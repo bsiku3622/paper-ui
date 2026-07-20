@@ -1,24 +1,25 @@
 // ╔══════════════════════════════════════════════════════════════════════════╗
-// ║ Text — 장부의 손글씨                                                     ║
+// ║ Text — 단정한 제품 타이포                                                ║
 // ║                                                                          ║
-// ║ 6 단. 장부에 필요한 목소리는 이게 전부다.                                ║
+// ║ 6 단. 복잡한 화면을 위한 밀도(body 14px)와 또렷한 위계.                  ║
 // ╚══════════════════════════════════════════════════════════════════════════╝
 //
-// 숫자는 mono 다 —
-//   장부의 숫자는 세로로 자리가 맞아야 한다. 금액 열에서 1 과 8 의 폭이 다르면
-//   눈이 합계를 못 따라간다. `numeric` variant 와 tabular-nums 가 그 자리.
+// 서체 —
+//   -apple-system 을 맨 앞에 둔다. macOS 에서 라틴은 San Francisco(SwiftUI 의
+//   그 얼굴), 한글은 Pretendard 로 빠진다. 둘 다 humanist geometric 이라 섞여도
+//   결이 맞는다. 숫자는 mono·tabular — 데이터 표의 열이 세로로 맞게.
 
 export const FONT = {
-  sans: "'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+  sans: "-apple-system, BlinkMacSystemFont, 'Pretendard Variable', Pretendard, 'Segoe UI', Roboto, sans-serif",
   mono: "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, 'Pretendard Variable', monospace",
 } as const;
 
 export const TEXT_VARIANTS = [
   "title", // 페이지 제목
-  "heading", // 섹션 제목
-  "label", // 라벨 · 표 머리 (mono · uppercase)
+  "heading", // 섹션 · 카드 제목
+  "label", // 폼 라벨 · 표 머리
   "body", // 본문 ◀ default
-  "numeric", // 금액 · 수량 (mono · tabular)
+  "numeric", // 수치 · 키 (mono · tabular)
   "caption", // 부연 · 메타
 ] as const;
 export type TextVariant = (typeof TEXT_VARIANTS)[number];
@@ -29,46 +30,43 @@ type TextSpec = {
   lineHeight: string;
   tracking: string;
   family: "sans" | "mono";
-  transform?: "uppercase";
   tabular?: boolean;
 };
 
-// body 15px 이 anchor — 장부는 읽는 문서지 대시보드가 아니다.
-// 13px 로 조이면 밀도는 오르지만 읽기를 포기하게 된다.
+// body 14px 이 anchor — 복잡한 웹앱의 표준 밀도(shadcn text-sm · Atlassian).
 export const TEXT_SPEC = {
   title: {
-    size: "1.75rem", // 28px
-    weight: "700",
-    lineHeight: "1.25",
+    size: "1.375rem", // 22px
+    weight: "600",
+    lineHeight: "1.3",
     tracking: "-0.02em",
     family: "sans",
   },
   heading: {
-    size: "1.0625rem", // 17px
+    size: "0.9375rem", // 15px — 섹션/카드 제목
     weight: "600",
     lineHeight: "1.4",
     tracking: "-0.01em",
     family: "sans",
   },
   label: {
-    size: "0.6875rem", // 11px — 표 머리 · 라벨. 작지만 mono·tracking 으로 읽힌다.
+    size: "0.75rem", // 12px — 폼 라벨 · 표 머리. 뉴트럴 medium, uppercase 아님.
     weight: "500",
     lineHeight: "1.4",
-    tracking: "0.07em",
-    family: "mono",
-    transform: "uppercase",
+    tracking: "0.005em",
+    family: "sans",
   },
   body: {
-    size: "0.9375rem", // 15px ◀ anchor
+    size: "0.875rem", // 14px ◀ anchor
     weight: "400",
-    lineHeight: "1.55",
-    tracking: "-0.01em",
+    lineHeight: "1.5",
+    tracking: "-0.006em",
     family: "sans",
   },
   numeric: {
-    size: "0.9375rem", // 15px — body 와 같은 크기. 다른 건 자리맞춤뿐.
+    size: "0.875rem", // 14px — body 크기, 자리맞춤만 다름
     weight: "450",
-    lineHeight: "1.55",
+    lineHeight: "1.5",
     tracking: "0",
     family: "mono",
     tabular: true,
@@ -76,13 +74,13 @@ export const TEXT_SPEC = {
   caption: {
     size: "0.8125rem", // 13px
     weight: "400",
-    lineHeight: "1.5",
+    lineHeight: "1.45",
     tracking: "0",
     family: "sans",
   },
 } as const satisfies Record<TextVariant, TextSpec>;
 
-// variant 별 기본 잉크 농도 — caption · label 은 흐리게.
+// variant 별 기본 잉크 농도 — label · caption 은 흐리게.
 export const TEXT_INK: Record<TextVariant, "base" | "soft"> = {
   title: "base",
   heading: "base",

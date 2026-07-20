@@ -4,8 +4,8 @@ import { tokens } from "../tokens";
 
 const fade = keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });
 const rise = keyframes({
-  from: { opacity: 0, transform: "translateY(4px)" },
-  to: { opacity: 1, transform: "translateY(0)" },
+  from: { opacity: 0, transform: "translateY(6px) scale(0.99)" },
+  to: { opacity: 1, transform: "translateY(0) scale(1)" },
 });
 
 export const modalBackdrop = style({
@@ -14,14 +14,13 @@ export const modalBackdrop = style({
   zIndex: tokens.shape.z.modal,
   display: "grid",
   placeItems: "center",
-  padding: tokens.shape.space.lg,
-  // 종이를 덮는 건 검정이 아니라 잉크의 옅은 층.
-  background: "rgba(26, 25, 23, 0.28)",
-  animation: `${fade} 120ms ease`,
+  padding: tokens.shape.space.xl,
+  background: "rgba(24, 25, 28, 0.32)",
+  animation: `${fade} 130ms ease`,
 });
 
 export const modalPanel = style({
   width: "100%",
-  maxWidth: "26rem",
-  animation: `${rise} 140ms ease`,
+  maxWidth: "27rem",
+  animation: `${rise} 150ms cubic-bezier(0.22, 1, 0.36, 1)`,
 });

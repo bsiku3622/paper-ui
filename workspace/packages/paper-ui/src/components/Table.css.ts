@@ -7,38 +7,35 @@ export const tableRoot = style({
   borderCollapse: "collapse",
 });
 
-// 표 머리는 파인 칸 — 아래에 강한 괘선.
+// 표 머리 — 옅은 면. 강한 밑줄 대신 조용히.
 export const tableHead = style({
-  background: tokens.color.paper.sunk,
-  borderBottomWidth: tokens.shape.ruleWidth.base,
-  borderBottomStyle: "solid",
-  borderBottomColor: tokens.color.rule.strong,
+  background: tokens.color.surface.subtle,
 });
 
-// 표 머리도 장부의 한 줄이다 — line 높이라야 배경 괘선과 격자가 맞는다.
-// (control 높이(33px) 로 두면 아래 모든 행이 11px 씩 밀려 배경 괘선과 이중선이 된다.)
 export const tableTh = style({
-  height: tokens.shape.height.row,
+  height: tokens.shape.height.control,
   paddingInline: tokens.shape.space.md,
   textAlign: "left",
   whiteSpace: "nowrap",
 });
 
-// 행 높이 = line. 배경 괘선과 정확히 맞아 항목이 선 위에 앉는다.
+// 행 — 구분선은 아주 옅게. hover 때만 배경이 조용히 바뀐다.
 export const tableTr = style({
   height: tokens.shape.height.row,
-  borderBottomWidth: tokens.shape.ruleWidth.base,
-  borderBottomStyle: "solid",
-  borderBottomColor: tokens.color.rule.base,
-  selectors: { "&:last-child": { borderBottom: "none" } },
+  transition: "background 100ms ease",
+  selectors: {
+    "&:not(:last-child)": {
+      borderBottom: `${tokens.shape.borderWidth.base} solid ${tokens.color.border.base}`,
+    },
+    "&:hover": { background: tokens.color.surface.subtle },
+  },
 });
 
 export const tableTd = style({
   paddingInline: tokens.shape.space.md,
-  fontSize: "0.9375rem",
+  fontSize: "0.875rem",
 });
 
-// 숫자 열 — mono·우측정렬. 합계를 눈으로 따라갈 수 있게.
 export const tableNumeric = style({
   fontFamily: tokens.font.mono,
   fontVariantNumeric: "tabular-nums",

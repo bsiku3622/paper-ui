@@ -1,6 +1,6 @@
 // utility.css.ts — resolver 가 뱉는 클래스의 실체.
 //
-// resolver 는 이름만 만들고(`paper-red-wash`), 그 이름이 무엇인지는 여기서 굳는다.
+// resolver 는 이름만 만들고(`paper-blue-wash`), 그 이름이 무엇인지는 여기서 굳는다.
 // 두 자리가 같은 토큰 트리를 돌기 때문에 조합이 빠질 수 없다.
 
 import { globalStyle } from "@vanilla-extract/css";
@@ -8,12 +8,12 @@ import { globalStyle } from "@vanilla-extract/css";
 import { tokens, ACCENT_NAMES, SPACE_KEYS } from "../tokens";
 import { SURFACES, INKS } from "../resolvers";
 
-// ───── surface — 파인 면 ───────────────────────────────────────────────────
+// ───── surface — 면 ────────────────────────────────────────────────────────
 
 const SURFACE_TOKEN = {
-  base: tokens.color.paper.base,
-  sunk: tokens.color.paper.sunk,
-  deep: tokens.color.paper.deep,
+  base: tokens.color.surface.base,
+  subtle: tokens.color.surface.subtle,
+  muted: tokens.color.surface.muted,
 } as const;
 
 for (const s of SURFACES) {
@@ -32,15 +32,16 @@ for (const i of INKS) {
   globalStyle(`.paper-ink-${i}`, { color: INK_TOKEN[i] });
 }
 
-// ───── accent — 가끔 등장하는 잉크 ─────────────────────────────────────────
+// ───── accent — 작게 얹는 색 ───────────────────────────────────────────────
 //
-// ink  = 글자·선만 그 색. 종이는 건드리지 않는다.
+// ink  = 글자·아이콘만 그 색.
 // wash = 옅은 면 + 같은 색 괘선 + 그 색 글자.
+// dot  = 작은 채운 점 (배경/글자에 solid).
 
 const ACCENT_TOKEN = {
-  red: tokens.color.accent.red,
+  blue: tokens.color.accent.blue,
   green: tokens.color.accent.green,
-  orange: tokens.color.accent.orange,
+  red: tokens.color.accent.red,
 } as const;
 
 for (const a of ACCENT_NAMES) {
@@ -51,6 +52,7 @@ for (const a of ACCENT_NAMES) {
     color: t.ink,
     borderColor: t.edge,
   });
+  globalStyle(`.paper-${a}-dot`, { background: t.solid, color: t.solid });
 }
 
 // ───── space — 간격 ────────────────────────────────────────────────────────

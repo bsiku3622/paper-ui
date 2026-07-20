@@ -2,11 +2,12 @@ import { style } from "@vanilla-extract/css";
 
 import { tokens } from "../tokens";
 
-// 탭 줄 자체가 괘선이다 — 아래 선 위에 탭이 앉는다.
 export const tabsList = style({
-  borderBottomWidth: tokens.shape.ruleWidth.base,
-  borderBottomStyle: "solid",
-  borderBottomColor: tokens.color.rule.base,
+  display: "inline-flex",
+  gap: "2px",
+  padding: "3px",
+  background: tokens.color.surface.muted,
+  borderRadius: tokens.shape.radius.md,
 });
 
 export const tabItem = style({
@@ -14,20 +15,20 @@ export const tabItem = style({
   background: "transparent",
   border: "none",
   cursor: "pointer",
-  padding: `${tokens.shape.space.sm} 0`,
+  height: "1.75rem",
+  paddingInline: tokens.shape.space.md,
+  borderRadius: tokens.shape.radius.sm,
   fontFamily: tokens.font.sans,
-  fontSize: "0.875rem",
+  fontSize: "0.8125rem",
   fontWeight: "500",
   color: tokens.color.ink.soft,
-  // 선택 표시는 밑줄 — 잉크로 그은 획.
-  borderBottomWidth: "2px",
-  borderBottomStyle: "solid",
-  borderBottomColor: "transparent",
-  marginBottom: `calc(-1 * ${tokens.shape.ruleWidth.base})`,
+  transition: "background 130ms ease, color 130ms ease",
   selectors: { "&:hover": { color: tokens.color.ink.base } },
 });
 
+// 선택 = 흰 pill 이 떠오름. SwiftUI segmented control 의 그 감각.
 export const tabItemActive = style({
+  background: tokens.color.surface.base,
   color: tokens.color.ink.base,
-  borderBottomColor: tokens.color.ink.base,
+  boxShadow: tokens.shape.shadow.raised,
 });

@@ -6,15 +6,15 @@ export const dividerRoot = style({
   border: "none",
   margin: 0,
   flexShrink: 0,
-  background: tokens.color.rule.base,
+  background: tokens.color.border.base,
 });
 
 export const dividerWeight = styleVariants({
-  base: { background: tokens.color.rule.base },
-  strong: { background: tokens.color.rule.strong },
+  base: { background: tokens.color.border.base },
+  strong: { background: tokens.color.border.strong },
 });
 
 export const dividerAxis = styleVariants({
-  horizontal: { height: tokens.shape.ruleWidth.base, width: "100%" },
-  vertical: { width: tokens.shape.ruleWidth.base, alignSelf: "stretch" },
+  horizontal: { height: tokens.shape.borderWidth.base, width: "100%" },
+  vertical: { width: tokens.shape.borderWidth.base, alignSelf: "stretch" },
 });

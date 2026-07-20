@@ -13,16 +13,14 @@ import type { ComponentPropsWithoutRef, ElementType, ReactNode } from "react";
 
 import { resolveBoxClass, type BoxLike } from "../resolvers";
 import { joinClass } from "../internal/joinClass";
-import { RULED_CLASS, boxRadius, boxShadow } from "./Box.css";
+import { boxRadius, boxShadow } from "./Box.css";
 
 // `as` 를 제네릭으로 묶어야 <Box as="button" type="submit"> 의 type 이 검사된다.
 type OwnProps<As extends ElementType> = BoxLike & {
   as?: As;
-  // 괘선지 — 배경에 line 간격 가로줄. Row 를 담는 자리에.
-  ruled?: boolean;
-  // 모서리 — 면이면 base, 큰 overlay 면 lg. 안 주면 각지게 둔다.
-  radius?: "base" | "lg" | "pill";
-  // 뜨는 건 overlay 뿐이다. Card 는 괘선으로 정의된다.
+  // 모서리 — 안 주면 각지게 둔다.
+  radius?: "sm" | "md" | "lg" | "pill";
+  // 뜨는 건 overlay 뿐이다 (Modal · Popover). 면은 그림자로 뜨지 않는다.
   shadow?: "raised" | "overlay";
   children?: ReactNode;
   className?: string;
@@ -46,7 +44,6 @@ const OWN_KEYS = [
 
 export const Box = <As extends ElementType = "div">({
   as,
-  ruled,
   radius,
   shadow,
   children,
@@ -67,7 +64,6 @@ export const Box = <As extends ElementType = "div">({
     <Tag
       className={joinClass(
         resolveBoxClass(style as BoxLike),
-        ruled && RULED_CLASS,
         radius && boxRadius[radius],
         shadow && boxShadow[shadow],
         className,

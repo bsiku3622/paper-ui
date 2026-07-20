@@ -1,17 +1,18 @@
 // Resolvers — 규칙의 주인.
 //
-// 컴포넌트는 "내가 어떤 색인지" 만 말하고, *그게 무슨 클래스가 되는지* 는 모른다.
-// 색 해석이 Button 안에도 Badge 안에도 흩어지면 둘이 조용히 달라진다.
+// 컴포넌트는 "내가 어떤 색인지" 만 말하고, 그게 무슨 클래스가 되는지는 모른다.
+// 색 해석이 컴포넌트마다 흩어지면 둘이 조용히 달라진다.
 
 import { joinClass } from "../internal/joinClass";
 import type { AccentName, StatusName, Space } from "../tokens";
+import { STATUS_ACCENT } from "../tokens";
 
 // ───── surface — 면 ────────────────────────────────────────────────────────
 //
-// 이 시스템의 면은 3 단뿐이고, 전부 *내려간다* (raised 없음).
-// 장부에서 강조는 띄우는 게 아니라 칸을 파는 것이다.
+// 순백(base) · 옅은 면(subtle) · 눌린 면(muted). 이 시스템은 선보다 면으로
+// 구획을 나눈다 (ChatGPT 의 결).
 
-export const SURFACES = ["base", "sunk", "deep"] as const;
+export const SURFACES = ["base", "subtle", "muted"] as const;
 export type Surface = (typeof SURFACES)[number];
 
 export const resolveSurface = (s: Surface | undefined): string =>
@@ -24,28 +25,24 @@ export type Ink = (typeof INKS)[number];
 
 export const resolveInk = (i: Ink | undefined): string => (i ? `paper-ink-${i}` : "");
 
-// ───── tone — 가끔 등장하는 잉크 ───────────────────────────────────────────
+// ───── tone — 작게 얹는 색 ─────────────────────────────────────────────────
 //
-// accent 를 쓰는 방법은 두 가지뿐이다:
-//   ink  — 글자/선만 그 색 (기본. 종이는 그대로)
-//   wash — 아주 옅은 면 + 괘선 (Banner · 선택된 행처럼 면이 필요한 자리)
+// accent 를 쓰는 방법:
+//   ink  — 글자/아이콘만 그 색 (링크 · 강조 수치)
+//   wash — 옅은 면 + 같은 색 괘선 + 그 색 글자 (배지 · 선택 행)
+//   dot  — 작은 채운 점 (status 표시자)
 //
-// solid(색으로 꽉 찬 면) 는 *Button 의 1 차 액션 한 자리* 에만 있다. 그 외에
-// solid 를 노출하지 않는 게 이 팔레트가 조용한 이유다.
+// 색으로 꽉 찬 큰 면(solid)은 tone 이 아니다 — primary(검정) 만 면을 채운다.
 
-export const TONES = ["ink", "wash"] as const;
+export const TONES = ["ink", "wash", "dot"] as const;
 export type Tone = (typeof TONES)[number];
 
 export const resolveTone = (accent: AccentName | undefined, tone: Tone = "ink"): string =>
   accent ? `paper-${accent}-${tone}` : "";
 
-// status → accent. info 는 유채색이 없다 — ink.soft 로 간다.
-export const resolveStatus = (status: StatusName | undefined, tone: Tone = "ink"): string => {
-  if (!status) return "";
-  if (status === "info") return tone === "wash" ? "paper-surface-sunk" : "paper-ink-soft";
-  const map = { error: "red", success: "green", danger: "orange" } as const;
-  return `paper-${map[status]}-${tone}`;
-};
+// status → accent. info=blue · success=green · error=red (전부 색을 가짐).
+export const resolveStatus = (status: StatusName | undefined, tone: Tone = "ink"): string =>
+  status ? resolveTone(STATUS_ACCENT[status], tone) : "";
 
 // ───── space — 간격 ────────────────────────────────────────────────────────
 

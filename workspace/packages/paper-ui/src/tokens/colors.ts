@@ -1,104 +1,125 @@
 // ╔══════════════════════════════════════════════════════════════════════════╗
-// ║ Color — 장부(ledger) 의 물성                                             ║
+// ║ Color — 순백 위의 검정, 포인트로 작게 얹는 색                            ║
 // ║                                                                          ║
-// ║ 종이 위에 잉크로 쓴다. 이 시스템의 색은 두 축뿐이다 — paper 와 ink.      ║
-// ║ 나머지 색은 "가끔 등장하는 잉크" 다.                                     ║
+// ║ 베이스는 흰색과 검정 둘뿐이다. 그 조화가 화면의 골격을 만든다.          ║
+// ║ 색(red·green·blue)은 *작게 얹는 점* 이다 — status · focus · 링크처럼    ║
+// ║ 의미가 있는 자리에만, 면을 채우지 않고.                                  ║
 // ╚══════════════════════════════════════════════════════════════════════════╝
 //
-// 왜 무채색인가 —
-//   화면의 99% 는 종이와 잉크다. 색이 등장하면 *반드시 의미가 있다*. 색을 아껴
-//   쓰는 게 아니라, 색에 일을 시키지 않으면 아예 꺼낼 이유가 없는 구조다.
-//   (accent 8 색을 깔아두고 "절제해서 쓰세요" 라고 문서로 부탁하면 지켜지지
-//    않는다. 팔레트에 없으면 지켜진다.)
+// 지향 — Atlassian 의 밀도 · shadcn 의 절제된 뉴트럴 · SwiftUI 의 단정한 여백.
+// 복잡한 웹앱을 위한 표면: 흰 바탕, 얇은 회색 괘선, 필요할 때만 옅게 뜨는 그림자.
 //
-// paper 는 흰색이 아니다 —
-//   #fbf9f5 는 RGB 편차 6. 순백(편차 0) 과 누런 장부지(편차 10+) 사이에서,
-//   흰 화면 옆에 두면 종이인 게 보이고 혼자 있으면 흰색처럼 조용한 자리.
+// 왜 primary 가 검정인가 —
+//   "순백+검정 조화에 색은 작게" 라는 정체성에서 파랑 버튼이 매 화면 등장하면
+//   색이 더는 포인트가 아니다. 그래서 일꾼(primary 액션)은 검정이고, 파랑은
+//   focus · 링크 · info 처럼 *작은* 자리에만 나온다.
 //
-// ink 는 검정이 아니다 —
-//   #1a1917 은 순검정보다 따뜻하다. 종이 위 잉크는 순검정으로 마르지 않는다.
+// 검정은 순검정이 아니다 —
+//   #18181b. 넓은 면에 순검정(#000)은 눈을 찌른다. 살짝 문 뉴트럴이 더 단정하다.
 
-// ───── paper — 지면 3 단 ────────────────────────────────────────────────────
+// ───── surface — 흰 바탕 3 단 ───────────────────────────────────────────────
 //
-// raised 가 아니라 sunk 로 내려간다. 장부에서 무언가를 강조하는 방법은
-// 띄우는 게 아니라 *칸을 파는* 것이다 (table head · sidebar · input).
+// base 가 순백. 위로 갈수록(subtle · muted) 아주 옅게 내려앉는 회색 — hover ·
+// table head · 눌린 자리. 종이가 아니라 *깨끗한 시트* 다.
 
-export const PAPER = {
-  base: "#fbf9f5", // 편차 6 — 기본 지면
-  sunk: "#f2efe8", // 편차 10 — 눌린 칸 (table head · sidebar · input 바닥)
-  deep: "#e9e5dc", // 편차 13 — 더 눌린 칸 (code · well)
+export const SURFACE = {
+  base: "#ffffff", // 순백 — 페이지 캔버스
+  subtle: "#f7f7f8", // 카드 · 사이드바 · table head (ChatGPT 의 옅은 면)
+  muted: "#ececee", // hover · 눌린 칸 · 선택
 } as const;
 
-// ───── ink — 잉크 3 단 ──────────────────────────────────────────────────────
+// ───── ink — 검정 3 단 ──────────────────────────────────────────────────────
 
 export const INK = {
-  base: "#1a1917", // 본문
-  soft: "#6b655c", // 보조 · 라벨 · info
-  faint: "#a8a29a", // 흐린 · placeholder · disabled
+  base: "#18181b", // 본문 (검정으로 읽히는 뉴트럴)
+  soft: "#71717a", // 보조 · 라벨 · placeholder 위
+  faint: "#a1a1aa", // 흐린 · placeholder · disabled
 } as const;
 
-// ───── rule — 괘선 ─────────────────────────────────────────────────────────
+// ───── border — 괘선 ───────────────────────────────────────────────────────
 //
-// 이 시스템에서 border 는 "테두리" 가 아니라 *괘선* 이다. 장부의 선은 요소를
-// 감싸려고 있는 게 아니라 칸을 나누려고 있다. 그래서 ink 의 알파로 정의된다 —
-// 종이 위에 옅게 그은 선.
+// 이 시스템의 구획은 얇은 뉴트럴 선으로 나뉜다 (shadcn/Atlassian 의 결).
 
-export const RULE = {
-  base: "rgba(26, 25, 23, 0.10)", // 기본 괘선
-  strong: "rgba(26, 25, 23, 0.18)", // 강한 괘선 (섹션 경계 · table head 밑)
+export const BORDER = {
+  base: "#e8e8ea", // 기본 경계 — 거의 안 보이게. 선보다 면으로 나누는 게 먼저.
+  strong: "#d8d8dc", // 강한 경계 — 섹션 · table head 밑처럼 선이 필요한 자리만
 } as const;
 
-// ───── accent — 가끔 등장하는 잉크 ──────────────────────────────────────────
+// ───── accent — 작게 얹는 점 ────────────────────────────────────────────────
 //
-// 3 색뿐이다. 그리고 *쨍하다* — 빛바랜 파스텔이 아니라 확실히 다른 잉크.
-// 무채색 지면 위에서 색은 드물게 등장하므로, 등장할 땐 분명해야 한다.
-// (옅게 깔면 무채색 배경에 묻혀 "색을 쓴 이유" 가 사라진다.)
+// 3 색. 각자 의미를 진다: blue = 정보/상호작용, green = 성공, red = 위험.
+// 각 색은 4 자리를 갖는다:
+//   solid — 채운 면/점 (dot · 채운 배지). 600 톤.
+//   ink   — 흰 배경 위 *글자* 색 (AA 대비). 700 톤.
+//   wash  — 아주 옅은 면 (subtle 배지 · 선택 행). 50 톤.
+//   edge  — wash 의 괘선. 200 톤.
 //
-// info 가 여기 없는 이유 — info 는 소리칠 일이 없다. ink.soft 로 충분하고,
-// 그래서 유채색은 3 개다. status 4 종 중 하나가 무채색인 건 결함이 아니라
-// 이 시스템의 주장이다.
+// solid 로 꽉 찬 큰 면은 만들지 않는다 — 색은 점이지 배경이 아니다.
 
 export const ACCENT = {
-  red: {
-    ink: "#c8322a", // error — 쨍한 빨강
-    wash: "#fbeceb", // paper 위에 아주 옅게 깐 면
-    edge: "#eec7c4", // wash 의 괘선
+  blue: {
+    solid: "#2563eb",
+    ink: "#1d4ed8",
+    wash: "#eff6ff",
+    edge: "#bfdbfe",
   },
   green: {
-    ink: "#1f7a3d", // success
-    wash: "#e9f4ec",
-    edge: "#c2dfcb",
+    solid: "#16a34a",
+    ink: "#15803d",
+    wash: "#f0fdf4",
+    edge: "#bbf7d0",
   },
-  orange: {
-    ink: "#c2610d", // danger — error 보다 한 단계 아래의 경고
-    wash: "#fdf0e3",
-    edge: "#f0d3ae",
+  red: {
+    solid: "#dc2626",
+    ink: "#b91c1c",
+    wash: "#fef2f2",
+    edge: "#fecaca",
   },
 } as const;
 
 export type AccentName = keyof typeof ACCENT;
-export const ACCENT_NAMES = ["red", "green", "orange"] as const satisfies readonly AccentName[];
+export const ACCENT_NAMES = ["blue", "green", "red"] as const satisfies readonly AccentName[];
 
-// ───── status — 의미 → 색 매핑 ──────────────────────────────────────────────
+// ───── primary — 검정 일꾼 ──────────────────────────────────────────────────
 //
-// status 는 4 종인데 유채색은 3 개다. info 는 ink.soft 로 간다.
+// 1 차 액션의 면. 이 시스템에서 색이 아니라 검정이 채우는 유일한 자리.
 
-export const STATUS = ["error", "success", "danger", "info"] as const;
+export const PRIMARY = {
+  base: "#18181b",
+  hover: "#27272a",
+  fg: "#ffffff",
+} as const;
+
+// ───── focus — 파란 링 ──────────────────────────────────────────────────────
+//
+// 키보드 포커스. blue 가 가장 작게, 가장 자주 등장하는 포인트 자리 (Apple ·
+// Atlassian 의 시그니처). ring 은 accent.blue.solid 와 같은 값 — 한 곳에서 굳힌다.
+
+export const FOCUS = {
+  ring: "#2563eb",
+} as const;
+
+// ───── status — 의미 → 색 ───────────────────────────────────────────────────
+//
+// 3 종. ledger 와 달리 info 도 색을 갖는다 (blue) — 파랑을 포인트로 쓰기로 한
+// 정체성의 귀결.
+
+export const STATUS = ["info", "success", "error"] as const;
 export type StatusName = (typeof STATUS)[number];
 
-export const STATUS_ACCENT: Record<Exclude<StatusName, "info">, AccentName> = {
-  error: "red",
+export const STATUS_ACCENT: Record<StatusName, AccentName> = {
+  info: "blue",
   success: "green",
-  danger: "orange",
+  error: "red",
 };
 
 // ───── VALUES — emit 대상 트리 ─────────────────────────────────────────────
-//
-// 이 트리 하나가 CSS var 와 TS 참조 트리 양쪽의 출처다 (tokens/helpers.ts).
 
 export const COLOR_VALUES = {
-  paper: PAPER,
+  surface: SURFACE,
   ink: INK,
-  rule: RULE,
+  border: BORDER,
   accent: ACCENT,
+  primary: PRIMARY,
+  focus: FOCUS,
 } as const;

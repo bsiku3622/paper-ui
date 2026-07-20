@@ -2,27 +2,35 @@ import { style } from "@vanilla-extract/css";
 
 import { tokens } from "../tokens";
 
-// 입력 칸은 *파인다*. 종이에 눌린 자리 — 떠오르지 않는다.
+// 옅은 회색 면. 포커스 때만 파란 링 (ChatGPT 의 입력 결).
 export const fieldRoot = style({
   height: tokens.shape.height.control,
   width: "100%",
   paddingInline: tokens.shape.space.md,
-  background: tokens.color.paper.sunk,
-  borderRadius: tokens.shape.radius.base,
-  borderWidth: tokens.shape.ruleWidth.base,
+  background: tokens.color.surface.subtle,
+  borderRadius: tokens.shape.radius.sm,
+  borderWidth: tokens.shape.borderWidth.base,
   borderStyle: "solid",
-  borderColor: tokens.color.rule.base,
+  borderColor: "transparent",
   color: tokens.color.ink.base,
   fontFamily: tokens.font.sans,
   fontSize: "0.875rem",
+  transition: "border-color 130ms ease, box-shadow 130ms ease, background 130ms ease",
   selectors: {
     "&::placeholder": { color: tokens.color.ink.faint },
+    "&:hover:not(:focus):not(:disabled)": { background: tokens.color.surface.muted },
+    "&:focus": {
+      outline: "none",
+      background: tokens.color.surface.base,
+      borderColor: tokens.color.focus.ring,
+      boxShadow: `0 0 0 3px ${tokens.color.accent.blue.wash}`,
+    },
     "&:disabled": { opacity: 0.5, cursor: "not-allowed" },
-    "&[aria-invalid='true']": { borderColor: tokens.color.accent.red.ink },
+    "&[aria-invalid='true']": { borderColor: tokens.color.accent.red.solid },
   },
 });
 
-// 금액 입력은 mono·우측정렬 — 장부의 숫자 열.
+// 수치 입력 — mono·우측정렬.
 export const fieldNumeric = style({
   fontFamily: tokens.font.mono,
   fontVariantNumeric: "tabular-nums",

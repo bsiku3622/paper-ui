@@ -2,17 +2,6 @@
 //
 // 여기가 raw hex 를 import 하는 *유일한* 모듈이다 (절대 규칙 4). 다른 모든
 // 파일은 tokens 객체의 var() 참조만 본다.
-//
-// 출력 (개념):
-//   :root {
-//     --paper-color-paper-base: #fbf9f5;
-//     --paper-color-ink-base:   #1a1917;
-//     --paper-shape-line-base:  2.75rem;
-//     ...
-//   }
-//   .paper-text-body    { font: ... }
-//   .paper-ink-soft     { color: var(--paper-color-ink-soft) }
-//   .paper-rules        { background-image: repeating-linear-gradient(...) }
 
 import { globalStyle } from "@vanilla-extract/css";
 
@@ -44,25 +33,29 @@ walkValues(TEXT_VALUES, [], (path, value) => {
 globalStyle(":root", { vars: rootVars });
 
 // ╭──────────────────────────────────────────────────────────────────────────╮
-// │ Pass 2 — 지면 (body)                                                     │
+// │ Pass 2 — 캔버스 (body)                                                   │
 // ╰──────────────────────────────────────────────────────────────────────────╯
 
 globalStyle("body", {
   margin: 0,
-  background: tokens.color.paper.base,
+  background: tokens.color.surface.base,
   color: tokens.color.ink.base,
   fontFamily: tokens.font.sans,
   fontSize: TEXT_SPEC.body.size,
   lineHeight: TEXT_SPEC.body.lineHeight,
   letterSpacing: TEXT_SPEC.body.tracking,
   WebkitFontSmoothing: "antialiased",
+  MozOsxFontSmoothing: "grayscale",
 });
 
 globalStyle("*", { boxSizing: "border-box" });
 
+// 포커스는 파란 링 하나로 통일 (Apple · Atlassian 시그니처). 색이 가장 작게,
+// 가장 자주 등장하는 포인트 자리.
 globalStyle(":focus-visible", {
-  outline: `2px solid ${tokens.color.ink.base}`,
+  outline: `2px solid ${tokens.color.focus.ring}`,
   outlineOffset: "2px",
+  borderRadius: tokens.shape.radius.sm,
 });
 
 // ╭──────────────────────────────────────────────────────────────────────────╮
@@ -78,49 +71,14 @@ for (const v of TEXT_VARIANTS) {
     lineHeight: spec.lineHeight,
     letterSpacing: spec.tracking,
     color: tokens.color.ink[TEXT_INK[v]],
-    ...("transform" in spec && spec.transform ? { textTransform: spec.transform } : {}),
     ...("tabular" in spec && spec.tabular ? { fontVariantNumeric: "tabular-nums" } : {}),
     margin: 0,
   });
 }
 
 // ╭──────────────────────────────────────────────────────────────────────────╮
-// │ Pass 4 — 괘선지 (rules)                                                  │
+// │ Pass 4 — reduced motion                                                  │
 // ╰──────────────────────────────────────────────────────────────────────────╯
-//
-// 이 시스템의 시그니처. 배경에 line 간격으로 가로줄을 긋는다. Row 의 높이가
-// 같은 line 이므로 항목이 선 *위에* 앉는다 — 이게 종이로 읽히는 이유다.
-
-globalStyle(".paper-rules", {
-  backgroundImage: `repeating-linear-gradient(
-    to bottom,
-    transparent,
-    transparent calc(${tokens.shape.line.base} - ${tokens.shape.ruleWidth.base}),
-    ${tokens.color.rule.base} calc(${tokens.shape.line.base} - ${tokens.shape.ruleWidth.base}),
-    ${tokens.color.rule.base} ${tokens.shape.line.base}
-  )`,
-});
-
-// ╭──────────────────────────────────────────────────────────────────────────╮
-// │ Pass 5 — 종이 결                                                         │
-// ╰──────────────────────────────────────────────────────────────────────────╯
-//
-// 아주 옅은 noise 를 화면 전체에 곱한다. 없어도 되지만, 있으면 #fbf9f5 가
-// "밝은 회색" 이 아니라 "종이" 로 읽힌다. data URI 라 네트워크 요청 0.
-
-const GRAIN =
-  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.32'/%3E%3C/svg%3E\")";
-
-globalStyle(".paper-grain::before", {
-  content: "''",
-  position: "fixed",
-  inset: 0,
-  zIndex: 9999,
-  pointerEvents: "none",
-  opacity: 0.45,
-  mixBlendMode: "multiply",
-  backgroundImage: GRAIN,
-});
 
 globalStyle("*", {
   "@media": {

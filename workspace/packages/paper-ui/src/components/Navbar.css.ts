@@ -2,15 +2,14 @@ import { style } from "@vanilla-extract/css";
 
 import { tokens } from "../tokens";
 
-// 머리글 — 아래 강한 괘선 하나로 본문과 갈린다. 그림자 없음.
 export const navbarRoot = style({
   position: "sticky",
   top: 0,
   zIndex: tokens.shape.z.sticky,
-  height: tokens.shape.height.row,
-  borderBottomWidth: tokens.shape.ruleWidth.base,
+  minHeight: "3.25rem",
+  borderBottomWidth: tokens.shape.borderWidth.base,
   borderBottomStyle: "solid",
-  borderBottomColor: tokens.color.rule.strong,
+  borderBottomColor: tokens.color.border.base,
 });
 
 export const navItem = style({
@@ -18,14 +17,17 @@ export const navItem = style({
   background: "transparent",
   border: "none",
   cursor: "pointer",
-  padding: 0,
+  height: "2rem",
+  paddingInline: tokens.shape.space.sm,
+  borderRadius: tokens.shape.radius.sm,
   fontFamily: tokens.font.sans,
   fontSize: "0.875rem",
   color: tokens.color.ink.soft,
-  selectors: { "&:hover": { color: tokens.color.ink.base } },
+  transition: "background 130ms ease, color 130ms ease",
+  selectors: { "&:hover": { color: tokens.color.ink.base, background: tokens.color.surface.muted } },
 });
 
 export const navItemActive = style({
   color: tokens.color.ink.base,
-  fontWeight: "600",
+  fontWeight: "500",
 });
