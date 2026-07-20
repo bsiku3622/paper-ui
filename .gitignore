@@ -11,3 +11,8 @@ coverage/
 *.swp
 .claude/
 /*.png
+
+# Playwright
+test-results/
+playwright-report/
+.playwright/
