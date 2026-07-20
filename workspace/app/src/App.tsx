@@ -11,6 +11,7 @@ import {
   Box,
   Button,
   Checkbox,
+  Field,
   Icon,
   Inline,
   Label,
@@ -162,7 +163,7 @@ export const App = () => {
         trailing={
           <Inline gap="sm">
             <Box style={{ width: "16rem" }}>
-              <TextField label="" placeholder="검색…" aria-label="검색" />
+              <Field placeholder="검색…" aria-label="검색" />
             </Box>
             <Tooltip label="새 이슈 (C)">
               <Button kind="solid" onClick={() => setOpen(true)}>
