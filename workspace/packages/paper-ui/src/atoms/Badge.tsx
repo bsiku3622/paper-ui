@@ -1,11 +1,11 @@
-// Badge — 상태 한 낱말. status 를 주면 색이 따라온다 (info 는 무채색).
+// Badge — 상태 한 낱말. status 를 주면 옅은 색 면(wash)이 붙는다.
 
 import type { ReactNode } from "react";
 
 import { joinClass } from "../internal/joinClass";
 import { resolveStatus } from "../resolvers";
 import type { StatusName } from "../tokens";
-import { badgeRoot } from "./Badge.css";
+import { badgeRoot, badgeNeutral } from "./Badge.css";
 
 export type BadgeProps = {
   status?: StatusName;
@@ -14,7 +14,7 @@ export type BadgeProps = {
 };
 
 export const Badge = ({ status, children, className }: BadgeProps) => (
-  <span className={joinClass(badgeRoot, status ? resolveStatus(status, "wash") : "paper-surface-sunk", className)}>
+  <span className={joinClass(badgeRoot, status ? resolveStatus(status, "wash") : badgeNeutral, className)}>
     {children}
   </span>
 );

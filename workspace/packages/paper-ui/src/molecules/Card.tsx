@@ -1,6 +1,6 @@
-// Card — 괘선으로 두른 칸.
+// Card — 옅은 면으로 정의되는 칸.
 //
-// 그림자로 뜨지 않는다. 종이에 그은 네모다.
+// 선도 그림자도 없다. surface.subtle 이 흰 캔버스 위에서 카드를 조용히 들어올린다.
 
 import type { ReactNode } from "react";
 
@@ -17,7 +17,7 @@ export type CardProps = Omit<BoxProps<"div">, "children" | "shadow" | "padding">
 
 export const Card = ({
   padding = "lg",
-  radius = "base",
+  radius = "md",
   className,
   children,
   ...rest

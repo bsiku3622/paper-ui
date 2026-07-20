@@ -1,8 +1,8 @@
-// 데모 — ledger 의 한 화면을 paper-ui 20 개로 다시 만든다.
+// 데모 — 복잡한 웹앱 화면 하나(이슈 트래커)를 paper-ui 20 개로 짓는다.
 //
-// 이게 이 데모의 전부다. 컴포넌트 갤러리가 아니라 *실제 화면 하나* 를 짓는다.
-// 20 개로 장부 화면이 서면 20 개면 충분한 것이고, 안 서면 뭐가 빠졌는지 여기서
-// 드러난다. 그게 "실사용 검증" 이다.
+// 컴포넌트 갤러리가 아니라 *실제 화면* 이다. Atlassian/Linear 감각의 이슈 목록:
+// 상단 nav · 세그먼트 탭 · 필터 · 데이터 표 · status 배지 · 생성 모달.
+// 20 개로 이게 서면 20 개면 충분한 것이고, 안 서면 뭐가 빠졌는지 여기서 드러난다.
 
 import { useMemo, useState } from "react";
 
@@ -10,11 +10,11 @@ import {
   Badge,
   Box,
   Button,
-  Card,
   Checkbox,
-  Divider,
+  Icon,
   Inline,
   Label,
+  Link,
   Modal,
   Navbar,
   Select,
@@ -24,81 +24,149 @@ import {
   Text,
   TextField,
   Tooltip,
+  tokens,
   type Column,
+  type StatusName,
 } from "@studio-baeks/paper-ui";
 
-type Entry = {
+type State = "todo" | "progress" | "done" | "blocked";
+
+type Issue = {
   id: string;
-  date: string;
-  memo: string;
-  tag: string;
-  amount: number; // 음수 = 지출
+  key: string;
+  title: string;
+  state: State;
+  priority: "높음" | "보통" | "낮음";
+  assignee: string;
+  updated: string;
 };
 
-const ENTRIES: Entry[] = [
-  { id: "1", date: "07-16", memo: "급여", tag: "수입", amount: 3_240_000 },
-  { id: "2", date: "07-15", memo: "전세 대출 이자", tag: "고정", amount: -412_000 },
-  { id: "3", date: "07-14", memo: "장보기 — 이마트", tag: "식비", amount: -86_400 },
-  { id: "4", date: "07-14", memo: "커피", tag: "식비", amount: -4_800 },
-  { id: "5", date: "07-12", memo: "책 — 알라딘", tag: "문화", amount: -32_000 },
-  { id: "6", date: "07-11", memo: "외주 정산", tag: "수입", amount: 900_000 },
-  { id: "7", date: "07-09", memo: "통신비", tag: "고정", amount: -55_000 },
+const ISSUES: Issue[] = [
+  { id: "1", key: "STU-142", title: "토큰 트리를 두 번 걷는 emit 파이프라인", state: "progress", priority: "높음", assignee: "재원", updated: "10분 전" },
+  { id: "2", key: "STU-139", title: "Select 포커스 링이 사파리에서 잘림", state: "blocked", priority: "높음", assignee: "민주", updated: "1시간 전" },
+  { id: "3", key: "STU-137", title: "Table hover 배경을 subtle 로 통일", state: "done", priority: "보통", assignee: "재원", updated: "3시간 전" },
+  { id: "4", key: "STU-135", title: "Badge wash 대비 AA 검증", state: "todo", priority: "보통", assignee: "지현", updated: "어제" },
+  { id: "5", key: "STU-131", title: "Modal 진입 애니메이션 곡선 조정", state: "done", priority: "낮음", assignee: "민주", updated: "어제" },
+  { id: "6", key: "STU-128", title: "eslint 규칙 4 — Box as 예외 문서화", state: "todo", priority: "낮음", assignee: "지현", updated: "2일 전" },
 ];
 
-const won = (n: number) => `${n < 0 ? "−" : ""}${Math.abs(n).toLocaleString("ko-KR")}`;
+const STATE_LABEL: Record<State, string> = { todo: "할 일", progress: "진행", done: "완료", blocked: "막힘" };
+const STATE_STATUS: Record<State, StatusName | undefined> = {
+  todo: undefined,
+  progress: "info",
+  done: "success",
+  blocked: "error",
+};
+
+// avatar — 전용 컴포넌트 없이 Box 조합으로. pill + muted 면 + 이니셜.
+const Avatar = ({ name }: { name: string }) => (
+  <Box
+    surface="muted"
+    radius="pill"
+    className="avatar"
+    aria-hidden
+    style={{
+      width: "1.5rem",
+      height: "1.5rem",
+      display: "inline-grid",
+      placeItems: "center",
+      fontSize: "0.6875rem",
+      fontWeight: 600,
+    }}
+  >
+    {name.slice(0, 1)}
+  </Box>
+);
 
 export const App = () => {
   const [tab, setTab] = useState("all");
-  const [tag, setTag] = useState("all");
-  const [hideSmall, setHideSmall] = useState(false);
+  const [priority, setPriority] = useState("all");
+  const [mineOnly, setMineOnly] = useState(false);
   const [open, setOpen] = useState(false);
 
   const rows = useMemo(
     () =>
-      ENTRIES.filter((e) => (tab === "all" ? true : tab === "in" ? e.amount > 0 : e.amount < 0))
-        .filter((e) => (tag === "all" ? true : e.tag === tag))
-        .filter((e) => (hideSmall ? Math.abs(e.amount) >= 10_000 : true)),
-    [tab, tag, hideSmall],
+      ISSUES.filter((i) => (tab === "all" ? true : tab === "open" ? i.state !== "done" : i.state === "done"))
+        .filter((i) => (priority === "all" ? true : i.priority === priority))
+        .filter((i) => (mineOnly ? i.assignee === "재원" : true)),
+    [tab, priority, mineOnly],
   );
 
-  const total = rows.reduce((s, e) => s + e.amount, 0);
-
-  const columns: Column<Entry>[] = [
-    { key: "date", header: "날짜", render: (r) => <Text variant="numeric">{r.date}</Text> },
-    { key: "memo", header: "적요", render: (r) => r.memo },
+  const columns: Column<Issue>[] = [
     {
-      key: "tag",
-      header: "분류",
-      render: (r) => <Badge status={r.amount > 0 ? "success" : "info"}>{r.tag}</Badge>,
+      key: "key",
+      header: "키",
+      render: (r) => (
+        <Link href="#" onClick={(e) => e.preventDefault()}>
+          <Text variant="numeric" as="span">
+            {r.key}
+          </Text>
+        </Link>
+      ),
+    },
+    { key: "title", header: "제목", render: (r) => r.title },
+    {
+      key: "state",
+      header: "상태",
+      render: (r) => <Badge status={STATE_STATUS[r.state]}>{STATE_LABEL[r.state]}</Badge>,
+    },
+    { key: "priority", header: "우선순위", render: (r) => <Text variant="caption" as="span">{r.priority}</Text> },
+    {
+      key: "assignee",
+      header: "담당",
+      render: (r) => (
+        <Inline gap="sm">
+          <Avatar name={r.assignee} />
+          <Text variant="body" as="span">{r.assignee}</Text>
+        </Inline>
+      ),
     },
     {
-      key: "amount",
-      header: "금액",
+      key: "updated",
+      header: "수정",
       numeric: true,
-      // 번 돈은 검정, 쓴 돈은 붉은 잉크 — 이 시스템에서 색이 등장하는 자리.
-      render: (r) => (
-        <Text variant="numeric" className={r.amount < 0 ? "paper-red-ink" : undefined}>
-          {won(r.amount)}
-        </Text>
-      ),
+      render: (r) => <Text variant="caption" as="span">{r.updated}</Text>,
     },
   ];
 
   return (
     <Stack>
       <Navbar
-        brand={<Text variant="heading">장부</Text>}
+        brand={
+          <Inline gap="sm">
+            <Box
+              radius="sm"
+              aria-hidden
+              style={{
+                width: "1.5rem",
+                height: "1.5rem",
+                background: tokens.color.primary.base,
+                color: tokens.color.primary.fg,
+                display: "grid",
+                placeItems: "center",
+                fontSize: "0.8125rem",
+                fontWeight: 700,
+              }}
+            >
+              S
+            </Box>
+            <Text variant="heading">Studio</Text>
+          </Inline>
+        }
         items={[
-          { value: "book", label: "기입" },
-          { value: "budget", label: "예산" },
-          { value: "report", label: "결산" },
+          { value: "issues", label: "이슈" },
+          { value: "boards", label: "보드" },
+          { value: "reports", label: "리포트" },
         ]}
-        active="book"
+        active="issues"
         trailing={
           <Inline gap="sm">
-            <Tooltip label="새 항목 추가 (N)">
+            <Box style={{ width: "16rem" }}>
+              <TextField label="" placeholder="검색…" aria-label="검색" />
+            </Box>
+            <Tooltip label="새 이슈 (C)">
               <Button kind="solid" onClick={() => setOpen(true)}>
-                기입
+                새 이슈
               </Button>
             </Tooltip>
           </Inline>
@@ -106,14 +174,12 @@ export const App = () => {
       />
 
       <Box paddingX="xl" paddingY="xl">
-        <Stack gap="xl" className="page">
+        <Stack gap="xl" style={{ maxWidth: "72rem", marginInline: "auto" }}>
           <Stack gap="xs">
-            <Text variant="label">2026년 7월</Text>
+            <Text variant="label">프로젝트 · Studio UI</Text>
             <Inline justify="between" align="baseline">
-              <Text variant="title">이번 달 장부</Text>
-              <Text variant="numeric" className={total < 0 ? "paper-red-ink" : undefined}>
-                {won(total)}
-              </Text>
+              <Text variant="title">이슈</Text>
+              <Text variant="caption">{rows.length}건 표시 중 · 전체 {ISSUES.length}건</Text>
             </Inline>
           </Stack>
 
@@ -123,79 +189,80 @@ export const App = () => {
               onChange={setTab}
               items={[
                 { value: "all", label: "전체" },
-                { value: "in", label: "수입" },
-                { value: "out", label: "지출" },
+                { value: "open", label: "열림" },
+                { value: "done", label: "완료" },
               ]}
             />
             <Inline gap="md">
-              <Box>
+              <Inline as="label" gap="sm">
+                <Checkbox checked={mineOnly} onChange={(e) => setMineOnly(e.currentTarget.checked)} />
+                <Text variant="caption" as="span">내 담당만</Text>
+              </Inline>
+              <Box style={{ width: "9rem" }}>
                 <Select
-                  value={tag}
-                  onChange={(e) => setTag(e.currentTarget.value)}
+                  value={priority}
+                  onChange={(e) => setPriority(e.currentTarget.value)}
                   options={[
-                    { value: "all", label: "분류 전체" },
-                    { value: "수입", label: "수입" },
-                    { value: "고정", label: "고정" },
-                    { value: "식비", label: "식비" },
-                    { value: "문화", label: "문화" },
+                    { value: "all", label: "우선순위 전체" },
+                    { value: "높음", label: "높음" },
+                    { value: "보통", label: "보통" },
+                    { value: "낮음", label: "낮음" },
                   ]}
                 />
               </Box>
-              <Inline as="label" gap="sm">
-                <Checkbox
-                  checked={hideSmall}
-                  onChange={(e) => setHideSmall(e.currentTarget.checked)}
-                />
-                <Text variant="caption" as="span">
-                  1만원 미만 숨기기
-                </Text>
-              </Inline>
             </Inline>
           </Inline>
 
-          {/* 괘선지 위에 행이 앉는다 — Table 의 행 높이 = line = 괘선 간격 */}
-          <Card padding="none" radius="base">
-            <Box ruled>
-              <Table columns={columns} rows={rows} rowKey={(r) => r.id} />
-            </Box>
-          </Card>
+          {/* 옅은 면 카드 위의 표. 테두리 없이 surface.subtle 이 감싼다 */}
+          <Box surface="subtle" radius="md" style={{ overflow: "hidden" }}>
+            <Table columns={columns} rows={rows} rowKey={(r) => r.id} />
+          </Box>
 
-          <Inline gap="lg">
-            <Text variant="caption">{rows.length}건</Text>
-            <Divider axis="vertical" />
-            <Text variant="caption">잔액은 기입 즉시 반영됩니다.</Text>
+          <Inline gap="sm">
+            <Icon aria-label="정보">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 11v5M12 8h.01" />
+            </Icon>
+            <Text variant="caption">막힌 이슈는 담당자에게 자동으로 알림이 갑니다.</Text>
           </Inline>
         </Stack>
       </Box>
 
       <Modal
         open={open}
-        title="새 항목 기입"
+        title="새 이슈"
         onClose={() => setOpen(false)}
         footer={
           <>
-            <Button kind="quiet" onClick={() => setOpen(false)}>
-              취소
-            </Button>
-            <Button kind="solid" onClick={() => setOpen(false)}>
-              기입
-            </Button>
+            <Button kind="quiet" onClick={() => setOpen(false)}>취소</Button>
+            <Button kind="solid" onClick={() => setOpen(false)}>만들기</Button>
           </>
         }
       >
         <Stack gap="lg">
-          <TextField label="적요" placeholder="무엇에 썼나요" />
-          <TextField label="금액" numeric placeholder="0" hint="지출은 음수로 적습니다." />
-          <Stack gap="xs">
-            <Label>분류</Label>
-            <Select
-              options={[
-                { value: "식비", label: "식비" },
-                { value: "고정", label: "고정" },
-                { value: "문화", label: "문화" },
-              ]}
-            />
-          </Stack>
+          <TextField label="제목" placeholder="무엇을 해야 하나요" />
+          <Inline gap="md" align="start">
+            <Stack gap="xs" style={{ flex: 1 }}>
+              <Label>상태</Label>
+              <Select
+                options={[
+                  { value: "todo", label: "할 일" },
+                  { value: "progress", label: "진행" },
+                  { value: "done", label: "완료" },
+                ]}
+              />
+            </Stack>
+            <Stack gap="xs" style={{ flex: 1 }}>
+              <Label>우선순위</Label>
+              <Select
+                options={[
+                  { value: "보통", label: "보통" },
+                  { value: "높음", label: "높음" },
+                  { value: "낮음", label: "낮음" },
+                ]}
+              />
+            </Stack>
+          </Inline>
         </Stack>
       </Modal>
     </Stack>

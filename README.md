@@ -1,17 +1,21 @@
 # paper-ui
 
-A ledger for the screen. Paper, ink, and ruled lines.
+A design system for complex web apps. Pure white and black, with colour used only as a point.
 
 ```
-Paper and ink are the whole palette. Colour appears three times — error,
-success, danger — and never for decoration. A ledger does not need a brand
-colour; it needs a line you can read a number off.
+White and black are the whole base — their harmony is the skeleton of every
+screen. Colour (blue · green · red) appears only where it means something:
+status, focus, links. It is a point, never a fill.
+
+Quiet like ChatGPT (soft radii, near-invisible borders, surfaces over rules),
+dense enough for Atlassian, finished like SwiftUI.
 ```
 
-- **20 components.** Adding a 21st requires evidence it was needed twice in a
-  real screen.
-- **One spine.** `line = 44px` — rule spacing, row height, and table head all
-  derive from it, so entries sit *on* the ruled paper.
+- **20 components.** A 21st needs evidence it was needed twice in a real screen.
+- **Black is the workhorse.** Primary actions are black, not blue — a blue button
+  on every screen is no longer a "point". Colour stays small.
+- **No `primaryColor`.** A brand has no colour to pick; the identity is white,
+  black, and whitespace.
 - **Four absolute rules**, enforced by eslint rather than by documentation.
 
 ## Layers
@@ -28,7 +32,7 @@ colour; it needs a line you can read a number off.
 ```bash
 cd workspace
 pnpm install
-pnpm dev          # demo — one ledger screen, the system's only real validation
+pnpm dev          # demo — one issue-tracker screen, the system's only real validation
 pnpm typecheck
 pnpm lint
 ```

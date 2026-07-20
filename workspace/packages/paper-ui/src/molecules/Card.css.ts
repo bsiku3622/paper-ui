@@ -2,9 +2,8 @@ import { style } from "@vanilla-extract/css";
 
 import { tokens } from "../tokens";
 
-// Card 는 그림자로 뜨지 않는다. 괘선으로 정의된다 — 종이에 그은 네모.
+// 선이 아니라 옅은 면으로 정의되는 카드. 테두리도 그림자도 없다 —
+// surface.subtle 이 흰 캔버스 위에서 카드를 조용히 들어올린다.
 export const cardRoot = style({
-  borderWidth: tokens.shape.ruleWidth.base,
-  borderStyle: "solid",
-  borderColor: tokens.color.rule.base,
+  background: tokens.color.surface.subtle,
 });

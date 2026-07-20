@@ -9,49 +9,49 @@ export const buttonRoot = style({
   gap: tokens.shape.space.sm,
   height: tokens.shape.height.control,
   paddingInline: tokens.shape.space.md,
-  borderRadius: tokens.shape.radius.base,
-  borderWidth: tokens.shape.ruleWidth.base,
+  borderRadius: tokens.shape.radius.sm,
+  borderWidth: tokens.shape.borderWidth.base,
   borderStyle: "solid",
+  borderColor: "transparent",
   fontFamily: tokens.font.sans,
   fontSize: "0.875rem",
   fontWeight: "500",
-  letterSpacing: "-0.01em",
+  letterSpacing: "-0.006em",
   cursor: "pointer",
-  transition: "background 120ms ease, border-color 120ms ease",
+  whiteSpace: "nowrap",
+  transition: "background 130ms ease, border-color 130ms ease, color 130ms ease",
   selectors: {
-    "&:disabled": { cursor: "not-allowed", opacity: 0.45 },
+    "&:disabled": { cursor: "not-allowed", opacity: 0.4 },
   },
 });
 
-// 3 종뿐이다. 장부에 필요한 버튼의 무게는 이게 전부.
-//   solid   — 1 차 액션. 이 시스템에서 면이 잉크로 꽉 차는 유일한 자리.
-//   outline — 2 차. 괘선만.
-//   quiet   — 3 차. 선도 면도 없다.
+// 3 종. solid 만 면을 채우고(검정), 나머지는 조용하다.
 export const buttonKind = styleVariants({
   solid: {
-    background: tokens.color.ink.base,
-    borderColor: tokens.color.ink.base,
-    color: tokens.color.paper.base,
-    selectors: { "&:hover:not(:disabled)": { background: tokens.color.ink.soft, borderColor: tokens.color.ink.soft } },
+    background: tokens.color.primary.base,
+    color: tokens.color.primary.fg,
+    selectors: { "&:hover:not(:disabled)": { background: tokens.color.primary.hover } },
   },
+  // 옅은 면. 테두리는 거의 안 보이고 hover 때 배경만 조용히 회색.
   outline: {
-    background: "transparent",
-    borderColor: tokens.color.rule.strong,
+    background: tokens.color.surface.base,
+    borderColor: tokens.color.border.base,
     color: tokens.color.ink.base,
-    selectors: { "&:hover:not(:disabled)": { background: tokens.color.paper.sunk } },
+    selectors: { "&:hover:not(:disabled)": { background: tokens.color.surface.muted } },
   },
+  // 선도 면도 없음. hover 때만 회색.
   quiet: {
     background: "transparent",
-    borderColor: "transparent",
     color: tokens.color.ink.soft,
-    selectors: { "&:hover:not(:disabled)": { background: tokens.color.paper.sunk, color: tokens.color.ink.base } },
+    selectors: {
+      "&:hover:not(:disabled)": { background: tokens.color.surface.muted, color: tokens.color.ink.base },
+    },
   },
 });
 
-// danger 만 색을 입는다 — 되돌릴 수 없는 액션은 잉크가 달라야 한다.
+// 되돌릴 수 없는 액션만 색을 입는다 (red). solid 자리에서만.
 export const buttonDanger = style({
-  background: tokens.color.accent.red.ink,
-  borderColor: tokens.color.accent.red.ink,
-  color: tokens.color.paper.base,
-  selectors: { "&:hover:not(:disabled)": { opacity: 0.88 } },
+  background: tokens.color.accent.red.solid,
+  color: tokens.color.primary.fg,
+  selectors: { "&:hover:not(:disabled)": { background: tokens.color.accent.red.ink } },
 });
