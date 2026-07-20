@@ -37,7 +37,7 @@ type TextSpec = {
 export const TEXT_SPEC = {
   title: {
     size: "1.375rem", // 22px
-    weight: "600",
+    weight: "650", // 600 은 Retina 에서 한 톤 얇게 읽힌다 — 반 단계 무겁게 (loud 아님)
     lineHeight: "1.3",
     tracking: "-0.02em",
     family: "sans",
