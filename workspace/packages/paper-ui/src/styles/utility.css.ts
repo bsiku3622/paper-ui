@@ -6,18 +6,18 @@
 import { globalStyle } from "@vanilla-extract/css";
 
 import { tokens, ACCENT_NAMES, SPACE_KEYS } from "../tokens";
-import { SURFACES, INKS } from "../resolvers";
+import { PAPERS, INKS } from "../resolvers";
 
-// ───── surface — 면 ────────────────────────────────────────────────────────
+// ───── paper — 면 ────────────────────────────────────────────────────────
 
-const SURFACE_TOKEN = {
-  base: tokens.color.surface.base,
-  subtle: tokens.color.surface.subtle,
-  muted: tokens.color.surface.muted,
+const PAPER_TOKEN = {
+  base: tokens.color.paper.base,
+  subtle: tokens.color.paper.subtle,
+  muted: tokens.color.paper.muted,
 } as const;
 
-for (const s of SURFACES) {
-  globalStyle(`.paper-surface-${s}`, { background: SURFACE_TOKEN[s] });
+for (const s of PAPERS) {
+  globalStyle(`.paper-paper-${s}`, { background: PAPER_TOKEN[s] });
 }
 
 // ───── ink — 잉크 농도 ─────────────────────────────────────────────────────

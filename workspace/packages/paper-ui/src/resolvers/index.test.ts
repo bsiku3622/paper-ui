@@ -3,7 +3,7 @@
 
 import { describe, it, expect } from "vitest";
 
-import { resolveStatus, resolveTone, resolveSurface, resolveBoxClass } from "./index";
+import { resolveStatus, resolveTone, resolvePaper, resolveBoxClass } from "./index";
 
 describe("resolveStatus", () => {
   it("status 를 accent tone 클래스로 — info=blue · success=green · error=red", () => {
@@ -20,20 +20,20 @@ describe("resolveStatus", () => {
   });
 });
 
-describe("resolveTone / resolveSurface", () => {
+describe("resolveTone / resolvePaper", () => {
   it("accent 는 기본이 ink tone", () => {
     expect(resolveTone("green")).toBe("paper-green-ink");
   });
-  it("surface 는 base/subtle/muted", () => {
-    expect(resolveSurface("subtle")).toBe("paper-surface-subtle");
-    expect(resolveSurface(undefined)).toBe("");
+  it("paper 는 base/subtle/muted", () => {
+    expect(resolvePaper("subtle")).toBe("paper-paper-subtle");
+    expect(resolvePaper(undefined)).toBe("");
   });
 });
 
 describe("resolveBoxClass", () => {
   it("여러 축을 공백으로 합친다", () => {
-    expect(resolveBoxClass({ surface: "subtle", padding: "md", gap: "sm" })).toBe(
-      "paper-surface-subtle paper-p-md paper-gap-sm",
+    expect(resolveBoxClass({ paper: "subtle", padding: "md", gap: "sm" })).toBe(
+      "paper-paper-subtle paper-p-md paper-gap-sm",
     );
   });
   it("status 가 accent 보다 우선한다 (한 자리만 색)", () => {

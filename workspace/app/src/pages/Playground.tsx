@@ -53,7 +53,7 @@ const Spec = ({ label, testid, children }: { label: string; testid?: string; chi
 );
 
 const TEXT_VARIANTS = ["title", "heading", "label", "body", "numeric", "caption"] as const;
-const SURFACES = ["base", "subtle", "muted"] as const;
+const PAPERS = ["base", "subtle", "muted"] as const;
 const ACCENTS = ["blue", "green", "red"] as const;
 const STATUSES = ["info", "success", "error"] as const;
 
@@ -106,9 +106,9 @@ export const Playground = () => {
           </Section>
 
           <Section id="sec-color" title="Color">
-            <Spec label="surface — 흰 바탕 3 단">
-              {SURFACES.map((s) => (
-                <Box key={s} surface={s} radius="md" padding="lg" data-testid={`swatch-surface-${s}`}
+            <Spec label="paper — 흰 바탕 3 단">
+              {PAPERS.map((s) => (
+                <Box key={s} paper={s} radius="md" padding="lg" data-testid={`swatch-paper-${s}`}
                   style={{ border: `1px solid ${tokens.color.border.base}`, minWidth: "5rem" }}>
                   <Text variant="caption" as="span">{s}</Text>
                 </Box>
@@ -218,7 +218,7 @@ export const Playground = () => {
           {/* ── Components ─────────────────────────────────────── */}
           <Section id="sec-comp" title="Table · Modal">
             <Spec label="Table">
-              <Box surface="subtle" radius="md" style={{ overflow: "hidden", width: "28rem" }}>
+              <Box paper="subtle" radius="md" style={{ overflow: "hidden", width: "28rem" }}>
                 <Table columns={columns} rows={rows} rowKey={(r) => r.id} />
               </Box>
             </Spec>

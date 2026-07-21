@@ -31,7 +31,7 @@ export const Modal = ({ open, title, onClose, children, footer }: ModalProps) =>
         role="dialog"
         aria-modal="true"
         aria-label={typeof title === "string" ? title : undefined}
-        surface="base"
+        paper="base"
         radius="lg"
         shadow="overlay"
         className={modalPanel}

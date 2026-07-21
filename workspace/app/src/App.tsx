@@ -25,7 +25,7 @@ const useHashRoute = () => {
 // 두 화면을 오가는 작은 개발용 토글 (우하단 고정). 제품 chrome 이 아니라 dev 도구.
 const DevSwitch = ({ route }: { route: string }) => (
   <Box
-    surface="base"
+    paper="base"
     radius="pill"
     shadow="overlay"
     paddingX="md"

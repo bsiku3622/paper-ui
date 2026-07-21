@@ -43,9 +43,9 @@ pnpm 명령은 `workspace/` 에서 실행한다. `core`/`web` 분리는 일부�
 
 | 자리 | 값 | 쓰임 |
 |---|---|---|
-| `surface.base` | `#ffffff` | 순백 캔버스 |
-| `surface.subtle` | `#f7f7f8` | 카드 · 사이드바 · table head (선 대신 이 면으로 구획) |
-| `surface.muted` | `#ececee` | hover · 눌린 자리 |
+| `paper.base` | `#ffffff` | 순백 캔버스 |
+| `paper.subtle` | `#f7f7f8` | 카드 · 사이드바 · table head (선 대신 이 면으로 구획) |
+| `paper.muted` | `#ececee` | hover · 눌린 자리 |
 | `ink.base` | `#18181b` | 본문 (순검정 아님 — 넓은 면에 #000 은 눈을 찌른다) |
 | `ink.soft` | `#71717a` | 보조 · 라벨 |
 | `ink.faint` | `#a1a1aa` | placeholder · disabled |
@@ -77,11 +77,11 @@ pnpm 명령은 `workspace/` 에서 실행한다. `core`/`web` 분리는 일부�
 
 - **radius 넉넉하게** — `sm 8` (버튼·입력·배지) · `md 12` (카드) · `lg 16` (모달). ChatGPT
   의 부드러운 라운드. 각진 데가 없다.
-- **선보다 면** — 구획은 얇은 경계보다 `surface.subtle` 로 나눈다. 카드도 표도 옅은 면이
+- **선보다 면** — 구획은 얇은 경계보다 `paper.subtle` 로 나눈다. 카드도 표도 옅은 면이
   감싼다. border 는 정말 선이 필요한 자리(table 행 · navbar 밑)만.
 - **그림자는 overlay 의 표식** — 카드는 면으로 정의되고 뜨지 않는다. `raised`(세그먼트
   활성 pill) · `overlay`(Modal · Tooltip) 두 단뿐.
-- **hover 는 조용히** — 배경이 `surface.muted` 로 살짝. 테두리 강조 없음.
+- **hover 는 조용히** — 배경이 `paper.muted` 로 살짝. 테두리 강조 없음.
 - **밀도** — space 4px 배수(xs4~xl24, 촘촘하게) · control 높이 34 · table 행 44.
 
 ---

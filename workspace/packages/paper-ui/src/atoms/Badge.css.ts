@@ -22,6 +22,6 @@ export const badgeRoot = style({
 
 // 무채색 기본 배지.
 export const badgeNeutral = style({
-  background: tokens.color.surface.muted,
+  background: tokens.color.paper.muted,
   color: tokens.color.ink.soft,
 });
