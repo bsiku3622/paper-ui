@@ -62,7 +62,7 @@ const STATE_STATUS: Record<State, StatusName | undefined> = {
 // avatar — 전용 컴포넌트 없이 Box 조합으로. pill + muted 면 + 이니셜.
 const Avatar = ({ name }: { name: string }) => (
   <Box
-    surface="muted"
+    paper="muted"
     radius="pill"
     className="avatar"
     aria-hidden
@@ -214,8 +214,8 @@ export const Demo = () => {
             </Inline>
           </Inline>
 
-          {/* 옅은 면 카드 위의 표. 테두리 없이 surface.subtle 이 감싼다 */}
-          <Box surface="subtle" radius="md" style={{ overflow: "hidden" }}>
+          {/* 옅은 면 카드 위의 표. 테두리 없이 paper.subtle 이 감싼다 */}
+          <Box paper="subtle" radius="md" style={{ overflow: "hidden" }}>
             <Table columns={columns} rows={rows} rowKey={(r) => r.id} />
           </Box>
 

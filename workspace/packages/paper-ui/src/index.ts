@@ -52,4 +52,4 @@ export { tokens } from "./tokens";
 export type { AccentName, StatusName, TextVariant, Space } from "./tokens";
 
 // Resolver 타입 — 앱이 자기 컴포넌트를 이 어휘로 만들 때
-export type { Surface, Ink, Tone } from "./resolvers";
+export type { Paper, Ink, Tone } from "./resolvers";

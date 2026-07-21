@@ -7,7 +7,7 @@ White and black are the whole base — their harmony is the skeleton of every
 screen. Colour (blue · green · red) appears only where it means something:
 status, focus, links. It is a point, never a fill.
 
-Quiet like ChatGPT (soft radii, near-invisible borders, surfaces over rules),
+Quiet like ChatGPT (soft radii, near-invisible borders, papers over rules),
 dense enough for Atlassian, finished like SwiftUI.
 ```
 

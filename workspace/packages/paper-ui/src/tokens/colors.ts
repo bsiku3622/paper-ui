@@ -17,12 +17,12 @@
 // 검정은 순검정이 아니다 —
 //   #18181b. 넓은 면에 순검정(#000)은 눈을 찌른다. 살짝 문 뉴트럴이 더 단정하다.
 
-// ───── surface — 흰 바탕 3 단 ───────────────────────────────────────────────
+// ───── paper — 흰 바탕 3 단 ───────────────────────────────────────────────
 //
 // base 가 순백. 위로 갈수록(subtle · muted) 아주 옅게 내려앉는 회색 — hover ·
 // table head · 눌린 자리. 종이가 아니라 *깨끗한 시트* 다.
 
-export const SURFACE = {
+export const PAPER = {
   base: "#ffffff", // 순백 — 페이지 캔버스
   subtle: "#f7f7f8", // 카드 · 사이드바 · table head (ChatGPT 의 옅은 면)
   muted: "#ececee", // hover · 눌린 칸 · 선택
@@ -116,7 +116,7 @@ export const STATUS_ACCENT: Record<StatusName, AccentName> = {
 // ───── VALUES — emit 대상 트리 ─────────────────────────────────────────────
 
 export const COLOR_VALUES = {
-  surface: SURFACE,
+  paper: PAPER,
   ink: INK,
   border: BORDER,
   accent: ACCENT,

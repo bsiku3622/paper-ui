@@ -38,7 +38,7 @@ globalStyle(":root", { vars: rootVars });
 
 globalStyle("body", {
   margin: 0,
-  background: tokens.color.surface.base,
+  background: tokens.color.paper.base,
   color: tokens.color.ink.base,
   fontFamily: tokens.font.sans,
   fontSize: TEXT_SPEC.body.size,

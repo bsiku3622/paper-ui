@@ -9,7 +9,7 @@ export const tableRoot = style({
 
 // 표 머리 — 옅은 면. 강한 밑줄 대신 조용히.
 export const tableHead = style({
-  background: tokens.color.surface.subtle,
+  background: tokens.color.paper.subtle,
 });
 
 export const tableTh = style({
@@ -29,7 +29,7 @@ export const tableTr = style({
     },
     // 표는 subtle 패널 안에 들어가는 일이 많다 — hover 를 subtle 로 두면 안 보인다.
     // muted 로 한 단 더 내려 어느 컨테이너에서도 어두워지게 (원칙 4).
-    "&:hover": { background: tokens.color.surface.muted },
+    "&:hover": { background: tokens.color.paper.muted },
   },
 });
 

@@ -1,7 +1,7 @@
 // Box — 면 하나. raw HTML 을 렌더하는 4 개 자리 중 하나.
 //
 // 이 시스템의 Box 는 "무엇이든 되는 div" 가 아니다. 종이 위의 *칸* 이다:
-// 면(surface) · 잉크(ink) · 괘선(ruled) · 간격(space) 만 말할 수 있다.
+// 면(paper) · 잉크(ink) · 괘선(ruled) · 간격(space) 만 말할 수 있다.
 // width/height/position 같은 건 없다 — 필요하면 className 으로 앱이 가져간다.
 // (studio-ui 는 Box 에 30 개 넘는 prop 을 달았고, 그게 Box 를 시스템이 아니라
 //  CSS 를 TS 로 다시 쓴 물건으로 만들었다.)
@@ -31,7 +31,7 @@ export type BoxProps<As extends ElementType = "div"> = OwnProps<As> &
   Omit<ComponentPropsWithoutRef<As>, keyof OwnProps<As>>;
 
 const OWN_KEYS = [
-  "surface",
+  "paper",
   "ink",
   "accent",
   "tone",

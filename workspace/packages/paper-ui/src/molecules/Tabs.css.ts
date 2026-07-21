@@ -6,7 +6,7 @@ export const tabsList = style({
   display: "inline-flex",
   gap: "2px",
   padding: "3px",
-  background: tokens.color.surface.muted,
+  background: tokens.color.paper.muted,
   borderRadius: tokens.shape.radius.md,
 });
 
@@ -29,6 +29,6 @@ export const tabItem = style({
 // 선택 = 흰 pill. muted 트랙 위 흰색 대비만으로 또렷하다 — 그림자 없음.
 // (탭은 overlay 가 아니므로 뜨지 않는다. 원칙 3.)
 export const tabItemActive = style({
-  background: tokens.color.surface.base,
+  background: tokens.color.paper.base,
   color: tokens.color.ink.base,
 });

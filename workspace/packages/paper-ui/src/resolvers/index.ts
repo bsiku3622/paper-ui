@@ -7,16 +7,16 @@ import { joinClass } from "../internal/joinClass";
 import type { AccentName, StatusName, Space } from "../tokens";
 import { STATUS_ACCENT } from "../tokens";
 
-// ───── surface — 면 ────────────────────────────────────────────────────────
+// ───── paper — 면 ────────────────────────────────────────────────────────
 //
 // 순백(base) · 옅은 면(subtle) · 눌린 면(muted). 이 시스템은 선보다 면으로
 // 구획을 나눈다 (ChatGPT 의 결).
 
-export const SURFACES = ["base", "subtle", "muted"] as const;
-export type Surface = (typeof SURFACES)[number];
+export const PAPERS = ["base", "subtle", "muted"] as const;
+export type Paper = (typeof PAPERS)[number];
 
-export const resolveSurface = (s: Surface | undefined): string =>
-  s ? `paper-surface-${s}` : "";
+export const resolvePaper = (s: Paper | undefined): string =>
+  s ? `paper-paper-${s}` : "";
 
 // ───── ink — 잉크 농도 ─────────────────────────────────────────────────────
 
@@ -54,7 +54,7 @@ export const resolveSpace = (
 // ───── 합성 ────────────────────────────────────────────────────────────────
 
 export type BoxLike = {
-  surface?: Surface;
+  paper?: Paper;
   ink?: Ink;
   accent?: AccentName;
   tone?: Tone;
@@ -67,7 +67,7 @@ export type BoxLike = {
 
 export const resolveBoxClass = (p: BoxLike): string =>
   joinClass(
-    resolveSurface(p.surface),
+    resolvePaper(p.paper),
     resolveInk(p.ink),
     p.status ? resolveStatus(p.status, p.tone) : resolveTone(p.accent, p.tone),
     resolveSpace("p", p.padding),

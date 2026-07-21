@@ -34,17 +34,17 @@ export const buttonKind = styleVariants({
   },
   // 옅은 면. 테두리는 거의 안 보이고 hover 때 배경만 조용히 회색.
   outline: {
-    background: tokens.color.surface.base,
+    background: tokens.color.paper.base,
     borderColor: tokens.color.border.base,
     color: tokens.color.ink.base,
-    selectors: { "&:hover:not(:disabled)": { background: tokens.color.surface.muted } },
+    selectors: { "&:hover:not(:disabled)": { background: tokens.color.paper.muted } },
   },
   // 선도 면도 없음. hover 때만 회색.
   quiet: {
     background: "transparent",
     color: tokens.color.ink.soft,
     selectors: {
-      "&:hover:not(:disabled)": { background: tokens.color.surface.muted, color: tokens.color.ink.base },
+      "&:hover:not(:disabled)": { background: tokens.color.paper.muted, color: tokens.color.ink.base },
     },
   },
 });

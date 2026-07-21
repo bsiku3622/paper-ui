@@ -7,7 +7,7 @@ export const selectRoot = style({
   width: "100%",
   paddingInline: tokens.shape.space.md,
   paddingRight: tokens.shape.space.xl,
-  background: tokens.color.surface.subtle,
+  background: tokens.color.paper.subtle,
   borderRadius: tokens.shape.radius.sm,
   borderWidth: tokens.shape.borderWidth.base,
   borderStyle: "solid",
@@ -24,10 +24,10 @@ export const selectRoot = style({
   backgroundSize: "0.625rem",
   transition: "border-color 130ms ease, box-shadow 130ms ease, background-color 130ms ease",
   selectors: {
-    "&:hover:not(:focus)": { backgroundColor: tokens.color.surface.muted },
+    "&:hover:not(:focus)": { backgroundColor: tokens.color.paper.muted },
     "&:focus": {
       outline: "none",
-      backgroundColor: tokens.color.surface.base,
+      backgroundColor: tokens.color.paper.base,
       borderColor: tokens.color.focus.ring,
       boxShadow: `0 0 0 3px ${tokens.color.accent.blue.wash}`,
     },

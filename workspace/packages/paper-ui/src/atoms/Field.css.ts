@@ -7,7 +7,7 @@ export const fieldRoot = style({
   height: tokens.shape.height.control,
   width: "100%",
   paddingInline: tokens.shape.space.md,
-  background: tokens.color.surface.subtle,
+  background: tokens.color.paper.subtle,
   borderRadius: tokens.shape.radius.sm,
   borderWidth: tokens.shape.borderWidth.base,
   borderStyle: "solid",
@@ -18,10 +18,10 @@ export const fieldRoot = style({
   transition: "border-color 130ms ease, box-shadow 130ms ease, background 130ms ease",
   selectors: {
     "&::placeholder": { color: tokens.color.ink.faint },
-    "&:hover:not(:focus):not(:disabled)": { background: tokens.color.surface.muted },
+    "&:hover:not(:focus):not(:disabled)": { background: tokens.color.paper.muted },
     "&:focus": {
       outline: "none",
-      background: tokens.color.surface.base,
+      background: tokens.color.paper.base,
       borderColor: tokens.color.focus.ring,
       boxShadow: `0 0 0 3px ${tokens.color.accent.blue.wash}`,
     },

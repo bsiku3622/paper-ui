@@ -43,9 +43,9 @@ test("type · numeric 는 mono + tabular", async ({ page }) => {
 
 // ── 색 토큰 — :root 의 CSS var 가 기대 hex 와 일치 ─────────────────────────
 const VARS: Record<string, string> = {
-  "--paper-color-surface-base": "#ffffff",
-  "--paper-color-surface-subtle": "#f7f7f8",
-  "--paper-color-surface-muted": "#ececee",
+  "--paper-color-paper-base": "#ffffff",
+  "--paper-color-paper-subtle": "#f7f7f8",
+  "--paper-color-paper-muted": "#ececee",
   "--paper-color-ink-base": "#18181b",
   "--paper-color-ink-soft": "#71717a",
   "--paper-color-ink-faint": "#a1a1aa",
