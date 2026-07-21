@@ -13,8 +13,8 @@ export const selectRoot = style({
   borderStyle: "solid",
   borderColor: "transparent",
   color: tokens.color.ink.base,
-  fontFamily: tokens.font.sans,
-  fontSize: "0.875rem",
+  fontFamily: tokens.text.font.sans,
+  fontSize: tokens.text.size.body,
   cursor: "pointer",
   appearance: "none",
   backgroundImage:

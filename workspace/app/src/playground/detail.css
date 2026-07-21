@@ -40,9 +40,9 @@
   margin: 0;
   padding: 14px 16px;
   overflow-x: auto;
-  font-family: var(--pui-font-mono, ui-monospace, monospace);
-  font-size: 12.5px;
-  line-height: 1.65;
+  font-family: var(--pui-text-font-mono, ui-monospace, monospace);
+  font-size: var(--pui-text-size-caption, 0.8125rem);
+  line-height: var(--pui-text-leading-body, 1.5);
   color: var(--pui-color-ink-base, #18181b);
   tab-size: 2;
 }
@@ -58,8 +58,8 @@
   border-radius: var(--pui-shape-radius-sm, 8px);
   height: 26px;
   padding: 0 10px;
-  font-size: 12px;
-  font-family: var(--pui-font-sans, -apple-system, sans-serif);
+  font-size: var(--pui-text-size-label, 0.75rem);
+  font-family: var(--pui-text-font-sans, -apple-system, sans-serif);
   cursor: pointer;
   transition: background 120ms ease, color 120ms ease;
 }

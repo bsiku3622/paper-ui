@@ -49,18 +49,22 @@
 
 ## Text
 
-여섯 variant가 크기·굵기·서체·잉크 농도를 한 번에 정합니다.
+타이포는 네 축이 직교합니다 — **size · weight · leading · tracking**. 각 축이 토큰(`tokens.text.size.body` = `var(--pui-text-size-body)`)이라, 컴포넌트가 `"0.875rem"` 같은 raw 값을 박을 일이 없습니다. variant는 이 축들을 조합한 8단 위계일 뿐입니다.
 
-| variant | size | weight | family |
-|---|---|---|---|
-| `title` | 22px | 650 | sans |
-| `heading` | 15px | 600 | sans |
-| `label` | 12px | 500 | sans |
-| `body` (기본) | 14px | 400 | sans |
-| `mono` | 14px | 450 | mono |
-| `caption` | 13px | 400 | sans |
+| variant | size | weight | family | 자리 |
+|---|---|---|---|---|
+| `display` | 32px | 700 | sans | 랜딩 hero (페이지당 하나) |
+| `title` | 22px | 700 | sans | 페이지 제목 (h1) |
+| `heading` | 18px | 600 | sans | 섹션 제목 (h2) |
+| `subheading` | 15px | 600 | sans | 카드·소제목 (h3) |
+| `body` (기본) | 14px | 450 | sans | 본문 |
+| `caption` | 13px | 450 | sans | 부연·메타 |
+| `label` | 12px | 600 | sans | 폼 라벨·표 머리 |
+| `mono` | 14px | 450 | mono | 코드·토큰 |
 
-**body 14px**가 anchor입니다 — 복잡한 앱의 표준 밀도(shadcn·Atlassian·Linear). 콘텐츠 사이트의 16px로 키우면 밀도가 풀려 대시보드가 늘어집니다. `mono`는 코드·토큰 같은 기술적 자리에만 씁니다 — 숫자라고 무조건 등폭으로 두지 않습니다. 표의 숫자 열은 sans 그대로 `tabular-nums`로 자리만 맞춥니다.
+**body 14px**가 anchor입니다 — 복잡한 앱의 표준 밀도(shadcn·Atlassian·Linear). 콘텐츠 사이트의 16px로 키우면 밀도가 풀려 대시보드가 늘어집니다. 제목 위계는 셋(`title`·`heading`·`subheading` = h1·h2·h3)이라 페이지와 문서의 계층이 또렷합니다. `mono`는 코드·토큰 같은 기술적 자리에만 — 숫자라고 무조건 등폭으로 두지 않습니다. 표의 숫자 열은 sans 그대로 `tabular-nums`로 자리만 맞춥니다.
+
+`weight`는 variant와 **직교하는 별도 축**입니다(`normal` 450 · `medium` 550 · `semibold` 600 · `bold` 700). Button·Tab처럼 UI 컨트롤은 variant 기본 굵기 대신 여기서 골라 씁니다 — 값이 반 단계 무거운 건(450·550) dense 시스템에서 작은 글씨가 Retina에 눌리지 않게 하기 위함입니다.
 
 ## 참조 방식
 

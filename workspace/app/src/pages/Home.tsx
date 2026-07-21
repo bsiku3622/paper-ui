@@ -50,7 +50,7 @@ const LiveSampler = () => {
     <Card style={{ width: "100%" }}>
       <Stack gap="lg">
         <Inline justify="between" align="center">
-          <Text variant="heading">라이브 샘플러</Text>
+          <Text variant="subheading">라이브 샘플러</Text>
           <Text variant="caption" ink="faint">실제 컴포넌트</Text>
         </Inline>
 
@@ -179,10 +179,10 @@ export const Home = () => (
 
             <Logo height={112} style={{ maxWidth: "100%", height: "auto", width: "min(26rem, 72vw)" }} />
 
-            <Text variant="title" ink="base" style={{ fontSize: "1.75rem", lineHeight: 1.25, letterSpacing: "-0.02em", maxWidth: "30rem" }}>
+            <Text variant="title" style={{ maxWidth: "30rem" }}>
               순백과 검정, 그리고 의미가 있을 때만의 색.
             </Text>
-            <Text variant="body" ink="soft" style={{ maxWidth: "32rem", fontSize: "0.9375rem" }}>
+            <Text variant="body" ink="soft" style={{ maxWidth: "32rem" }}>
               복잡한 웹앱을 위한 디자인 시스템입니다. Atlassian의 밀도, shadcn의 뉴트럴, ChatGPT의 조용함, SwiftUI의 마감을 한 결로 묶었습니다.
             </Text>
 
@@ -198,7 +198,7 @@ export const Home = () => (
             <Inline gap="xl" style={{ marginTop: "0.5rem" }}>
               {STAT.map((s) => (
                 <Stack key={s.l} gap="xs">
-                  <Text variant="title" as="span" style={{ fontSize: "1.5rem", fontVariantNumeric: "tabular-nums" }}>{s.n}</Text>
+                  <Text variant="title" as="span" style={{ fontVariantNumeric: "tabular-nums" }}>{s.n}</Text>
                   <Text variant="caption" ink="soft">{s.l}</Text>
                 </Stack>
               ))}
@@ -231,7 +231,7 @@ export const Home = () => (
             {PRINCIPLES.map((p) => (
               <Card key={p.k}>
                 <Stack gap="xs">
-                  <Text variant="heading">{p.k}</Text>
+                  <Text variant="subheading">{p.k}</Text>
                   <Text variant="caption" ink="soft">{p.v}</Text>
                 </Stack>
               </Card>

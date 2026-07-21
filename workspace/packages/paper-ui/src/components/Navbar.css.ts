@@ -20,8 +20,8 @@ export const navItem = style({
   height: "2rem",
   paddingInline: tokens.shape.space.sm,
   borderRadius: tokens.shape.radius.sm,
-  fontFamily: tokens.font.sans,
-  fontSize: "0.875rem",
+  fontFamily: tokens.text.font.sans,
+  fontSize: tokens.text.size.body,
   color: tokens.color.ink.soft,
   transition: "background 130ms ease, color 130ms ease",
   selectors: { "&:hover": { color: tokens.color.ink.base, background: tokens.color.paper.muted } },
@@ -29,5 +29,5 @@ export const navItem = style({
 
 export const navItemActive = style({
   color: tokens.color.ink.base,
-  fontWeight: tokens.weight.medium,
+  fontWeight: tokens.text.weight.medium,
 });

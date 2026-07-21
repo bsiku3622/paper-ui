@@ -88,9 +88,17 @@ pnpm 명령은 `workspace/` 에서 실행한다. `core`/`web` 분리는 일부�
 
 ## 글자
 
-6 단. `title 22 · heading 15 · label 12 · body 14 · mono 14 · caption 13`.
+네 축이 직교한다 — **size · weight · leading · tracking**. 각 축이 `tokens.text.*`
+토큰이라 컴포넌트가 `"0.875rem"` 같은 raw 값을 박지 못한다. variant 는 이 축들을
+조합한 8 단 위계다:
+
+`display 32 · title 22 · heading 18 · subheading 15 · body 14 · caption 13 · label 12 · mono 14`.
 
 - **body 14px** anchor — 복잡한 웹앱의 표준 밀도(shadcn text-sm · Atlassian).
+- **제목 위계 셋** — `title·heading·subheading` = h1·h2·h3. 페이지·문서의 계층이 또렷.
+  `display` 는 랜딩 hero 한 자리만.
+- **weight 는 variant 와 직교한 별도 축** — `normal 450 · medium 550 · semibold 600 ·
+  bold 700`. Button·Tab 은 variant 기본 굵기 대신 여기서 골라 쓴다(`tokens.text.weight.*`).
 - **서체** — `-apple-system` 을 맨 앞에. macOS 에서 라틴은 SF(SwiftUI 의 얼굴), 한글은
   Pretendard. `mono` 는 코드·토큰 같은 기술적 자리에만 — 숫자를 무조건 등폭으로 두지
   않는다. 데이터 표의 숫자 열은 sans 그대로 `tabular-nums` 로 자리만 맞춘다.

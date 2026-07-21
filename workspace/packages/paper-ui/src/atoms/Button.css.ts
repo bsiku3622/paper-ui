@@ -13,10 +13,10 @@ export const buttonRoot = style({
   borderWidth: tokens.shape.borderWidth.base,
   borderStyle: "solid",
   borderColor: "transparent",
-  fontFamily: tokens.font.sans,
-  fontSize: "0.875rem",
-  fontWeight: tokens.weight.medium, // UI 컨트롤 굵기 (임의 숫자 아님)
-  letterSpacing: "-0.006em",
+  fontFamily: tokens.text.font.sans,
+  fontSize: tokens.text.size.body, // 14px — body 크기 (raw 아님)
+  fontWeight: tokens.text.weight.medium, // UI 컨트롤 굵기 (임의 숫자 아님)
+  letterSpacing: tokens.text.tracking.body,
   cursor: "pointer",
   whiteSpace: "nowrap",
   transition: "background 130ms ease, border-color 130ms ease, color 130ms ease",

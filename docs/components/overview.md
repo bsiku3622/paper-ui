@@ -11,7 +11,7 @@ raw HTML을 렌더하는 유일한 레이어입니다.
 - **Box** — 면 하나. `paper`(면색) · `ink`(잉크) · 간격 · `radius` · `shadow`를 말할 수 있습니다. `as`로 어떤 태그든 되지만, 상위 레이어가 raw 태그에 닿는 유일한 통로이기도 합니다.
 - **Stack** — 세로로 쌓습니다.
 - **Inline** — 가로로 늘어놓습니다. `justify` · `align` · `wrap`.
-- **Text** — 여섯 variant로 위계를 정합니다. `variant`가 크기·굵기·서체·잉크를 한 번에 결정합니다.
+- **Text** — 여덟 variant로 위계를 정합니다. `variant`가 크기·굵기·서체·잉크를 한 번에 결정합니다. 제목 위계가 셋(title·heading·subheading = h1·h2·h3)입니다.
 
 ## Atoms (9)
 

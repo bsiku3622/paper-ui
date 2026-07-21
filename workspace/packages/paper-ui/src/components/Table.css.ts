@@ -35,7 +35,7 @@ export const tableTr = style({
 
 export const tableTd = style({
   paddingInline: tokens.shape.space.md,
-  fontSize: "0.875rem",
+  fontSize: tokens.text.size.body,
 });
 
 // 숫자 열 — mono 로 시선을 뺏지 않는다. sans 그대로 tabular-nums 로 자리만 맞추고
