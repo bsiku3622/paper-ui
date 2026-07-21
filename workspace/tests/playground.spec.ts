@@ -22,7 +22,7 @@ const TYPE = {
   heading: { size: "15px", weight: "600" },
   label: { size: "12px", weight: "600" },
   body: { size: "14px", weight: "450" },
-  numeric: { size: "14px", weight: "450" },
+  mono: { size: "14px", weight: "450" },
   caption: { size: "13px", weight: "450" },
 } as const;
 
@@ -34,9 +34,8 @@ for (const [variant, spec] of Object.entries(TYPE)) {
   });
 }
 
-test("type · numeric 는 mono + tabular", async ({ page }) => {
-  const el = page.getByTestId("text-numeric");
-  await expect(el).toHaveCSS("font-variant-numeric", "tabular-nums");
+test("type · mono 는 등폭 서체", async ({ page }) => {
+  const el = page.getByTestId("text-mono");
   const fam = await el.evaluate((n) => getComputedStyle(n).fontFamily);
   expect(fam).toMatch(/mono/i);
 });

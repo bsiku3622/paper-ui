@@ -38,8 +38,9 @@ export const tableTd = style({
   fontSize: "0.875rem",
 });
 
+// 숫자 열 — mono 로 시선을 뺏지 않는다. sans 그대로 tabular-nums 로 자리만 맞추고
+// 우측정렬. (숫자라고 무조건 등폭이면 표가 시끄러워진다.)
 export const tableNumeric = style({
-  fontFamily: tokens.font.mono,
   fontVariantNumeric: "tabular-nums",
   textAlign: "right",
 });

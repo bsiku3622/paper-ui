@@ -36,7 +36,7 @@ Primitive + Atom 합성입니다.
 
 복잡한 상태를 가질 수 있는 고수준 UI입니다.
 
-- **Table** — column을 data로 받습니다. `numeric` 열은 mono·우측정렬이 자동입니다.
+- **Table** — column을 data로 받습니다. `numeric` 열은 sans 그대로 tabular-nums·우측정렬이 자동입니다(등폭 아님).
 - **Modal** — 떠 있는 것만 그림자를 갖습니다. Esc로 닫힙니다.
 - **Navbar** — 지면 맨 위 한 줄.
 

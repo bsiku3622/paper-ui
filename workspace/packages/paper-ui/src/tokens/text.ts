@@ -7,7 +7,8 @@
 // 서체 —
 //   -apple-system 을 맨 앞에 둔다. macOS 에서 라틴은 San Francisco(SwiftUI 의
 //   그 얼굴), 한글은 Pretendard 로 빠진다. 둘 다 humanist geometric 이라 섞여도
-//   결이 맞는다. 숫자는 mono·tabular — 데이터 표의 열이 세로로 맞게.
+//   결이 맞는다. mono 는 코드·토큰 같은 기술적 자리에만 — 숫자를 무조건 등폭으로
+//   두지 않는다. 표의 숫자 열은 sans 그대로 tabular-nums 로 자리만 맞춘다.
 
 export const FONT = {
   sans: "-apple-system, BlinkMacSystemFont, 'Pretendard Variable', Pretendard, 'Segoe UI', Roboto, sans-serif",
@@ -35,7 +36,7 @@ export const TEXT_VARIANTS = [
   "heading", // 섹션 · 카드 제목
   "label", // 폼 라벨 · 표 머리
   "body", // 본문 ◀ default
-  "numeric", // 수치 · 키 (mono · tabular)
+  "mono", // 코드 · 토큰 · 기술적 식별자 (등폭)
   "caption", // 부연 · 메타
 ] as const;
 export type TextVariant = (typeof TEXT_VARIANTS)[number];
@@ -46,7 +47,6 @@ type TextSpec = {
   lineHeight: string;
   tracking: string;
   family: "sans" | "mono";
-  tabular?: boolean;
 };
 
 // body 14px 이 anchor — 복잡한 웹앱의 표준 밀도(shadcn text-sm · Atlassian).
@@ -80,13 +80,12 @@ export const TEXT_SPEC = {
     tracking: "-0.006em",
     family: "sans",
   },
-  numeric: {
-    size: "0.875rem", // 14px — body 크기, 자리맞춤만 다름
+  mono: {
+    size: "0.875rem", // 14px — body 크기, 서체만 등폭
     weight: WEIGHT.normal, // 450
     lineHeight: "1.5",
     tracking: "0",
     family: "mono",
-    tabular: true,
   },
   caption: {
     size: "0.8125rem", // 13px
@@ -103,7 +102,7 @@ export const TEXT_INK: Record<TextVariant, "base" | "soft"> = {
   heading: "base",
   label: "soft",
   body: "base",
-  numeric: "base",
+  mono: "base",
   caption: "soft",
 };
 
