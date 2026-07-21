@@ -29,7 +29,7 @@ export type { AccentName, StatusName } from "./colors";
 export { SHAPE_VALUES, SPACE_KEYS } from "./shape";
 export type { Space } from "./shape";
 
-export { TEXT_VALUES, TEXT_VARIANTS, TEXT_SPEC, TEXT_INK } from "./text";
-export type { TextVariant } from "./text";
+export { TEXT_VALUES, TEXT_VARIANTS, TEXT_SPEC, TEXT_INK, WEIGHT } from "./text";
+export type { TextVariant, WeightKey } from "./text";
 
 export { kebab, pathToCssVar, pathToVarRef, walkValues, buildVarTree } from "./helpers";

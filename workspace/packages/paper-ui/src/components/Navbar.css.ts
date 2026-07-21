@@ -29,5 +29,5 @@ export const navItem = style({
 
 export const navItemActive = style({
   color: tokens.color.ink.base,
-  fontWeight: "500",
+  fontWeight: tokens.weight.medium,
 });
