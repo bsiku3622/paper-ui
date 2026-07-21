@@ -7,7 +7,8 @@
 //
 // 특정 앱에 치우치지 않은 중립 표본이다 — 여기서 어긋나면 시스템이 어긋난 것.
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Link as RouterLink, useParams } from "react-router-dom";
 
 import {
   Badge,
@@ -21,7 +22,6 @@ import {
   Inline,
   Link,
   Modal,
-  Navbar,
   Select,
   Stack,
   Table,
@@ -32,6 +32,19 @@ import {
   tokens,
   type Column,
 } from "@studio-baeks/paper-ui";
+
+import { SiteNav } from "../site/chrome";
+
+// 사이드바 → 섹션 (:entry 딥링크). id = sec-{entry}.
+const NAV = [
+  { entry: "type", label: "Type scale" },
+  { entry: "color", label: "Color" },
+  { entry: "button", label: "Button" },
+  { entry: "form", label: "Form controls" },
+  { entry: "badge", label: "Badge · Link · Icon" },
+  { entry: "mol", label: "Card · Tabs · Tooltip" },
+  { entry: "comp", label: "Table · Modal" },
+] as const;
 
 // ── 배치 헬퍼 (paper 프리미티브로만 조립) ──────────────────────────────────
 
@@ -73,16 +86,36 @@ export const Playground = () => {
     { id: "3", k: "PG-3", s: "error" as const, n: 5 },
   ];
 
+  // :entry 로 들어오면 해당 섹션으로 스크롤
+  const { entry } = useParams();
+  useEffect(() => {
+    if (!entry) return;
+    const el = document.getElementById(`sec-${entry}`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [entry]);
+
   return (
     <Stack>
-      <Navbar
-        brand={<Text variant="heading">paper-ui</Text>}
-        items={[{ value: "pg", label: "플레이그라운드" }]}
-        active="pg"
-      />
+      <SiteNav />
+      <Box style={{ display: "grid", gridTemplateColumns: "14rem 1fr", maxWidth: "72rem", marginInline: "auto", width: "100%" }}>
+        {/* 컴포넌트 사이드바 */}
+        <Box as="nav" paddingX="lg" paddingY="xl" style={{ borderRight: `1px solid ${tokens.color.border.base}`, minHeight: "calc(100vh - 3.25rem)", position: "sticky", top: "3.25rem", alignSelf: "start" }}>
+          <Stack gap="xs">
+            <Text variant="label">컴포넌트</Text>
+            <Stack gap="xs">
+              {NAV.map((n) => (
+                <RouterLink key={n.entry} to={`/playground/${n.entry}`} style={{ textDecoration: "none" }}>
+                  <Text variant="body" as="span" style={{ fontSize: "0.875rem", color: entry === n.entry ? tokens.color.accent.blue.ink : tokens.color.ink.soft, fontWeight: entry === n.entry ? 550 : 400 }}>
+                    {n.label}
+                  </Text>
+                </RouterLink>
+              ))}
+            </Stack>
+          </Stack>
+        </Box>
 
       <Box paddingX="xl" paddingY="xl">
-        <Stack gap="xl" style={{ maxWidth: "60rem", marginInline: "auto" }}>
+        <Stack gap="xl" style={{ maxWidth: "48rem" }}>
           <Stack gap="xs">
             <Text variant="label">Studio Baeks · Design System</Text>
             <Text variant="title">Component Playground</Text>
@@ -227,6 +260,7 @@ export const Playground = () => {
             </Spec>
           </Section>
         </Stack>
+      </Box>
       </Box>
 
       <Modal

@@ -16,3 +16,7 @@ coverage/
 test-results/
 playwright-report/
 .playwright/
+
+# generated docs mirror
+workspace/app/public/docs/
+workspace/app/dist/
