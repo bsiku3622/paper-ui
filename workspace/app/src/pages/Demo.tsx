@@ -5,7 +5,6 @@
 // 20 개로 이게 서면 20 개면 충분한 것이고, 안 서면 뭐가 빠졌는지 여기서 드러난다.
 
 import { useMemo, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
 
 import {
   Badge,
@@ -30,6 +29,8 @@ import {
   type Column,
   type StatusName,
 } from "@studio-baeks/paper-ui";
+
+import { DemoBar } from "../site/chrome";
 
 type State = "todo" | "progress" | "done" | "blocked";
 
@@ -133,19 +134,8 @@ export const Demo = () => {
 
   return (
     <Stack>
-      {/* 이 데모는 paper-ui 로 만든 실제 앱 예시 — 사이트로 돌아가는 링크만 얹는다 */}
-      <Box
-        paper="base"
-        radius="pill"
-        shadow="overlay"
-        paddingX="md"
-        paddingY="xs"
-        style={{ position: "fixed", left: "16px", bottom: "16px", zIndex: 60, border: `1px solid ${tokens.color.border.base}` }}
-      >
-        <RouterLink to="/" style={{ textDecoration: "none", fontSize: "0.8125rem", color: tokens.color.ink.soft }}>
-          ← paper-ui
-        </RouterLink>
-      </Box>
+      {/* 데모는 실제 제품처럼 자체 Navbar 를 갖고, 통합 DemoBar 로 사이트에 이어진다 */}
+      <DemoBar />
       <Navbar
         brand={
           <Inline gap="sm">

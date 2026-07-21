@@ -10,7 +10,7 @@ import rehypeSlug from "rehype-slug";
 
 import { Box, Stack, Text, tokens } from "@studio-baeks/paper-ui";
 
-import { SiteNav } from "../site/chrome";
+import { SiteNav, NAV_HEIGHT } from "../site/chrome";
 import "../site/markdown.css";
 
 type Doc = { slug: string; group: string; title: string; file: string };
@@ -54,7 +54,7 @@ export const Docs = () => {
       <SiteNav />
       <Box style={{ display: "grid", gridTemplateColumns: "15rem 1fr", maxWidth: "72rem", marginInline: "auto", width: "100%" }}>
         {/* 사이드바 */}
-        <Box as="nav" paddingX="lg" paddingY="xl" style={{ borderRight: `1px solid ${tokens.color.border.base}`, minHeight: "calc(100vh - 3.25rem)" }}>
+        <Box as="nav" paddingX="lg" paddingY="xl" style={{ borderRight: `1px solid ${tokens.color.border.base}`, minHeight: `calc(100vh - ${NAV_HEIGHT})`, position: "sticky", top: NAV_HEIGHT, alignSelf: "start" }}>
           <Stack gap="lg">
             {groups.map((g) => (
               <Stack key={g.group} gap="xs">
