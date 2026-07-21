@@ -65,7 +65,7 @@ const Spec = ({ label, testid, children }: { label: string; testid?: string; chi
   </Stack>
 );
 
-const TEXT_VARIANTS = ["title", "heading", "label", "body", "numeric", "caption"] as const;
+const TEXT_VARIANTS = ["title", "heading", "label", "body", "mono", "caption"] as const;
 const PAPERS = ["base", "subtle", "muted"] as const;
 const ACCENTS = ["blue", "green", "red"] as const;
 const STATUSES = ["info", "success", "error"] as const;
@@ -76,9 +76,9 @@ export const Playground = () => {
   const [modal, setModal] = useState(false);
 
   const columns: Column<{ id: string; k: string; s: "info" | "success" | "error"; n: number }>[] = [
-    { key: "k", header: "키", render: (r) => <Text variant="numeric" as="span">{r.k}</Text> },
+    { key: "k", header: "키", render: (r) => <Text variant="body" as="span">{r.k}</Text> },
     { key: "s", header: "상태", render: (r) => <Badge status={r.s}>{r.s}</Badge> },
-    { key: "n", header: "값", numeric: true, render: (r) => <Text variant="numeric" as="span">{r.n.toLocaleString()}</Text> },
+    { key: "n", header: "값", numeric: true, render: (r) => <Text variant="body" as="span">{r.n.toLocaleString()}</Text> },
   ];
   const rows = [
     { id: "1", k: "PG-1", s: "info" as const, n: 1240 },

@@ -71,7 +71,6 @@ for (const v of TEXT_VARIANTS) {
     lineHeight: spec.lineHeight,
     letterSpacing: spec.tracking,
     color: tokens.color.ink[TEXT_INK[v]],
-    ...("tabular" in spec && spec.tabular ? { fontVariantNumeric: "tabular-nums" } : {}),
     margin: 0,
   });
 }

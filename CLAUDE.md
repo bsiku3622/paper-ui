@@ -88,11 +88,12 @@ pnpm 명령은 `workspace/` 에서 실행한다. `core`/`web` 분리는 일부�
 
 ## 글자
 
-6 단. `title 22 · heading 15 · label 12 · body 14 · numeric 14(mono) · caption 13`.
+6 단. `title 22 · heading 15 · label 12 · body 14 · mono 14 · caption 13`.
 
 - **body 14px** anchor — 복잡한 웹앱의 표준 밀도(shadcn text-sm · Atlassian).
 - **서체** — `-apple-system` 을 맨 앞에. macOS 에서 라틴은 SF(SwiftUI 의 얼굴), 한글은
-  Pretendard. 숫자는 mono·tabular (데이터 표 열 정렬).
+  Pretendard. `mono` 는 코드·토큰 같은 기술적 자리에만 — 숫자를 무조건 등폭으로 두지
+  않는다. 데이터 표의 숫자 열은 sans 그대로 `tabular-nums` 로 자리만 맞춘다.
 - **label 은 sentence-case medium** — mono·uppercase 아님(그건 ledger 였다). shadcn 결.
 
 ---

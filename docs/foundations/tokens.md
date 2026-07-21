@@ -57,10 +57,10 @@
 | `heading` | 15px | 600 | sans |
 | `label` | 12px | 500 | sans |
 | `body` (기본) | 14px | 400 | sans |
-| `numeric` | 14px | 450 | mono · tabular |
+| `mono` | 14px | 450 | mono |
 | `caption` | 13px | 400 | sans |
 
-**body 14px**가 anchor입니다 — 복잡한 앱의 표준 밀도(shadcn·Atlassian·Linear). 콘텐츠 사이트의 16px로 키우면 밀도가 풀려 대시보드가 늘어집니다. 숫자는 `numeric`(mono·tabular)이라 표의 열이 세로로 맞습니다.
+**body 14px**가 anchor입니다 — 복잡한 앱의 표준 밀도(shadcn·Atlassian·Linear). 콘텐츠 사이트의 16px로 키우면 밀도가 풀려 대시보드가 늘어집니다. `mono`는 코드·토큰 같은 기술적 자리에만 씁니다 — 숫자라고 무조건 등폭으로 두지 않습니다. 표의 숫자 열은 sans 그대로 `tabular-nums`로 자리만 맞춥니다.
 
 ## 참조 방식
 

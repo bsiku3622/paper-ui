@@ -100,7 +100,7 @@ export const Demo = () => {
       header: "키",
       render: (r) => (
         <Link href="#" onClick={(e) => e.preventDefault()}>
-          <Text variant="numeric" as="span">
+          <Text variant="body" as="span">
             {r.key}
           </Text>
         </Link>

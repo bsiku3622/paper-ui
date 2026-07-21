@@ -27,7 +27,7 @@ const DEFAULT_TAG: Record<TextVariant, ElementType> = {
   heading: "h2",
   label: "span",
   body: "p",
-  numeric: "span",
+  mono: "span",
   caption: "p",
 };
 

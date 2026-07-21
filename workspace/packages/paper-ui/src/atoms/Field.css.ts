@@ -30,9 +30,9 @@ export const fieldRoot = style({
   },
 });
 
-// 수치 입력 — mono·우측정렬.
+// 수치 입력 — sans 그대로 tabular-nums 로 자리만 맞추고 우측정렬. (mono 로 시끄럽게
+// 하지 않는다 — 숫자라고 무조건 등폭이 아니다.)
 export const fieldNumeric = style({
-  fontFamily: tokens.font.mono,
   fontVariantNumeric: "tabular-nums",
   textAlign: "right",
 });
