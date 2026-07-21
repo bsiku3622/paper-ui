@@ -33,7 +33,7 @@ import {
   type Column,
 } from "@studio-baeks/paper-ui";
 
-import { SiteNav } from "../site/chrome";
+import { SiteNav, NAV_HEIGHT } from "../site/chrome";
 
 // 사이드바 → 섹션 (:entry 딥링크). id = sec-{entry}.
 const NAV = [
@@ -99,7 +99,7 @@ export const Playground = () => {
       <SiteNav />
       <Box style={{ display: "grid", gridTemplateColumns: "14rem 1fr", maxWidth: "72rem", marginInline: "auto", width: "100%" }}>
         {/* 컴포넌트 사이드바 */}
-        <Box as="nav" paddingX="lg" paddingY="xl" style={{ borderRight: `1px solid ${tokens.color.border.base}`, minHeight: "calc(100vh - 3.25rem)", position: "sticky", top: "3.25rem", alignSelf: "start" }}>
+        <Box as="nav" paddingX="lg" paddingY="xl" style={{ borderRight: `1px solid ${tokens.color.border.base}`, minHeight: `calc(100vh - ${NAV_HEIGHT})`, position: "sticky", top: NAV_HEIGHT, alignSelf: "start" }}>
           <Stack gap="xs">
             <Text variant="label">컴포넌트</Text>
             <Stack gap="xs">
