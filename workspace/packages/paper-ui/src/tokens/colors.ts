@@ -86,7 +86,7 @@ export const ACCENT_NAMES = ["blue", "green", "red"] as const satisfies readonly
 
 export const PRIMARY = {
   base: "#18181b",
-  hover: "#0a0a0a", // hover 는 어두워진다 — 검정 버튼도 예외 아님 (원칙 4 · danger 와 같은 방향)
+  hover: "#3f3f46", // 어두운 면은 hover 때 *밝아진다* — 이미 검정에 가까워 더 어둡게는 안 보인다. 한 단 확실히.
   fg: "#ffffff",
 } as const;
 
