@@ -15,14 +15,16 @@ export type TextFieldProps = Omit<FieldProps, "id"> & {
   hint?: ReactNode;
 };
 
-export const TextField = ({ label, error, hint, ...field }: TextFieldProps) => {
+export const TextField = ({ label, error, hint, status, ...field }: TextFieldProps) => {
   const id = useId();
   const noteId = `${id}-note`;
   const note = error ?? hint;
+  // 에러 문구가 있으면 그것만으로 danger 다 — status 를 명시하지 않아도 빨갛게.
+  const resolved = error ? "danger" : status;
   return (
     <Stack gap="xs">
       {label ? <Label htmlFor={id}>{label}</Label> : null}
-      <Field id={id} invalid={!!error} aria-describedby={note ? noteId : undefined} {...field} />
+      <Field id={id} status={resolved} aria-describedby={note ? noteId : undefined} {...field} />
       {note ? (
         <Text variant="caption" as="span" className={error ? "pui-red-ink" : undefined} id={noteId}>
           {note}

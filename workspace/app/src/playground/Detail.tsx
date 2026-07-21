@@ -19,8 +19,8 @@ const ControlRow = ({ control, value, onChange }: { control: Control; value: str
     <Text variant="label">{control.label}</Text>
     {control.kind === "bool" && (
       <Inline gap="xs">
-        <Button kind={value ? "solid" : "outline"} onClick={() => onChange(true)}>true</Button>
-        <Button kind={!value ? "solid" : "outline"} onClick={() => onChange(false)}>false</Button>
+        <Button variant={value ? "solid" : "outline"} onClick={() => onChange(true)}>true</Button>
+        <Button variant={!value ? "solid" : "outline"} onClick={() => onChange(false)}>false</Button>
       </Inline>
     )}
     {control.kind === "enum" && (

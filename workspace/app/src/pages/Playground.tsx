@@ -56,15 +56,15 @@ const Spec = ({ label, testid, children }: { label: string; testid?: string; chi
 
 const TEXT_VARIANTS = ["display", "title", "heading", "subheading", "body", "caption", "label", "mono"] as const;
 const PAPERS = ["base", "subtle", "muted"] as const;
-const ACCENTS = ["blue", "green", "red"] as const;
-const STATUSES = ["info", "success", "error"] as const;
+const ACCENTS = ["blue", "green", "amber", "red"] as const;
+const STATUSES = ["info", "success", "warning", "danger"] as const;
 
 export const Playground = () => {
   const [tab, setTab] = useState("one");
   const [checked, setChecked] = useState(true);
   const [modal, setModal] = useState(false);
 
-  const columns: Column<{ id: string; k: string; s: "info" | "success" | "error"; n: number }>[] = [
+  const columns: Column<{ id: string; k: string; s: "info" | "success" | "danger"; n: number }>[] = [
     { key: "k", header: "키", render: (r) => <Text variant="body" as="span">{r.k}</Text> },
     { key: "s", header: "상태", render: (r) => <Badge status={r.s}>{r.s}</Badge> },
     { key: "n", header: "값", numeric: true, render: (r) => <Text variant="body" as="span">{r.n.toLocaleString()}</Text> },
@@ -72,7 +72,7 @@ export const Playground = () => {
   const rows = [
     { id: "1", k: "PG-1", s: "info" as const, n: 1240 },
     { id: "2", k: "PG-2", s: "success" as const, n: 88 },
-    { id: "3", k: "PG-3", s: "error" as const, n: 5 },
+    { id: "3", k: "PG-3", s: "danger" as const, n: 5 },
   ];
 
   return (
@@ -123,14 +123,20 @@ export const Playground = () => {
 
         {/* ── Atoms ─────────────────────────────────────────── */}
         <Section id="sec-button" title="Button">
-          <Spec label="kind" testid="spec-button-kinds">
-            <Button kind="solid" data-testid="btn-solid">solid</Button>
-            <Button kind="outline" data-testid="btn-outline">outline</Button>
-            <Button kind="quiet" data-testid="btn-quiet">quiet</Button>
+          <Spec label="variant — 시각 무게" testid="spec-button-variants">
+            <Button variant="solid" data-testid="btn-solid">solid</Button>
+            <Button variant="soft" data-testid="btn-soft">soft</Button>
+            <Button variant="outline" data-testid="btn-outline">outline</Button>
+            <Button variant="quiet" data-testid="btn-quiet">quiet</Button>
+          </Spec>
+          <Spec label="status — 의미 색 (variant 와 직교)">
+            <Button status="danger" data-testid="btn-danger">삭제</Button>
+            <Button variant="soft" status="success">완료</Button>
+            <Button variant="soft" status="warning">주의</Button>
+            <Button variant="quiet" status="danger">지우기</Button>
           </Spec>
           <Spec label="state">
-            <Button kind="solid" disabled data-testid="btn-disabled">disabled</Button>
-            <Button kind="solid" danger data-testid="btn-danger">삭제</Button>
+            <Button disabled data-testid="btn-disabled">disabled</Button>
           </Spec>
         </Section>
 
@@ -140,11 +146,12 @@ export const Playground = () => {
             <Box style={{ width: "16rem" }}>
               <Field placeholder="검색…" aria-label="검색" data-testid="align-field" />
             </Box>
-            <Button kind="solid" data-testid="align-button">실행</Button>
+            <Button data-testid="align-button">실행</Button>
           </Spec>
-          <Spec label="Field state">
+          <Spec label="Field status">
             <Box style={{ width: "12rem" }}><Field placeholder="기본" data-testid="field-default" /></Box>
-            <Box style={{ width: "12rem" }}><Field placeholder="에러" invalid data-testid="field-invalid" /></Box>
+            <Box style={{ width: "12rem" }}><Field placeholder="에러" status="danger" data-testid="field-invalid" /></Box>
+            <Box style={{ width: "12rem" }}><Field placeholder="성공" status="success" /></Box>
             <Box style={{ width: "12rem" }}><Field placeholder="비활성" disabled /></Box>
           </Spec>
           <Spec label="Select">
@@ -205,7 +212,7 @@ export const Playground = () => {
           </Spec>
           <Spec label="Tooltip (hover)">
             <Tooltip label="툴팁 내용">
-              <Button kind="outline" data-testid="tooltip-trigger">hover 해보세요</Button>
+              <Button variant="outline" data-testid="tooltip-trigger">hover 해보세요</Button>
             </Tooltip>
           </Spec>
         </Section>
@@ -218,7 +225,7 @@ export const Playground = () => {
             </Box>
           </Spec>
           <Spec label="Modal (열기)">
-            <Button kind="solid" onClick={() => setModal(true)} data-testid="modal-open">모달 열기</Button>
+            <Button onClick={() => setModal(true)} data-testid="modal-open">모달 열기</Button>
           </Spec>
         </Section>
       </Stack>
@@ -229,8 +236,8 @@ export const Playground = () => {
         onClose={() => setModal(false)}
         footer={
           <>
-            <Button kind="quiet" onClick={() => setModal(false)}>취소</Button>
-            <Button kind="solid" onClick={() => setModal(false)}>확인</Button>
+            <Button variant="quiet" onClick={() => setModal(false)}>취소</Button>
+            <Button onClick={() => setModal(false)}>확인</Button>
           </>
         }
       >

@@ -2,8 +2,8 @@
 // ║ Color — 순백 위의 검정, 포인트로 작게 얹는 색                            ║
 // ║                                                                          ║
 // ║ 베이스는 흰색과 검정 둘뿐이다. 그 조화가 화면의 골격을 만든다.          ║
-// ║ 색(red·green·blue)은 *작게 얹는 점* 이다 — status · focus · 링크처럼    ║
-// ║ 의미가 있는 자리에만, 면을 채우지 않고.                                  ║
+// ║ 색(blue·green·amber·red)은 *작게 얹는 점* 이다 — status · focus ·      ║
+// ║ 링크처럼 의미가 있는 자리에만, 면을 채우지 않고.                        ║
 // ╚══════════════════════════════════════════════════════════════════════════╝
 //
 // 지향 — Atlassian 의 밀도 · shadcn 의 절제된 뉴트럴 · SwiftUI 의 단정한 여백.
@@ -47,14 +47,15 @@ export const BORDER = {
 
 // ───── accent — 작게 얹는 점 ────────────────────────────────────────────────
 //
-// 3 색. 각자 의미를 진다: blue = 정보/상호작용, green = 성공, red = 위험.
-// 각 색은 4 자리를 갖는다:
-//   solid — 채운 면/점 (dot · 채운 배지). 600 톤.
+// 4 색. 각자 의미를 진다: blue = 정보/상호작용, green = 성공, amber = 주의,
+// red = 위험. 각 색은 4 자리를 갖는다:
+//   solid — 채운 면/점 (dot · 채운 배지 · status 버튼). 600 톤.
 //   ink   — 흰 배경 위 *글자* 색 (AA 대비). 700 톤.
-//   wash  — 아주 옅은 면 (subtle 배지 · 선택 행). 50 톤.
+//   wash  — 아주 옅은 면 (subtle 배지 · soft 버튼 · 선택 행). 50 톤.
 //   edge  — wash 의 괘선. 200 톤.
 //
-// solid 로 꽉 찬 큰 면은 만들지 않는다 — 색은 점이지 배경이 아니다.
+// 색 면은 그 색의 *의미* 를 짊어질 때만 쓴다 (danger 버튼처럼). 장식으로 면을
+// 채우지 않는다 — 큰 면을 채우는 건 primary(검정) 뿐.
 
 export const ACCENT = {
   blue: {
@@ -69,6 +70,12 @@ export const ACCENT = {
     wash: "#f0fdf4",
     edge: "#bbf7d0",
   },
+  amber: {
+    solid: "#d97706",
+    ink: "#b45309",
+    wash: "#fffbeb",
+    edge: "#fde68a",
+  },
   red: {
     solid: "#dc2626",
     ink: "#b91c1c",
@@ -78,7 +85,7 @@ export const ACCENT = {
 } as const;
 
 export type AccentName = keyof typeof ACCENT;
-export const ACCENT_NAMES = ["blue", "green", "red"] as const satisfies readonly AccentName[];
+export const ACCENT_NAMES = ["blue", "green", "amber", "red"] as const satisfies readonly AccentName[];
 
 // ───── primary — 검정 일꾼 ──────────────────────────────────────────────────
 //
@@ -101,16 +108,19 @@ export const FOCUS = {
 
 // ───── status — 의미 → 색 ───────────────────────────────────────────────────
 //
-// 3 종. ledger 와 달리 info 도 색을 갖는다 (blue) — 파랑을 포인트로 쓰기로 한
-// 정체성의 귀결.
+// 4 종. 컴포넌트(Button · Field · Badge)는 상태를 이 하나의 축으로 받는다 —
+// boolean(invalid · danger) 을 난립시키지 않는다. info 도 색을 갖는다(blue) —
+// 파랑을 포인트로 쓰기로 한 정체성의 귀결. danger 는 accent 로는 red 다(의미와
+// 색 이름을 분리 — 상태는 danger, 그 색은 red).
 
-export const STATUS = ["info", "success", "error"] as const;
+export const STATUS = ["info", "success", "warning", "danger"] as const;
 export type StatusName = (typeof STATUS)[number];
 
 export const STATUS_ACCENT: Record<StatusName, AccentName> = {
   info: "blue",
   success: "green",
-  error: "red",
+  warning: "amber",
+  danger: "red",
 };
 
 // ───── VALUES — emit 대상 트리 ─────────────────────────────────────────────

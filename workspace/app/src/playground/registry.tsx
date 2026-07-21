@@ -109,20 +109,24 @@ export const COMPONENTS: CompSpec[] = [
     slug: "button",
     name: "Button",
     group: "Atoms",
-    blurb: "solid(검정 채움)·outline·quiet 3종 + danger. 면을 채우는 건 solid(검정)뿐.",
+    blurb: "두 축이 직교한다 — variant(solid·soft·outline·quiet, 시각 무게) × status(색). 큰 면을 채우는 건 검정(solid)뿐, 색은 뜻을 질 때만.",
     controls: [
-      { kind: "enum", prop: "kind", label: "kind", options: ["solid", "outline", "quiet"], def: "outline" },
-      { kind: "bool", prop: "danger", label: "danger", def: false },
+      { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "outline", "quiet"], def: "solid" },
+      { kind: "enum", prop: "status", label: "status", options: ["default", "info", "success", "warning", "danger"], def: "default" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
       { kind: "text", prop: "children", label: "children", def: "버튼" },
     ],
     render: (st) => (
-      <Button kind={s(st.kind) as "solid" | "outline" | "quiet"} danger={b(st.danger)} disabled={b(st.disabled)}>
+      <Button
+        variant={s(st.variant) as "solid" | "soft" | "outline" | "quiet"}
+        status={s(st.status) as "default" | StatusName}
+        disabled={b(st.disabled)}
+      >
         {s(st.children)}
       </Button>
     ),
     code: (st) =>
-      `<Button${AE("kind", s(st.kind), "outline")}${A("danger", b(st.danger))}${A("disabled", b(st.disabled))}>${s(st.children)}</Button>`,
+      `<Button${AE("variant", s(st.variant), "solid")}${AE("status", s(st.status), "default")}${A("disabled", b(st.disabled))}>${s(st.children)}</Button>`,
   },
   {
     slug: "badge",
@@ -130,7 +134,7 @@ export const COMPONENTS: CompSpec[] = [
     group: "Atoms",
     blurb: "상태 한 낱말. status 를 주면 옅은 색 면(wash)이 붙는다. 없으면 중립.",
     controls: [
-      { kind: "enum", prop: "status", label: "status", options: ["none", "info", "success", "error"], def: "info" },
+      { kind: "enum", prop: "status", label: "status", options: ["none", "info", "success", "warning", "danger"], def: "info" },
       { kind: "text", prop: "children", label: "children", def: "진행" },
     ],
     render: (st) => (
@@ -142,20 +146,20 @@ export const COMPONENTS: CompSpec[] = [
     slug: "field",
     name: "Field",
     group: "Atoms",
-    blurb: "한 줄 입력. 옅은 면으로 정의되고, 포커스 때만 파란 링.",
+    blurb: "한 줄 입력. 상태는 status 축 하나로 받는다(invalid boolean 대신). 포커스 때만 파란 링.",
     controls: [
       { kind: "text", prop: "placeholder", label: "placeholder", def: "검색…" },
-      { kind: "bool", prop: "invalid", label: "invalid", def: false },
+      { kind: "enum", prop: "status", label: "status", options: ["default", "info", "success", "warning", "danger"], def: "default" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
       { kind: "bool", prop: "numeric", label: "numeric", def: false },
     ],
     render: (st) => (
       <Box style={{ width: "16rem" }}>
-        <Field placeholder={s(st.placeholder)} invalid={b(st.invalid)} disabled={b(st.disabled)} numeric={b(st.numeric)} />
+        <Field placeholder={s(st.placeholder)} status={s(st.status) as "default" | StatusName} disabled={b(st.disabled)} numeric={b(st.numeric)} />
       </Box>
     ),
     code: (st) =>
-      `<Field${A("placeholder", s(st.placeholder))}${A("invalid", b(st.invalid))}${A("disabled", b(st.disabled))}${A("numeric", b(st.numeric))} />`,
+      `<Field${A("placeholder", s(st.placeholder))}${AE("status", s(st.status), "default")}${A("disabled", b(st.disabled))}${A("numeric", b(st.numeric))} />`,
   },
   {
     slug: "checkbox",
@@ -307,10 +311,10 @@ export const COMPONENTS: CompSpec[] = [
     controls: [{ kind: "text", prop: "label", label: "label", def: "툴팁 내용" }],
     render: (st) => (
       <Tooltip label={s(st.label)}>
-        <Button kind="outline">hover 해보세요</Button>
+        <Button variant="outline">hover 해보세요</Button>
       </Tooltip>
     ),
-    code: (st) => `<Tooltip label="${s(st.label)}">\n  <Button kind="outline">hover</Button>\n</Tooltip>`,
+    code: (st) => `<Tooltip label="${s(st.label)}">\n  <Button variant="outline">hover</Button>\n</Tooltip>`,
   },
 
   // ─ Components ─
@@ -332,7 +336,7 @@ export const COMPONENTS: CompSpec[] = [
     controls: [{ kind: "text", prop: "title", label: "title", def: "새 이슈" }],
     render: (st) => <ModalDemo title={s(st.title)} />,
     code: (st) =>
-      `const [open, setOpen] = useState(false);\n<Modal open={open} title="${s(st.title)}" onClose={() => setOpen(false)}\n  footer={<><Button kind="quiet" onClick={() => setOpen(false)}>취소</Button>\n           <Button kind="solid" onClick={() => setOpen(false)}>확인</Button></>}>\n  <Text variant="body">본문</Text>\n</Modal>`,
+      `const [open, setOpen] = useState(false);\n<Modal open={open} title="${s(st.title)}" onClose={() => setOpen(false)}\n  footer={<><Button variant="quiet" onClick={() => setOpen(false)}>취소</Button>\n           <Button onClick={() => setOpen(false)}>확인</Button></>}>\n  <Text variant="body">본문</Text>\n</Modal>`,
   },
   {
     slug: "navbar",
@@ -349,12 +353,12 @@ export const COMPONENTS: CompSpec[] = [
             { value: "boards", label: "보드" },
           ]}
           active="issues"
-          trailing={<Button kind="solid">새 이슈</Button>}
+          trailing={<Button>새 이슈</Button>}
         />
       </Box>
     ),
     code: () =>
-      `<Navbar\n  brand={<Text variant="subheading">Studio</Text>}\n  items={[{ value: "issues", label: "이슈" }, { value: "boards", label: "보드" }]}\n  active="issues"\n  trailing={<Button kind="solid">새 이슈</Button>}\n/>`,
+      `<Navbar\n  brand={<Text variant="subheading">Studio</Text>}\n  items={[{ value: "issues", label: "이슈" }, { value: "boards", label: "보드" }]}\n  active="issues"\n  trailing={<Button>새 이슈</Button>}\n/>`,
   },
 ];
 
@@ -384,7 +388,7 @@ const TableDemo = () => {
   const rows: Row[] = [
     { id: "1", k: "PG-1", st: "info", n: 1240 },
     { id: "2", k: "PG-2", st: "success", n: 88 },
-    { id: "3", k: "PG-3", st: "error", n: 5 },
+    { id: "3", k: "PG-3", st: "danger", n: 5 },
   ];
   return (
     <Box paper="subtle" radius="md" style={{ overflow: "hidden", width: "28rem", maxWidth: "100%" }}>
@@ -397,15 +401,15 @@ const ModalDemo = ({ title }: { title: string }) => {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <Button kind="solid" onClick={() => setOpen(true)}>모달 열기</Button>
+      <Button onClick={() => setOpen(true)}>모달 열기</Button>
       <Modal
         open={open}
         title={title}
         onClose={() => setOpen(false)}
         footer={
           <>
-            <Button kind="quiet" onClick={() => setOpen(false)}>취소</Button>
-            <Button kind="solid" onClick={() => setOpen(false)}>확인</Button>
+            <Button variant="quiet" onClick={() => setOpen(false)}>취소</Button>
+            <Button onClick={() => setOpen(false)}>확인</Button>
           </>
         }
       >
