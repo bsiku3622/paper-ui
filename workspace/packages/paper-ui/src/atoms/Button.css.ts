@@ -15,7 +15,7 @@ export const buttonRoot = style({
   borderColor: "transparent",
   fontFamily: tokens.font.sans,
   fontSize: "0.875rem",
-  fontWeight: "550", // 500 은 채운 버튼 위에서 살짝 얇다 — 반 단계 무겁게
+  fontWeight: tokens.weight.medium, // UI 컨트롤 굵기 (임의 숫자 아님)
   letterSpacing: "-0.006em",
   cursor: "pointer",
   whiteSpace: "nowrap",

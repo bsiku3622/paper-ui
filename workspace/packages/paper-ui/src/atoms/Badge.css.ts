@@ -15,7 +15,7 @@ export const badgeRoot = style({
   borderColor: "transparent",
   fontFamily: tokens.font.sans,
   fontSize: "0.75rem",
-  fontWeight: "500",
+  fontWeight: tokens.weight.medium,
   letterSpacing: "0",
   whiteSpace: "nowrap",
 });

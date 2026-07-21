@@ -20,7 +20,7 @@ export const tabItem = style({
   borderRadius: tokens.shape.radius.sm,
   fontFamily: tokens.font.sans,
   fontSize: "0.8125rem",
-  fontWeight: "500",
+  fontWeight: tokens.weight.medium,
   color: tokens.color.ink.soft,
   transition: "background 130ms ease, color 130ms ease",
   selectors: { "&:hover": { color: tokens.color.ink.base } },
