@@ -26,9 +26,9 @@ export const tabItem = style({
   selectors: { "&:hover": { color: tokens.color.ink.base } },
 });
 
-// 선택 = 흰 pill 이 떠오름. SwiftUI segmented control 의 그 감각.
+// 선택 = 흰 pill. muted 트랙 위 흰색 대비만으로 또렷하다 — 그림자 없음.
+// (탭은 overlay 가 아니므로 뜨지 않는다. 원칙 3.)
 export const tabItemActive = style({
   background: tokens.color.surface.base,
   color: tokens.color.ink.base,
-  boxShadow: tokens.shape.shadow.raised,
 });

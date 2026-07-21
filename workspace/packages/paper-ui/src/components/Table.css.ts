@@ -27,7 +27,9 @@ export const tableTr = style({
     "&:not(:last-child)": {
       borderBottom: `${tokens.shape.borderWidth.base} solid ${tokens.color.border.base}`,
     },
-    "&:hover": { background: tokens.color.surface.subtle },
+    // 표는 subtle 패널 안에 들어가는 일이 많다 — hover 를 subtle 로 두면 안 보인다.
+    // muted 로 한 단 더 내려 어느 컨테이너에서도 어두워지게 (원칙 4).
+    "&:hover": { background: tokens.color.surface.muted },
   },
 });
 
