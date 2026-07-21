@@ -119,7 +119,7 @@ export const Playground = () => {
                 <Inline key={a} gap="sm" align="center">
                   <Box accent={a} tone="dot" radius="pill" data-testid={`dot-${a}`}
                     style={{ width: "1rem", height: "1rem" }} />
-                  <Text variant="body" as="span" className={`paper-${a}-ink`} data-testid={`ink-${a}`}>{a}</Text>
+                  <Text variant="body" as="span" className={`pui-${a}-ink`} data-testid={`ink-${a}`}>{a}</Text>
                   <Badge status={STATUSES[ACCENTS.indexOf(a)]}>{STATUSES[ACCENTS.indexOf(a)]}</Badge>
                 </Inline>
               ))}

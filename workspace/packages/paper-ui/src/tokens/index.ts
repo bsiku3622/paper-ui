@@ -1,10 +1,10 @@
 // Tokens — 모든 시각 값의 유일한 정의 위치.
 //
 // `tokens` 객체는 *값이 아니라 var() 참조* 를 든다. 컴포넌트는 이 객체로만 색과
-// 크기에 닿는다 — raw hex 도, "var(--paper-...)" 문자열도 직접 쓰지 않는다.
+// 크기에 닿는다 — raw hex 도, "var(--pui-...)" 문자열도 직접 쓰지 않는다.
 //
-//   tokens.color.ink.base        → "var(--paper-color-ink-base)"
-//   tokens.shape.height.control  → "var(--paper-shape-height-control)"
+//   tokens.color.ink.base        → "var(--pui-color-ink-base)"
+//   tokens.shape.height.control  → "var(--pui-shape-height-control)"
 //
 // 실제 값은 styles/theme.css.ts 가 :root 에 emit 한다. 두 자리 모두 아래 VALUES
 // 트리를 같은 helper 로 걷기 때문에 이름이 어긋날 수 없다.

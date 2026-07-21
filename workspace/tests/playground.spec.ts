@@ -43,18 +43,18 @@ test("type · numeric 는 mono + tabular", async ({ page }) => {
 
 // ── 색 토큰 — :root 의 CSS var 가 기대 hex 와 일치 ─────────────────────────
 const VARS: Record<string, string> = {
-  "--paper-color-paper-base": "#ffffff",
-  "--paper-color-paper-subtle": "#f7f7f8",
-  "--paper-color-paper-muted": "#ececee",
-  "--paper-color-ink-base": "#18181b",
-  "--paper-color-ink-soft": "#71717a",
-  "--paper-color-ink-faint": "#a1a1aa",
-  "--paper-color-border-base": "#e8e8ea",
-  "--paper-color-accent-blue-solid": "#2563eb",
-  "--paper-color-accent-green-solid": "#16a34a",
-  "--paper-color-accent-red-solid": "#dc2626",
-  "--paper-color-primary-base": "#18181b",
-  "--paper-color-focus-ring": "#2563eb",
+  "--pui-color-paper-base": "#ffffff",
+  "--pui-color-paper-subtle": "#f7f7f8",
+  "--pui-color-paper-muted": "#ececee",
+  "--pui-color-ink-base": "#18181b",
+  "--pui-color-ink-soft": "#71717a",
+  "--pui-color-ink-faint": "#a1a1aa",
+  "--pui-color-border-base": "#e8e8ea",
+  "--pui-color-accent-blue-solid": "#2563eb",
+  "--pui-color-accent-green-solid": "#16a34a",
+  "--pui-color-accent-red-solid": "#dc2626",
+  "--pui-color-primary-base": "#18181b",
+  "--pui-color-focus-ring": "#2563eb",
 };
 
 test("color · 토큰이 기대 hex 로 emit 된다", async ({ page }) => {

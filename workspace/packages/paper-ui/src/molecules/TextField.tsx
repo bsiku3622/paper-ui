@@ -24,7 +24,7 @@ export const TextField = ({ label, error, hint, ...field }: TextFieldProps) => {
       {label ? <Label htmlFor={id}>{label}</Label> : null}
       <Field id={id} invalid={!!error} aria-describedby={note ? noteId : undefined} {...field} />
       {note ? (
-        <Text variant="caption" as="span" className={error ? "paper-red-ink" : undefined} id={noteId}>
+        <Text variant="caption" as="span" className={error ? "pui-red-ink" : undefined} id={noteId}>
           {note}
         </Text>
       ) : null}

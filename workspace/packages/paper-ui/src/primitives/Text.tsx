@@ -42,7 +42,7 @@ export const Text = <As extends ElementType = "p">({
   const Tag = (as ?? DEFAULT_TAG[variant]) as ElementType;
   return (
     <Tag
-      className={joinClass(`paper-text-${variant}`, resolveInk(ink), className)}
+      className={joinClass(`pui-text-${variant}`, resolveInk(ink), className)}
       {...(rest as object)}
     >
       {children}

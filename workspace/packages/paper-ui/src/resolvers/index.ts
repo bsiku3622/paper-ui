@@ -16,14 +16,14 @@ export const PAPERS = ["base", "subtle", "muted"] as const;
 export type Paper = (typeof PAPERS)[number];
 
 export const resolvePaper = (s: Paper | undefined): string =>
-  s ? `paper-paper-${s}` : "";
+  s ? `pui-paper-${s}` : "";
 
 // ───── ink — 잉크 농도 ─────────────────────────────────────────────────────
 
 export const INKS = ["base", "soft", "faint"] as const;
 export type Ink = (typeof INKS)[number];
 
-export const resolveInk = (i: Ink | undefined): string => (i ? `paper-ink-${i}` : "");
+export const resolveInk = (i: Ink | undefined): string => (i ? `pui-ink-${i}` : "");
 
 // ───── tone — 작게 얹는 색 ─────────────────────────────────────────────────
 //
@@ -38,7 +38,7 @@ export const TONES = ["ink", "wash", "dot"] as const;
 export type Tone = (typeof TONES)[number];
 
 export const resolveTone = (accent: AccentName | undefined, tone: Tone = "ink"): string =>
-  accent ? `paper-${accent}-${tone}` : "";
+  accent ? `pui-${accent}-${tone}` : "";
 
 // status → accent. info=blue · success=green · error=red (전부 색을 가짐).
 export const resolveStatus = (status: StatusName | undefined, tone: Tone = "ink"): string =>
@@ -49,7 +49,7 @@ export const resolveStatus = (status: StatusName | undefined, tone: Tone = "ink"
 export const resolveSpace = (
   axis: "p" | "px" | "py" | "gap",
   size: Space | undefined,
-): string => (size ? `paper-${axis}-${size}` : "");
+): string => (size ? `pui-${axis}-${size}` : "");
 
 // ───── 합성 ────────────────────────────────────────────────────────────────
 
