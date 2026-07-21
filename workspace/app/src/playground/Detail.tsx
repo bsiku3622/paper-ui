@@ -40,7 +40,7 @@ const ControlRow = ({ control, value, onChange }: { control: Control; value: str
         paddingX="sm"
         value={String(value)}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.currentTarget.value)}
-        style={{ height: "2rem", border: "1px solid var(--pui-color-border-base)", fontSize: "0.8125rem", width: "100%" }}
+        style={{ height: "2rem", border: "1px solid var(--pui-color-border-base)", fontSize: "var(--pui-text-size-caption)", width: "100%" }}
       />
     )}
   </Stack>
@@ -87,14 +87,16 @@ export const ComponentDetail = () => {
   return (
     <PlaygroundLayout active={spec.slug} key={key}>
       <Stack gap="xl" style={{ maxWidth: "52rem" }}>
-        {/* 머리 */}
-        <Stack gap="xs">
-          <Inline gap="xs" align="center">
-            <Text variant="caption" ink="faint" as="span">{spec.group}</Text>
-            <Text variant="caption" ink="faint" as="span">/</Text>
-            <Text variant="caption" ink="soft" as="span">Component</Text>
-          </Inline>
-          <Text variant="title">{spec.name}</Text>
+        {/* 머리 — 브레드크럼은 제목에 붙이고, 설명은 한 숨 띄운다 */}
+        <Stack gap="md">
+          <Stack gap="xs">
+            <Inline gap="xs" align="center">
+              <Text variant="caption" ink="faint" as="span">{spec.group}</Text>
+              <Text variant="caption" ink="faint" as="span">/</Text>
+              <Text variant="caption" ink="soft" as="span">Component</Text>
+            </Inline>
+            <Text variant="title">{spec.name}</Text>
+          </Stack>
           <Text variant="body" ink="soft" style={{ maxWidth: "40rem" }}>{spec.blurb}</Text>
         </Stack>
 
@@ -117,7 +119,7 @@ export const ComponentDetail = () => {
                   <button
                     type="button"
                     onClick={() => setState(defaultState(spec))}
-                    style={{ appearance: "none", background: "none", border: "none", cursor: "pointer", fontSize: "0.75rem", color: "var(--pui-color-ink-soft)", padding: 0 }}
+                    style={{ appearance: "none", background: "none", border: "none", cursor: "pointer", fontSize: "var(--pui-text-size-label)", color: "var(--pui-color-ink-soft)", padding: 0 }}
                   >
                     초기화
                   </button>

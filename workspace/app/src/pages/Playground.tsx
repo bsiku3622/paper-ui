@@ -54,7 +54,7 @@ const Spec = ({ label, testid, children }: { label: string; testid?: string; chi
   </Stack>
 );
 
-const TEXT_VARIANTS = ["title", "heading", "label", "body", "mono", "caption"] as const;
+const TEXT_VARIANTS = ["display", "title", "heading", "subheading", "body", "caption", "label", "mono"] as const;
 const PAPERS = ["base", "subtle", "muted"] as const;
 const ACCENTS = ["blue", "green", "red"] as const;
 const STATUSES = ["info", "success", "error"] as const;
@@ -191,7 +191,7 @@ export const Playground = () => {
           <Spec label="Card">
             <Card style={{ width: "16rem" }} data-testid="card">
               <Stack gap="xs">
-                <Text variant="heading">카드 제목</Text>
+                <Text variant="subheading">카드 제목</Text>
                 <Text variant="caption">옅은 면으로 정의되는 컨테이너.</Text>
               </Stack>
             </Card>

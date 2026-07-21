@@ -1,6 +1,6 @@
 // Text — 글자. variant 가 크기·굵기·서체·잉크 농도를 한 번에 정한다.
 //
-// size/weight/color 를 따로 고르는 prop 은 없다. 6 개 목소리 중 하나를 고르는
+// size/weight/color 를 따로 고르는 prop 은 없다. 8 개 목소리 중 하나를 고르는
 // 것이 전부다 — 고를 게 없으면 화면이 저절로 일관된다.
 
 import type { ComponentPropsWithoutRef, ElementType, ReactNode } from "react";
@@ -23,12 +23,14 @@ export type TextProps<As extends ElementType = "p"> = OwnProps<As> &
 
 // 시각 위계(variant)와 의미 태그(as)는 직교한다. 기본만 깔아두고 필요하면 as 로 덮는다.
 const DEFAULT_TAG: Record<TextVariant, ElementType> = {
+  display: "h1",
   title: "h1",
   heading: "h2",
-  label: "span",
+  subheading: "h3",
   body: "p",
-  mono: "span",
   caption: "p",
+  label: "span",
+  mono: "span",
 };
 
 export const Text = <As extends ElementType = "p">({

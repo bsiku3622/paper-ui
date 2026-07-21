@@ -13,10 +13,10 @@ export const badgeRoot = style({
   borderWidth: tokens.shape.borderWidth.base,
   borderStyle: "solid",
   borderColor: "transparent",
-  fontFamily: tokens.font.sans,
-  fontSize: "0.75rem",
-  fontWeight: tokens.weight.medium,
-  letterSpacing: "0",
+  fontFamily: tokens.text.font.sans,
+  fontSize: tokens.text.size.label, // 12px
+  fontWeight: tokens.text.weight.medium,
+  letterSpacing: tokens.text.tracking.caption, // 0 — inline 라벨은 조이지 않는다
   whiteSpace: "nowrap",
 });
 

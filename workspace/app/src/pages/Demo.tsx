@@ -73,8 +73,8 @@ const Avatar = ({ name }: { name: string }) => (
       height: "1.5rem",
       display: "inline-grid",
       placeItems: "center",
-      fontSize: "0.6875rem",
-      fontWeight: 600,
+      fontSize: "var(--pui-text-size-label)",
+      fontWeight: "var(--pui-text-weight-semibold)",
     }}
   >
     {name.slice(0, 1)}
@@ -149,13 +149,13 @@ export const Demo = () => {
                 color: tokens.color.primary.fg,
                 display: "grid",
                 placeItems: "center",
-                fontSize: "0.8125rem",
-                fontWeight: 700,
+                fontSize: "var(--pui-text-size-caption)",
+                fontWeight: "var(--pui-text-weight-bold)",
               }}
             >
               S
             </Box>
-            <Text variant="heading">Studio</Text>
+            <Text variant="subheading">Studio</Text>
           </Inline>
         }
         items={[

@@ -18,12 +18,14 @@ test.beforeEach(async ({ page }) => {
 
 // ── 타입 스케일 — 6 variant 의 크기·굵기가 토큰과 일치 ──────────────────────
 const TYPE = {
+  display: { size: "32px", weight: "700" },
   title: { size: "22px", weight: "700" },
-  heading: { size: "15px", weight: "600" },
-  label: { size: "12px", weight: "600" },
+  heading: { size: "18px", weight: "600" },
+  subheading: { size: "15px", weight: "600" },
   body: { size: "14px", weight: "450" },
-  mono: { size: "14px", weight: "450" },
   caption: { size: "13px", weight: "450" },
+  label: { size: "12px", weight: "600" },
+  mono: { size: "14px", weight: "450" },
 } as const;
 
 for (const [variant, spec] of Object.entries(TYPE)) {

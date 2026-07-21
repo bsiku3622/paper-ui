@@ -13,8 +13,8 @@ export const fieldRoot = style({
   borderStyle: "solid",
   borderColor: "transparent",
   color: tokens.color.ink.base,
-  fontFamily: tokens.font.sans,
-  fontSize: "0.875rem",
+  fontFamily: tokens.text.font.sans,
+  fontSize: tokens.text.size.body,
   transition: "border-color 130ms ease, box-shadow 130ms ease, background 130ms ease",
   selectors: {
     "&::placeholder": { color: tokens.color.ink.faint },

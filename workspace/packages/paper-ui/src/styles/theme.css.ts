@@ -40,10 +40,10 @@ globalStyle("body", {
   margin: 0,
   background: tokens.color.paper.base,
   color: tokens.color.ink.base,
-  fontFamily: tokens.font.sans,
-  fontSize: TEXT_SPEC.body.size,
-  lineHeight: TEXT_SPEC.body.lineHeight,
-  letterSpacing: TEXT_SPEC.body.tracking,
+  fontFamily: tokens.text.font.sans,
+  fontSize: tokens.text.size.body,
+  lineHeight: tokens.text.leading.body,
+  letterSpacing: tokens.text.tracking.body,
   WebkitFontSmoothing: "antialiased",
   MozOsxFontSmoothing: "grayscale",
 });
@@ -65,11 +65,12 @@ globalStyle(":focus-visible", {
 for (const v of TEXT_VARIANTS) {
   const spec = TEXT_SPEC[v];
   globalStyle(`.pui-text-${v}`, {
-    fontFamily: spec.family === "mono" ? tokens.font.mono : tokens.font.sans,
-    fontSize: spec.size,
-    fontWeight: spec.weight,
-    lineHeight: spec.lineHeight,
-    letterSpacing: spec.tracking,
+    // size · leading · tracking 은 :root var 를 참조 — 값은 Pass 1 한 곳에서만.
+    fontFamily: spec.family === "mono" ? tokens.text.font.mono : tokens.text.font.sans,
+    fontSize: tokens.text.size[v],
+    fontWeight: spec.weight, // weight 는 variant→굵기 매핑이라 spec 의 raw 어휘값
+    lineHeight: tokens.text.leading[v],
+    letterSpacing: tokens.text.tracking[v],
     color: tokens.color.ink[TEXT_INK[v]],
     margin: 0,
   });

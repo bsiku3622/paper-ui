@@ -72,7 +72,7 @@ export const COMPONENTS: CompSpec[] = [
     slug: "text",
     name: "Text",
     group: "Primitives",
-    blurb: "여섯 variant 로 위계를 정한다. variant 가 크기·굵기·서체·잉크를 한 번에 결정.",
+    blurb: "여덟 variant 로 위계를 정한다. variant 가 크기·굵기·서체·잉크를 한 번에 결정.",
     controls: [
       { kind: "enum", prop: "variant", label: "variant", options: ["title", "heading", "label", "body", "mono", "caption"], def: "body" },
       { kind: "enum", prop: "ink", label: "ink", options: ["default", "base", "soft", "faint"], def: "default" },
@@ -281,13 +281,13 @@ export const COMPONENTS: CompSpec[] = [
     render: (st) => (
       <Card radius={s(st.radius) as "sm" | "md" | "lg"} padding={s(st.padding) as "md" | "lg" | "xl"} style={{ width: "18rem" }}>
         <Stack gap="xs">
-          <Text variant="heading">카드 제목</Text>
+          <Text variant="subheading">카드 제목</Text>
           <Text variant="caption" ink="soft">옅은 면으로 정의되는 컨테이너.</Text>
         </Stack>
       </Card>
     ),
     code: (st) =>
-      `<Card${AE("radius", s(st.radius), "md")}${AE("padding", s(st.padding), "lg")}>\n  <Stack gap="xs">\n    <Text variant="heading">카드 제목</Text>\n    <Text variant="caption" ink="soft">…</Text>\n  </Stack>\n</Card>`,
+      `<Card${AE("radius", s(st.radius), "md")}${AE("padding", s(st.padding), "lg")}>\n  <Stack gap="xs">\n    <Text variant="subheading">카드 제목</Text>\n    <Text variant="caption" ink="soft">…</Text>\n  </Stack>\n</Card>`,
   },
   {
     slug: "tabs",
@@ -343,7 +343,7 @@ export const COMPONENTS: CompSpec[] = [
     render: () => (
       <Box style={{ width: "100%", border: `1px solid ${tokens.color.border.base}`, borderRadius: tokens.shape.radius.md, overflow: "hidden" }}>
         <Navbar
-          brand={<Text variant="heading">Studio</Text>}
+          brand={<Text variant="subheading">Studio</Text>}
           items={[
             { value: "issues", label: "이슈" },
             { value: "boards", label: "보드" },
@@ -354,7 +354,7 @@ export const COMPONENTS: CompSpec[] = [
       </Box>
     ),
     code: () =>
-      `<Navbar\n  brand={<Text variant="heading">Studio</Text>}\n  items={[{ value: "issues", label: "이슈" }, { value: "boards", label: "보드" }]}\n  active="issues"\n  trailing={<Button kind="solid">새 이슈</Button>}\n/>`,
+      `<Navbar\n  brand={<Text variant="subheading">Studio</Text>}\n  items={[{ value: "issues", label: "이슈" }, { value: "boards", label: "보드" }]}\n  active="issues"\n  trailing={<Button kind="solid">새 이슈</Button>}\n/>`,
   },
 ];
 
