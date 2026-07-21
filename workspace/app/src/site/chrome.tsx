@@ -33,43 +33,31 @@ const Brand = ({ height = 26 }: { height?: number }) => (
 export const SiteNav = () => {
   const { pathname } = useLocation();
   return (
-    <Box
-      as="header"
-      paper="base"
-      paddingX="xl"
-      style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 20,
-        borderBottom: `1px solid ${tokens.color.border.base}`,
-      }}
-    >
-      <Inline gap="xl" justify="between" style={{ height: NAV_HEIGHT, maxWidth: "72rem", marginInline: "auto" }}>
-        <Inline gap="xl" align="center">
+    <Box as="header" paddingX="xl" className="gnb">
+      <div className="gnb-inner">
+        <Inline gap="lg" align="center">
           <Brand />
-          <Inline as="nav" gap="lg">
+          <nav className="gnb-nav">
             {SITE_NAV.map((n) => (
-              <Link
-                key={n.to}
-                to={n.to}
-                style={{
-                  textDecoration: "none",
-                  fontSize: "0.875rem",
-                  fontWeight: isActive(pathname, n.to) ? 550 : 450,
-                  color: isActive(pathname, n.to) ? tokens.color.ink.base : tokens.color.ink.soft,
-                }}
-              >
+              <Link key={n.to} to={n.to} className="gnb-link" data-active={isActive(pathname, n.to)}>
                 {n.label}
               </Link>
             ))}
-          </Inline>
+          </nav>
         </Inline>
-        <Inline gap="md" align="center">
-          <Text variant="caption" as="span" ink="faint" style={{ fontVariantNumeric: "tabular-nums" }}>
-            v0.1.0
-          </Text>
+        <Inline gap="sm" align="center">
+          <Box
+            paper="subtle"
+            radius="pill"
+            paddingX="sm"
+            style={{ border: `1px solid ${tokens.color.border.base}`, lineHeight: "1.4rem" }}
+          >
+            <Text variant="caption" as="span" ink="soft" style={{ fontVariantNumeric: "tabular-nums" }}>
+              v0.1.0
+            </Text>
+          </Box>
         </Inline>
-      </Inline>
+      </div>
     </Box>
   );
 };

@@ -8,7 +8,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 
-import { Box, Stack, Text, tokens } from "@studio-baeks/paper-ui";
+import { Box, Stack, Text } from "@studio-baeks/paper-ui";
 
 import { SiteNav, NAV_HEIGHT } from "../site/chrome";
 import "../site/markdown.css";
@@ -53,24 +53,18 @@ export const Docs = () => {
     <Stack>
       <SiteNav />
       <Box style={{ display: "grid", gridTemplateColumns: "15rem 1fr", maxWidth: "72rem", marginInline: "auto", width: "100%" }}>
-        {/* 사이드바 */}
-        <Box as="nav" paddingX="lg" paddingY="xl" style={{ borderRight: `1px solid ${tokens.color.border.base}`, minHeight: `calc(100vh - ${NAV_HEIGHT})`, position: "sticky", top: NAV_HEIGHT, alignSelf: "start" }}>
-          <Stack gap="lg">
-            {groups.map((g) => (
-              <Stack key={g.group} gap="xs">
-                <Text variant="label">{g.label}</Text>
-                <Stack gap="xs">
-                  {g.docs.map((d) => (
-                    <Link key={d.slug} to={`/docs/${d.slug}`} style={{ textDecoration: "none" }}>
-                      <Text variant="body" as="span" style={{ fontSize: "0.875rem", color: active(d.slug) ? tokens.color.accent.blue.ink : tokens.color.ink.soft, fontWeight: active(d.slug) ? 550 : 400 }}>
-                        {d.title}
-                      </Text>
-                    </Link>
-                  ))}
-                </Stack>
-              </Stack>
-            ))}
-          </Stack>
+        {/* 사이드바 — playground 와 같은 .side-* 언어 */}
+        <Box as="nav" paddingX="md" paddingY="lg" className="side-nav" style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, top: NAV_HEIGHT }}>
+          {groups.map((g) => (
+            <div className="side-group" key={g.group}>
+              <div className="side-group-label">{g.label}</div>
+              {g.docs.map((d) => (
+                <Link key={d.slug} to={`/docs/${d.slug}`} className="side-link" data-active={active(d.slug)}>
+                  {d.title}
+                </Link>
+              ))}
+            </div>
+          ))}
         </Box>
 
         {/* 본문 */}
