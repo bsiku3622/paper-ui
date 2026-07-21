@@ -58,7 +58,7 @@ const STATE_STATUS: Record<State, StatusName | undefined> = {
   todo: undefined,
   progress: "info",
   done: "success",
-  blocked: "error",
+  blocked: "danger",
 };
 
 // avatar — 전용 컴포넌트 없이 Box 조합으로. pill + muted 면 + 이니셜.
@@ -170,7 +170,7 @@ export const Demo = () => {
               <Field placeholder="검색…" aria-label="검색" />
             </Box>
             <Tooltip label="새 이슈 (C)">
-              <Button kind="solid" onClick={() => setOpen(true)}>
+              <Button onClick={() => setOpen(true)}>
                 새 이슈
               </Button>
             </Tooltip>
@@ -239,8 +239,8 @@ export const Demo = () => {
         onClose={() => setOpen(false)}
         footer={
           <>
-            <Button kind="quiet" onClick={() => setOpen(false)}>취소</Button>
-            <Button kind="solid" onClick={() => setOpen(false)}>만들기</Button>
+            <Button variant="quiet" onClick={() => setOpen(false)}>취소</Button>
+            <Button onClick={() => setOpen(false)}>만들기</Button>
           </>
         }
       >

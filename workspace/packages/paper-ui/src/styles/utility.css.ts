@@ -38,14 +38,8 @@ for (const i of INKS) {
 // wash = 옅은 면 + 같은 색 괘선 + 그 색 글자.
 // dot  = 작은 채운 점 (배경/글자에 solid).
 
-const ACCENT_TOKEN = {
-  blue: tokens.color.accent.blue,
-  green: tokens.color.accent.green,
-  red: tokens.color.accent.red,
-} as const;
-
 for (const a of ACCENT_NAMES) {
-  const t = ACCENT_TOKEN[a];
+  const t = tokens.color.accent[a];
   globalStyle(`.pui-${a}-ink`, { color: t.ink });
   globalStyle(`.pui-${a}-wash`, {
     background: t.wash,

@@ -46,7 +46,7 @@ export const Modal = ({ open, title, onClose, children, footer }: ModalProps) =>
           <Divider />
           <Inline padding="md" gap="sm" justify="end">
             {footer ?? (
-              <Button kind="quiet" onClick={onClose}>
+              <Button variant="quiet" onClick={onClose}>
                 닫기
               </Button>
             )}

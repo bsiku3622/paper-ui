@@ -53,6 +53,7 @@ const VARS: Record<string, string> = {
   "--pui-color-border-base": "#e8e8ea",
   "--pui-color-accent-blue-solid": "#2563eb",
   "--pui-color-accent-green-solid": "#16a34a",
+  "--pui-color-accent-amber-solid": "#d97706",
   "--pui-color-accent-red-solid": "#dc2626",
   "--pui-color-primary-base": "#18181b",
   "--pui-color-focus-ring": "#2563eb",
@@ -84,19 +85,26 @@ test("focus · Field 포커스 시 파란 링", async ({ page }) => {
   expect(shadow).not.toBe("none");
 });
 
-// ── Badge status → 색 ───────────────────────────────────────────────────────
-const BADGE = { info: "#1d4ed8", success: "#15803d", error: "#b91c1c" } as const;
+// ── Badge status → 색 (info·success·warning·danger) ─────────────────────────
+const BADGE = { info: "#1d4ed8", success: "#15803d", warning: "#b45309", danger: "#b91c1c" } as const;
 for (const [status, ink] of Object.entries(BADGE)) {
   test(`badge · ${status} 글자색 = ${ink}`, async ({ page }) => {
     await expect(page.getByTestId(`badge-${status}`)).toHaveCSS("color", hexToRgb(ink));
   });
 }
 
-// ── Button — solid 는 검정 채움 + weight 550, disabled 는 비활성 ────────────
+// ── Button — variant × status. solid=검정 채움, soft=회색 면, status=danger=빨강 ─
 test("button · solid 는 검정 채움 + weight 550", async ({ page }) => {
   const b = page.getByTestId("btn-solid");
   await expect(b).toHaveCSS("background-color", hexToRgb("#18181b"));
   await expect(b).toHaveCSS("font-weight", "550");
+});
+test("button · soft 는 회색 면(muted)", async ({ page }) => {
+  await expect(page.getByTestId("btn-soft")).toHaveCSS("background-color", hexToRgb("#ececee"));
+});
+test("button · status=danger 는 빨강 채움", async ({ page }) => {
+  // 기본 variant=solid 에 status=danger → red.solid 배경
+  await expect(page.getByTestId("btn-danger")).toHaveCSS("background-color", hexToRgb("#dc2626"));
 });
 test("button · disabled 는 비활성", async ({ page }) => {
   await expect(page.getByTestId("btn-disabled")).toBeDisabled();
@@ -125,19 +133,20 @@ test("tooltip · hover 시 나타난다", async ({ page }) => {
 });
 
 // ── 컴포넌트 상세 — prop 토글이 preview 와 코드를 함께 움직인다 ──────────────
-test("detail · Button kind 토글이 preview 와 코드에 반영된다", async ({ page }) => {
+test("detail · Button variant 토글이 preview 와 코드에 반영된다", async ({ page }) => {
   await page.goto("/playground/button");
   const stageBtn = page.locator(".preview-stage button");
   const code = page.locator(".code-block pre");
   await stageBtn.waitFor();
 
-  // 기본 kind=outline → 코드에 kind 가 안 적힌다(기본값 생략), 배경은 투명에 가깝다
-  await expect(code).not.toContainText('kind="solid"');
-
-  // kind=solid 로 바꾸면 코드와 preview 가 함께 바뀐다
-  await page.locator(".detail-body select").selectOption("solid");
-  await expect(code).toContainText('kind="solid"');
+  // 기본 variant=solid → 코드에 variant 가 안 적힌다(기본값 생략), 배경은 검정
+  await expect(code).not.toContainText('variant=');
   await expect(stageBtn).toHaveCSS("background-color", hexToRgb("#18181b"));
+
+  // variant=soft 로 바꾸면 코드와 preview 가 함께 바뀐다 (첫 select = variant)
+  await page.locator(".detail-body select").first().selectOption("soft");
+  await expect(code).toContainText('variant="soft"');
+  await expect(stageBtn).toHaveCSS("background-color", hexToRgb("#ececee"));
 });
 
 test("detail · 알 수 없는 slug 는 전수로 되돌린다", async ({ page }) => {

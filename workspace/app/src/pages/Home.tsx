@@ -44,7 +44,7 @@ const LiveSampler = () => {
   const [tab, setTab] = useState("form");
   const [agree, setAgree] = useState(true);
   const [priority, setPriority] = useState("보통");
-  const STATUSES: StatusName[] = ["info", "success", "error"];
+  const STATUSES: StatusName[] = ["info", "success", "warning", "danger"];
 
   return (
     <Card style={{ width: "100%" }}>
@@ -99,7 +99,7 @@ const LiveSampler = () => {
             </Inline>
             <Divider />
             <Inline gap="sm" wrap align="center">
-              {(["blue", "green", "red"] as const).map((a) => (
+              {(["blue", "green", "amber", "red"] as const).map((a) => (
                 <Inline key={a} gap="sm" align="center">
                   <Box accent={a} tone="dot" radius="pill" style={{ width: "0.75rem", height: "0.75rem" }} />
                   <Text variant="caption" as="span" className={`pui-${a}-ink`}>{a}</Text>
@@ -111,15 +111,16 @@ const LiveSampler = () => {
 
         {tab === "action" && (
           <Stack gap="md">
-            <Text variant="caption" ink="soft">면을 채우는 건 검정 primary 뿐. 색은 danger 처럼 뜻을 질 때만.</Text>
+            <Text variant="caption" ink="soft">variant(무게) × status(색)가 직교한다. 큰 면을 채우는 건 검정뿐, 색은 뜻을 질 때만.</Text>
             <Inline gap="sm" wrap>
-              <Button kind="solid">저장</Button>
-              <Button kind="outline">미리보기</Button>
-              <Button kind="quiet">취소</Button>
+              <Button>저장</Button>
+              <Button variant="soft">미리보기</Button>
+              <Button variant="quiet">취소</Button>
             </Inline>
             <Inline gap="sm" wrap>
-              <Button kind="solid" danger>삭제</Button>
-              <Button kind="outline" disabled>비활성</Button>
+              <Button status="danger">삭제</Button>
+              <Button variant="soft" status="success">완료</Button>
+              <Button variant="outline" disabled>비활성</Button>
             </Inline>
           </Stack>
         )}
@@ -188,10 +189,10 @@ export const Home = () => (
 
             <Inline gap="sm" style={{ marginTop: "0.25rem" }}>
               <Link to="/docs" style={{ textDecoration: "none" }}>
-                <Button kind="solid">문서 보기</Button>
+                <Button>문서 보기</Button>
               </Link>
               <Link to="/playground" style={{ textDecoration: "none" }}>
-                <Button kind="outline">플레이그라운드</Button>
+                <Button variant="outline">플레이그라운드</Button>
               </Link>
             </Inline>
 
