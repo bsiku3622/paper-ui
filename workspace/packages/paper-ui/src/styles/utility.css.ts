@@ -1,6 +1,6 @@
 // utility.css.ts — resolver 가 뱉는 클래스의 실체.
 //
-// resolver 는 이름만 만들고(`paper-blue-wash`), 그 이름이 무엇인지는 여기서 굳는다.
+// resolver 는 이름만 만들고(`pui-blue-wash`), 그 이름이 무엇인지는 여기서 굳는다.
 // 두 자리가 같은 토큰 트리를 돌기 때문에 조합이 빠질 수 없다.
 
 import { globalStyle } from "@vanilla-extract/css";
@@ -17,7 +17,7 @@ const PAPER_TOKEN = {
 } as const;
 
 for (const s of PAPERS) {
-  globalStyle(`.paper-paper-${s}`, { background: PAPER_TOKEN[s] });
+  globalStyle(`.pui-paper-${s}`, { background: PAPER_TOKEN[s] });
 }
 
 // ───── ink — 잉크 농도 ─────────────────────────────────────────────────────
@@ -29,7 +29,7 @@ const INK_TOKEN = {
 } as const;
 
 for (const i of INKS) {
-  globalStyle(`.paper-ink-${i}`, { color: INK_TOKEN[i] });
+  globalStyle(`.pui-ink-${i}`, { color: INK_TOKEN[i] });
 }
 
 // ───── accent — 작게 얹는 색 ───────────────────────────────────────────────
@@ -46,20 +46,20 @@ const ACCENT_TOKEN = {
 
 for (const a of ACCENT_NAMES) {
   const t = ACCENT_TOKEN[a];
-  globalStyle(`.paper-${a}-ink`, { color: t.ink });
-  globalStyle(`.paper-${a}-wash`, {
+  globalStyle(`.pui-${a}-ink`, { color: t.ink });
+  globalStyle(`.pui-${a}-wash`, {
     background: t.wash,
     color: t.ink,
     borderColor: t.edge,
   });
-  globalStyle(`.paper-${a}-dot`, { background: t.solid, color: t.solid });
+  globalStyle(`.pui-${a}-dot`, { background: t.solid, color: t.solid });
 }
 
 // ───── space — 간격 ────────────────────────────────────────────────────────
 
 for (const s of SPACE_KEYS) {
-  globalStyle(`.paper-p-${s}`, { padding: tokens.shape.space[s] });
-  globalStyle(`.paper-px-${s}`, { paddingInline: tokens.shape.space[s] });
-  globalStyle(`.paper-py-${s}`, { paddingBlock: tokens.shape.space[s] });
-  globalStyle(`.paper-gap-${s}`, { gap: tokens.shape.space[s] });
+  globalStyle(`.pui-p-${s}`, { padding: tokens.shape.space[s] });
+  globalStyle(`.pui-px-${s}`, { paddingInline: tokens.shape.space[s] });
+  globalStyle(`.pui-py-${s}`, { paddingBlock: tokens.shape.space[s] });
+  globalStyle(`.pui-gap-${s}`, { gap: tokens.shape.space[s] });
 }

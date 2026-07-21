@@ -33,7 +33,7 @@ export const Table = <T,>({ columns, rows, rowKey, className }: TableProps<T>) =
             as="th"
             key={c.key}
             scope="col"
-            className={joinClass("paper-text-label", tableTh, c.numeric && tableNumeric)}
+            className={joinClass("pui-text-label", tableTh, c.numeric && tableNumeric)}
           >
             {c.header}
           </Box>

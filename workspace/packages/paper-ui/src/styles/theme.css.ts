@@ -64,7 +64,7 @@ globalStyle(":focus-visible", {
 
 for (const v of TEXT_VARIANTS) {
   const spec = TEXT_SPEC[v];
-  globalStyle(`.paper-text-${v}`, {
+  globalStyle(`.pui-text-${v}`, {
     fontFamily: spec.family === "mono" ? tokens.font.mono : tokens.font.sans,
     fontSize: spec.size,
     fontWeight: spec.weight,

@@ -10,7 +10,7 @@ export const kebab = (s: string): string =>
 
 // path 배열 → CSS var 이름
 export const pathToCssVar = (path: readonly string[]): string =>
-  `--paper-${path.map(kebab).join("-")}`;
+  `--pui-${path.map(kebab).join("-")}`;
 
 // path 배열 → var() 참조 문자열
 export const pathToVarRef = (path: readonly string[]): string =>
@@ -35,7 +35,7 @@ export const walkValues = (
 };
 
 // Values 트리와 *같은 모양* 의 var() 참조 트리를 만든다.
-// leaf 의 값만 "var(--paper-...)" 로 바뀐다.
+// leaf 의 값만 "var(--pui-...)" 로 바뀐다.
 export const buildVarTree = <T extends ValueTree>(
   values: T,
   prefix: readonly string[],

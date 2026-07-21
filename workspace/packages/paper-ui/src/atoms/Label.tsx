@@ -10,7 +10,7 @@ export type LabelProps = Omit<LabelHTMLAttributes<HTMLLabelElement>, "className"
 };
 
 export const Label = ({ children, className, ...rest }: LabelProps) => (
-  <label className={joinClass("paper-text-label", className)} {...rest}>
+  <label className={joinClass("pui-text-label", className)} {...rest}>
     {children}
   </label>
 );
