@@ -7,6 +7,9 @@ import { joinClass } from "../internal/joinClass";
 import type { AccentName, StatusName, Space } from "../tokens";
 import { STATUS_ACCENT } from "../tokens";
 
+// interactive 색 축(variant × status)은 별도 파일에.
+export { resolveColorClassnames, VARIANTS, INTERACTIVE, type Variant, type ColorStatus } from "./color";
+
 // ───── paper — 면 ────────────────────────────────────────────────────────
 //
 // 순백(base) · 옅은 면(subtle) · 눌린 면(muted). 이 시스템은 선보다 면으로
