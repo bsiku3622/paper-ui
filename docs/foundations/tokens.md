@@ -37,7 +37,7 @@
 | **green** (success) | `#16a34a` | `#15803d` | `#f0fdf4` | `#bbf7d0` |
 | **red** (error) | `#dc2626` | `#b91c1c` | `#fef2f2` | `#fecaca` |
 
-**primary / focus.** `primary`는 검정 일꾼(`base` `#18181b` · `hover` `#0a0a0a` · `fg` `#ffffff`), `focus.ring`은 파란 링 `#2563eb`. accent가 다른 축보다 깊은 건 "색은 이 네 방식으로만 등장한다"를 트리 모양에 박아둔 것입니다.
+**primary / focus.** `primary`는 검정 일꾼(`base` `#18181b` · `hover` `#3f3f46` · `fg` `#ffffff`), `focus.ring`은 파란 링 `#2563eb`. 검정 면은 hover 때 *밝아진다* — 이미 검정에 가까워 더 어둡게는 눈에 안 보이기 때문(원칙 4의 예외). accent가 다른 축보다 깊은 건 "색은 이 네 방식으로만 등장한다"를 트리 모양에 박아둔 것입니다.
 
 ## Shape
 
