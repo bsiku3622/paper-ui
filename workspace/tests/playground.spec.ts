@@ -122,6 +122,28 @@ test("tooltip · hover 시 나타난다", async ({ page }) => {
   await expect(page.getByRole("tooltip")).toBeVisible();
 });
 
+// ── 컴포넌트 상세 — prop 토글이 preview 와 코드를 함께 움직인다 ──────────────
+test("detail · Button kind 토글이 preview 와 코드에 반영된다", async ({ page }) => {
+  await page.goto("/playground/button");
+  const stageBtn = page.locator(".preview-stage button");
+  const code = page.locator(".code-block pre");
+  await stageBtn.waitFor();
+
+  // 기본 kind=outline → 코드에 kind 가 안 적힌다(기본값 생략), 배경은 투명에 가깝다
+  await expect(code).not.toContainText('kind="solid"');
+
+  // kind=solid 로 바꾸면 코드와 preview 가 함께 바뀐다
+  await page.locator(".detail-body select").selectOption("solid");
+  await expect(code).toContainText('kind="solid"');
+  await expect(stageBtn).toHaveCSS("background-color", hexToRgb("#18181b"));
+});
+
+test("detail · 알 수 없는 slug 는 전수로 되돌린다", async ({ page }) => {
+  await page.goto("/playground/nope");
+  await expect(page).toHaveURL(/\/playground$/);
+  await page.getByTestId("text-title").waitFor();
+});
+
 // ── 콘솔 에러가 없다 ────────────────────────────────────────────────────────
 test("no console errors on playground", async ({ page }: { page: Page }) => {
   const errs: string[] = [];
