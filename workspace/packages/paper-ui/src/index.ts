@@ -5,6 +5,7 @@
 
 import "./styles/theme.css";
 import "./styles/utility.css";
+import "./styles/color.css";
 
 // Primitives (4) — raw HTML 을 렌더하는 유일한 레이어
 export { Box, Stack, Inline, Text } from "./primitives";

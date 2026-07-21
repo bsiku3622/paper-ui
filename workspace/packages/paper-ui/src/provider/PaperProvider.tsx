@@ -10,6 +10,7 @@ import type { ReactNode } from "react";
 
 import "../styles/theme.css";
 import "../styles/utility.css";
+import "../styles/color.css";
 
 export type PaperProviderProps = {
   children?: ReactNode;
