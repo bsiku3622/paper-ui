@@ -12,7 +12,7 @@ const hexToRgb = (hex: string) => {
 };
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/#/playground");
+  await page.goto("/playground");
   await page.getByTestId("text-title").waitFor();
 });
 
@@ -128,7 +128,7 @@ test("no console errors on playground", async ({ page }: { page: Page }) => {
   const errs: string[] = [];
   page.on("pageerror", (e) => errs.push(String(e)));
   page.on("console", (m) => m.type() === "error" && errs.push(m.text()));
-  await page.goto("/#/playground");
+  await page.goto("/playground");
   await page.getByTestId("text-title").waitFor();
   await page.waitForTimeout(500);
   expect(errs).toEqual([]);
