@@ -9,7 +9,7 @@ export const badgeRoot = style({
   display: "inline-flex",
   alignItems: "center",
   gap: tokens.shape.gap.xs,
-  height: "1.375rem",
+  height: tokens.shape.atom.badgeHeight,
   paddingInline: tokens.shape.padding.sm.interaction,
   borderRadius: tokens.shape.radius.interaction,
   borderWidth: tokens.shape.constants.borderWidth,

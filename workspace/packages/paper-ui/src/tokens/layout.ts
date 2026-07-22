@@ -36,9 +36,10 @@ export type ZTier = keyof typeof Z;
 // mobile 은 base(0). 앱이 @media 를 손으로 쓸 때 이 값을 기준으로 맞춘다.
 
 export const BREAKPOINT = {
-  mobile: "0px",
-  tablet: "640px",
-  desktop: "1024px",
+  sm: "480px",
+  md: "768px", // 2 열 → 1 열로 접히는 기준 (hero · 격자)
+  lg: "1024px",
+  xl: "1280px",
 } as const;
 export type Breakpoint = keyof typeof BREAKPOINT;
 
@@ -80,9 +81,17 @@ export const LAYOUT_VALUES = {
   z: Z,
 } as const;
 
+// ───── container — 앱 셸 최대 폭 (읽기 폭 measure 와 별개) ──────────────────
+
+export const CONTAINER = {
+  content: "72rem", // 사이트 본문 격자·GNB 가 이 폭 안에서 가운데 정렬
+} as const;
+export type ContainerSize = keyof typeof CONTAINER;
+
 // var 로 굽지 않는 어휘(값). tokens.layout 이 z(var) 옆에 이들을 값으로 든다.
 export const LAYOUT_CONST = {
   breakpoint: BREAKPOINT,
   sizeIntent: SIZE_INTENT,
   inset: INSET,
+  container: CONTAINER,
 } as const;

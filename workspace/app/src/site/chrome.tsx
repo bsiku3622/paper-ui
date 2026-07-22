@@ -20,7 +20,7 @@ export const SITE_NAV = [
 const isActive = (pathname: string, to: string) =>
   to === "/" ? pathname === "/" : pathname.startsWith(to);
 
-export const NAV_HEIGHT = "3.5rem";
+export const NAV_HEIGHT = tokens.shape.atom.navbar;
 
 // 브랜드 — 손글씨 로고. 홈으로 가는 통로.
 const Brand = ({ height = 26 }: { height?: number }) => (
@@ -50,7 +50,8 @@ export const SiteNav = () => {
             paper="subtle"
             radius="pill"
             paddingX="sm"
-            style={{ border: `1px solid ${tokens.color.border.base}`, lineHeight: "1.4rem" }}
+            paddingY="xs"
+            style={{ border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }}
           >
             <Text variant="caption" as="span" ink="soft" style={{ fontVariantNumeric: "tabular-nums" }}>
               v0.1.0
@@ -73,7 +74,7 @@ export const DemoBar = () => (
       color: tokens.color.paper.base,
     }}
   >
-    <Inline gap="md" justify="between" align="center" style={{ height: "2.5rem", maxWidth: "72rem", marginInline: "auto" }}>
+    <Inline gap="md" justify="between" align="center" style={{ height: tokens.shape.height.lg.interaction, maxWidth: tokens.layout.container.content, marginInline: "auto" }}>
       <Inline gap="sm" align="center">
         <Link to="/" style={{ textDecoration: "none", color: tokens.color.paper.base, display: "inline-flex" }} aria-label="Paper UI 홈">
           <Logo height={17} />
@@ -83,7 +84,7 @@ export const DemoBar = () => (
         </Text>
       </Inline>
       <Link to="/" style={{ textDecoration: "none" }}>
-        <Text variant="caption" as="span" style={{ color: tokens.color.paper.base, fontWeight: 550 }}>
+        <Text variant="caption" as="span" style={{ color: tokens.color.paper.base, fontWeight: tokens.text.weight.medium }}>
           ← 사이트로
         </Text>
       </Link>

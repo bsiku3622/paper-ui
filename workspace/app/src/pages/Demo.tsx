@@ -179,7 +179,7 @@ export const Demo = () => {
       />
 
       <Box paddingX="xl" paddingY="xl">
-        <Stack gap="xl" style={{ maxWidth: "72rem", marginInline: "auto" }}>
+        <Stack gap="xl" style={{ maxWidth: tokens.layout.container.content, marginInline: "auto" }}>
           <Stack gap="xs">
             <Text variant="label">프로젝트 · Studio UI</Text>
             <Inline justify="between" align="baseline">

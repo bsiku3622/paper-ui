@@ -159,11 +159,22 @@ export const SHAPE_CONSTANTS = {
   textureCell: "16px",
 } as const;
 
-// ───── atom intrinsic — ladder 안 맞는 atom 자체 1D ─────────────────────────
+// ───── atom intrinsic — ladder 안 맞는 atom·컴포넌트 자체 1D ────────────────
+//
+// 5 단 ladder 에 안 맞아 자기 값을 갖는 자리. 여기 모아두면 컴포넌트가 raw 리터럴
+// 대신 토큰을 참조한다 (상위 레이어 하드코딩 제거의 근거).
 
 export const ATOM_INTRINSIC = {
-  checkbox: REM(16),
-  checkMark: REM(8), // 체크 표식
+  checkbox: REM(16), //        Checkbox 크기
+  checkMark: REM(8), //        체크 표식 폭
+  checkboxRadius: REM(5), //   Checkbox 모서리 (작아서 radius 사다리와 별도)
+  badgeHeight: REM(22), //     Badge 높이 (control 34 보다 낮은 인라인 라벨)
+  navbar: REM(52), //          Navbar · 사이트 GNB 바 높이
+  navItem: REM(32), //         Navbar 항목 높이
+  tabsTrackGap: "2px", //      세그먼트 트랙 항목 간격
+  tabsTrackPad: "3px", //      세그먼트 트랙 안쪽 여백
+  modalWidth: REM(432), //     Modal 기본 최대 폭 (27rem)
+  selectArrow: REM(10), //     Select 화살표 아이콘 크기 (0.625rem)
 } as const;
 
 // ───── VALUES — emit 대상 트리 ─────────────────────────────────────────────

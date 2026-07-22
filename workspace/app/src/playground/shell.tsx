@@ -7,7 +7,7 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 
-import { Box, Stack, Text } from "@studio-baeks/paper-ui";
+import { Box, Stack, Text, tokens } from "@studio-baeks/paper-ui";
 
 import { SiteNav, NAV_HEIGHT } from "../site/chrome";
 import { COMPONENTS, GROUPS } from "./registry";
@@ -28,7 +28,7 @@ const SideGroup = ({ label, children }: { label: string; children: ReactNode }) 
 export const PlaygroundLayout = ({ active, children }: { active: string; children: ReactNode }) => (
   <Stack>
     <SiteNav />
-    <Box style={{ display: "grid", gridTemplateColumns: "13.5rem 1fr", maxWidth: "72rem", marginInline: "auto", width: "100%" }}>
+    <Box style={{ display: "grid", gridTemplateColumns: `${tokens.shape.width.lg.layout} 1fr`, maxWidth: tokens.layout.container.content, marginInline: "auto", width: "100%" }}>
       <Box
         as="nav"
         paddingX="md"

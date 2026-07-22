@@ -23,6 +23,6 @@ export const modalBackdrop = style({
 
 export const modalPanel = style({
   width: "100%",
-  maxWidth: "27rem",
+  maxWidth: tokens.shape.atom.modalWidth,
   animation: `${rise} ${enter.duration} ${enter.easing}`,
 });

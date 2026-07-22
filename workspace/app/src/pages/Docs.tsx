@@ -8,7 +8,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 
-import { Box, Stack, Text } from "@studio-baeks/paper-ui";
+import { Box, Stack, Text, tokens } from "@studio-baeks/paper-ui";
 
 import { SiteNav, NAV_HEIGHT } from "../site/chrome";
 import "../site/markdown.css";
@@ -52,7 +52,7 @@ export const Docs = () => {
   return (
     <Stack>
       <SiteNav />
-      <Box style={{ display: "grid", gridTemplateColumns: "15rem 1fr", maxWidth: "72rem", marginInline: "auto", width: "100%" }}>
+      <Box style={{ display: "grid", gridTemplateColumns: `${tokens.shape.width.lg.layout} 1fr`, maxWidth: tokens.layout.container.content, marginInline: "auto", width: "100%" }}>
         {/* 사이드바 — playground 와 같은 .side-* 언어 */}
         <Box as="nav" paddingX="md" paddingY="lg" className="side-nav" style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, top: NAV_HEIGHT }}>
           {groups.map((g) => (
