@@ -1,15 +1,14 @@
-import { style, keyframes } from "@vanilla-extract/css";
+import { style, styleVariants, keyframes } from "@vanilla-extract/css";
 
-import { tokens } from "../tokens";
+import { tokens, SPACE_KEYS, type Space } from "../tokens";
 
 const spin = keyframes({ to: { transform: "rotate(360deg)" } });
 
 // 도는 원. 옅은 링에 한 조각만 진해 회전으로 읽힌다. loop 주기는 motion 토큰.
+// 크기는 size 축(spinnerSize)이 정한다 — Icon 과 같은 dot 사다리(12~20).
 export const spinnerRoot = style({
   display: "inline-block",
   flexShrink: 0,
-  width: tokens.shape.atom.spinner,
-  height: tokens.shape.atom.spinner,
   borderRadius: tokens.shape.constants.pillRadius,
   borderWidth: tokens.shape.constants.focusRingWidth,
   borderStyle: "solid",
@@ -17,3 +16,9 @@ export const spinnerRoot = style({
   borderTopColor: tokens.color.ink.base,
   animation: `${spin} ${tokens.motion.loop.spin} linear infinite`,
 });
+
+export const spinnerSize = styleVariants(
+  Object.fromEntries(
+    SPACE_KEYS.map((s) => [s, { width: tokens.shape.dot[s], height: tokens.shape.dot[s] }]),
+  ) as Record<Space, { width: string; height: string }>,
+);

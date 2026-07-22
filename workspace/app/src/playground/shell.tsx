@@ -7,14 +7,22 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 
-import { Box, Stack, Text, tokens } from "@studio-baeks/paper-ui";
+import { Box, Stack, Text, Button, tokens } from "@studio-baeks/paper-ui";
 
 import { SiteNav, NAV_HEIGHT } from "../site/chrome";
 import { COMPONENTS, GROUPS } from "./registry";
 
+// 사이드바 항목 = paper-ui Button(quiet/soft). 하드코딩 .side-link 대신 컴포넌트로.
+// active 는 soft(옅은 회색 면), 나머지는 quiet(투명·hover muted). size sm 으로 밀도.
 const SideLink = ({ to, label, active }: { to: string; label: string; active: boolean }) => (
-  <Link to={to} className="side-link" data-active={active}>
-    {label}
+  <Link to={to} style={{ textDecoration: "none", display: "block" }}>
+    <Button
+      variant={active ? "soft" : "quiet"}
+      size="sm"
+      style={{ width: "100%", justifyContent: "flex-start" }}
+    >
+      {label}
+    </Button>
   </Link>
 );
 

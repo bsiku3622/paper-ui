@@ -6,18 +6,21 @@
 import type { ReactNode } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import { iconRoot } from "./Icon.css";
+import type { Space } from "../tokens";
+import { iconRoot, iconSize } from "./Icon.css";
 
 export type IconProps = {
+  // 크기 사다리 5 단 (xs~xl). dot 사다리(12~20). Spinner 와 같은 사다리.
+  size?: Space;
   children?: ReactNode;
   className?: string;
   "aria-label"?: string;
 };
 
-export const Icon = ({ children, className, ...rest }: IconProps) => (
+export const Icon = ({ size = "md", children, className, ...rest }: IconProps) => (
   <svg
     viewBox="0 0 24 24"
-    className={joinClass(iconRoot, className)}
+    className={joinClass(iconRoot, iconSize[size], className)}
     aria-hidden={rest["aria-label"] ? undefined : true}
     {...rest}
   >

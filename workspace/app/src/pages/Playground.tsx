@@ -135,6 +135,13 @@ export const Playground = () => {
             <Button variant="soft" status="warning">주의</Button>
             <Button variant="quiet" status="danger">지우기</Button>
           </Spec>
+          <Spec label="size — 크기 사다리 xs·sm·md·lg·xl (커질수록 weight 도 무거워진다)" testid="spec-button-sizes">
+            <Button size="xs" data-testid="btn-xs">xs</Button>
+            <Button size="sm">sm</Button>
+            <Button size="md" data-testid="btn-md">md</Button>
+            <Button size="lg">lg</Button>
+            <Button size="xl" data-testid="btn-xl">xl</Button>
+          </Spec>
           <Spec label="state">
             <Button disabled data-testid="btn-disabled">disabled</Button>
           </Spec>
@@ -161,6 +168,17 @@ export const Playground = () => {
                 { value: "b", label: "옵션 B" },
               ]} />
             </Box>
+          </Spec>
+          {/* size 정렬 — Field·Select·Button 이 같은 사다리라 나란히 두면 높이가 맞는다 */}
+          <Spec label="size md — Field · Select · Button 같은 높이" testid="spec-size-md">
+            <Box style={{ width: "10rem" }}><Field size="md" placeholder="Field" aria-label="field md" /></Box>
+            <Box style={{ width: "9rem" }}><Select size="md" options={[{ value: "a", label: "Select" }]} /></Box>
+            <Button size="md">Button</Button>
+          </Spec>
+          <Spec label="size lg — 셋이 함께 커진다" testid="spec-size-lg">
+            <Box style={{ width: "10rem" }}><Field size="lg" placeholder="Field" aria-label="field lg" /></Box>
+            <Box style={{ width: "9rem" }}><Select size="lg" options={[{ value: "a", label: "Select" }]} /></Box>
+            <Button size="lg">Button</Button>
           </Spec>
           <Spec label="Checkbox">
             <Inline as="label" gap="sm">

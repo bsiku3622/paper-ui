@@ -3,12 +3,15 @@
 import type { InputHTMLAttributes } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import { radioRoot } from "./Radio.css";
+import type { Space } from "../tokens";
+import { radioRoot, radioSize } from "./Radio.css";
 
-export type RadioProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "className"> & {
+export type RadioProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "className" | "size"> & {
+  // 크기 사다리 5 단 (xs~xl). Checkbox 와 같은 변 사다리.
+  size?: Space;
   className?: string;
 };
 
-export const Radio = ({ className, ...rest }: RadioProps) => (
-  <input type="radio" className={joinClass(radioRoot, className)} {...rest} />
+export const Radio = ({ size = "md", className, ...rest }: RadioProps) => (
+  <input type="radio" className={joinClass(radioRoot, radioSize[size], className)} {...rest} />
 );
