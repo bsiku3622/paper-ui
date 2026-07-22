@@ -7,3 +7,7 @@ export { Icon, type IconProps } from "./Icon";
 export { Divider, type DividerProps } from "./Divider";
 export { Link, type LinkProps } from "./Link";
 export { Select, type SelectProps, type SelectOption } from "./Select";
+export { Textarea, type TextareaProps } from "./Textarea";
+export { Switch, type SwitchProps } from "./Switch";
+export { Radio, type RadioProps } from "./Radio";
+export { Spinner, type SpinnerProps } from "./Spinner";

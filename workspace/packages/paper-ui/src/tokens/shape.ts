@@ -175,6 +175,11 @@ export const ATOM_INTRINSIC = {
   tabsTrackPad: "3px", //      세그먼트 트랙 안쪽 여백
   modalWidth: REM(432), //     Modal 기본 최대 폭 (27rem)
   selectArrow: REM(10), //     Select 화살표 아이콘 크기 (0.625rem)
+  switchWidth: REM(36), //     Switch 트랙 가로
+  switchHeight: REM(20), //    Switch 트랙 세로
+  switchThumb: REM(16), //     Switch 손잡이 (= checkbox)
+  radioDot: REM(8), //         Radio 채운 점
+  spinner: REM(18), //         Spinner 크기
 } as const;
 
 // ───── VALUES — emit 대상 트리 ─────────────────────────────────────────────
