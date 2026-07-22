@@ -14,7 +14,7 @@ export const modalBackdrop = style({
   zIndex: tokens.shape.z.modal,
   display: "grid",
   placeItems: "center",
-  padding: tokens.shape.space.xl,
+  padding: tokens.shape.padding.xl.interaction,
   background: "rgba(24, 25, 28, 0.32)",
   animation: `${fade} 130ms ease`,
 });

@@ -3,13 +3,13 @@ import { style } from "@vanilla-extract/css";
 import { tokens } from "../tokens";
 
 export const selectRoot = style({
-  height: tokens.shape.height.control,
+  height: tokens.shape.height.md.interaction,
   width: "100%",
-  paddingInline: tokens.shape.space.md,
-  paddingRight: tokens.shape.space.xl,
+  paddingInline: tokens.shape.padding.md.interaction,
+  paddingRight: tokens.shape.padding.xl.interaction,
   background: tokens.color.paper.subtle,
-  borderRadius: tokens.shape.radius.sm,
-  borderWidth: tokens.shape.borderWidth.base,
+  borderRadius: tokens.shape.radius.interaction,
+  borderWidth: tokens.shape.constants.borderWidth,
   borderStyle: "solid",
   borderColor: "transparent",
   color: tokens.color.ink.base,

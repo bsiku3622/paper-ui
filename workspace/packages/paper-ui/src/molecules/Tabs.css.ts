@@ -7,7 +7,7 @@ export const tabsList = style({
   gap: "2px",
   padding: "3px",
   background: tokens.color.paper.muted,
-  borderRadius: tokens.shape.radius.md,
+  borderRadius: tokens.shape.radius.layout.md,
 });
 
 export const tabItem = style({
@@ -16,8 +16,8 @@ export const tabItem = style({
   border: "none",
   cursor: "pointer",
   height: "1.75rem",
-  paddingInline: tokens.shape.space.md,
-  borderRadius: tokens.shape.radius.sm,
+  paddingInline: tokens.shape.padding.md.interaction,
+  borderRadius: tokens.shape.radius.interaction,
   fontFamily: tokens.text.font.sans,
   fontSize: tokens.text.size.caption,
   fontWeight: tokens.text.weight.medium,

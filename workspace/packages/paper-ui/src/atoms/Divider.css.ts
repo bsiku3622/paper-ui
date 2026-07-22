@@ -15,6 +15,6 @@ export const dividerWeight = styleVariants({
 });
 
 export const dividerAxis = styleVariants({
-  horizontal: { height: tokens.shape.borderWidth.base, width: "100%" },
-  vertical: { width: tokens.shape.borderWidth.base, alignSelf: "stretch" },
+  horizontal: { height: tokens.shape.constants.borderWidth, width: "100%" },
+  vertical: { width: tokens.shape.constants.borderWidth, alignSelf: "stretch" },
 });
