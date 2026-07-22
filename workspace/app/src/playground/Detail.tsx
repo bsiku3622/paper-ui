@@ -3,14 +3,18 @@
 // 왼쪽 위에 살아 있는 preview, 그 아래 그 상태 그대로의 코드, 오른쪽에 prop 토글.
 // 토글을 만지면 preview 와 코드가 같은 state 를 보고 함께 바뀐다 — 화면과 코드가
 // 어긋날 수 없다. 전수 레퍼런스(/playground)와 사이드바를 공유한다.
+//
+// 상태(useState)는 slug 로 keyed 된 DetailView 가 든다 — slug 가 바뀌면 remount 돼
+// 그 컴포넌트의 기본값으로 새로 시작한다. (안 그러면 앞 컴포넌트의 값이 남아
+// variant="" · children=undefined 같은 유령이 샌다.)
 
 import { useMemo, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 
-import { Box, Button, Divider, Inline, Select, Stack, Text } from "@studio-baeks/paper-ui";
+import { Box, Button, Divider, Inline, Select, Stack, Text, tokens } from "@studio-baeks/paper-ui";
 
 import { PlaygroundLayout } from "./shell";
-import { bySlug, defaultState, type Control, type State } from "./registry";
+import { bySlug, defaultState, type CompSpec, type Control, type State } from "./registry";
 import "./detail.css";
 
 // prop 토글 한 줄. bool 은 켬/끔 pill, enum 은 Select, text 는 입력.
@@ -25,7 +29,7 @@ const ControlRow = ({ control, value, onChange }: { control: Control; value: str
     )}
     {control.kind === "enum" && (
       <Select
-        value={String(value)}
+        value={value === undefined ? "" : String(value)}
         onChange={(e) => onChange(e.currentTarget.value)}
         options={control.options.map((o) => ({ value: o, label: o }))}
       />
@@ -38,9 +42,14 @@ const ControlRow = ({ control, value, onChange }: { control: Control; value: str
         paper="subtle"
         radius="sm"
         paddingX="sm"
-        value={String(value)}
+        value={value === undefined ? "" : String(value)}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.currentTarget.value)}
-        style={{ height: "2rem", border: "1px solid var(--pui-color-border-base)", fontSize: "var(--pui-text-size-caption)", width: "100%" }}
+        style={{
+          height: tokens.shape.height.md.interaction,
+          border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
+          fontSize: tokens.text.size.caption,
+          width: "100%",
+        }}
       />
     )}
   </Stack>
@@ -69,78 +78,80 @@ const CodeBlock = ({ code }: { code: string }) => {
   );
 };
 
-export const ComponentDetail = () => {
-  const { slug = "" } = useParams();
-  const spec = bySlug(slug);
-  const [state, setState] = useState<State>(() => (spec ? defaultState(spec) : {}));
-
-  // slug 가 바뀌면 state 를 그 컴포넌트 기본값으로 초기화 (키로 리마운트 유도)
-  const key = spec?.slug;
-
-  const preview = useMemo(() => (spec ? spec.render(state) : null), [spec, state]);
-  const code = useMemo(() => (spec ? spec.code(state) : ""), [spec, state]);
-
-  if (!spec) return <Navigate to="/playground" replace />;
-
+// 상태를 든 몸통. slug 마다 remount(key) 돼 defaultState 로 새로 시작한다.
+const DetailView = ({ spec }: { spec: CompSpec }) => {
+  const [state, setState] = useState<State>(() => defaultState(spec));
+  const preview = useMemo(() => spec.render(state), [spec, state]);
+  const code = useMemo(() => spec.code(state), [spec, state]);
   const set = (prop: string) => (v: string | boolean) => setState((s) => ({ ...s, [prop]: v }));
 
   return (
-    <PlaygroundLayout active={spec.slug} key={key}>
-      <Stack gap="xl" style={{ maxWidth: "52rem" }}>
-        {/* 머리 — 브레드크럼은 제목에 붙이고, 설명은 한 숨 띄운다 */}
-        <Stack gap="md">
+    <Stack gap="xl" style={{ maxWidth: "52rem" }}>
+      {/* 머리 — 브레드크럼은 제목에 붙이고, 설명은 한 숨 띄운다 */}
+      <Stack gap="md">
+        <Stack gap="xs">
+          <Inline gap="xs" align="center">
+            <Text variant="caption" ink="faint" as="span">{spec.group}</Text>
+            <Text variant="caption" ink="faint" as="span">/</Text>
+            <Text variant="caption" ink="soft" as="span">Component</Text>
+          </Inline>
+          <Text variant="title">{spec.name}</Text>
+        </Stack>
+        <Text variant="body" ink="soft" style={{ maxWidth: "40rem" }}>{spec.blurb}</Text>
+      </Stack>
+
+      <div className="detail-body">
+        {/* preview + code */}
+        <Stack gap="md" style={{ minWidth: 0 }}>
+          <div className="preview-stage">{preview}</div>
           <Stack gap="xs">
-            <Inline gap="xs" align="center">
-              <Text variant="caption" ink="faint" as="span">{spec.group}</Text>
-              <Text variant="caption" ink="faint" as="span">/</Text>
-              <Text variant="caption" ink="soft" as="span">Component</Text>
-            </Inline>
-            <Text variant="title">{spec.name}</Text>
+            <Text variant="label">코드</Text>
+            <CodeBlock code={code} />
           </Stack>
-          <Text variant="body" ink="soft" style={{ maxWidth: "40rem" }}>{spec.blurb}</Text>
         </Stack>
 
-        <div className="detail-body">
-          {/* preview + code */}
-          <Stack gap="md" style={{ minWidth: 0 }}>
-            <div className="preview-stage">{preview}</div>
-            <Stack gap="xs">
-              <Text variant="label">코드</Text>
-              <CodeBlock code={code} />
-            </Stack>
-          </Stack>
-
-          {/* controls */}
-          <Box paper="subtle" radius="md" padding="lg" style={{ position: "sticky", top: "5rem" }}>
-            <Stack gap="lg">
-              <Inline justify="between" align="center">
-                <Text variant="label">Props</Text>
-                {spec.controls.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setState(defaultState(spec))}
-                    style={{ appearance: "none", background: "none", border: "none", cursor: "pointer", fontSize: "var(--pui-text-size-label)", color: "var(--pui-color-ink-soft)", padding: 0 }}
-                  >
-                    초기화
-                  </button>
-                )}
-              </Inline>
-              {spec.controls.length === 0 ? (
-                <Text variant="caption" ink="soft">토글할 prop 이 없는 컴포넌트입니다. 위 미리보기가 기본 형태입니다.</Text>
-              ) : (
-                <Stack gap="md">
-                  {spec.controls.map((c, i) => (
-                    <Stack gap="md" key={c.prop}>
-                      {i > 0 && <Divider />}
-                      <ControlRow control={c} value={state[c.prop]} onChange={set(c.prop)} />
-                    </Stack>
-                  ))}
-                </Stack>
+        {/* controls */}
+        <Box paper="subtle" radius="md" padding="lg" style={{ position: "sticky", top: `calc(${tokens.shape.atom.navbar} + ${tokens.shape.gap.xl})` }}>
+          <Stack gap="lg">
+            <Inline justify="between" align="center">
+              <Text variant="label">Props</Text>
+              {spec.controls.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setState(defaultState(spec))}
+                  style={{ appearance: "none", background: "none", border: "none", cursor: "pointer", fontSize: tokens.text.size.label, color: tokens.color.ink.soft, padding: 0 }}
+                >
+                  초기화
+                </button>
               )}
-            </Stack>
-          </Box>
-        </div>
-      </Stack>
+            </Inline>
+            {spec.controls.length === 0 ? (
+              <Text variant="caption" ink="soft">토글할 prop 이 없는 컴포넌트입니다. 위 미리보기가 기본 형태입니다.</Text>
+            ) : (
+              <Stack gap="md">
+                {spec.controls.map((c, i) => (
+                  <Stack gap="md" key={c.prop}>
+                    {i > 0 && <Divider />}
+                    <ControlRow control={c} value={state[c.prop]} onChange={set(c.prop)} />
+                  </Stack>
+                ))}
+              </Stack>
+            )}
+          </Stack>
+        </Box>
+      </div>
+    </Stack>
+  );
+};
+
+export const ComponentDetail = () => {
+  const { slug = "" } = useParams();
+  const spec = bySlug(slug);
+  if (!spec) return <Navigate to="/playground" replace />;
+  return (
+    <PlaygroundLayout active={spec.slug}>
+      {/* key=slug — 컴포넌트가 바뀌면 상태를 새로 시작 */}
+      <DetailView spec={spec} key={spec.slug} />
     </PlaygroundLayout>
   );
 };
