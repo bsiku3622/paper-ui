@@ -29,6 +29,7 @@ import {
   TextField,
   Textarea,
   Switch,
+  Radio,
   RadioGroup,
   Spinner,
   Alert,
@@ -107,6 +108,43 @@ export const COMPONENTS: CompSpec[] = [
       </Box>
     ),
     code: (st) => `<Box paper="${s(st.paper)}" radius="${s(st.radius)}" padding="${s(st.padding)}">…</Box>`,
+  },
+  {
+    slug: "stack",
+    name: "Stack",
+    group: "Primitives",
+    blurb: "세로로 쌓는다. gap 으로 사이 간격만 정한다 — 나머지는 자식이 알아서.",
+    controls: [{ kind: "enum", prop: "gap", label: "gap", options: ["xs", "sm", "md", "lg", "xl"], def: "md" }],
+    render: (st) => (
+      <Stack gap={s(st.gap) as "xs" | "sm" | "md" | "lg" | "xl"} style={{ width: "12rem" }}>
+        {["하나", "둘", "셋"].map((t) => (
+          <Box key={t} paper="muted" radius="sm" padding="sm">
+            <Text variant="caption" as="span">{t}</Text>
+          </Box>
+        ))}
+      </Stack>
+    ),
+    code: (st) => `<Stack gap="${s(st.gap)}">\n  <Box>…</Box>\n  <Box>…</Box>\n</Stack>`,
+  },
+  {
+    slug: "inline",
+    name: "Inline",
+    group: "Primitives",
+    blurb: "가로로 늘어놓는다. gap · justify · align · wrap 으로 한 줄 배치를 정한다.",
+    controls: [
+      { kind: "enum", prop: "gap", label: "gap", options: ["xs", "sm", "md", "lg", "xl"], def: "sm" },
+      { kind: "enum", prop: "justify", label: "justify", options: ["start", "center", "end", "between"], def: "start" },
+    ],
+    render: (st) => (
+      <Inline gap={s(st.gap) as "xs" | "sm" | "md" | "lg" | "xl"} justify={s(st.justify) as "start" | "center" | "end" | "between"} style={{ width: "18rem" }}>
+        {["A", "B", "C"].map((t) => (
+          <Box key={t} paper="muted" radius="sm" padding="sm">
+            <Text variant="caption" as="span">{t}</Text>
+          </Box>
+        ))}
+      </Inline>
+    ),
+    code: (st) => `<Inline gap="${s(st.gap)}"${AE("justify", s(st.justify), "start")}>\n  …\n</Inline>`,
   },
 
   // ─ Atoms ─
@@ -293,6 +331,25 @@ export const COMPONENTS: CompSpec[] = [
     ),
     code: (st) =>
       `<Inline as="label" gap="sm" align="center">\n  <Switch checked={${b(st.checked)}}${A("disabled", b(st.disabled))} />\n  <Text variant="body" as="span">${s(st.label)}</Text>\n</Inline>`,
+  },
+  {
+    slug: "radio",
+    name: "Radio",
+    group: "Atoms",
+    blurb: "여럿 중 하나. 보통 RadioGroup 이 묶지만 단독 원자로도 쓴다.",
+    controls: [
+      { kind: "bool", prop: "checked", label: "checked", def: true },
+      { kind: "bool", prop: "disabled", label: "disabled", def: false },
+      { kind: "text", prop: "label", label: "label", def: "옵션" },
+    ],
+    render: (st) => (
+      <Inline as="label" gap="sm" align="center">
+        <Radio checked={b(st.checked)} disabled={b(st.disabled)} readOnly />
+        <Text variant="body" as="span">{s(st.label)}</Text>
+      </Inline>
+    ),
+    code: (st) =>
+      `<Inline as="label" gap="sm" align="center">\n  <Radio checked={${b(st.checked)}}${A("disabled", b(st.disabled))} />\n  <Text variant="body" as="span">${s(st.label)}</Text>\n</Inline>`,
   },
   {
     slug: "spinner",

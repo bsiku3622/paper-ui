@@ -81,7 +81,7 @@ export const Playground = () => {
         <Stack gap="xs">
           <Text variant="label">Studio Baeks · Design System</Text>
           <Text variant="title">Component Playground</Text>
-          <Text variant="caption">25 컴포넌트 · variant · state 전수. 이 페이지가 자동 테스트의 대상이다. 개별 컴포넌트는 사이드바에서 상세로.</Text>
+          <Text variant="caption">26 컴포넌트 · variant · state 전수. 이 페이지가 자동 테스트의 대상이다. 개별 컴포넌트는 사이드바에서 상세로.</Text>
         </Stack>
 
         {/* ── Tokens ─────────────────────────────────────────── */}
