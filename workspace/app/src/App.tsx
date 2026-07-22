@@ -4,7 +4,7 @@
 //   /playground  플레이그라운드 (컴포넌트 전수 · 테스트 표면)
 //   /docs/*      문서 (마크다운)
 //
-// site chrome 은 앱에만 산다 — 라이브러리 20 개에 nav 컴포넌트를 더하지 않는다
+// site chrome 은 앱에만 산다 — 라이브러리 컴포넌트 집합에 nav 를 더하지 않는다
 // (원칙 5: 증거 없이 늘리지 않는다). chrome 은 paper-ui 프리미티브로 조립한다.
 
 import { lazy, Suspense } from "react";

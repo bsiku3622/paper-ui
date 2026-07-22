@@ -221,7 +221,7 @@ export const Home = () => (
             <DemoPreview />
           </Link>
           <Text variant="caption" ink="soft">
-            컴포넌트 갤러리가 아니라 실제 화면(이슈 트래커)으로 검증합니다. 20개로 이게 서면 20개면 충분한 것.
+            컴포넌트 갤러리가 아니라 실제 화면(이슈 트래커)으로 검증합니다. 이 컴포넌트들로 이게 서면 충분한 것.
           </Text>
         </Stack>
 
