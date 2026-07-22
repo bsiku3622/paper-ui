@@ -1,6 +1,6 @@
 # 토큰
 
-모든 색·크기·시간의 정본입니다. 컴포넌트는 이 값을 직접 알지 못하고, `tokens` 객체의 `var()` 참조로만 닿습니다. 값을 바꾸려면 여기 세 파일(`colors.ts` · `shape.ts` · `text.ts`) 한 곳만 고치면 전 화면이 따라옵니다.
+모든 색·크기·시간의 정본입니다. 컴포넌트는 이 값을 직접 알지 못하고, `tokens` 객체의 `var()` 참조로만 닿습니다. 값을 바꾸려면 `tokens/`의 다섯 도메인(`colors` · `shape` · `text` · `motion` · `layout`) 한 곳만 고치면 전 화면이 따라옵니다.
 
 ## Color
 
@@ -29,23 +29,36 @@
 | `border.base` | `#e8e8ea` |
 | `border.strong` | `#d8d8dc` |
 
-**accent — 3색 × 4자리.** `solid`(채운 점) · `ink`(흰 배경 위 글자, AA) · `wash`(옅은 면) · `edge`(wash 괘선).
+**accent — 4색 × 4자리.** `solid`(채운 점) · `ink`(흰 배경 위 글자, AA) · `wash`(옅은 면) · `edge`(wash 괘선).
 
 | | solid | ink | wash | edge |
 |---|---|---|---|---|
 | **blue** (info) | `#2563eb` | `#1d4ed8` | `#eff6ff` | `#bfdbfe` |
 | **green** (success) | `#16a34a` | `#15803d` | `#f0fdf4` | `#bbf7d0` |
-| **red** (error) | `#dc2626` | `#b91c1c` | `#fef2f2` | `#fecaca` |
+| **amber** (warning) | `#d97706` | `#b45309` | `#fffbeb` | `#fde68a` |
+| **red** (danger) | `#dc2626` | `#b91c1c` | `#fef2f2` | `#fecaca` |
+
+**status → accent.** 컴포넌트(Button·Field·Badge·Alert)는 상태를 하나의 `status` 축으로 받습니다(boolean 난립 아님): `info`=blue · `success`=green · `warning`=amber · `danger`=red. 상태 이름과 색 이름을 분리해 — 상태는 `danger`, 그 색은 red.
 
 **primary / focus.** `primary`는 검정 일꾼(`base` `#18181b` · `hover` `#3f3f46` · `fg` `#ffffff`), `focus.ring`은 파란 링 `#2563eb`. 검정 면은 hover 때 *밝아진다* — 이미 검정에 가까워 더 어둡게는 눈에 안 보이기 때문(원칙 4의 예외). accent가 다른 축보다 깊은 건 "색은 이 네 방식으로만 등장한다"를 트리 모양에 박아둔 것입니다.
 
 ## Shape
 
-**space** (4px 배수) — `xs` 4 · `sm` 8 · `md` 12 · `lg` 16 · `xl` 24
-**height** — `sm` 28 · `control` 34(기본) · `lg` 40 · `row` 44
-**radius** — `sm` 8 · `md` 12 · `lg` 16 · `pill` 999px
+크기는 **5단 사다리(xs~xl) × intent(interaction·layout)** 구조입니다 — chrome(Button·Field)은 `interaction`, container(Card·Modal)는 `layout`을 씁니다. 값은 넉넉한 라운드·부드러운 밀도를 지킵니다.
+
+**height** — `interaction` 24/28/34/40/44 (control = `md.interaction` 34) · `layout` 64~320
+**padding** — `interaction` 4/8/12/16/24 (Box 여백) · `layout` 8/12/16/24/32 (container)
+**gap** — 4/8/12/16/24 (4px 배수)
+**radius** — `interaction` 단일 8 · `layout` `sm` 8 · `md` 12 · `lg` 16
+**fontSize**(chrome text) · **dot**(아이콘) · **measure**(읽기 폭) — 각 5단
 **shadow** (2단, overlay만 뜬다) — `raised` · `overlay`
-**z** — base 0 · sticky 20 · overlay 30 · modal 40 · **measure** 608px · **borderWidth** 1px
+**constants** — `borderWidth` 1 · `focusRingWidth` 2 · `pillRadius` 999 등, **atom** — Checkbox·Switch·Radio 등 사다리 밖 치수
+
+## Motion · Layout
+
+**motion** — `duration`(instant~slow) · `easing`(standard·decelerate·accelerate·overshoot) · `loop`(spin·pulse) · `role`(hover·state·enter…). 유일하게 CSS 변수로 굽지 않고 값을 직접 듭니다 — `stateTransition("background", "color")`로 인라인됩니다.
+
+**layout** — `z` 6단 tier(base~toast) · `breakpoint`(sm~xl) · `container`(콘텐츠 폭) · `sizeIntent`(full·fit…) · `inset`. 배치 어휘를 노출하되 반응형 Box 프로퍼티를 전면 열지는 않습니다 — 유연함은 escape로 엽니다(정체성: 구조 안전 > 자유도).
 
 ## Text
 

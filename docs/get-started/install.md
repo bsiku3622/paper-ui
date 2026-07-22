@@ -29,7 +29,7 @@ export const App = () => (
   <PaperProvider>
     <Stack gap="md" padding="xl">
       <Text variant="title">안녕하세요</Text>
-      <Button kind="solid">시작하기</Button>
+      <Button>시작하기</Button>
     </Stack>
   </PaperProvider>
 );

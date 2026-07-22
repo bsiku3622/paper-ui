@@ -1,6 +1,6 @@
 # 컴포넌트
 
-스무 개입니다. 스무 개를 한 화면에서 훑으려면 [플레이그라운드](/playground)로, 한 컴포넌트의 prop을 토글하며 코드까지 보려면 사이드바에서 그 컴포넌트의 상세(`/playground/<이름>`)로 들어가세요 — 이 문서는 무엇이 있고 어느 레이어에 사는지를 잡아줍니다.
+스물여섯 개입니다. 한 화면에서 훑으려면 [플레이그라운드](/playground)로, 한 컴포넌트의 prop을 토글하며 코드까지 보려면 사이드바에서 그 컴포넌트의 상세(`/playground/<이름>`)로 들어가세요 — 이 문서는 무엇이 있고 어느 레이어에 사는지를 잡아줍니다.
 
 레이어는 자기보다 아래만 씁니다. `Tokens → Primitives → Atoms → Molecules → Components`.
 
@@ -9,28 +9,33 @@
 raw HTML을 렌더하는 유일한 레이어입니다.
 
 - **Box** — 면 하나. `paper`(면색) · `ink`(잉크) · 간격 · `radius` · `shadow`를 말할 수 있습니다. `as`로 어떤 태그든 되지만, 상위 레이어가 raw 태그에 닿는 유일한 통로이기도 합니다.
-- **Stack** — 세로로 쌓습니다.
-- **Inline** — 가로로 늘어놓습니다. `justify` · `align` · `wrap`.
+- **Stack** — 세로로 쌓습니다. `gap`.
+- **Inline** — 가로로 늘어놓습니다. `gap` · `justify` · `align` · `wrap`.
 - **Text** — 여덟 variant로 위계를 정합니다. `variant`가 크기·굵기·서체·잉크를 한 번에 결정합니다. 제목 위계가 셋(title·heading·subheading = h1·h2·h3)입니다.
 
-## Atoms (9)
+## Atoms (13)
 
 단일 컨트롤·표시 단위입니다.
 
-- **Button** — `solid`(검정 채움) · `outline` · `quiet` 3종 + `danger`.
-- **Field** — 한 줄 입력. 옅은 면으로 정의되고, 포커스 때만 파란 링.
-- **Label** · **Checkbox** · **Icon** · **Divider** · **Link**(파랑).
-- **Badge** — 상태 한 낱말. `status`를 주면 옅은 색 면(wash)이 붙습니다.
+- **Button** — `variant`(시각 무게: `solid`·`soft`·`outline`·`quiet`) × `status`(의미 색: `default`·`info`·`success`·`warning`·`danger`) 두 축이 직교합니다. 큰 면을 채우는 건 검정(solid)뿐, 색은 뜻을 질 때만.
+- **Field** — 한 줄 입력. 상태는 `status` 축 하나로 받습니다(invalid boolean 아님). 포커스 때만 파란 링.
+- **Textarea** — 여러 줄 입력. Field와 같은 `status` 축, 세로로만 resize.
 - **Select** — native `<select>`를 종이 결로 감싼 것.
+- **Checkbox** · **Switch**(켬/끔 토글) · **Radio**(하나 고르기) — 켜지면 검정(색이 아니라 primary).
+- **Label** · **Icon** · **Divider** · **Link**(파랑).
+- **Badge** — 상태 한 낱말. `status`를 주면 옅은 색 면(wash)이 붙습니다. Button과 같은 색 시스템(soft variant)을 씁니다.
+- **Spinner** — 진행 중 표시. 주기는 motion 토큰.
 
-## Molecules (4)
+## Molecules (6)
 
-Primitive + Atom 합성입니다.
+Primitive + Atom 합성입니다. raw HTML 없이 하위 레이어 조합만.
 
 - **Card** — 옅은 면으로 정의되는 칸. 선도 그림자도 없습니다.
-- **TextField** — Label + Field + 도움말 한 묶음. id 연결을 대신합니다.
+- **TextField** — Label + Field + 도움말 한 묶음. id 연결을 대신합니다. `error`가 있으면 그것만으로 danger.
+- **RadioGroup** — Radio + Label을 `options`로 묶어 한 그룹으로.
 - **Tabs** — 세그먼트 컨트롤. 활성은 흰 pill.
 - **Tooltip** — 잠깐 뜨는 쪽지. 위 공간이 없으면 자동으로 아래로 뒤집습니다.
+- **Alert** — 상태 한 줄을 옅은 색 면(wash)으로 알립니다. `status` 시스템의 표시 자리.
 
 ## Components (3)
 
@@ -40,6 +45,6 @@ Primitive + Atom 합성입니다.
 - **Modal** — 떠 있는 것만 그림자를 갖습니다. Esc로 닫힙니다.
 - **Navbar** — 지면 맨 위 한 줄.
 
-## 스무 개인 이유
+## 스물여섯 개인 이유
 
-늘리려면 *실제 화면에서 두 번 이상 필요했다는 증거*가 있어야 합니다. "있으면 좋을 것 같아서"는 증거가 아닙니다. Avatar가 필요하면 Box 조합으로 이니셜 원을 만들 수 있고(데모가 그렇게 합니다), Popover가 필요하면 그게 정말 두 번 이상 나왔는지 먼저 봅니다. 선택지를 늘리는 방향은 시스템의 목표에 역행한다고 봅니다 — 자세히는 [원칙](../get-started/principles.md)의 "고를 것을 줄인다".
+폼(Textarea·Switch·Radio)·피드백(Alert)·로딩(Spinner)까지, 시스템이 실제 화면을 완결할 수 있는 최소 집합입니다. 더 늘리려면 *실제 화면에서 두 번 이상 필요했다는 증거*가 있어야 합니다. "있으면 좋을 것 같아서"는 증거가 아닙니다. Avatar가 필요하면 Box 조합으로 이니셜 원을 만들 수 있고(데모가 그렇게 합니다), Popover가 필요하면 그게 정말 두 번 이상 나왔는지 먼저 봅니다. 선택지를 늘리는 방향은 시스템의 목표에 역행한다고 봅니다 — 자세히는 [원칙](../get-started/principles.md)의 "고를 것을 줄인다".

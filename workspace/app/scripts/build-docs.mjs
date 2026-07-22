@@ -11,11 +11,12 @@ const DOCS = join(here, "../../../docs");        // paper-ui/docs
 const OUT = join(here, "../public/docs");         // app/public/docs
 
 // 섹션 순서·라벨 (없는 그룹은 알파벳). slug 는 그룹/파일.
-const GROUP_ORDER = ["", "get-started", "foundations", "components"];
+const GROUP_ORDER = ["", "get-started", "foundations", "components", "recipes"];
 const GROUP_LABEL = {
   "get-started": "시작하기",
   foundations: "기초",
   components: "컴포넌트",
+  recipes: "실전 조합",
   "": "개요",
 };
 
