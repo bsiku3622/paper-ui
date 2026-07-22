@@ -5,7 +5,7 @@ import { tokens, stateTransition } from "../tokens";
 export const navbarRoot = style({
   position: "sticky",
   top: 0,
-  zIndex: tokens.shape.z.sticky,
+  zIndex: tokens.layout.z.sticky,
   minHeight: "3.25rem",
   borderBottomWidth: tokens.shape.constants.borderWidth,
   borderBottomStyle: "solid",

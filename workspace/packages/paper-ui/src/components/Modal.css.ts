@@ -13,7 +13,7 @@ const rise = keyframes({
 export const modalBackdrop = style({
   position: "fixed",
   inset: 0,
-  zIndex: tokens.shape.z.modal,
+  zIndex: tokens.layout.z.modal,
   display: "grid",
   placeItems: "center",
   padding: tokens.shape.padding.xl.interaction,
