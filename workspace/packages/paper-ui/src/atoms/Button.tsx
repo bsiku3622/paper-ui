@@ -11,15 +11,15 @@ import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 import { joinClass } from "../internal/joinClass";
 import { resolveColorClassnames, INTERACTIVE, type Variant, type ColorStatus } from "../resolvers";
-import type { Space } from "../tokens";
+import type { ControlSize } from "../tokens";
 import { buttonRoot, buttonSize } from "./Button.css";
 
 export type ButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className"> & {
   variant?: Variant;
   status?: ColorStatus;
-  // 크기 사다리 5 단 (xs~xl). md 가 anchor(chrome 기본), lg·xl 은 CTA. Field·Select 와
+  // 크기 3 단 (sm·md·lg). md 가 anchor(기본), sm 은 밀집/보조, lg 는 CTA. Field·Select 와
   // 같은 사다리라 나란히 두면 높이가 맞는다.
-  size?: Space;
+  size?: ControlSize;
   children?: ReactNode;
   className?: string;
 };

@@ -1,22 +1,23 @@
-// sizeLadder — 인터랙티브 크기 사다리 (studio-ui 구조 이식).
+// sizeLadder — 컨트롤 크기 사다리 (3 단 sm·md·lg).
 //
-// height × paddingInline × fontSize 를 5 단(xs~xl)으로 묶은 공통 규칙. Button ·
-// Field · Select 가 *같은 사다리* 를 공유하기 때문에 크기 축이 어긋날 수 없다 —
-// 한 컴포넌트의 md 와 다른 컴포넌트의 md 가 항상 같은 height 에 앉는다.
+// height × paddingInline × fontSize 를 묶되, **fontSize 는 밀도와 분리**한다:
+// height·padding 은 사이즈마다 움직여도(밀도) fontSize 는 14 를 지킨다(가독성 하한,
+// lg 만 16). 컨트롤이 작아진다고 글자가 12 로 떨어지면 안 된다 — Ant(14/14/16)·
+// Atlassian(14 고정)·Carbon(테이블 24→64px 인데 폰트 14 고정)의 결론.
 //
-// calc 식 없음: 모든 값은 사다리의 *그 단계* 토큰(shape.height/padding/fontSize)이다.
+// Button·Field·Select·Tabs 가 이 사다리를 공유해 같은 size 는 같은 height 에 앉는다.
 
 import type { StyleRule } from "@vanilla-extract/css";
 
-import { tokens, SPACE_KEYS, type Space } from "../tokens";
+import { tokens, CONTROL_SIZES, type ControlSize } from "../tokens";
 
 export const sizeLadderRules = Object.fromEntries(
-  SPACE_KEYS.map((s) => [
+  CONTROL_SIZES.map((s) => [
     s,
     {
       height: tokens.shape.height[s].interaction,
       paddingInline: tokens.shape.padding[s].interaction,
-      fontSize: tokens.shape.fontSize[s],
+      fontSize: tokens.shape.controlFontSize[s], // ← height/padding 과 분리한 14/14/16
     } satisfies StyleRule,
   ]),
-) as Record<Space, StyleRule>;
+) as Record<ControlSize, StyleRule>;

@@ -5,13 +5,13 @@ import type { HTMLAttributes, ReactNode } from "react";
 
 import { joinClass } from "../internal/joinClass";
 import { resolveColorClassnames } from "../resolvers";
-import type { StatusName, Space } from "../tokens";
+import type { StatusName, ControlSize } from "../tokens";
 import { badgeRoot, badgeSize } from "./Badge.css";
 
 export type BadgeProps = Omit<HTMLAttributes<HTMLSpanElement>, "className"> & {
   status?: StatusName;
-  // 크기 사다리 5 단 (xs~xl). 배지 높이 사다리(18~28).
-  size?: Space;
+  // 크기 3 단 (sm·md·lg). 배지 높이 사다리(20·22·24).
+  size?: ControlSize;
   children?: ReactNode;
   className?: string;
 };

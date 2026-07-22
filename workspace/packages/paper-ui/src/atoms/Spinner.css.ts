@@ -1,6 +1,6 @@
 import { style, styleVariants, keyframes } from "@vanilla-extract/css";
 
-import { tokens, SPACE_KEYS, type Space } from "../tokens";
+import { tokens, CONTROL_SIZES, type ControlSize } from "../tokens";
 
 const spin = keyframes({ to: { transform: "rotate(360deg)" } });
 
@@ -19,6 +19,6 @@ export const spinnerRoot = style({
 
 export const spinnerSize = styleVariants(
   Object.fromEntries(
-    SPACE_KEYS.map((s) => [s, { width: tokens.shape.dot[s], height: tokens.shape.dot[s] }]),
-  ) as Record<Space, { width: string; height: string }>,
+    CONTROL_SIZES.map((s) => [s, { width: tokens.shape.dot[s], height: tokens.shape.dot[s] }]),
+  ) as Record<ControlSize, { width: string; height: string }>,
 );

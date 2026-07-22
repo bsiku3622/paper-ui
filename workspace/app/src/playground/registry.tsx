@@ -114,9 +114,9 @@ export const COMPONENTS: CompSpec[] = [
     name: "Stack",
     group: "Primitives",
     blurb: "세로로 쌓는다. gap 으로 사이 간격만 정한다 — 나머지는 자식이 알아서.",
-    controls: [{ kind: "enum", prop: "gap", label: "gap", options: ["xs", "sm", "md", "lg", "xl"], def: "md" }],
+    controls: [{ kind: "enum", prop: "gap", label: "gap", options: ["sm", "md", "lg"], def: "md" }],
     render: (st) => (
-      <Stack gap={s(st.gap) as "xs" | "sm" | "md" | "lg" | "xl"} style={{ width: "12rem" }}>
+      <Stack gap={s(st.gap) as "sm" | "md" | "lg"} style={{ width: "12rem" }}>
         {["하나", "둘", "셋"].map((t) => (
           <Box key={t} paper="muted" radius="sm" padding="sm">
             <Text variant="caption" as="span">{t}</Text>
@@ -132,11 +132,11 @@ export const COMPONENTS: CompSpec[] = [
     group: "Primitives",
     blurb: "가로로 늘어놓는다. gap · justify · align · wrap 으로 한 줄 배치를 정한다.",
     controls: [
-      { kind: "enum", prop: "gap", label: "gap", options: ["xs", "sm", "md", "lg", "xl"], def: "sm" },
+      { kind: "enum", prop: "gap", label: "gap", options: ["sm", "md", "lg"], def: "sm" },
       { kind: "enum", prop: "justify", label: "justify", options: ["start", "center", "end", "between"], def: "start" },
     ],
     render: (st) => (
-      <Inline gap={s(st.gap) as "xs" | "sm" | "md" | "lg" | "xl"} justify={s(st.justify) as "start" | "center" | "end" | "between"} style={{ width: "18rem" }}>
+      <Inline gap={s(st.gap) as "sm" | "md" | "lg"} justify={s(st.justify) as "start" | "center" | "end" | "between"} style={{ width: "18rem" }}>
         {["A", "B", "C"].map((t) => (
           <Box key={t} paper="muted" radius="sm" padding="sm">
             <Text variant="caption" as="span">{t}</Text>
@@ -156,7 +156,7 @@ export const COMPONENTS: CompSpec[] = [
     controls: [
       { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "outline", "quiet"], def: "solid" },
       { kind: "enum", prop: "status", label: "status", options: ["default", "info", "success", "warning", "danger"], def: "default" },
-      { kind: "enum", prop: "size", label: "size", options: ["xs", "sm", "md", "lg", "xl"], def: "md" },
+      { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
       { kind: "text", prop: "children", label: "children", def: "버튼" },
     ],
@@ -164,7 +164,7 @@ export const COMPONENTS: CompSpec[] = [
       <Button
         variant={s(st.variant) as "solid" | "soft" | "outline" | "quiet"}
         status={s(st.status) as "default" | StatusName}
-        size={s(st.size) as "xs" | "sm" | "md" | "lg" | "xl"}
+        size={s(st.size) as "sm" | "md" | "lg"}
         disabled={b(st.disabled)}
       >
         {s(st.children)}
@@ -180,11 +180,11 @@ export const COMPONENTS: CompSpec[] = [
     blurb: "상태 한 낱말. status 를 주면 옅은 색 면(wash)이 붙는다. 없으면 중립.",
     controls: [
       { kind: "enum", prop: "status", label: "status", options: ["none", "info", "success", "warning", "danger"], def: "info" },
-      { kind: "enum", prop: "size", label: "size", options: ["xs", "sm", "md", "lg", "xl"], def: "md" },
+      { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "text", prop: "children", label: "children", def: "진행" },
     ],
     render: (st) => (
-      <Badge status={st.status === "none" ? undefined : (s(st.status) as StatusName)} size={s(st.size) as "xs" | "sm" | "md" | "lg" | "xl"}>{s(st.children)}</Badge>
+      <Badge status={st.status === "none" ? undefined : (s(st.status) as StatusName)} size={s(st.size) as "sm" | "md" | "lg"}>{s(st.children)}</Badge>
     ),
     code: (st) => `<Badge${st.status === "none" ? "" : A("status", s(st.status))}${AE("size", s(st.size), "md")}>${s(st.children)}</Badge>`,
   },
@@ -196,13 +196,13 @@ export const COMPONENTS: CompSpec[] = [
     controls: [
       { kind: "text", prop: "placeholder", label: "placeholder", def: "검색…" },
       { kind: "enum", prop: "status", label: "status", options: ["default", "info", "success", "warning", "danger"], def: "default" },
-      { kind: "enum", prop: "size", label: "size", options: ["xs", "sm", "md", "lg", "xl"], def: "md" },
+      { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
       { kind: "bool", prop: "numeric", label: "numeric", def: false },
     ],
     render: (st) => (
       <Box style={{ width: "16rem" }}>
-        <Field placeholder={s(st.placeholder)} status={s(st.status) as "default" | StatusName} size={s(st.size) as "xs" | "sm" | "md" | "lg" | "xl"} disabled={b(st.disabled)} numeric={b(st.numeric)} />
+        <Field placeholder={s(st.placeholder)} status={s(st.status) as "default" | StatusName} size={s(st.size) as "sm" | "md" | "lg"} disabled={b(st.disabled)} numeric={b(st.numeric)} />
       </Box>
     ),
     code: (st) =>
@@ -215,13 +215,13 @@ export const COMPONENTS: CompSpec[] = [
     blurb: "켜고 끄는 네모. 라벨과 나란히 두면 통째로 누를 수 있다.",
     controls: [
       { kind: "bool", prop: "checked", label: "checked", def: true },
-      { kind: "enum", prop: "size", label: "size", options: ["xs", "sm", "md", "lg", "xl"], def: "md" },
+      { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
       { kind: "text", prop: "label", label: "label", def: "동의합니다" },
     ],
     render: (st) => (
       <Inline as="label" gap="sm" align="center">
-        <Checkbox checked={b(st.checked)} size={s(st.size) as "xs" | "sm" | "md" | "lg" | "xl"} disabled={b(st.disabled)} readOnly />
+        <Checkbox checked={b(st.checked)} size={s(st.size) as "sm" | "md" | "lg"} disabled={b(st.disabled)} readOnly />
         <Text variant="body" as="span">{s(st.label)}</Text>
       </Inline>
     ),
@@ -252,13 +252,13 @@ export const COMPONENTS: CompSpec[] = [
     group: "Atoms",
     blurb: "native select 를 종이 결로 감싼 것. options 를 data 로 받는다.",
     controls: [
-      { kind: "enum", prop: "size", label: "size", options: ["xs", "sm", "md", "lg", "xl"], def: "md" },
+      { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
     ],
     render: (st) => (
       <Box style={{ width: "12rem" }}>
         <Select
-          size={s(st.size) as "xs" | "sm" | "md" | "lg" | "xl"}
+          size={s(st.size) as "sm" | "md" | "lg"}
           disabled={b(st.disabled)}
           options={[
             { value: "a", label: "옵션 A" },
@@ -278,11 +278,11 @@ export const COMPONENTS: CompSpec[] = [
     blurb: "24 그리드 stroke 아이콘. 자식 svg path 를 감싸 currentColor 로 그린다.",
     controls: [
       { kind: "enum", prop: "ink", label: "잉크", options: ["base", "soft", "faint"], def: "base" },
-      { kind: "enum", prop: "size", label: "size", options: ["xs", "sm", "md", "lg", "xl"], def: "md" },
+      { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
     ],
     render: (st) => (
       <Text ink={s(st.ink) as "base" | "soft" | "faint"} as="span">
-        <Icon aria-label="정보" size={s(st.size) as "xs" | "sm" | "md" | "lg" | "xl"}>
+        <Icon aria-label="정보" size={s(st.size) as "sm" | "md" | "lg"}>
           <circle cx="12" cy="12" r="9" />
           <path d="M12 11v5M12 8h.01" />
         </Icon>
@@ -332,13 +332,13 @@ export const COMPONENTS: CompSpec[] = [
     blurb: "켬/끔 토글. 즉시 적용되는 설정 자리. 켜지면 검정 트랙(색이 아니라 primary).",
     controls: [
       { kind: "bool", prop: "checked", label: "checked", def: true },
-      { kind: "enum", prop: "size", label: "size", options: ["xs", "sm", "md", "lg", "xl"], def: "md" },
+      { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
       { kind: "text", prop: "label", label: "label", def: "알림 받기" },
     ],
     render: (st) => (
       <Inline as="label" gap="sm" align="center">
-        <Switch checked={b(st.checked)} size={s(st.size) as "xs" | "sm" | "md" | "lg" | "xl"} disabled={b(st.disabled)} readOnly />
+        <Switch checked={b(st.checked)} size={s(st.size) as "sm" | "md" | "lg"} disabled={b(st.disabled)} readOnly />
         <Text variant="body" as="span">{s(st.label)}</Text>
       </Inline>
     ),
@@ -352,13 +352,13 @@ export const COMPONENTS: CompSpec[] = [
     blurb: "여럿 중 하나. 보통 RadioGroup 이 묶지만 단독 원자로도 쓴다.",
     controls: [
       { kind: "bool", prop: "checked", label: "checked", def: true },
-      { kind: "enum", prop: "size", label: "size", options: ["xs", "sm", "md", "lg", "xl"], def: "md" },
+      { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
       { kind: "text", prop: "label", label: "label", def: "옵션" },
     ],
     render: (st) => (
       <Inline as="label" gap="sm" align="center">
-        <Radio checked={b(st.checked)} size={s(st.size) as "xs" | "sm" | "md" | "lg" | "xl"} disabled={b(st.disabled)} readOnly />
+        <Radio checked={b(st.checked)} size={s(st.size) as "sm" | "md" | "lg"} disabled={b(st.disabled)} readOnly />
         <Text variant="body" as="span">{s(st.label)}</Text>
       </Inline>
     ),
@@ -371,9 +371,9 @@ export const COMPONENTS: CompSpec[] = [
     group: "Atoms",
     blurb: "진행 중 표시. 옅은 링에 한 조각만 진해 회전으로 읽힌다. 주기는 motion 토큰.",
     controls: [
-      { kind: "enum", prop: "size", label: "size", options: ["xs", "sm", "md", "lg", "xl"], def: "md" },
+      { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
     ],
-    render: (st) => <Spinner size={s(st.size) as "xs" | "sm" | "md" | "lg" | "xl"} />,
+    render: (st) => <Spinner size={s(st.size) as "sm" | "md" | "lg"} />,
     code: (st) => `<Spinner${AE("size", s(st.size), "md")} />`,
   },
 
@@ -423,9 +423,9 @@ export const COMPONENTS: CompSpec[] = [
     group: "Molecules",
     blurb: "세그먼트 컨트롤. 활성은 흰 pill 로 떠오른다(그림자 없이).",
     controls: [
-      { kind: "enum", prop: "size", label: "size", options: ["xs", "sm", "md", "lg", "xl"], def: "sm" },
+      { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "sm" },
     ],
-    render: (st) => <TabsDemo size={s(st.size) as "xs" | "sm" | "md" | "lg" | "xl"} />,
+    render: (st) => <TabsDemo size={s(st.size) as "sm" | "md" | "lg"} />,
     code: (st) =>
       `const [tab, setTab] = useState("one");\n<Tabs value={tab} onChange={setTab}${AE("size", s(st.size), "sm")} items={[\n  { value: "one", label: "하나" },\n  { value: "two", label: "둘" },\n  { value: "three", label: "셋" },\n]} />`,
   },
@@ -518,7 +518,7 @@ export const COMPONENTS: CompSpec[] = [
 ];
 
 // ── 상태가 필요한 미리보기(내부 컴포넌트) ────────────────────────────────────
-const TabsDemo = ({ size }: { size?: "xs" | "sm" | "md" | "lg" | "xl" }) => {
+const TabsDemo = ({ size }: { size?: "sm" | "md" | "lg" }) => {
   const [tab, setTab] = useState("one");
   return (
     <Tabs

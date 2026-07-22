@@ -7,22 +7,18 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 
-import { Box, Stack, Text, Button, tokens } from "@studio-baeks/paper-ui";
+import { Box, Stack, Text, tokens } from "@studio-baeks/paper-ui";
 
 import { SiteNav, NAV_HEIGHT } from "../site/chrome";
 import { COMPONENTS, GROUPS } from "./registry";
 
-// 사이드바 항목 = paper-ui Button(quiet/soft). 하드코딩 .side-link 대신 컴포넌트로.
-// active 는 soft(옅은 회색 면), 나머지는 quiet(투명·hover muted). size sm 으로 밀도.
+// 사이드바 항목 = nav 전용 밀도(.side-link). 컨트롤(Button)의 size 체계를 상속하지
+// 않는다 — nav 는 행 높이만 촘촘하게(28) 두고 글자는 14 로 고정한다(가독성). Button
+// size="sm" 에 태우면 밀도 축이 폰트 축을 끌고 내려가 맥없어진다(VS Code·Atlassian·
+// Linear 전부 nav 를 버튼 스케일과 분리). active 는 옅은 면 + weight 로 보상.
 const SideLink = ({ to, label, active }: { to: string; label: string; active: boolean }) => (
-  <Link to={to} style={{ textDecoration: "none", display: "block" }}>
-    <Button
-      variant={active ? "soft" : "quiet"}
-      size="sm"
-      style={{ width: "100%", justifyContent: "flex-start" }}
-    >
-      {label}
-    </Button>
+  <Link to={to} className="side-link" data-active={active}>
+    {label}
   </Link>
 );
 
