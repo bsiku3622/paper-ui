@@ -145,14 +145,7 @@ export const SHADOW = {
   overlay: "0 8px 24px -6px rgba(24, 25, 28, 0.14), 0 2px 6px -2px rgba(24, 25, 28, 0.08)",
 } as const;
 
-// ───── z — 층 (standalone) ──────────────────────────────────────────────────
-
-export const Z = {
-  base: "0",
-  sticky: "20",
-  overlay: "30",
-  modal: "40",
-} as const;
+// z 층 tier 는 shape 가 아니라 layout 책임 — tokens/layout.ts 로 옮겼다.
 
 // ───── constants — 전역 1D ──────────────────────────────────────────────────
 
@@ -185,7 +178,6 @@ export const SHAPE_VALUES = {
   dot: SHAPE_DOT,
   measure: SHAPE_MEASURE,
   shadow: SHADOW,
-  z: Z,
   constants: SHAPE_CONSTANTS,
   atom: ATOM_INTRINSIC,
 } as const;

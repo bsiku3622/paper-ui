@@ -8,7 +8,7 @@ export const tooltipBubble = style({
   position: "absolute",
   left: "50%",
   transform: "translateX(-50%)",
-  zIndex: tokens.shape.z.overlay,
+  zIndex: tokens.layout.z.overlay,
   whiteSpace: "nowrap",
   padding: `${tokens.shape.padding.xs.interaction} ${tokens.shape.padding.sm.interaction}`,
   borderRadius: tokens.shape.radius.interaction,

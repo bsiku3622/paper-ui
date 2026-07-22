@@ -7,6 +7,7 @@ import { globalStyle } from "@vanilla-extract/css";
 
 import { COLOR_VALUES } from "../tokens/colors";
 import { SHAPE_VALUES } from "../tokens/shape";
+import { LAYOUT_VALUES } from "../tokens/layout";
 import { TEXT_VALUES, TEXT_SPEC, TEXT_INK, TEXT_VARIANTS } from "../tokens/text";
 import { walkValues, pathToCssVar } from "../tokens/helpers";
 import { tokens } from "../tokens";
@@ -24,6 +25,9 @@ walkValues(COLOR_VALUES, ["color"], (path, value) => {
   rootVars[pathToCssVar(path)] = value;
 });
 walkValues(SHAPE_VALUES, ["shape"], (path, value) => {
+  rootVars[pathToCssVar(path)] = value;
+});
+walkValues(LAYOUT_VALUES, ["layout"], (path, value) => {
   rootVars[pathToCssVar(path)] = value;
 });
 walkValues(TEXT_VALUES, [], (path, value) => {
