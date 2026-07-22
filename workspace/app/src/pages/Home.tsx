@@ -34,7 +34,7 @@ const PRINCIPLES = [
 ] as const;
 
 const STAT = [
-  { n: "25", l: "컴포넌트" },
+  { n: "26", l: "컴포넌트" },
   { n: "3", l: "포인트 색" },
   { n: "4", l: "빌드가 강제하는 규칙" },
 ] as const;
@@ -132,7 +132,7 @@ const LiveSampler = () => {
 // 데모 프리뷰 — Mobbin 처럼 실제 화면 한 조각을 액자에 담아 /demo 로 보낸다.
 const PREVIEW_ROWS = [
   { key: "STU-142", title: "토큰 트리를 두 번 걷는 emit 파이프라인", status: "info" as StatusName, label: "진행" },
-  { key: "STU-139", title: "Select 포커스 링이 사파리에서 잘림", status: "error" as StatusName, label: "막힘" },
+  { key: "STU-139", title: "Select 포커스 링이 사파리에서 잘림", status: "danger" as StatusName, label: "막힘" },
   { key: "STU-137", title: "Table hover 배경을 subtle 로 통일", status: "success" as StatusName, label: "완료" },
 ];
 
