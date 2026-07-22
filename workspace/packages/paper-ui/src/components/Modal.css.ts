@@ -2,9 +2,11 @@ import { style, keyframes } from "@vanilla-extract/css";
 
 import { tokens } from "../tokens";
 
+// enter 모션의 등장 변위(offset·scale)를 motion.enter 에서 읽어 keyframe 에 인라인.
+const { enter } = tokens.motion.role;
 const fade = keyframes({ from: { opacity: 0 }, to: { opacity: 1 } });
 const rise = keyframes({
-  from: { opacity: 0, transform: "translateY(6px) scale(0.99)" },
+  from: { opacity: 0, transform: `translateY(${enter.offset}) scale(${enter.scale})` },
   to: { opacity: 1, transform: "translateY(0) scale(1)" },
 });
 
@@ -16,11 +18,11 @@ export const modalBackdrop = style({
   placeItems: "center",
   padding: tokens.shape.padding.xl.interaction,
   background: "rgba(24, 25, 28, 0.32)",
-  animation: `${fade} 130ms ease`,
+  animation: `${fade} ${tokens.motion.duration.base} ${tokens.motion.easing.standard}`,
 });
 
 export const modalPanel = style({
   width: "100%",
   maxWidth: "27rem",
-  animation: `${rise} 150ms cubic-bezier(0.22, 1, 0.36, 1)`,
+  animation: `${rise} ${enter.duration} ${enter.easing}`,
 });

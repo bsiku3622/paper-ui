@@ -1,6 +1,6 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
-import { tokens, STATUS, STATUS_ACCENT } from "../tokens";
+import { tokens, STATUS, STATUS_ACCENT, stateTransition } from "../tokens";
 import type { StatusName } from "../tokens";
 
 // 옅은 회색 면. 포커스 때만 파란 링 (ChatGPT 의 입력 결).
@@ -16,7 +16,7 @@ export const fieldRoot = style({
   color: tokens.color.ink.base,
   fontFamily: tokens.text.font.sans,
   fontSize: tokens.text.size.body,
-  transition: "border-color 130ms ease, box-shadow 130ms ease, background 130ms ease",
+  transition: stateTransition("border-color", "box-shadow", "background"),
   selectors: {
     "&::placeholder": { color: tokens.color.ink.faint },
     "&:hover:not(:focus):not(:disabled)": { background: tokens.color.paper.muted },

@@ -1,6 +1,6 @@
 import { style } from "@vanilla-extract/css";
 
-import { tokens } from "../tokens";
+import { tokens, stateTransition } from "../tokens";
 
 export const selectRoot = style({
   height: tokens.shape.height.md.interaction,
@@ -22,7 +22,7 @@ export const selectRoot = style({
   backgroundRepeat: "no-repeat",
   backgroundPosition: "right 0.75rem center",
   backgroundSize: "0.625rem",
-  transition: "border-color 130ms ease, box-shadow 130ms ease, background-color 130ms ease",
+  transition: stateTransition("border-color", "box-shadow", "background-color"),
   selectors: {
     "&:hover:not(:focus)": { backgroundColor: tokens.color.paper.muted },
     "&:focus": {

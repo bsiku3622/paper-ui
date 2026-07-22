@@ -1,6 +1,6 @@
 import { style } from "@vanilla-extract/css";
 
-import { tokens } from "../tokens";
+import { tokens, stateTransition } from "../tokens";
 
 // geometry·motion 만. 색(background·color·border-color)은 resolveColorClassnames 가
 // 붙이는 pui-c-* 클래스가 정한다 — Button 은 어떤 색인지 모른다.
@@ -20,7 +20,7 @@ export const buttonRoot = style({
   letterSpacing: tokens.text.tracking.body,
   cursor: "pointer",
   whiteSpace: "nowrap",
-  transition: "background 130ms ease, border-color 130ms ease, color 130ms ease",
+  transition: stateTransition("background", "border-color", "color"),
   selectors: {
     "&:disabled": { cursor: "not-allowed", opacity: 0.4 },
   },

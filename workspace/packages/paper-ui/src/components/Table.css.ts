@@ -1,6 +1,6 @@
 import { style } from "@vanilla-extract/css";
 
-import { tokens } from "../tokens";
+import { tokens, stateTransition } from "../tokens";
 
 export const tableRoot = style({
   width: "100%",
@@ -22,7 +22,7 @@ export const tableTh = style({
 // 행 — 구분선은 아주 옅게. hover 때만 배경이 조용히 바뀐다.
 export const tableTr = style({
   height: tokens.shape.height.xl.interaction,
-  transition: "background 100ms ease",
+  transition: stateTransition("background"),
   selectors: {
     "&:not(:last-child)": {
       borderBottom: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,

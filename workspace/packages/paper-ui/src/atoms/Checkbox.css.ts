@@ -1,6 +1,6 @@
 import { style } from "@vanilla-extract/css";
 
-import { tokens } from "../tokens";
+import { tokens, stateTransition } from "../tokens";
 
 export const checkboxRoot = style({
   appearance: "none",
@@ -16,7 +16,7 @@ export const checkboxRoot = style({
   cursor: "pointer",
   display: "grid",
   placeContent: "center",
-  transition: "background 120ms ease, border-color 120ms ease",
+  transition: stateTransition("background", "border-color"),
   selectors: {
     "&:checked": { background: tokens.color.primary.base, borderColor: tokens.color.primary.base },
     "&:checked::after": {

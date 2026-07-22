@@ -1,6 +1,6 @@
 import { style } from "@vanilla-extract/css";
 
-import { tokens } from "../tokens";
+import { tokens, stateTransition } from "../tokens";
 
 export const navbarRoot = style({
   position: "sticky",
@@ -23,7 +23,7 @@ export const navItem = style({
   fontFamily: tokens.text.font.sans,
   fontSize: tokens.text.size.body,
   color: tokens.color.ink.soft,
-  transition: "background 130ms ease, color 130ms ease",
+  transition: stateTransition("background", "color"),
   selectors: { "&:hover": { color: tokens.color.ink.base, background: tokens.color.paper.muted } },
 });
 

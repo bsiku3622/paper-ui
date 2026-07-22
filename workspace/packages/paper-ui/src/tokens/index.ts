@@ -13,10 +13,13 @@ import { buildVarTree } from "./helpers";
 import { COLOR_VALUES } from "./colors";
 import { SHAPE_VALUES } from "./shape";
 import { TEXT_VALUES } from "./text";
+import { MOTION_VALUES } from "./motion";
 
 export const tokens = {
   color: buildVarTree(COLOR_VALUES, ["color"]),
   shape: buildVarTree(SHAPE_VALUES, ["shape"]),
+  // motion 은 var 로 굽지 않는다 — 값(duration·easing)을 직접 든다 (motion.ts 참고).
+  motion: MOTION_VALUES,
   ...buildVarTree(TEXT_VALUES, []),
 } as const;
 
@@ -31,5 +34,8 @@ export type { Space } from "./shape";
 
 export { TEXT_VALUES, TEXT_VARIANTS, TEXT_SPEC, TEXT_INK, WEIGHT } from "./text";
 export type { TextVariant, WeightKey } from "./text";
+
+export { MOTION_VALUES, DURATION, EASING, MOTION, stateTransition } from "./motion";
+export type { MotionDuration, MotionEasing, MotionRole } from "./motion";
 
 export { kebab, pathToCssVar, pathToVarRef, walkValues, buildVarTree } from "./helpers";

@@ -1,6 +1,6 @@
 import { style } from "@vanilla-extract/css";
 
-import { tokens } from "../tokens";
+import { tokens, stateTransition } from "../tokens";
 
 export const tabsList = style({
   display: "inline-flex",
@@ -22,7 +22,7 @@ export const tabItem = style({
   fontSize: tokens.text.size.caption,
   fontWeight: tokens.text.weight.medium,
   color: tokens.color.ink.soft,
-  transition: "background 130ms ease, color 130ms ease",
+  transition: stateTransition("background", "color"),
   selectors: { "&:hover": { color: tokens.color.ink.base } },
 });
 
