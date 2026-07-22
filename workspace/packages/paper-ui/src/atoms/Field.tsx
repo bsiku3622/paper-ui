@@ -8,13 +8,13 @@
 import type { InputHTMLAttributes } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import type { StatusName, Space } from "../tokens";
+import type { StatusName, ControlSize } from "../tokens";
 import { fieldRoot, fieldSize, fieldStatus, fieldNumeric } from "./Field.css";
 
 export type FieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "size"> & {
   status?: "default" | StatusName;
-  // 크기 사다리 5 단 (xs~xl). Button 과 같은 사다리 — 나란히 두면 높이가 맞는다.
-  size?: Space;
+  // 크기 3 단 (sm·md·lg). Button 과 같은 사다리 — 나란히 두면 높이가 맞는다.
+  size?: ControlSize;
   numeric?: boolean;
   className?: string;
 };

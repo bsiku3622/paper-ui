@@ -26,9 +26,23 @@
 const REM = (px: number) => `${px / 16}rem`;
 
 // ───── Ladder vocabulary ────────────────────────────────────────────────────
+//
+// 두 어휘가 직교한다:
+//   SHAPE_SIZES (5 단 xs~xl)  = *간격* 축. Box 의 padding·gap (8pt 그리드).
+//   CONTROL_SIZES (3 단 sm~lg) = *컨트롤 크기* 축. 컴포넌트 size prop.
+//
+// 이 둘을 섞으면 안 된다 — 간격은 세밀해야(5 단) 하고, 컨트롤 크기는 단순해야
+// (3 단) 한다(Ant·Primer·Geist 전부 3 단; Nathan Curtis: "2~3 개면 충분, 그 이상은
+// 복잡도만"). 그리고 컨트롤이 작아진다고 글자가 작아지면 안 된다 → CONTROL 크기는
+// height·padding 만 움직이고 fontSize 는 CONTROL_FONT_SIZE 로 *따로* 정한다.
 
 export const SHAPE_SIZES = ["xs", "sm", "md", "lg", "xl"] as const;
 export type ShapeSize = (typeof SHAPE_SIZES)[number];
+
+// 컨트롤 크기 3 단 — Button·Field·Select·Tabs·Icon·Spinner·Badge·Checkbox·Switch·
+// Radio 의 size prop. md 가 anchor(기본), sm 은 밀집/보조, lg 는 강조/CTA.
+export const CONTROL_SIZES = ["sm", "md", "lg"] as const;
+export type ControlSize = (typeof CONTROL_SIZES)[number];
 
 export const SHAPE_INTENTS = ["interaction", "layout"] as const;
 export type ShapeIntent = (typeof SHAPE_INTENTS)[number];
@@ -104,8 +118,8 @@ export const SHAPE_RADIUS = {
 
 // ───── fontSize — chrome text (interaction 자리, text variant 와 직교) ──────
 //
-// Button·Field 같은 interactive 내부 글자. 컨텐츠 위계(text variant)가 아니라
-// chrome 텍스트 — md=14 가 body anchor 와 정렬. 좁은 위계 10~16.
+// Button·Field 같은 interactive 내부 글자의 *일반* 스케일(Badge fontSize 등이 참조).
+// 컨텐츠 위계(text variant)가 아니라 chrome 텍스트 — md=14 가 body anchor 와 정렬.
 
 export const SHAPE_FONT_SIZE = {
   xs: REM(11),
@@ -115,50 +129,54 @@ export const SHAPE_FONT_SIZE = {
   xl: REM(16),
 } as const;
 
-// ───── dot — 작은 시각 요소 (Icon · status dot · Spinner 공용) ──────────────
+// ───── control fontSize — 밀도와 분리한 컨트롤 라벨 크기 (14 하한) ──────────
+//
+// 컨트롤이 작아져도(sm) 글자는 14 를 지킨다 — 밀도(height·padding)와 가독성(fontSize)은
+// 다른 축이다. 사이드바를 sm 으로 줄였더니 글자가 12 로 떨어져 맥없어진 게 이 둘을
+// 묶었기 때문. lg 에서만 16 으로 한 단(큰 CTA). Ant(14/14/16)·Atlassian(14 고정) 모델.
+
+export const CONTROL_FONT_SIZE = {
+  sm: REM(14),
+  md: REM(14),
+  lg: REM(16),
+} as const;
+
+// ───── dot — 작은 시각 요소 (Icon · status dot · Spinner 공용, 3 단) ────────
 
 export const SHAPE_DOT = {
-  xs: REM(12),
   sm: REM(14),
   md: REM(16), // ◀ anchor (Icon 기본)
   lg: REM(18),
-  xl: REM(20),
 } as const;
 
-// ───── badge — 인라인 라벨 높이 사다리 ──────────────────────────────────────
+// ───── badge — 인라인 라벨 높이 사다리 (3 단) ───────────────────────────────
 //
-// control 높이(24~44)보다 낮은 열. 낱말 하나를 담는 pill 이라 좁은 범위. md=22 anchor.
+// control 높이(28~40)보다 낮은 열. 낱말 하나를 담는 pill. md=22 anchor.
 
 export const SHAPE_BADGE = {
-  xs: REM(18),
   sm: REM(20),
   md: REM(22), // ◀ anchor
   lg: REM(24),
-  xl: REM(28),
 } as const;
 
-// ───── checkbox — 변·틱·모서리 사다리 ───────────────────────────────────────
+// ───── checkbox — 변·틱·모서리 사다리 (3 단) ────────────────────────────────
 //
 // box(변) 를 키우면 틱(mark 긴변·short 짧은변, 2:1)과 radius 가 비례해 커진다. md=16 anchor.
 
 export const SHAPE_CHECKBOX = {
-  xs: { box: REM(14), mark: REM(7), short: REM(3.5), radius: REM(4) },
   sm: { box: REM(15), mark: REM(7), short: REM(3.5), radius: REM(4) },
   md: { box: REM(16), mark: REM(8), short: REM(4), radius: REM(5) }, // ◀ anchor
   lg: { box: REM(18), mark: REM(9), short: REM(4.5), radius: REM(6) },
-  xl: { box: REM(20), mark: REM(10), short: REM(5), radius: REM(6) },
 } as const;
 
-// ───── switch — 트랙·손잡이 사다리 (비례 스케일) ────────────────────────────
+// ───── switch — 트랙·손잡이 사다리 (비례 스케일, 3 단) ──────────────────────
 //
-// w(트랙 가로) · h(트랙 세로) · thumb(손잡이). 켜짐 이동은 css 가 이 값으로 calc. md 현재값.
+// w(트랙 가로) · h(트랙 세로) · thumb(손잡이). 켜짐 이동은 css 가 이 값으로 calc. md anchor.
 
 export const SHAPE_SWITCH = {
-  xs: { w: REM(30), h: REM(17), thumb: REM(13) },
   sm: { w: REM(32), h: REM(18), thumb: REM(14) },
   md: { w: REM(36), h: REM(20), thumb: REM(16) }, // ◀ anchor
   lg: { w: REM(42), h: REM(24), thumb: REM(19) },
-  xl: { w: REM(48), h: REM(28), thumb: REM(23) },
 } as const;
 
 // ───── measure — prose 줄길이 ───────────────────────────────────────────────
@@ -227,6 +245,7 @@ export const SHAPE_VALUES = {
   gap: SHAPE_GAP,
   radius: SHAPE_RADIUS,
   fontSize: SHAPE_FONT_SIZE,
+  controlFontSize: CONTROL_FONT_SIZE,
   dot: SHAPE_DOT,
   badge: SHAPE_BADGE,
   checkbox: SHAPE_CHECKBOX,

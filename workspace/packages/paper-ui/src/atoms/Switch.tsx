@@ -3,12 +3,12 @@
 import type { InputHTMLAttributes } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import type { Space } from "../tokens";
+import type { ControlSize } from "../tokens";
 import { switchRoot, switchSize } from "./Switch.css";
 
 export type SwitchProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "className" | "size"> & {
-  // 크기 사다리 5 단 (xs~xl). 트랙·손잡이 비례 스케일.
-  size?: Space;
+  // 크기 3 단 (sm·md·lg). 트랙·손잡이 비례 스케일.
+  size?: ControlSize;
   className?: string;
 };
 

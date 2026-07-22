@@ -135,12 +135,10 @@ export const Playground = () => {
             <Button variant="soft" status="warning">주의</Button>
             <Button variant="quiet" status="danger">지우기</Button>
           </Spec>
-          <Spec label="size — 크기 사다리 xs·sm·md·lg·xl (커질수록 weight 도 무거워진다)" testid="spec-button-sizes">
-            <Button size="xs" data-testid="btn-xs">xs</Button>
-            <Button size="sm">sm</Button>
+          <Spec label="size — 크기 3 단 sm·md·lg (fontSize 는 14 고정, lg 만 16·semibold)" testid="spec-button-sizes">
+            <Button size="sm" data-testid="btn-sm">sm</Button>
             <Button size="md" data-testid="btn-md">md</Button>
-            <Button size="lg">lg</Button>
-            <Button size="xl" data-testid="btn-xl">xl</Button>
+            <Button size="lg" data-testid="btn-lg">lg</Button>
           </Spec>
           <Spec label="state">
             <Button disabled data-testid="btn-disabled">disabled</Button>

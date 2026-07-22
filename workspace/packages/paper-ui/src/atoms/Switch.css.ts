@@ -1,6 +1,6 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
-import { tokens, stateTransition, SPACE_KEYS, type Space } from "../tokens";
+import { tokens, stateTransition, CONTROL_SIZES, type ControlSize } from "../tokens";
 
 // 켬/끔 토글. muted 트랙 위 흰 손잡이, 켜지면 검정 트랙(색이 아니라 primary).
 // 크기(트랙·손잡이·켜짐 이동)는 size 축(switchSize)이 정한다.
@@ -34,10 +34,10 @@ export const switchRoot = style({
   },
 });
 
-// size 5 단 — 트랙(w·h) · 손잡이(thumb) · 켜짐 이동(트랙 − 손잡이 − 양쪽 여백).
+// size 3 단 — 트랙(w·h) · 손잡이(thumb) · 켜짐 이동(트랙 − 손잡이 − 양쪽 여백).
 export const switchSize = styleVariants(
   Object.fromEntries(
-    SPACE_KEYS.map((s) => {
+    CONTROL_SIZES.map((s) => {
       const sw = tokens.shape.switch[s];
       return [
         s,
@@ -53,5 +53,5 @@ export const switchSize = styleVariants(
         },
       ];
     }),
-  ) as Record<Space, object>,
+  ) as Record<ControlSize, object>,
 );

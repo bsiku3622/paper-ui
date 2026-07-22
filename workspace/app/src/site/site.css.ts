@@ -117,4 +117,8 @@ globalStyle(".side-link", {
   transition: stateTransition("background"),
 });
 globalStyle(".side-link:hover", { background: tokens.color.paper.subtle });
-globalStyle('.side-link[data-active="true"]', { background: tokens.color.paper.muted });
+// active — 옅은 면 + weight 한 단(작은 글자가 약해 보이는 걸 보상, Material 결).
+globalStyle('.side-link[data-active="true"]', {
+  background: tokens.color.paper.muted,
+  fontWeight: tokens.text.weight.medium,
+});

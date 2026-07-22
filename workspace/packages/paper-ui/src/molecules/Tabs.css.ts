@@ -1,6 +1,6 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
-import { tokens, stateTransition, SPACE_KEYS, type Space } from "../tokens";
+import { tokens, stateTransition, CONTROL_SIZES, type ControlSize } from "../tokens";
 import { sizeLadderRules } from "../internal/sizeLadder";
 
 export const tabsList = style({
@@ -27,7 +27,7 @@ export const tabItem = style({
 });
 
 export const tabItemSize = styleVariants(
-  Object.fromEntries(SPACE_KEYS.map((s) => [s, sizeLadderRules[s]])) as Record<Space, (typeof sizeLadderRules)[Space]>,
+  Object.fromEntries(CONTROL_SIZES.map((s) => [s, sizeLadderRules[s]])) as Record<ControlSize, (typeof sizeLadderRules)[ControlSize]>,
 );
 
 // 선택 = 흰 pill. muted 트랙 위 흰색 대비만으로 또렷하다 — 그림자 없음.

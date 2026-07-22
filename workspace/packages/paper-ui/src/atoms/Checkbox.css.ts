@@ -1,6 +1,6 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
-import { tokens, stateTransition, SPACE_KEYS, type Space } from "../tokens";
+import { tokens, stateTransition, CONTROL_SIZES, type ControlSize } from "../tokens";
 
 // 크기(변·틱·radius)는 size 축(checkboxSize)이 정한다. 색·틱 모양은 여기 고정.
 export const checkboxRoot = style({
@@ -31,10 +31,10 @@ export const checkboxRoot = style({
   },
 });
 
-// size 5 단 — 변(box)·모서리(radius) + 틱(mark 긴변·short 짧은변, 2:1).
+// size 3 단 — 변(box)·모서리(radius) + 틱(mark 긴변·short 짧은변, 2:1).
 export const checkboxSize = styleVariants(
   Object.fromEntries(
-    SPACE_KEYS.map((s) => [
+    CONTROL_SIZES.map((s) => [
       s,
       {
         width: tokens.shape.checkbox[s].box,
@@ -48,5 +48,5 @@ export const checkboxSize = styleVariants(
         },
       },
     ]),
-  ) as Record<Space, object>,
+  ) as Record<ControlSize, object>,
 );

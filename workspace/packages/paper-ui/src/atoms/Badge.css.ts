@@ -1,6 +1,6 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
-import { tokens, SPACE_KEYS, type Space } from "../tokens";
+import { tokens, CONTROL_SIZES, type ControlSize } from "../tokens";
 
 // geometry 만. 색은 resolveColorClassnames("soft", status) 가 붙이는 pui-c-soft-*
 // 클래스가 정한다 (옅은 색 면 = soft variant). Badge 는 gate(pui-interactive)를
@@ -19,24 +19,27 @@ export const badgeRoot = style({
   whiteSpace: "nowrap",
 });
 
-// size 5 단 — 배지 높이 사다리 + fontSize(라벨 열이라 한 단 낮춰 담백하게).
-const BADGE_FONT: Record<Space, string> = {
-  xs: tokens.shape.fontSize.xs,
-  sm: tokens.shape.fontSize.xs,
-  md: tokens.shape.fontSize.sm, // = 12 (기존 label 크기)
-  lg: tokens.shape.fontSize.sm,
-  xl: tokens.shape.fontSize.md,
+// size 3 단 — 배지 높이 + fontSize·padding(라벨 열이라 control 보다 한 단 낮춰 담백하게).
+const BADGE_FONT: Record<ControlSize, string> = {
+  sm: tokens.shape.fontSize.xs, // 11
+  md: tokens.shape.fontSize.sm, // 12 (anchor)
+  lg: tokens.shape.fontSize.md, // 14
+};
+const BADGE_PAD: Record<ControlSize, string> = {
+  sm: tokens.shape.padding.xs.interaction, // 4
+  md: tokens.shape.padding.sm.interaction, // 8 (anchor)
+  lg: tokens.shape.padding.md.interaction, // 12
 };
 
 export const badgeSize = styleVariants(
   Object.fromEntries(
-    SPACE_KEYS.map((s) => [
+    CONTROL_SIZES.map((s) => [
       s,
       {
         height: tokens.shape.badge[s],
-        paddingInline: tokens.shape.padding[s].interaction,
+        paddingInline: BADGE_PAD[s],
         fontSize: BADGE_FONT[s],
       },
     ]),
-  ) as Record<Space, { height: string; paddingInline: string; fontSize: string }>,
+  ) as Record<ControlSize, { height: string; paddingInline: string; fontSize: string }>,
 );

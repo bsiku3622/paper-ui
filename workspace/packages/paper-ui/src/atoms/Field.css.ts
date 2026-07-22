@@ -1,6 +1,6 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
-import { tokens, STATUS, STATUS_ACCENT, stateTransition, SPACE_KEYS, type Space } from "../tokens";
+import { tokens, STATUS, STATUS_ACCENT, stateTransition, CONTROL_SIZES, type ControlSize } from "../tokens";
 import type { StatusName } from "../tokens";
 import { sizeLadderRules } from "../internal/sizeLadder";
 
@@ -31,9 +31,9 @@ export const fieldRoot = style({
   },
 });
 
-// size 5 단 — Button 과 같은 공통 사다리 (height × paddingInline × fontSize).
+// size 3 단 — Button 과 같은 공통 사다리 (height × paddingInline × fontSize).
 export const fieldSize = styleVariants(
-  Object.fromEntries(SPACE_KEYS.map((s) => [s, sizeLadderRules[s]])) as Record<Space, (typeof sizeLadderRules)[Space]>,
+  Object.fromEntries(CONTROL_SIZES.map((s) => [s, sizeLadderRules[s]])) as Record<ControlSize, (typeof sizeLadderRules)[ControlSize]>,
 );
 
 // status — 상태 색 테두리. 포커스(파란 링)보다 약해, 포커스하면 파란 링이 이긴다.

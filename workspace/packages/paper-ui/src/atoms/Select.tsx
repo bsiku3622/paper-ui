@@ -3,15 +3,15 @@
 import type { SelectHTMLAttributes } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import type { Space } from "../tokens";
+import type { ControlSize } from "../tokens";
 import { selectRoot, selectSize } from "./Select.css";
 
 export type SelectOption = { value: string; label: string };
 
 export type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "className" | "children" | "size"> & {
   options: readonly SelectOption[];
-  // 크기 사다리 5 단 (xs~xl). Button·Field 와 같은 사다리 — 나란히 두면 높이가 맞는다.
-  size?: Space;
+  // 크기 3 단 (sm·md·lg). Button·Field 와 같은 사다리 — 나란히 두면 높이가 맞는다.
+  size?: ControlSize;
   className?: string;
 };
 

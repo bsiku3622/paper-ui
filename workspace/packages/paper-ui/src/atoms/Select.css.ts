@@ -1,6 +1,6 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
-import { tokens, stateTransition, SPACE_KEYS, type Space } from "../tokens";
+import { tokens, stateTransition, CONTROL_SIZES, type ControlSize } from "../tokens";
 
 // 크기(height·fontSize·왼쪽 padding)는 size 축(selectSize)이 정한다 — Button·Field 와
 // 같은 사다리. 오른쪽 padding 은 화살표 자리라 size 무관하게 넉넉히 고정.
@@ -32,17 +32,18 @@ export const selectRoot = style({
   },
 });
 
-// size 5 단 — Button·Field 와 같은 공통 사다리. 오른쪽은 화살표 자리라 xl 고정.
+// size 3 단 — Button·Field 와 같은 공통 사다리(fontSize 는 controlFontSize 로 분리).
+// 오른쪽은 화살표 자리라 넉넉히 고정.
 export const selectSize = styleVariants(
   Object.fromEntries(
-    SPACE_KEYS.map((s) => [
+    CONTROL_SIZES.map((s) => [
       s,
       {
         height: tokens.shape.height[s].interaction,
-        fontSize: tokens.shape.fontSize[s],
+        fontSize: tokens.shape.controlFontSize[s],
         paddingLeft: tokens.shape.padding[s].interaction,
         paddingRight: tokens.shape.padding.xl.interaction,
       },
     ]),
-  ) as Record<Space, { height: string; fontSize: string; paddingLeft: string; paddingRight: string }>,
+  ) as Record<ControlSize, { height: string; fontSize: string; paddingLeft: string; paddingRight: string }>,
 );
