@@ -8,20 +8,23 @@
 import type { InputHTMLAttributes } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import type { StatusName } from "../tokens";
-import { fieldRoot, fieldStatus, fieldNumeric } from "./Field.css";
+import type { StatusName, Space } from "../tokens";
+import { fieldRoot, fieldSize, fieldStatus, fieldNumeric } from "./Field.css";
 
-export type FieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className"> & {
+export type FieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "size"> & {
   status?: "default" | StatusName;
+  // 크기 사다리 5 단 (xs~xl). Button 과 같은 사다리 — 나란히 두면 높이가 맞는다.
+  size?: Space;
   numeric?: boolean;
   className?: string;
 };
 
-export const Field = ({ status = "default", numeric, className, ...rest }: FieldProps) => (
+export const Field = ({ status = "default", size = "md", numeric, className, ...rest }: FieldProps) => (
   <input
     aria-invalid={status === "danger" || undefined}
     className={joinClass(
       fieldRoot,
+      fieldSize[size],
       status !== "default" && fieldStatus[status],
       numeric && fieldNumeric,
       className,

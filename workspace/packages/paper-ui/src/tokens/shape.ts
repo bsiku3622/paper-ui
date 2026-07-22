@@ -125,6 +125,42 @@ export const SHAPE_DOT = {
   xl: REM(20),
 } as const;
 
+// ───── badge — 인라인 라벨 높이 사다리 ──────────────────────────────────────
+//
+// control 높이(24~44)보다 낮은 열. 낱말 하나를 담는 pill 이라 좁은 범위. md=22 anchor.
+
+export const SHAPE_BADGE = {
+  xs: REM(18),
+  sm: REM(20),
+  md: REM(22), // ◀ anchor
+  lg: REM(24),
+  xl: REM(28),
+} as const;
+
+// ───── checkbox — 변·틱·모서리 사다리 ───────────────────────────────────────
+//
+// box(변) 를 키우면 틱(mark 긴변·short 짧은변, 2:1)과 radius 가 비례해 커진다. md=16 anchor.
+
+export const SHAPE_CHECKBOX = {
+  xs: { box: REM(14), mark: REM(7), short: REM(3.5), radius: REM(4) },
+  sm: { box: REM(15), mark: REM(7), short: REM(3.5), radius: REM(4) },
+  md: { box: REM(16), mark: REM(8), short: REM(4), radius: REM(5) }, // ◀ anchor
+  lg: { box: REM(18), mark: REM(9), short: REM(4.5), radius: REM(6) },
+  xl: { box: REM(20), mark: REM(10), short: REM(5), radius: REM(6) },
+} as const;
+
+// ───── switch — 트랙·손잡이 사다리 (비례 스케일) ────────────────────────────
+//
+// w(트랙 가로) · h(트랙 세로) · thumb(손잡이). 켜짐 이동은 css 가 이 값으로 calc. md 현재값.
+
+export const SHAPE_SWITCH = {
+  xs: { w: REM(30), h: REM(17), thumb: REM(13) },
+  sm: { w: REM(32), h: REM(18), thumb: REM(14) },
+  md: { w: REM(36), h: REM(20), thumb: REM(16) }, // ◀ anchor
+  lg: { w: REM(42), h: REM(24), thumb: REM(19) },
+  xl: { w: REM(48), h: REM(28), thumb: REM(23) },
+} as const;
+
 // ───── measure — prose 줄길이 ───────────────────────────────────────────────
 
 export const SHAPE_MEASURE = {
@@ -192,6 +228,9 @@ export const SHAPE_VALUES = {
   radius: SHAPE_RADIUS,
   fontSize: SHAPE_FONT_SIZE,
   dot: SHAPE_DOT,
+  badge: SHAPE_BADGE,
+  checkbox: SHAPE_CHECKBOX,
+  switch: SHAPE_SWITCH,
   measure: SHAPE_MEASURE,
   shadow: SHADOW,
   constants: SHAPE_CONSTANTS,

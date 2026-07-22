@@ -12,7 +12,7 @@
   "sideEffects": ["**/*.css", "**/*.css.ts"],
   "files": ["dist"],
   "scripts": {
-    "build": "vite build",
+    "build": "vite build && tsc -p tsconfig.json --declaration --emitDeclarationOnly --outDir dist --noEmit false",
     "typecheck": "tsc --noEmit",
     "test": "vitest --run"
   },

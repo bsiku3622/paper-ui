@@ -6,6 +6,7 @@ import { useId, type ReactNode } from "react";
 
 import { Stack, Inline, Text } from "../primitives";
 import { Radio } from "../atoms";
+import type { Space } from "../tokens";
 
 export type RadioOption = { value: string; label: ReactNode; disabled?: boolean };
 
@@ -14,10 +15,12 @@ export type RadioGroupProps = {
   value?: string;
   onChange?: (value: string) => void;
   name?: string;
+  // 라디오 크기 사다리 5 단 (xs~xl). 그룹의 모든 라디오에 적용.
+  size?: Space;
   className?: string;
 };
 
-export const RadioGroup = ({ options, value, onChange, name, className }: RadioGroupProps) => {
+export const RadioGroup = ({ options, value, onChange, name, size = "md", className }: RadioGroupProps) => {
   const auto = useId();
   const group = name ?? auto;
   return (
@@ -29,6 +32,7 @@ export const RadioGroup = ({ options, value, onChange, name, className }: RadioG
             value={o.value}
             checked={value === o.value}
             disabled={o.disabled}
+            size={size}
             onChange={() => onChange?.(o.value)}
           />
           <Text variant="body" as="span" ink={o.disabled ? "faint" : "base"}>

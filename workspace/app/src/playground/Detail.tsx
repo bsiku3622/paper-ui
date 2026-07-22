@@ -38,8 +38,8 @@ const ControlRow = ({ control, value, onChange }: { control: Control; value: str
       <Box
         as="input"
         // Field 를 쓰지 않는 건 여기 값이 곧장 preview 로 흐르는 편집 필드라서.
-        // paper 프리미티브(Box as=input)로 최소 구성.
-        paper="subtle"
+        // paper 프리미티브(Box as=input)로 최소 구성. 흰 면 + 옅은 테두리(Field 결).
+        paper="base"
         radius="sm"
         paddingX="sm"
         value={value === undefined ? "" : String(value)}
@@ -111,7 +111,7 @@ const DetailView = ({ spec }: { spec: CompSpec }) => {
         </Stack>
 
         {/* controls */}
-        <Box paper="subtle" radius="md" padding="lg" style={{ position: "sticky", top: `calc(${tokens.shape.atom.navbar} + ${tokens.shape.gap.xl})` }}>
+        <Box paper="base" radius="md" padding="lg" style={{ position: "sticky", top: `calc(${tokens.shape.atom.navbar} + ${tokens.shape.gap.xl})`, border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }}>
           <Stack gap="lg">
             <Inline justify="between" align="center">
               <Text variant="label">Props</Text>

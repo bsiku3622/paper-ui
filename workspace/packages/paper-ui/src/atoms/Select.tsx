@@ -3,17 +3,20 @@
 import type { SelectHTMLAttributes } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import { selectRoot } from "./Select.css";
+import type { Space } from "../tokens";
+import { selectRoot, selectSize } from "./Select.css";
 
 export type SelectOption = { value: string; label: string };
 
-export type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "className" | "children"> & {
+export type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "className" | "children" | "size"> & {
   options: readonly SelectOption[];
+  // 크기 사다리 5 단 (xs~xl). Button·Field 와 같은 사다리 — 나란히 두면 높이가 맞는다.
+  size?: Space;
   className?: string;
 };
 
-export const Select = ({ options, className, ...rest }: SelectProps) => (
-  <select className={joinClass(selectRoot, className)} {...rest}>
+export const Select = ({ options, size = "md", className, ...rest }: SelectProps) => (
+  <select className={joinClass(selectRoot, selectSize[size], className)} {...rest}>
     {options.map((o) => (
       <option key={o.value} value={o.value}>
         {o.label}

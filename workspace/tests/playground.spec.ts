@@ -160,8 +160,8 @@ test("detail · 알 수 없는 slug 는 전수로 되돌린다", async ({ page }
 test("detail · 컴포넌트 전환 시 상태가 초기화된다", async ({ page }) => {
   await page.goto("/playground/badge");
   await page.locator(".code-block pre").waitFor();
-  // Badge → Button 을 사이드바 링크(클라이언트 이동)로
-  await page.locator('a.side-link[href="/playground/button"]').click();
+  // Badge → Button 을 사이드바 링크(클라이언트 이동)로 (링크 = a, 안에 Button)
+  await page.locator('a[href="/playground/button"]').click();
   await expect(page).toHaveURL(/\/playground\/button$/);
   const code = page.locator(".code-block pre");
   await expect(code).toHaveText("<Button>버튼</Button>");
