@@ -4,8 +4,8 @@ import { tokens, stateTransition } from "../tokens";
 
 export const tabsList = style({
   display: "inline-flex",
-  gap: "2px",
-  padding: "3px",
+  gap: tokens.shape.atom.tabsTrackGap,
+  padding: tokens.shape.atom.tabsTrackPad,
   background: tokens.color.paper.muted,
   borderRadius: tokens.shape.radius.layout.md,
 });
@@ -15,7 +15,7 @@ export const tabItem = style({
   background: "transparent",
   border: "none",
   cursor: "pointer",
-  height: "1.75rem",
+  height: tokens.shape.height.sm.interaction,
   paddingInline: tokens.shape.padding.md.interaction,
   borderRadius: tokens.shape.radius.interaction,
   fontFamily: tokens.text.font.sans,

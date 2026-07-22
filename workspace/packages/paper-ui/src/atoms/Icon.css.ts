@@ -1,13 +1,15 @@
 import { style } from "@vanilla-extract/css";
 
+import { tokens } from "../tokens";
+
 export const iconRoot = style({
   display: "inline-block",
   flexShrink: 0,
-  width: "1rem",
-  height: "1rem",
+  width: tokens.shape.dot.md,
+  height: tokens.shape.dot.md,
   stroke: "currentColor",
   fill: "none",
-  strokeWidth: 1.75,
+  strokeWidth: tokens.shape.constants.iconStrokeWidth,
   strokeLinecap: "round",
   strokeLinejoin: "round",
 });

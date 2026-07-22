@@ -169,7 +169,7 @@ export const Home = () => (
     <SiteNav />
 
     <Box paddingX="xl">
-      <Stack gap="xl" style={{ maxWidth: "72rem", marginInline: "auto", width: "100%" }}>
+      <Stack gap="xl" style={{ maxWidth: tokens.layout.container.content, marginInline: "auto", width: "100%" }}>
         {/* ── Hero ─────────────────────────────────────────────── */}
         <Box className="hero-grid" style={{ paddingBlock: "3.5rem 3rem" }}>
           <Stack gap="lg">

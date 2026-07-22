@@ -49,7 +49,7 @@ export { PaperProvider } from "./provider/PaperProvider";
 export type { PaperProviderProps } from "./provider/PaperProvider";
 
 // Tokens — 앱이 시스템 값에 닿는 유일한 통로
-export { tokens } from "./tokens";
+export { tokens, stateTransition } from "./tokens";
 export type { AccentName, StatusName, TextVariant, Space } from "./tokens";
 
 // Resolver 타입 — 앱이 자기 컴포넌트를 이 어휘로 만들 때
