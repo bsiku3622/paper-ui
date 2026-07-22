@@ -153,7 +153,7 @@ const DemoPreview = () => (
     <Box paper="base" padding="md">
       <Stack gap="xs">
         {PREVIEW_ROWS.map((r) => (
-          <Inline key={r.key} gap="md" align="center" paddingX="sm" paddingY="sm" style={{ borderRadius: tokens.shape.radius.sm }}>
+          <Inline key={r.key} gap="md" align="center" paddingX="sm" paddingY="sm" style={{ borderRadius: tokens.shape.radius.interaction }}>
             <Text variant="caption" as="span" ink="soft" style={{ width: "4.5rem", fontVariantNumeric: "tabular-nums" }}>{r.key}</Text>
             <Text variant="body" as="span" style={{ flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{r.title}</Text>
             <Badge status={r.status}>{r.label}</Badge>

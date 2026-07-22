@@ -55,7 +55,7 @@ globalStyle("*", { boxSizing: "border-box" });
 globalStyle(":focus-visible", {
   outline: `2px solid ${tokens.color.focus.ring}`,
   outlineOffset: "2px",
-  borderRadius: tokens.shape.radius.sm,
+  borderRadius: tokens.shape.radius.interaction,
 });
 
 // ╭──────────────────────────────────────────────────────────────────────────╮

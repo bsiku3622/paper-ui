@@ -52,8 +52,8 @@ for (const a of ACCENT_NAMES) {
 // ───── space — 간격 ────────────────────────────────────────────────────────
 
 for (const s of SPACE_KEYS) {
-  globalStyle(`.pui-p-${s}`, { padding: tokens.shape.space[s] });
-  globalStyle(`.pui-px-${s}`, { paddingInline: tokens.shape.space[s] });
-  globalStyle(`.pui-py-${s}`, { paddingBlock: tokens.shape.space[s] });
-  globalStyle(`.pui-gap-${s}`, { gap: tokens.shape.space[s] });
+  globalStyle(`.pui-p-${s}`, { padding: tokens.shape.padding[s].interaction });
+  globalStyle(`.pui-px-${s}`, { paddingInline: tokens.shape.padding[s].interaction });
+  globalStyle(`.pui-py-${s}`, { paddingBlock: tokens.shape.padding[s].interaction });
+  globalStyle(`.pui-gap-${s}`, { gap: tokens.shape.gap[s] });
 }

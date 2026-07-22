@@ -13,19 +13,19 @@ export const tableHead = style({
 });
 
 export const tableTh = style({
-  height: tokens.shape.height.control,
-  paddingInline: tokens.shape.space.md,
+  height: tokens.shape.height.md.interaction,
+  paddingInline: tokens.shape.padding.md.interaction,
   textAlign: "left",
   whiteSpace: "nowrap",
 });
 
 // 행 — 구분선은 아주 옅게. hover 때만 배경이 조용히 바뀐다.
 export const tableTr = style({
-  height: tokens.shape.height.row,
+  height: tokens.shape.height.xl.interaction,
   transition: "background 100ms ease",
   selectors: {
     "&:not(:last-child)": {
-      borderBottom: `${tokens.shape.borderWidth.base} solid ${tokens.color.border.base}`,
+      borderBottom: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
     },
     // 표는 subtle 패널 안에 들어가는 일이 많다 — hover 를 subtle 로 두면 안 보인다.
     // muted 로 한 단 더 내려 어느 컨테이너에서도 어두워지게 (원칙 4).
@@ -34,7 +34,7 @@ export const tableTr = style({
 });
 
 export const tableTd = style({
-  paddingInline: tokens.shape.space.md,
+  paddingInline: tokens.shape.padding.md.interaction,
   fontSize: tokens.text.size.body,
 });
 

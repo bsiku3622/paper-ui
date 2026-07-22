@@ -5,12 +5,12 @@ import type { StatusName } from "../tokens";
 
 // 옅은 회색 면. 포커스 때만 파란 링 (ChatGPT 의 입력 결).
 export const fieldRoot = style({
-  height: tokens.shape.height.control,
+  height: tokens.shape.height.md.interaction,
   width: "100%",
-  paddingInline: tokens.shape.space.md,
+  paddingInline: tokens.shape.padding.md.interaction,
   background: tokens.color.paper.subtle,
-  borderRadius: tokens.shape.radius.sm,
-  borderWidth: tokens.shape.borderWidth.base,
+  borderRadius: tokens.shape.radius.interaction,
+  borderWidth: tokens.shape.constants.borderWidth,
   borderStyle: "solid",
   borderColor: "transparent",
   color: tokens.color.ink.base,

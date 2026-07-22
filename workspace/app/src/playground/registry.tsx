@@ -345,7 +345,7 @@ export const COMPONENTS: CompSpec[] = [
     blurb: "지면 맨 위 한 줄. brand·items·trailing 을 받는다.",
     controls: [],
     render: () => (
-      <Box style={{ width: "100%", border: `1px solid ${tokens.color.border.base}`, borderRadius: tokens.shape.radius.md, overflow: "hidden" }}>
+      <Box style={{ width: "100%", border: `1px solid ${tokens.color.border.base}`, borderRadius: tokens.shape.radius.layout.md, overflow: "hidden" }}>
         <Navbar
           brand={<Text variant="subheading">Studio</Text>}
           items={[

@@ -8,10 +8,10 @@ import "../styles/theme.css";
 import "../styles/utility.css";
 
 export const boxRadius = styleVariants({
-  sm: { borderRadius: tokens.shape.radius.sm },
-  md: { borderRadius: tokens.shape.radius.md },
-  lg: { borderRadius: tokens.shape.radius.lg },
-  pill: { borderRadius: tokens.shape.radius.pill },
+  sm: { borderRadius: tokens.shape.radius.interaction },
+  md: { borderRadius: tokens.shape.radius.layout.md },
+  lg: { borderRadius: tokens.shape.radius.layout.lg },
+  pill: { borderRadius: tokens.shape.constants.pillRadius },
 });
 
 export const boxShadow = styleVariants({
