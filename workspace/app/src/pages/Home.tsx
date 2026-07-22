@@ -34,7 +34,7 @@ const PRINCIPLES = [
 ] as const;
 
 const STAT = [
-  { n: "20", l: "컴포넌트" },
+  { n: "25", l: "컴포넌트" },
   { n: "3", l: "포인트 색" },
   { n: "4", l: "빌드가 강제하는 규칙" },
 ] as const;

@@ -27,6 +27,11 @@ import {
   Tabs,
   Text,
   TextField,
+  Textarea,
+  Switch,
+  RadioGroup,
+  Spinner,
+  Alert,
   Tooltip,
   tokens,
   type Column,
@@ -252,6 +257,52 @@ export const COMPONENTS: CompSpec[] = [
     ),
     code: () => `<Divider />`,
   },
+  {
+    slug: "textarea",
+    name: "Textarea",
+    group: "Atoms",
+    blurb: "여러 줄 입력. Field 와 같은 status 축, 세로로만 resize.",
+    controls: [
+      { kind: "text", prop: "placeholder", label: "placeholder", def: "여러 줄 입력…" },
+      { kind: "enum", prop: "status", label: "status", options: ["default", "info", "success", "warning", "danger"], def: "default" },
+      { kind: "bool", prop: "disabled", label: "disabled", def: false },
+    ],
+    render: (st) => (
+      <Box style={{ width: "18rem" }}>
+        <Textarea placeholder={s(st.placeholder)} status={s(st.status) as "default" | StatusName} disabled={b(st.disabled)} rows={3} />
+      </Box>
+    ),
+    code: (st) =>
+      `<Textarea${A("placeholder", s(st.placeholder))}${AE("status", s(st.status), "default")}${A("disabled", b(st.disabled))} />`,
+  },
+  {
+    slug: "switch",
+    name: "Switch",
+    group: "Atoms",
+    blurb: "켬/끔 토글. 즉시 적용되는 설정 자리. 켜지면 검정 트랙(색이 아니라 primary).",
+    controls: [
+      { kind: "bool", prop: "checked", label: "checked", def: true },
+      { kind: "bool", prop: "disabled", label: "disabled", def: false },
+      { kind: "text", prop: "label", label: "label", def: "알림 받기" },
+    ],
+    render: (st) => (
+      <Inline as="label" gap="sm" align="center">
+        <Switch checked={b(st.checked)} disabled={b(st.disabled)} readOnly />
+        <Text variant="body" as="span">{s(st.label)}</Text>
+      </Inline>
+    ),
+    code: (st) =>
+      `<Inline as="label" gap="sm" align="center">\n  <Switch checked={${b(st.checked)}}${A("disabled", b(st.disabled))} />\n  <Text variant="body" as="span">${s(st.label)}</Text>\n</Inline>`,
+  },
+  {
+    slug: "spinner",
+    name: "Spinner",
+    group: "Atoms",
+    blurb: "진행 중 표시. 옅은 링에 한 조각만 진해 회전으로 읽힌다. 주기는 motion 토큰.",
+    controls: [],
+    render: () => <Spinner />,
+    code: () => `<Spinner />`,
+  },
 
   // ─ Molecules ─
   {
@@ -316,6 +367,35 @@ export const COMPONENTS: CompSpec[] = [
     ),
     code: (st) => `<Tooltip label="${s(st.label)}">\n  <Button variant="outline">hover</Button>\n</Tooltip>`,
   },
+  {
+    slug: "radiogroup",
+    name: "RadioGroup",
+    group: "Molecules",
+    blurb: "여럿 중 하나. Radio + Label 을 options 로 묶고 한 그룹으로 만든다.",
+    controls: [],
+    render: () => <RadioGroupDemo />,
+    code: () =>
+      `const [v, setV] = useState("a");\n<RadioGroup value={v} onChange={setV} options={[\n  { value: "a", label: "옵션 A" },\n  { value: "b", label: "옵션 B" },\n  { value: "c", label: "옵션 C" },\n]} />`,
+  },
+  {
+    slug: "alert",
+    name: "Alert",
+    group: "Molecules",
+    blurb: "상태 한 줄을 옅은 색 면으로 알린다. status 시스템의 표시 자리.",
+    controls: [
+      { kind: "enum", prop: "status", label: "status", options: ["info", "success", "warning", "danger"], def: "info" },
+      { kind: "text", prop: "title", label: "title", def: "확인이 필요합니다" },
+      { kind: "text", prop: "children", label: "children", def: "이 작업은 되돌릴 수 없습니다." },
+    ],
+    render: (st) => (
+      <Box style={{ width: "22rem" }}>
+        <Alert status={s(st.status) as StatusName} title={s(st.title)}>
+          {s(st.children)}
+        </Alert>
+      </Box>
+    ),
+    code: (st) => `<Alert status="${s(st.status)}" title="${s(st.title)}">${s(st.children)}</Alert>`,
+  },
 
   // ─ Components ─
   {
@@ -373,6 +453,21 @@ const TabsDemo = () => {
         { value: "one", label: "하나" },
         { value: "two", label: "둘" },
         { value: "three", label: "셋" },
+      ]}
+    />
+  );
+};
+
+const RadioGroupDemo = () => {
+  const [v, setV] = useState("a");
+  return (
+    <RadioGroup
+      value={v}
+      onChange={setV}
+      options={[
+        { value: "a", label: "옵션 A" },
+        { value: "b", label: "옵션 B" },
+        { value: "c", label: "옵션 C" },
       ]}
     />
   );
