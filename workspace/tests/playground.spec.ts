@@ -155,6 +155,20 @@ test("detail · 알 수 없는 slug 는 전수로 되돌린다", async ({ page }
   await page.getByTestId("text-title").waitFor();
 });
 
+// 컴포넌트 사이를 사이드바로 옮기면 상태가 앞 컴포넌트 값을 물려받지 않고 새로 시작한다
+// (과거 버그: variant="" · children=undefined 유령이 샜다).
+test("detail · 컴포넌트 전환 시 상태가 초기화된다", async ({ page }) => {
+  await page.goto("/playground/badge");
+  await page.locator(".code-block pre").waitFor();
+  // Badge → Button 을 사이드바 링크(클라이언트 이동)로
+  await page.locator('a.side-link[href="/playground/button"]').click();
+  await expect(page).toHaveURL(/\/playground\/button$/);
+  const code = page.locator(".code-block pre");
+  await expect(code).toHaveText("<Button>버튼</Button>");
+  await expect(code).not.toContainText("undefined");
+  await expect(code).not.toContainText('variant=""');
+});
+
 // ── 콘솔 에러가 없다 ────────────────────────────────────────────────────────
 test("no console errors on playground", async ({ page }: { page: Page }) => {
   const errs: string[] = [];
