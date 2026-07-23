@@ -57,9 +57,9 @@ export type {
   AlertProps,
 } from "./molecules";
 
-// Components (3)
-export { Table, Modal, Navbar } from "./components";
-export type { TableProps, Column, ModalProps, NavbarProps, NavItem } from "./components";
+// Components (4)
+export { Table, Modal, Navbar, Banner } from "./components";
+export type { TableProps, Column, ModalProps, NavbarProps, NavItem, BannerProps } from "./components";
 
 // Provider
 export { PaperProvider } from "./provider/PaperProvider";

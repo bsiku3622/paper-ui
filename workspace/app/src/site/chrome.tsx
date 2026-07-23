@@ -5,7 +5,7 @@
 
 import { Link, useLocation } from "react-router-dom";
 
-import { Box, Inline, Navbar, Text, tokens } from "@studio-baeks/paper-ui";
+import { Box, Inline, Navbar, Banner, Text, tokens } from "@studio-baeks/paper-ui";
 
 import { Logo } from "./Logo";
 import "./site.css";
@@ -63,33 +63,25 @@ export const SiteNav = () => {
   );
 };
 
-// 데모용 얇은 통합 바 — 브랜드를 이어 붙이고 사이트로 돌아가는 escape 를 준다.
-// 데모의 제품 Navbar 는 이 아래에 그대로 살아 데모의 사실감을 지킨다.
+// 데모용 얇은 통합 바 — 라이브러리 Banner(검정 solid)로 브랜드를 이어 붙이고 사이트로
+// 돌아가는 escape 를 준다. 데모의 제품 Navbar 는 이 아래에 그대로 살아 사실감을 지킨다.
 export const DemoBar = () => (
-  <Box
-    as="header"
-    paddingX="xl"
-    style={{
-      background: tokens.color.ink.base,
-      color: tokens.color.paper.base,
-    }}
-  >
-    <Inline gap="md" justify="between" align="center" style={{ height: tokens.shape.height.lg.interaction, maxWidth: tokens.layout.container.content, marginInline: "auto" }}>
-      <Inline gap="sm" align="center">
-        <Link to="/" style={{ textDecoration: "none", color: tokens.color.paper.base, display: "inline-flex" }} aria-label="Paper UI 홈">
-          <Logo height={17} />
-        </Link>
-        <Text variant="caption" as="span" style={{ color: tokens.color.paper.muted }}>
-          데모 · 이슈 트래커
-        </Text>
-      </Inline>
+  <Banner
+    action={
       <Link to="/" style={{ textDecoration: "none" }}>
         <Text variant="caption" as="span" style={{ color: tokens.color.paper.base, fontWeight: tokens.text.weight.medium }}>
           ← 사이트로
         </Text>
       </Link>
-    </Inline>
-  </Box>
+    }
+  >
+    <Link to="/" style={{ textDecoration: "none", color: tokens.color.paper.base, display: "inline-flex" }} aria-label="Paper UI 홈">
+      <Logo height={17} />
+    </Link>
+    <Text variant="caption" as="span" style={{ color: tokens.color.paper.muted }}>
+      데모 · 이슈 트래커
+    </Text>
+  </Banner>
 );
 
 // Navbar 를 직접 쓰고 싶은 페이지용 (data API). 위 SiteNav 가 기본.
