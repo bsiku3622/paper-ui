@@ -21,6 +21,7 @@ import {
   Link,
   Modal,
   Navbar,
+  Banner,
   Select,
   Stack,
   Table,
@@ -514,6 +515,37 @@ export const COMPONENTS: CompSpec[] = [
     ),
     code: () =>
       `<Navbar\n  brand={<Text variant="subheading">Studio</Text>}\n  items={[{ value: "issues", label: "이슈" }, { value: "boards", label: "보드" }]}\n  active="issues"\n  trailing={<Button>새 이슈</Button>}\n/>`,
+  },
+  {
+    slug: "banner",
+    name: "Banner",
+    group: "Components",
+    blurb: "얇은 풀폭 상단 바. 화면을 채우는 색은 검정(solid)뿐 — status 색은 그 색의 의미를 짊어질 때(공지·경고)만. 좌 콘텐츠 + 우 액션.",
+    controls: [
+      { kind: "enum", prop: "tone", label: "tone", options: ["solid", "info", "success", "warning", "danger"], def: "solid" },
+      { kind: "text", prop: "children", label: "children", def: "데모 · 이슈 트래커" },
+    ],
+    render: (st) => (
+      <Box style={{ width: "100%", borderRadius: tokens.shape.radius.layout.md, overflow: "hidden" }}>
+        <Banner
+          tone={s(st.tone) as "solid" | StatusName}
+          action={
+            <Text variant="caption" as="span" style={{ color: tokens.color.paper.base, fontWeight: tokens.text.weight.medium }}>
+              ← 사이트로
+            </Text>
+          }
+        >
+          <Text variant="caption" as="span" style={{ color: tokens.color.paper.base, fontWeight: tokens.text.weight.semibold }}>
+            Paper UI
+          </Text>
+          <Text variant="caption" as="span" style={{ color: tokens.color.paper.muted }}>
+            {s(st.children)}
+          </Text>
+        </Banner>
+      </Box>
+    ),
+    code: (st) =>
+      `<Banner${AE("tone", s(st.tone), "solid")} action={<Link>← 사이트로</Link>}>\n  Paper UI · ${s(st.children)}\n</Banner>`,
   },
 ];
 

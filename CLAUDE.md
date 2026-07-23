@@ -117,10 +117,11 @@ Tokens → Primitives → Atoms → Molecules → Components
 | Primitives | 4 | `Box · Stack · Inline · Text` — raw HTML 을 렌더하는 유일한 자리 |
 | Atoms | 13 | `Button · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Icon · Spinner · Divider · Link` |
 | Molecules | 6 | `Card · TextField · RadioGroup · Tabs · Tooltip · Alert` |
-| Components | 3 | `Table · Modal · Navbar` |
+| Components | 4 | `Table · Modal · Navbar · Banner` |
 
-**= 26.** 폼(Textarea·Switch·Radio)·피드백(Alert)·로딩(Spinner)까지 시스템이 완결되는
-최소 집합. 더 늘리려면 *실제 화면에서 두 번 이상 필요했다는 증거* 가 있어야 한다.
+**= 27.** 폼(Textarea·Switch·Radio)·피드백(Alert)·로딩(Spinner)까지 시스템이 완결되는
+최소 집합. Banner 는 데모·공지 chrome 의 얇은 풀폭 바(검정 solid + status). 더 늘리려면
+*실제 화면에서 두 번 이상 필요했다는 증거* 가 있어야 한다.
 
 1. **raw 값 금지** — hex 는 `tokens/colors.ts` 에만. `tokens.color.X` 로만 참조.
 2. **VALUES import 격리** — raw 값 모듈은 `styles/theme.css.ts` 만 import.
