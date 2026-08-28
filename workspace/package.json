@@ -12,12 +12,13 @@
     "test:e2e": "playwright test"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "eslint": "^9.0.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react-hooks": "^7.1.1",
-    "playwright": "^1.60.0",
-    "@playwright/test": "^1.60.0"
+    "playwright": "^1.60.0"
   },
   "packageManager": "pnpm@11.0.9",
   "engines": {

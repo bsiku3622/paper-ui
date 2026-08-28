@@ -1,4 +1,4 @@
-# 아키텍처
+# Architecture
 
 값 하나가 어떻게 화면까지 흐르는지, 그리고 왜 이름이 어긋날 수 없는지를 다룹니다. 핵심은 하나입니다 — **각 도메인마다 값 트리가 하나 있고, 같은 헬퍼가 그 트리를 한 번 걸어서 두 산출물을 만든다.**
 
@@ -21,23 +21,23 @@ VALUES (raw hex/rem/ms — 유일한 정의 위치)
 
 ## resolver — 규칙의 주인
 
-색은 `.css.ts`마다 흩어지지 않고 **resolver + 중앙 emission** 한 자리에 모입니다. 컴포넌트는 "내가 어떤 variant·status인지"만 말하고, 그게 무슨 클래스가 되는지는 모릅니다.
+색은 `.css.ts`마다 흩어지지 않고 **resolver + 중앙 emission** 한 자리에 모입니다. 컴포넌트는 "내가 어떤 color·variant인지"(또는 어떤 surface인지)만 말하고, 그게 무슨 클래스가 되는지는 모릅니다.
 
 ```
-resolveColorClassnames(variant, status)  →  "pui-c-solid-danger"   (이름 규칙)
-        │                                          │
-styles/color.css.ts  ── VARIANTS × STATUS 를 loop ──┘  (그 클래스의 실체)
+resolveColor(color, variant)  →  "pui-c-error-solid"   (이름 규칙)
+        │                              │
+styles/color.css.ts  ── COLORS × VARIANTS 를 loop ──┘  (그 클래스의 실체)
 ```
 
-`resolveColorClassnames("solid", "danger")`가 `"pui-c-solid-danger"`를 돌려주고, 그 클래스가 무엇인지(background·color·border)는 `styles/color.css.ts`가 같은 `VARIANTS × STATUS` 배열을 걸어 굳힙니다. 두 자리가 한 배열을 돌기 때문에 resolver가 만들 수 있는 모든 이름에 대응하는 규칙이 반드시 있습니다 — 조합이 빠지거나 어긋날 수 없습니다. hover는 `.pui-interactive` gate가 함께 있을 때만 뭅니다(Button은 붙이고, 표시용 Badge는 안 붙입니다).
+`resolveColor("error", "solid")`가 `"pui-c-error-solid"`를 돌려주고, 그 클래스가 무엇인지(background·color·border)는 `styles/color.css.ts`가 같은 `COLORS × VARIANTS` 배열을 걸어 굳힙니다. 면은 색과 다른 종류라 resolver 도 따로입니다 — `resolveSurface(surface)` → `"pui-surface-raised"`. 두 자리가 한 배열을 돌기 때문에 resolver가 만들 수 있는 모든 이름에 대응하는 규칙이 반드시 있습니다 — 조합이 빠지거나 어긋날 수 없습니다. hover는 `.pui-interactive` gate가 함께 있을 때만 뭅니다(Button은 붙이고, 표시용 Badge는 안 붙입니다).
 
 ## 레이어
 
 ```
-Primitives(4) → Atoms(13) → Molecules(6) → Components(3)
+Primitives(4) → Atoms(13) → Molecules(6) → Components(4)
 ```
 
-**Primitive만 raw HTML을 렌더합니다.** `Box · Stack · Inline · Text` 넷이 `div`·`span` 같은 태그에 닿는 유일한 레이어입니다. Molecule부터는 이들로 합성하고, raw 태그가 필요하면 `<Box as="button">`이 유일한 통로입니다.
+**raw HTML은 Primitive와 Atom까지입니다.** `Box · Stack · Inline · Text`(Primitive)가 기본 태그 레이어이고, Atom도 자기 시맨틱 태그를 직접 렌더합니다(`Button`→`button` · `Field`→`input` · `Link`→`a`). **Molecule부터는** raw 태그를 직접 쓰지 않고 Primitive·Atom으로 합성합니다 — raw 태그가 꼭 필요하면 `<Box as="button">`이 유일한 통로입니다. eslint는 이 금지를 Molecule·Component 레이어에 강제합니다(규칙 4).
 
 ## 절대 규칙 4
 

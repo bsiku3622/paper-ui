@@ -1,4 +1,4 @@
-# 폼 한 벌
+# Form
 
 입력 화면 하나를 짓습니다. 라벨·입력·선택·토글·버튼을 어떻게 앉히고, 검증 표시가 어디서 오는지를 봅니다. 핵심은 하나입니다 — **정렬과 상태 색은 시스템이 정하고, 여러분은 배치와 의미만 고릅니다.**
 
@@ -36,7 +36,7 @@
 
 ## 검증은 status로
 
-틀린 입력은 boolean을 흩뿌리지 않고 `status` 축 하나로 말합니다. `TextField`는 `error` 문구를 주면 그것만으로 danger가 되어 — 테두리가 빨개지고 문구가 빨간 caption으로 붙습니다. 상태를 두 번 적지 않습니다.
+틀린 입력은 boolean을 흩뿌리지 않고 `status` 축 하나로 말합니다. `TextField`는 `error` 문구를 주면 그것만으로 error 상태가 되어 — 테두리가 빨개지고 문구가 빨간 caption으로 붙습니다. 상태를 두 번 적지 않습니다.
 
 ```tsx
 <TextField
@@ -46,12 +46,12 @@
 />
 ```
 
-`Field`를 직접 쓸 때도 같은 축입니다 — `status="danger"`가 테두리를 빨갛게 하고 `aria-invalid`를 함께 세웁니다. 포커스하면 상태 색보다 파란 포커스 링이 이깁니다(지금 무엇을 만지는지가 먼저입니다).
+`Field`를 직접 쓸 때도 같은 축입니다 — `status="error"`가 테두리를 빨갛게 하고 `aria-invalid`를 함께 세웁니다. 포커스하면 상태 색보다 파란 포커스 링이 이깁니다(지금 무엇을 만지는지가 먼저입니다).
 
 ```tsx
-<Field status="danger" placeholder="필수 항목" />
+<Field status="error" placeholder="필수 항목" />
 ```
 
 ## 왜 이렇게
 
-정렬은 여러분이 맞추는 게 아닙니다. `Field`·`Button`·`Select`가 같은 `height.md.interaction`(34px)을 토큰에서 읽어, 한 줄에 나란히 두면 baseline이 저절로 맞습니다. 상태 색도 `status` 하나로 모든 입력이 같은 규칙을 돌기 때문에, Field와 TextField의 danger가 조용히 달라질 수 없습니다. 폼에서 여러분이 정하는 것은 *무엇을 묻는가*(라벨)와 *어떻게 배치하는가*(Stack/Inline)뿐입니다.
+정렬은 여러분이 맞추는 게 아닙니다. `Field`·`Button`·`Select`가 같은 `height.md.interaction`(34px)을 토큰에서 읽어, 한 줄에 나란히 두면 baseline이 저절로 맞습니다. 상태 색도 `status` 하나로 모든 입력이 같은 규칙을 돌기 때문에, Field와 TextField의 error 상태가 조용히 달라질 수 없습니다. 폼에서 여러분이 정하는 것은 *무엇을 묻는가*(라벨)와 *어떻게 배치하는가*(Stack/Inline)뿐입니다.

@@ -3,12 +3,14 @@
 // ║                                                                          ║
 // ║ 모든 수치의 단일 출처. 네 축이 직교한다 — size · weight · leading ·      ║
 // ║ tracking. 각 축이 토큰이라 컴포넌트가 "0.875rem" 같은 raw 값을 박지      ║
-// ║ 못한다. variant 는 이 축들을 조합한 8 단 위계일 뿐이다.                  ║
+// ║ 못한다. variant 는 이 축들을 조합한 7 단 위계일 뿐이다.                  ║
 // ╚══════════════════════════════════════════════════════════════════════════╝
 //
 // 구조 —
-//   SIZE · LEADING · TRACKING  8 단 variant 스케일 (정본 수치)
+//   SIZE · LEADING · TRACKING  7 단 variant 스케일 (정본 수치)
 //   WEIGHT                     굵기 어휘 (variant 와 직교 — 컨트롤이 골라 씀)
+//   FAMILY                     서체 축 (sans·mono) — variant 위에 교차. Text 의
+//                              family prop 으로 고르고, .pui-mono 가 자간을 리셋
 //   TEXT_SPEC                  variant = 위 축들의 조합
 //   TEXT_VALUES.text           → tokens.text.{size,weight,leading,tracking,font}
 //
@@ -17,7 +19,8 @@
 //   -apple-system 을 앞에 두면 라틴만 San Francisco 로, 한글은 Apple SD Gothic Neo
 //   로 갈라져 같은 weight 라도 한글이 얇게 보인다 — Pretendard 는 SF 결을 모방하며
 //   한 몸으로 렌더해 그 어긋남이 없다. -apple-system 은 Pretendard 미로드 시 fallback.
-//   mono 는 코드·토큰 같은 기술적 자리에만 — 숫자를 무조건 등폭으로 두지 않는다.
+//   mono 는 family 축이다 — 어느 크기에도 얹을 수 있고, 코드·토큰 같은 기술적
+//   자리에만 쓴다. 숫자를 무조건 등폭으로 두지 않는다 (표의 숫자 열은 sans + tabular-nums).
 
 const REM = (px: number) => `${px / 16}rem`;
 
@@ -25,7 +28,12 @@ const REM = (px: number) => `${px / 16}rem`;
 
 export const FONT = {
   sans: "'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  mono: "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, 'Pretendard Variable', monospace",
+  // 시스템 mono 를 앞에 — SF Mono(macOS)·Cascadia(Windows)는 x-height 가 커서
+  // Pretendard 옆에서 크기·무게가 맞는다. 라틴·숫자는 여기서 그린다. 한글은 이들에
+  // 글리프가 없어 뒤의 CJK mono(D2Coding)로 떨어진다 — 한글도 등폭이 된다.
+  // (Pretendard 는 proportional 이라 mono 스택에서 뺐다 — 넣으면 한글이 sans 로 샌다.
+  //  소비 앱은 D2Coding 같은 한글 mono 를 로드해야 한다 — 앱 index.html 참고.)
+  mono: "ui-monospace, SFMono-Regular, Menlo, Consolas, 'D2Coding', monospace",
 } as const;
 
 // ───── weight — 굵기 어휘 (variant 와 직교) ─────────────────────────────────
@@ -44,10 +52,11 @@ export const WEIGHT = {
 } as const;
 export type WeightKey = keyof typeof WEIGHT;
 
-// ───── variant — 8 단 컨텐츠 위계 ───────────────────────────────────────────
+// ───── variant — 7 단 컨텐츠 위계 ───────────────────────────────────────────
 //
-// display 부터 mono 까지, 크기 내림차순. heading 위계가 셋(title·heading·
-// subheading = h1·h2·h3) 이라 페이지·문서의 제목 계층이 또렷하다.
+// display 부터 label 까지, 크기 내림차순. heading 위계가 셋(title·heading·
+// subheading = h1·h2·h3) 이라 페이지·문서의 제목 계층이 또렷하다. 서체(mono)는
+// 위계가 아니라 family 축이라 여기 없다 — 어느 variant 에도 얹는다.
 
 export const TEXT_VARIANTS = [
   "display", // 랜딩 hero — 페이지당 단 한 자리의 큰 호흡
@@ -57,7 +66,6 @@ export const TEXT_VARIANTS = [
   "body", // 본문 ◀ default
   "caption", // 부연 · 메타
   "label", // 폼 라벨 · 표 머리
-  "mono", // 코드 · 토큰 · 기술적 식별자 (등폭)
 ] as const;
 export type TextVariant = (typeof TEXT_VARIANTS)[number];
 
@@ -74,7 +82,6 @@ export const SIZE = {
   body: REM(14), // 0.875rem ◀ anchor
   caption: REM(13), // 0.8125rem
   label: REM(12), // 0.75rem
-  mono: REM(14), // 0.875rem — body 크기, 서체만 등폭
 } as const;
 
 // ───── LEADING — 행간 ───────────────────────────────────────────────────────
@@ -89,7 +96,6 @@ export const LEADING = {
   body: "1.5",
   caption: "1.45",
   label: "1.4",
-  mono: "1.5",
 } as const;
 
 // ───── TRACKING — 자간 ──────────────────────────────────────────────────────
@@ -105,7 +111,6 @@ export const TRACKING = {
   body: "-0.006em",
   caption: "0",
   label: "0.01em",
-  mono: "0",
 } as const;
 
 // ───── TEXT_SPEC — variant = 축들의 조합 ────────────────────────────────────
@@ -115,18 +120,16 @@ type TextSpec = {
   weight: string;
   lineHeight: string;
   tracking: string;
-  family: "sans" | "mono";
 };
 
 export const TEXT_SPEC = {
-  display: { size: SIZE.display, weight: WEIGHT.bold, lineHeight: LEADING.display, tracking: TRACKING.display, family: "sans" },
-  title: { size: SIZE.title, weight: WEIGHT.bold, lineHeight: LEADING.title, tracking: TRACKING.title, family: "sans" },
-  heading: { size: SIZE.heading, weight: WEIGHT.semibold, lineHeight: LEADING.heading, tracking: TRACKING.heading, family: "sans" },
-  subheading: { size: SIZE.subheading, weight: WEIGHT.semibold, lineHeight: LEADING.subheading, tracking: TRACKING.subheading, family: "sans" },
-  body: { size: SIZE.body, weight: WEIGHT.normal, lineHeight: LEADING.body, tracking: TRACKING.body, family: "sans" },
-  caption: { size: SIZE.caption, weight: WEIGHT.normal, lineHeight: LEADING.caption, tracking: TRACKING.caption, family: "sans" },
-  label: { size: SIZE.label, weight: WEIGHT.semibold, lineHeight: LEADING.label, tracking: TRACKING.label, family: "sans" },
-  mono: { size: SIZE.mono, weight: WEIGHT.normal, lineHeight: LEADING.mono, tracking: TRACKING.mono, family: "mono" },
+  display: { size: SIZE.display, weight: WEIGHT.bold, lineHeight: LEADING.display, tracking: TRACKING.display },
+  title: { size: SIZE.title, weight: WEIGHT.bold, lineHeight: LEADING.title, tracking: TRACKING.title },
+  heading: { size: SIZE.heading, weight: WEIGHT.semibold, lineHeight: LEADING.heading, tracking: TRACKING.heading },
+  subheading: { size: SIZE.subheading, weight: WEIGHT.semibold, lineHeight: LEADING.subheading, tracking: TRACKING.subheading },
+  body: { size: SIZE.body, weight: WEIGHT.normal, lineHeight: LEADING.body, tracking: TRACKING.body },
+  caption: { size: SIZE.caption, weight: WEIGHT.normal, lineHeight: LEADING.caption, tracking: TRACKING.caption },
+  label: { size: SIZE.label, weight: WEIGHT.semibold, lineHeight: LEADING.label, tracking: TRACKING.label },
 } as const satisfies Record<TextVariant, TextSpec>;
 
 // variant 별 기본 잉크 농도 — label · caption 은 흐리게(부연 자리).
@@ -138,7 +141,6 @@ export const TEXT_INK: Record<TextVariant, "base" | "soft"> = {
   body: "base",
   caption: "soft",
   label: "soft",
-  mono: "base",
 };
 
 // ───── VALUES — emit 대상 트리 (tokens.text.*) ──────────────────────────────

@@ -13,11 +13,16 @@ const OUT = join(here, "../public/docs");         // app/public/docs
 // 섹션 순서·라벨 (없는 그룹은 알파벳). slug 는 그룹/파일.
 const GROUP_ORDER = ["", "get-started", "foundations", "components", "recipes"];
 const GROUP_LABEL = {
-  "get-started": "시작하기",
-  foundations: "기초",
-  components: "컴포넌트",
-  recipes: "실전 조합",
-  "": "개요",
+  "get-started": "Getting Started",
+  foundations: "Foundations",
+  components: "Components",
+  recipes: "Recipes",
+  "": "", // 최상위 개요는 그룹 라벨 없이 단독 링크로
+};
+
+// 그룹 내 문서 순서 (여기 없는 문서는 알파벳으로 뒤에 붙는다).
+const DOC_ORDER = {
+  "get-started": ["get-started/philosophy", "get-started/install"],
 };
 
 const walk = async (dir, base = "") => {
@@ -56,7 +61,14 @@ const run = async () => {
   const manifest = groups.map((g) => ({
     group: g,
     label: GROUP_LABEL[g] ?? g,
-    docs: docs.filter((d) => d.group === g).sort((a, b) => a.slug.localeCompare(b.slug)),
+    docs: docs.filter((d) => d.group === g).sort((a, b) => {
+      const order = DOC_ORDER[g] ?? [];
+      const ai = order.indexOf(a.slug);
+      const bi = order.indexOf(b.slug);
+      const av = ai === -1 ? 99 : ai;
+      const bv = bi === -1 ? 99 : bi;
+      return av - bv || a.slug.localeCompare(b.slug);
+    }),
   }));
   await writeFile(join(OUT, "manifest.json"), JSON.stringify(manifest, null, 2));
   console.log(`docs → public/docs: ${docs.length} files, ${groups.length} groups`);

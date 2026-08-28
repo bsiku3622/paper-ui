@@ -6,21 +6,25 @@
 import type { ReactNode } from "react";
 
 import { joinClass } from "../internal/joinClass";
+import { resolveInk, type Ink } from "../resolvers";
 import type { ControlSize } from "../tokens";
 import { iconRoot, iconSize } from "./Icon.css";
 
 export type IconProps = {
   // 크기 3 단 (sm·md·lg). dot 사다리(14·16·18). Spinner 와 같은 사다리.
   size?: ControlSize;
+  // 잉크 농도 — 아이콘은 마크라 자기 색을 정한다(Text 로 감싸는 꼼수 없이). 안 주면
+  // 부모 색(currentColor)을 따른다.
+  ink?: Ink;
   children?: ReactNode;
   className?: string;
   "aria-label"?: string;
 };
 
-export const Icon = ({ size = "md", children, className, ...rest }: IconProps) => (
+export const Icon = ({ size = "md", ink, children, className, ...rest }: IconProps) => (
   <svg
     viewBox="0 0 24 24"
-    className={joinClass(iconRoot, iconSize[size], className)}
+    className={joinClass(iconRoot, iconSize[size], resolveInk(ink), className)}
     aria-hidden={rest["aria-label"] ? undefined : true}
     {...rest}
   >

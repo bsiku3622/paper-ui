@@ -11,7 +11,7 @@ Quiet like ChatGPT (soft radii, near-invisible borders, papers over rules),
 dense enough for Atlassian, finished like SwiftUI.
 ```
 
-The six principles behind every visual decision: **[docs/get-started/principles.md](docs/get-started/principles.md)**.
+The seven principles behind every visual decision: **[docs/get-started/philosophy.md](docs/get-started/philosophy.md)**.
 
 - **20 components.** A 21st needs evidence it was needed twice in a real screen.
 - **Black is the workhorse.** Primary actions are black, not blue — a blue button

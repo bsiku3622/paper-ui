@@ -1,23 +1,27 @@
 // utility.css.ts — resolver 가 뱉는 클래스의 실체.
 //
-// resolver 는 이름만 만들고(`pui-blue-wash`), 그 이름이 무엇인지는 여기서 굳는다.
+// resolver 는 이름만 만들고(`pui-info-wash`), 그 이름이 무엇인지는 여기서 굳는다.
 // 두 자리가 같은 토큰 트리를 돌기 때문에 조합이 빠질 수 없다.
 
 import { globalStyle } from "@vanilla-extract/css";
 
 import { tokens, ACCENT_NAMES, SPACE_KEYS } from "../tokens";
-import { PAPERS, INKS } from "../resolvers";
+import { NEUTRAL_INKS, SURFACES } from "../resolvers";
 
-// ───── paper — 면 ────────────────────────────────────────────────────────
+// ───── surface — 면 (Box 전용 구조 축) ──────────────────────────────────────
+//
+// 깊이 사다리: raised(최명) — canvas(기준) — sunken — well(최암). 색이 아니라 지면이다.
+// 카드 테두리는 별도(Box 의 border prop). hover 는 면이 아니라 앱의 interaction 이 맡는다.
 
-const PAPER_TOKEN = {
-  base: tokens.color.paper.base,
-  subtle: tokens.color.paper.subtle,
-  muted: tokens.color.paper.muted,
+const SURFACE_TOKEN = {
+  canvas: tokens.color.paper.canvas,
+  raised: tokens.color.paper.raised,
+  sunken: tokens.color.paper.sunken,
+  well: tokens.color.paper.well,
 } as const;
 
-for (const s of PAPERS) {
-  globalStyle(`.pui-paper-${s}`, { background: PAPER_TOKEN[s] });
+for (const s of SURFACES) {
+  globalStyle(`.pui-surface-${s}`, { background: SURFACE_TOKEN[s] });
 }
 
 // ───── ink — 잉크 농도 ─────────────────────────────────────────────────────
@@ -28,7 +32,7 @@ const INK_TOKEN = {
   faint: tokens.color.ink.faint,
 } as const;
 
-for (const i of INKS) {
+for (const i of NEUTRAL_INKS) {
   globalStyle(`.pui-ink-${i}`, { color: INK_TOKEN[i] });
 }
 

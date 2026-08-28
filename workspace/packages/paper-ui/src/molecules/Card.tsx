@@ -1,6 +1,6 @@
 // Card — 옅은 면으로 정의되는 칸.
 //
-// 선도 그림자도 없다. paper.subtle 이 흰 캔버스 위에서 카드를 조용히 들어올린다.
+// 선도 그림자도 없다. paper.sunken 이 흰 캔버스 위에서 카드를 조용히 들어올린다.
 
 import type { ReactNode } from "react";
 

@@ -1,6 +1,6 @@
 // Switch — 켬/끔 토글. Checkbox 와 형제지만 즉시 적용되는 설정 자리에 쓴다.
 
-import type { InputHTMLAttributes } from "react";
+import { forwardRef, type InputHTMLAttributes } from "react";
 
 import { joinClass } from "../internal/joinClass";
 import type { ControlSize } from "../tokens";
@@ -12,6 +12,11 @@ export type SwitchProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "
   className?: string;
 };
 
-export const Switch = ({ size = "md", className, ...rest }: SwitchProps) => (
-  <input type="checkbox" role="switch" className={joinClass(switchRoot, switchSize[size], className)} {...rest} />
-);
+export const Switch = forwardRef<HTMLInputElement, SwitchProps>(function Switch(
+  { size = "md", className, ...rest },
+  ref,
+) {
+  return (
+    <input type="checkbox" role="switch" ref={ref} className={joinClass(switchRoot, switchSize[size], className)} {...rest} />
+  );
+});

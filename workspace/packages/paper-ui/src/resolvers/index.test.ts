@@ -3,43 +3,45 @@
 
 import { describe, it, expect } from "vitest";
 
-import { resolveStatus, resolveTone, resolvePaper, resolveBoxClass } from "./index";
+import { resolveStatus, resolveTone, resolveSurface, resolveColor, resolveBoxClass } from "./index";
 
 describe("resolveStatus", () => {
-  it("status 를 accent tone 클래스로 — info=blue · success=green · warning=amber · danger=red", () => {
-    expect(resolveStatus("info")).toBe("pui-blue-ink");
-    expect(resolveStatus("success")).toBe("pui-green-ink");
-    expect(resolveStatus("warning")).toBe("pui-amber-ink");
-    expect(resolveStatus("danger")).toBe("pui-red-ink");
+  it("status 를 accent tone 클래스로 — 이름이 곧 의미(info·success·warning·error)", () => {
+    expect(resolveStatus("info")).toBe("pui-info-ink");
+    expect(resolveStatus("success")).toBe("pui-success-ink");
+    expect(resolveStatus("warning")).toBe("pui-warning-ink");
+    expect(resolveStatus("error")).toBe("pui-error-ink");
   });
   it("tone 을 반영한다 (wash · dot)", () => {
-    expect(resolveStatus("danger", "wash")).toBe("pui-red-wash");
-    expect(resolveStatus("info", "dot")).toBe("pui-blue-dot");
+    expect(resolveStatus("error", "wash")).toBe("pui-error-wash");
+    expect(resolveStatus("info", "dot")).toBe("pui-info-dot");
   });
   it("status 없으면 빈 문자열", () => {
     expect(resolveStatus(undefined)).toBe("");
   });
 });
 
-describe("resolveTone / resolvePaper", () => {
-  it("accent 는 기본이 ink tone", () => {
-    expect(resolveTone("green")).toBe("pui-green-ink");
+describe("resolveSurface / resolveColor / resolveTone", () => {
+  it("surface(면) → pui-surface-{s}", () => {
+    expect(resolveSurface("sunken")).toBe("pui-surface-sunken");
+    expect(resolveSurface(undefined)).toBe("");
   });
-  it("paper 는 base/subtle/muted", () => {
-    expect(resolvePaper("subtle")).toBe("pui-paper-subtle");
-    expect(resolvePaper(undefined)).toBe("");
+  it("color × variant(잉크색) → pui-c-{color}-{variant} (variant 기본 solid)", () => {
+    expect(resolveColor("error", "soft")).toBe("pui-c-error-soft");
+    expect(resolveColor("primary")).toBe("pui-c-primary-solid");
+    expect(resolveColor("primary", "quiet")).toBe("pui-c-primary-quiet");
+    expect(resolveColor(undefined)).toBe("");
+  });
+  it("accent tone 은 기본이 ink", () => {
+    expect(resolveTone("success")).toBe("pui-success-ink");
   });
 });
 
 describe("resolveBoxClass", () => {
-  it("여러 축을 공백으로 합친다", () => {
-    expect(resolveBoxClass({ paper: "subtle", padding: "md", gap: "sm" })).toBe(
-      "pui-paper-subtle pui-p-md pui-gap-sm",
+  it("surface(면) + 간격을 공백으로 합친다 — Box 에 색은 없다", () => {
+    expect(resolveBoxClass({ surface: "sunken", padding: "md", gap: "sm" })).toBe(
+      "pui-surface-sunken pui-p-md pui-gap-sm",
     );
-  });
-  it("status 가 accent 보다 우선한다 (한 자리만 색)", () => {
-    // status 와 accent 를 동시에 줘도 status 로 해석 (컴포넌트가 둘 다 넘기지 않게 하는 계약)
-    expect(resolveBoxClass({ status: "danger", accent: "blue", tone: "wash" })).toContain("pui-red-wash");
   });
   it("빈 입력은 빈 문자열", () => {
     expect(resolveBoxClass({})).toBe("");

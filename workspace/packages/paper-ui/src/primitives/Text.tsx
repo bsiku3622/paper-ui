@@ -1,7 +1,8 @@
-// Text — 글자. variant 가 크기·굵기·서체·잉크 농도를 한 번에 정한다.
+// Text — 글자. variant 가 크기·굵기·잉크 농도를 한 번에 정하고, family 가 서체를 정한다.
 //
-// size/weight/color 를 따로 고르는 prop 은 없다. 8 개 목소리 중 하나를 고르는
-// 것이 전부다 — 고를 게 없으면 화면이 저절로 일관된다.
+// size/weight/color 를 따로 고르는 prop 은 없다. 7 개 목소리(variant) 중 하나를
+// 고르는 것이 전부다 — 고를 게 없으면 화면이 저절로 일관된다. 서체만 family 축
+// (sans 기본 · mono)으로 교차한다.
 
 import type { ComponentPropsWithoutRef, ElementType, ReactNode } from "react";
 
@@ -13,6 +14,8 @@ type OwnProps<As extends ElementType> = {
   variant?: TextVariant;
   // 잉크 농도만 variant 기본값 위로 덮을 수 있다 (muted 처리용).
   ink?: Ink;
+  // 서체 축 — variant 위에 교차한다. mono 는 .pui-mono 가 등폭 + 자간 리셋.
+  family?: "sans" | "mono";
   as?: As;
   children?: ReactNode;
   className?: string;
@@ -30,12 +33,12 @@ const DEFAULT_TAG: Record<TextVariant, ElementType> = {
   body: "p",
   caption: "p",
   label: "span",
-  mono: "span",
 };
 
 export const Text = <As extends ElementType = "p">({
   variant = "body",
   ink,
+  family,
   as,
   children,
   className,
@@ -44,7 +47,7 @@ export const Text = <As extends ElementType = "p">({
   const Tag = (as ?? DEFAULT_TAG[variant]) as ElementType;
   return (
     <Tag
-      className={joinClass(`pui-text-${variant}`, resolveInk(ink), className)}
+      className={joinClass(`pui-text-${variant}`, family === "mono" && "pui-mono", resolveInk(ink), className)}
       {...(rest as object)}
     >
       {children}

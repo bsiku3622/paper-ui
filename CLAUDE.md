@@ -4,12 +4,12 @@
 
 paper-ui — 복잡한 웹앱을 위한, 순백과 검정의 디자인 시스템. Studio Baeks 의 작업용.
 
-**정체성: 순백 위의 검정, 포인트로 작게 얹는 색.** 모든 시각 결정의 근거는 [docs/get-started/principles.md](docs/get-started/principles.md) 의 여섯 원칙 — 색은 점 · 선보다 면 · 떠 있는 것만 그림자 · 조용한 밀도 · 고를 것을 줄인다 · 빌드가 지킨다.
+**정체성: 순백 위에 부드럽게 그려지는 UI.** 모든 시각 결정의 근거는 [docs/get-started/philosophy.md](docs/get-started/philosophy.md) 의 세 철학(편안한 컬러감 · 조용한 밀도감 · 부드러운 견고함)과 그 아래 일곱 원칙 — 색은 의미가 없으면 쓰지 않는다 · 회색은 카드를 감싸지 않고 받친다 · 크기와 밀도는 다른 축이다 · 떠 있는 것만 그림자를 갖는다 · 시스템이 형태를 정한다 · 빌드가 규칙을 지킨다 · 닫혀 있되 막다른 길은 없다.
 
 ```
 베이스는 흰색과 검정 둘뿐이다. 그 조화가 화면의 골격을 만든다.
-색(blue·green·red)은 status·focus·링크처럼 의미가 있는 자리에만 작게 얹는다 —
-장식으로 면을 채우지 않고, 점으로. (색 면은 그 색의 의미를 짊어질 때만 — danger 버튼처럼.)
+색(blue·green·amber·red)은 status·focus·링크처럼 의미가 있는 자리에만 작게 얹는다 —
+장식으로 면을 채우지 않고, 의미가 있을 때만. (색 면은 그 색의 의미를 짊어질 때만 — danger 버튼처럼.)
 
 지향: ChatGPT 의 조용함(옅은 면·넉넉한 라운드·거의 안 보이는 경계)을 골격으로,
       복잡한 화면의 밀도(Atlassian)와 단정한 마감(SwiftUI)을 얹는다.
@@ -37,39 +37,59 @@ pnpm 명령은 `workspace/` 에서 실행한다. `core`/`web` 분리는 일부�
 
 ---
 
-## 색
+## 색 — 면(surface)과 잉크색(color × variant)을 나눈다 (v2)
 
-**베이스 — 흰색과 검정:**
+**두 어휘를 종류로 나눈다** — 면은 색이 아니라 지면이라서. "큰 면을 색으로 안 채운다"는
+정체성상 Box 는 accent 색을 입을 일이 없어, 애초에 다른 종류다. 값은 손으로 잡은 light/dark
+쌍(OKLCH 없음), `[data-theme]` 스코프가 교체.
 
-| 자리 | 값 | 쓰임 |
-|---|---|---|
-| `paper.base` | `#ffffff` | 순백 캔버스 |
-| `paper.subtle` | `#f7f7f8` | 카드 · 사이드바 · table head (선 대신 이 면으로 구획) |
-| `paper.muted` | `#ececee` | hover · 눌린 자리 |
-| `ink.base` | `#18181b` | 본문 (순검정 아님 — 넓은 면에 #000 은 눈을 찌른다) |
-| `ink.soft` | `#71717a` | 보조 · 라벨 |
-| `ink.faint` | `#a1a1aa` | placeholder · disabled |
-| `border.base` | `#e8e8ea` | 거의 안 보이는 경계 — 선보다 면이 먼저 |
-| `border.strong` | `#d8d8dc` | 선이 꼭 필요한 자리만 |
-| `primary.base` | `#18181b` | 1 차 액션 면 — 색이 아니라 검정이 채운다 |
+**면(surface) — Box 의 구조 축.** 깊이 사다리. 색을 입지 않는다.
 
-**포인트 — 작게 얹는 색 (blue·green·red 뿐):**
+| surface | light | dark | 쓰임 |
+|---|---|---|---|
+| `raised` | `#ffffff` | `#212121` | 떠오른 면 (카드·입력·모달) — 최명 |
+| `canvas` | `#fcfcfc` | `#171717` | 기준면 (페이지 바닥) |
+| `sunken` | `#f4f4f5` | `#101010` | 사이드바 · table head |
+| `well` | `#e2e2e5` | `#0a0a0a` | 더 깊은 well — 최암 |
 
-각 색은 `solid`(채운 점) · `ink`(흰 배경 위 글자, AA) · `wash`(옅은 면) · `edge`(wash 괘선) 4 자리.
+깊이 불변식: **raised 최명 · well 최암** (다크도 순서 유지. 다크 base 는 YouTube·ChatGPT 결로
+깊게). **Box** = `surface` + `border`(카드 헤어라인) + `inverse`(검은 판) + radius·shadow·padding.
+**색·잉크는 Box 에 없다.**
 
-- `blue #2563eb` — info · **focus 링** · 링크
-- `green #16a34a` — success
-- `red #dc2626` — error · danger
+**잉크색(color × variant) — Button·Badge·Alert.** `color` 가 무슨 색, `variant` 가 얼마나 무겁게.
+
+| color | light | dark | 쓰임 |
+|---|---|---|---|
+| `primary` | `#18181b` | `#e8e8e8` | 검정 일꾼 (다크선 흰 채움) — 면 채우는 유일한 색 |
+| `info` | `#2563eb` | `#3b82f6` | 정보 · **focus 링** · 링크 |
+| `success` | `#16a34a` | `#22c55e` | 성공 |
+| `warning` | `#d97706` | `#f59e0b` | 주의 |
+| `error` | `#dc2626` | `#ef4444` | 위험 |
+
+accent 는 hue 이름(blue 등)이 **API 에 없다** — 전부 의미색. 각 accent 는 solid·**solidFg**·ink·wash·edge
+5 자리. **solid 버튼은 모노크로매틱** — 채움은 진한 색(solid), 그 위 글자(solidFg)는 **같은 hue 의 옅은
+톤**(흰색 아님). 버튼 전체가 한 색으로 통일된다. 채움을 다 진한 대역(green·amber 도 700 톤)으로 맞춰
+늘 옅은 색 글자가 얹힌다 — 밝은 채움 + 흰 글자(AA 미달)나 색마다 글자 밝기가 갈리는 문제를 없앤다.
+
+**`variant` 축 = 시각 무게:** `solid`(채움) · `soft`(옅은 면) · `outline`(테두리) · `quiet`(글자만).
+- Button 예) 기본=`primary solid`(검정) · `variant="soft"`=회색 secondary · **`variant="outline"`=흰 기본
+  버튼** · `color="error"`=빨강. 흰/회색 버튼은 색이 아니라 primary 의 무게로 나온다.
+- **Badge** 도 color × variant (기본 soft) + `dot`(상태 점) — solid=카운트·강조, outline=테두리 태그, quiet=글자만.
+  Alert 는 언제나 soft, `color` 는 accent 4 색.
+
+**마크 색(ink)은 면이 아니라 글자가 정한다** — `Text`·`Icon` 의 `ink`. 한 축에 뉴트럴
+농도(`base·soft·faint`)와 의미색(`info·success·warning·error`)이 함께 있다 — 글자는 색이
+하나. accent 는 단일 톤(AA ink)이라 농도×색 직교(죽은 셀)를 안 만든다. `<Text ink="error">`.
+**interaction**(hover/selected/active)은 중립=오버레이(라이트=ink alpha, 다크=흰빛 alpha),
+색=accent 스텝. **scrim**(모달 뒤)·**shadow**(다크는 더 짙게)도 테마 인식.
 
 **규칙:**
-- **primary 는 검정, 파랑이 아니다.** 파랑 버튼이 매 화면 등장하면 색이 더는 포인트가
-  아니다. 일꾼은 검정이고, 색은 status·focus·링크처럼 *작은* 자리에만.
-- **solid 로 꽉 찬 큰 면을 만들지 않는다.** 색은 점이지 배경이 아니다. 면을 채우는 건
-  primary(검정) 뿐.
-- **info 도 색을 갖는다(blue).** 파랑을 포인트로 쓰기로 한 정체성의 귀결. status 3 종
-  (info·success·error) 전부 색.
-- **`primaryColor` 가 없다.** 브랜드가 고를 색이 없다 — 정체성은 색이 아니라 순백·검정·
-  여백에서 나온다.
+- **면을 색으로 채우지 않는다.** 면은 surface(회색·흰), 채우는 건 primary(검정/다크선 흰색)뿐.
+  색은 의미의 자리. **Box 는 색을 안 받는다** — 색 영역은 Button·Badge·Alert, 검은 판은 `inverse`.
+- **status = validation 만.** Field·TextField·Textarea 는 `status`, 나머지는 `color`.
+  status 이름 == accent color 이름 (danger 폐기 → error).
+- **`primaryColor` 가 없다.** 정체성은 색이 아니라 순백·검정·여백. Provider 가 고르는 단 하나는
+  *테마*(light·dark·system).
 
 ---
 
@@ -77,12 +97,15 @@ pnpm 명령은 `workspace/` 에서 실행한다. `core`/`web` 분리는 일부�
 
 - **radius 넉넉하게** — `sm 8` (버튼·입력·배지) · `md 12` (카드) · `lg 16` (모달). ChatGPT
   의 부드러운 라운드. 각진 데가 없다.
-- **선보다 면** — 구획은 얇은 경계보다 `paper.subtle` 로 나눈다. 카드도 표도 옅은 면이
-  감싼다. border 는 정말 선이 필요한 자리(table 행 · navbar 밑)만.
-- **그림자는 overlay 의 표식** — 카드는 면으로 정의되고 뜨지 않는다. `raised`(세그먼트
-  활성 pill) · `overlay`(Modal · Tooltip) 두 단뿐.
-- **hover 는 조용히** — 배경이 `paper.muted` 로 살짝. 테두리 강조 없음.
-- **밀도** — space 4px 배수(xs4~xl24, 촘촘하게) · control 높이 34 · table 행 44.
+- **회색은 받친다** — 카드는 흰 면 + 얇은 헤어라인으로 선다. 회색(`sunken`·`well`)은 그 아래
+  well(table head · marker)에만 온다 — 회색 위에 회색을 얹지 않는다. 구획은 여백과 헤어라인으로.
+- **shadow 는 2 단 토큰(elevation 축 아님)** — 떠 있는 것만 그림자를 갖는다. `overlay`
+  (Modal·Tooltip·Popover) · `overlayMinimal`(Switch 손잡이 등). 붙어있는 면(Button·Field·
+  Card·Table)은 그림자 없음(prop 을 안 준다). 다크에선 near-black 이 사라지므로 더 짙은 그림자로
+  교체(테마 인식). `raised` 는 이제 surface color 지 그림자가 아니다(옛 elevation.raised 충돌 해소).
+  radius 는 독립 — 면 크기가 정한다(작은 Tooltip 8, 큰 Modal 16).
+- **hover 는 조용히** — interaction 오버레이가 밑 면 위에 얹혀 한 단 어두워/밝아진다. 테두리 강조 없음.
+- **밀도** — 간격(Space) 5단(4px 배수 xs4~xl24)과 컨트롤 크기(ControlSize) 3단(sm·md·lg)을 분리한다. 컨트롤 크기가 바뀌어도 글자는 14 고정(controlFontSize 14/14/14). control 높이 md 34 · table 행 44.
 
 ---
 
@@ -90,18 +113,21 @@ pnpm 명령은 `workspace/` 에서 실행한다. `core`/`web` 분리는 일부�
 
 네 축이 직교한다 — **size · weight · leading · tracking**. 각 축이 `tokens.text.*`
 토큰이라 컴포넌트가 `"0.875rem"` 같은 raw 값을 박지 못한다. variant 는 이 축들을
-조합한 8 단 위계다:
+조합한 7 단 위계다:
 
-`display 32 · title 22 · heading 18 · subheading 15 · body 14 · caption 13 · label 12 · mono 14`.
+`display 32 · title 22 · heading 18 · subheading 15 · body 14 · caption 13 · label 12`.
+
+서체는 위계가 아니라 **family 축**이다 — `Text` 의 `family`(sans 기본 · mono)가 어느
+variant 에도 교차한다. mono 는 `.pui-mono` 가 등폭으로 바꾸며 음수 tracking 을 지운다.
 
 - **body 14px** anchor — 복잡한 웹앱의 표준 밀도(shadcn text-sm · Atlassian).
 - **제목 위계 셋** — `title·heading·subheading` = h1·h2·h3. 페이지·문서의 계층이 또렷.
   `display` 는 랜딩 hero 한 자리만.
 - **weight 는 variant 와 직교한 별도 축** — `normal 450 · medium 550 · semibold 600 ·
   bold 700`. Button·Tab 은 variant 기본 굵기 대신 여기서 골라 쓴다(`tokens.text.weight.*`).
-- **서체** — `-apple-system` 을 맨 앞에. macOS 에서 라틴은 SF(SwiftUI 의 얼굴), 한글은
-  Pretendard. `mono` 는 코드·토큰 같은 기술적 자리에만 — 숫자를 무조건 등폭으로 두지
-  않는다. 데이터 표의 숫자 열은 sans 그대로 `tabular-nums` 로 자리만 맞춘다.
+- **서체** — Pretendard 를 맨 앞에(라틴·한글을 한 몸으로 그려 굵기가 균형), `-apple-system`
+  은 fallback. `family="mono"` 는 코드·토큰·식별자 같은 기술적 자리에만 — 숫자를 무조건
+  등폭으로 두지 않는다. 데이터 표의 숫자 열은 sans 그대로 `tabular-nums` 로 자리만 맞춘다.
 - **label 은 sentence-case medium** — mono·uppercase 아님(그건 ledger 였다). shadcn 결.
 
 ---
@@ -119,9 +145,14 @@ Tokens → Primitives → Atoms → Molecules → Components
 | Molecules | 6 | `Card · TextField · RadioGroup · Tabs · Tooltip · Alert` |
 | Components | 4 | `Table · Modal · Navbar · Banner` |
 
-**= 27.** 폼(Textarea·Switch·Radio)·피드백(Alert)·로딩(Spinner)까지 시스템이 완결되는
-최소 집합. Banner 는 데모·공지 chrome 의 얇은 풀폭 바(검정 solid + status). 더 늘리려면
-*실제 화면에서 두 번 이상 필요했다는 증거* 가 있어야 한다.
+**= 27(기준선).** 폼(Textarea·Switch·Radio)·피드백(Alert)·로딩(Spinner)까지 시스템이
+완결되는 최소 집합. Banner 는 데모·공지 chrome 의 얇은 풀폭 바(검정 solid + status).
+
+**컴포넌트 추가 잣대는 단계로 갈린다.** *"실제 화면에서 두 번 이상 필요했다는 증거"* 는
+**v1 배포 이후** 의 규칙이다 — 배포 전엔 소비자가 없어 "수요 2회" 가 성립할 수 없다. **v1 로
+가는 지금은** 기준이 다르다: **표준 primitive 이거나(공개 DS 가 으레 제공하는 것) 실제
+semantic 공백을 메우는가.** 그래도 장식적 중복(같은 걸 이름만 바꿔 두 개)은 여전히 금지 —
+가능하면 새 컴포넌트보다 기존 것의 확장(prop·폴리모피즘)을 먼저 본다.
 
 1. **raw 값 금지** — hex 는 `tokens/colors.ts` 에만. `tokens.color.X` 로만 참조.
 2. **VALUES import 격리** — raw 값 모듈은 `styles/theme.css.ts` 만 import.
@@ -131,12 +162,18 @@ Tokens → Primitives → Atoms → Molecules → Components
 
 네 규칙 모두 **eslint 가** 막는다 (문서가 아니라 빌드가).
 
+**+ 접근성도 빌드가 지킨다.** `eslint-plugin-jsx-a11y`(recommended)를 `polymorphicPropName:"as"`
+로 걸어 `<Box as="button">` 같은 폴리모픽 요소까지 검사한다 — 유효한 role·aria, 대체텍스트,
+양수 tabindex 금지 등. 우리 폼 아톰은 `label-has-associated-control` 의 `controlComponents`
+로 컨트롤 등록. runtime 계약(Modal focus trap 등)은 lint 로 못 잡으니 컴포넌트가 직접 진다.
+원칙 6("빌드가 규칙을 지킨다")의 확장.
+
 ---
 
 ## 작업 완료 전 체크
 
 - [ ] `pnpm -r typecheck` · `pnpm lint` 통과했는가
-- [ ] 색을 추가했다면 — 정말 *의미* 가 있는가. 장식이면 넣지 않는다 (색은 점이다)
+- [ ] 색을 추가했다면 — 정말 *의미* 가 있는가. 장식이면 넣지 않는다 (색은 의미가 없으면 쓰지 않는다)
 - [ ] 큰 면을 색으로 채우지 않았는가 (면은 검정 primary 만)
-- [ ] 컴포넌트를 추가했다면 — 실제 화면에서 두 번 이상 필요했다는 증거가 있는가
+- [ ] 컴포넌트를 추가했다면 — (v1 배포 후) 실제 화면에서 두 번 이상 필요했다는 증거가 있는가 / (배포 전, 지금) 표준 primitive·semantic 공백을 메우는가, 기존 것의 확장으로 안 되는가
 - [ ] 데모(`app/`)가 여전히 서는가. 데모가 이 시스템의 유일한 검증이다

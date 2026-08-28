@@ -41,6 +41,7 @@ export const PlaygroundLayout = ({ active, children }: { active: string; childre
         style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, top: NAV_HEIGHT }}
       >
         <SideGroup label="레퍼런스">
+          <SideLink to="/playground/tokens" label="토큰 · Foundations" active={active === "tokens"} />
           <SideLink to="/playground" label="전수 · 한 화면" active={active === "all"} />
         </SideGroup>
         {GROUPS.map((g) => {

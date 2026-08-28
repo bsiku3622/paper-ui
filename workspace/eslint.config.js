@@ -1,11 +1,15 @@
 import tseslint from "@typescript-eslint/eslint-plugin";
 import tsparser from "@typescript-eslint/parser";
 import reactHooks from "eslint-plugin-react-hooks";
+import jsxA11y from "eslint-plugin-jsx-a11y";
 
 // 절대 규칙을 문서가 아니라 빌드가 지킨다.
 // 규칙을 적어두고 리뷰어의 기억력에 맡기면 3 개월 뒤에 안 지켜져 있다.
 
 export default [
+  // 빌드 산출물은 린트하지 않는다 — 번들에 섞인 eslint-disable 주석이 dist 에선 미등록
+  // 규칙("unknown rule")으로 걸린다. src 만 본다.
+  { ignores: ["**/dist/**", "**/public/docs/**"] },
   {
     files: ["packages/*/src/**/*.{ts,tsx}", "app/src/**/*.{ts,tsx}"],
     languageOptions: {
@@ -21,6 +25,27 @@ export default [
       ...tseslint.configs.recommended.rules,
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "error",
+    },
+  },
+
+  // ── a11y 를 빌드가 지킨다 (원칙 6 의 확장) ────────────────────────────────
+  // 접근성 기본(유효한 role·aria, 대체텍스트, 키보드 상호작용, 양수 tabindex 금지 등)을
+  // 리뷰 기억력이 아니라 lint 로 강제한다. paper-ui 는 raw HTML 을 <Box as="button"> 로
+  // 추상화하므로 polymorphicPropName 으로 `as` 를 실제 요소로 읽게 한다 — 안 그러면
+  // 규칙이 Box 를 못 알아보고 통째로 건너뛴다.
+  {
+    files: ["packages/*/src/**/*.{ts,tsx}", "app/src/**/*.{ts,tsx}"],
+    ignores: ["**/*.test.{ts,tsx}"],
+    plugins: { "jsx-a11y": jsxA11y },
+    settings: { "jsx-a11y": { polymorphicPropName: "as" } },
+    rules: {
+      ...jsxA11y.flatConfigs.recommended.rules,
+      // 우리 폼 아톰은 native 컨트롤을 감싸므로 <label> 안의 컨트롤로 인정한다 —
+      // 안 그러면 <Inline as="label"><Checkbox/></Inline> 가 오탐으로 걸린다.
+      "jsx-a11y/label-has-associated-control": [
+        "error",
+        { controlComponents: ["Checkbox", "Radio", "Switch", "Field", "Select", "Textarea"] },
+      ],
     },
   },
 

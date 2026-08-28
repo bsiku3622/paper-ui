@@ -1,4 +1,4 @@
-# 모달로 만드는 생성 흐름
+# Dialog
 
 "새로 만들기"를 `Modal` 안에 폼을 담아 처리합니다. 앞의 [폼 한 벌](/docs/recipes/form)과 [필터 + 데이터 표](/docs/recipes/data-view)를 잇는 조각입니다 — 표에서 "새 이슈"를 누르면 뜨는 그 화면.
 
@@ -56,17 +56,17 @@ Modal 본문은 그냥 자식입니다 — [폼 한 벌](/docs/recipes/form)의 
 
 ## 되돌릴 수 없는 확인
 
-삭제처럼 되돌릴 수 없는 흐름은 1차 액션을 `status="danger"`로 물들입니다 — 이 색은 "이건 위험하다"는 뜻을 질 때만 씁니다. 옆에 `Alert`를 얹어 결과를 미리 말해두면 더 분명합니다.
+삭제처럼 되돌릴 수 없는 흐름은 1차 액션을 `color="error"`로 물들입니다 — 이 색은 "이건 위험하다"는 뜻을 질 때만 씁니다. 옆에 `Alert`를 얹어 결과를 미리 말해두면 더 분명합니다.
 
 ```tsx
 <Modal open={open} title="이슈 삭제" onClose={close}
   footer={
     <>
       <Button variant="quiet" onClick={close}>취소</Button>
-      <Button status="danger" onClick={remove}>삭제</Button>
+      <Button color="error" onClick={remove}>삭제</Button>
     </>
   }>
-  <Alert status="danger" title="되돌릴 수 없습니다">
+  <Alert color="error" title="되돌릴 수 없습니다">
     이 이슈와 하위 댓글이 모두 지워집니다.
   </Alert>
 </Modal>
@@ -74,4 +74,4 @@ Modal 본문은 그냥 자식입니다 — [폼 한 벌](/docs/recipes/form)의 
 
 ## 왜 이렇게
 
-`Modal`은 열림·Esc·배경 클릭·그림자·진입 애니메이션까지 다 정합니다 — 떠 있는 것만 그림자를 갖는다는 규칙(원칙 3)을 여러분이 지키지 않아도, Modal이 대신 지킵니다. 여러분이 정하는 것은 *무엇을 만들지*(본문 폼)와 *액션의 무게*(footer의 solid/quiet/danger)뿐입니다.
+`Modal`은 열림·Esc·배경 클릭·그림자·진입 애니메이션까지 다 정합니다 — 떠 있는 것만 그림자를 갖는다는 규칙(원칙 3)을 여러분이 지키지 않아도, Modal이 대신 지킵니다. 여러분이 정하는 것은 *무엇을 만들지*(본문 폼)와 *액션의 무게*(footer의 solid/quiet/error)뿐입니다.

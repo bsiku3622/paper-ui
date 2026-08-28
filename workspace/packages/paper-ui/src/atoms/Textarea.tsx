@@ -1,6 +1,6 @@
 // Textarea — 여러 줄 입력. Field 의 status 축을 그대로 쓴다(테두리로 상태 표시).
 
-import type { TextareaHTMLAttributes } from "react";
+import { forwardRef, type TextareaHTMLAttributes } from "react";
 
 import { joinClass } from "../internal/joinClass";
 import type { StatusName } from "../tokens";
@@ -12,10 +12,16 @@ export type TextareaProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "c
   className?: string;
 };
 
-export const Textarea = ({ status = "default", className, ...rest }: TextareaProps) => (
-  <textarea
-    aria-invalid={status === "danger" || undefined}
-    className={joinClass(textareaRoot, status !== "default" && fieldStatus[status], className)}
-    {...rest}
-  />
-);
+export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function Textarea(
+  { status = "default", className, ...rest },
+  ref,
+) {
+  return (
+    <textarea
+      ref={ref}
+      aria-invalid={status === "error" || undefined}
+      className={joinClass(textareaRoot, status !== "default" && fieldStatus[status], className)}
+      {...rest}
+    />
+  );
+});
