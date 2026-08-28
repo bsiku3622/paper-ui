@@ -20,3 +20,6 @@ playwright-report/
 # generated docs mirror
 workspace/app/public/docs/
 workspace/app/dist/
+
+# local work log — stays on the machine, never in the repo
+/logs.md
