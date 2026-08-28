@@ -24,7 +24,7 @@ export const navItem = style({
   fontSize: tokens.text.size.body,
   color: tokens.color.ink.soft,
   transition: stateTransition("background", "color"),
-  selectors: { "&:hover": { color: tokens.color.ink.base, background: tokens.color.paper.muted } },
+  selectors: { "&:hover": { color: tokens.color.ink.base, background: tokens.color.interaction.hover } },
 });
 
 export const navItemActive = style({

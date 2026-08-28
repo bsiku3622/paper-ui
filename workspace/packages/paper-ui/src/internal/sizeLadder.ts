@@ -17,7 +17,7 @@ export const sizeLadderRules = Object.fromEntries(
     {
       height: tokens.shape.height[s].interaction,
       paddingInline: tokens.shape.padding[s].interaction,
-      fontSize: tokens.shape.controlFontSize[s], // ← height/padding 과 분리한 14/14/16
+      fontSize: tokens.shape.controlFontSize[s], // ← height/padding 과 분리해 14 고정
     } satisfies StyleRule,
   ]),
 ) as Record<ControlSize, StyleRule>;

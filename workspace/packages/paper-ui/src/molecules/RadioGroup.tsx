@@ -17,14 +17,27 @@ export type RadioGroupProps = {
   name?: string;
   // 라디오 크기 3 단 (sm·md·lg). 그룹의 모든 라디오에 적용.
   size?: ControlSize;
+  // 그룹의 접근 이름 — 라디오들을 무엇으로 묶는지(예: "결제 수단"). 눈에 보이는 라벨이
+  // 있으면 그 id 를 aria-labelledby 로.
+  "aria-label"?: string;
+  "aria-labelledby"?: string;
   className?: string;
 };
 
-export const RadioGroup = ({ options, value, onChange, name, size = "md", className }: RadioGroupProps) => {
+export const RadioGroup = ({
+  options,
+  value,
+  onChange,
+  name,
+  size = "md",
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledby,
+  className,
+}: RadioGroupProps) => {
   const auto = useId();
   const group = name ?? auto;
   return (
-    <Stack gap="sm" role="radiogroup" className={className}>
+    <Stack gap="sm" role="radiogroup" aria-label={ariaLabel} aria-labelledby={ariaLabelledby} className={className}>
       {options.map((o) => (
         <Inline as="label" gap="sm" align="center" key={o.value}>
           <Radio

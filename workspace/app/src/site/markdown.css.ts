@@ -39,7 +39,7 @@ globalStyle(".md h3", {
 });
 
 globalStyle(".md p", { margin: `0 0 ${tokens.shape.gap.lg}` });
-globalStyle(".md a", { color: tokens.color.accent.blue.ink, textDecoration: "none" });
+globalStyle(".md a", { color: tokens.color.accent.info.ink, textDecoration: "none" });
 globalStyle(".md a:hover", { textDecoration: "underline", textUnderlineOffset: "0.2em" });
 globalStyle(".md ul, .md ol", { margin: `0 0 ${tokens.shape.gap.lg}`, paddingLeft: tokens.shape.padding.xl.interaction });
 globalStyle(".md li", { margin: `${tokens.shape.gap.xs} 0` });
@@ -48,12 +48,12 @@ globalStyle(".md strong", { fontWeight: tokens.text.weight.semibold });
 globalStyle(".md code", {
   fontFamily: tokens.text.font.mono,
   fontSize: "0.85em", // em 상대 — 본문 글자에 비례
-  background: tokens.color.paper.muted,
+  background: tokens.color.paper.well,
   padding: "0.1em 0.4em",
   borderRadius: tokens.shape.radius.interaction,
 });
 globalStyle(".md pre", {
-  background: tokens.color.paper.subtle,
+  background: tokens.color.paper.sunken,
   border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
   borderRadius: tokens.shape.radius.layout.md,
   padding: tokens.shape.padding.md.layout,
@@ -74,7 +74,7 @@ globalStyle(".md th", {
   textAlign: "left",
   fontWeight: tokens.text.weight.semibold,
   padding: `${tokens.shape.padding.sm.interaction} ${tokens.shape.padding.md.interaction}`,
-  background: tokens.color.paper.subtle,
+  background: tokens.color.paper.sunken,
   borderBottom: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.strong}`,
 });
 globalStyle(".md td", {

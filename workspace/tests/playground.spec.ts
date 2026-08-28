@@ -16,7 +16,7 @@ test.beforeEach(async ({ page }) => {
   await page.getByTestId("text-title").waitFor();
 });
 
-// ── 타입 스케일 — 6 variant 의 크기·굵기가 토큰과 일치 ──────────────────────
+// ── 타입 스케일 — 7 variant 의 크기·굵기가 토큰과 일치 ──────────────────────
 const TYPE = {
   display: { size: "32px", weight: "700" },
   title: { size: "22px", weight: "700" },
@@ -25,7 +25,6 @@ const TYPE = {
   body: { size: "14px", weight: "450" },
   caption: { size: "13px", weight: "450" },
   label: { size: "12px", weight: "600" },
-  mono: { size: "14px", weight: "450" },
 } as const;
 
 for (const [variant, spec] of Object.entries(TYPE)) {
@@ -36,25 +35,28 @@ for (const [variant, spec] of Object.entries(TYPE)) {
   });
 }
 
-test("type · mono 는 등폭 서체", async ({ page }) => {
+// family=mono 는 variant 위에 교차하는 축 — body 크기를 유지한 채 서체만 등폭.
+test("type · family=mono 는 크기 유지 + 등폭 서체", async ({ page }) => {
   const el = page.getByTestId("text-mono");
   const fam = await el.evaluate((n) => getComputedStyle(n).fontFamily);
   expect(fam).toMatch(/mono/i);
+  await expect(el).toHaveCSS("font-size", "13.3px"); // body(14) × MONO_SCALE 0.95 — mono 가 크게 읽혀 살짝 줄인다
 });
 
 // ── 색 토큰 — :root 의 CSS var 가 기대 hex 와 일치 ─────────────────────────
 const VARS: Record<string, string> = {
-  "--pui-color-paper-base": "#ffffff",
-  "--pui-color-paper-subtle": "#f7f7f8",
-  "--pui-color-paper-muted": "#ececee",
+  "--pui-color-paper-canvas": "#fcfcfc",
+  "--pui-color-paper-raised": "#ffffff",
+  "--pui-color-paper-sunken": "#f4f4f5",
+  "--pui-color-paper-well": "#e2e2e5",
   "--pui-color-ink-base": "#18181b",
   "--pui-color-ink-soft": "#71717a",
   "--pui-color-ink-faint": "#a1a1aa",
   "--pui-color-border-base": "#e8e8ea",
-  "--pui-color-accent-blue-solid": "#2563eb",
-  "--pui-color-accent-green-solid": "#16a34a",
-  "--pui-color-accent-amber-solid": "#d97706",
-  "--pui-color-accent-red-solid": "#dc2626",
+  "--pui-color-accent-info-solid": "#2563eb",
+  "--pui-color-accent-success-solid": "#15803d",
+  "--pui-color-accent-warning-solid": "#b45309",
+  "--pui-color-accent-error-solid": "#dc2626",
   "--pui-color-primary-base": "#18181b",
   "--pui-color-focus-ring": "#2563eb",
 };
@@ -67,6 +69,24 @@ test("color · 토큰이 기대 hex 로 emit 된다", async ({ page }) => {
   for (const [name, hex] of Object.entries(VARS)) expect(got[name], name).toBe(hex);
 });
 
+// ── 다크 — [data-theme=dark] 스코프가 색 var 세트를 통째로 교체한다 (T4) ──────
+// var 이름은 그대로, 스코프만 바뀌면 값이 바뀐다. 면 사다리(raised>canvas)·ink 반전·
+// primary 반전을 대표로 검증한다.
+const DARK_VARS: Record<string, string> = {
+  "--pui-color-paper-canvas": "#171717",
+  "--pui-color-paper-raised": "#212121",
+  "--pui-color-ink-base": "#dcdcdc",
+  "--pui-color-primary-base": "#e8e8e8",
+};
+test("dark · [data-theme=dark] 로 색 var 가 다크 세트로 바뀐다", async ({ page }) => {
+  await page.evaluate(() => document.documentElement.setAttribute("data-theme", "dark"));
+  const got = await page.evaluate((names: string[]) => {
+    const cs = getComputedStyle(document.documentElement);
+    return Object.fromEntries(names.map((n) => [n, cs.getPropertyValue(n).trim()]));
+  }, Object.keys(DARK_VARS));
+  for (const [name, hex] of Object.entries(DARK_VARS)) expect(got[name], name).toBe(hex);
+});
+
 // ── 정렬 — Field 와 Button 이 같은 top(baseline)에 앉는다 (과거 회귀 버그) ──
 test("align · Field 와 Button 의 top 이 일치", async ({ page }) => {
   const f = await page.getByTestId("align-field").boundingBox();
@@ -76,17 +96,20 @@ test("align · Field 와 Button 의 top 이 일치", async ({ page }) => {
   expect(Math.abs(f!.height - b!.height)).toBeLessThanOrEqual(1);
 });
 
-// ── 포커스 링 — Field 포커스 시 파란 링(테두리+그림자) ──────────────────────
-test("focus · Field 포커스 시 파란 링", async ({ page }) => {
-  const field = page.getByTestId("align-field");
-  await field.focus();
-  await expect(field).toHaveCSS("border-color", hexToRgb("#2563eb"));
-  const shadow = await field.evaluate((n) => getComputedStyle(n).boxShadow);
-  expect(shadow).not.toBe("none");
+// ── 포커스 링 — Field 포커스 시 보더 *바깥* 파란 링(outline). 전역·Checkbox 와 같은
+// outside-the-border 방식으로 통일. Field 는 input group 이라 data-testid 는 래퍼에,
+// 포커스는 안쪽 input, 링은 래퍼(:focus-within)의 outline 으로 뜬다. ─────────────────
+test("focus · Field 포커스 시 보더 바깥 파란 링(outline)", async ({ page }) => {
+  const wrap = page.getByTestId("align-field");
+  await wrap.locator("input").focus();
+  await expect(wrap).toHaveCSS("outline-color", hexToRgb("#2563eb"));
+  await expect(wrap).toHaveCSS("outline-style", "solid");
+  await expect(wrap).toHaveCSS("outline-width", "2px");
+  await expect(wrap).toHaveCSS("outline-offset", "2px");
 });
 
 // ── Badge status → 색 (info·success·warning·danger) ─────────────────────────
-const BADGE = { info: "#1d4ed8", success: "#15803d", warning: "#b45309", danger: "#b91c1c" } as const;
+const BADGE = { info: "#1d4ed8", success: "#15803d", warning: "#b45309", error: "#b91c1c" } as const;
 for (const [status, ink] of Object.entries(BADGE)) {
   test(`badge · ${status} 글자색 = ${ink}`, async ({ page }) => {
     await expect(page.getByTestId(`badge-${status}`)).toHaveCSS("color", hexToRgb(ink));
@@ -100,10 +123,10 @@ test("button · solid 는 검정 채움 + weight 550", async ({ page }) => {
   await expect(b).toHaveCSS("font-weight", "550");
 });
 test("button · soft 는 회색 면(muted)", async ({ page }) => {
-  await expect(page.getByTestId("btn-soft")).toHaveCSS("background-color", hexToRgb("#ececee"));
+  await expect(page.getByTestId("btn-soft")).toHaveCSS("background-color", hexToRgb("#e2e2e5"));
 });
 test("button · status=danger 는 빨강 채움", async ({ page }) => {
-  // 기본 variant=solid 에 status=danger → red.solid 배경
+  // 기본 variant=solid 에 status=danger → error.solid 배경
   await expect(page.getByTestId("btn-danger")).toHaveCSS("background-color", hexToRgb("#dc2626"));
 });
 test("button · disabled 는 비활성", async ({ page }) => {
@@ -117,13 +140,34 @@ test("tabs · 클릭하면 활성이 바뀐다", async ({ page }) => {
   await expect(two).toHaveCSS("background-color", hexToRgb("#ffffff"));
 });
 
-// ── Modal — 열고 Esc 로 닫힌다 ─────────────────────────────────────────────
-test("modal · 열림 → Esc 닫힘", async ({ page }) => {
-  await page.getByTestId("modal-open").click();
+// ── Modal — 포커스 트랩·복귀·배경 inert + Esc 닫힘 (a11y 계약) ────────────────
+test("modal · 열리면 포커스 진입·배경 inert, Esc 닫힘·포커스 복귀", async ({ page }) => {
+  const trigger = page.getByTestId("modal-open");
+  await trigger.click();
   const dialog = page.getByRole("dialog");
   await expect(dialog).toBeVisible();
+  await expect(dialog).toHaveAttribute("aria-modal", "true");
+
+  // 열리면 포커스가 다이얼로그(패널)로 들어간다.
+  await expect(dialog).toBeFocused();
+  // 접근 이름 — aria-labelledby 가 제목에 연결된다(문자열/노드 무관).
+  expect(await dialog.getAttribute("aria-labelledby")).toBeTruthy();
+  // 배경이 inert 로 잠긴다 (body 형제 중 하나 이상 — 대개 앱 루트).
+  expect(await page.evaluate(() => [...document.body.children].some((el) => el.hasAttribute("inert")))).toBe(true);
+
+  // Tab 을 눌러도 포커스가 다이얼로그 밖으로 새지 않는다(트랩).
+  await page.keyboard.press("Tab");
+  expect(
+    await page.evaluate(() => {
+      const d = document.querySelector('[role="dialog"]');
+      return !!d && d.contains(document.activeElement);
+    }),
+  ).toBe(true);
+
+  // Esc 로 닫히고 포커스가 트리거로 복귀한다.
   await page.keyboard.press("Escape");
   await expect(dialog).toHaveCount(0);
+  await expect(trigger).toBeFocused();
 });
 
 // ── Tooltip — hover 시 나타난다 ────────────────────────────────────────────
@@ -143,10 +187,11 @@ test("detail · Button variant 토글이 preview 와 코드에 반영된다", as
   await expect(code).not.toContainText('variant=');
   await expect(stageBtn).toHaveCSS("background-color", hexToRgb("#18181b"));
 
-  // variant=soft 로 바꾸면 코드와 preview 가 함께 바뀐다 (첫 select = variant)
-  await page.locator(".detail-body select").first().selectOption("soft");
+  // variant=soft 로 바꾸면 코드와 preview 가 함께 바뀐다 (컨트롤 순서: color · variant …)
+  await page.locator(".detail-body select").nth(1).selectOption("soft");
   await expect(code).toContainText('variant="soft"');
-  await expect(stageBtn).toHaveCSS("background-color", hexToRgb("#ececee"));
+  // color=primary(기본) + variant=soft → 회색 secondary(paper.well)
+  await expect(stageBtn).toHaveCSS("background-color", hexToRgb("#e2e2e5"));
 });
 
 test("detail · 알 수 없는 slug 는 전수로 되돌린다", async ({ page }) => {

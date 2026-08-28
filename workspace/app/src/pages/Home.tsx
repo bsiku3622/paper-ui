@@ -1,7 +1,9 @@
-// 홈 — paper-ui 랜딩. 정체성 그대로: 순백·검정·여백, 색은 작게.
+// 홈 — paper-ui 랜딩.
 //
-// hero 는 손글씨 워드마크(애플 hello 결) + 살아 있는 컴포넌트 샘플러 한 장.
-// 갤러리가 아니라 *만져지는* 증거를 앞에 둔다 — 오른쪽 카드는 실제 paper-ui 다.
+// shadcn/ui 전략: 정제된 헤드라인 + CTA 아래에 "완전한 앱 목업 하나"를 주인공으로
+// 세운다. 조각난 컴포넌트 카드를 나열하지 않고, 사이드바·검색·탭·테이블·배지가 다
+// 들어간 실제 이슈 트래커 화면으로 "컴포넌트가 함께 선다"를 증명한다 — paper 정체성
+// (갤러리가 아니라 실제 화면으로 검증)과 같은 결.
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -10,252 +12,186 @@ import {
   Badge,
   Box,
   Button,
-  Card,
-  Checkbox,
-  Divider,
+  Field,
   Inline,
-  Select,
   Stack,
+  Table,
   Tabs,
   Text,
-  TextField,
   tokens,
+  type Column,
   type StatusName,
 } from "@studio-baeks/paper-ui";
 
 import { SiteNav } from "../site/chrome";
 import { Logo } from "../site/Logo";
+import "../site/home.css";
 
-const PRINCIPLES = [
-  { k: "색은 점이다", v: "흰색·검정이 골격. 색은 의미가 있을 때만 작게 얹는다. 검정이 일꾼이라 primary도 파랑이 아니다." },
-  { k: "선보다 면", v: "구획은 얇은 선이 아니라 옅은 면과 여백으로. 경계는 거의 안 보인다." },
-  { k: "조용한 밀도", v: "복잡한 앱의 밀도(14px)를 지키되 넉넉한 radius로 부드럽게. hover는 한 단 또렷해지고 포커스는 파랗다." },
-  { k: "빌드가 지킨다", v: "원칙은 문서가 아니라 lint·테스트가 강제한다. 정본 하나를 한 번 걷는다." },
-] as const;
+type Issue = { id: string; key: string; title: string; who: string; status: StatusName; label: string };
 
-const STAT = [
-  { n: "26", l: "컴포넌트" },
-  { n: "3", l: "포인트 색" },
-  { n: "4", l: "빌드가 강제하는 규칙" },
-] as const;
-
-// hero 오른쪽 — 실제 paper-ui 로 조립한, 만져지는 샘플러.
-const LiveSampler = () => {
-  const [tab, setTab] = useState("form");
-  const [agree, setAgree] = useState(true);
-  const [priority, setPriority] = useState("보통");
-  const STATUSES: StatusName[] = ["info", "success", "warning", "danger"];
-
-  return (
-    <Card style={{ width: "100%" }}>
-      <Stack gap="lg">
-        <Inline justify="between" align="center">
-          <Text variant="subheading">라이브 샘플러</Text>
-          <Text variant="caption" ink="faint">실제 컴포넌트</Text>
-        </Inline>
-
-        <Inline>
-          <Tabs
-            value={tab}
-            onChange={setTab}
-            items={[
-              { value: "form", label: "입력" },
-              { value: "status", label: "상태" },
-              { value: "action", label: "액션" },
-            ]}
-          />
-        </Inline>
-
-        {tab === "form" && (
-          <Stack gap="md">
-            <TextField label="제목" placeholder="무엇을 해야 하나요" hint="포커스는 파란 링 하나로만." />
-            <Stack gap="xs">
-              <Text variant="label">우선순위</Text>
-              <Select
-                value={priority}
-                onChange={(e) => setPriority(e.currentTarget.value)}
-                options={[
-                  { value: "높음", label: "높음" },
-                  { value: "보통", label: "보통" },
-                  { value: "낮음", label: "낮음" },
-                ]}
-              />
-            </Stack>
-            <Inline as="label" gap="sm" align="center">
-              <Checkbox checked={agree} onChange={(e) => setAgree(e.currentTarget.checked)} />
-              <Text variant="body" as="span">담당자에게 알림 보내기</Text>
-            </Inline>
-          </Stack>
-        )}
-
-        {tab === "status" && (
-          <Stack gap="md">
-            <Text variant="caption" ink="soft">status 3종은 전부 색을 갖는다 — 의미가 있는 자리라서.</Text>
-            <Inline gap="sm" wrap>
-              {STATUSES.map((s) => (
-                <Badge key={s} status={s}>{s}</Badge>
-              ))}
-              <Badge>중립</Badge>
-            </Inline>
-            <Divider />
-            <Inline gap="sm" wrap align="center">
-              {(["blue", "green", "amber", "red"] as const).map((a) => (
-                <Inline key={a} gap="sm" align="center">
-                  <Box accent={a} tone="dot" radius="pill" style={{ width: "0.75rem", height: "0.75rem" }} />
-                  <Text variant="caption" as="span" className={`pui-${a}-ink`}>{a}</Text>
-                </Inline>
-              ))}
-            </Inline>
-          </Stack>
-        )}
-
-        {tab === "action" && (
-          <Stack gap="md">
-            <Text variant="caption" ink="soft">variant(무게) × status(색)가 직교한다. 큰 면을 채우는 건 검정뿐, 색은 뜻을 질 때만.</Text>
-            <Inline gap="sm" wrap>
-              <Button>저장</Button>
-              <Button variant="soft">미리보기</Button>
-              <Button variant="quiet">취소</Button>
-            </Inline>
-            <Inline gap="sm" wrap>
-              <Button status="danger">삭제</Button>
-              <Button variant="soft" status="success">완료</Button>
-              <Button variant="outline" disabled>비활성</Button>
-            </Inline>
-          </Stack>
-        )}
-      </Stack>
-    </Card>
-  );
-};
-
-// 데모 프리뷰 — Mobbin 처럼 실제 화면 한 조각을 액자에 담아 /demo 로 보낸다.
-const PREVIEW_ROWS = [
-  { key: "STU-142", title: "토큰 트리를 두 번 걷는 emit 파이프라인", status: "info" as StatusName, label: "진행" },
-  { key: "STU-139", title: "Select 포커스 링이 사파리에서 잘림", status: "danger" as StatusName, label: "막힘" },
-  { key: "STU-137", title: "Table hover 배경을 subtle 로 통일", status: "success" as StatusName, label: "완료" },
+const ISSUES: Issue[] = [
+  { id: "1", key: "STU-142", title: "토큰 트리를 두 번 걷는 emit 파이프라인", who: "재원", status: "info", label: "진행" },
+  { id: "2", key: "STU-139", title: "Select 포커스 링이 사파리에서 잘림", who: "민주", status: "error", label: "막힘" },
+  { id: "3", key: "STU-137", title: "Table hover 배경을 subtle 로 통일", who: "재원", status: "success", label: "완료" },
+  { id: "4", key: "STU-135", title: "Badge wash 대비 AA 재검증", who: "지현", status: "warning", label: "검토" },
+  { id: "5", key: "STU-131", title: "Modal 진입 애니메이션 곡선 조정", who: "민주", status: "success", label: "완료" },
+  { id: "6", key: "STU-128", title: "eslint 규칙 4 — Box as 예외 문서화", who: "지현", status: "info", label: "진행" },
 ];
 
-const DemoPreview = () => (
-  <Box paper="subtle" radius="lg" style={{ overflow: "hidden", border: `1px solid ${tokens.color.border.base}` }}>
-    {/* 창 머리 — 중립 점 세 개(색은 장식으로 쓰지 않는다) + 경로 pill */}
-    <Inline gap="sm" align="center" paddingX="md" style={{ height: "2.25rem", borderBottom: `1px solid ${tokens.color.border.base}` }}>
-      <Inline gap="xs">
-        {[0, 1, 2].map((i) => (
-          <Box key={i} paper="muted" radius="pill" style={{ width: "0.625rem", height: "0.625rem" }} />
-        ))}
-      </Inline>
-      <Box paper="base" radius="pill" paddingX="sm" style={{ marginInline: "auto" }}>
-        <Text variant="caption" as="span" ink="faint">paper-ui / demo</Text>
-      </Box>
-    </Inline>
-    {/* 미니 이슈 목록 */}
-    <Box paper="base" padding="md">
-      <Stack gap="xs">
-        {PREVIEW_ROWS.map((r) => (
-          <Inline key={r.key} gap="md" align="center" paddingX="sm" paddingY="sm" style={{ borderRadius: tokens.shape.radius.interaction }}>
-            <Text variant="caption" as="span" ink="soft" style={{ width: "4.5rem", fontVariantNumeric: "tabular-nums" }}>{r.key}</Text>
-            <Text variant="body" as="span" style={{ flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{r.title}</Text>
-            <Badge status={r.status}>{r.label}</Badge>
+const columns: Column<Issue>[] = [
+  { key: "key", header: "키", render: (r) => <Text variant="caption" family="mono" as="span" ink="soft">{r.key}</Text> },
+  { key: "title", header: "이슈", render: (r) => <Text variant="body" as="span">{r.title}</Text> },
+  { key: "who", header: "담당", render: (r) => <Text variant="caption" as="span" ink="soft">{r.who}</Text> },
+  { key: "status", header: "상태", render: (r) => <Badge color={r.status}>{r.label}</Badge> },
+];
+
+const NAV = [
+  { label: "이슈", active: true },
+  { label: "보드", active: false },
+  { label: "리포트", active: false },
+  { label: "멤버", active: false },
+];
+
+const FILTERS: { label: string; accent: "info" | "success" | "warning" | "error" }[] = [
+  { label: "진행 중", accent: "info" },
+  { label: "막힘", accent: "error" },
+  { label: "검토", accent: "warning" },
+  { label: "완료", accent: "success" },
+];
+
+// 완전한 앱 목업 — 랜딩의 주인공. 실제 paper 컴포넌트로만 조립한 이슈 트래커.
+const AppMockup = () => {
+  const [tab, setTab] = useState("all");
+  return (
+    <div className="home-mockup">
+      <div className="home-mockup-bar">
+        <Inline gap="xs">
+          {[0, 1, 2].map((i) => (
+            <Box key={i} surface="well" radius="pill" style={{ width: "0.6rem", height: "0.6rem" }} />
+          ))}
+        </Inline>
+        <Box surface="canvas" radius="pill" paddingX="sm" style={{ marginInline: "auto", border: `1px solid ${tokens.color.border.base}` }}>
+          <Text variant="caption" as="span" ink="faint">app.studio-baeks.dev / issues</Text>
+        </Box>
+      </div>
+
+      <div className="home-mockup-body">
+        <aside className="home-mockup-side">
+          <Inline gap="sm" align="center" style={{ paddingInline: tokens.shape.padding.sm.interaction }}>
+            <Box style={{ width: "1.5rem", height: "1.5rem", borderRadius: tokens.shape.radius.interaction, background: tokens.color.ink.base, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Text variant="caption" as="span" style={{ color: tokens.color.paper.canvas, fontWeight: tokens.text.weight.bold }}>S</Text>
+            </Box>
+            <Text variant="subheading" as="span">Studio</Text>
           </Inline>
-        ))}
-      </Stack>
-    </Box>
-  </Box>
-);
+
+          <div className="home-nav">
+            {NAV.map((n) => (
+              <div key={n.label} className="home-navitem" data-active={n.active}>
+                <Box radius="pill" style={{ width: "0.4rem", height: "0.4rem", background: n.active ? tokens.color.ink.base : tokens.color.ink.faint }} />
+                {n.label}
+              </div>
+            ))}
+          </div>
+
+          <Stack gap="xs">
+            <Text variant="label" as="p" ink="soft" style={{ paddingInline: tokens.shape.padding.sm.interaction }}>필터</Text>
+            {FILTERS.map((f) => (
+              <Inline key={f.label} gap="sm" align="center" style={{ paddingInline: tokens.shape.padding.sm.interaction, height: "1.75rem" }}>
+                <Box className={`pui-${f.accent}-dot`} radius="pill" style={{ width: "0.55rem", height: "0.55rem" }} />
+                <Text variant="caption" as="span" ink="soft">{f.label}</Text>
+              </Inline>
+            ))}
+          </Stack>
+        </aside>
+
+        <main className="home-mockup-main">
+          <Inline align="center" justify="between" gap="sm" paddingX="lg" paddingY="md" style={{ borderBottom: `1px solid ${tokens.color.border.base}` }}>
+            <Text variant="heading" as="h3">이슈</Text>
+            <Inline gap="sm" align="center">
+              <Box style={{ width: "12rem" }}>
+                <Field size="sm" placeholder="검색…" aria-label="검색" />
+              </Box>
+              <Button size="sm">새 이슈</Button>
+            </Inline>
+          </Inline>
+
+          <Inline align="center" justify="between" gap="sm" paddingX="lg" paddingY="sm" style={{ borderBottom: `1px solid ${tokens.color.border.base}` }}>
+            <Tabs
+              value={tab}
+              onChange={setTab}
+              items={[
+                { value: "all", label: "전체" },
+                { value: "open", label: "열림" },
+                { value: "done", label: "완료" },
+              ]}
+            />
+            <Text variant="caption" as="span" ink="soft">6건 · 열림 4</Text>
+          </Inline>
+
+          <Box style={{ padding: tokens.shape.padding.md.interaction }}>
+            <Table columns={columns} rows={ISSUES} rowKey={(r) => r.id} />
+          </Box>
+        </main>
+      </div>
+    </div>
+  );
+};
 
 export const Home = () => (
   <Stack>
     <SiteNav />
 
     <Box paddingX="xl">
-      <Stack gap="xl" style={{ maxWidth: tokens.layout.container.content, marginInline: "auto", width: "100%" }}>
+      <Box style={{ maxWidth: tokens.layout.container.content, marginInline: "auto", width: "100%" }}>
         {/* ── Hero ─────────────────────────────────────────────── */}
-        <Box className="hero-grid" style={{ paddingBlock: "3.5rem 3rem" }}>
-          <Stack gap="lg">
-            <Inline gap="sm" align="center">
-              <Badge status="info">Studio Baeks</Badge>
-              <Text variant="caption">Design System</Text>
-            </Inline>
+        <div className="home-hero">
+          <Inline gap="sm" align="center" style={{ marginBottom: tokens.shape.gap.lg }}>
+            <Badge color="info">Studio Baeks</Badge>
+            <Text variant="caption" ink="soft">Design System · v0.1.0</Text>
+          </Inline>
 
-            <Logo height={112} style={{ maxWidth: "100%", height: "auto", width: "min(26rem, 72vw)" }} />
+          <h1 className="home-headline">
+            복잡한 웹앱을 위한<br />
+            조용한 바탕<span className="home-dot">.</span>
+          </h1>
 
-            <Text variant="title" style={{ maxWidth: "30rem" }}>
-              순백과 검정, 그리고 의미가 있을 때만의 색.
-            </Text>
-            <Text variant="body" ink="soft" style={{ maxWidth: "32rem" }}>
-              복잡한 웹앱을 위한 디자인 시스템입니다. Atlassian의 밀도, shadcn의 뉴트럴, ChatGPT의 조용함, SwiftUI의 마감을 한 결로 묶었습니다.
-            </Text>
+          <Text variant="subheading" as="p" ink="soft" className="home-sub">
+            스물일곱 개의 컴포넌트로 실제 화면을 세웁니다. 색은 의미가 있을 때만 쓰고, 구조는 빌드가 지킵니다 — 순백 위에 부드럽게.
+          </Text>
 
-            <Inline gap="sm" style={{ marginTop: "0.25rem" }}>
-              <Link to="/docs" style={{ textDecoration: "none" }}>
-                <Button>문서 보기</Button>
-              </Link>
-              <Link to="/playground" style={{ textDecoration: "none" }}>
-                <Button variant="outline">플레이그라운드</Button>
-              </Link>
-            </Inline>
-
-            <Inline gap="xl" style={{ marginTop: "0.5rem" }}>
-              {STAT.map((s) => (
-                <Stack key={s.l} gap="xs">
-                  <Text variant="title" as="span" style={{ fontVariantNumeric: "tabular-nums" }}>{s.n}</Text>
-                  <Text variant="caption" ink="soft">{s.l}</Text>
-                </Stack>
-              ))}
-            </Inline>
-          </Stack>
-
-          <LiveSampler />
-        </Box>
-
-        {/* ── 실제 화면에서 ────────────────────────────────────── */}
-        <Stack gap="md" style={{ paddingBlock: "1rem 0" }}>
-          <Inline justify="between" align="baseline">
-            <Text variant="label">실제 화면에서</Text>
-            <Link to="/demo" style={{ textDecoration: "none" }}>
-              <Text variant="caption" as="span" className="pui-blue-ink" style={{ fontWeight: 550 }}>데모 전체 보기 →</Text>
+          <Inline gap="sm" style={{ marginTop: tokens.shape.gap.xl }}>
+            <Link to="/docs" style={{ textDecoration: "none" }}>
+              <Button size="lg">문서 읽기</Button>
+            </Link>
+            <Link to="/playground" style={{ textDecoration: "none" }}>
+              <Button size="lg" variant="outline">컴포넌트 보기</Button>
             </Link>
           </Inline>
+        </div>
+
+        {/* ── 완전한 앱 목업 ──────────────────────────────────────── */}
+        <AppMockup />
+
+        <Inline gap="sm" align="center" wrap style={{ paddingBlock: tokens.shape.padding.lg.layout }}>
+          <Text variant="caption" ink="soft">갤러리가 아니라 실제 화면(이슈 트래커)으로 검증합니다.</Text>
           <Link to="/demo" style={{ textDecoration: "none" }}>
-            <DemoPreview />
+            <Text variant="caption" as="span" className="pui-info-ink" style={{ fontWeight: tokens.text.weight.medium }}>데모 열기 →</Text>
           </Link>
-          <Text variant="caption" ink="soft">
-            컴포넌트 갤러리가 아니라 실제 화면(이슈 트래커)으로 검증합니다. 이 컴포넌트들로 이게 서면 충분한 것.
-          </Text>
-        </Stack>
+        </Inline>
 
-        {/* ── 원칙 ─────────────────────────────────────────────── */}
-        <Stack gap="md" style={{ paddingBlock: "1rem" }}>
-          <Text variant="label">여섯 원칙 중 넷</Text>
-          <Box className="principles-grid">
-            {PRINCIPLES.map((p) => (
-              <Card key={p.k}>
-                <Stack gap="xs">
-                  <Text variant="subheading">{p.k}</Text>
-                  <Text variant="caption" ink="soft">{p.v}</Text>
-                </Stack>
-              </Card>
-            ))}
-          </Box>
-          <Inline gap="sm" align="center">
-            <Text variant="caption">더 알아보기 —</Text>
-            <Link to="/docs/get-started/principles" style={{ textDecoration: "none" }}><Text variant="caption" as="span" className="pui-blue-ink">여섯 원칙 전문</Text></Link>
-            <Text variant="caption" ink="faint">·</Text>
-            <Link to="/docs/foundations/tokens" style={{ textDecoration: "none" }}><Text variant="caption" as="span" className="pui-blue-ink">토큰</Text></Link>
-            <Text variant="caption" ink="faint">·</Text>
-            <Link to="/docs/foundations/architecture" style={{ textDecoration: "none" }}><Text variant="caption" as="span" className="pui-blue-ink">아키텍처</Text></Link>
-          </Inline>
-        </Stack>
-
-        {/* ── 푸터 ─────────────────────────────────────────────── */}
-        <Box style={{ borderTop: `1px solid ${tokens.color.border.base}`, paddingBlock: "1.5rem 2.5rem" }}>
+        {/* ── 푸터 ────────────────────────────────────────────────── */}
+        <Box as="footer" style={{ borderTop: `1px solid ${tokens.color.border.base}`, marginTop: tokens.shape.gap.lg, paddingBlock: "1.5rem 2.5rem" }}>
           <Inline justify="between" align="center" wrap gap="md">
-            <Logo height={20} style={{ opacity: 0.7 }} />
-            <Text variant="caption" ink="faint">© Studio Baeks · 순백과 검정, 그리고 의미가 있을 때만의 색.</Text>
+            <Logo height={18} style={{ opacity: 0.7 }} />
+            <Inline gap="md" wrap align="center">
+              <Link to="/docs/get-started/philosophy" style={{ textDecoration: "none" }}><Text variant="caption" as="span" ink="soft">원칙</Text></Link>
+              <Link to="/docs/foundations/tokens" style={{ textDecoration: "none" }}><Text variant="caption" as="span" ink="soft">토큰</Text></Link>
+              <Link to="/docs" style={{ textDecoration: "none" }}><Text variant="caption" as="span" ink="soft">문서</Text></Link>
+              <Text variant="caption" ink="faint" as="span">© Studio Baeks</Text>
+            </Inline>
           </Inline>
         </Box>
-      </Stack>
+      </Box>
     </Box>
   </Stack>
 );

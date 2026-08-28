@@ -34,6 +34,10 @@ export const Tooltip = ({ label, children }: TooltipProps) => {
       onMouseLeave={hide}
       onFocus={show}
       onBlur={hide}
+      // 떠 있는 동안 Esc 로 해제 (WAI-ARIA tooltip). 포커스는 트리거에 그대로 둔다.
+      onKeyDown={(e) => {
+        if (e.key === "Escape") hide();
+      }}
     >
       <Box aria-describedby={open ? id : undefined}>{children}</Box>
       {open ? (

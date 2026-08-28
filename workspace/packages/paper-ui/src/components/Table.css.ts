@@ -9,7 +9,7 @@ export const tableRoot = style({
 
 // 표 머리 — 옅은 면. 강한 밑줄 대신 조용히.
 export const tableHead = style({
-  background: tokens.color.paper.subtle,
+  background: tokens.color.paper.sunken,
 });
 
 export const tableTh = style({
@@ -27,9 +27,9 @@ export const tableTr = style({
     "&:not(:last-child)": {
       borderBottom: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
     },
-    // 표는 subtle 패널 안에 들어가는 일이 많다 — hover 를 subtle 로 두면 안 보인다.
-    // muted 로 한 단 더 내려 어느 컨테이너에서도 어두워지게 (원칙 4).
-    "&:hover": { background: tokens.color.paper.muted },
+    // hover 는 interaction 오버레이 — 어느 면(순백·smoke·well) 위든 그 면을 조금
+    // 어둡게 만든다. solid 회색을 자리마다 고르지 않는다 (중립 상호작용 = 오버레이).
+    "&:hover": { background: tokens.color.interaction.hover },
   },
 });
 

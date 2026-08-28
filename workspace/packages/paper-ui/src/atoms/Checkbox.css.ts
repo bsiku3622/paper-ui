@@ -7,7 +7,7 @@ export const checkboxRoot = style({
   appearance: "none",
   margin: 0,
   flexShrink: 0,
-  background: tokens.color.paper.base,
+  background: tokens.color.paper.raised,
   borderWidth: tokens.shape.constants.borderWidth,
   borderStyle: "solid",
   borderColor: tokens.color.border.strong,
@@ -22,6 +22,15 @@ export const checkboxRoot = style({
       borderLeft: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.primary.fg}`,
       borderBottom: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.primary.fg}`,
       transform: "rotate(-45deg) translate(0.5px, -1px)",
+    },
+    // indeterminate — 부분 선택. 체크 대신 가로 대시. width % 라 size 를 자동으로 따른다.
+    "&:indeterminate": { background: tokens.color.primary.base, borderColor: tokens.color.primary.base },
+    "&:indeterminate::after": {
+      content: "''",
+      width: "58%",
+      height: tokens.shape.constants.focusRingWidth,
+      borderRadius: "1px",
+      background: tokens.color.primary.fg,
     },
     "&:focus-visible": {
       outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.focus.ring}`,

@@ -13,7 +13,7 @@ export const tooltipBubble = style({
   padding: `${tokens.shape.padding.xs.interaction} ${tokens.shape.padding.sm.interaction}`,
   borderRadius: tokens.shape.radius.interaction,
   background: tokens.color.ink.base,
-  color: tokens.color.paper.base,
+  color: tokens.color.paper.raised,
   fontFamily: tokens.text.font.sans,
   fontSize: tokens.text.size.label,
   fontWeight: tokens.text.weight.normal,

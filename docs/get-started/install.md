@@ -1,4 +1,4 @@
-# 설치
+# Installation
 
 paper-ui를 React 앱에 붙이는 방법입니다. 패키지 하나와 스타일시트 한 줄이면 됩니다.
 
@@ -35,7 +35,7 @@ export const App = () => (
 );
 ```
 
-`PaperProvider`가 받는 설정은 없습니다. 이 시스템엔 `primaryColor`도, 테마 토글도 없습니다 — 정체성이 색이 아니라 순백·검정·여백에서 나오기 때문입니다. 자세한 이유는 [원칙](principles.md)에 있습니다.
+`PaperProvider`가 받는 설정은 없습니다. 이 시스템엔 `primaryColor`도, 테마 토글도 없습니다 — 정체성이 색이 아니라 순백·검정·여백에서 나오기 때문입니다. 자세한 이유는 [원칙](philosophy.md)에 있습니다.
 
 ## 폰트
 

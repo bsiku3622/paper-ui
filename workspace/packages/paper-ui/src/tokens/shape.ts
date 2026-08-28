@@ -129,16 +129,17 @@ export const SHAPE_FONT_SIZE = {
   xl: REM(16),
 } as const;
 
-// ───── control fontSize — 밀도와 분리한 컨트롤 라벨 크기 (14 하한) ──────────
+// ───── control fontSize — 밀도와 분리한 컨트롤 라벨 크기 (14 고정) ───────────
 //
-// 컨트롤이 작아져도(sm) 글자는 14 를 지킨다 — 밀도(height·padding)와 가독성(fontSize)은
+// 컨트롤 크기가 바뀌어도 글자는 14 로 고정 — 밀도(height·padding)와 가독성(fontSize)은
 // 다른 축이다. 사이드바를 sm 으로 줄였더니 글자가 12 로 떨어져 맥없어진 게 이 둘을
-// 묶었기 때문. lg 에서만 16 으로 한 단(큰 CTA). Ant(14/14/16)·Atlassian(14 고정) 모델.
+// 묶었기 때문. lg 도 16 이 아니라 14 — 큰 컨트롤이라고 글자까지 키우면 밀도 축이 흔들린다.
+// height·padding 만 세 단으로 움직인다. Atlassian(14 고정) 모델.
 
 export const CONTROL_FONT_SIZE = {
   sm: REM(14),
   md: REM(14),
-  lg: REM(16),
+  lg: REM(14),
 } as const;
 
 // ───── dot — 작은 시각 요소 (Icon · status dot · Spinner 공용, 3 단) ────────
@@ -189,14 +190,27 @@ export const SHAPE_MEASURE = {
   xl: "46rem",
 } as const;
 
-// ───── shadow — 옅은 부상 (standalone, ladder 아님) ─────────────────────────
+// ───── shadow — 떠 있는 것의 표식 (2단, 축 아님) ────────────────────────────
 //
-// paper-ui 는 2 단. 카드는 border/면으로 정의되고 뜨지 않는다 — 그림자는 *떠 있는
-// 것*(overlay)의 표식. raised(세그먼트 활성)·overlay(Modal·Tooltip) 뿐.
+// 원칙 4: "떠 있는 것만 그림자를 갖는다". 붙어있는 면(Button·Field·Card·Table)은
+// 그림자 없음 — 그냥 prop 을 안 준다. radius·size 와 나란한 shape 토큰일 뿐,
+// "elevation" 같은 추상 축이 아니다 (그 이름은 surface 의 'raised' 와 충돌했다 —
+// 떠오른 흰 면(raised)은 그림자 없이 뜨는데 elevation.raised 는 그림자였다).
+//
+// overlay        — 자유롭게 뜬 것 (Modal · Tooltip · Popover · 제품 목업).
+// overlayMinimal — 아주 살짝 뜬 것 (Switch 손잡이 등). overlay 결의 최소치.
 
 export const SHADOW = {
-  raised: "0 1px 2px 0 rgba(24, 25, 28, 0.05)",
   overlay: "0 8px 24px -6px rgba(24, 25, 28, 0.14), 0 2px 6px -2px rgba(24, 25, 28, 0.08)",
+  overlayMinimal: "0 1px 2px 0 rgba(24, 25, 28, 0.05)",
+} as const;
+
+// 다크 그림자 — near-black 은 어두운 면 위에서 사라져 elevation 단서를 잃는다. 순검정을
+// 더 짙고 넓게 깔아 떠오름을 살린다. theme.css.ts 가 [data-theme="dark"] 스코프에 이
+// 세트로 shadow var 를 덮어쓴다(색과 함께, shape 축은 그대로).
+export const SHADOW_DARK = {
+  overlay: "0 10px 28px -6px rgba(0, 0, 0, 0.6), 0 3px 8px -2px rgba(0, 0, 0, 0.5)",
+  overlayMinimal: "0 1px 2px 0 rgba(0, 0, 0, 0.45)",
 } as const;
 
 // z 층 tier 는 shape 가 아니라 layout 책임 — tokens/layout.ts 로 옮겼다.

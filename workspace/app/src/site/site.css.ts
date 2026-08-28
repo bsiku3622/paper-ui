@@ -37,7 +37,7 @@ globalStyle(".gnb", {
   position: "sticky",
   top: 0,
   zIndex: tokens.layout.z.sticky,
-  background: tokens.color.paper.base,
+  background: tokens.color.paper.canvas,
   borderBottom: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
 });
 
@@ -72,8 +72,28 @@ globalStyle(".gnb-link", {
   textDecoration: "none",
   transition: stateTransition("background", "color"),
 });
-globalStyle(".gnb-link:hover", { background: tokens.color.paper.subtle, color: tokens.color.ink.base });
-globalStyle('.gnb-link[data-active="true"]', { background: tokens.color.paper.subtle, color: tokens.color.ink.base });
+globalStyle(".gnb-link:hover", { background: tokens.color.interaction.hover, color: tokens.color.ink.base });
+globalStyle('.gnb-link[data-active="true"]', { background: tokens.color.interaction.selected, color: tokens.color.ink.base });
+
+// 테마 토글 — GNB 우측 정사각 버튼. 라이브러리 useTheme 로 light→dark→system 순환.
+// 색은 전부 토큰이라 스코프가 바뀌면 버튼 자신도 다크로 따라온다.
+globalStyle(".gnb-theme", {
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  width: tokens.shape.height.md.interaction,
+  height: tokens.shape.height.md.interaction,
+  padding: 0,
+  border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
+  borderRadius: tokens.shape.radius.interaction,
+  background: tokens.color.paper.raised,
+  color: tokens.color.ink.soft,
+  cursor: "pointer",
+  fontSize: tokens.text.size.subheading,
+  lineHeight: 1,
+  transition: stateTransition("background", "color"),
+});
+globalStyle(".gnb-theme:hover", { background: tokens.color.interaction.hover, color: tokens.color.ink.base });
 
 // ── 사이드바 ─────────────────────────────────────────────────────────────────
 // 흰 지면 위 리스트. 편안한 밀도 — 항목은 28px 높이에 넉넉한 좌우 여백, active 는
@@ -81,7 +101,7 @@ globalStyle('.gnb-link[data-active="true"]', { background: tokens.color.paper.su
 globalStyle(".side-nav", {
   alignSelf: "start",
   position: "sticky",
-  background: tokens.color.paper.base,
+  background: tokens.color.paper.canvas,
   borderRight: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
 });
 
@@ -116,9 +136,9 @@ globalStyle(".side-link", {
   textDecoration: "none",
   transition: stateTransition("background"),
 });
-globalStyle(".side-link:hover", { background: tokens.color.paper.subtle });
-// active — 옅은 면 + weight 한 단(작은 글자가 약해 보이는 걸 보상, Material 결).
+globalStyle(".side-link:hover", { background: tokens.color.interaction.hover });
+// active — interaction.selected 오버레이 + weight 한 단(작은 글자가 약해 보이는 걸 보상).
 globalStyle('.side-link[data-active="true"]', {
-  background: tokens.color.paper.muted,
+  background: tokens.color.interaction.selected,
   fontWeight: tokens.text.weight.medium,
 });

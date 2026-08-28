@@ -1,6 +1,6 @@
 // Select — 목록에서 하나. native select 를 종이 결로 감싼 것.
 
-import type { SelectHTMLAttributes } from "react";
+import { forwardRef, type SelectHTMLAttributes } from "react";
 
 import { joinClass } from "../internal/joinClass";
 import type { ControlSize } from "../tokens";
@@ -15,12 +15,17 @@ export type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "classNa
   className?: string;
 };
 
-export const Select = ({ options, size = "md", className, ...rest }: SelectProps) => (
-  <select className={joinClass(selectRoot, selectSize[size], className)} {...rest}>
-    {options.map((o) => (
-      <option key={o.value} value={o.value}>
-        {o.label}
-      </option>
-    ))}
-  </select>
-);
+export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select(
+  { options, size = "md", className, ...rest },
+  ref,
+) {
+  return (
+    <select ref={ref} className={joinClass(selectRoot, selectSize[size], className)} {...rest}>
+      {options.map((o) => (
+        <option key={o.value} value={o.value}>
+          {o.label}
+        </option>
+      ))}
+    </select>
+  );
+});

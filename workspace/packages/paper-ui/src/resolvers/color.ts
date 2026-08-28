@@ -1,29 +1,38 @@
-// Color resolver — interactive 색의 이름 규칙의 주인.
+// Color resolver — 색·면의 이름 규칙의 주인.
 //
-// studio-ui 의 resolveColorClassnames 패턴을 paper-ui 로 이식한 것. 컴포넌트는
-// "내가 어떤 variant·status 인지" 만 말하고, 그게 무슨 클래스가 되는지는 모른다.
-// 그 클래스의 실체(background·color·border)는 styles/color.css.ts 가 같은 축
-// 배열을 걸어 굳힌다 — resolver 와 emitter 가 한 배열을 도니 조합이 어긋날 수 없다.
+// 두 어휘를 **종류로 나눈다** (한 prop 에 욱여넣지 않는다):
+//   surface — 면의 깊이. Box 가 입는 구조 축. 색이 아니라 지면이다.
+//   color × variant — 잉크색의 무게. Button·Badge·Alert 가 입는다.
+// paper-ui 정체성("색으로 면을 안 채운다 — 큰 면은 검정 primary 만")상 Box 는 accent 색을
+// 입을 일이 없어, 면(surface)과 잉크색(color)은 애초에 다른 종류다. 그래서 나눈다.
 //
-// paper-ui 는 색을 자유롭게 고르지 않는다(primaryColor 없음). 그래서 studio-ui 의
-// (color × variant × status) 3 축에서 color 를 뺀 **variant × status 2 축** 이다:
-//   variant  시각 무게 — solid(검정 채움) · soft(회색/옅은 색면) · outline · quiet
-//   status   의미 색   — default(뉴트럴) · info · success · warning · danger
+//   resolveSurface("raised")          → "pui-surface-raised"   (순백 면 — 카드 바닥)
+//   resolveColor("primary", "solid")  → "pui-c-primary-solid"  (검정 채움 — 일꾼)
+//   resolveColor("error",   "soft")   → "pui-c-error-soft"     (옅은 빨강 면)
 //
-//   resolveColorClassnames("solid")            → "pui-c-solid"        (검정)
-//   resolveColorClassnames("solid", "danger")  → "pui-c-solid-danger" (빨강)
-//   resolveColorClassnames("soft", "success")  → "pui-c-soft-success" (옅은 초록)
+// 잉크색 이름의 실체(background·color·border·hover)는 styles/color.css.ts 가, 면은
+// styles/utility.css.ts 가 같은 축 배열을 걸어 굳힌다 — 조합이 어긋날 수 없다.
 
-import type { StatusName } from "../tokens";
+// 면(surface) — 깊이 사다리. Box 전용 구조 축.
+export const SURFACES = ["raised", "canvas", "sunken", "well"] as const;
+export type Surface = (typeof SURFACES)[number];
+
+export const resolveSurface = (s: Surface | undefined): string => (s ? `pui-surface-${s}` : "");
+
+// 의미 4색 — tokens.color.accent 의 키와 같다.
+export const ACCENTS = ["info", "success", "warning", "error"] as const;
+export type Accent = (typeof ACCENTS)[number];
+
+// color 축 = 잉크색 = primary(검정 일꾼) ∪ accent 4색. 면(surface)은 여기 없다.
+export const COLORS = ["primary", ...ACCENTS] as const;
+export type Color = (typeof COLORS)[number];
 
 export const VARIANTS = ["solid", "soft", "outline", "quiet"] as const;
 export type Variant = (typeof VARIANTS)[number];
 
-export type ColorStatus = "default" | StatusName;
+export const resolveColor = (color: Color | undefined, variant: Variant = "solid"): string =>
+  color ? `pui-c-${color}-${variant}` : "";
 
-export const resolveColorClassnames = (variant: Variant, status: ColorStatus = "default"): string =>
-  status === "default" ? `pui-c-${variant}` : `pui-c-${variant}-${status}`;
-
-// hover/active 를 켜는 opt-in gate. Button 처럼 눌리는 것만 붙인다 — Badge 같은
-// 표시용은 안 붙여 hover 색이 뜨지 않게 한다 (studio-ui 의 is-interactive).
+// hover/active 를 켜는 opt-in gate. Button 처럼 눌리는 것만 붙인다 — Badge 같은 표시용은
+// 안 붙여 hover 색이 뜨지 않게 한다 (studio-ui 의 is-interactive).
 export const INTERACTIVE = "pui-interactive";

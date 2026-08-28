@@ -19,7 +19,7 @@ export type NavbarProps = {
 export const Navbar = ({ brand, items = [], active, onSelect, trailing }: NavbarProps) => (
   <Inline
     as="header"
-    paper="base"
+    surface="canvas"
     paddingX="lg"
     gap="xl"
     justify="between"

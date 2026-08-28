@@ -17,11 +17,11 @@ export const bannerRoot = style({
 
 // tone — solid(검정) 기본 + status 색 면. 채운 면 위 흰 글자.
 export const bannerTone = styleVariants({
-  solid: { background: tokens.color.ink.base, color: tokens.color.paper.base },
+  solid: { background: tokens.color.ink.base, color: tokens.color.paper.raised },
   ...(Object.fromEntries(
     STATUS.map((s) => [
       s,
-      { background: tokens.color.accent[STATUS_ACCENT[s]].solid, color: tokens.color.paper.base },
+      { background: tokens.color.accent[STATUS_ACCENT[s]].solid, color: tokens.color.paper.raised },
     ]),
   ) as Record<StatusName, { background: string; color: string }>),
 });

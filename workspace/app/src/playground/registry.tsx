@@ -37,6 +37,11 @@ import {
   Tooltip,
   tokens,
   type Column,
+  type Surface,
+  type Color,
+  type Variant,
+  type Accent,
+  type Ink,
   type StatusName,
   type TextVariant,
 } from "@studio-baeks/paper-ui";
@@ -79,53 +84,72 @@ export const COMPONENTS: CompSpec[] = [
     slug: "text",
     name: "Text",
     group: "Primitives",
-    blurb: "여덟 variant 로 위계를 정한다. variant 가 크기·굵기·서체·잉크를 한 번에 결정.",
+    blurb: "일곱 variant 로 위계를 정한다. variant 가 크기·굵기·잉크를, family 가 서체(sans·mono)를 정한다.",
     controls: [
-      { kind: "enum", prop: "variant", label: "variant", options: ["title", "heading", "label", "body", "mono", "caption"], def: "body" },
-      { kind: "enum", prop: "ink", label: "ink", options: ["default", "base", "soft", "faint"], def: "default" },
+      { kind: "enum", prop: "variant", label: "variant", options: ["display", "title", "heading", "subheading", "body", "caption", "label"], def: "body" },
+      { kind: "enum", prop: "family", label: "family", options: ["sans", "mono"], def: "sans" },
+      { kind: "enum", prop: "ink", label: "ink", options: ["default", "base", "soft", "faint", "info", "success", "warning", "error"], def: "default" },
       { kind: "text", prop: "children", label: "children", def: "다람쥐 헌 쳇바퀴 Aa 0123" },
     ],
     render: (st) => (
-      <Text variant={s(st.variant) as TextVariant} ink={st.ink === "default" ? undefined : (s(st.ink) as "base" | "soft" | "faint")}>
+      <Text
+        variant={s(st.variant) as TextVariant}
+        family={(s(st.family) || "sans") as "sans" | "mono"}
+        ink={st.ink === "default" ? undefined : (s(st.ink) as Ink)}
+      >
         {s(st.children)}
       </Text>
     ),
     code: (st) =>
-      `<Text${AE("variant", s(st.variant), "body")}${st.ink === "default" ? "" : A("ink", s(st.ink))}>${s(st.children)}</Text>`,
+      `<Text${AE("variant", s(st.variant), "body")}${AE("family", s(st.family) || "sans", "sans")}${st.ink === "default" ? "" : A("ink", s(st.ink))}>${s(st.children)}</Text>`,
   },
   {
     slug: "box",
     name: "Box",
     group: "Primitives",
-    blurb: "면 하나. paper(면색)·radius·padding 을 말한다. as 로 어떤 태그든 된다.",
+    blurb: "구조 패널. surface(면 깊이)에 border(카드 헤어라인)·radius·shadow·padding 을 얹는다. 색(잉크)은 여기 없다 — 큰 면은 색으로 안 채운다. 검은 판은 inverse. as 로 어떤 태그든.",
     controls: [
-      { kind: "enum", prop: "paper", label: "paper", options: ["base", "subtle", "muted"], def: "subtle" },
+      { kind: "enum", prop: "surface", label: "surface", options: ["none", "raised", "canvas", "sunken", "well"], def: "raised" },
+      { kind: "bool", prop: "border", label: "border", def: false },
+      { kind: "bool", prop: "inverse", label: "inverse", def: false },
+      { kind: "enum", prop: "shadow", label: "shadow", options: ["none", "overlay", "overlayMinimal"], def: "none" },
       { kind: "enum", prop: "radius", label: "radius", options: ["sm", "md", "lg", "pill"], def: "md" },
       { kind: "enum", prop: "padding", label: "padding", options: ["sm", "md", "lg", "xl"], def: "lg" },
     ],
     render: (st) => (
-      <Box paper={s(st.paper) as "base" | "subtle" | "muted"} radius={s(st.radius) as "sm" | "md" | "lg" | "pill"} padding={s(st.padding) as "sm" | "md" | "lg" | "xl"} style={{ minWidth: "8rem", border: `1px solid ${tokens.color.border.base}` }}>
-        <Text variant="caption" as="span">paper.{s(st.paper)}</Text>
+      <Box
+        surface={s(st.surface) === "none" ? undefined : (s(st.surface) as Surface)}
+        border={b(st.border)}
+        inverse={b(st.inverse)}
+        shadow={s(st.shadow) === "none" ? undefined : (s(st.shadow) as "overlay" | "overlayMinimal")}
+        radius={s(st.radius) as "sm" | "md" | "lg" | "pill"}
+        padding={s(st.padding) as "sm" | "md" | "lg" | "xl"}
+        style={{ minWidth: "8rem" }}
+      >
+        <Text variant="caption" as="span">surface={s(st.surface)}</Text>
       </Box>
     ),
-    code: (st) => `<Box paper="${s(st.paper)}" radius="${s(st.radius)}" padding="${s(st.padding)}">…</Box>`,
+    code: (st) => `<Box${st.surface === "none" ? "" : A("surface", s(st.surface))}${A("border", b(st.border))}${A("inverse", b(st.inverse))}${AE("shadow", s(st.shadow), "none")} radius="${s(st.radius)}" padding="${s(st.padding)}">…</Box>`,
   },
   {
     slug: "stack",
     name: "Stack",
     group: "Primitives",
-    blurb: "세로로 쌓는다. gap 으로 사이 간격만 정한다 — 나머지는 자식이 알아서.",
-    controls: [{ kind: "enum", prop: "gap", label: "gap", options: ["sm", "md", "lg"], def: "md" }],
+    blurb: "세로로 쌓는다. gap 으로 사이 간격을, align 으로 가로 정렬을 정한다.",
+    controls: [
+      { kind: "enum", prop: "gap", label: "gap", options: ["xs", "sm", "md", "lg", "xl"], def: "md" },
+      { kind: "enum", prop: "align", label: "align", options: ["stretch", "start", "center", "end"], def: "stretch" },
+    ],
     render: (st) => (
-      <Stack gap={s(st.gap) as "sm" | "md" | "lg"} style={{ width: "12rem" }}>
+      <Stack gap={s(st.gap) as "xs" | "sm" | "md" | "lg" | "xl"} align={s(st.align) as "start" | "center" | "end" | "stretch"} style={{ width: "12rem" }}>
         {["하나", "둘", "셋"].map((t) => (
-          <Box key={t} paper="muted" radius="sm" padding="sm">
+          <Box key={t} surface="well" radius="sm" padding="sm">
             <Text variant="caption" as="span">{t}</Text>
           </Box>
         ))}
       </Stack>
     ),
-    code: (st) => `<Stack gap="${s(st.gap)}">\n  <Box>…</Box>\n  <Box>…</Box>\n</Stack>`,
+    code: (st) => `<Stack gap="${s(st.gap)}"${AE("align", s(st.align), "stretch")}>\n  <Box>…</Box>\n  <Box>…</Box>\n</Stack>`,
   },
   {
     slug: "inline",
@@ -133,19 +157,21 @@ export const COMPONENTS: CompSpec[] = [
     group: "Primitives",
     blurb: "가로로 늘어놓는다. gap · justify · align · wrap 으로 한 줄 배치를 정한다.",
     controls: [
-      { kind: "enum", prop: "gap", label: "gap", options: ["sm", "md", "lg"], def: "sm" },
+      { kind: "enum", prop: "gap", label: "gap", options: ["xs", "sm", "md", "lg", "xl"], def: "sm" },
+      { kind: "enum", prop: "align", label: "align", options: ["center", "start", "end", "baseline"], def: "center" },
       { kind: "enum", prop: "justify", label: "justify", options: ["start", "center", "end", "between"], def: "start" },
+      { kind: "bool", prop: "wrap", label: "wrap", def: false },
     ],
     render: (st) => (
-      <Inline gap={s(st.gap) as "sm" | "md" | "lg"} justify={s(st.justify) as "start" | "center" | "end" | "between"} style={{ width: "18rem" }}>
+      <Inline gap={s(st.gap) as "xs" | "sm" | "md" | "lg" | "xl"} align={s(st.align) as "start" | "center" | "end" | "baseline"} justify={s(st.justify) as "start" | "center" | "end" | "between"} wrap={b(st.wrap)} style={{ width: "18rem", height: "4rem" }}>
         {["A", "B", "C"].map((t) => (
-          <Box key={t} paper="muted" radius="sm" padding="sm">
+          <Box key={t} surface="well" radius="sm" padding="sm">
             <Text variant="caption" as="span">{t}</Text>
           </Box>
         ))}
       </Inline>
     ),
-    code: (st) => `<Inline gap="${s(st.gap)}"${AE("justify", s(st.justify), "start")}>\n  …\n</Inline>`,
+    code: (st) => `<Inline gap="${s(st.gap)}"${AE("align", s(st.align), "center")}${AE("justify", s(st.justify), "start")}${A("wrap", b(st.wrap))}>\n  …\n</Inline>`,
   },
 
   // ─ Atoms ─
@@ -153,61 +179,84 @@ export const COMPONENTS: CompSpec[] = [
     slug: "button",
     name: "Button",
     group: "Atoms",
-    blurb: "두 축이 직교한다 — variant(solid·soft·outline·quiet, 시각 무게) × status(색). 큰 면을 채우는 건 검정(solid)뿐, 색은 뜻을 질 때만.",
+    blurb: "두 축이 직교한다 — color(primary·의미 4색) × variant(solid·soft·outline·quiet, 시각 무게). 큰 면을 채우는 건 검정(primary)뿐, 색은 뜻을 질 때만.",
     controls: [
+      { kind: "enum", prop: "color", label: "color", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
       { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "outline", "quiet"], def: "solid" },
-      { kind: "enum", prop: "status", label: "status", options: ["default", "info", "success", "warning", "danger"], def: "default" },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
+      { kind: "bool", prop: "loading", label: "loading", def: false },
+      { kind: "bool", prop: "fullWidth", label: "fullWidth", def: false },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
       { kind: "text", prop: "children", label: "children", def: "버튼" },
     ],
     render: (st) => (
       <Button
-        variant={s(st.variant) as "solid" | "soft" | "outline" | "quiet"}
-        status={s(st.status) as "default" | StatusName}
+        color={s(st.color) as Color}
+        variant={s(st.variant) as Variant}
         size={s(st.size) as "sm" | "md" | "lg"}
+        loading={b(st.loading)}
+        fullWidth={b(st.fullWidth)}
         disabled={b(st.disabled)}
       >
         {s(st.children)}
       </Button>
     ),
     code: (st) =>
-      `<Button${AE("variant", s(st.variant), "solid")}${AE("status", s(st.status), "default")}${AE("size", s(st.size), "md")}${A("disabled", b(st.disabled))}>${s(st.children)}</Button>`,
+      `<Button${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "solid")}${AE("size", s(st.size), "md")}${A("loading", b(st.loading))}${A("fullWidth", b(st.fullWidth))}${A("disabled", b(st.disabled))}>${s(st.children)}</Button>`,
   },
   {
     slug: "badge",
     name: "Badge",
     group: "Atoms",
-    blurb: "상태 한 낱말. status 를 주면 옅은 색 면(wash)이 붙는다. 없으면 중립.",
+    blurb: "상태 한 낱말. color × variant(soft·solid·outline·quiet). dot 으로 앞에 상태 점. 표시용이라 hover 없음.",
     controls: [
-      { kind: "enum", prop: "status", label: "status", options: ["none", "info", "success", "warning", "danger"], def: "info" },
+      { kind: "enum", prop: "color", label: "color", options: ["none", "info", "success", "warning", "error"], def: "info" },
+      { kind: "enum", prop: "variant", label: "variant", options: ["soft", "solid", "outline", "quiet"], def: "soft" },
+      { kind: "bool", prop: "dot", label: "dot", def: false },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "text", prop: "children", label: "children", def: "진행" },
     ],
     render: (st) => (
-      <Badge status={st.status === "none" ? undefined : (s(st.status) as StatusName)} size={s(st.size) as "sm" | "md" | "lg"}>{s(st.children)}</Badge>
+      <Badge color={st.color === "none" ? undefined : (s(st.color) as Color)} variant={s(st.variant) as Variant} dot={b(st.dot)} size={s(st.size) as "sm" | "md" | "lg"}>{s(st.children)}</Badge>
     ),
-    code: (st) => `<Badge${st.status === "none" ? "" : A("status", s(st.status))}${AE("size", s(st.size), "md")}>${s(st.children)}</Badge>`,
+    code: (st) => `<Badge${st.color === "none" ? "" : A("color", s(st.color))}${AE("variant", s(st.variant), "soft")}${A("dot", b(st.dot))}${AE("size", s(st.size), "md")}>${s(st.children)}</Badge>`,
   },
   {
     slug: "field",
     name: "Field",
     group: "Atoms",
-    blurb: "한 줄 입력. 상태는 status 축 하나로 받는다(invalid boolean 대신). 포커스 때만 파란 링.",
+    blurb: "input group — leading/trailing 어도먼트(아이콘·$·단위) + clear(×) + 비밀번호 보기. 래퍼가 테두리·포커스링·상태를 진다.",
     controls: [
       { kind: "text", prop: "placeholder", label: "placeholder", def: "검색…" },
-      { kind: "enum", prop: "status", label: "status", options: ["default", "info", "success", "warning", "danger"], def: "default" },
+      { kind: "enum", prop: "type", label: "type", options: ["text", "password"], def: "text" },
+      { kind: "bool", prop: "leading", label: "leading(검색 아이콘)", def: false },
+      { kind: "bool", prop: "clearable", label: "clearable", def: false },
+      { kind: "bool", prop: "showPasswordToggle", label: "showPasswordToggle", def: false },
+      { kind: "enum", prop: "align", label: "align", options: ["start", "center", "end"], def: "start" },
+      { kind: "enum", prop: "status", label: "status", options: ["default", "info", "success", "warning", "error"], def: "default" },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
       { kind: "bool", prop: "numeric", label: "numeric", def: false },
     ],
     render: (st) => (
-      <Box style={{ width: "16rem" }}>
-        <Field placeholder={s(st.placeholder)} status={s(st.status) as "default" | StatusName} size={s(st.size) as "sm" | "md" | "lg"} disabled={b(st.disabled)} numeric={b(st.numeric)} />
+      <Box style={{ width: "18rem" }}>
+        <Field
+          placeholder={s(st.placeholder)}
+          type={s(st.type)}
+          leading={b(st.leading) ? <Icon size="sm"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon> : undefined}
+          clearable={b(st.clearable)}
+          showPasswordToggle={b(st.showPasswordToggle)}
+          defaultValue={b(st.clearable) ? "지울 값" : undefined}
+          align={s(st.align) as "start" | "center" | "end"}
+          status={s(st.status) as "default" | StatusName}
+          size={s(st.size) as "sm" | "md" | "lg"}
+          disabled={b(st.disabled)}
+          numeric={b(st.numeric)}
+        />
       </Box>
     ),
     code: (st) =>
-      `<Field${A("placeholder", s(st.placeholder))}${AE("status", s(st.status), "default")}${AE("size", s(st.size), "md")}${A("disabled", b(st.disabled))}${A("numeric", b(st.numeric))} />`,
+      `<Field${A("placeholder", s(st.placeholder))}${AE("type", s(st.type), "text")}${b(st.leading) ? " leading={<Icon>…</Icon>}" : ""}${A("clearable", b(st.clearable))}${A("showPasswordToggle", b(st.showPasswordToggle))}${AE("align", s(st.align), "start")}${AE("status", s(st.status), "default")}${AE("size", s(st.size), "md")}${A("disabled", b(st.disabled))}${A("numeric", b(st.numeric))} />`,
   },
   {
     slug: "checkbox",
@@ -216,18 +265,19 @@ export const COMPONENTS: CompSpec[] = [
     blurb: "켜고 끄는 네모. 라벨과 나란히 두면 통째로 누를 수 있다.",
     controls: [
       { kind: "bool", prop: "checked", label: "checked", def: true },
+      { kind: "bool", prop: "indeterminate", label: "indeterminate", def: false },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
       { kind: "text", prop: "label", label: "label", def: "동의합니다" },
     ],
     render: (st) => (
       <Inline as="label" gap="sm" align="center">
-        <Checkbox checked={b(st.checked)} size={s(st.size) as "sm" | "md" | "lg"} disabled={b(st.disabled)} readOnly />
+        <Checkbox checked={b(st.checked)} indeterminate={b(st.indeterminate)} size={s(st.size) as "sm" | "md" | "lg"} disabled={b(st.disabled)} readOnly />
         <Text variant="body" as="span">{s(st.label)}</Text>
       </Inline>
     ),
     code: (st) =>
-      `<Inline as="label" gap="sm" align="center">\n  <Checkbox checked={${b(st.checked)}}${AE("size", s(st.size), "md")}${A("disabled", b(st.disabled))} />\n  <Text variant="body" as="span">${s(st.label)}</Text>\n</Inline>`,
+      `<Inline as="label" gap="sm" align="center">\n  <Checkbox checked={${b(st.checked)}}${A("indeterminate", b(st.indeterminate))}${AE("size", s(st.size), "md")}${A("disabled", b(st.disabled))} />\n  <Text variant="body" as="span">${s(st.label)}</Text>\n</Inline>`,
   },
   {
     slug: "link",
@@ -276,37 +326,47 @@ export const COMPONENTS: CompSpec[] = [
     slug: "icon",
     name: "Icon",
     group: "Atoms",
-    blurb: "24 그리드 stroke 아이콘. 자식 svg path 를 감싸 currentColor 로 그린다.",
+    blurb: "24 그리드 stroke 아이콘. 자식 svg path 를 감싸 currentColor 로 그린다. ink 로 자기 색을 정한다(Text 로 감쌀 필요 없이).",
     controls: [
-      { kind: "enum", prop: "ink", label: "잉크", options: ["base", "soft", "faint"], def: "base" },
+      { kind: "enum", prop: "ink", label: "ink", options: ["base", "soft", "faint", "info", "success", "warning", "error"], def: "base" },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
     ],
     render: (st) => (
-      <Text ink={s(st.ink) as "base" | "soft" | "faint"} as="span">
-        <Icon aria-label="정보" size={s(st.size) as "sm" | "md" | "lg"}>
-          <circle cx="12" cy="12" r="9" />
-          <path d="M12 11v5M12 8h.01" />
-        </Icon>
-      </Text>
+      <Icon aria-label="정보" ink={s(st.ink) as Ink} size={s(st.size) as "sm" | "md" | "lg"}>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 11v5M12 8h.01" />
+      </Icon>
     ),
-    code: (st) => `<Icon aria-label="정보"${AE("size", s(st.size), "md")}>\n  <circle cx="12" cy="12" r="9" />\n  <path d="M12 11v5M12 8h.01" />\n</Icon>`,
+    code: (st) => `<Icon aria-label="정보"${AE("ink", s(st.ink), "base")}${AE("size", s(st.size), "md")}>\n  <circle cx="12" cy="12" r="9" />\n  <path d="M12 11v5M12 8h.01" />\n</Icon>`,
   },
   {
     slug: "divider",
     name: "Divider",
     group: "Atoms",
-    blurb: "아주 옅은 가로 괘선. 선이 꼭 필요한 자리에만.",
-    controls: [],
-    render: () => (
-      <Box style={{ width: "18rem" }}>
-        <Stack gap="md">
-          <Text variant="body" as="span">위</Text>
-          <Divider />
-          <Text variant="body" as="span">아래</Text>
-        </Stack>
-      </Box>
-    ),
-    code: () => `<Divider />`,
+    blurb: "아주 옅은 괘선. axis 로 가로·세로, weight 로 굵기. 선이 꼭 필요한 자리에만.",
+    controls: [
+      { kind: "enum", prop: "axis", label: "axis", options: ["horizontal", "vertical"], def: "horizontal" },
+      { kind: "enum", prop: "weight", label: "weight", options: ["base", "strong"], def: "base" },
+    ],
+    render: (st) => {
+      const weight = s(st.weight) as "base" | "strong";
+      return s(st.axis) === "vertical" ? (
+        <Inline gap="md" align="center" style={{ height: "3rem" }}>
+          <Text variant="body" as="span">왼</Text>
+          <Divider axis="vertical" weight={weight} />
+          <Text variant="body" as="span">오</Text>
+        </Inline>
+      ) : (
+        <Box style={{ width: "18rem" }}>
+          <Stack gap="md">
+            <Text variant="body" as="span">위</Text>
+            <Divider weight={weight} />
+            <Text variant="body" as="span">아래</Text>
+          </Stack>
+        </Box>
+      );
+    },
+    code: (st) => `<Divider${AE("axis", s(st.axis), "horizontal")}${AE("weight", s(st.weight), "base")} />`,
   },
   {
     slug: "textarea",
@@ -315,7 +375,7 @@ export const COMPONENTS: CompSpec[] = [
     blurb: "여러 줄 입력. Field 와 같은 status 축, 세로로만 resize.",
     controls: [
       { kind: "text", prop: "placeholder", label: "placeholder", def: "여러 줄 입력…" },
-      { kind: "enum", prop: "status", label: "status", options: ["default", "info", "success", "warning", "danger"], def: "default" },
+      { kind: "enum", prop: "status", label: "status", options: ["default", "info", "success", "warning", "error"], def: "default" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
     ],
     render: (st) => (
@@ -389,14 +449,18 @@ export const COMPONENTS: CompSpec[] = [
       { kind: "text", prop: "placeholder", label: "placeholder", def: "입력" },
       { kind: "text", prop: "hint", label: "hint", def: "공백 없이" },
       { kind: "text", prop: "error", label: "error", def: "" },
+      { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
+      { kind: "enum", prop: "status", label: "status", options: ["default", "info", "success", "warning", "error"], def: "default" },
+      { kind: "bool", prop: "numeric", label: "numeric", def: false },
+      { kind: "bool", prop: "disabled", label: "disabled", def: false },
     ],
     render: (st) => (
       <Box style={{ width: "18rem" }}>
-        <TextField label={s(st.label)} placeholder={s(st.placeholder)} hint={s(st.hint) || undefined} error={s(st.error) || undefined} />
+        <TextField label={s(st.label)} placeholder={s(st.placeholder)} hint={s(st.hint) || undefined} error={s(st.error) || undefined} size={s(st.size) as "sm" | "md" | "lg"} status={s(st.status) as "default" | StatusName} numeric={b(st.numeric)} disabled={b(st.disabled)} />
       </Box>
     ),
     code: (st) =>
-      `<TextField${A("label", s(st.label))}${A("placeholder", s(st.placeholder))}${A("hint", s(st.hint))}${A("error", s(st.error))} />`,
+      `<TextField${A("label", s(st.label))}${A("placeholder", s(st.placeholder))}${A("hint", s(st.hint))}${A("error", s(st.error))}${AE("size", s(st.size), "md")}${AE("status", s(st.status), "default")}${A("numeric", b(st.numeric))}${A("disabled", b(st.disabled))} />`,
   },
   {
     slug: "card",
@@ -404,11 +468,11 @@ export const COMPONENTS: CompSpec[] = [
     group: "Molecules",
     blurb: "옅은 면으로 정의되는 칸. 선도 그림자도 없다.",
     controls: [
-      { kind: "enum", prop: "radius", label: "radius", options: ["sm", "md", "lg"], def: "md" },
-      { kind: "enum", prop: "padding", label: "padding", options: ["md", "lg", "xl"], def: "lg" },
+      { kind: "enum", prop: "radius", label: "radius", options: ["sm", "md", "lg", "pill"], def: "md" },
+      { kind: "enum", prop: "padding", label: "padding", options: ["none", "sm", "md", "lg", "xl"], def: "lg" },
     ],
     render: (st) => (
-      <Card radius={s(st.radius) as "sm" | "md" | "lg"} padding={s(st.padding) as "md" | "lg" | "xl"} style={{ width: "18rem" }}>
+      <Card radius={s(st.radius) as "sm" | "md" | "lg" | "pill"} padding={s(st.padding) as "none" | "sm" | "md" | "lg" | "xl"} style={{ width: "18rem" }}>
         <Stack gap="xs">
           <Text variant="subheading">카드 제목</Text>
           <Text variant="caption" ink="soft">옅은 면으로 정의되는 컨테이너.</Text>
@@ -448,29 +512,31 @@ export const COMPONENTS: CompSpec[] = [
     name: "RadioGroup",
     group: "Molecules",
     blurb: "여럿 중 하나. Radio + Label 을 options 로 묶고 한 그룹으로 만든다.",
-    controls: [],
-    render: () => <RadioGroupDemo />,
-    code: () =>
-      `const [v, setV] = useState("a");\n<RadioGroup value={v} onChange={setV} options={[\n  { value: "a", label: "옵션 A" },\n  { value: "b", label: "옵션 B" },\n  { value: "c", label: "옵션 C" },\n]} />`,
+    controls: [
+      { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
+    ],
+    render: (st) => <RadioGroupDemo size={s(st.size) as "sm" | "md" | "lg"} />,
+    code: (st) =>
+      `const [v, setV] = useState("a");\n<RadioGroup value={v} onChange={setV}${AE("size", s(st.size), "md")} options={[\n  { value: "a", label: "옵션 A" },\n  { value: "b", label: "옵션 B" },\n  { value: "c", label: "옵션 C" },\n]} />`,
   },
   {
     slug: "alert",
     name: "Alert",
     group: "Molecules",
-    blurb: "상태 한 줄을 옅은 색 면으로 알린다. status 시스템의 표시 자리.",
+    blurb: "상태 한 줄을 옅은 색 면으로 알린다. color 로 의미를 정한다 (언제나 soft).",
     controls: [
-      { kind: "enum", prop: "status", label: "status", options: ["info", "success", "warning", "danger"], def: "info" },
+      { kind: "enum", prop: "color", label: "color", options: ["info", "success", "warning", "error"], def: "info" },
       { kind: "text", prop: "title", label: "title", def: "확인이 필요합니다" },
       { kind: "text", prop: "children", label: "children", def: "이 작업은 되돌릴 수 없습니다." },
     ],
     render: (st) => (
       <Box style={{ width: "22rem" }}>
-        <Alert status={s(st.status) as StatusName} title={s(st.title)}>
+        <Alert color={s(st.color) as Accent} title={s(st.title)}>
           {s(st.children)}
         </Alert>
       </Box>
     ),
-    code: (st) => `<Alert status="${s(st.status)}" title="${s(st.title)}">${s(st.children)}</Alert>`,
+    code: (st) => `<Alert color="${s(st.color)}" title="${s(st.title)}">${s(st.children)}</Alert>`,
   },
 
   // ─ Components ─
@@ -482,7 +548,7 @@ export const COMPONENTS: CompSpec[] = [
     controls: [],
     render: () => <TableDemo />,
     code: () =>
-      `const columns = [\n  { key: "k", header: "키", render: (r) => r.k },\n  { key: "s", header: "상태", render: (r) => <Badge status={r.s}>{r.s}</Badge> },\n  { key: "n", header: "값", numeric: true, render: (r) => r.n.toLocaleString() },\n];\n<Table columns={columns} rows={rows} rowKey={(r) => r.id} />`,
+      `const columns = [\n  { key: "k", header: "키", render: (r) => r.k },\n  { key: "s", header: "상태", render: (r) => <Badge color={r.s}>{r.s}</Badge> },\n  { key: "n", header: "값", numeric: true, render: (r) => r.n.toLocaleString() },\n];\n<Table columns={columns} rows={rows} rowKey={(r) => r.id} />`,
   },
   {
     slug: "modal",
@@ -522,7 +588,7 @@ export const COMPONENTS: CompSpec[] = [
     group: "Components",
     blurb: "얇은 풀폭 상단 바. 화면을 채우는 색은 검정(solid)뿐 — status 색은 그 색의 의미를 짊어질 때(공지·경고)만. 좌 콘텐츠 + 우 액션.",
     controls: [
-      { kind: "enum", prop: "tone", label: "tone", options: ["solid", "info", "success", "warning", "danger"], def: "solid" },
+      { kind: "enum", prop: "tone", label: "tone", options: ["solid", "info", "success", "warning", "error"], def: "solid" },
       { kind: "text", prop: "children", label: "children", def: "데모 · 이슈 트래커" },
     ],
     render: (st) => (
@@ -530,15 +596,15 @@ export const COMPONENTS: CompSpec[] = [
         <Banner
           tone={s(st.tone) as "solid" | StatusName}
           action={
-            <Text variant="caption" as="span" style={{ color: tokens.color.paper.base, fontWeight: tokens.text.weight.medium }}>
+            <Text variant="caption" as="span" style={{ color: tokens.color.paper.canvas, fontWeight: tokens.text.weight.medium }}>
               ← 사이트로
             </Text>
           }
         >
-          <Text variant="caption" as="span" style={{ color: tokens.color.paper.base, fontWeight: tokens.text.weight.semibold }}>
+          <Text variant="caption" as="span" style={{ color: tokens.color.paper.canvas, fontWeight: tokens.text.weight.semibold }}>
             Paper UI
           </Text>
-          <Text variant="caption" as="span" style={{ color: tokens.color.paper.muted }}>
+          <Text variant="caption" as="span" style={{ color: tokens.color.paper.well }}>
             {s(st.children)}
           </Text>
         </Banner>
@@ -566,12 +632,13 @@ const TabsDemo = ({ size }: { size?: "sm" | "md" | "lg" }) => {
   );
 };
 
-const RadioGroupDemo = () => {
+const RadioGroupDemo = ({ size }: { size?: "sm" | "md" | "lg" }) => {
   const [v, setV] = useState("a");
   return (
     <RadioGroup
       value={v}
       onChange={setV}
+      size={size}
       options={[
         { value: "a", label: "옵션 A" },
         { value: "b", label: "옵션 B" },
@@ -585,16 +652,16 @@ type Row = { id: string; k: string; st: StatusName; n: number };
 const TableDemo = () => {
   const columns: Column<Row>[] = [
     { key: "k", header: "키", render: (r) => <Text variant="body" as="span">{r.k}</Text> },
-    { key: "st", header: "상태", render: (r) => <Badge status={r.st}>{r.st}</Badge> },
+    { key: "st", header: "상태", render: (r) => <Badge color={r.st}>{r.st}</Badge> },
     { key: "n", header: "값", numeric: true, render: (r) => <Text variant="body" as="span">{r.n.toLocaleString()}</Text> },
   ];
   const rows: Row[] = [
     { id: "1", k: "PG-1", st: "info", n: 1240 },
     { id: "2", k: "PG-2", st: "success", n: 88 },
-    { id: "3", k: "PG-3", st: "danger", n: 5 },
+    { id: "3", k: "PG-3", st: "error", n: 5 },
   ];
   return (
-    <Box paper="subtle" radius="md" style={{ overflow: "hidden", width: "28rem", maxWidth: "100%" }}>
+    <Box surface="sunken" radius="md" style={{ overflow: "hidden", width: "28rem", maxWidth: "100%" }}>
       <Table columns={columns} rows={rows} rowKey={(r) => r.id} />
     </Box>
   );

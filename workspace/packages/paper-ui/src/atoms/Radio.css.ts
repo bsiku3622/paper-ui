@@ -8,7 +8,7 @@ export const radioRoot = style({
   appearance: "none",
   margin: 0,
   flexShrink: 0,
-  background: tokens.color.paper.base,
+  background: tokens.color.paper.raised,
   borderWidth: tokens.shape.constants.borderWidth,
   borderStyle: "solid",
   borderColor: tokens.color.border.strong,

@@ -15,6 +15,7 @@ import { Box, Text } from "@studio-baeks/paper-ui";
 const Home = lazy(() => import("./pages/Home").then((m) => ({ default: m.Home })));
 const Demo = lazy(() => import("./pages/Demo").then((m) => ({ default: m.Demo })));
 const Playground = lazy(() => import("./pages/Playground").then((m) => ({ default: m.Playground })));
+const TokensPage = lazy(() => import("./playground/Tokens").then((m) => ({ default: m.Tokens })));
 const ComponentDetail = lazy(() => import("./playground/Detail").then((m) => ({ default: m.ComponentDetail })));
 const Docs = lazy(() => import("./pages/Docs").then((m) => ({ default: m.Docs })));
 
@@ -30,6 +31,7 @@ export const App = () => (
       <Route path="/" element={<Home />} />
       <Route path="/demo" element={<Demo />} />
       <Route path="/playground" element={<Playground />} />
+      <Route path="/playground/tokens" element={<TokensPage />} />
       <Route path="/playground/:slug" element={<ComponentDetail />} />
       <Route path="/docs/*" element={<Docs />} />
       <Route path="*" element={<Navigate to="/" replace />} />

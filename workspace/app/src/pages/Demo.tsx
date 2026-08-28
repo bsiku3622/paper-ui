@@ -58,13 +58,13 @@ const STATE_STATUS: Record<State, StatusName | undefined> = {
   todo: undefined,
   progress: "info",
   done: "success",
-  blocked: "danger",
+  blocked: "error",
 };
 
 // avatar — 전용 컴포넌트 없이 Box 조합으로. pill + muted 면 + 이니셜.
 const Avatar = ({ name }: { name: string }) => (
   <Box
-    paper="muted"
+    surface="well"
     radius="pill"
     className="avatar"
     aria-hidden
@@ -111,7 +111,7 @@ export const Demo = () => {
     {
       key: "state",
       header: "상태",
-      render: (r) => <Badge status={STATE_STATUS[r.state]}>{STATE_LABEL[r.state]}</Badge>,
+      render: (r) => <Badge color={STATE_STATUS[r.state]}>{STATE_LABEL[r.state]}</Badge>,
     },
     { key: "priority", header: "우선순위", render: (r) => <Text variant="caption" as="span">{r.priority}</Text> },
     {
@@ -218,8 +218,8 @@ export const Demo = () => {
             </Inline>
           </Inline>
 
-          {/* 옅은 면 카드 위의 표. 테두리 없이 paper.subtle 이 감싼다 */}
-          <Box paper="subtle" radius="md" style={{ overflow: "hidden" }}>
+          {/* 옅은 면 카드 위의 표. 테두리 없이 paper.sunken 이 감싼다 */}
+          <Box surface="sunken" radius="md" style={{ overflow: "hidden" }}>
             <Table columns={columns} rows={rows} rowKey={(r) => r.id} />
           </Box>
 

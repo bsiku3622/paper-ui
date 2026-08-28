@@ -57,7 +57,7 @@ export const Docs = () => {
         <Box as="nav" paddingX="md" paddingY="lg" className="side-nav" style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, top: NAV_HEIGHT }}>
           {groups.map((g) => (
             <div className="side-group" key={g.group}>
-              <div className="side-group-label">{g.label}</div>
+              {g.label && <div className="side-group-label">{g.label}</div>}
               {g.docs.map((d) => (
                 <Link key={d.slug} to={`/docs/${d.slug}`} className="side-link" data-active={active(d.slug)}>
                   {d.title}
@@ -72,7 +72,7 @@ export const Docs = () => {
           {content === null ? (
             <Text variant="caption">불러오는 중…</Text>
           ) : (
-            <div className="md">
+              <div className="md">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeSlug]}
@@ -95,7 +95,7 @@ export const Docs = () => {
               >
                 {content}
               </ReactMarkdown>
-            </div>
+              </div>
           )}
         </Box>
       </Box>

@@ -5,10 +5,30 @@
 
 import { Link, useLocation } from "react-router-dom";
 
-import { Box, Inline, Navbar, Banner, Text, tokens } from "@studio-baeks/paper-ui";
+import { Box, Inline, Navbar, Banner, Text, tokens, useTheme, type Theme } from "@studio-baeks/paper-ui";
 
 import { Logo } from "./Logo";
 import "./site.css";
+
+// 테마 토글 — light → dark → system 순환. 라이브러리 useTheme 로 상태를 제어한다.
+const THEME_NEXT: Record<Theme, Theme> = { light: "dark", dark: "system", system: "light" };
+const THEME_GLYPH: Record<Theme, string> = { light: "☀", dark: "☾", system: "◐" };
+const THEME_LABEL: Record<Theme, string> = { light: "라이트", dark: "다크", system: "시스템" };
+
+const ThemeToggle = () => {
+  const { theme, setTheme } = useTheme();
+  return (
+    <button
+      type="button"
+      className="gnb-theme"
+      onClick={() => setTheme(THEME_NEXT[theme])}
+      title={`테마: ${THEME_LABEL[theme]} (클릭해 전환)`}
+      aria-label={`테마 전환 — 현재 ${THEME_LABEL[theme]}`}
+    >
+      {THEME_GLYPH[theme]}
+    </button>
+  );
+};
 
 export const SITE_NAV = [
   { to: "/", label: "홈" },
@@ -46,8 +66,9 @@ export const SiteNav = () => {
           </nav>
         </Inline>
         <Inline gap="sm" align="center">
+          <ThemeToggle />
           <Box
-            paper="subtle"
+            surface="sunken"
             radius="pill"
             paddingX="sm"
             paddingY="xs"
@@ -69,16 +90,16 @@ export const DemoBar = () => (
   <Banner
     action={
       <Link to="/" style={{ textDecoration: "none" }}>
-        <Text variant="caption" as="span" style={{ color: tokens.color.paper.base, fontWeight: tokens.text.weight.medium }}>
+        <Text variant="caption" as="span" style={{ color: tokens.color.paper.canvas, fontWeight: tokens.text.weight.medium }}>
           ← 사이트로
         </Text>
       </Link>
     }
   >
-    <Link to="/" style={{ textDecoration: "none", color: tokens.color.paper.base, display: "inline-flex" }} aria-label="Paper UI 홈">
+    <Link to="/" style={{ textDecoration: "none", color: tokens.color.paper.canvas, display: "inline-flex" }} aria-label="Paper UI 홈">
       <Logo height={17} />
     </Link>
-    <Text variant="caption" as="span" style={{ color: tokens.color.paper.muted }}>
+    <Text variant="caption" as="span" style={{ color: tokens.color.paper.well }}>
       데모 · 이슈 트래커
     </Text>
   </Banner>
