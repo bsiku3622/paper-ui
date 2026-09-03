@@ -6,7 +6,7 @@
 
 import { useState } from "react";
 
-import { Box, Divider, Inline, Stack, Text, tokens } from "@studio-baeks/paper-ui";
+import { Box, Divider, Inline, Stack, Text, tokens, useResolvedTheme } from "@studio-baeks/paper-ui";
 
 import { PlaygroundLayout, Crumb } from "./shell";
 
@@ -61,6 +61,10 @@ const Swatch = ({ name, token, w = "7.5rem" }: { name: string; token: string; w?
 
 export const Tokens = () => {
   const [hover, setHover] = useState(false);
+  // 표시값은 렌더 중 :root 의 var 를 읽어 만든다(val). 그래서 테마가 바뀌면 이
+  // 컴포넌트가 **다시 렌더돼야** 값이 따라온다 — 구독하지 않으면 스코프만 바뀌고
+  // 숫자는 옛 테마에 머물러, 밝은 화면에 다크 값이 적힌 표가 남는다.
+  useResolvedTheme();
 
   return (
     <PlaygroundLayout active="tokens">
@@ -171,7 +175,7 @@ export const Tokens = () => {
         <Divider />
 
         {/* ── Radius ─────────────────────────────────────────── */}
-        <Section id="tok-radius" title="Radius" desc="넉넉한 라운드. interaction 은 단일 8, layout 은 큰 면일수록 한 호흡 더.">
+        <Section id="tok-radius" title="Radius" desc="절제된 곡선 — 모서리의 날만 죽인다. interaction 은 단일 6, layout 은 큰 면일수록 한 호흡 더(6·8·12).">
           <Inline gap="lg" wrap>
             {[
               { name: "interaction", token: tokens.shape.radius.interaction },
@@ -192,14 +196,15 @@ export const Tokens = () => {
         <Divider />
 
         {/* ── Control size ───────────────────────────────────── */}
-        <Section id="tok-control" title="Control size (3단)" desc="Button·Field·Select 의 size. height·padding 만 세 단으로 움직이고 글자는 14 로 고정 — 크기가 커져도 라벨 크기는 그대로.">
+        <Section id="tok-control" title="Control size (3단)" desc="Button·Field·Select·Tabs 의 size. height 와 가로 여백만 세 단으로 움직이고 글자는 14 로 고정. 라벨이 14 고정이라 세로 여백은 height 가 정해 버리므로(8·10·13) 가로(controlPaddingX 10·13·17)와 함께 잡는다 — sm 높이가 30 인 것도 세로 8 을 만들기 위해서다.">
           <Inline gap="lg" align="end" wrap>
             {CONTROLS.map((c) => (
-              <Stack key={c} gap="xs" style={{ width: "9rem" }}>
-                <Box style={{ height: tokens.shape.height[c].interaction, borderRadius: tokens.shape.radius.interaction, background: tokens.color.paper.sunken, border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.strong}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <Text variant="body" as="span" style={{ fontSize: tokens.shape.controlFontSize[c] }}>텍스트 Text</Text>
+              <Stack key={c} gap="xs" align="start">
+                <Box style={{ height: tokens.shape.height[c].interaction, paddingInline: tokens.shape.controlPaddingX[c], borderRadius: tokens.shape.radius.interaction, background: tokens.color.paper.sunken, border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.strong}`, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+                  <Text variant="body" as="span" style={{ fontSize: tokens.shape.controlFontSize[c] }}>텍스트</Text>
                 </Box>
                 <Text variant="caption" family="mono" ink="faint" as="span">{c} · h {val(tokens.shape.height[c].interaction)}</Text>
+                <Text variant="caption" family="mono" ink="faint" as="span">px {val(tokens.shape.controlPaddingX[c])}</Text>
               </Stack>
             ))}
           </Inline>

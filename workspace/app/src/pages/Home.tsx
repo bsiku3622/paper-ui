@@ -109,9 +109,9 @@ const AppMockup = () => {
             <Text variant="heading" as="h3">이슈</Text>
             <Inline gap="sm" align="center">
               <Box style={{ width: "12rem" }}>
-                <Field size="sm" placeholder="검색…" aria-label="검색" />
+                <Field placeholder="검색…" aria-label="검색" />
               </Box>
-              <Button size="sm">새 이슈</Button>
+              <Button>새 이슈</Button>
             </Inline>
           </Inline>
 

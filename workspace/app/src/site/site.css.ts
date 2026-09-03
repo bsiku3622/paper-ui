@@ -58,7 +58,10 @@ globalStyle(".gnb-nav", {
   gap: tokens.shape.gap.xs,
 });
 
-// nav item — rounded rect. rest 는 조용, hover 에 옅은 면, active 는 진해진다.
+// nav item — 활성은 면이 아니라 **글자**로 표시한다(라이브러리 Navbar 와 같은 방식).
+// 면으로 표시하면 nav 하나가 화면에서 가장 눈에 띄는 덩어리가 되는데, nav 는 지금
+// 어디인지 알려줄 뿐 주인공이 아니다. 배경은 hover 에만 — 그건 포인터에 답하는
+// 것이라 사라질 표시다.
 globalStyle(".gnb-link", {
   display: "inline-flex",
   alignItems: "center",
@@ -73,7 +76,7 @@ globalStyle(".gnb-link", {
   transition: stateTransition("background", "color"),
 });
 globalStyle(".gnb-link:hover", { background: tokens.color.interaction.hover, color: tokens.color.ink.base });
-globalStyle('.gnb-link[data-active="true"]', { background: tokens.color.interaction.selected, color: tokens.color.ink.base });
+globalStyle('.gnb-link[data-active="true"]', { color: tokens.color.ink.base, fontWeight: tokens.text.weight.medium });
 
 // 테마 토글 — GNB 우측 정사각 버튼. 라이브러리 useTheme 로 light→dark→system 순환.
 // 색은 전부 토큰이라 스코프가 바뀌면 버튼 자신도 다크로 따라온다.
@@ -132,13 +135,16 @@ globalStyle(".side-link", {
   fontSize: tokens.text.size.body,
   fontWeight: tokens.text.weight.normal,
   letterSpacing: tokens.text.tracking.body,
-  color: tokens.color.ink.base,
+  color: tokens.color.ink.soft,
   textDecoration: "none",
-  transition: stateTransition("background"),
+  transition: stateTransition("background", "color"),
 });
-globalStyle(".side-link:hover", { background: tokens.color.interaction.hover });
-// active — interaction.selected 오버레이 + weight 한 단(작은 글자가 약해 보이는 걸 보상).
+globalStyle(".side-link:hover", { background: tokens.color.interaction.hover, color: tokens.color.ink.base });
+// active — 여기는 GNB 와 다르다. 가로 GNB 는 항목이 서넛뿐이라 글자만으로 충분하지만,
+// 세로 사이드바는 수십 줄을 훑는 자리라 눈이 걸릴 면이 필요하다. rest 를 ink.soft 로
+// 낮춰야 활성 한 줄이 굵기만으로도 떠오른다.
 globalStyle('.side-link[data-active="true"]', {
   background: tokens.color.interaction.selected,
+  color: tokens.color.ink.base,
   fontWeight: tokens.text.weight.medium,
 });

@@ -32,8 +32,11 @@ const primaryProfile: Record<Variant, ColorSpec> = {
     borderColor: "transparent",
     hoverOverlay: tokens.color.interaction.hover,
   },
+  // outline 은 **면을 칠하지 않는다** — 테두리만 두르고 밑면이 그대로 비친다.
+  // raised 를 칠하고 있었는데, 이 팔레트에서는 raised(#ffffff)와 canvas(#fcfcfc)가
+  // 거의 같아 티가 안 났을 뿐 이름과는 어긋난 자리였다.
   outline: {
-    background: tokens.color.paper.raised,
+    background: "transparent",
     color: tokens.color.ink.base,
     borderColor: tokens.color.border.base,
     hoverOverlay: tokens.color.interaction.hover,
@@ -69,7 +72,7 @@ const accentProfile = (c: AccentTones): Record<Variant, ColorSpec> => ({
     hoverBackground: c.edge,
   },
   outline: {
-    background: tokens.color.paper.raised,
+    background: "transparent", // 면을 칠하지 않는다 — 밑면이 비친다
     color: c.ink,
     borderColor: c.edge,
     hoverBackground: c.wash,
