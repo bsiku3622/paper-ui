@@ -5,27 +5,33 @@
 
 import { Link, useLocation } from "react-router-dom";
 
-import { Box, Inline, Navbar, Banner, Text, tokens, useTheme, type Theme } from "@studio-baeks/paper-ui";
+import { Box, Inline, Navbar, Banner, Text, tokens, useTheme, type Theme, type ResolvedTheme } from "@studio-baeks/paper-ui";
 
 import { Logo } from "./Logo";
 import "./site.css";
 
-// 테마 토글 — light → dark → system 순환. 라이브러리 useTheme 로 상태를 제어한다.
-const THEME_NEXT: Record<Theme, Theme> = { light: "dark", dark: "system", system: "light" };
-const THEME_GLYPH: Record<Theme, string> = { light: "☀", dark: "☾", system: "◐" };
-const THEME_LABEL: Record<Theme, string> = { light: "라이트", dark: "다크", system: "시스템" };
+// 테마 토글 — 라이트 ⇄ 다크 둘만 오간다.
+//
+// 라이브러리는 system 모드도 갖고 있고(첫 방문 때 OS 를 따라가는 건 좋은 기본값이다),
+// PaperProvider 의 defaultTheme 은 여전히 system 이다. 다만 **버튼이 그 자리를 거치지는
+// 않는다** — 3단 순환이면 어느 방향으로 가든 매번 중간에 한 번 더 눌러야 하고, 그 중간
+// 상태가 지금 화면과 같은 색이면 눌러도 아무 일이 안 일어난 것처럼 보인다. 그래서
+// **해석된 테마(resolved)의 반대로 곧장 간다.**
+const THEME_GLYPH: Record<ResolvedTheme, string> = { light: "☀", dark: "☾" };
+const THEME_LABEL: Record<ResolvedTheme, string> = { light: "라이트", dark: "다크" };
 
 const ThemeToggle = () => {
-  const { theme, setTheme } = useTheme();
+  const { resolved, setTheme } = useTheme();
+  const next: Theme = resolved === "dark" ? "light" : "dark";
   return (
     <button
       type="button"
       className="gnb-theme"
-      onClick={() => setTheme(THEME_NEXT[theme])}
-      title={`테마: ${THEME_LABEL[theme]} (클릭해 전환)`}
-      aria-label={`테마 전환 — 현재 ${THEME_LABEL[theme]}`}
+      onClick={() => setTheme(next)}
+      title={`${THEME_LABEL[next]}로 전환`}
+      aria-label={`${THEME_LABEL[next]} 테마로 전환`}
     >
-      {THEME_GLYPH[theme]}
+      {THEME_GLYPH[resolved]}
     </button>
   );
 };
