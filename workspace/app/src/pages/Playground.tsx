@@ -322,7 +322,7 @@ export const Playground = () => {
         {/* ── Components ─────────────────────────────────────── */}
         <Section id="sec-comp" title="Table · Modal">
           <Spec label="Table">
-            <Box surface="sunken" radius="md" style={{ overflow: "hidden", width: "28rem" }}>
+            <Box surface="raised" border radius="md" style={{ overflow: "hidden", width: "28rem" }}>
               <Table columns={columns} rows={rows} rowKey={(r) => r.id} />
             </Box>
           </Spec>

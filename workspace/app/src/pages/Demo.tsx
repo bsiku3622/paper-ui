@@ -219,7 +219,7 @@ export const Demo = () => {
           </Inline>
 
           {/* 옅은 면 카드 위의 표. 테두리 없이 paper.sunken 이 감싼다 */}
-          <Box surface="sunken" radius="md" style={{ overflow: "hidden" }}>
+          <Box surface="raised" border radius="md" style={{ overflow: "hidden" }}>
             <Table columns={columns} rows={rows} rowKey={(r) => r.id} />
           </Box>
 

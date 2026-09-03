@@ -661,7 +661,7 @@ const TableDemo = () => {
     { id: "3", k: "PG-3", st: "error", n: 5 },
   ];
   return (
-    <Box surface="sunken" radius="md" style={{ overflow: "hidden", width: "28rem", maxWidth: "100%" }}>
+    <Box surface="raised" border radius="md" style={{ overflow: "hidden", width: "28rem", maxWidth: "100%" }}>
       <Table columns={columns} rows={rows} rowKey={(r) => r.id} />
     </Box>
   );
