@@ -187,35 +187,56 @@ export const COLOR_VALUES = {
 // 중간 회색 base 는 "다크인데 붕 뜨고 밝은" 인상을 준다. base 가 깊어야 지면이 가라앉고,
 // 떠오름(카드·모달)은 값의 큰 점프가 아니라 얇은 그림자/헤어라인으로 읽힌다.
 
+// ⚠ **다크는 깊이의 방향이 라이트와 반대다.** 라이트는 canvas 아래로 파고
+// (well < sunken < canvas < raised), 다크는 canvas 위로 쌓는다
+// (canvas < well < sunken < raised).
+//
+// 반전되는 건 조명이 아니라 지면의 재질이다. 빛은 다크에서도 위에서 오므로 올라온
+// 면은 여전히 밝다 — raised 가 최명인 것은 양쪽이 같다. 움직이는 건 canvas 다:
+// 라이트에서 canvas 는 종이라 홈을 파면 그늘이 지지만, **다크에서 canvas 는 어둠
+// 그 자체라 홈을 팔 수 없다.** 그래서 sunken·well 은 "파인 것" 이 아니라 "지면 위에
+// 낮게 놓인 것" 이 되고, 깊은 것일수록 지면에 가깝게 앉는다.
+//
+// 예전 값(sunken #101010 · well #0a0a0a)은 canvas 아래 남은 L .20 을 쥐어짠 것이라
+// **table head 가 몸통보다 어두운 구멍이 되고 사이드바가 뭉갰다.** 실제 다크 UI 는
+// 전부 반대다(GitHub #0d1117→#161b22 · VS Code #1e1e1e→#252526 · Notion #191919→#202020).
 const PAPER_DARK = {
-  canvas: "#171717", // 기준면 — 깊은 중립 (지면이 가라앉는다)
-  raised: "#212121", // 떠오른 면 = 최명 (카드 · 입력 · 모달). ChatGPT surface 결
-  sunken: "#101010", // 사이드바 · table head (지면 아래)
-  well: "#0a0a0a", // 최암 well
+  raised: "#2b2b2b", // 떠오른 면 = 최명 (카드 · 입력 · 모달)
+  sunken: "#252525", // 사이드바 · table head — 지면 위 한 겹
+  well: "#1f1f1f", //   트랙 · secondary 면 — 지면에 가장 가깝게
+  canvas: "#171717", // 지면 = 최암
 } as const;
 
+// 면이 통째로 밝아진 만큼 잉크·괘선도 따라 오른다 — 가장 밝은 면(raised) 위에서
+// 대비를 풀어 잡은 값이다. 예전 faint(#6a6a6a)는 새 raised 위에서 2.62,
+// border.base(#2a2a2a)는 1.01 로 사실상 보이지 않았다.
 const INK_DARK = {
   base: "#dcdcdc", // 본문 — soft white. 딥다크 위 순백은 대비가 세 눈이 아프다(≈83% 회백)
-  soft: "#9a9a9a",
-  faint: "#6a6a6a",
+  soft: "#9a9a9a", //  보조 · 라벨 (raised 위 5.03:1)
+  faint: "#737373", // 흐린 · placeholder (raised 위 2.99:1)
 } as const;
 
 const BORDER_DARK = {
-  base: "#2a2a2a", // 헤어라인 — 밝은 border 는 다크에서 면을 outline 해 붕 띄운다. 낮게 눌러 가라앉힘
-  strong: "#3a3a3a", // 강한 경계 — table head·섹션·컨트롤 테두리
+  base: "#3c3c3c", //   헤어라인 (raised 위 1.28:1)
+  strong: "#585858", // 강한 경계 — table head·섹션·컨트롤 테두리 (1.99:1)
 } as const;
 
-// 다크 accent — 딥 뉴트럴 base(#171717) 위에서 순채도(Tailwind-500/300)는 "붕 떠" 진동한다.
-// 채도를 눌러(muted jewel) 면 안에 앉힌다 — 그래도 hue 는 또렷하게(success=초록·error=빨강).
-// ink(글자)는 뉴트럴 위계(ink.soft 근처, L~62%)로 눌러 발광 없이 앉힌다 — 순채도 pastel 은
-// 딥 base 위에서 너무 밝게 뜬다. AA(#171717 위 4.5:1↑) 유지. solid(채움)는 L~55%로 색 확실.
-// solid(채움)은 깊게 눌러 옅은 글자(solidFg)와 대비를 잡는다 — 라이트와 같은 "진한 채움 +
-// 옅은 색 글자" 한 방향. ink/wash(글자·soft 배지)는 뮤티드 그대로(면에 앉힘).
+// 다크 accent — 딥 뉴트럴 base 위에서 순채도(Tailwind-500/300)는 "붕 떠" 진동한다.
+// 채도를 눌러(muted jewel) 면 안에 앉힌다 — 그래도 hue 는 또렷하게.
+//
+// ⚠ **wash·edge 는 alpha 가 아니라 solid 다.** 예전엔 색을 alpha .15/.30 으로 얹었는데,
+// 그러면 밑면에 따라 색이 달라져 **밝은 면 위에서 대비를 잃는다** — 배지는 canvas 에도
+// 카드(raised)에도 놓이므로 어느 면 위든 같은 색이어야 대비가 예측된다. 라이트가 이미
+// solid 였으니 구조도 이쪽이 맞다. wash 는 raised 보다 위에 둔다 — 카드 위에 놓인 배지가
+// 카드와 같은 밝기면 사라지기 때문이다.
+//
+// ink(글자)도 L .745 로 올렸다. 면이 밝아진 만큼 따라 오르지 않으면 raised 위에서
+// info 가 4.46 으로 AA 를 놓친다.
 const ACCENT_DARK = {
-  info: { solid: "#35619b", solidFg: "#d6e4fd", ink: "#6d93c4", wash: "rgba(74, 130, 199, 0.15)", edge: "rgba(74, 130, 199, 0.30)" },
-  success: { solid: "#256b40", solidFg: "#d6f2df", ink: "#69a382", wash: "rgba(74, 157, 105, 0.15)", edge: "rgba(74, 157, 105, 0.30)" },
-  warning: { solid: "#8a6224", solidFg: "#fbe7b4", ink: "#b89a60", wash: "rgba(192, 143, 69, 0.15)", edge: "rgba(192, 143, 69, 0.30)" },
-  error: { solid: "#a63f3f", solidFg: "#ffe0e0", ink: "#c98080", wash: "rgba(203, 95, 95, 0.15)", edge: "rgba(203, 95, 95, 0.30)" },
+  info: { solid: "#32547e", solidFg: "#d6e4fd", ink: "#88afe2", wash: "#334051", edge: "#3c516b" },
+  success: { solid: "#295f43", solidFg: "#d6f2df", ink: "#81bc9a", wash: "#33473b", edge: "#3b5a48" },
+  warning: { solid: "#684e15", solidFg: "#fbe7b4", ink: "#c6a86e", wash: "#483e2b", edge: "#5d4d2f" },
+  error: { solid: "#7b3d3f", solidFg: "#ffe0e0", ink: "#e09595", wash: "#503736", edge: "#694242" },
 } as const;
 
 const PRIMARY_DARK = {

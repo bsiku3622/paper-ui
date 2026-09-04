@@ -72,9 +72,13 @@ test("color · 토큰이 기대 hex 로 emit 된다", async ({ page }) => {
 // ── 다크 — [data-theme=dark] 스코프가 색 var 세트를 통째로 교체한다 (T4) ──────
 // var 이름은 그대로, 스코프만 바뀌면 값이 바뀐다. 면 사다리(raised>canvas)·ink 반전·
 // primary 반전을 대표로 검증한다.
+// 다크는 canvas 가 최암이고 나머지가 그 위로 쌓인다(라이트와 방향이 반대다).
+// 이 순서가 뒤집히면 table head 가 몸통보다 어두운 구멍이 된다.
 const DARK_VARS: Record<string, string> = {
-  "--pui-color-paper-canvas": "#171717",
-  "--pui-color-paper-raised": "#212121",
+  "--pui-color-paper-canvas": "#171717", // 지면 = 최암
+  "--pui-color-paper-well": "#1f1f1f",
+  "--pui-color-paper-sunken": "#252525",
+  "--pui-color-paper-raised": "#2b2b2b", // 최명
   "--pui-color-ink-base": "#dcdcdc",
   "--pui-color-primary-base": "#e8e8e8",
 };
