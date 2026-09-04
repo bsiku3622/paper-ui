@@ -200,10 +200,13 @@ export const COLOR_VALUES = {
 // 예전 값(sunken #101010 · well #0a0a0a)은 canvas 아래 남은 L .20 을 쥐어짠 것이라
 // **table head 가 몸통보다 어두운 구멍이 되고 사이드바가 뭉갰다.** 실제 다크 UI 는
 // 전부 반대다(GitHub #0d1117→#161b22 · VS Code #1e1e1e→#252526 · Notion #191919→#202020).
+// 폭은 L .049 다. 처음 위로 뒤집을 때 .084 까지 벌렸다가 좁혔다 — 실제 다크 UI 는
+// .030~.056 대역이고(VS Code .030 · Notion .030 · GitHub .044 · Linear .056),
+// 그보다 벌리면 카드가 지면에서 **뜬다**. 어둠 위에서는 작은 차이도 층으로 읽힌다.
 const PAPER_DARK = {
-  raised: "#2b2b2b", // 떠오른 면 = 최명 (카드 · 입력 · 모달)
-  sunken: "#252525", // 사이드바 · table head — 지면 위 한 겹
-  well: "#1f1f1f", //   트랙 · secondary 면 — 지면에 가장 가깝게
+  raised: "#222222", // 떠오른 면 = 최명 (카드 · 입력 · 모달)
+  sunken: "#1f1f1f", // 사이드바 · table head — 지면 위 한 겹
+  well: "#1b1b1b", //   트랙 · secondary 면 — 지면에 가장 가깝게
   canvas: "#171717", // 지면 = 최암
 } as const;
 
