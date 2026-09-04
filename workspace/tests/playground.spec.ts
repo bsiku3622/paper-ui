@@ -76,9 +76,9 @@ test("color · 토큰이 기대 hex 로 emit 된다", async ({ page }) => {
 // 이 순서가 뒤집히면 table head 가 몸통보다 어두운 구멍이 된다.
 const DARK_VARS: Record<string, string> = {
   "--pui-color-paper-canvas": "#171717", // 지면 = 최암
-  "--pui-color-paper-well": "#1f1f1f",
-  "--pui-color-paper-sunken": "#252525",
-  "--pui-color-paper-raised": "#2b2b2b", // 최명
+  "--pui-color-paper-well": "#1b1b1b",
+  "--pui-color-paper-sunken": "#1f1f1f",
+  "--pui-color-paper-raised": "#222222", // 최명
   "--pui-color-ink-base": "#dcdcdc",
   "--pui-color-primary-base": "#e8e8e8",
 };
