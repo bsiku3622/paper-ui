@@ -78,7 +78,7 @@ const DARK_VARS: Record<string, string> = {
   "--pui-color-paper-canvas": "#171717", // 지면 = 최암
   "--pui-color-paper-well": "#0e0e0e",
   "--pui-color-paper-sunken": "#131313",
-  "--pui-color-paper-raised": "#262626", // 최명
+  "--pui-color-paper-raised": "#212121", // 최명 — canvas 바로 위 한 칸(1.11). 카드는 헤어라인이 세운다
   "--pui-color-ink-base": "#dcdcdc",
   "--pui-color-primary-base": "#e8e8e8",
 };

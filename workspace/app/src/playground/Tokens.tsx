@@ -78,7 +78,7 @@ export const Tokens = () => {
 
       <Stack gap="xl">
         {/* ── Color · 흰과 검정 ─────────────────────────────── */}
-        <Section id="tok-neutral" title="Color · surface (면 깊이) · ink · border · primary" desc="surface 는 Box 의 깊이 축(색 아님) — raised(최명)·canvas(기준면)·sunken·well. 토큰은 color.paper.*. 다크는 YouTube·ChatGPT 결의 깊은 중립 base. primary(검정 일꾼, 면 채우는 유일한 색)·ink(마크)·border·focus·scrim 은 잉크·경계·오버레이. 값은 현재 테마로 표시된다.">
+        <Section id="tok-neutral" title="Color · surface (면 깊이) · ink · border · primary" desc="surface 는 Box 의 깊이 축(색 아님) — raised(최명)·canvas(기준면)·sunken·well. 토큰은 color.paper.*. 다크는 YouTube·ChatGPT 결의 깊은 중립 base. 다크 canvas↔raised 는 1.11 로 좁고(라이트는 1.03 — smoke 위 순백), 카드를 지면에서 가르는 일은 톤이 아니라 헤어라인이 한다. 한동안 다크 raised 만 크게 띄웠는데 그 넓은 칸은 깊이가 아니라 과한 오버레이를 피해 벌려 둔 자리였다. primary(검정 일꾼, 면 채우는 유일한 색)·ink(마크)·border·focus·scrim 은 잉크·경계·오버레이. 값은 현재 테마로 표시된다.">
           <Inline gap="lg" wrap>
             {PAPERS.map((s) => <Swatch key={`p-${s}`} name={`surface.${s}`} token={tokens.color.paper[s]} />)}
             {INKS.map((s) => <Swatch key={`i-${s}`} name={`ink.${s}`} token={tokens.color.ink[s]} />)}
@@ -92,7 +92,7 @@ export const Tokens = () => {
         <Divider />
 
         {/* ── Color · interaction (오버레이) ──────────────────── */}
-        <Section id="tok-interaction" title="Color · interaction (오버레이)" desc="hover·selected·active 는 solid 회색이 아니라 ink 계열 alpha 틴트. 아래 순백 위에 얹혀 면을 조금 어둡게 만든다 — 어느 면(순백·smoke·well) 위든 같은 규칙이라 자리마다 회색을 새로 고르지 않는다.">
+        <Section id="tok-interaction" title="Color · interaction (오버레이)" desc="hover·selected·active 는 solid 회색이 아니라 ink 계열 alpha 틴트. 아래 순백 위에 얹혀 면을 조금 어둡게 만든다 — 어느 면(순백·smoke·well) 위든 같은 규칙이라 자리마다 회색을 새로 고르지 않는다. 다크는 흰빛으로 뒤집혀 밝히는데, **hover 의 alpha 만 라이트보다 작다**(.036 vs .05) — 같은 alpha 가 방향에 따라 다른 크기이기 때문이다. 블렌드는 sRGB 8bit 에서 일어나고 밝기 곡선은 검정 근처에서 가파르다: 예전 다크 값 .055 는 지각적으로 라이트의 1.9 배였고, hover 하나가 면 사다리 세 칸을 건너뛰어 Tabs 트랙 위에서 hover 된 비활성 탭이 활성 pill 을 따라잡았다. alpha 가 아니라 ΔL 로 맞춘다. selected·active 는 라이트가 이미 세서(.13·.16) 그대로 둔다.">
           <Inline gap="lg" wrap>
             {INTERACTIONS.map((s) => (
               <Stack key={`ix-${s}`} gap="xs" style={{ width: "7.5rem" }}>
