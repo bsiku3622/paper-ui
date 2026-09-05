@@ -78,7 +78,7 @@ export const Tokens = () => {
 
       <Stack gap="xl">
         {/* ── Color · 흰과 검정 ─────────────────────────────── */}
-        <Section id="tok-neutral" title="Color · surface (면 깊이) · ink · border · primary" desc="surface 는 Box 의 깊이 축(색 아님) — raised(최명)·canvas(기준면)·sunken·well. 토큰은 color.paper.*. 다크는 YouTube·ChatGPT 결의 깊은 중립 base. 다크 canvas↔raised 는 1.11 로 좁고(라이트는 1.03 — smoke 위 순백), 카드를 지면에서 가르는 일은 톤이 아니라 헤어라인이 한다. 한동안 다크 raised 만 크게 띄웠는데 그 넓은 칸은 깊이가 아니라 과한 오버레이를 피해 벌려 둔 자리였다. primary(검정 일꾼, 면 채우는 유일한 색)·ink(마크)·border·focus·scrim 은 잉크·경계·오버레이. 값은 현재 테마로 표시된다.">
+        <Section id="tok-neutral" title="Color · surface (면 깊이) · ink · border · primary" desc="surface 는 Box 의 깊이 축(색 아님) — raised(최명)·canvas(기준면)·sunken·well. 토큰은 color.paper.*. 다크는 YouTube·ChatGPT 결의 깊은 중립 base. ⚠ **다크 사다리는 라이트의 거울이다 — 순서가 반대다.** 각 테마에는 목표가 있고 raised 가 거기 가장 가깝다: 라이트는 WHITE|raised|canvas|sunken|well|GRAY, 다크는 BLACK|raised|canvas|sunken|well|GRAY. 그래서 **다크에서는 raised 가 최암, well 이 최명**이다. 간격은 canvas 를 축으로 라이트를 접은 값이라 쌍의 거리가 양 테마에서 거의 같다(canvas↔raised 1.019 vs 1.026). primary(검정 일꾼, 면 채우는 유일한 색)·ink(마크)·border·focus·scrim 은 잉크·경계·오버레이. 값은 현재 테마로 표시된다.">
           <Inline gap="lg" wrap>
             {PAPERS.map((s) => <Swatch key={`p-${s}`} name={`surface.${s}`} token={tokens.color.paper[s]} />)}
             {INKS.map((s) => <Swatch key={`i-${s}`} name={`ink.${s}`} token={tokens.color.ink[s]} />)}

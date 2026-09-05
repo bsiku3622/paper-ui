@@ -47,13 +47,23 @@ pnpm 명령은 `workspace/` 에서 실행한다. `core`/`web` 분리는 일부�
 
 | surface | light | dark | 쓰임 |
 |---|---|---|---|
-| `raised` | `#ffffff` | `#212121` | 떠오른 면 (카드·입력·모달) — 최명 |
-| `canvas` | `#fcfcfc` | `#171717` | 기준면 (페이지 바닥) |
-| `sunken` | `#f4f4f5` | `#101010` | 사이드바 · table head |
-| `well` | `#e2e2e5` | `#0a0a0a` | 더 깊은 well — 최암 |
+| `raised` | `#ffffff` | `#151515` (최암) | 떠오른 면 (카드·입력·모달) |
+| `canvas` | `#fcfcfc` | `#171717` (앵커) | 기준면 (페이지 바닥) |
+| `sunken` | `#f4f4f5` | `#1c1c1c` | 사이드바 · table head |
+| `well` | `#e2e2e5` | `#292929` (최명) | 더 깊은 well |
 
-깊이 불변식: **raised 최명 · well 최암** (다크도 순서 유지. 다크 base 는 YouTube·ChatGPT 결로
-깊게). **Box** = `surface` + `border`(카드 헤어라인) + `inverse`(검은 판) + radius·shadow·padding.
+⚠ **깊이 불변식 — 사다리는 양 테마에서 거울이다. 순서가 반대다.**
+
+    라이트   WHITE | raised | canvas | sunken | well | GRAY
+    다크     BLACK | raised | canvas | sunken | well | GRAY
+
+`raised` 는 **그 테마의 목표에 가장 가까운 면**이다 — 라이트에서 최명, 다크에서 **최암**.
+"raised = 언제나 최명" 은 폐기됐다(2026-09-04). 그게 남아 있는 동안 다크는 뒤집히지 않은 축을
+하나 갖고 있었고, 값을 맞춰도 어색함이 안 지워졌다. 간격은 `canvas`(앵커)를 축으로 라이트를
+접는다 — 쌍의 거리가 양 테마에서 거의 같아진다. 괘선도 같은 대칭이라 **다크 괘선은 사다리보다
+위**다(라이트에서 `well` 아래인 것의 거울).
+
+**Box** = `surface` + `border`(카드 헤어라인) + `inverse`(검은 판) + radius·shadow·padding.
 **색·잉크는 Box 에 없다.**
 
 **잉크색(color × variant) — Button·Badge·Alert.** `color` 가 무슨 색, `variant` 가 얼마나 무겁게.
