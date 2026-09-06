@@ -77,9 +77,14 @@ pnpm 명령은 `workspace/` 에서 실행한다. `core`/`web` 분리는 일부�
 | `error` | `#dc2626` | `#ef4444` | 위험 |
 
 accent 는 hue 이름(blue 등)이 **API 에 없다** — 전부 의미색. 각 accent 는 solid·**solidFg**·ink·wash·edge
-5 자리. **solid 버튼은 모노크로매틱** — 채움은 진한 색(solid), 그 위 글자(solidFg)는 **같은 hue 의 옅은
-톤**(흰색 아님). 버튼 전체가 한 색으로 통일된다. 채움을 다 진한 대역(green·amber 도 700 톤)으로 맞춰
-늘 옅은 색 글자가 얹힌다 — 밝은 채움 + 흰 글자(AA 미달)나 색마다 글자 밝기가 갈리는 문제를 없앤다.
+5 자리. **solid 버튼은 모노크로매틱** — 채움(solid)과 그 위 글자(solidFg)가 **같은 hue** 라 버튼 전체가
+한 색으로 통일된다(흰색 아님). 라이트는 채움을 다 진한 대역(green·amber 도 700 톤)으로 맞춰 늘 옅은 색
+글자가 얹힌다 — 색마다 글자 밝기가 갈리는 문제를 없앤다.
+⚠ **채움은 테마마다 방향이 반대다** — 라이트는 진한 면 + 옅은 글자(L .53~.58 / .92~.94), 다크는 **옅은
+면 + 진한 글자**(L .645 / .245). 라이트를 canvas 축으로 접은 값이고, primary 가 이미 그렇게 한다. 다크
+채움을 눌러 두면 solid→면 대비가 3:1 을 못 넘고(1.79~2.45) status Banner 글자가 2.2~2.5 로 무너진다.
+채운 면 위 글자는 `paper.raised` 가 아니라 **언제나 solidFg** 다 — 다크의 raised 는 최암이다.
+⚠ 라이트 solidFg 는 채움 위에서 3.91~4.21 로 아직 AA 미달이다. 값의 문제라 팔레트 확정 뒤로 미뤄 뒀다.
 
 **`variant` 축 = 시각 무게:** `solid`(채움) · `soft`(옅은 면) · `outline`(테두리) · `quiet`(글자만).
 - Button 예) 기본=`primary solid`(검정) · `variant="soft"`=회색 secondary · **`variant="outline"`=흰 기본
