@@ -4,9 +4,9 @@
 // 뷰어가 그대로 따라오므로 정의상 드리프트가 없다. 표시값(hex·rem)은 :root 의
 // CSS var 를 런타임에 resolve 한다 (raw 값 모듈을 import 하지 않는다).
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import { Box, Divider, Inline, Stack, Text, tokens, useResolvedTheme } from "@studio-baeks/paper-ui";
+import { Box, Divider, Inline, Stack, Text, tokens } from "@studio-baeks/paper-ui";
 
 import { PlaygroundLayout, Crumb } from "./shell";
 
@@ -17,6 +17,27 @@ const withPx = (v: string) => {
   const m = /^(-?[\d.]+)rem$/.exec(v);
   return m ? `${v} · ${Math.round(parseFloat(m[1] ?? "0") * 16 * 100) / 100}px` : v;
 };
+// 테마 구독 — **context 가 아니라 DOM 속성을 본다.**
+// PaperProvider 는 data-theme 를 effect 에서 심는다. 그래서 토글 직후의 렌더는 context
+// 만 새 값이고 DOM 은 아직 옛 테마다 — 렌더 중에 var 를 읽는 이 뷰어는 그 한 프레임을
+// 그대로 표에 박아, **값이 늘 한 테마 뒤처진다**(스와치는 CSS 라 맞고 숫자만 틀렸다).
+// useResolvedTheme 로 구독했을 때 실제로 그랬다. 속성 자체를 관찰하면 값이 바뀐 *뒤에*
+// 다시 렌더하므로 어긋날 프레임이 없고, 밖에서 data-theme 를 직접 바꿔도 따라온다.
+const useThemeAttr = (): string => {
+  const [attr, setAttr] = useState(() =>
+    typeof document === "undefined" ? "light" : (document.documentElement.dataset.theme ?? "light"),
+  );
+  useEffect(() => {
+    const el = document.documentElement;
+    const sync = () => setAttr(el.dataset.theme ?? "light");
+    sync();
+    const mo = new MutationObserver(sync);
+    mo.observe(el, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => mo.disconnect();
+  }, []);
+  return attr;
+};
+
 const val = (ref: string): string => {
   if (typeof ref !== "string" || !ref.startsWith("var(")) return withPx(ref);
   const name = (ref.slice(4, -1).split(",")[0] ?? "").trim();
@@ -61,10 +82,10 @@ const Swatch = ({ name, token, w = "7.5rem" }: { name: string; token: string; w?
 
 export const Tokens = () => {
   const [hover, setHover] = useState(false);
-  // 표시값은 렌더 중 :root 의 var 를 읽어 만든다(val). 그래서 테마가 바뀌면 이
-  // 컴포넌트가 **다시 렌더돼야** 값이 따라온다 — 구독하지 않으면 스코프만 바뀌고
-  // 숫자는 옛 테마에 머물러, 밝은 화면에 다크 값이 적힌 표가 남는다.
-  useResolvedTheme();
+  // 표시값은 렌더 중 :root 의 var 를 읽어 만든다(val). 그래서 테마가 *DOM 에 반영된 뒤*
+  // 다시 렌더돼야 값이 따라온다 — 구독을 놓치거나 한 프레임 일찍 읽으면 숫자가 옛 테마에
+  // 머물러, 다크 화면에 라이트 값이 적힌 표가 남는다(→ useThemeAttr).
+  useThemeAttr();
 
   return (
     <PlaygroundLayout active="tokens">
@@ -109,7 +130,7 @@ export const Tokens = () => {
         <Divider />
 
         {/* ── Color · accent ─────────────────────────────────── */}
-        <Section id="tok-accent" title="Color · accent (4색 × 5자리)" desc="이름이 곧 의미 — info · success · warning · error (hue 이름 없음). solid 채운 면 · solidFg solid 위 글자(대비쌍 — 밝은 배경은 어두운 잉크) · ink 흰 배경 위 글자(AA) · wash 옅은 면 · edge wash 괘선.">
+        <Section id="tok-accent" title="Color · accent (4색 × 5자리)" desc="이름이 곧 의미 — info · success · warning · error (hue 이름 없음). solid 채운 면 · solidFg solid 위 글자(대비쌍 — 밝은 배경은 어두운 잉크) · ink 흰 배경 위 글자(AA) · wash 옅은 면 · edge wash 괘선. ⚠ **다크에서 채움(solid)은 뒤집힌다 — 밝은 면 + 어두운 글자다.** 라이트를 canvas 축으로 접은 값이다(라이트 canvas .991→solid .53~.58 / 다크 canvas .205→solid .645, solidFg 는 .92~.94 / .245). 오래 다크 solid 를 .44 로 눌러 뒀는데 — 옅은 글자를 얹어야 하니 면이 어두워야 한다는 생각이었다 — 그러면 **채움이 면에서 안 떨어진다**: solid→면 대비가 1.79~2.45 였다(라이트 3.74~5.17). 비텍스트 3:1 을 못 넘기니 배지·버튼의 윤곽 자체가 계약을 깬 것이고, 글자 없는 상태 점은 아예 안 보였다. 눌러서는 못 고친다 — 가장 밝은 면(well)의 상대휘도가 .022 라 그 아래로 3:1 을 만들려면 채움의 휘도가 음수여야 한다. 위로 가는 길뿐이다. primary 는 이미 뒤집고 있었고(흰 채움/검정 글자) accent solid 만 안 뒤집힌 축으로 남아 있었다. 뒤집으면 solid→면 4.20~5.84 · solidFg→solid 4.76~5.13 으로 라이트와 나란해진다. 곁딸려 Banner 도 고쳤다 — 채운 면 위 글자를 paper.raised 로 박아 뒀는데 다크의 raised 는 최암이라 status Banner 가 2.2~2.5 였다. ⚠ 라이트 solidFg 는 아직 3.91~4.21 로 AA 미달이다 — 구조가 아니라 값의 문제라 이번 범위 밖으로 남겨 뒀다.">
           <Stack gap="lg">
             {ACCENTS.map((a) => (
               <Inline key={a} gap="lg" align="center" wrap>

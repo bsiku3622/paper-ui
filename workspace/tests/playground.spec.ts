@@ -81,6 +81,13 @@ const DARK_VARS: Record<string, string> = {
   "--pui-color-paper-raised": "#151515", // ⚠ 최암 — 다크는 사다리가 라이트의 거울이다(BLACK 에 raised 가 가장 가깝다)
   "--pui-color-ink-base": "#dcdcdc",
   "--pui-color-primary-base": "#e8e8e8",
+  // ⚠ **다크 채움(accent solid)은 밝다** — 라이트(L .53~.58)를 canvas 축으로 접은 L .645 다.
+  // 여기를 눌러 두면 두 계약이 한꺼번에 깨진다: solid→면 대비가 3:1 을 못 넘고
+  // (예전 .44 에서 1.79~2.45), status Banner 의 글자가 2.2~2.5 로 무너진다. 채움 위 글자는
+  // paper.raised 가 아니라 **solid-fg** 다 — 다크의 raised 는 최암이라 종이색이 아니다.
+  "--pui-color-accent-info-solid": "#5d90cf",
+  "--pui-color-accent-error-solid": "#c87173",
+  "--pui-color-accent-info-solid-fg": "#132133",
 };
 test("dark · [data-theme=dark] 로 색 var 가 다크 세트로 바뀐다", async ({ page }) => {
   await page.evaluate(() => document.documentElement.setAttribute("data-theme", "dark"));
