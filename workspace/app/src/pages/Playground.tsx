@@ -285,14 +285,16 @@ export const Playground = () => {
             <Badge color="info" dot>진행</Badge>
             <Badge color="success" dot>정상</Badge>
           </Spec>
-          <Spec label="Link · Icon">
+          {/* Divider 는 세로로 세워 표본으로 보인다. 가로 한 줄을 그으면 섹션을 가르는
+              선처럼 읽혀, 예제 화면이 줄무늬가 된다 — 두 축은 상세 페이지에서 전환한다. */}
+          <Spec label="Divider · Link · Icon">
             <Link href="#/" data-testid="link">링크</Link>
+            <Divider axis="vertical" />
             <Icon aria-label="정보" data-testid="icon">
               <circle cx="12" cy="12" r="9" />
               <path d="M12 11v5M12 8h.01" />
             </Icon>
           </Spec>
-          <Divider />
         </Section>
 
         {/* ── Molecules ─────────────────────────────────────── */}
