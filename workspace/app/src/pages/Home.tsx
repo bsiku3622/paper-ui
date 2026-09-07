@@ -105,28 +105,33 @@ const AppMockup = () => {
         </aside>
 
         <main className="home-mockup-main">
-          <Inline align="center" justify="between" gap="sm" paddingX="lg" paddingY="md" style={{ borderBottom: `1px solid ${tokens.color.border.base}` }}>
-            <Text variant="heading" as="h3">이슈</Text>
-            <Inline gap="sm" align="center">
-              <Box style={{ width: "12rem" }}>
-                <Field placeholder="검색…" aria-label="검색" />
-              </Box>
-              <Button>새 이슈</Button>
+          {/* 제목 줄과 필터 줄은 **한 덩어리**다 — 사이에 선이 없으니 각자 여백을 갖는 두
+              밴드일 이유가 없다. 따로 두면 12(위) / 20(사이) / 9(아래) 로 리듬이 어긋나고,
+              선이 없어진 순간 그게 "제목이 위로 붙은" 인상으로 드러난다. */}
+          <Stack gap="md" paddingX="lg" paddingY="md">
+            <Inline align="center" justify="between" gap="sm">
+              <Text variant="heading" as="h3">이슈</Text>
+              <Inline gap="sm" align="center">
+                <Box style={{ width: "12rem" }}>
+                  <Field placeholder="검색…" aria-label="검색" />
+                </Box>
+                <Button>새 이슈</Button>
+              </Inline>
             </Inline>
-          </Inline>
 
-          <Inline align="center" justify="between" gap="sm" paddingX="lg" paddingY="sm" style={{ borderBottom: `1px solid ${tokens.color.border.base}` }}>
-            <Tabs
-              value={tab}
-              onChange={setTab}
-              items={[
-                { value: "all", label: "전체" },
-                { value: "open", label: "열림" },
-                { value: "done", label: "완료" },
-              ]}
-            />
-            <Text variant="caption" as="span" ink="soft">6건 · 열림 4</Text>
-          </Inline>
+            <Inline align="center" justify="between" gap="sm">
+              <Tabs
+                value={tab}
+                onChange={setTab}
+                items={[
+                  { value: "all", label: "전체" },
+                  { value: "open", label: "열림" },
+                  { value: "done", label: "완료" },
+                ]}
+              />
+              <Text variant="caption" as="span" ink="soft">6건 · 열림 4</Text>
+            </Inline>
+          </Stack>
 
           <Box style={{ padding: tokens.shape.padding.md.interaction }}>
             <Table columns={columns} rows={ISSUES} rowKey={(r) => r.id} />
