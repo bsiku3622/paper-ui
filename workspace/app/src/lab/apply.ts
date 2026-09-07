@@ -131,8 +131,12 @@ export const applyLab = (c: Combo | null): void => {
     return;
   }
 
+  const sh = SHAPES[c.shape];
   applyRules(
-    c.shape === "paper" ? "" : `:root [role="tablist"]{border-radius:${SHAPES[c.shape].trackRadius}}`,
+    c.shape === "paper"
+      ? ""
+      : `:root [role="tablist"]{border-radius:${sh.trackRadius}}` +
+        `:root .home-navitem{border-radius:${sh.navRadius}}`,
   );
 
   // 각 축의 첫 항목(`paper`/`compact`/`comfort`)은 기준점이라 곧 시스템 기본값이다.

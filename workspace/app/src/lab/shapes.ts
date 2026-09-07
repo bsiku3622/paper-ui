@@ -12,6 +12,15 @@
 //   Capsule 처럼 항목이 999px 이고 트랙이 3px 이면 — 알약의 곡선과 트랙의 직각 사이에
 //   초승달 모양 빈틈이 생겨 깨져 보인다. 알약을 담는 그릇은 알약이어야 한다. 사다리 값을
 //   올려 맞추면 카드까지 둥글어지므로, `[role="tablist"]` 에만 거는 규칙으로 분리했다.
+//
+// ⚠ `navRadius` 도 같은 이유로 뗐다. `radius.interaction` 하나가 버튼과 사이드바 행을 함께
+//   담당하는데(`Navbar.css.ts`, `.home-navitem`), 999px 는 좁고 높은 버튼에서만 알약으로
+//   읽힌다. 폭이 넓고 높이가 낮은 행에 같은 값을 주면 양 끝이 반원이 되어 과해진다.
+//   Vercel 이 "nav 는 6px, 마케팅 CTA 는 100px, 한 화면에서 섞지 말 것" 이라고 못 박는 게
+//   같은 문제다. **알약은 손이 닿는 좁은 컨트롤에만 준다.**
+//
+//   ⚠ 이건 lab 이 만든 문제가 아니라 토큰 구조가 극단에서 드러낸 한계다. Capsule 이나
+//     Lozenge 를 실제로 채택한다면 `radius.interaction` 을 control 과 nav 로 쪼개야 한다.
 
 export type Shape = {
   label: string;
@@ -20,6 +29,8 @@ export type Shape = {
   pillRadius: string;
   // 세그먼트 트랙(role="tablist")의 곡률. radius 사다리와 따로 두는 이유는 아래 ⚠ 참고.
   trackRadius: string;
+  // 넓고 낮은 항목(사이드바 행 등)의 곡률. 아래 ⚠ 참고.
+  navRadius: string;
   borderWidth: string;
   focusRingWidth: string;
   focusRingOffset: string;
@@ -36,6 +47,7 @@ export const SHAPES = {
     radius: { interaction: ".375rem", layoutSm: ".375rem", layoutMd: ".5rem", layoutLg: ".75rem" },
     pillRadius: "999px",
     trackRadius: ".5rem",
+    navRadius: ".375rem",
     borderWidth: "1px",
     focusRingWidth: "2px",
     focusRingOffset: "2px",
@@ -53,6 +65,7 @@ export const SHAPES = {
     radius: { interaction: ".75rem", layoutSm: ".875rem", layoutMd: "1.25rem", layoutLg: "1.75rem" },
     pillRadius: "999px",
     trackRadius: "1.25rem",
+    navRadius: ".75rem",
     borderWidth: "1px",
     focusRingWidth: "3px",
     focusRingOffset: "3px",
@@ -69,6 +82,7 @@ export const SHAPES = {
     radius: { interaction: "0", layoutSm: "0", layoutMd: "0", layoutLg: "0" },
     pillRadius: "0",
     trackRadius: "0",
+    navRadius: "0",
     borderWidth: "1.5px",
     focusRingWidth: "2px",
     focusRingOffset: "0px",
@@ -85,6 +99,7 @@ export const SHAPES = {
     radius: { interaction: "999px", layoutSm: "2px", layoutMd: "3px", layoutLg: "4px" },
     pillRadius: "999px",
     trackRadius: "999px",
+    navRadius: ".5rem",
     borderWidth: "1px",
     focusRingWidth: "2px",
     focusRingOffset: "2px",
@@ -100,6 +115,7 @@ export const SHAPES = {
     radius: { interaction: "999px", layoutSm: ".5rem", layoutMd: ".75rem", layoutLg: "1rem" },
     pillRadius: "999px",
     trackRadius: "999px",
+    navRadius: ".5rem",
     borderWidth: "1px",
     focusRingWidth: "2px",
     focusRingOffset: "2px",
