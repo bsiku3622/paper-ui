@@ -22,6 +22,10 @@
 //   ⚠ 이건 lab 이 만든 문제가 아니라 토큰 구조가 극단에서 드러낸 한계다. Capsule 이나
 //     Lozenge 를 실제로 채택한다면 `radius.interaction` 을 control 과 nav 로 쪼개야 한다.
 //
+// ⚠ `tabPadX` 는 곡률이 여백을 먹는 문제다. 항목이 알약이 되면 좌우 반경이 높이의 절반까지
+//   커져서 글자와 가장자리 사이가 실제보다 멀어 보이고, 세 항목이 늘어선 트랙이 길어진다.
+//   각진 상태를 기준으로 잡힌 여백은 알약에서 과해지므로 한 단 줄인다.
+//
 // ⚠ `fieldRadius` 도 같은 갈래다. Button 과 Field 가 둘 다 `radius.interaction` 을 읽는데
 //   (`atoms/Button.css.ts`, `atoms/Field.css.ts`), 999px 는 짧은 버튼에서만 알약으로 읽힌다.
 //   폭이 긴 검색 입력에 같은 값을 주면 양 끝이 반원인 캡슐이 되어 과해진다. 알약을
@@ -46,6 +50,10 @@ export type Shape = {
   };
   // 999 를 고른 컴포넌트의 셀렉터. 빈 문자열이면 알약을 따로 고르는 자리가 없다는 뜻이다.
   pillTargets: string;
+  // 세그먼트 항목의 좌우 여백. 알약이 되면 곡률이 여백 위에 얹혀 같은 값도 넓어 보인다.
+  tabPadX: string;
+  // 세그먼트 항목 사이 간격.
+  trackGap: string;
   borderWidth: string;
   focusRingWidth: string;
   focusRingOffset: string;
@@ -72,6 +80,8 @@ export const SHAPES = {
     shadowOverlay: "0 6px 18px -5px rgba(24, 25, 28, .16), 0 2px 5px -2px rgba(24, 25, 28, .09)",
     shadowOverlayMinimal: "0 1px 2px 0 rgba(24, 25, 28, .06)",
     pillTargets: "",
+    tabPadX: ".625rem",
+    trackGap: "2px",
   },
 
   // 둥근 UI 가 흔히 실패하는 지점은 radius 만 키우고 선을 그대로 두는 것이다. 선이 남으면
@@ -93,6 +103,8 @@ export const SHAPES = {
     shadowOverlay: "0 16px 40px -12px rgba(24, 25, 28, .22), 0 6px 14px -6px rgba(24, 25, 28, .12)",
     shadowOverlayMinimal: "0 2px 8px -2px rgba(24, 25, 28, .10)",
     pillTargets: "",
+    tabPadX: ".625rem",
+    trackGap: "2px",
   },
 
   // 곡률을 한 칸도 남기지 않는다. 알약 트랙까지 사각으로 내린다. 깊이는 그림자가 아니라
@@ -113,18 +125,23 @@ export const SHAPES = {
     shadowOverlay: "0 0 0 1.5px rgba(24, 25, 28, .22), 12px 12px 0 -2px rgba(24, 25, 28, .10)",
     shadowOverlayMinimal: "0 0 0 1px rgba(24, 25, 28, .12)",
     pillTargets: "",
+    tabPadX: ".625rem",
+    trackGap: "2px",
   },
 
   // 손이 닿는 것과 내용을 담는 것을 형태로 갈라놓는다. 버튼·입력은 완전한 알약이고
   // 카드·모달은 거의 직각이다. 한 화면 안에서 두 곡률이 부딪히는 게 이 shape 의 전부다.
+  //
+  // ⚠ 예외를 두지 않는다 — 긴 입력도, 사이드바 행도 999 다. Lozenge 가 "알약을 고르는" 쪽이라면
+  //   이쪽은 "알약이 기본" 인 쪽이고, 둘을 나란히 놓아야 그 차이가 무엇을 뜻하는지 보인다.
   capsule: {
     label: "Capsule",
     motto: "누르는 것은 알약, 담는 것은 판",
     radius: { interaction: "999px", layoutSm: "2px", layoutMd: "3px", layoutLg: "4px" },
     pillRadius: "999px",
     trackRadius: "999px",
-    navRadius: ".5rem",
-    fieldRadius: ".375rem",
+    navRadius: "999px",
+    fieldRadius: "999px",
     sidebar: { width: "13.5rem", pad: ".75rem", gap: ".75rem", itemHeight: "1.875rem", itemPadX: ".5rem", filterHeight: "1.75rem" },
     borderWidth: "1px",
     focusRingWidth: "2px",
@@ -133,6 +150,8 @@ export const SHAPES = {
     shadowOverlay: "0 8px 24px -8px rgba(24, 25, 28, .18), 0 3px 6px -3px rgba(24, 25, 28, .10)",
     shadowOverlayMinimal: "0 1px 2px 0 rgba(24, 25, 28, .07)",
     pillTargets: "",
+    tabPadX: ".4375rem",
+    trackGap: "1px",
   },
   // Paper 를 그대로 두고 **알약을 고른 컴포넌트만** 999 를 갖는다. 알약을 모든 컨트롤의
   // 기본값으로 만들면 셋 다 무너진다 — 긴 검색 입력은 스타디움이 되고, 두 글자짜리 링크는
@@ -149,15 +168,20 @@ export const SHAPES = {
     trackRadius: "999px",
     navRadius: ".375rem",
     fieldRadius: ".375rem",
-    sidebar: { width: "13.5rem", pad: ".75rem", gap: ".75rem", itemHeight: "1.875rem", itemPadX: ".5rem", filterHeight: "1.75rem" },
+    // 기본 폭에서 한 뼘만. 15rem 까지 열었더니 항목이 흩어진 링크로 읽혀서 되돌렸고,
+    // 그 사이 어디쯤이 목록으로 남으면서 숨은 트인다.
+    sidebar: { width: "14.5rem", pad: ".8125rem", gap: ".625rem", itemHeight: "2rem", itemPadX: ".625rem", filterHeight: "1.8125rem" },
     borderWidth: "1px",
     focusRingWidth: "2px",
     focusRingOffset: "2px",
     checkboxRadius: ".1875rem",
     shadowOverlay: "0 8px 24px 0 rgba(0, 55, 112, .08), 0 2px 6px 0 rgba(0, 55, 112, .04)",
     shadowOverlayMinimal: "0 1px 3px 0 rgba(0, 55, 112, .08)",
-    // 이 shape 만 갖는 규칙 — 알약을 고른 컴포넌트.
-    pillTargets: 'button,[role="tab"]',
+    // 알약을 고르는 자리는 세그먼트 하나다. Button 은 빼 뒀다 — 알약이 하나뿐일 때
+    // 그게 무엇을 뜻하는지가 가장 또렷해진다. Badge 는 원래 pillRadius 를 읽으므로 남는다.
+    pillTargets: '[role="tab"]',
+    tabPadX: ".4375rem",
+    trackGap: "1px",
   },
 } as const satisfies Record<string, Shape>;
 

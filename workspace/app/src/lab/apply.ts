@@ -143,6 +143,8 @@ export const applyLab = (c: Combo | null): void => {
         (sh.pillTargets
           ? sh.pillTargets.split(",").map((t: string) => `:root ${t.trim()}{border-radius:999px}`).join("")
           : "") +
+        `:root [role="tab"]{padding-inline:${sh.tabPadX}}` +
+        `:root [role="tablist"]{gap:${sh.trackGap}}` +
         `:root .home-navitem{border-radius:${sh.navRadius};height:${sb.itemHeight};padding-inline:${sb.itemPadX}}` +
         `:root .home-filterrow{height:${sb.filterHeight};padding-inline:${sb.itemPadX}}` +
         `:root .home-filterhead{padding-inline:${sb.itemPadX}}` +
