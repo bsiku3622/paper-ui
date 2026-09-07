@@ -9,14 +9,15 @@
 // 그대로 옮겼다. 계약은 본문 4.5 · 비텍스트 3.0 이고, 맨 면 기준으로 잰다.
 // `edge` 는 wash 의 장식 괘선이라 1.4.11 대상이 아니어서 검산에서 뺐다.
 //
-// indigo · teal · azure · wine 은 한 계열이다. 지면(#f6f9fc)·먹(#0d253d)·경계를 공유하고
-// **행동 색 하나만** 다르다. 그 하나를 옮길 때 가까운 status 를 같이 밀어내야 배지와 버튼이
-// 같은 색으로 읽히지 않는다 — 무엇을 밀어냈는지는 각 항목 주석에 있다.
+// 두 계열이 있다. **cream · matcha** 는 따뜻한 지면을 공유하고 hue 만 다르다(노랑 88 →
+// 황록 105). **indigo · teal · azure · wine** 은 지면(#f6f9fc)·먹(#0d253d)·경계를 공유하고
+// 행동 색 하나만 다르다. 두 경우 모두, 색을 옮길 때 그와 가까운 status 를 같이 밀어내야
+// 배지와 버튼이 같은 색으로 읽히지 않는다 — 무엇을 밀어냈는지는 각 항목 주석에 있다.
 //
 // ⚠ `paper` 만 위반 4 건을 안고 있다 — solidFg → solid 가 3.91~4.21 이다. 이건 이 lab 이
 //   만든 결함이 아니라 현재 시스템이 이미 갖고 있는 것이고(`tokens/colors.ts` 주석에
 //   "값의 문제라 범위 밖" 으로 기록돼 있다), 기준점을 손대면 비교가 흐려져 그대로 뒀다.
-//   나머지 열은 전부 통과한다.
+//   나머지 열하나는 전부 통과한다.
 
 export type PaletteTheme = "light" | "dark";
 
@@ -224,6 +225,68 @@ export const PALETTES = {
       "active": "rgba(33,29,24,.17)"
     },
     "scrim": "rgba(33,29,24,.4)"
+  },
+  "matcha": {
+    "label": "Matcha",
+    "theme": "light",
+    "motto": "크림에 녹차를 한 숟갈",
+    "paper": {
+      "raised": "#f7f8ec",
+      "canvas": "#e7e9cc",
+      "sunken": "#dcdfba",
+      "well": "#c7cc9e"
+    },
+    "ink": {
+      "base": "#1e2117",
+      "soft": "#565a44",
+      "faint": "#5b5f49"
+    },
+    "border": {
+      "base": "#d9dcbb",
+      "strong": "#bfc39a"
+    },
+    "primary": {
+      "base": "#1e2117",
+      "fg": "#e7e9cc",
+      "hover": "#414632"
+    },
+    "accent": {
+      "info": {
+        "solid": "#1d4b8f",
+        "solidFg": "#dde8f8",
+        "ink": "#1a4480",
+        "wash": "#e7edf6",
+        "edge": "#a6bcd8"
+      },
+      "success": {
+        "solid": "#2f4f1c",
+        "solidFg": "#e2f0d5",
+        "ink": "#294517",
+        "wash": "#e9f0e0",
+        "edge": "#a7bd90"
+      },
+      "warning": {
+        "solid": "#7d5a12",
+        "solidFg": "#faeecd",
+        "ink": "#6d4e0f",
+        "wash": "#f4eed6",
+        "edge": "#cfba78"
+      },
+      "error": {
+        "solid": "#9c2b22",
+        "solidFg": "#fbe3df",
+        "ink": "#87251d",
+        "wash": "#f6e7e2",
+        "edge": "#dba79e"
+      }
+    },
+    "focusRing": "#2f4f1c",
+    "interaction": {
+      "hover": "rgba(30,33,23,.06)",
+      "selected": "rgba(30,33,23,.13)",
+      "active": "rgba(30,33,23,.17)"
+    },
+    "scrim": "rgba(30,33,23,.4)"
   },
   "lavender": {
     "label": "Lavender",
