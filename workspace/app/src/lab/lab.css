@@ -1,0 +1,111 @@
+/* lab 패널 전용 스타일.
+   paper-ui 변수를 참조하지 않는 게 규칙이다 — 팔레트를 갈아 끼워도 이 패널만은 안 변해야
+   무엇이 바뀌었는지 잴 기준이 남는다. 그래서 값이 전부 리터럴이다. */
+
+.lab,
+.lab-fab {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 9999;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  color-scheme: dark;
+}
+
+.lab-fab {
+  padding: 9px 16px;
+  border: 1px solid #45455a;
+  border-radius: 8px;
+  background: #1b1b24;
+  color: #e7e7f2;
+  font-size: 12px;
+  letter-spacing: .04em;
+  cursor: pointer;
+  box-shadow: 0 8px 24px -10px rgba(0, 0, 0, .7);
+}
+.lab-fab:hover { background: #262633; }
+
+.lab {
+  width: 262px;
+  max-height: min(72vh, 640px);
+  overflow-y: auto;
+  padding: 12px;
+  border: 1px solid #3a3a4c;
+  border-radius: 12px;
+  background: #16161e;
+  color: #e7e7f2;
+  box-shadow: 0 20px 48px -16px rgba(0, 0, 0, .78);
+}
+
+.lab-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 2px 10px;
+  border-bottom: 1px solid #2c2c3a;
+  margin-bottom: 10px;
+}
+.lab-title { font-size: 12px; font-weight: 700; letter-spacing: .1em; }
+.lab-combo { margin-left: auto; font-size: 11px; color: #9a9ab4; }
+.lab-x {
+  width: 20px; height: 20px; padding: 0;
+  border: 0; border-radius: 5px;
+  background: #262633; color: #c9c9de;
+  font-size: 14px; line-height: 1; cursor: pointer;
+}
+.lab-x:hover { background: #34344a; }
+
+.lab-legend {
+  padding: 4px 2px 6px;
+  font-size: 10px;
+  letter-spacing: .12em;
+  color: #7c7c96;
+}
+.lab-group + .lab-group { margin-top: 12px; padding-top: 10px; border-top: 1px solid #2c2c3a; }
+
+.lab-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 5px 7px;
+  margin-bottom: 2px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.lab-row:hover { background: #21212c; }
+.lab-row.is-on { background: #23233a; border-color: #4f4f7a; }
+
+.lab-sw { display: flex; flex: none; width: 38px; height: 22px; border-radius: 5px; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(255,255,255,.14); }
+.lab-sw i { flex: 1; }
+
+.lab-shape { display: flex; align-items: center; gap: 3px; flex: none; width: 38px; height: 22px; }
+.lab-shape i { display: block; width: 15px; height: 15px; border-style: solid; border-color: #8f8fb4; background: #2e2e40; }
+.lab-shape-pill { width: 18px !important; height: 10px !important; }
+
+.lab-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
+.lab-text b { font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.lab-text small {
+  font-size: 10px; color: #9a9ab4; line-height: 1.3;
+  font-family: "Pretendard Variable", Pretendard, -apple-system, sans-serif;
+}
+
+.lab-tag {
+  font-style: normal; font-size: 9px; letter-spacing: .08em;
+  padding: 1px 5px; border-radius: 4px;
+  background: #3b3b58; color: #c3c3e6;
+}
+
+.lab kbd {
+  flex: none;
+  font-family: inherit;
+  font-size: 10px;
+  color: #6f6f8c;
+  border: 1px solid #33334a;
+  border-radius: 4px;
+  padding: 1px 4px;
+}
