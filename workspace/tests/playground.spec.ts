@@ -75,11 +75,11 @@ test("color · 토큰이 기대 hex 로 emit 된다", async ({ page }) => {
 // 다크는 canvas 가 최암이고 나머지가 그 위로 쌓인다(라이트와 방향이 반대다).
 // 이 순서가 뒤집히면 table head 가 몸통보다 어두운 구멍이 된다.
 const DARK_VARS: Record<string, string> = {
-  "--pui-color-paper-canvas": "#171717", // 지면 — 앵커(사다리를 접는 축)
-  "--pui-color-paper-well": "#292929",
-  "--pui-color-paper-sunken": "#1c1c1c",
-  "--pui-color-paper-raised": "#151515", // ⚠ 최암 — 다크는 사다리가 라이트의 거울이다(BLACK 에 raised 가 가장 가깝다)
-  "--pui-color-ink-base": "#dcdcdc",
+  "--pui-color-paper-canvas": "#101010", // 지면 — 앵커(사다리를 접는 축)
+  "--pui-color-paper-well": "#252525",
+  "--pui-color-paper-sunken": "#161616",
+  "--pui-color-paper-raised": "#0d0d0d", // ⚠ 최암 — 다크는 사다리가 라이트의 거울이다(BLACK 에 raised 가 가장 가깝다)
+  "--pui-color-ink-base": "#e9e9e9",
   "--pui-color-primary-base": "#e8e8e8",
   // ⚠ **다크 채움(accent solid)은 밝다** — 라이트(L .53~.58)를 canvas 축으로 접은 L .645 다.
   // 여기를 눌러 두면 두 계약이 한꺼번에 깨진다: solid→면 대비가 3:1 을 못 넘고

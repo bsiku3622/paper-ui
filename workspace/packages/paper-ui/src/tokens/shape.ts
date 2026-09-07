@@ -241,8 +241,11 @@ export const SHAPE_MEASURE = {
 // 두면 형태의 윤곽과 그림자의 윤곽이 어긋나 떠 있는 게 흐릿해진다.
 
 export const SHADOW = {
-  overlay: "0 6px 18px -5px rgba(24, 25, 28, 0.16), 0 2px 5px -2px rgba(24, 25, 28, 0.09)",
-  overlayMinimal: "0 1px 2px 0 rgba(24, 25, 28, 0.06)",
+  // 2026-09-07 — lab 의 Lozenge 결로 교체. 무거운 단일 그림자 대신 낮고 푸른 기가 도는
+  // 두 겹이다. Vercel·Stripe 가 공통으로 명시하는 규칙("never a single heavy drop-shadow")
+  // 이기도 하고, 흰 면 위에서 회색 그림자보다 덜 탁하다.
+  overlay: "0 8px 24px 0 rgba(0, 55, 112, 0.08), 0 2px 6px 0 rgba(0, 55, 112, 0.04)",
+  overlayMinimal: "0 1px 3px 0 rgba(0, 55, 112, 0.08)",
 } as const;
 
 // 다크 그림자 — near-black 은 어두운 면 위에서 사라져 elevation 단서를 잃는다. 순검정을
@@ -279,8 +282,12 @@ export const ATOM_INTRINSIC = {
   badgeHeight: REM(22), //     Badge 높이 (control 34 보다 낮은 인라인 라벨)
   navbar: REM(52), //          Navbar · 사이트 GNB 바 높이
   navItem: REM(32), //         Navbar 항목 높이
-  tabsTrackGap: "2px", //      세그먼트 트랙 항목 간격
+  // ⚠ 알약은 자기 여백을 먹는다. 항목이 pill 이면 좌우 반경이 높이의 절반까지 커져 곡선이
+  //   padding 위에 얹히고, 글자와 가장자리 사이가 실측보다 넓어 보인다. 그래서 간격과
+  //   항목 여백을 각진 상태 기준보다 한 단씩 내렸다 — 트랙이 429px 에서 369px 로 줄며 읽힘이 맞다.
+  tabsTrackGap: "1px", //      세그먼트 트랙 항목 간격
   tabsTrackPad: "3px", //      세그먼트 트랙 안쪽 여백 — 2px 면 활성 pill 이 트랙에 낀다
+  tabsItemPadX: "9px", //      세그먼트 항목 좌우 여백 (control 사다리의 10px 보다 한 단 좁게)
   modalWidth: REM(432), //     Modal 기본 최대 폭 (27rem)
   selectArrow: REM(10), //     Select 화살표 아이콘 크기 (0.625rem)
   switchWidth: REM(36), //     Switch 트랙 가로
