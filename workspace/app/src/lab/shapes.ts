@@ -6,12 +6,20 @@
 //
 // ⚠ `pillRadius` 까지 건드리는 게 핵심이다. 이 값을 안 바꾸면 Badge·Tabs 트랙만 늘 알약으로
 //   남아서, 각지게 가려는 shape 이 절반만 각져 보인다.
+//
+// ⚠ `trackRadius` 는 사다리에 없는 값이라 따로 둔다. Tabs 는 트랙에 `radius.layout.md` 를,
+//   안쪽 항목에 `radius.interaction` 을 쓴다(`molecules/Tabs.css.ts`). 두 값이 멀어지면 —
+//   Capsule 처럼 항목이 999px 이고 트랙이 3px 이면 — 알약의 곡선과 트랙의 직각 사이에
+//   초승달 모양 빈틈이 생겨 깨져 보인다. 알약을 담는 그릇은 알약이어야 한다. 사다리 값을
+//   올려 맞추면 카드까지 둥글어지므로, `[role="tablist"]` 에만 거는 규칙으로 분리했다.
 
 export type Shape = {
   label: string;
   motto: string;
   radius: { interaction: string; layoutSm: string; layoutMd: string; layoutLg: string };
   pillRadius: string;
+  // 세그먼트 트랙(role="tablist")의 곡률. radius 사다리와 따로 두는 이유는 아래 ⚠ 참고.
+  trackRadius: string;
   borderWidth: string;
   focusRingWidth: string;
   focusRingOffset: string;
@@ -27,6 +35,7 @@ export const SHAPES = {
     motto: "모서리는 눈에 띄지 않는다",
     radius: { interaction: ".375rem", layoutSm: ".375rem", layoutMd: ".5rem", layoutLg: ".75rem" },
     pillRadius: "999px",
+    trackRadius: ".5rem",
     borderWidth: "1px",
     focusRingWidth: "2px",
     focusRingOffset: "2px",
@@ -43,6 +52,7 @@ export const SHAPES = {
     motto: "경계는 선이 아니라 그림자가 만든다",
     radius: { interaction: ".75rem", layoutSm: ".875rem", layoutMd: "1.25rem", layoutLg: "1.75rem" },
     pillRadius: "999px",
+    trackRadius: "1.25rem",
     borderWidth: "1px",
     focusRingWidth: "3px",
     focusRingOffset: "3px",
@@ -58,6 +68,7 @@ export const SHAPES = {
     motto: "선이 유일한 구조다",
     radius: { interaction: "0", layoutSm: "0", layoutMd: "0", layoutLg: "0" },
     pillRadius: "0",
+    trackRadius: "0",
     borderWidth: "1.5px",
     focusRingWidth: "2px",
     focusRingOffset: "0px",
@@ -73,12 +84,28 @@ export const SHAPES = {
     motto: "누르는 것은 알약, 담는 것은 판",
     radius: { interaction: "999px", layoutSm: "2px", layoutMd: "3px", layoutLg: "4px" },
     pillRadius: "999px",
+    trackRadius: "999px",
     borderWidth: "1px",
     focusRingWidth: "2px",
     focusRingOffset: "2px",
     checkboxRadius: "2px",
     shadowOverlay: "0 8px 24px -8px rgba(24, 25, 28, .18), 0 3px 6px -3px rgba(24, 25, 28, .10)",
     shadowOverlayMinimal: "0 1px 2px 0 rgba(24, 25, 28, .07)",
+  },
+  // Stripe 가 실제로 쓰는 배치다 — 버튼은 전부 알약이고 카드는 12px 로 둥글다. Capsule 이
+  // 두 곡률을 부딪히게 두는 반면, 이쪽은 둘 사이를 잇는다. 알약이 튀지 않고 화면에 녹는다.
+  lozenge: {
+    label: "Lozenge",
+    motto: "컨트롤은 알약, 판은 둥글게",
+    radius: { interaction: "999px", layoutSm: ".5rem", layoutMd: ".75rem", layoutLg: "1rem" },
+    pillRadius: "999px",
+    trackRadius: "999px",
+    borderWidth: "1px",
+    focusRingWidth: "2px",
+    focusRingOffset: "2px",
+    checkboxRadius: ".25rem",
+    shadowOverlay: "0 8px 24px 0 rgba(0, 55, 112, .08), 0 2px 6px 0 rgba(0, 55, 112, .04)",
+    shadowOverlayMinimal: "0 1px 3px 0 rgba(0, 55, 112, .08)",
   },
 } as const satisfies Record<string, Shape>;
 

@@ -104,13 +104,36 @@ export type Combo = {
   density: DensityKey;
 };
 
+// 변수로 못 가는 보정은 규칙 한 줄로 건다. 지금은 세그먼트 트랙 하나뿐이다 —
+// Tabs 는 트랙에 `radius.layout.md`, 항목에 `radius.interaction` 을 쓰는데 두 값이 멀어지면
+// 알약이 각진 그릇에 안 맞는다. `role="tablist"` 는 마크업이 보장하는 셀렉터라
+// vanilla-extract 의 해시 클래스에 기대지 않아도 된다. `:root` 를 앞에 붙여 특이도를
+// 0,1,1 로 올리면 !important 없이 컴포넌트 규칙(0,1,0)을 이긴다.
+let sheet: HTMLStyleElement | null = null;
+
+const applyRules = (css: string): void => {
+  if (!sheet) {
+    sheet = document.createElement("style");
+    sheet.dataset.puiLab = "";
+    document.head.appendChild(sheet);
+  }
+  sheet.textContent = css;
+};
+
 let applied: string[] = [];
 
 export const applyLab = (c: Combo | null): void => {
   const root = document.documentElement;
   for (const name of applied) root.style.removeProperty(name);
   applied = [];
-  if (!c) return;
+  if (!c) {
+    applyRules("");
+    return;
+  }
+
+  applyRules(
+    c.shape === "paper" ? "" : `:root [role="tablist"]{border-radius:${SHAPES[c.shape].trackRadius}}`,
+  );
 
   // 각 축의 첫 항목(`paper`/`compact`/`comfort`)은 기준점이라 곧 시스템 기본값이다.
   // 같은 값을 인라인으로 덮어써 봐야 얻는 게 없고, 덮는 순간 "lab 이 꺼진 상태" 와

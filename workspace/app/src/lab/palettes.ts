@@ -12,7 +12,7 @@
 // ⚠ `paper` 만 위반 4 건을 안고 있다 — solidFg → solid 가 3.91~4.21 이다. 이건 이 lab 이
 //   만든 결함이 아니라 현재 시스템이 이미 갖고 있는 것이고(`tokens/colors.ts` 주석에
 //   "값의 문제라 범위 밖" 으로 기록돼 있다), 기준점을 손대면 비교가 흐려져 그대로 뒀다.
-//   나머지 다섯은 전부 통과한다.
+//   나머지 일곱은 전부 통과한다.
 
 export type PaletteTheme = "light" | "dark";
 
@@ -97,67 +97,67 @@ export const PALETTES = {
     },
     "scrim": "rgba(24,25,28,.32)"
   },
-  "acid": {
-    "label": "Acid",
+  "cream": {
+    "label": "Cream",
     "theme": "light",
-    "motto": "형광은 잉크가 아니라 종이다",
+    "motto": "종이는 원래 희지 않다",
     "paper": {
-      "raised": "#ffffff",
-      "canvas": "#e4fb52",
-      "sunken": "#d7f02f",
-      "well": "#c2db1e"
+      "raised": "#fdfaf2",
+      "canvas": "#f3ebd8",
+      "sunken": "#e9dfc7",
+      "well": "#d8cbac"
     },
     "ink": {
-      "base": "#0f1005",
-      "soft": "#3f4416",
-      "faint": "#4a5019"
+      "base": "#211d18",
+      "soft": "#5f574a",
+      "faint": "#655d4f"
     },
     "border": {
-      "base": "#a9c018",
-      "strong": "#7d9012"
+      "base": "#e2d8c0",
+      "strong": "#cabb9c"
     },
     "primary": {
-      "base": "#0f1005",
-      "fg": "#e4fb52",
-      "hover": "#2a2d10"
+      "base": "#211d18",
+      "fg": "#f3ebd8",
+      "hover": "#453d31"
     },
     "accent": {
       "info": {
-        "solid": "#4c1d95",
-        "solidFg": "#e9d5ff",
-        "ink": "#4c1d95",
-        "wash": "#efe6ff",
-        "edge": "#c4a8f5"
+        "solid": "#1d4b8f",
+        "solidFg": "#dde8f8",
+        "ink": "#1a4480",
+        "wash": "#e8eef7",
+        "edge": "#a8bdd9"
       },
       "success": {
-        "solid": "#14532d",
-        "solidFg": "#dcfce7",
-        "ink": "#14532d",
-        "wash": "#e7f7ec",
-        "edge": "#93c5a8"
+        "solid": "#2b6647",
+        "solidFg": "#ddf0e5",
+        "ink": "#25583d",
+        "wash": "#e6f0e8",
+        "edge": "#a3c4ae"
       },
       "warning": {
-        "solid": "#7c2d12",
-        "solidFg": "#ffedd5",
-        "ink": "#7c2d12",
-        "wash": "#fdeee2",
-        "edge": "#e0a882"
+        "solid": "#7d5a12",
+        "solidFg": "#faeecd",
+        "ink": "#6d4e0f",
+        "wash": "#f5ecd6",
+        "edge": "#d1b878"
       },
       "error": {
-        "solid": "#9f1239",
-        "solidFg": "#ffe4e6",
-        "ink": "#9f1239",
-        "wash": "#fde8ec",
-        "edge": "#eda1b4"
+        "solid": "#9c2b22",
+        "solidFg": "#fbe3df",
+        "ink": "#87251d",
+        "wash": "#f7e6e2",
+        "edge": "#dda79e"
       }
     },
-    "focusRing": "#4c1d95",
+    "focusRing": "#1d4b8f",
     "interaction": {
-      "hover": "rgba(15,16,5,.07)",
-      "selected": "rgba(15,16,5,.15)",
-      "active": "rgba(15,16,5,.19)"
+      "hover": "rgba(33,29,24,.06)",
+      "selected": "rgba(33,29,24,.13)",
+      "active": "rgba(33,29,24,.17)"
     },
-    "scrim": "rgba(15,16,5,.44)"
+    "scrim": "rgba(33,29,24,.4)"
   },
   "lavender": {
     "label": "Lavender",
@@ -221,129 +221,67 @@ export const PALETTES = {
     },
     "scrim": "rgba(27,26,51,.36)"
   },
-  "neonNight": {
-    "label": "Neon Night",
-    "theme": "dark",
-    "motto": "어둠은 배경이 아니라 재료다",
-    "paper": {
-      "raised": "#0d0d10",
-      "canvas": "#101014",
-      "sunken": "#16161c",
-      "well": "#24242e"
-    },
-    "ink": {
-      "base": "#e8e8f0",
-      "soft": "#a0a0b4",
-      "faint": "#8b8b9e"
-    },
-    "border": {
-      "base": "#2a2a36",
-      "strong": "#3d3d4d"
-    },
-    "primary": {
-      "base": "#ccff00",
-      "fg": "#0d0d10",
-      "hover": "#b5e600"
-    },
-    "accent": {
-      "info": {
-        "solid": "#22d3ee",
-        "solidFg": "#06232b",
-        "ink": "#4ce0f5",
-        "wash": "#10333c",
-        "edge": "#1c5e6d"
-      },
-      "success": {
-        "solid": "#4ade80",
-        "solidFg": "#07240f",
-        "ink": "#6ee7a0",
-        "wash": "#123322",
-        "edge": "#1e5c3a"
-      },
-      "warning": {
-        "solid": "#fbbf24",
-        "solidFg": "#2a1c00",
-        "ink": "#fcd34d",
-        "wash": "#33280a",
-        "edge": "#5e4a14"
-      },
-      "error": {
-        "solid": "#fb7185",
-        "solidFg": "#2b0710",
-        "ink": "#fda4af",
-        "wash": "#3a121c",
-        "edge": "#68222f"
-      }
-    },
-    "focusRing": "#ccff00",
-    "interaction": {
-      "hover": "rgba(204,255,0,.07)",
-      "selected": "rgba(204,255,0,.14)",
-      "active": "rgba(204,255,0,.2)"
-    },
-    "scrim": "rgba(0,0,0,.66)"
-  },
-  "citrus": {
-    "label": "Citrus",
+  "indigo": {
+    "label": "Indigo",
     "theme": "light",
-    "motto": "배경이 주인공이다",
+    "motto": "먹은 검정이 아니라 남색이다",
     "paper": {
       "raised": "#ffffff",
-      "canvas": "#f8b957",
-      "sunken": "#f0a52e",
-      "well": "#d98d18"
+      "canvas": "#f6f9fc",
+      "sunken": "#eef3f9",
+      "well": "#dbe4ef"
     },
     "ink": {
-      "base": "#1c1206",
-      "soft": "#48300f",
-      "faint": "#523713"
+      "base": "#0d253d",
+      "soft": "#5b6b81",
+      "faint": "#61718a"
     },
     "border": {
-      "base": "#dd9422",
-      "strong": "#ab690e"
+      "base": "#e3e8ee",
+      "strong": "#c9d4e2"
     },
     "primary": {
-      "base": "#4c1d95",
+      "base": "#4b32e8",
       "fg": "#ffffff",
-      "hover": "#3f177d"
+      "hover": "#3d28c4"
     },
     "accent": {
       "info": {
-        "solid": "#4c1d95",
-        "solidFg": "#ece3ff",
-        "ink": "#42167f",
-        "wash": "#efe7ff",
-        "edge": "#b79df0"
+        "solid": "#4b32e8",
+        "solidFg": "#e5e0fd",
+        "ink": "#3d28c4",
+        "wash": "#eeebfe",
+        "edge": "#bcaff8"
       },
       "success": {
-        "solid": "#0b4a31",
-        "solidFg": "#d7f5e6",
-        "ink": "#083c28",
-        "wash": "#e3f5ec",
-        "edge": "#7fc3a5"
+        "solid": "#0b6b52",
+        "solidFg": "#d5f2e8",
+        "ink": "#095a45",
+        "wash": "#e5f4ef",
+        "edge": "#8fcbb7"
       },
       "warning": {
-        "solid": "#5c3104",
-        "solidFg": "#ffeacc",
-        "ink": "#4d2903",
-        "wash": "#fdeed9",
-        "edge": "#e0ab63"
+        "solid": "#8a5a12",
+        "solidFg": "#fbeed2",
+        "ink": "#784e0f",
+        "wash": "#f8f0dd",
+        "edge": "#dcb977"
       },
       "error": {
-        "solid": "#8d1027",
-        "solidFg": "#ffe1e6",
-        "ink": "#780d21",
-        "wash": "#fde7ea",
-        "edge": "#eb96a6"
+        "solid": "#c11a4c",
+        "solidFg": "#ffe2ea",
+        "ink": "#a71540",
+        "wash": "#fdeaf0",
+        "edge": "#f0a2bb"
       }
     },
-    "focusRing": "#1c1206",
+    "focusRing": "#4b32e8",
     "interaction": {
-      "hover": "rgba(28,18,6,.08)",
-      "selected": "rgba(28,18,6,.16)",
-      "active": "rgba(28,18,6,.2)"
+      "hover": "rgba(13,37,61,.05)",
+      "selected": "rgba(75,50,232,.11)",
+      "active": "rgba(75,50,232,.15)"
     },
-    "scrim": "rgba(28,18,6,.46)"
+    "scrim": "rgba(13,37,61,.38)"
   },
   "vermilion": {
     "label": "Vermilion",
@@ -406,6 +344,192 @@ export const PALETTES = {
       "active": "rgba(22,19,15,.16)"
     },
     "scrim": "rgba(22,19,15,.34)"
+  },
+  "citrus": {
+    "label": "Citrus",
+    "theme": "light",
+    "motto": "배경이 주인공이다",
+    "paper": {
+      "raised": "#fdf6e6",
+      "canvas": "#f8b957",
+      "sunken": "#f0a52e",
+      "well": "#d98d18"
+    },
+    "ink": {
+      "base": "#1c1206",
+      "soft": "#48300f",
+      "faint": "#523713"
+    },
+    "border": {
+      "base": "#dd9422",
+      "strong": "#ab690e"
+    },
+    "primary": {
+      "base": "#4c1d95",
+      "fg": "#ffffff",
+      "hover": "#3f177d"
+    },
+    "accent": {
+      "info": {
+        "solid": "#4c1d95",
+        "solidFg": "#ece3ff",
+        "ink": "#42167f",
+        "wash": "#efe7ff",
+        "edge": "#b79df0"
+      },
+      "success": {
+        "solid": "#0b4a31",
+        "solidFg": "#d7f5e6",
+        "ink": "#083c28",
+        "wash": "#e3f5ec",
+        "edge": "#7fc3a5"
+      },
+      "warning": {
+        "solid": "#5c3104",
+        "solidFg": "#ffeacc",
+        "ink": "#4d2903",
+        "wash": "#fdeed9",
+        "edge": "#e0ab63"
+      },
+      "error": {
+        "solid": "#8d1027",
+        "solidFg": "#ffe1e6",
+        "ink": "#780d21",
+        "wash": "#fde7ea",
+        "edge": "#eb96a6"
+      }
+    },
+    "focusRing": "#1c1206",
+    "interaction": {
+      "hover": "rgba(28,18,6,.08)",
+      "selected": "rgba(28,18,6,.16)",
+      "active": "rgba(28,18,6,.2)"
+    },
+    "scrim": "rgba(28,18,6,.46)"
+  },
+  "acid": {
+    "label": "Acid",
+    "theme": "light",
+    "motto": "형광은 잉크가 아니라 종이다",
+    "paper": {
+      "raised": "#ffffff",
+      "canvas": "#e4fb52",
+      "sunken": "#d7f02f",
+      "well": "#c2db1e"
+    },
+    "ink": {
+      "base": "#0f1005",
+      "soft": "#3f4416",
+      "faint": "#4a5019"
+    },
+    "border": {
+      "base": "#a9c018",
+      "strong": "#7d9012"
+    },
+    "primary": {
+      "base": "#0f1005",
+      "fg": "#e4fb52",
+      "hover": "#2a2d10"
+    },
+    "accent": {
+      "info": {
+        "solid": "#4c1d95",
+        "solidFg": "#e9d5ff",
+        "ink": "#4c1d95",
+        "wash": "#efe6ff",
+        "edge": "#c4a8f5"
+      },
+      "success": {
+        "solid": "#14532d",
+        "solidFg": "#dcfce7",
+        "ink": "#14532d",
+        "wash": "#e7f7ec",
+        "edge": "#93c5a8"
+      },
+      "warning": {
+        "solid": "#7c2d12",
+        "solidFg": "#ffedd5",
+        "ink": "#7c2d12",
+        "wash": "#fdeee2",
+        "edge": "#e0a882"
+      },
+      "error": {
+        "solid": "#9f1239",
+        "solidFg": "#ffe4e6",
+        "ink": "#9f1239",
+        "wash": "#fde8ec",
+        "edge": "#eda1b4"
+      }
+    },
+    "focusRing": "#4c1d95",
+    "interaction": {
+      "hover": "rgba(15,16,5,.07)",
+      "selected": "rgba(15,16,5,.15)",
+      "active": "rgba(15,16,5,.19)"
+    },
+    "scrim": "rgba(15,16,5,.44)"
+  },
+  "neonNight": {
+    "label": "Neon Night",
+    "theme": "dark",
+    "motto": "어둠은 배경이 아니라 재료다",
+    "paper": {
+      "raised": "#0d0d10",
+      "canvas": "#101014",
+      "sunken": "#16161c",
+      "well": "#24242e"
+    },
+    "ink": {
+      "base": "#e8e8f0",
+      "soft": "#a0a0b4",
+      "faint": "#8b8b9e"
+    },
+    "border": {
+      "base": "#2a2a36",
+      "strong": "#3d3d4d"
+    },
+    "primary": {
+      "base": "#ccff00",
+      "fg": "#0d0d10",
+      "hover": "#b5e600"
+    },
+    "accent": {
+      "info": {
+        "solid": "#22d3ee",
+        "solidFg": "#06232b",
+        "ink": "#4ce0f5",
+        "wash": "#10333c",
+        "edge": "#1c5e6d"
+      },
+      "success": {
+        "solid": "#4ade80",
+        "solidFg": "#07240f",
+        "ink": "#6ee7a0",
+        "wash": "#123322",
+        "edge": "#1e5c3a"
+      },
+      "warning": {
+        "solid": "#fbbf24",
+        "solidFg": "#2a1c00",
+        "ink": "#fcd34d",
+        "wash": "#33280a",
+        "edge": "#5e4a14"
+      },
+      "error": {
+        "solid": "#fb7185",
+        "solidFg": "#2b0710",
+        "ink": "#fda4af",
+        "wash": "#3a121c",
+        "edge": "#68222f"
+      }
+    },
+    "focusRing": "#ccff00",
+    "interaction": {
+      "hover": "rgba(204,255,0,.07)",
+      "selected": "rgba(204,255,0,.14)",
+      "active": "rgba(204,255,0,.2)"
+    },
+    "scrim": "rgba(0,0,0,.66)"
   }
 } as const satisfies Record<string, Palette>;
 
