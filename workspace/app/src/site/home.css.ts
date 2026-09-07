@@ -106,6 +106,17 @@ globalStyle(".home-navitem", {
   color: tokens.color.ink.soft,
 });
 
+/* 필터 행·머리말의 크기. Home.tsx 인라인에 있던 것을 옮겼다 — 사이드바 치수를 한곳에
+   모아 두면 shape 이 통째로 바꿀 수 있다. */
+globalStyle(".home-filterrow", {
+  height: "1.75rem",
+  paddingInline: tokens.shape.padding.sm.interaction,
+});
+
+globalStyle(".home-filterhead", {
+  paddingInline: tokens.shape.padding.sm.interaction,
+});
+
 globalStyle(".home-navitem[data-active='true']", {
   background: tokens.color.interaction.selected,
   color: tokens.color.ink.base,

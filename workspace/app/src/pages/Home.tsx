@@ -94,9 +94,9 @@ const AppMockup = () => {
           </div>
 
           <Stack gap="xs">
-            <Text variant="label" as="p" ink="soft" style={{ paddingInline: tokens.shape.padding.sm.interaction }}>필터</Text>
+            <Text variant="label" as="p" ink="soft" className="home-filterhead">필터</Text>
             {FILTERS.map((f) => (
-              <Inline key={f.label} gap="sm" align="center" style={{ paddingInline: tokens.shape.padding.sm.interaction, height: "1.75rem" }}>
+              <Inline key={f.label} className="home-filterrow" gap="sm" align="center">
                 <Box className={`pui-${f.accent}-dot`} radius="pill" style={{ width: "0.55rem", height: "0.55rem" }} />
                 <Text variant="caption" as="span" ink="soft">{f.label}</Text>
               </Inline>
