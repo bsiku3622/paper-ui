@@ -11,7 +11,7 @@
 import { useMemo, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 
-import { Box, Button, Divider, Inline, Select, Stack, Text, tokens } from "@studio-baeks/paper-ui";
+import { Box, Button, Inline, Select, Stack, Text, tokens } from "@studio-baeks/paper-ui";
 
 import { PlaygroundLayout } from "./shell";
 import { bySlug, defaultState, type CompSpec, type Control, type State } from "./registry";
@@ -131,11 +131,8 @@ const DetailView = ({ spec }: { spec: CompSpec }) => {
               <Text variant="caption" ink="soft">토글할 prop 이 없는 컴포넌트입니다. 위 미리보기가 기본 형태입니다.</Text>
             ) : (
               <Stack gap="md">
-                {spec.controls.map((c, i) => (
-                  <Stack gap="md" key={c.prop}>
-                    {i > 0 && <Divider />}
-                    <ControlRow control={c} value={state[c.prop]} onChange={set(c.prop)} />
-                  </Stack>
+                {spec.controls.map((c) => (
+                  <ControlRow key={c.prop} control={c} value={state[c.prop]} onChange={set(c.prop)} />
                 ))}
               </Stack>
             )}
