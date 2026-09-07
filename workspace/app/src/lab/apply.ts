@@ -132,11 +132,24 @@ export const applyLab = (c: Combo | null): void => {
   }
 
   const sh = SHAPES[c.shape];
+  const sb = sh.sidebar;
   applyRules(
     c.shape === "paper"
       ? ""
       : `:root [role="tablist"]{border-radius:${sh.trackRadius}}` +
-        `:root .home-navitem{border-radius:${sh.navRadius}}`,
+        // 알약을 모든 컨트롤의 기본으로 두지 않고, 어떤 컴포넌트가 999 를 고르는지의
+        // 문제로 바꾼다. `pillTargets` 가 그 목록이고, 나머지는 사다리 값을 그대로 쓴다.
+        `:root input,:root textarea,:root select{border-radius:${sh.fieldRadius}}` +
+        (sh.pillTargets
+          ? sh.pillTargets.split(",").map((t: string) => `:root ${t.trim()}{border-radius:999px}`).join("")
+          : "") +
+        `:root .home-navitem{border-radius:${sh.navRadius};height:${sb.itemHeight};padding-inline:${sb.itemPadX}}` +
+        `:root .home-filterrow{height:${sb.filterHeight};padding-inline:${sb.itemPadX}}` +
+        `:root .home-filterhead{padding-inline:${sb.itemPadX}}` +
+        `:root .home-mockup-side{padding:${sb.pad};gap:${sb.gap}}` +
+        // 사이드바 폭은 그리드가 쥐고 있고, 접히는 규칙이 미디어 쿼리 안에 있다.
+        // 같은 조건으로 감싸지 않으면 좁은 화면에서도 2 열로 남아 사이드바가 되살아난다.
+        `@media (min-width:769px){:root .home-mockup-body{grid-template-columns:${sb.width} minmax(0,1fr)}}`,
   );
 
   // 각 축의 첫 항목(`paper`/`compact`/`comfort`)은 기준점이라 곧 시스템 기본값이다.
