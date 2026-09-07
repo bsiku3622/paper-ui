@@ -9,10 +9,14 @@
 // 그대로 옮겼다. 계약은 본문 4.5 · 비텍스트 3.0 이고, 맨 면 기준으로 잰다.
 // `edge` 는 wash 의 장식 괘선이라 1.4.11 대상이 아니어서 검산에서 뺐다.
 //
+// indigo · teal · azure · wine 은 한 계열이다. 지면(#f6f9fc)·먹(#0d253d)·경계를 공유하고
+// **행동 색 하나만** 다르다. 그 하나를 옮길 때 가까운 status 를 같이 밀어내야 배지와 버튼이
+// 같은 색으로 읽히지 않는다 — 무엇을 밀어냈는지는 각 항목 주석에 있다.
+//
 // ⚠ `paper` 만 위반 4 건을 안고 있다 — solidFg → solid 가 3.91~4.21 이다. 이건 이 lab 이
 //   만든 결함이 아니라 현재 시스템이 이미 갖고 있는 것이고(`tokens/colors.ts` 주석에
 //   "값의 문제라 범위 밖" 으로 기록돼 있다), 기준점을 손대면 비교가 흐려져 그대로 뒀다.
-//   나머지 일곱은 전부 통과한다.
+//   나머지 열은 전부 통과한다.
 
 export type PaletteTheme = "light" | "dark";
 
@@ -96,6 +100,68 @@ export const PALETTES = {
       "active": "rgba(24,25,28,.16)"
     },
     "scrim": "rgba(24,25,28,.32)"
+  },
+  "vermilion": {
+    "label": "Vermilion",
+    "theme": "light",
+    "motto": "경고만 색을 가진다",
+    "paper": {
+      "raised": "#ffffff",
+      "canvas": "#fbfaf9",
+      "sunken": "#f2f0ee",
+      "well": "#e0dcd8"
+    },
+    "ink": {
+      "base": "#16130f",
+      "soft": "#6b6560",
+      "faint": "#6e6862"
+    },
+    "border": {
+      "base": "#e6e2de",
+      "strong": "#d3cec9"
+    },
+    "primary": {
+      "base": "#16130f",
+      "fg": "#fbfaf9",
+      "hover": "#3a342d"
+    },
+    "accent": {
+      "info": {
+        "solid": "#3a342d",
+        "solidFg": "#f2f0ee",
+        "ink": "#3a342d",
+        "wash": "#f2f0ee",
+        "edge": "#c9c3bc"
+      },
+      "success": {
+        "solid": "#16130f",
+        "solidFg": "#fbfaf9",
+        "ink": "#16130f",
+        "wash": "#eeece9",
+        "edge": "#bdb7b0"
+      },
+      "warning": {
+        "solid": "#6b6560",
+        "solidFg": "#fbfaf9",
+        "ink": "#575049",
+        "wash": "#f4f2f0",
+        "edge": "#d0cac4"
+      },
+      "error": {
+        "solid": "#d1341f",
+        "solidFg": "#fff1ee",
+        "ink": "#b52a17",
+        "wash": "#fdefec",
+        "edge": "#eda596"
+      }
+    },
+    "focusRing": "#d1341f",
+    "interaction": {
+      "hover": "rgba(22,19,15,.05)",
+      "selected": "rgba(22,19,15,.12)",
+      "active": "rgba(22,19,15,.16)"
+    },
+    "scrim": "rgba(22,19,15,.34)"
   },
   "cream": {
     "label": "Cream",
@@ -283,67 +349,191 @@ export const PALETTES = {
     },
     "scrim": "rgba(13,37,61,.38)"
   },
-  "vermilion": {
-    "label": "Vermilion",
+  "teal": {
+    "label": "Teal",
     "theme": "light",
-    "motto": "경고만 색을 가진다",
+    "motto": "행동은 청록 하나가 가져간다",
     "paper": {
       "raised": "#ffffff",
-      "canvas": "#fbfaf9",
-      "sunken": "#f2f0ee",
-      "well": "#e0dcd8"
+      "canvas": "#f6f9fc",
+      "sunken": "#eef3f9",
+      "well": "#dbe4ef"
     },
     "ink": {
-      "base": "#16130f",
-      "soft": "#6b6560",
-      "faint": "#6e6862"
+      "base": "#0d253d",
+      "soft": "#5b6b81",
+      "faint": "#61718a"
     },
     "border": {
-      "base": "#e6e2de",
-      "strong": "#d3cec9"
+      "base": "#e3e8ee",
+      "strong": "#c9d4e2"
     },
     "primary": {
-      "base": "#16130f",
-      "fg": "#fbfaf9",
-      "hover": "#3a342d"
+      "base": "#0d7d75",
+      "fg": "#ffffff",
+      "hover": "#0a635d"
     },
     "accent": {
       "info": {
-        "solid": "#3a342d",
-        "solidFg": "#f2f0ee",
-        "ink": "#3a342d",
-        "wash": "#f2f0ee",
-        "edge": "#c9c3bc"
+        "solid": "#0d7d75",
+        "solidFg": "#e8faf8",
+        "ink": "#0a635d",
+        "wash": "#e6f4f3",
+        "edge": "#8fcdc7"
       },
       "success": {
-        "solid": "#16130f",
-        "solidFg": "#fbfaf9",
-        "ink": "#16130f",
-        "wash": "#eeece9",
-        "edge": "#bdb7b0"
+        "solid": "#15803d",
+        "solidFg": "#eafaf0",
+        "ink": "#136c34",
+        "wash": "#e8f5ec",
+        "edge": "#93cfa9"
       },
       "warning": {
-        "solid": "#6b6560",
-        "solidFg": "#fbfaf9",
-        "ink": "#575049",
-        "wash": "#f4f2f0",
-        "edge": "#d0cac4"
+        "solid": "#8a5a12",
+        "solidFg": "#fbeed2",
+        "ink": "#784e0f",
+        "wash": "#f8f0dd",
+        "edge": "#dcb977"
       },
       "error": {
-        "solid": "#d1341f",
-        "solidFg": "#fff1ee",
-        "ink": "#b52a17",
-        "wash": "#fdefec",
-        "edge": "#eda596"
+        "solid": "#c11a4c",
+        "solidFg": "#ffe2ea",
+        "ink": "#a71540",
+        "wash": "#fdeaf0",
+        "edge": "#f0a2bb"
       }
     },
-    "focusRing": "#d1341f",
+    "focusRing": "#0d7d75",
     "interaction": {
-      "hover": "rgba(22,19,15,.05)",
-      "selected": "rgba(22,19,15,.12)",
-      "active": "rgba(22,19,15,.16)"
+      "hover": "rgba(13,37,61,.05)",
+      "selected": "rgba(13,125,117,.12)",
+      "active": "rgba(13,125,117,.16)"
     },
-    "scrim": "rgba(22,19,15,.34)"
+    "scrim": "rgba(13,37,61,.38)"
+  },
+  "azure": {
+    "label": "Azure",
+    "theme": "light",
+    "motto": "행동은 지면과 같은 계열에서 나온다",
+    "paper": {
+      "raised": "#ffffff",
+      "canvas": "#f6f9fc",
+      "sunken": "#eef3f9",
+      "well": "#dbe4ef"
+    },
+    "ink": {
+      "base": "#0d253d",
+      "soft": "#5b6b81",
+      "faint": "#61718a"
+    },
+    "border": {
+      "base": "#e3e8ee",
+      "strong": "#c9d4e2"
+    },
+    "primary": {
+      "base": "#0369a1",
+      "fg": "#ffffff",
+      "hover": "#025582"
+    },
+    "accent": {
+      "info": {
+        "solid": "#0369a1",
+        "solidFg": "#d8ecf8",
+        "ink": "#025582",
+        "wash": "#e7f2f9",
+        "edge": "#96c6e0"
+      },
+      "success": {
+        "solid": "#15803d",
+        "solidFg": "#eafaf0",
+        "ink": "#136c34",
+        "wash": "#e8f5ec",
+        "edge": "#93cfa9"
+      },
+      "warning": {
+        "solid": "#8a5a12",
+        "solidFg": "#fbeed2",
+        "ink": "#784e0f",
+        "wash": "#f8f0dd",
+        "edge": "#dcb977"
+      },
+      "error": {
+        "solid": "#be123c",
+        "solidFg": "#ffe1e8",
+        "ink": "#a30f33",
+        "wash": "#fde9ee",
+        "edge": "#efa0b6"
+      }
+    },
+    "focusRing": "#0369a1",
+    "interaction": {
+      "hover": "rgba(13,37,61,.05)",
+      "selected": "rgba(3,105,161,.12)",
+      "active": "rgba(3,105,161,.16)"
+    },
+    "scrim": "rgba(13,37,61,.38)"
+  },
+  "wine": {
+    "label": "Wine",
+    "theme": "light",
+    "motto": "행동은 붉되 경고와는 다른 붉음이다",
+    "paper": {
+      "raised": "#ffffff",
+      "canvas": "#f6f9fc",
+      "sunken": "#eef3f9",
+      "well": "#dbe4ef"
+    },
+    "ink": {
+      "base": "#0d253d",
+      "soft": "#5b6b81",
+      "faint": "#61718a"
+    },
+    "border": {
+      "base": "#e3e8ee",
+      "strong": "#c9d4e2"
+    },
+    "primary": {
+      "base": "#9d174d",
+      "fg": "#ffffff",
+      "hover": "#83103f"
+    },
+    "accent": {
+      "info": {
+        "solid": "#9d174d",
+        "solidFg": "#fde0eb",
+        "ink": "#83103f",
+        "wash": "#fbe9f0",
+        "edge": "#eba6c2"
+      },
+      "success": {
+        "solid": "#15803d",
+        "solidFg": "#eafaf0",
+        "ink": "#136c34",
+        "wash": "#e8f5ec",
+        "edge": "#93cfa9"
+      },
+      "warning": {
+        "solid": "#8a5a12",
+        "solidFg": "#fbeed2",
+        "ink": "#784e0f",
+        "wash": "#f8f0dd",
+        "edge": "#dcb977"
+      },
+      "error": {
+        "solid": "#b91c1c",
+        "solidFg": "#ffe0e0",
+        "ink": "#9f1616",
+        "wash": "#fdeaea",
+        "edge": "#eda3a3"
+      }
+    },
+    "focusRing": "#9d174d",
+    "interaction": {
+      "hover": "rgba(13,37,61,.05)",
+      "selected": "rgba(157,23,77,.11)",
+      "active": "rgba(157,23,77,.15)"
+    },
+    "scrim": "rgba(13,37,61,.38)"
   },
   "citrus": {
     "label": "Citrus",
