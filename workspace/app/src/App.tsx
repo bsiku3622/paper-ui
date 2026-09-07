@@ -19,10 +19,6 @@ const TokensPage = lazy(() => import("./playground/Tokens").then((m) => ({ defau
 const ComponentDetail = lazy(() => import("./playground/Detail").then((m) => ({ default: m.ComponentDetail })));
 const Docs = lazy(() => import("./pages/Docs").then((m) => ({ default: m.Docs })));
 
-// palette × shape 실험 패널. dev/lab 브랜치에만 있는 개발용 표면이라, 라우트 밖에서
-// 한 겹 위에 떠 있고 시스템 토큰은 런타임 오버라이드로만 건드린다 (lab/apply.ts).
-const LabBar = lazy(() => import("./lab/LabBar").then((m) => ({ default: m.LabBar })));
-
 const Loading = () => (
   <Box paddingX="xl" paddingY="xl">
     <Text variant="caption">불러오는 중…</Text>
@@ -40,6 +36,5 @@ export const App = () => (
       <Route path="/docs/*" element={<Docs />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
-    <LabBar />
   </Suspense>
 );

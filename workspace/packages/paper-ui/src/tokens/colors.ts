@@ -225,19 +225,23 @@ export const COLOR_VALUES = {
 // ⚠ 라이트의 canvas↔raised 는 1.03 이다 — smoke 위 순백이라 **톤이 아니라 헤어라인과
 // 그림자로 갈린다.** 다크도 같은 방향으로 좁혔고, 그만큼 헤어라인이 일을 넘겨받는다.
 const PAPER_DARK = {
-  raised: "#151515", // 떠오른 면 = **최암** (카드 · 입력 · 모달) — BLACK 에 가장 가깝다
-  canvas: "#171717", // 지면 — 앵커라 안 움직인다
-  sunken: "#1c1c1c", // 얕은 홈 — 사이드바 · table head
-  well: "#292929", //   가장 깊은 홈 = **최명** — 트랙 · soft. GRAY 쪽 끝
+  // 2026-09-07 — 사다리를 한 단 깊게 내렸다. lab 의 Neon Night 팔레트가 같은 구조에서
+  // 훨씬 나은 균형을 보였는데, 재 보니 색조가 아니라 **명도 위계**의 차이였다. 그쪽 값의
+  // 무채 등가를 그대로 가져왔다(푸른 기는 뺐다 — paper 는 중립이 정체성이다).
+  // 면이 깊어진 만큼 잉크·괘선이 함께 올라가므로 대비는 전 항목에서 좋아진다.
+  raised: "#0d0d0d", // 떠오른 면 = **최암** (카드 · 입력 · 모달) — BLACK 에 가장 가깝다
+  canvas: "#101010", // 지면 — 앵커라 안 움직인다
+  sunken: "#161616", // 얕은 홈 — 사이드바 · table head
+  well: "#252525", //   가장 깊은 홈 = **최명** — 트랙 · soft. GRAY 쪽 끝
 } as const;
 
 // 면이 통째로 밝아진 만큼 잉크·괘선도 따라 오른다 — 가장 밝은 면(raised) 위에서
 // 대비를 풀어 잡은 값이다. 예전 faint(#6a6a6a)는 새 raised 위에서 2.62,
 // border.base(#2a2a2a)는 1.01 로 사실상 보이지 않았다.
 const INK_DARK = {
-  base: "#dcdcdc", // 본문 — soft white. 딥다크 위 순백은 대비가 세 눈이 아프다(≈83% 회백)
-  soft: "#9a9a9a", //  보조 · 라벨 (raised 위 5.03:1)
-  faint: "#737373", // 흐린 · placeholder (raised 위 2.99:1)
+  base: "#e9e9e9", // 본문 — soft white. 딥다크 위 순백은 대비가 세 눈이 아프다(raised 위 16.01:1)
+  soft: "#a2a2a2", //  보조 · 라벨 (raised 위 7.61:1)
+  faint: "#8c8c8c", // 흐린 · placeholder (raised 위 5.78:1 — 예전 2.99 에서 올라와 이제 넘긴다)
 } as const;
 
 // 괘선도 같은 대칭으로 옮겼다. **라이트에서 괘선은 well 너머 GRAY 쪽에 있다**
@@ -248,8 +252,8 @@ const INK_DARK = {
 //     다크 base       1.19    1.17    1.11   1.05
 //     라이트 base     1.22    1.19    1.11   1.06
 const BORDER_DARK = {
-  base: "#252525", //   헤어라인 — well 바로 너머, GRAY 쪽 (raised 위 1.19:1)
-  strong: "#313131", // 강한 경계 — table head·섹션·컨트롤 테두리 (1.40:1)
+  base: "#2b2b2b", //   헤어라인 — well 바로 너머, GRAY 쪽 (raised 위 1.37:1)
+  strong: "#3e3e3e", // 강한 경계 — table head·섹션·컨트롤 테두리 (1.82:1)
 } as const;
 
 // 다크 accent — 딥 뉴트럴 base 위에서 순채도(Tailwind-500/300)는 "붕 떠" 진동한다.
