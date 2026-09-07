@@ -24,6 +24,7 @@ import {
 } from "@studio-baeks/paper-ui";
 
 import { SiteNav } from "../site/chrome";
+import { AppMockupB } from "../site/AppMockupB";
 import { Logo } from "../site/Logo";
 import "../site/home.css";
 
@@ -159,7 +160,7 @@ export const Home = () => (
             스물일곱 개의 컴포넌트로 실제 화면을 세웁니다. 색은 의미가 있을 때만 쓰고, 구조는 빌드가 지킵니다 — 순백 위에 부드럽게.
           </Text>
 
-          <Inline gap="sm" style={{ marginTop: tokens.shape.gap.xl }}>
+          <Inline className="home-cta" gap="sm" style={{ marginTop: tokens.shape.gap.xl }}>
             <Link to="/docs" style={{ textDecoration: "none" }}>
               <Button size="lg">문서 읽기</Button>
             </Link>
@@ -171,6 +172,14 @@ export const Home = () => (
 
         {/* ── 완전한 앱 목업 ──────────────────────────────────────── */}
         <AppMockup />
+
+        {/* ── 사이드바 재설계안 ─────────────────────────────────────
+            같은 화면을 다른 사이드바로 짠 것. 위와 나란히 놓고 고르려고 남긴다. */}
+        <Inline gap="sm" align="center" style={{ paddingBlock: tokens.shape.padding.md.layout }}>
+          <Text variant="label" ink="faint" as="span">사이드바 재설계안</Text>
+          <Text variant="caption" ink="soft" as="span">활성 표시가 미끄러지고 · 필터가 접히고 · 레일로 접힌다</Text>
+        </Inline>
+        <AppMockupB />
 
         <Inline gap="sm" align="center" wrap style={{ paddingBlock: tokens.shape.padding.lg.layout }}>
           <Text variant="caption" ink="soft">갤러리가 아니라 실제 화면(이슈 트래커)으로 검증합니다.</Text>

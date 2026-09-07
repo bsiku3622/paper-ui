@@ -150,7 +150,7 @@ export const SHAPES = {
     shadowOverlay: "0 8px 24px -8px rgba(24, 25, 28, .18), 0 3px 6px -3px rgba(24, 25, 28, .10)",
     shadowOverlayMinimal: "0 1px 2px 0 rgba(24, 25, 28, .07)",
     pillTargets: "",
-    tabPadX: ".4375rem",
+    tabPadX: ".5625rem",
     trackGap: "1px",
   },
   // Paper 를 그대로 두고 **알약을 고른 컴포넌트만** 999 를 갖는다. 알약을 모든 컨트롤의
@@ -177,10 +177,11 @@ export const SHAPES = {
     checkboxRadius: ".1875rem",
     shadowOverlay: "0 8px 24px 0 rgba(0, 55, 112, .08), 0 2px 6px 0 rgba(0, 55, 112, .04)",
     shadowOverlayMinimal: "0 1px 3px 0 rgba(0, 55, 112, .08)",
-    // 알약을 고르는 자리는 세그먼트 하나다. Button 은 빼 뒀다 — 알약이 하나뿐일 때
-    // 그게 무엇을 뜻하는지가 가장 또렷해진다. Badge 는 원래 pillRadius 를 읽으므로 남는다.
-    pillTargets: '[role="tab"]',
-    tabPadX: ".4375rem",
+    // 알약을 고르는 자리는 셋뿐이다 — 세그먼트, 그리고 hero 의 CTA 둘. 일반 Button 은
+    // 빼 뒀다. 알약이 드물수록 그게 무엇을 뜻하는지가 또렷해지고, 남은 자리가 "여기가
+    // 이 화면에서 가장 중요한 행동" 이라는 신호가 된다. Badge 는 원래 pillRadius 를 읽는다.
+    pillTargets: '[role="tab"],.home-cta button',
+    tabPadX: ".5625rem",
     trackGap: "1px",
   },
 } as const satisfies Record<string, Shape>;
