@@ -75,19 +75,19 @@ test("color · 토큰이 기대 hex 로 emit 된다", async ({ page }) => {
 // 다크는 canvas 가 최암이고 나머지가 그 위로 쌓인다(라이트와 방향이 반대다).
 // 이 순서가 뒤집히면 table head 가 몸통보다 어두운 구멍이 된다.
 const DARK_VARS: Record<string, string> = {
-  "--pui-color-paper-canvas": "#101010", // 지면 — 앵커(사다리를 접는 축)
-  "--pui-color-paper-well": "#252525",
-  "--pui-color-paper-sunken": "#161616",
-  "--pui-color-paper-raised": "#0d0d0d", // ⚠ 최암 — 다크는 사다리가 라이트의 거울이다(BLACK 에 raised 가 가장 가깝다)
-  "--pui-color-ink-base": "#e9e9e9",
-  "--pui-color-primary-base": "#e8e8e8",
+  "--pui-color-paper-canvas": "#101013", // 지면 — 앵커(사다리를 접는 축)
+  "--pui-color-paper-well": "#252529",
+  "--pui-color-paper-sunken": "#161619",
+  "--pui-color-paper-raised": "#0d0d10", // ⚠ 최암 — 다크는 사다리가 라이트의 거울이다(BLACK 에 raised 가 가장 가깝다)
+  "--pui-color-ink-base": "#e9e9eb",
+  "--pui-color-primary-base": "#e8e8ea",
   // ⚠ **다크 채움(accent solid)은 밝다** — 라이트(L .53~.58)를 canvas 축으로 접은 L .645 다.
   // 여기를 눌러 두면 두 계약이 한꺼번에 깨진다: solid→면 대비가 3:1 을 못 넘고
   // (예전 .44 에서 1.79~2.45), status Banner 의 글자가 2.2~2.5 로 무너진다. 채움 위 글자는
   // paper.raised 가 아니라 **solid-fg** 다 — 다크의 raised 는 최암이라 종이색이 아니다.
-  "--pui-color-accent-info-solid": "#5d90cf",
-  "--pui-color-accent-error-solid": "#c87173",
-  "--pui-color-accent-info-solid-fg": "#132133",
+  "--pui-color-accent-info-solid": "#5492ec",
+  "--pui-color-accent-error-solid": "#df6768",
+  "--pui-color-accent-info-solid-fg": "#0a1930",
 };
 test("dark · [data-theme=dark] 로 색 var 가 다크 세트로 바뀐다", async ({ page }) => {
   await page.evaluate(() => document.documentElement.setAttribute("data-theme", "dark"));
