@@ -19,14 +19,14 @@ export const tableTh = style({
   whiteSpace: "nowrap",
 });
 
-// 행 — 구분선은 아주 옅게. hover 때만 배경이 조용히 바뀐다.
+// 행 — **선을 긋지 않는다.** 행을 가르는 건 줄이 아니라 높이(44px)와 hover 다.
+// 헤어라인 여섯 줄이 들어가면 표가 격자로 읽히고, 한 화면에 표·패널·섹션이 함께
+// 서면 그 줄들이 전부 같은 굵기로 쌓여 화면이 줄무늬가 된다. 머리는 sunken 면으로
+// 이미 갈리므로 몸통에는 줄이 필요 없다.
 export const tableTr = style({
   height: tokens.shape.height.xl.interaction,
   transition: stateTransition("background"),
   selectors: {
-    "&:not(:last-child)": {
-      borderBottom: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
-    },
     // hover 는 interaction 오버레이 — 어느 면(순백·smoke·well) 위든 그 면을 조금
     // 어둡게 만든다. solid 회색을 자리마다 고르지 않는다 (중립 상호작용 = 오버레이).
     "&:hover": { background: tokens.color.interaction.hover },

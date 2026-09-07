@@ -6,7 +6,7 @@
 
 import { useEffect, useState } from "react";
 
-import { Box, Divider, Inline, Stack, Text, tokens } from "@studio-baeks/paper-ui";
+import { Box, Inline, Stack, Text, tokens } from "@studio-baeks/paper-ui";
 
 import { PlaygroundLayout, Crumb } from "./shell";
 
@@ -110,7 +110,6 @@ export const Tokens = () => {
           </Inline>
         </Section>
 
-        <Divider />
 
         {/* ── Color · interaction (오버레이) ──────────────────── */}
         <Section id="tok-interaction" title="Color · interaction (오버레이)" desc="hover·selected·active 는 solid 회색이 아니라 ink 계열 alpha 틴트. 아래 순백 위에 얹혀 면을 조금 어둡게 만든다 — 어느 면(순백·smoke·well) 위든 같은 규칙이라 자리마다 회색을 새로 고르지 않는다. 다크는 흰빛으로 뒤집혀 밝히는데, **hover 의 alpha 만 라이트보다 작다**(.036 vs .05) — 같은 alpha 가 방향에 따라 다른 크기이기 때문이다. 블렌드는 sRGB 8bit 에서 일어나고 밝기 곡선은 검정 근처에서 가파르다: 예전 다크 값 .055 는 지각적으로 라이트의 1.9 배였고, hover 하나가 면 사다리 세 칸을 건너뛰어 Tabs 트랙 위에서 hover 된 비활성 탭이 활성 pill 을 따라잡았다. alpha 가 아니라 ΔL 로 맞춘다. selected·active 는 라이트가 이미 세서(.13·.16) 그대로 둔다.">
@@ -127,7 +126,6 @@ export const Tokens = () => {
           </Inline>
         </Section>
 
-        <Divider />
 
         {/* ── Color · accent ─────────────────────────────────── */}
         <Section id="tok-accent" title="Color · accent (4색 × 5자리)" desc="이름이 곧 의미 — info · success · warning · error (hue 이름 없음). solid 채운 면 · solidFg solid 위 글자(대비쌍 — 밝은 배경은 어두운 잉크) · ink 흰 배경 위 글자(AA) · wash 옅은 면 · edge wash 괘선. ⚠ **다크에서 채움(solid)은 뒤집힌다 — 밝은 면 + 어두운 글자다.** 라이트를 canvas 축으로 접은 값이다(라이트 canvas .991→solid .53~.58 / 다크 canvas .205→solid .645, solidFg 는 .92~.94 / .245). 오래 다크 solid 를 .44 로 눌러 뒀는데 — 옅은 글자를 얹어야 하니 면이 어두워야 한다는 생각이었다 — 그러면 **채움이 면에서 안 떨어진다**: solid→면 대비가 1.79~2.45 였다(라이트 3.74~5.17). 비텍스트 3:1 을 못 넘기니 배지·버튼의 윤곽 자체가 계약을 깬 것이고, 글자 없는 상태 점은 아예 안 보였다. 눌러서는 못 고친다 — 가장 밝은 면(well)의 상대휘도가 .022 라 그 아래로 3:1 을 만들려면 채움의 휘도가 음수여야 한다. 위로 가는 길뿐이다. primary 는 이미 뒤집고 있었고(흰 채움/검정 글자) accent solid 만 안 뒤집힌 축으로 남아 있었다. 뒤집으면 solid→면 4.20~5.84 · solidFg→solid 4.76~5.13 으로 라이트와 나란해진다. 곁딸려 Banner 도 고쳤다 — 채운 면 위 글자를 paper.raised 로 박아 뒀는데 다크의 raised 는 최암이라 status Banner 가 2.2~2.5 였다. ⚠ 라이트 solidFg 는 아직 3.91~4.21 로 AA 미달이다 — 구조가 아니라 값의 문제라 이번 범위 밖으로 남겨 뒀다.">
@@ -143,7 +141,6 @@ export const Tokens = () => {
           </Stack>
         </Section>
 
-        <Divider />
 
         {/* ── Type ───────────────────────────────────────────── */}
         <Section id="tok-type" title="Type · variant (7단) × family" desc="variant 가 size·weight·leading·tracking 을, family(sans·mono)가 서체를 정한다.">
@@ -156,7 +153,6 @@ export const Tokens = () => {
               </Inline>
             ))}
           </Stack>
-          <Divider />
           <Inline gap="xl" wrap>
             {WEIGHTS.map((w) => (
               <Stack key={w} gap="xs" style={{ width: "8rem" }}>
@@ -178,7 +174,6 @@ export const Tokens = () => {
           </Inline>
         </Section>
 
-        <Divider />
 
         {/* ── Space · gap ────────────────────────────────────── */}
         <Section id="tok-space" title="Space · gap (5단, 4px 그리드)" desc="flex/grid 간격. 촘촘하게 — 복잡한 화면은 여백이 넓으면 스크롤만 는다.">
@@ -193,7 +188,6 @@ export const Tokens = () => {
           </Stack>
         </Section>
 
-        <Divider />
 
         {/* ── Radius ─────────────────────────────────────────── */}
         <Section id="tok-radius" title="Radius" desc="절제된 곡선 — 모서리의 날만 죽인다. interaction 은 단일 6, layout 은 큰 면일수록 한 호흡 더(6·8·12).">
@@ -214,7 +208,6 @@ export const Tokens = () => {
           </Inline>
         </Section>
 
-        <Divider />
 
         {/* ── Control size ───────────────────────────────────── */}
         <Section id="tok-control" title="Control size (3단)" desc="Button·Field·Select·Tabs 의 size. height 와 가로 여백만 세 단으로 움직이고 글자는 14 로 고정. 라벨이 14 고정이라 세로 여백은 height 가 정해 버리므로(8·10·13) 가로(controlPaddingX 10·13·17)와 함께 잡는다 — sm 높이가 30 인 것도 세로 8 을 만들기 위해서다.">
@@ -231,7 +224,6 @@ export const Tokens = () => {
           </Inline>
         </Section>
 
-        <Divider />
 
         {/* ── Shadow ─────────────────────────────────────────── */}
         <Section id="tok-shadow" title="Shadow (2단 — 떠 있는 것의 표식)" desc="원칙 4: 떠 있는 것만 그림자를 갖는다. 붙은 면(Button·Field·Card·Table)은 그림자 없음(prop 생략). overlay=자유롭게 뜬 것 · overlayMinimal=아주 살짝. radius 와 나란한 shape 토큰일 뿐 별도 'elevation' 축 아님. 다크에선 near-black 이 사라지므로 더 짙은 그림자로 교체(테마 인식) — 다크 토글로 확인.">
@@ -251,7 +243,6 @@ export const Tokens = () => {
           </Inline>
         </Section>
 
-        <Divider />
 
         {/* ── Motion ─────────────────────────────────────────── */}
         <Section id="tok-motion" title="Motion · duration · easing" desc="조용한 밀도의 시스템 — 짧고 차분하게(80~200ms). var 로 굽지 않고 값을 직접 든다.">
