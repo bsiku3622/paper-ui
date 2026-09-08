@@ -10,7 +10,7 @@ export const checkboxRoot = style({
   background: tokens.color.paper.raised,
   borderWidth: tokens.shape.constants.borderWidth,
   borderStyle: "solid",
-  borderColor: tokens.color.border.strong,
+  borderColor: tokens.color.border.control,
   cursor: "pointer",
   display: "grid",
   placeContent: "center",

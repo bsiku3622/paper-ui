@@ -448,6 +448,42 @@ test("outline · 테두리가 지면 대비 3:1 을 넘는다 (다섯 색 전부
   }
 });
 
+// ── 컨트롤의 경계는 자기 면 위에서 3:1 이다 ─────────────────────────────────
+//
+// 빈 Field 는 상자 말고 아무 단서가 없고, 꺼진 Checkbox 도 마찬가지다. 그 선이 안 보이면
+// 컴포넌트가 안 보인다(WCAG 1.4.11 이 비텍스트에 3:1 을 요구하는 자리). 카드 헤어라인은
+// 여기 없다 — 그건 면을 나누는 선이라 물러나 있는 게 맞고, 값도 따로 산다(border.base).
+test("control edge · 입력·체크박스의 경계가 자기 면 위에서 3:1 을 넘는다", async ({ page }) => {
+  const ratios = await page.evaluate(() => {
+    const lum = (rgb: string) => {
+      const [r, g, b] = rgb.match(/[\d.]+/g)!.slice(0, 3).map((v) => Number(v) / 255)
+        .map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
+      return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
+    };
+    const ratio = (a: string, b: string) => {
+      const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m);
+      return (x! + 0.05) / (y! + 0.05);
+    };
+    const out: Record<string, number> = {};
+    // 켜진 체크박스는 채움으로 읽히니 **꺼진 상태**를 잰다 — 경계가 유일한 단서인 자리다.
+    for (const [name, el] of [
+      ["field", document.querySelector('[data-testid="base-field"]')],
+      ["select", document.querySelector('[data-testid="base-select"]')],
+      ["textarea", document.querySelector('[data-testid="base-textarea"]')],
+      ["checkbox(off)", document.querySelector('[data-testid="mark-checkbox-off"]')],
+      ["radio(off)", document.querySelector('[data-testid="mark-radio-off"]')],
+    ] as [string, HTMLElement][]) {
+      const cs = getComputedStyle(el);
+      // 자기 면 위에서 잰다 — 경계가 갈라놓는 두 색 중 밝은 쪽(입력은 흰 면)이 기준이다.
+      out[name] = ratio(cs.borderTopColor, cs.backgroundColor);
+    }
+    return out;
+  });
+  for (const [name, r] of Object.entries(ratios)) {
+    expect(r, `${name} 경계 대비`).toBeGreaterThanOrEqual(2.9);
+  }
+});
+
 // ── Alert — Button·Badge 와 같은 매트릭스를 물고, 글자는 면의 색을 받는다 ────
 //
 // Text 는 variant 마다 자기 잉크를 못 박는다(caption = ink.soft). 색이 깔린 면 안에서

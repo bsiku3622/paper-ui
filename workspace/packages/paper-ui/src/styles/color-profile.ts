@@ -36,13 +36,13 @@ const primaryProfile: Record<Variant, ColorSpec> = {
   // raised 를 칠하고 있었는데, 이 팔레트에서는 raised(#ffffff)와 canvas(#fcfcfc)가
   // 거의 같아 티가 안 났을 뿐 이름과는 어긋난 자리였다.
   //
-  // 테두리는 primary 자신의 edgeStrong 이다 — border.base 를 빌려 쓰던 자리인데, 그건
-  // 면을 나누는 헤어라인이라 canvas 대비 1.19 였다. 면을 안 칠하는 변형에서 테두리는
-  // 장식이 아니라 형태 그 자체다.
+  // 테두리는 border.control — **빈 Field 의 테두리와 같은 선이다.** 둘 다 "그 자체가
+  // 컨트롤인 선" 이라 한 값을 공유한다. 예전엔 border.base(헤어라인)를 빌려 써서 지면
+  // 대비 1.19 였다. 면을 안 칠하는 변형에서 테두리는 장식이 아니라 형태 그 자체다.
   outline: {
     background: "transparent",
     color: tokens.color.ink.base,
-    borderColor: tokens.color.primary.edgeStrong,
+    borderColor: tokens.color.border.control,
     hoverOverlay: tokens.color.interaction.hover,
   },
   quiet: {
