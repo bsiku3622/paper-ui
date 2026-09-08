@@ -12,6 +12,10 @@ import { Routes, Route, Navigate } from "react-router-dom";
 
 import { Box, Text } from "@studio-baeks/paper-ui";
 
+// 괘선 강도를 고르는 도구. `?lab=edge` 로 켜면 세션에 남아 사이트를 돌아다니는 동안 유지된다.
+// 값을 정하고 나면 이 import 와 lab/ 폴더를 지운다.
+import { EdgeLab } from "./lab/EdgeLab";
+
 const Home = lazy(() => import("./pages/Home").then((m) => ({ default: m.Home })));
 const Demo = lazy(() => import("./pages/Demo").then((m) => ({ default: m.Demo })));
 const Playground = lazy(() => import("./pages/Playground").then((m) => ({ default: m.Playground })));
@@ -27,6 +31,7 @@ const Loading = () => (
 
 export const App = () => (
   <Suspense fallback={<Loading />}>
+    <EdgeLab />
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/demo" element={<Demo />} />

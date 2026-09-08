@@ -16,14 +16,14 @@ export const fieldWrap = style({
   borderRadius: tokens.shape.radius.interaction,
   borderWidth: tokens.shape.constants.borderWidth,
   borderStyle: "solid",
-  borderColor: tokens.color.border.control,
+  borderColor: tokens.color.border.base,
   color: tokens.color.ink.base,
   fontFamily: tokens.text.font.sans,
   cursor: "text",
   transition: stateTransition("border-color", "box-shadow", "background"),
   selectors: {
     // hover 는 배경을 흔들지 않고 테두리만 한 단 또렷하게 (흰 면 유지)
-    "&:hover:not(:focus-within):has(input:enabled)": { borderColor: tokens.color.border.controlHover },
+    "&:hover:not(:focus-within):has(input:enabled)": { borderColor: tokens.color.border.strong },
     // 포커스 — 안쪽 input 이 포커스되면 래퍼 *바깥* 에 파란 링(outline). 전역 :focus-visible·
     // Checkbox·Switch 와 같은 outside-the-border 방식 — 보더 위가 아니라 보더 밖에 뜬다.
     "&:focus-within": {

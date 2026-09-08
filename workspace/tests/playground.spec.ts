@@ -450,45 +450,28 @@ test("outline · accent 테두리가 지면 대비 3:1 을 넘는다 (네 색 �
   }
 });
 
-// ── 컨트롤의 경계는 구조선보다 확실히 진하다 ────────────────────────────────
+// ── 화면의 회색 선은 한 벌이다 ──────────────────────────────────────────────
 //
-// 빈 Field 는 상자 말고 아무 단서가 없고, 꺼진 Checkbox 도 마찬가지다. 그 선이 안 보이면
-// 컴포넌트가 안 보인다. 카드 헤어라인은 여기 없다 — 그건 면을 나누는 선이라 물러나 있는
-// 게 맞고, 값도 따로 산다(border.base, 1.19).
+// 빈 Field 는 상자 말고 아무 단서가 없으니 카드 헤어라인보다 진해야 한다 — 그럴듯해서
+// 한동안 컨트롤 전용 회색을 따로 뒀는데, **실물에서는 그게 바로 어긋남으로 읽혔다.**
+// 표를 감싼 카드는 거의 안 보이는데 그 위 검색창만 진하면 한 화면에 회색이 두 벌이 된다.
+// 선의 *역할* 이 다르다고 *색* 까지 갈리면 화면은 그걸 두 팔레트로 읽는다.
 //
-// ⚠ **잠그는 건 값이 아니라 "구조선보다 진하다" 는 관계다.** 강도는 아직 미정이라
-// (WCAG 1.4.11 의 3:1 까지 올렸다가 눈으로 한 단 내렸다) 숫자를 못 박으면 그 조율이
-// 매번 테스트를 깨뜨린다. 대신 두 선이 뒤집히거나 같아지는 것만 막는다.
-test("control edge · 컨트롤의 경계가 구조 헤어라인보다 확실히 진하다", async ({ page }) => {
-  const ratios = await page.evaluate(() => {
-    const lum = (rgb: string) => {
-      const [r, g, b] = rgb.match(/[\d.]+/g)!.slice(0, 3).map((v) => Number(v) / 255)
-        .map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
-      return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
+// 그래서 잠그는 건 강도가 아니라 **한 벌이라는 것** 이다. 강도는 lab(`?lab=edge`)으로
+// 고르는 중이고, 올릴 때도 컨트롤만이 아니라 표 전체가 함께 움직여야 한다.
+test("edge · 입력·체크박스·카드가 같은 회색 선을 쓴다", async ({ page }) => {
+  const colors = await page.evaluate(() => {
+    const q = (sel: string) => document.querySelector(sel) as HTMLElement;
+    return {
+      card: getComputedStyle(q('[data-testid="card"]')).borderTopColor,
+      field: getComputedStyle(q('[data-testid="base-field"]')).borderTopColor,
+      select: getComputedStyle(q('[data-testid="base-select"]')).borderTopColor,
+      textarea: getComputedStyle(q('[data-testid="base-textarea"]')).borderTopColor,
+      outlineBtn: getComputedStyle(q('[data-testid="outline-primary"]')).borderTopColor,
     };
-    const ratio = (a: string, b: string) => {
-      const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m);
-      return (x! + 0.05) / (y! + 0.05);
-    };
-    const out: Record<string, number> = {};
-    // 켜진 체크박스는 채움으로 읽히니 **꺼진 상태**를 잰다 — 경계가 유일한 단서인 자리다.
-    for (const [name, el] of [
-      ["field", document.querySelector('[data-testid="base-field"]')],
-      ["select", document.querySelector('[data-testid="base-select"]')],
-      ["textarea", document.querySelector('[data-testid="base-textarea"]')],
-      ["checkbox(off)", document.querySelector('[data-testid="mark-checkbox-off"]')],
-      ["radio(off)", document.querySelector('[data-testid="mark-radio-off"]')],
-    ] as [string, HTMLElement][]) {
-      const cs = getComputedStyle(el);
-      // 자기 면 위에서 잰다 — 경계가 갈라놓는 두 색 중 밝은 쪽(입력은 흰 면)이 기준이다.
-      out[name] = ratio(cs.borderTopColor, cs.backgroundColor);
-    }
-    return out;
   });
-  // 카드 헤어라인(base)이 기준선 — 컨트롤 경계는 그보다 확실히 위에 있어야 한다.
-  for (const [name, r] of Object.entries(ratios)) {
-    expect(r, `${name} 경계 대비`).toBeGreaterThan(1.6);
-  }
+  const distinct = new Set(Object.values(colors));
+  expect(distinct.size, `한 벌이어야 한다: ${JSON.stringify(colors)}`).toBe(1);
 });
 
 // ── Alert — Button·Badge 와 같은 매트릭스를 물고, 글자는 면의 색을 받는다 ────

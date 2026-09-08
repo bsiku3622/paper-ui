@@ -36,13 +36,13 @@ const primaryProfile: Record<Variant, ColorSpec> = {
   // raised 를 칠하고 있었는데, 이 팔레트에서는 raised(#ffffff)와 canvas(#fcfcfc)가
   // 거의 같아 티가 안 났을 뿐 이름과는 어긋난 자리였다.
   //
-  // 테두리는 border.control — **빈 Field 의 테두리와 같은 선이다.** 둘 다 "그 자체가
-  // 컨트롤인 선" 이라 한 값을 공유한다. 예전엔 border.base(헤어라인)를 빌려 써서 지면
-  // 대비 1.19 였다. 면을 안 칠하는 변형에서 테두리는 장식이 아니라 형태 그 자체다.
+  // 테두리는 border.base — **카드 헤어라인·빈 Field 와 같은 선이다.** 화면의 회색 선은
+  // 한 벌이라, 이 자리만 진하게 하면 같은 화면에 회색이 두 종류가 된다. 더 또렷하게
+  // 하려면 이 자리가 아니라 border 표를 올린다.
   outline: {
     background: "transparent",
     color: tokens.color.ink.base,
-    borderColor: tokens.color.border.control,
+    borderColor: tokens.color.border.base,
     hoverOverlay: tokens.color.interaction.hover,
   },
   quiet: {
