@@ -352,12 +352,23 @@ export const Playground = () => {
               </Stack>
             </Card>
           </Spec>
-          <Spec label="Tabs (segmented)">
-            <Tabs value={tab} onChange={setTab} items={[
-              { value: "one", label: "하나" },
-              { value: "two", label: "둘" },
-              { value: "three", label: "셋" },
-            ]} />
+          <Spec label="Tabs — shape (트랙·항목이 함께 갈린다. 각진 쪽 안쪽 반경 = 6 − 트랙 여백 3)" testid="spec-tabs-shape">
+            <Inline gap="lg" wrap align="center">
+              <Box data-testid="tabs-shape-default">
+                <Tabs value={tab} onChange={setTab} items={[
+                  { value: "one", label: "하나" },
+                  { value: "two", label: "둘" },
+                  { value: "three", label: "셋" },
+                ]} />
+              </Box>
+              <Box data-testid="tabs-shape-pill">
+                <Tabs value={tab} onChange={setTab} shape="pill" items={[
+                  { value: "one", label: "하나" },
+                  { value: "two", label: "둘" },
+                  { value: "three", label: "셋" },
+                ]} />
+              </Box>
+            </Inline>
           </Spec>
           <Spec label="Tooltip (hover)">
             <Tooltip label="툴팁 내용">

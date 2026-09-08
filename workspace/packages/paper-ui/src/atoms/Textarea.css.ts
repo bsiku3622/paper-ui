@@ -33,7 +33,8 @@ export const textareaRoot = style({
 
 // size 3 단 — 여백 두 축 + 글자. **height 는 빼고 가져온다.** 공통 사다리(sizeLadderRules)
 // 는 height 를 박는데 Textarea 는 줄 수만큼 자라야 해서, 그 자리를 controlPaddingY 가
-// 대신 든다((height − 14) / 2 라, 첫 줄이 같은 size 의 Field 와 같은 높이에서 시작한다).
+// 대신 든다((height − 테두리 2 − 줄상자 21) / 2 라, 첫 줄이 같은 size 의 Field 와 같은
+// 자리에서 시작한다 — Field 가 34 짜리 상자 안에 21 짜리 줄상자를 가운데 두는 그 자리다).
 //
 // ⚠ 예전엔 이 축이 아예 없었다 — 여백이 Box 사다리(12 · 8)에서 오고 글자는 text.size.body
 // 를 봤다. 값이 우연히 14 로 같았을 뿐 컨트롤 축과 연결되지 않아, 컨트롤 글자를 바꿔도

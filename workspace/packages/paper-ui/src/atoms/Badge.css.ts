@@ -43,12 +43,10 @@ export const badgeDot = style({
 // 가독성 하한 아래였고, lg 의 14 는 배지를 버튼 라벨만큼 크게 읽히게 해 "표식" 이라는
 // 역할을 넘겼다. 높이 사다리(20·22·24)가 14 를 못 담는 게 원인이었는데, 컨트롤은 같은
 // 문제를 sm 높이를 28 → 30 으로 올려 풀었지 글자를 내려서 풀지 않았다.
+// 가로 여백은 badgePaddingX (6 · 8 · 10) — 높이 사다리(20 · 22 · 24)와 같은 Δ2 로 움직여
+// 세 크기가 한 실루엣의 축소·확대로 읽힌다. 예전엔 Box 여백 사다리(4 · 8 · 12)를 빌려
+// Δ4 로 두 배 빨리 벌어졌고, 글자가 12 로 고정되고 나서 sm 이 답답하고 lg 가 헐거워졌다.
 const BADGE_FONT = tokens.shape.fontSize.sm; // 12 — size 무관
-const BADGE_PAD: Record<ControlSize, string> = {
-  sm: tokens.shape.padding.xs.interaction, // 4
-  md: tokens.shape.padding.sm.interaction, // 8 (anchor)
-  lg: tokens.shape.padding.md.interaction, // 12
-};
 
 export const badgeSize = styleVariants(
   Object.fromEntries(
@@ -56,7 +54,7 @@ export const badgeSize = styleVariants(
       s,
       {
         height: tokens.shape.badge[s],
-        paddingInline: BADGE_PAD[s],
+        paddingInline: tokens.shape.badgePaddingX[s],
         fontSize: BADGE_FONT,
       },
     ]),

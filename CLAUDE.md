@@ -113,7 +113,9 @@ accent 는 hue 이름(blue 등)이 **API 에 없다** — 전부 의미색. 각 
 
 - **radius 는 날만 죽인다** — `interaction` 단일 6 (버튼·입력·배지) · `layout` `sm 6`(Tooltip) ·
   `md 8`(카드) · `lg 12`(모달) · `full 999`(알약). 알약을 여는 prop 이름은 Box 가 `radius="full"`
-  (사다리 한 칸), Button·Badge·Field·Select 가 `shape="pill"`(실루엣) 이다. Textarea 엔 없다 —
+  (사다리 한 칸), Button·Badge·Field·Select·Tabs 가 `shape="pill"`(실루엣) 이다. Tabs 는 한 축이
+  트랙·항목 두 곡선을 함께 정하고, 각진 쪽 안쪽 반경은 `바깥 − 트랙 여백` 동심 계산이다.
+  Textarea 엔 없다 —
   알약은 "높이의 절반" 이라 한 줄짜리에서만 성립하고, 여러 줄 상자에선 경기장이 된다. 사다리를 한 단 조인 건 큰 곡선이 밀도와
   싸우기 때문 — 모서리가 물러날수록 면과 헤어라인이 앞으로 나온다. `full` 은 intent 로
   갈리지 않아 두 가지와 나란한 셋째 가지다.
@@ -126,7 +128,10 @@ accent 는 hue 이름(blue 등)이 **API 에 없다** — 전부 의미색. 각 
   radius 는 독립 — 면 크기가 정한다(작은 Tooltip 6, 큰 Modal 12).
 - **hover 는 조용히** — interaction 오버레이가 밑 면 위에 얹혀 한 단 어두워/밝아진다. 테두리 강조 없음.
 - **밀도** — 간격(Space) 5단(4px 배수 xs4~xl24)과 컨트롤 크기(ControlSize) 3단(sm·md·lg)을 분리한다. 컨트롤 크기가 바뀌어도 글자는 14 고정(controlFontSize 14/14/14). control 높이 md 34 · table 행 44.
-  여백도 컨트롤 전용 축이다 — `controlPaddingX` 10/13/17 · `controlPaddingY` 8/10/13(= (height−14)/2).
+  여백도 컨트롤 전용 축이다 — `controlPaddingX` 10/13/17 · `controlPaddingY` 3.5/5.5/8.5
+  (= (height − 테두리 2 − 줄상자 21) / 2). 분모는 글자 크기가 아니라 **줄상자**다 — 브라우저가
+  세로 가운데 두는 게 줄상자라, 이 산식이라야 Textarea 첫 줄이 Field 와 같은 자리에 앉는다.
+  Badge 는 컨트롤이 아니라 자기 축 `badgePaddingX` 6/8/10 을 쓴다(높이 20/22/24 와 같은 Δ2).
   **Box 여백 사다리(8/12/16)를 컨트롤에 빌려 쓰지 말 것** — 비가 눌려 답답해지고 형제와 1~2px 어긋난다.
   Button·Field·Select·Textarea·Tabs 가 `internal/sizeLadder` 를 공유한다(Link 는 글자라 제외).
   Badge 는 자기 높이 사다리(20/22/24)를 쓰되 **글자는 12 고정** — 컨트롤 14 와 같은 규칙, 다른 tier.
