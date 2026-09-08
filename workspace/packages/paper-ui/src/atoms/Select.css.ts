@@ -59,3 +59,8 @@ export const selectSize = styleVariants(
     ]),
   ) as Record<ControlSize, (typeof sizeLadderRules)[ControlSize] & { paddingInlineEnd: string }>,
 );
+
+// 알약 — Field 와 같은 어휘. 화살표는 오른쪽 여백 24 안에 앉아 곡선과 안 부딪친다
+// (곡선이 가장 많이 파고드는 건 위아래고, 화살표는 세로 중앙이다).
+// selectRoot 뒤에 와서 같은 특정도를 순서로 이긴다.
+export const selectPill = style({ borderRadius: tokens.shape.radius.full });

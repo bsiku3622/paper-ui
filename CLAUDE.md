@@ -113,7 +113,8 @@ accent 는 hue 이름(blue 등)이 **API 에 없다** — 전부 의미색. 각 
 
 - **radius 는 날만 죽인다** — `interaction` 단일 6 (버튼·입력·배지) · `layout` `sm 6`(Tooltip) ·
   `md 8`(카드) · `lg 12`(모달) · `full 999`(알약). 알약을 여는 prop 이름은 Box 가 `radius="full"`
-  (사다리 한 칸), Button·Badge 가 `shape="pill"`(실루엣) 이다. 사다리를 한 단 조인 건 큰 곡선이 밀도와
+  (사다리 한 칸), Button·Badge·Field·Select 가 `shape="pill"`(실루엣) 이다. Textarea 엔 없다 —
+  알약은 "높이의 절반" 이라 한 줄짜리에서만 성립하고, 여러 줄 상자에선 경기장이 된다. 사다리를 한 단 조인 건 큰 곡선이 밀도와
   싸우기 때문 — 모서리가 물러날수록 면과 헤어라인이 앞으로 나온다. `full` 은 intent 로
   갈리지 않아 두 가지와 나란한 셋째 가지다.
 - **회색은 받친다** — 카드는 흰 면 + 얇은 헤어라인으로 선다. 회색(`sunken`·`well`)은 그 아래

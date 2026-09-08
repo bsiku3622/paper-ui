@@ -235,7 +235,7 @@ export const COMPONENTS: CompSpec[] = [
     slug: "field",
     name: "Field",
     group: "Atoms",
-    blurb: "input group — leading/trailing 어도먼트(아이콘·$·단위) + clear(×) + 비밀번호 보기. 래퍼가 테두리·포커스링·상태를 진다.",
+    blurb: "input group — leading/trailing 어도먼트(아이콘·$·단위) + clear(×) + 비밀번호 보기. 래퍼가 테두리·포커스링·상태를 진다. shape=\"pill\" 은 검색창 결 — Button·Badge 와 같은 어휘다.",
     controls: [
       { kind: "text", prop: "placeholder", label: "placeholder", def: "검색…" },
       { kind: "enum", prop: "type", label: "type", options: ["text", "password"], def: "text" },
@@ -246,6 +246,7 @@ export const COMPONENTS: CompSpec[] = [
       { kind: "enum", prop: "align", label: "align", options: ["start", "center", "end"], def: "start" },
       { kind: "enum", prop: "status", label: "status", options: ["default", "info", "success", "warning", "error"], def: "default" },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
+      { kind: "enum", prop: "shape", label: "shape", options: ["default", "pill"], def: "default" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
       { kind: "bool", prop: "numeric", label: "numeric", def: false },
     ],
@@ -262,13 +263,14 @@ export const COMPONENTS: CompSpec[] = [
           align={s(st.align) as "start" | "center" | "end"}
           status={s(st.status) as "default" | StatusName}
           size={s(st.size) as "sm" | "md" | "lg"}
+          shape={s(st.shape) as "default" | "pill"}
           disabled={b(st.disabled)}
           numeric={b(st.numeric)}
         />
       </Box>
     ),
     code: (st) =>
-      `<Field${A("placeholder", s(st.placeholder))}${AE("type", s(st.type), "text")}${b(st.leading) ? " leading={<Icon>…</Icon>}" : ""}${b(st.trailing) ? ' trailing={<Text ink="faint">kg</Text>}' : ""}${A("clearable", b(st.clearable))}${A("showPasswordToggle", b(st.showPasswordToggle))}${AE("align", s(st.align), "start")}${AE("status", s(st.status), "default")}${AE("size", s(st.size), "md")}${A("disabled", b(st.disabled))}${A("numeric", b(st.numeric))} />`,
+      `<Field${A("placeholder", s(st.placeholder))}${AE("type", s(st.type), "text")}${b(st.leading) ? " leading={<Icon>…</Icon>}" : ""}${b(st.trailing) ? ' trailing={<Text ink="faint">kg</Text>}' : ""}${A("clearable", b(st.clearable))}${A("showPasswordToggle", b(st.showPasswordToggle))}${AE("align", s(st.align), "start")}${AE("status", s(st.status), "default")}${AE("size", s(st.size), "md")}${AE("shape", s(st.shape), "default")}${A("disabled", b(st.disabled))}${A("numeric", b(st.numeric))} />`,
   },
   {
     slug: "checkbox",
@@ -313,15 +315,17 @@ export const COMPONENTS: CompSpec[] = [
     slug: "select",
     name: "Select",
     group: "Atoms",
-    blurb: "native select 를 종이 결로 감싼 것. options 를 data 로 받는다.",
+    blurb: "native select 를 종이 결로 감싼 것. options 를 data 로 받는다. Button·Field 와 같은 사다리를 그대로 쓰고(오른쪽만 화살표 자리로 넓다) shape=\"pill\" 도 같은 어휘다.",
     controls: [
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
+      { kind: "enum", prop: "shape", label: "shape", options: ["default", "pill"], def: "default" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
     ],
     render: (st) => (
       <Box style={{ width: "12rem" }}>
         <Select
           size={s(st.size) as "sm" | "md" | "lg"}
+          shape={s(st.shape) as "default" | "pill"}
           disabled={b(st.disabled)}
           options={[
             { value: "a", label: "옵션 A" },
@@ -332,7 +336,7 @@ export const COMPONENTS: CompSpec[] = [
       </Box>
     ),
     code: (st) =>
-      `<Select${AE("size", s(st.size), "md")}${A("disabled", b(st.disabled))}\n  options={[\n    { value: "a", label: "옵션 A" },\n    { value: "b", label: "옵션 B" },\n  ]}\n/>`,
+      `<Select${AE("size", s(st.size), "md")}${AE("shape", s(st.shape), "default")}${A("disabled", b(st.disabled))}\n  options={[\n    { value: "a", label: "옵션 A" },\n    { value: "b", label: "옵션 B" },\n  ]}\n/>`,
   },
   {
     slug: "icon",

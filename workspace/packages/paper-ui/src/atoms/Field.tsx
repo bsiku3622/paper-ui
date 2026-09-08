@@ -1,6 +1,7 @@
 // Field — 한 줄 입력. input group 이다: 래퍼가 면·테두리·포커스링·상태를 지고, 안쪽
 // input 이 값을 담으며, 양옆에 어도먼트(아이콘·$·단위)와 액션(clear·비밀번호 보기)이 앉는다.
 //   status   default · info · success · warning · error (테두리 색). error 는 aria-invalid 도.
+//   shape    default · pill — Button·Badge 와 같은 어휘. 검색창이 이 어휘의 본진이다.
 //   numeric  포맷 축 — 숫자 글리프만 등폭(tabular-nums). 정렬은 안 건드린다.
 //   align    정렬 축 — start · center · end. numeric 과 직교 (우측정렬 숫자열은 numeric + align="end").
 //   leading  왼쪽 어도먼트 (검색 아이콘 · "$" 프리픽스 등)
@@ -23,12 +24,14 @@ import {
 import { joinClass } from "../internal/joinClass";
 import type { StatusName, ControlSize } from "../tokens";
 import { Icon } from "./Icon";
-import { fieldWrap, fieldInput, fieldSize, fieldStatus, fieldNumeric, fieldAlign, fieldAdornment, fieldAction } from "./Field.css";
+import { fieldWrap, fieldInput, fieldSize, fieldStatus, fieldNumeric, fieldAlign, fieldAdornment, fieldAction, fieldPill } from "./Field.css";
 
 export type FieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "size" | "prefix"> & {
   status?: "default" | StatusName;
   // 크기 3 단 (sm·md·lg). Button 과 같은 사다리 — 나란히 두면 높이가 맞는다.
   size?: ControlSize;
+  // 실루엣 — Button·Badge 와 같은 어휘. pill 은 알약(검색창 결).
+  shape?: "default" | "pill";
   numeric?: boolean;
   align?: "start" | "center" | "end";
   leading?: ReactNode;
@@ -65,6 +68,7 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
   {
     status = "default",
     size = "md",
+    shape = "default",
     numeric,
     align,
     leading,
@@ -125,7 +129,7 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
     // 진짜 컨트롤은 input 이라 role·키보드를 붙이는 게 오히려 틀리다.
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
-      className={joinClass(fieldWrap, fieldSize[size], status !== "default" && fieldStatus[status], className)}
+      className={joinClass(fieldWrap, fieldSize[size], shape === "pill" && fieldPill, status !== "default" && fieldStatus[status], className)}
       style={style}
       data-testid={testid}
       // 래퍼 여백을 클릭해도 input 이 포커스되게 (액션 버튼은 제외)

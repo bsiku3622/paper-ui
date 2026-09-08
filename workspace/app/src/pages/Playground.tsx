@@ -274,6 +274,20 @@ export const Playground = () => {
             <Box style={{ width: "9rem" }}><Select size="md" options={[{ value: "a", label: "Select" }]} data-testid="base-select" /></Box>
             <Box style={{ width: "12rem" }}><Textarea size="md" rows={2} placeholder="Textarea" aria-label="textarea base" data-testid="base-textarea" /></Box>
           </Spec>
+          {/* 알약은 컨트롤 어휘 하나다 — Button·Field·Select 가 같은 곡선을 든다. 검색
+              한 줄에 셋이 나란히 서는 게 이 어휘가 있는 이유고, 여백은 안 움직인다
+              (shape 은 실루엣 축이지 밀도 축이 아니다).
+              Textarea 에는 없다 — 알약은 "높이의 절반" 이라 한 줄짜리에서만 성립한다. */}
+          <Spec label="shape=pill — 검색 한 줄 (Field · Select · Button 같은 곡선)" testid="spec-pill-row">
+            <Box style={{ width: "12rem" }}>
+              <Field shape="pill" placeholder="검색" aria-label="검색" data-testid="field-pill"
+                leading={<Icon size="sm"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon>} />
+            </Box>
+            <Box style={{ width: "8rem" }}>
+              <Select shape="pill" options={[{ value: "a", label: "전체" }]} data-testid="select-pill" />
+            </Box>
+            <Button shape="pill" data-testid="button-pill-row">검색</Button>
+          </Spec>
           <Spec label="Checkbox">
             <Inline as="label" gap="sm">
               <Checkbox checked={checked} onChange={(e) => setChecked(e.currentTarget.checked)} data-testid="checkbox" />

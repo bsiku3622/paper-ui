@@ -276,6 +276,17 @@ test("control base · md 는 넷 다 왼쪽 여백 13 · 글자 14", async ({ pa
   await expect(page.getByTestId("base-textarea")).toHaveCSS("padding-top", "10px");
 });
 
+// ── shape=pill — 컨트롤 어휘 하나. 여백은 안 따라 움직인다 ──────────────────
+//
+// Field·Select 는 반경만 바뀌고 컨트롤 사다리(md 13)를 그대로 지킨다. 알약이 여백까지
+// 건드리기 시작하면 같은 size 의 형제와 글자 시작점이 갈린다 — shape 은 실루엣 축이다.
+test("pill · Field·Select·Button 이 같은 곡선, 여백은 그대로 13", async ({ page }) => {
+  for (const id of ["field-pill", "select-pill", "button-pill-row"]) {
+    await expect(page.getByTestId(id)).toHaveCSS("border-radius", "999px");
+    await expect(page.getByTestId(id)).toHaveCSS("padding-left", "13px");
+  }
+});
+
 // ── Badge — 높이는 세 단, 글자는 12 고정 ────────────────────────────────────
 //
 // 밀도와 가독성은 다른 축이다. 예전엔 11·12·14 로 높이를 따라가서 sm 이 가독성 하한
