@@ -394,7 +394,6 @@ export const ATOM_INTRINSIC = {
   checkboxRadius: REM(3), //   Checkbox 모서리 (작아서 radius 사다리와 별도)
   badgeHeight: REM(22), //     Badge 높이 (control 34 보다 낮은 인라인 라벨)
   navbar: REM(52), //          Navbar · 사이트 GNB 바 높이
-  navItem: REM(32), //         Navbar 항목 높이
   // ⚠ tabsTrackPad 는 여백이면서 **동심 반경의 분모**다. 각진 탭(shape="default")의 항목
   //   반경을 `radius.interaction − tabsTrackPad` 로 계산하므로, 이 값을 건드리면 안쪽
   //   곡선이 같이 움직인다. 3 → 6 이면 항목 반경이 0 이 되어 안쪽만 직각이 된다.

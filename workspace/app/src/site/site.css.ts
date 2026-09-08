@@ -33,53 +33,10 @@ globalStyle(".principles-grid", {
 
 // ── GNB — 지면 맨 위 한 줄 ───────────────────────────────────────────────────
 // 흰 지면 위 깔끔한 바. 스크롤에도 조용히 붙어 있다.
-globalStyle(".gnb", {
-  position: "sticky",
-  top: 0,
-  zIndex: tokens.layout.z.sticky,
-  background: tokens.color.paper.canvas,
-  borderBottom: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
-});
+// ⚠ .gnb · .gnb-inner · .gnb-nav · .gnb-link 은 지웠다. 사이트 GNB 가 라이브러리
+// Navbar 를 직접 쓰게 되면서(항목이 링크가 될 수 있게 `as` 를 열었다) 손으로 짠 헤더가
+// 통째로 사라졌다. 남은 .gnb-theme 은 헤더가 아니라 테마 토글 버튼의 모양이다.
 
-globalStyle(".gnb-inner", {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: tokens.shape.gap.xl,
-  height: tokens.shape.atom.navbar,
-  maxWidth: tokens.layout.container.content,
-  width: "100%",
-  marginInline: "auto",
-});
-
-globalStyle(".gnb-nav", {
-  display: "flex",
-  alignItems: "center",
-  gap: tokens.shape.gap.xs,
-});
-
-// nav item — 활성은 면이 아니라 **글자**로 표시한다(라이브러리 Navbar 와 같은 방식).
-// 면으로 표시하면 nav 하나가 화면에서 가장 눈에 띄는 덩어리가 되는데, nav 는 지금
-// 어디인지 알려줄 뿐 주인공이 아니다. 배경은 hover 에만 — 그건 포인터에 답하는
-// 것이라 사라질 표시다.
-globalStyle(".gnb-link", {
-  display: "inline-flex",
-  alignItems: "center",
-  height: tokens.shape.height.md.interaction,
-  paddingInline: tokens.shape.padding.md.interaction,
-  borderRadius: tokens.shape.radius.interaction,
-  fontSize: tokens.text.size.body,
-  fontWeight: tokens.text.weight.normal,
-  letterSpacing: tokens.text.tracking.body,
-  color: tokens.color.ink.soft,
-  textDecoration: "none",
-  transition: stateTransition("background", "color"),
-});
-globalStyle(".gnb-link:hover", { background: tokens.color.interaction.hover, color: tokens.color.ink.base });
-globalStyle('.gnb-link[data-active="true"]', { color: tokens.color.ink.base, fontWeight: tokens.text.weight.medium });
-
-// 테마 토글 — GNB 우측 정사각 버튼. 라이브러리 useTheme 로 light→dark→system 순환.
-// 색은 전부 토큰이라 스코프가 바뀌면 버튼 자신도 다크로 따라온다.
 globalStyle(".gnb-theme", {
   display: "inline-flex",
   alignItems: "center",

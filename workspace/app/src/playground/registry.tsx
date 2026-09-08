@@ -583,23 +583,28 @@ export const COMPONENTS: CompSpec[] = [
     slug: "navbar",
     name: "Navbar",
     group: "Components",
-    blurb: "지면 맨 위 한 줄. brand·items·trailing 을 받는다.",
-    controls: [],
-    render: () => (
+    blurb: "지면 맨 위 한 줄. brand·items·trailing 을 받는다. 항목은 버튼일 수도 링크일 수도 있다 — as 로 태그를 갈아 끼우면 나머지 키(href·to·target)가 그대로 흘러간다. width 는 안쪽 줄의 폭만 정하고(full=제품 chrome · content=사이트 헤더) 괘선은 어느 쪽이든 화면 끝까지 간다.",
+    controls: [
+      { kind: "enum", prop: "width", label: "width", options: ["full", "content"], def: "full" },
+    ],
+    render: (st) => (
       <Box style={{ width: "100%", border: `1px solid ${tokens.color.border.base}`, borderRadius: tokens.shape.radius.layout.md, overflow: "hidden" }}>
         <Navbar
+          width={s(st.width) as "full" | "content"}
           brand={<Text variant="subheading">Studio</Text>}
           items={[
             { value: "issues", label: "이슈" },
             { value: "boards", label: "보드" },
+            // 링크 항목 — 태그가 갈리면 속성도 갈린다(여기선 href).
+            { value: "docs", label: "문서", as: "a", href: "#/" },
           ]}
           active="issues"
           trailing={<Button>새 이슈</Button>}
         />
       </Box>
     ),
-    code: () =>
-      `<Navbar\n  brand={<Text variant="subheading">Studio</Text>}\n  items={[{ value: "issues", label: "이슈" }, { value: "boards", label: "보드" }]}\n  active="issues"\n  trailing={<Button>새 이슈</Button>}\n/>`,
+    code: (st) =>
+      `<Navbar${AE("width", s(st.width), "full")}\n  brand={<Text variant="subheading">Studio</Text>}\n  items={[\n    { value: "issues", label: "이슈" },\n    { value: "docs", label: "문서", as: Link, to: "/docs" },\n  ]}\n  active="issues"\n  trailing={<Button>새 이슈</Button>}\n/>`,
   },
   {
     slug: "banner",
