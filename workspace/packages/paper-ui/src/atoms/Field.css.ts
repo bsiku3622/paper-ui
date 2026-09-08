@@ -104,3 +104,13 @@ export const fieldAlign = styleVariants({
   center: { textAlign: "center" },
   end: { textAlign: "end" },
 });
+
+// 알약 — 모서리를 높이의 절반까지. 검색창이 이 어휘의 본진이다(아이콘 + 둥근 입력).
+// 반경은 래퍼 하나에만 있고 포커스 링이 outline 이라, 링이 곡선을 저절로 따라간다.
+//
+// 여백은 안 건드린다. shape 은 실루엣 축이지 밀도 축이 아니라, 알약이라고 해서 컨트롤
+// 사다리(10·13·17)를 벗어나면 같은 size 의 형제와 글자 시작점이 갈린다.
+//
+// fieldWrap 뒤에 와서 같은 특정도를 순서로 이긴다(반경을 정하는 건 fieldWrap 뿐 —
+// fieldSize 는 height·padding·font 만, fieldStatus 는 borderColor 만 정한다).
+export const fieldPill = style({ borderRadius: tokens.shape.radius.full });
