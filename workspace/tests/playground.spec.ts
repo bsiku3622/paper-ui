@@ -283,6 +283,38 @@ test("control base · 넷이 높이·글자를 공유하고 가로만 역할로 
   await expect(page.getByTestId("base-textarea")).toHaveCSS("padding-top", "5.5px");
 });
 
+// ── 입력 글자는 시스템 굵기를 든다 ───────────────────────────────────────────
+//
+// 크기는 넷 다 14 인데 입력만 얇아 보였다. fontFamily 만 정하고 굵기를 안 줘서 브라우저
+// 기본값 400 으로 떨어져 있었던 것 — 이 시스템의 `normal` 은 **450** 이다(작은 sans 가
+// Retina 에서 힘 빠지는 걸 잡는 half-step). 사람이 글자를 *써 넣는* 자리만 그 보정을 못
+// 받고 있었다. 값이 아니라 **관계**를 잠근다: 본문과 같은 굵기, 버튼보다는 가볍게.
+test("type · 입력 글자가 본문과 같은 굵기, 버튼 라벨은 그보다 무겁다", async ({ page }) => {
+  const w = await page.evaluate(() => {
+    const g = (sel: string) => Number(getComputedStyle(document.querySelector(sel)!).fontWeight);
+    return {
+      body: g('[data-testid="text-body"]'),
+      field: g('[data-testid="base-field"] input'),
+      select: g('[data-testid="base-select"]'),
+      textarea: g('[data-testid="base-textarea"]'),
+      button: g('[data-testid="base-button"]'),
+    };
+  });
+  expect(w.field, "입력이 브라우저 기본 400 으로 떨어지면 안 된다").toBe(w.body);
+  expect(w.select).toBe(w.body);
+  expect(w.textarea).toBe(w.body);
+  expect(w.button).toBeGreaterThan(w.body);
+
+  // 자간도 래퍼에서 이어진다 — 브라우저 기본 스타일시트가 폼 컨트롤에 letter-spacing:
+  // normal 을 명시해 두어 `font: inherit` 만으로는 안 따라온다.
+  const track = await page.evaluate(() => {
+    const wrap = document.querySelector('[data-testid="base-field"]')!;
+    const input = wrap.querySelector("input")!;
+    return [getComputedStyle(wrap).letterSpacing, getComputedStyle(input).letterSpacing];
+  });
+  expect(track[1]).toBe(track[0]);
+});
+
 // ── 입력류 안의 글자는 사방 같은 거리에 앉는다 ───────────────────────────────
 //
 // 선언값이 아니라 **잉크의 자리**를 잰다. Textarea 의 세로 선언은 5.5 지만 줄상자에 반 줄
