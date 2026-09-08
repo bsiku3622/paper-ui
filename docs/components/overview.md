@@ -21,10 +21,10 @@ raw HTML을 렌더하는 유일한 레이어입니다.
 - **Field** — 한 줄 입력 그룹. 상태는 `status` 축 하나로(invalid boolean 아님), 양옆에 `leading`/`trailing` 어도먼트(아이콘·$·단위)와 `clearable`(×)·`showPasswordToggle`(👁). 포커스 때만 파란 링. `shape="pill"`은 Button·Badge와 같은 어휘이고, 검색창이 그 본진입니다 — 반경이 래퍼 하나에만 있고 포커스 링이 `outline`이라 링이 곡선을 저절로 따라갑니다.
 - **Textarea** — 여러 줄 입력. Field와 같은 `status`·`size` 축, 세로로만 resize. `shape="pill"`은 **없습니다** — 알약은 "높이의 절반"이라는 규칙이라 한 줄짜리 컨트롤에서만 성립합니다. 96px짜리 상자에 걸면 반경이 48이 되어 경기장 모양이 나오고, 첫 줄과 마지막 줄이 곡선 아래로 밀려 왼쪽 정렬이 무너집니다. 어휘가 여기서 멈추는 것은 빠뜨린 게 아니라 경계입니다. `size`가 움직이는 것은 여백과 글자뿐입니다 — 높이는 `rows`가 정하고, 첫 줄은 같은 `size`의 Field와 같은 자리에서 시작합니다.
 - **Select** — native `<select>`를 종이 결로 감싼 것.
-- **Checkbox** · **Switch**(켬/끔 토글) · **Radio**(하나 고르기) — 켜지면 검정(색이 아니라 primary).
+- **Checkbox** · **Switch**(켬/끔 토글) · **Radio**(하나 고르기) — 켜지면 검정(색이 아니라 primary). 셋은 폼 한 줄에서 같은 열에 앉도록 묶여 있습니다: Radio는 Checkbox의 변 사다리를 그대로 쓰고, Switch의 손잡이는 Checkbox 변 − 2여서 트랙이 Checkbox + 2로 앉습니다.
 - **Label** · **Icon** · **Divider** · **Link**(파랑).
 - **Badge** — 짧은 표식. Button과 같은 `color × variant`(기본 `soft`) + `dot`(상태 점). `solid`=카운트·강조, `outline`=테두리 태그, `quiet`=글자만. Button과 같은 `shape="pill"`을 받아 두 알약이 나란히 서도 곡선이 갈리지 않습니다. `size`는 높이(20·22·24)만 움직이고 글자는 12로 고정입니다.
-- **Spinner** — 진행 중 표시. 주기는 motion 토큰.
+- **Spinner** — 진행 중 표시. 주기는 motion 토큰. Icon과 같은 사다리(16·18·20)라 나란히 두면 크기가 맞습니다. 속이 빈 링이라 같은 지름의 채운 사각형보다 가볍게 읽히는데, 그건 스피너가 지고 가는 성질이라 지름으로 보정하지 않습니다.
 
 ## Molecules (6)
 

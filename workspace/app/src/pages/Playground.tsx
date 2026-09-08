@@ -22,8 +22,11 @@ import {
   Inline,
   Link,
   Modal,
+  Radio,
   Select,
+  Spinner,
   Stack,
+  Switch,
   Table,
   Tabs,
   Text,
@@ -292,6 +295,23 @@ export const Playground = () => {
             <Inline as="label" gap="sm">
               <Checkbox checked={checked} onChange={(e) => setChecked(e.currentTarget.checked)} data-testid="checkbox" />
               <Text variant="body" as="span">동의</Text>
+            </Inline>
+          </Spec>
+          {/* 작은 표식들이 한 줄에 섰을 때 서로 같은 무게로 읽히는지 — 숫자가 같은 것과
+              같아 보이는 것은 다르다. 아이콘은 24 아트보드 안에서 여백을 갖고, 스위치는
+              폭이 넓어 같은 높이여도 더 크게 읽힌다. */}
+          <Spec label="작은 표식 — 한 줄에 세웠을 때 (md)" testid="spec-marks">
+            <Inline gap="lg" align="center">
+              <Checkbox defaultChecked data-testid="mark-checkbox" />
+              <Radio name="mark" defaultChecked data-testid="mark-radio" />
+              <Switch defaultChecked data-testid="mark-switch" />
+              <Icon aria-label="정보" data-testid="mark-icon">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 8h.01M12 11v5" />
+              </Icon>
+              <Spinner data-testid="mark-spinner" />
+              <Badge data-testid="mark-badge">배지</Badge>
+              <Button size="sm" data-testid="mark-button">버튼</Button>
             </Inline>
           </Spec>
           <Spec label="TextField (Label + Field + hint/error)">

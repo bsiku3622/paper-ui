@@ -107,7 +107,11 @@ chroma 는 저명도에서 지각이 약해지므로 다크 쪽을 조금 올려
 **height** — `interaction` 24/30/34/40/44 (control = `md.interaction` 34) · `layout` 64~320
 **controlSize** — 컴포넌트 `size` 3단(`sm`·`md`·`lg`), height·padding만 움직임 · **controlPaddingX** 10/13/17 · **controlPaddingY** 3.5/5.5/8.5 · **controlFontSize** 14/14/14 (밀도와 분리 — 14가 하한이자 상한)
 
-세로 여백은 `(height − 14) / 2`입니다. 라벨이 14로 고정이니 한 줄짜리 컨트롤에서는 height가 이 값을 정해 버리고, 가로 여백도 그 세로를 분모로 삼은 비(1.25·1.30·1.31)로 잡습니다. 이 관계는 오래 주석에만 있었는데, 높이를 못 박는 컨트롤이 생기면서 토큰이 되었습니다 — Textarea는 줄 수만큼 자라 `height`를 쓸 수 없어 세로 여백을 직접 받아야 하고, 그때 이 값을 쓰면 첫 줄이 같은 `size`의 Field와 같은 높이에서 시작합니다.
+세로 여백은 `(height − 테두리 2 − 줄상자 21) / 2`입니다. 높이를 못 박는 컨트롤을 위한 값입니다 — Textarea는 줄 수만큼 자라 `height`를 쓸 수 없어 세로 여백을 직접 받아야 하고, 그때 이 값을 쓰면 첫 줄이 같은 `size`의 Field와 같은 자리에서 시작합니다.
+
+**분모는 글자 크기가 아니라 줄상자입니다.** 한동안 `(height − 14) / 2`로 잡혀 있었는데, 브라우저가 상자 안에서 세로 가운데 두는 것은 글리프가 아니라 줄상자(14 × line-height 1.5 = 21)입니다. Field는 34짜리 상자 안에 21짜리 줄상자를 가운데 두어 첫 줄이 위에서 6.5에서 시작하는데, Textarea는 10을 그대로 밀어 11에서 시작했습니다 — 나란히 두면 4.5px 어긋납니다. 토큰의 주석은 정렬을 약속하고 있었지만 산식이 그 약속을 못 지키고 있었습니다. 테두리 2를 빼는 것도 같은 이유입니다: Field의 중앙 정렬은 content box 안에서 일어나 테두리 뒤의 32를 나누는데, Textarea의 padding은 테두리 안쪽부터 재니까요.
+
+높이·line-height·이 값은 한 식의 세 변입니다. 하나를 바꾸면 나머지도 다시 계산해야 합니다.
 
 `Button`·`Field`·`Select`·`Textarea`·`Tabs`가 이 사다리를 공유합니다. Select는 오른쪽만 화살표 자리로 덮고, Textarea는 height를 뺀 나머지를 가져옵니다. Link는 여기 없습니다 — 상자가 아니라 글자라, 높이도 여백도 없이 주변 텍스트에 실려 갑니다.
 
@@ -115,7 +119,9 @@ chroma 는 저명도에서 지각이 약해지므로 다크 쪽을 조금 올려
 **padding** — `interaction` 4/8/12/16/24 (Box 여백) · `layout` 8/12/16/24/32 (container)
 **gap** — 4/8/12/16/24 (4px 배수)
 **radius** — `interaction` 단일 6 · `layout` `sm` 6 · `md` 8 · `lg` 12 · `full` 999(알약)
-**fontSize**(chrome text) · **dot**(아이콘) · **measure**(읽기 폭) — 각 5단
+**fontSize**(chrome text) · **measure**(읽기 폭) — 각 5단
+**icon** — 아이콘·스피너 16/18/20. **아트보드지 잉크가 아닙니다.** `Icon`은 viewBox 24짜리 path를 받아 그리는데 아이콘 규격(lucide 등)은 그 24 안에 여백을 두고 18~20만 채우므로, 화면의 잉크는 아트보드의 75~83%입니다. 그래서 아트보드가 Checkbox와 같은 16이면 아이콘만 한 단 작아 보입니다 — 숫자가 같은 것과 같아 보이는 것은 다릅니다. 사다리가 한 단 위에 있는 이유입니다(이 축의 옛 이름은 `dot`이었는데, status dot은 이 축을 안 쓰고 소비처가 Icon·Spinner 둘뿐이라 이름이 축을 잘못 가리키고 있었습니다)
+**switch** — 트랙 30×17 / 32×18 / 36×20, 손잡이 13/14/16. 손잡이가 Checkbox 변 − 2라 트랙이 Checkbox + 2로 앉습니다. 옛 규칙은 반대로 손잡이를 Checkbox에 맞춰(16) 트랙이 20이 됐는데, 스위치는 폭이 트랙 두 배라 같은 높이에서도 면적이 세 배입니다 — 높이까지 크면 폼 한 줄에서 스위치만 튑니다. 여백 `(h − thumb) / 2`가 사방에 같이 걸려 켜짐 이동이 `w − h` 한 항등식으로 떨어집니다
 **shadow** (2단, 떠 있는 것만) — `overlay`(Modal·Tooltip) · `overlayMinimal`(Switch 손잡이)
 **constants** — `borderWidth` 1 · `focusRingWidth` 2 · `overlayBlur` 2 등, **atom** — Checkbox·Switch·Radio 등 사다리 밖 치수
 

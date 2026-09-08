@@ -344,6 +344,48 @@ test("badge · 높이 20·22·24 와 여백 6·8·10 이 같은 보폭, 글자�
   }
 });
 
+// ── 작은 표식들 — 폼 한 줄에서 같은 열에 앉는다 ──────────────────────────────
+//
+// 세 사다리(icon · checkbox · switch)가 따로 사는데 서로 묶여 있다. Icon 이 Checkbox 와
+// 같은 16 이면 아트보드 안 여백 때문에 아이콘만 작아 보이고, Switch 손잡이를 Checkbox 에
+// 맞추면 트랙이 그만큼 커진다. 숫자로 못 박아 둔다 — 눈으로 고른 값이라 우연히 되돌리기 쉽다.
+test("mark · 아이콘 18 · 체크박스 16 · 스위치 32×18 이 한 열에 앉는다", async ({ page }) => {
+  // SVG 에는 offsetWidth 가 없고 Spinner 는 돌고 있어 bounding box 가 회전에 따라 커진다
+  // — 둘 다 computed 값으로 잰다.
+  const S = {
+    "mark-checkbox": ["16px", "16px"],
+    "mark-radio": ["16px", "16px"],
+    // 아이콘·스피너는 아트보드가 한 단 위 — 잉크가 아트보드의 75~83% 라서다.
+    "mark-icon": ["18px", "18px"],
+    "mark-spinner": ["18px", "18px"],
+    // 손잡이 = checkbox − 2 → 트랙 = checkbox + 2.
+    "mark-switch": ["32px", "18px"],
+  };
+  for (const [id, [w, h]] of Object.entries(S)) {
+    await expect(page.getByTestId(id)).toHaveCSS("width", w);
+    await expect(page.getByTestId(id)).toHaveCSS("height", h);
+  }
+});
+
+// ── Switch 켜짐 — 손잡이가 사방 같은 간격으로 반대쪽 끝에 붙는다 ──────────────
+//
+// 여백 (h − thumb) / 2 를 사방에 걸면 이동 거리가 w − h 로 떨어진다. 예전엔 좌우만
+// borderWidth(1px)를 빌려 써서 위아래 2 · 좌우 1 로 어긋나 있었다(스위치엔 테두리도 없다).
+test("switch · 손잡이 여백이 사방 같고, 켜짐 이동이 w − h 다", async ({ page }) => {
+  const g = await page.getByTestId("mark-switch").evaluate((el: HTMLElement) => {
+    const track = { w: parseFloat(getComputedStyle(el).width), h: parseFloat(getComputedStyle(el).height) };
+    const a = getComputedStyle(el, "::after");
+    const thumb = parseFloat(a.width);
+    const left = parseFloat(a.left);
+    // matrix(1,0,0,1,tx,ty) — checked 상태의 가로 이동.
+    const tx = parseFloat(a.transform.split(",")[4] ?? "0");
+    return { inset: (track.h - thumb) / 2, left, tx, travel: track.w - track.h, right: track.w - (left + tx) - thumb };
+  });
+  expect(g.left).toBeCloseTo(g.inset, 1); // 좌 = 상하
+  expect(g.right).toBeCloseTo(g.inset, 1); // 켜졌을 때 우 = 상하
+  expect(g.tx).toBeCloseTo(g.travel, 1); // 이동 = w − h
+});
+
 // ── 홈 CTA — 버튼처럼 생긴 자리가 링크면, 링크 하나만 그린다 ──────────────────
 //
 // <Link><Button/></Link> 로 감싸면 <a> 안에 <button> 이라 같은 자리에서 탭이 두 번
