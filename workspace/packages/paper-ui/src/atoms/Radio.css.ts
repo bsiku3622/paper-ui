@@ -11,7 +11,7 @@ export const radioRoot = style({
   background: tokens.color.paper.raised,
   borderWidth: tokens.shape.constants.borderWidth,
   borderStyle: "solid",
-  borderColor: tokens.color.border.control,
+  borderColor: tokens.color.border.strong,
   borderRadius: tokens.shape.radius.full,
   cursor: "pointer",
   display: "grid",

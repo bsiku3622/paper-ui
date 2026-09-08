@@ -14,7 +14,7 @@ export const textareaRoot = style({
   borderRadius: tokens.shape.radius.interaction,
   borderWidth: tokens.shape.constants.borderWidth,
   borderStyle: "solid",
-  borderColor: tokens.color.border.control,
+  borderColor: tokens.color.border.base,
   color: tokens.color.ink.base,
   fontFamily: tokens.text.font.sans,
   lineHeight: tokens.text.leading.body,
@@ -22,7 +22,7 @@ export const textareaRoot = style({
   transition: stateTransition("border-color", "box-shadow", "background"),
   selectors: {
     "&::placeholder": { color: tokens.color.ink.faint },
-    "&:hover:not(:focus):not(:disabled)": { borderColor: tokens.color.border.controlHover },
+    "&:hover:not(:focus):not(:disabled)": { borderColor: tokens.color.border.strong },
     // 포커스 — 보더 *바깥* 에 파란 링(outline). 전역/Checkbox 와 같은 방식.
     "&:focus": {
       outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.focus.ring}`,
