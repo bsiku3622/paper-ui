@@ -267,15 +267,45 @@ test("no console errors on playground", async ({ page }: { page: Page }) => {
 // 자리로 덮는다), Textarea 는 height 를 뺀 두 축을 같은 토큰에서 가져온다. 넷 중 하나가
 // 사다리를 손으로 베끼기 시작하면 여기서 걸린다 — 실제로 Select 가 Box 여백(12)을 쓰고
 // 있어서 Field 보다 1px 좁았다.
-test("control base · md 는 넷 다 왼쪽 여백 13 · 글자 14", async ({ page }) => {
+test("control base · 넷이 높이·글자를 공유하고 가로만 역할로 갈린다", async ({ page }) => {
+  // 공유하는 축 — 글자는 넷 다 14.
   for (const id of ["base-button", "base-field", "base-select", "base-textarea"]) {
-    await expect(page.getByTestId(id)).toHaveCSS("padding-left", "13px");
     await expect(page.getByTestId(id)).toHaveCSS("font-size", "14px");
   }
-  // 화살표 자리는 오른쪽만 넓다 — 공통 base 를 덮는 건 이 한 축뿐이다.
+  // 갈리는 축 — 버튼은 라벨의 비율(13), 입력류는 높이가 만든 세로와 같은 값(9).
+  await expect(page.getByTestId("base-button")).toHaveCSS("padding-left", "13px");
+  for (const id of ["base-field", "base-select", "base-textarea"]) {
+    await expect(page.getByTestId(id)).toHaveCSS("padding-left", "9px");
+  }
+  // 화살표 자리는 오른쪽만 넓다 — 통로로 한 축 더 덮는다.
   await expect(page.getByTestId("base-select")).toHaveCSS("padding-right", "24px");
   // Textarea 의 세로 여백은 (34 − 테두리 2 − 줄상자 21) / 2 = 5.5.
   await expect(page.getByTestId("base-textarea")).toHaveCSS("padding-top", "5.5px");
+});
+
+// ── 입력류 안의 글자는 사방 같은 거리에 앉는다 ───────────────────────────────
+//
+// 선언값이 아니라 **잉크의 자리**를 잰다. Textarea 의 세로 선언은 5.5 지만 줄상자에 반 줄
+// 여백(3.5)이 들어 있어 잉크는 9 에 앉고, Field 는 높이 34 가 만드는 세로가 이미 9 다.
+// 선언값을 정사각(9/9)으로 맞추면 되레 첫 줄이 3.5 내려가 어긋나 보인다.
+test("input · Field·Textarea 의 글자가 테두리에서 사방 같은 거리에 앉는다", async ({ page }) => {
+  const ink = await page.evaluate(() => {
+    const q = (id: string) => document.querySelector(`[data-testid="${id}"]`) as HTMLElement;
+    const ta = q("base-textarea");
+    const c = getComputedStyle(ta);
+    const half = (parseFloat(c.lineHeight) - parseFloat(c.fontSize)) / 2;
+    const field = q("base-field");
+    const cf = getComputedStyle(field);
+    return {
+      taTop: parseFloat(c.borderTopWidth) + parseFloat(c.paddingTop) + half,
+      taLeft: parseFloat(c.borderLeftWidth) + parseFloat(c.paddingLeft),
+      fieldTop: (field.getBoundingClientRect().height - parseFloat(cf.fontSize)) / 2,
+      fieldLeft: parseFloat(cf.borderLeftWidth) + parseFloat(cf.paddingLeft),
+    };
+  });
+  expect(ink.taTop).toBeCloseTo(ink.taLeft, 1);
+  expect(ink.fieldTop).toBeCloseTo(ink.fieldLeft, 1);
+  expect(ink.taTop).toBeCloseTo(ink.fieldTop, 1); // 둘이 서로도 같다
 });
 
 // ── Field 와 Textarea 의 첫 줄은 같은 자리에서 시작한다 ─────────────────────
@@ -303,11 +333,14 @@ test("control base · Field 와 Textarea 의 첫 줄이 같은 높이에서 시�
 //
 // Field·Select 는 반경만 바뀌고 컨트롤 사다리(md 13)를 그대로 지킨다. 알약이 여백까지
 // 건드리기 시작하면 같은 size 의 형제와 글자 시작점이 갈린다 — shape 은 실루엣 축이다.
-test("pill · Field·Select·Button 이 같은 곡선, 여백은 그대로 13", async ({ page }) => {
+test("pill · 곡선만 바뀌고 각자의 가로 여백은 그대로다", async ({ page }) => {
   for (const id of ["field-pill", "select-pill", "button-pill-row"]) {
     await expect(page.getByTestId(id)).toHaveCSS("border-radius", "999px");
-    await expect(page.getByTestId(id)).toHaveCSS("padding-left", "13px");
   }
+  // 알약이 됐다고 여백이 따라 움직이지 않는다 — 각진 형제와 글자 시작점이 같다.
+  await expect(page.getByTestId("field-pill")).toHaveCSS("padding-left", "9px");
+  await expect(page.getByTestId("select-pill")).toHaveCSS("padding-left", "9px");
+  await expect(page.getByTestId("button-pill-row")).toHaveCSS("padding-left", "13px");
 });
 
 // ── Tabs shape — 트랙과 항목이 함께 갈리고, 각진 쪽은 동심이다 ─────────────

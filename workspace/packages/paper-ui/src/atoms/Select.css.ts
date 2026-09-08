@@ -1,7 +1,7 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
-import { tokens, stateTransition, CONTROL_SIZES, type ControlSize } from "../tokens";
-import { sizeLadderRules } from "../internal/sizeLadder";
+import { tokens, stateTransition } from "../tokens";
+import { ladderRules } from "../internal/sizeLadder";
 
 // 크기(height·fontSize·좌우 padding)는 size 축(selectSize)이 정한다 — Button·Field 와
 // 같은 사다리를 그대로 가져온다. 오른쪽만 화살표 자리라 size 무관하게 넉넉히 고정.
@@ -41,23 +41,21 @@ export const selectRoot = style({
   },
 });
 
-// size 3 단 — Button·Field 와 **같은 사다리를 실제로 가져다 쓴다**. 오른쪽만 화살표
-// 자리라 size 무관하게 넉넉히 덮는다.
+// size 3 단 — 베이스에서 **가로 여백을 Field 와 같은 자리로** 갈아 끼우고, 오른쪽만
+// 화살표 자리로 한 번 더 덮는다. Select 는 입력칸이지 버튼이 아니라, 글자가 상자 안에
+// 사방 같은 거리로 앉아야 옆의 Field 와 한 줄로 읽힌다.
 //
 // ⚠ 예전엔 사다리를 손으로 베껴 쓰면서 좌우 여백만 Box 사다리(`padding[s].interaction`
 // = 8·12·16)에서 가져왔다. 주석은 "Button·Field 와 같은 공통 사다리" 라고 말하는데 실제
-// 값은 컨트롤 여백(10·13·17)보다 매 단 1~2px 좁아서, Field 옆에 Select 를 세우면 글자
-// 시작점이 어긋났다. **사다리를 베끼면 언젠가 갈라진다 — 스프레드로 가져온다.**
+// 값은 매 단 1~2px 어긋나 있었다. **사다리를 베끼면 언젠가 갈라진다 — 통로로 나간다.**
 //
-// paddingInlineEnd 가 사다리의 paddingInline 뒤에 와서 오른쪽만 덮어쓴다(같은 규칙
-// 안에서는 나중 선언이 이긴다). 둘 다 논리 속성이라 RTL 에서도 화살표 쪽이 열린다.
+// paddingInlineEnd 가 paddingInline 뒤에 와서 오른쪽만 덮어쓴다(같은 규칙 안에서는 나중
+// 선언이 이긴다). 둘 다 논리 속성이라 RTL 에서도 화살표 쪽이 열린다.
 export const selectSize = styleVariants(
-  Object.fromEntries(
-    CONTROL_SIZES.map((s) => [
-      s,
-      { ...sizeLadderRules[s], paddingInlineEnd: tokens.shape.padding.xl.interaction },
-    ]),
-  ) as Record<ControlSize, (typeof sizeLadderRules)[ControlSize] & { paddingInlineEnd: string }>,
+  ladderRules((s) => ({
+    paddingInline: tokens.shape.inputPaddingX[s],
+    paddingInlineEnd: tokens.shape.padding.xl.interaction,
+  })),
 );
 
 // 알약 — Field 와 같은 어휘. 화살표는 오른쪽 여백 24 안에 앉아 곡선과 안 부딪친다

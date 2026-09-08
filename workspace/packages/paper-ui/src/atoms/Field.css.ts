@@ -1,8 +1,8 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
-import { tokens, STATUS, STATUS_ACCENT, stateTransition, CONTROL_SIZES, type ControlSize } from "../tokens";
+import { tokens, STATUS, STATUS_ACCENT, stateTransition } from "../tokens";
 import type { StatusName } from "../tokens";
-import { sizeLadderRules } from "../internal/sizeLadder";
+import { ladderRules } from "../internal/sizeLadder";
 
 // Field 는 input group — 래퍼가 면·테두리·포커스링·상태·크기를 지고, 안쪽 input 은
 // 투명·무테로 값만 담는다. leading/trailing 어도먼트(아이콘·$·단위·clear·비밀번호)가
@@ -48,9 +48,14 @@ export const fieldInput = style({
   selectors: { "&::placeholder": { color: tokens.color.ink.faint } },
 });
 
-// size 3 단 — 래퍼에 (height × paddingInline × fontSize). Button 과 같은 공통 사다리.
+// size 3 단 — 공통 사다리에서 **가로 여백만** 갈아 끼운다.
+//
+// height 와 fontSize 는 베이스 그대로다(폼 한 줄에서 버튼과 같은 높이에 선다). 가로만
+// inputPaddingX(7 · 9 · 12)로 나가는데, 그 값이 (height − 테두리 2 − 글자 14) / 2 라
+// **글자가 테두리에서 사방 같은 거리에 앉는다.** 컨트롤 사다리의 10 · 13 · 17 은 버튼
+// 라벨의 비율이라, 입력칸에 쓰면 세로 9 에 가로 13 이 되어 글자가 눌린 것처럼 보인다.
 export const fieldSize = styleVariants(
-  Object.fromEntries(CONTROL_SIZES.map((s) => [s, sizeLadderRules[s]])) as Record<ControlSize, (typeof sizeLadderRules)[ControlSize]>,
+  ladderRules((s) => ({ paddingInline: tokens.shape.inputPaddingX[s] })),
 );
 
 // status — 래퍼 테두리 색. 포커스 링은 이제 바깥 outline 이라 status 테두리와 겹치지 않고

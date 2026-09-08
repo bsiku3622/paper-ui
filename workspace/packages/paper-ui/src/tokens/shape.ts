@@ -200,6 +200,32 @@ export const CONTROL_PADDING_Y = {
   lg: REM(8.5), // (40 − 2 − 21) / 2
 } as const;
 
+// ───── input paddingInline — 입력류 전용 가로 여백 (3 단) ───────────────────
+//
+// **(height − 테두리 2 − 글자 14) / 2.** 위 CONTROL_PADDING_Y 와 같은 식인데 분모가
+// 줄상자(21)가 아니라 **글자(14)** 다. 두 값이 재는 게 다르기 때문이다 —
+// controlPaddingY 는 *줄상자* 를 어디에 놓을지, 이 값은 *잉크* 가 테두리에서 얼마나
+// 떨어져 보이는지다. 사람 눈에 여백으로 읽히는 건 후자다.
+//
+// 그래서 이 값을 가로에 그대로 쓰면 **입력칸 안의 글자가 사방 같은 거리에 앉는다.**
+// 34 짜리 Field 는 세로로 이미 9 를 갖고 있으므로(높이가 그렇게 만든다) 가로도 9 다.
+//
+// 왜 버튼과 갈라지나 — 버튼은 라벨이 상자를 정의하니 좌우가 넉넉해야 형태가 산다
+// (controlPaddingX 10 · 13 · 17). 입력칸은 상자가 먼저 있고 글자가 그 안에 놓이는
+// 자리라, 가로만 넓으면 글자가 한쪽으로 눌린 것처럼 읽힌다. shadcn(버튼 16 · 입력 12)
+// ·Ant(15 · 11) 도 같은 방향으로 갈라 둔다. **높이는 그대로 공유한다** — 폼 한 줄에서
+// 버튼과 입력이 같은 높이에 서는 건 다른 문제고, 그건 사다리가 계속 맡는다.
+//
+// ⚠ Textarea 는 세로를 controlPaddingY(3.5 · 5.5 · 8.5)로 받는다. 줄상자에 반 줄 여백이
+// 이미 들어 있어, 그 값이라야 *잉크* 가 이 표의 7 · 9 · 12 에 앉는다. 선언값을 정사각으로
+// 맞추면(9 / 9) 첫 줄이 왼쪽 여백보다 3.5 아래에서 시작해 되레 어긋나 보인다.
+
+export const INPUT_PADDING_X = {
+  sm: REM(7), //  (30 − 2 − 14) / 2
+  md: REM(9), //  (34 − 2 − 14) / 2 ◀ anchor
+  lg: REM(12), // (40 − 2 − 14) / 2
+} as const;
+
 // ───── control fontSize — 밀도와 분리한 컨트롤 라벨 크기 (14 고정) ───────────
 //
 // 컨트롤 크기가 바뀌어도 글자는 14 로 고정 — 밀도(height·padding)와 가독성(fontSize)은
@@ -395,6 +421,7 @@ export const SHAPE_VALUES = {
   fontSize: SHAPE_FONT_SIZE,
   controlPaddingX: CONTROL_PADDING_X,
   controlPaddingY: CONTROL_PADDING_Y,
+  inputPaddingX: INPUT_PADDING_X,
   controlFontSize: CONTROL_FONT_SIZE,
   icon: SHAPE_ICON,
   badge: SHAPE_BADGE,

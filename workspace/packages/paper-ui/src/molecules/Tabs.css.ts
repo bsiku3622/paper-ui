@@ -1,7 +1,7 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
-import { tokens, stateTransition, CONTROL_SIZES, type ControlSize } from "../tokens";
-import { sizeLadderRules } from "../internal/sizeLadder";
+import { tokens, stateTransition } from "../tokens";
+import { ladderRules } from "../internal/sizeLadder";
 
 // 트랙 — 그릇. 곡선은 shape 축(tabsListShape)이 정한다.
 export const tabsList = style({
@@ -36,9 +36,8 @@ export const tabItem = style({
   },
 });
 
-export const tabItemSize = styleVariants(
-  Object.fromEntries(CONTROL_SIZES.map((s) => [s, sizeLadderRules[s]])) as Record<ControlSize, (typeof sizeLadderRules)[ControlSize]>,
-);
+// 탭 항목은 버튼과 같은 자리다 — 라벨이 상자를 정의하므로 베이스를 그대로 쓴다.
+export const tabItemSize = styleVariants(ladderRules());
 
 // 선택 = 흰 면. well 트랙 위 흰색 대비만으로 또렷하다 — 그림자 없음.
 // (탭은 overlay 가 아니므로 뜨지 않는다. 원칙 3.)
