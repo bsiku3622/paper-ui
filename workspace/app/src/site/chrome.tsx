@@ -55,22 +55,22 @@ const Brand = ({ height = 26 }: { height?: number }) => (
   </Link>
 );
 
-// paper-ui Navbar 는 data API(items+onSelect)라, 라우팅을 위해 얇게 감싼 사이트 전용 GNB.
+// 사이트 GNB — **라이브러리 Navbar 를 그대로 쓴다.**
+//
+// 오래 여기서 손으로 다시 짜고 있었다. 이유는 하나였다: Navbar 항목이 `<button>` 이라
+// 라우터 링크가 될 수 없었다. 자기 시스템으로 자기 사이트의 헤더를 못 짜는 건 시스템
+// 쪽의 결함이지 사이트 쪽 사정이 아니라, Navbar 에 `as` 를 열어 고쳤다.
+// `width="content"` 는 안쪽 줄만 본문 격자에 맞추고 괘선은 화면 끝까지 보낸다.
 export const SiteNav = () => {
   const { pathname } = useLocation();
+  const active = SITE_NAV.find((n) => isActive(pathname, n.to))?.to;
   return (
-    <Box as="header" paddingX="xl" className="gnb">
-      <div className="gnb-inner">
-        <Inline gap="lg" align="center">
-          <Brand />
-          <nav className="gnb-nav">
-            {SITE_NAV.map((n) => (
-              <Link key={n.to} to={n.to} className="gnb-link" data-active={isActive(pathname, n.to)}>
-                {n.label}
-              </Link>
-            ))}
-          </nav>
-        </Inline>
+    <Navbar
+      width="content"
+      brand={<Brand />}
+      active={active}
+      items={SITE_NAV.map((n) => ({ value: n.to, label: n.label, as: Link, to: n.to }))}
+      trailing={
         <Inline gap="sm" align="center">
           <ThemeToggle />
           <Box
@@ -85,8 +85,8 @@ export const SiteNav = () => {
             </Text>
           </Box>
         </Inline>
-      </div>
-    </Box>
+      }
+    />
   );
 };
 

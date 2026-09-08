@@ -547,6 +547,26 @@ test("modal · 긴 본문이어도 패널이 화면 안에 있고 푸터가 보�
   await page.keyboard.press("Escape");
 });
 
+// ── 사이트 GNB — 자기 시스템의 Navbar 로 짜여 있고, 항목은 진짜 링크다 ──────
+//
+// 오래 이 사이트는 헤더를 손으로 다시 짜고 있었다. Navbar 항목이 <button> 이라 라우터
+// 링크가 될 수 없어서였다 — 가운데 클릭으로 새 탭도 못 열고 주소도 없다. 자기 시스템으로
+// 자기 사이트의 헤더를 못 짜는 건 시스템 쪽 결함이라 `as` 를 열어 고쳤다. 되돌아가지 않게
+// 못 박는다.
+test("navbar · GNB 항목이 <a href> 이고 현재 항목만 aria-current", async ({ page }) => {
+  await page.goto("/docs");
+  const nav = page.locator("header nav");
+  const links = nav.locator("a");
+  await expect(links).toHaveCount(4);
+  for (const href of ["/", "/demo", "/playground", "/docs"]) {
+    await expect(nav.locator(`a[href="${href}"]`)).toHaveCount(1);
+  }
+  await expect(nav.locator('[aria-current="page"]')).toHaveCount(1);
+  await expect(nav.locator('[aria-current="page"]')).toHaveAttribute("href", "/docs");
+  // 링크로 왔어도 밑줄·파란 글자 같은 <a> 기본값이 남아 있으면 안 된다.
+  await expect(links.first()).toHaveCSS("text-decoration-line", "none");
+});
+
 // ── 홈 CTA — 버튼처럼 생긴 자리가 링크면, 링크 하나만 그린다 ──────────────────
 //
 // <Link><Button/></Link> 로 감싸면 <a> 안에 <button> 이라 같은 자리에서 탭이 두 번
