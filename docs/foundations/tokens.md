@@ -112,13 +112,13 @@ chroma 는 저명도에서 지각이 약해지므로 다크 쪽을 조금 올려
 
 **톤은 램프 인덱스가 아니라 대비로 고릅니다.** 넷을 다 400톤으로 맞춰 보면 초록·amber가 파랑·빨강보다 눈에 띄게 옅습니다 — hue마다 고유 명도가 달라서입니다. 그래서 각자 지면 대비 3.0이 되는 자리를 따로 찾았습니다(`solid`를 "진한 톤으로 낮춤" 한 것과 같은 이유). primary는 자기 `edgeStrong`을 들지 않습니다 — 위의 `border.control`이 그 자리입니다.
 
-**color × variant — 잉크색을 입는 컴포넌트(Button·Badge·Alert).** `color`(primary + 4 accent) × `variant`(`solid`·`soft`·`outline`·`plain`·`quiet`)로 색을 받습니다.
+**color × variant — 잉크색을 입는 컴포넌트(Button·Badge·Alert).** `color`(primary + 4 accent) × `variant`(`solid`·`soft`·`outline`·`hairline`·`quiet`)로 색을 받습니다.
 
-**테두리만 있는 변형이 둘인데, 세기가 아니라 *어느 선이냐*로 갈립니다.** `outline`은 color family가 소유한 선입니다 — primary는 `primary.edgeStrong`, accent는 각자의 `edgeStrong`이고 둘 다 지면 대비 3:1입니다. 면을 안 칠하니 테두리가 곧 형태여서, 강조가 필요한 자리에 고르는 변형입니다. `plain`은 지면이 소유한 선입니다 — 뉴트럴은 카드 헤어라인·빈 입력칸과 같은 `border.base`를 그대로 두르고, accent는 그 색의 가장 옅은 괘선(`edge`)으로 갑니다(색 있는 자리에 뉴트럴 회색을 두르면 그 컴포넌트만 색 정체성을 잃습니다).
+**테두리만 있는 변형이 둘인데, 세기가 아니라 *어느 선이냐*로 갈립니다.** `outline`은 color family가 소유한 선입니다 — primary는 `primary.edgeStrong`, accent는 각자의 `edgeStrong`이고 둘 다 지면 대비 3:1입니다. 면을 안 칠하니 테두리가 곧 형태여서, 강조가 필요한 자리에 고르는 변형입니다. `hairline`은 지면이 소유한 선입니다 — 뉴트럴은 카드 헤어라인·빈 입력칸과 같은 `border.base`를 그대로 두르고, accent는 그 색의 가장 옅은 괘선(`edge`)으로 갑니다(색 있는 자리에 뉴트럴 회색을 두르면 그 컴포넌트만 색 정체성을 잃습니다).
 
-그래서 `plain`은 여러 개 깔려도 조용하고 — 폼의 보조 버튼처럼 수가 많은 자리가 여기입니다 — `outline`은 하나만 놓아야 말이 됩니다.
+그래서 `hairline`은 여러 개 깔려도 조용하고 — 폼의 보조 버튼처럼 수가 많은 자리가 여기입니다 — `outline`은 하나만 놓아야 말이 됩니다.
 
-한때 `outline` 하나뿐이었고 그게 지금의 `plain`이었습니다. 헤어라인만으로는 "테두리가 곧 형태"인 변형이 지면에서 떨어지지 않아(1.19:1) 진한 쪽을 새로 열고 이름을 옮겼습니다. 그렇다고 지면의 선 자체를 올리지는 않았는데, 그러면 카드는 안 보이는데 그 위 컨트롤만 진해져 한 화면에 회색이 두 벌이 됩니다 — 어느 쪽을 쓸지는 **variant로 고릅니다.** 이건 면(surface)과 **다른 종류**라 Box 는 `color` 를 안 받습니다. `status`(validation)는 Field·TextField·Textarea 만 받고, 이름은 accent 와 같습니다(`danger` 폐기 → `error`).
+한때 `outline` 하나뿐이었고 그게 지금의 `hairline`이었습니다. 헤어라인만으로는 "테두리가 곧 형태"인 변형이 지면에서 떨어지지 않아(1.19:1) 진한 쪽을 새로 열고 이름을 옮겼습니다. 그렇다고 지면의 선 자체를 올리지는 않았는데, 그러면 카드는 안 보이는데 그 위 컨트롤만 진해져 한 화면에 회색이 두 벌이 됩니다 — 어느 쪽을 쓸지는 **variant로 고릅니다.** 이건 면(surface)과 **다른 종류**라 Box 는 `color` 를 안 받습니다. `status`(validation)는 Field·TextField·Textarea 만 받고, 이름은 accent 와 같습니다(`danger` 폐기 → `error`).
 
 **primary / focus / interaction.** `primary`는 검정 일꾼(`base` `#18181b` · `hover` `#3f3f46` · `fg` `#ffffff`, 다크선 흰 채움으로 반전). 검정 면은 hover 때 *밝아진다* — 이미 검정에 가까워 더 어둡게는 눈에 안 보이기 때문(원칙 3의 예외). `focus.ring`은 파란 링 `#2563eb`(= `accent.info.solid`, 한 곳에서 굳힘). hover·selected·active 는 solid 회색이 아니라 **interaction 오버레이**(ink 계열 alpha — 어느 면 위든 밑을 그대로 어둡게, 다크는 흰빛 alpha)로 얹고, `scrim`(모달 뒤)도 테마 인식입니다.
 

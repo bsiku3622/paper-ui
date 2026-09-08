@@ -44,10 +44,10 @@ const primaryProfile: Record<Variant, ColorSpec> = {
     borderColor: tokens.color.primary.edgeStrong,
     hoverOverlay: tokens.color.interaction.hover,
   },
-  // plain — **지면이 소유한 선.** 카드 헤어라인·빈 입력칸과 같은 border.base 를 두른다.
+  // hairline — **지면이 소유한 선.** 카드 헤어라인·빈 입력칸과 같은 border.base 를 두른다.
   // 화면에 여러 개 깔려도 조용한 쪽이라, 폼의 보조 버튼처럼 수가 많은 자리가 여기다.
   // (예전 `outline` 이 이 자리였다 — 이름만 옮겼고 값은 그대로다.)
-  plain: {
+  hairline: {
     background: "transparent",
     color: tokens.color.ink.base,
     borderColor: tokens.color.border.base,
@@ -92,10 +92,10 @@ const accentProfile = (c: AccentTones): Record<Variant, ColorSpec> => ({
     borderColor: c.edgeStrong,
     hoverBackground: c.wash,
   },
-  // plain — 색은 지되 선은 물러난다. 뉴트럴이 지면의 헤어라인을 쓰듯, 여기서는 그 색의
+  // hairline — 색은 지되 선은 물러난다. 뉴트럴이 지면의 헤어라인을 쓰듯, 여기서는 그 색의
   // 가장 옅은 괘선(edge)을 쓴다. 색 있는 자리에 뉴트럴 회색을 두르면 그 컴포넌트만
   // 색 정체성을 잃는다 — 그래서 뉴트럴처럼 border.base 로 넘어가지 않는다.
-  plain: {
+  hairline: {
     background: "transparent",
     color: c.ink,
     borderColor: c.edge,

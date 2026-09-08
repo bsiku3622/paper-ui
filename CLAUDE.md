@@ -88,11 +88,12 @@ accent 는 hue 이름(blue 등)이 **API 에 없다** — 전부 의미색. 각 
 ⚠ 라이트 solidFg 는 채움 위에서 3.91~4.21 로 아직 AA 미달이다. 값의 문제라 팔레트 확정 뒤로 미뤄 뒀다.
 
 **`variant` 축 = 면의 무게:** `solid`(채움) · `soft`(옅은 면) · `outline`(또렷한 테두리) ·
-`plain`(헤어라인) · `quiet`(글자만). ⚠ **테두리만 있는 자리가 둘이고, 세기가 아니라 *어느 선이냐*
+`hairline`(헤어라인) · `quiet`(글자만). ⚠ **테두리만 있는 자리가 둘이고, 세기가 아니라 *어느 선이냐*
 로 갈린다** — `outline` 은 color family 가 소유한 선(`primary.edgeStrong` · accent `edgeStrong`,
-지면 대비 3:1)이고 `plain` 은 지면이 소유한 선(뉴트럴은 `border.base`, accent 는 그 색의 `edge`).
-그래서 plain 은 여러 개 깔려도 조용하고 outline 은 하나만 놓아야 말이 된다.
-⚠ **`outline` 의 뜻이 바뀌었다** — 예전 outline 이 지금의 `plain` 이다.
+지면 대비 3:1)이고 `hairline` 은 지면이 소유한 선(뉴트럴은 `border.base`, accent 는 그 색의 `edge`).
+그래서 `hairline` 은 여러 개 깔려도 조용하고 `outline` 은 하나만 놓아야 말이 된다.
+⚠ 이름을 둘 다 `-line` 으로 맞춘 건 의도다 — 둘 다 선을 말하니 `quiet`(선 없음)과 섞이지 않는다.
+⚠ **`outline` 의 뜻이 바뀌었다** — 예전 outline 이 지금의 `hairline` 이다.
 - Button 예) 기본=`primary solid`(검정) · `variant="soft"`=회색 secondary · **`variant="outline"`=흰 기본
   버튼** · `color="error"`=빨강. 흰/회색 버튼은 색이 아니라 primary 의 무게로 나온다.
 - **Badge** 도 color × variant (기본 soft) + `dot`(상태 점) — solid=카운트·강조, outline=테두리 태그, quiet=글자만.
