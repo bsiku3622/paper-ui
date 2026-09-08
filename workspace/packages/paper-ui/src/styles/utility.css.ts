@@ -36,6 +36,10 @@ for (const i of NEUTRAL_INKS) {
   globalStyle(`.pui-ink-${i}`, { color: INK_TOKEN[i] });
 }
 
+// ink="inherit" — 면이 정한 글자색을 그대로 받는다. Alert 처럼 색이 깔린 면 안의 Text 가
+// variant 기본 잉크(ink.soft 등)로 면의 색을 덮어쓰는 걸 막는 자리.
+globalStyle(".pui-ink-inherit", { color: "inherit" });
+
 // ───── accent — 작게 얹는 색 ───────────────────────────────────────────────
 //
 // ink  = 글자·아이콘만 그 색.

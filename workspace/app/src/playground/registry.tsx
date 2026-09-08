@@ -40,7 +40,6 @@ import {
   type Surface,
   type Color,
   type Variant,
-  type Accent,
   type Ink,
   type StatusName,
   type TextVariant,
@@ -541,20 +540,22 @@ export const COMPONENTS: CompSpec[] = [
     slug: "alert",
     name: "Alert",
     group: "Molecules",
-    blurb: "상태 한 줄을 옅은 색 면으로 알린다. color 로 의미를 정한다 (언제나 soft).",
+    blurb: "상태 한 줄을 색이 깔린 면으로 알린다. Button·Badge 와 같은 color × variant 매트릭스를 그대로 문다 — variant 가 이미 면의 무게 축이라 Alert 전용 surface 축을 따로 세우지 않았다.",
     controls: [
-      { kind: "enum", prop: "color", label: "color", options: ["info", "success", "warning", "error"], def: "info" },
+      { kind: "enum", prop: "color", label: "color", options: ["primary", "info", "success", "warning", "error"], def: "info" },
+      { kind: "enum", prop: "variant", label: "variant", options: ["soft", "solid", "outline", "quiet"], def: "soft" },
       { kind: "text", prop: "title", label: "title", def: "확인이 필요합니다" },
       { kind: "text", prop: "children", label: "children", def: "이 작업은 되돌릴 수 없습니다." },
     ],
     render: (st) => (
       <Box style={{ width: "22rem" }}>
-        <Alert color={s(st.color) as Accent} title={s(st.title)}>
+        <Alert color={s(st.color) as Color} variant={s(st.variant) as Variant} title={s(st.title)}>
           {s(st.children)}
         </Alert>
       </Box>
     ),
-    code: (st) => `<Alert color="${s(st.color)}" title="${s(st.title)}">${s(st.children)}</Alert>`,
+    code: (st) =>
+      `<Alert color="${s(st.color)}"${AE("variant", s(st.variant), "soft")} title="${s(st.title)}">${s(st.children)}</Alert>`,
   },
 
   // ─ Components ─

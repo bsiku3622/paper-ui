@@ -60,7 +60,18 @@ export const BORDER = {
 //             글자가 얹힌다. 버튼 전체가 한 색으로 통일된다.
 //   ink     — 흰 배경 위 *글자* 색 (AA 대비). 700 톤.
 //   wash    — 아주 옅은 면 (subtle 배지 · soft 버튼 · 선택 행). 50 톤.
-//   edge    — wash 의 괘선. 200 톤.
+//   edge    — wash 의 괘선, 그리고 soft 의 hover 면. 200 톤.
+//   edgeStrong — **홀로 서는 테두리** (outline 변형). canvas 대비 3:1 로 맞춘 값.
+//
+// ⚠ edge 와 edgeStrong 을 가르는 이유. 예전엔 outline 이 edge 를 빌려 썼는데, 두 자리가
+// 요구하는 세기가 다르다. wash 의 괘선은 이미 색이 깔린 면의 가장자리라 살짝만 진하면
+// 되지만, **outline 은 그 선이 곧 컴포넌트다** — 흰 면 위에서 혼자 형태를 만들어야 한다.
+// 200 톤은 canvas 대비 1.18~1.41 이라 그 일을 못 했다(비텍스트 기준 3:1 의 절반도 안 된다).
+// 다크 팔레트 주석이 "edge 가 두 일을 겸하는 구조 문제" 라고 이미 적어 둔 그 문제다.
+//
+// ⚠ **톤은 램프 인덱스가 아니라 대비로 고른다.** 넷을 다 400 톤으로 맞춰 보면 초록·amber
+// 가 파랑·빨강보다 눈에 띄게 옅다 — hue 마다 고유 명도가 달라서다. 그래서 각자 canvas
+// 대비 3.0 이 되는 자리를 따로 찾았다(solid 를 "진한 톤으로 낮춤" 한 것과 같은 이유).
 //
 // 색 면은 그 색의 *의미* 를 짊어질 때만 쓴다 (error 버튼처럼). 장식으로 면을
 // 채우지 않는다 — 큰 면을 채우는 건 primary(검정) 뿐.
@@ -72,6 +83,7 @@ export const ACCENT = {
     ink: "#1d4ed8",
     wash: "#eff6ff",
     edge: "#bfdbfe",
+    edgeStrong: "#5694e9", // canvas 3.01
   },
   success: {
     solid: "#15803d", // 진한 초록으로 낮춤(옅은 글자 대비 확보)
@@ -79,6 +91,7 @@ export const ACCENT = {
     ink: "#15803d",
     wash: "#f0fdf4",
     edge: "#bbf7d0",
+    edgeStrong: "#35a75f", // canvas 2.99
   },
   warning: {
     solid: "#b45309", // 진한 amber 로 낮춤
@@ -86,6 +99,7 @@ export const ACCENT = {
     ink: "#b45309",
     wash: "#fffbeb",
     edge: "#fde68a",
+    edgeStrong: "#c5861b", // canvas 3.01
   },
   error: {
     solid: "#dc2626",
@@ -93,6 +107,7 @@ export const ACCENT = {
     ink: "#b91c1c",
     wash: "#fef2f2",
     edge: "#fecaca",
+    edgeStrong: "#ed6969", // canvas 3.00
   },
 } as const;
 
@@ -107,6 +122,11 @@ export const PRIMARY = {
   base: "#18181b",
   hover: "#3f3f46", // 어두운 면은 hover 때 *밝아진다* — 이미 검정에 가까워 더 어둡게는 안 보인다. 한 단 확실히.
   fg: "#ffffff",
+  // 홀로 서는 테두리 (primary outline). accent 의 edgeStrong 과 같은 자리 — **색 family
+  // 가 자기 outline 테두리를 소유한다.** border.* 는 구조선(카드 헤어라인 · 구획 · 입력)
+  // 이라 종류가 다르다: 하나는 "면을 나누는 선", 하나는 "그 자체가 컴포넌트인 선".
+  // 예전엔 border.base(#e8e8ea)를 빌려 써서 canvas 대비 1.19 — 사실상 안 보였다.
+  edgeStrong: "#92929b", // canvas 3.01
 } as const;
 
 // ───── focus — 파란 링 ──────────────────────────────────────────────────────
@@ -303,7 +323,12 @@ const BORDER_DARK = {
 // ⚠ edge 만 접기에서 벗어난다(엄밀한 거울은 L .305). 거기서는 canvas 위 1.42 로
 // border.base(1.35)와 거의 같아 **outline 버튼의 테두리가 안 보인다.** .330 으로
 // 올려 1.50~1.60 을 준다 — 대신 soft 의 hover 폭이 ΔL .104 로 라이트(.073)보다 넓다.
-// **edge 가 두 일(테두리 · hover 면)을 겸하는 구조 문제**라 값으로는 여기까지다.
+//
+// ✅ **그 구조 문제는 풀렸다** (2026-09-09). 여기 "edge 가 두 일(테두리 · hover 면)을
+// 겸한다" 고 적어 둔 게 원인이었고, 자리를 갈라 `edgeStrong` 을 신설했다. edge 는 이제
+// wash 의 괘선 + soft 의 hover 면만 지고, outline 테두리는 edgeStrong 이 진다.
+// 다크 edgeStrong 은 **가장 밝은 면(well)** 위에서 3:1 이 되는 자리다 — 이 파일이
+// solid 를 well 기준으로 잡은 것과 같은 기준이라, 트랙 위에 얹혀도 테두리가 산다.
 //
 // 계약 (전 항목 통과):
 //     solid↔well     4.56~5.25  (비텍스트 3:1)
@@ -316,16 +341,17 @@ const BORDER_DARK = {
 // ⚠ **Banner 는 채운 면 위 글자를 solidFg 로 쓴다.** 한때 `paper.raised` 로 하드코딩돼
 // 있었는데 다크의 raised 는 최암이라 2.24~2.45 였다. 되돌리지 말 것.
 const ACCENT_DARK = {
-  info: { solid: "#5492ec", solidFg: "#0a1930", ink: "#8ebcff", wash: "#0d1c32", edge: "#1a355d" },
-  success: { solid: "#32ac64", solidFg: "#03200e", ink: "#81cf99", wash: "#062211", edge: "#094021" },
-  warning: { solid: "#c58300", solidFg: "#271500", ink: "#e4b066", wash: "#291800", edge: "#4c2e00" },
-  error: { solid: "#df6768", solidFg: "#2d0f0f", ink: "#f99e9b", wash: "#2f1211", edge: "#572223" },
+  info: { solid: "#5492ec", solidFg: "#0a1930", ink: "#8ebcff", wash: "#0d1c32", edge: "#1a355d", edgeStrong: "#4c6fa3" },
+  success: { solid: "#32ac64", solidFg: "#03200e", ink: "#81cf99", wash: "#062211", edge: "#094021", edgeStrong: "#3a7b52" },
+  warning: { solid: "#c58300", solidFg: "#271500", ink: "#e4b066", wash: "#291800", edge: "#4c2e00", edgeStrong: "#8e672c" },
+  error: { solid: "#df6768", solidFg: "#2d0f0f", ink: "#f99e9b", wash: "#2f1211", edge: "#572223", edgeStrong: "#a15a59" },
 } as const;
 
 const PRIMARY_DARK = {
   base: "#e8e8ea", // 일꾼 면 — 순백은 딥다크 위에서 튄다. soft white 로 눌러도 "가장 밝은 = primary" 유지
   hover: "#d6d6d9", // 밝은 면은 hover 때 살짝 어두워진다
   fg: "#18181b",
+  edgeStrong: "#6e6e75", // well 3.02 — 가장 밝은 면 위에서도 보이는 자리
 } as const;
 
 const FOCUS_DARK = {

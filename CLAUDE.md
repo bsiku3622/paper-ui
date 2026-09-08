@@ -93,7 +93,13 @@ accent 는 hue 이름(blue 등)이 **API 에 없다** — 전부 의미색. 각 
 - **Badge** 도 color × variant (기본 soft) + `dot`(상태 점) — solid=카운트·강조, outline=테두리 태그, quiet=글자만.
   Alert 는 언제나 soft, `color` 는 accent 4 색.
 
-**마크 색(ink)은 면이 아니라 글자가 정한다** — `Text`·`Icon` 의 `ink`. 한 축에 뉴트럴
+**`outline` 의 테두리는 `edgeStrong` 이다** — `edge`(wash 괘선 · soft hover 면)와 다른 자리다.
+면을 안 칠하는 변형에서 테두리는 장식이 아니라 형태 그 자체라, 지면 대비 3:1 로 맞춘다.
+톤은 램프 인덱스가 아니라 **대비**로 고른다(hue 마다 고유 명도가 달라 400 톤으로 맞추면
+초록·amber 가 옅다). primary 도 자기 `edgeStrong` 을 든다 — `border.*` 는 구조선이라 종류가 다르다.
+
+**마크 색(ink)은 면이 아니라 글자가 정한다** — `Text`·`Icon` 의 `ink`. `ink="inherit"` 는
+색면 위에서 자리를 비켜 면의 색을 그대로 받는 자리다(Alert 안 글자). 한 축에 뉴트럴
 농도(`base·soft·faint`)와 의미색(`info·success·warning·error`)이 함께 있다 — 글자는 색이
 하나. accent 는 단일 톤(AA ink)이라 농도×색 직교(죽은 셀)를 안 만든다. `<Text ink="error">`.
 **interaction**(hover/selected/active)은 중립=오버레이(라이트=ink alpha, 다크=흰빛 alpha),

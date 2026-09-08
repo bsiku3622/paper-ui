@@ -96,6 +96,12 @@ chroma 는 저명도에서 지각이 약해지므로 다크 쪽을 조금 올려
 ⚠ **`Banner`가 조용히 깨져 있었습니다.** 채운 면 위 글자를 `paper.raised`로 하드코딩하고 있었는데("종이색"이라는 뜻이었습니다), 다크의 `raised`는 최암입니다. 그래서 status Banner 의 글자가 다크에서 **`2.24~2.45`**였습니다. 지금은 Banner 도 `solidFg`를 씁니다 — 채움 위 글자의 정본은 처음부터 그 자리였습니다. 중립 tone 만 `paper.raised`를 그대로 씁니다: 거기 배경은 `ink.base`인데 둘이 테마마다 함께 뒤집혀 저절로 맞습니다.
 
 ⚠ **라이트 `solidFg`는 아직 AA 미달입니다.** 옅은 글자가 진한 채움 위에서 `3.91~4.21`로 4.5를 못 넘습니다(`error` `3.91`이 최악). 다크와 달리 라이트는 채움을 더 진하게 내리면 풀리므로 구조가 아니라 값의 문제입니다.
+**accent 5자리** — `solid`(채운 면) · `solidFg`(solid 위 글자) · `ink`(흰 배경 위 글자, AA) · `wash`(옅은 면) · `edge`(wash의 괘선, 그리고 `soft`의 hover 면) · `edgeStrong`(**홀로 서는 테두리** — `outline` 변형).
+
+`edge`와 `edgeStrong`을 가르는 이유는, 두 자리가 요구하는 세기가 다르기 때문입니다. wash의 괘선은 이미 색이 깔린 면의 가장자리라 살짝만 진하면 되지만, **`outline`은 그 선이 곧 컴포넌트입니다** — 흰 면 위에서 혼자 형태를 만들어야 합니다. 한동안 outline이 `edge`(200톤)를 빌려 써서 지면 대비 1.18~1.41이었는데, 비텍스트 기준 3:1의 절반도 안 되는 값입니다. 다크 팔레트 주석이 "edge가 두 일을 겸하는 구조 문제"라고 이미 적어 둔 그 문제였습니다.
+
+**톤은 램프 인덱스가 아니라 대비로 고릅니다.** 넷을 다 400톤으로 맞춰 보면 초록·amber가 파랑·빨강보다 눈에 띄게 옅습니다 — hue마다 고유 명도가 달라서입니다. 그래서 각자 지면 대비 3.0이 되는 자리를 따로 찾았습니다(`solid`를 "진한 톤으로 낮춤" 한 것과 같은 이유). primary도 자기 `edgeStrong`을 듭니다 — `border.*`를 빌려 쓰지 않는데, 그쪽은 면을 나누는 구조선이라 종류가 다릅니다: 하나는 "면을 나누는 선", 하나는 "그 자체가 컴포넌트인 선".
+
 **color × variant — 잉크색을 입는 컴포넌트(Button·Badge·Alert).** `color`(primary + 4 accent) × `variant`(`solid`·`soft`·`outline`·`quiet`)로 색을 받습니다. 이건 면(surface)과 **다른 종류**라 Box 는 `color` 를 안 받습니다. `status`(validation)는 Field·TextField·Textarea 만 받고, 이름은 accent 와 같습니다(`danger` 폐기 → `error`).
 
 **primary / focus / interaction.** `primary`는 검정 일꾼(`base` `#18181b` · `hover` `#3f3f46` · `fg` `#ffffff`, 다크선 흰 채움으로 반전). 검정 면은 hover 때 *밝아진다* — 이미 검정에 가까워 더 어둡게는 눈에 안 보이기 때문(원칙 3의 예외). `focus.ring`은 파란 링 `#2563eb`(= `accent.info.solid`, 한 곳에서 굳힘). hover·selected·active 는 solid 회색이 아니라 **interaction 오버레이**(ink 계열 alpha — 어느 면 위든 밑을 그대로 어둡게, 다크는 흰빛 alpha)로 얹고, `scrim`(모달 뒤)도 테마 인식입니다.

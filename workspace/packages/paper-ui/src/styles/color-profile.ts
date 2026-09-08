@@ -35,10 +35,14 @@ const primaryProfile: Record<Variant, ColorSpec> = {
   // outline 은 **면을 칠하지 않는다** — 테두리만 두르고 밑면이 그대로 비친다.
   // raised 를 칠하고 있었는데, 이 팔레트에서는 raised(#ffffff)와 canvas(#fcfcfc)가
   // 거의 같아 티가 안 났을 뿐 이름과는 어긋난 자리였다.
+  //
+  // 테두리는 primary 자신의 edgeStrong 이다 — border.base 를 빌려 쓰던 자리인데, 그건
+  // 면을 나누는 헤어라인이라 canvas 대비 1.19 였다. 면을 안 칠하는 변형에서 테두리는
+  // 장식이 아니라 형태 그 자체다.
   outline: {
     background: "transparent",
     color: tokens.color.ink.base,
-    borderColor: tokens.color.border.base,
+    borderColor: tokens.color.primary.edgeStrong,
     hoverOverlay: tokens.color.interaction.hover,
   },
   quiet: {
@@ -54,7 +58,7 @@ const primaryProfile: Record<Variant, ColorSpec> = {
 // solid=채운 색면 · soft=옅은 면(wash) · outline=흰 면+색 테두리 · quiet=색 글자만.
 // 색 면은 그 색의 의미를 짊어질 때만 (error 버튼처럼). hover 는 색 스텝(오버레이 아님).
 // solid 위 글자는 각 색의 solidFg(on-solid 대비쌍) — 배경 밝기 따라 흰/어두운 잉크가 갈린다.
-type AccentTones = { solid: string; solidFg: string; ink: string; wash: string; edge: string };
+type AccentTones = { solid: string; solidFg: string; ink: string; wash: string; edge: string; edgeStrong: string };
 
 const accentProfile = (c: AccentTones): Record<Variant, ColorSpec> => ({
   solid: {
@@ -71,10 +75,13 @@ const accentProfile = (c: AccentTones): Record<Variant, ColorSpec> => ({
     borderColor: "transparent",
     hoverBackground: c.edge,
   },
+  // 테두리는 edge(wash 의 괘선)가 아니라 edgeStrong 이다. 두 자리가 요구하는 세기가
+  // 다르다 — wash 의 괘선은 이미 색이 깔린 면의 가장자리지만, outline 은 그 선이 곧
+  // 컴포넌트라 흰 면 위에서 혼자 형태를 만들어야 한다.
   outline: {
     background: "transparent", // 면을 칠하지 않는다 — 밑면이 비친다
     color: c.ink,
-    borderColor: c.edge,
+    borderColor: c.edgeStrong,
     hoverBackground: c.wash,
   },
   quiet: {
