@@ -106,13 +106,6 @@ globalStyle(".home-navitem", {
   color: tokens.color.ink.soft,
 });
 
-/* hero 의 CTA 둘은 알약을 고른다. 세그먼트까지 합쳐 화면에 알약이 셋이고, 각각 자기
-   영역에서 가장 중요한 행동을 표시한다 — 알약이 기본값이 아니라 선택일 때 갖는 뜻이다.
-   일반 Button 은 사다리 값을 그대로 쓴다. */
-globalStyle(".home-cta button", {
-  borderRadius: tokens.shape.constants.pillRadius,
-});
-
 /* 필터 행·머리말의 크기. Home.tsx 인라인에 있던 것을 옮겼다 — 사이드바 치수를 한곳에
    모아 두면 shape 이 통째로 바꿀 수 있다. */
 globalStyle(".home-filterrow", {

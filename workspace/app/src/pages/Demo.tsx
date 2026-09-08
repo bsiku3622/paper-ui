@@ -65,7 +65,7 @@ const STATE_STATUS: Record<State, StatusName | undefined> = {
 const Avatar = ({ name }: { name: string }) => (
   <Box
     surface="well"
-    radius="pill"
+    radius="full"
     className="avatar"
     aria-hidden
     style={{

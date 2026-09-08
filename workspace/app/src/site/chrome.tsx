@@ -75,7 +75,7 @@ export const SiteNav = () => {
           <ThemeToggle />
           <Box
             surface="sunken"
-            radius="pill"
+            radius="full"
             paddingX="sm"
             paddingY="xs"
             style={{ border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }}

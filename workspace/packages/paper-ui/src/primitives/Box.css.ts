@@ -11,7 +11,7 @@ export const boxRadius = styleVariants({
   sm: { borderRadius: tokens.shape.radius.interaction },
   md: { borderRadius: tokens.shape.radius.layout.md },
   lg: { borderRadius: tokens.shape.radius.layout.lg },
-  pill: { borderRadius: tokens.shape.constants.pillRadius },
+  full: { borderRadius: tokens.shape.radius.full },
 });
 
 // Box `shadow` prop → overlay(자유롭게 뜸) · overlayMinimal(살짝). 붙은 면은 prop 생략.

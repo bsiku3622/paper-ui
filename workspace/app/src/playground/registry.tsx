@@ -113,7 +113,7 @@ export const COMPONENTS: CompSpec[] = [
       { kind: "bool", prop: "border", label: "border", def: false },
       { kind: "bool", prop: "inverse", label: "inverse", def: false },
       { kind: "enum", prop: "shadow", label: "shadow", options: ["none", "overlay", "overlayMinimal"], def: "none" },
-      { kind: "enum", prop: "radius", label: "radius", options: ["sm", "md", "lg", "pill"], def: "md" },
+      { kind: "enum", prop: "radius", label: "radius", options: ["sm", "md", "lg", "full"], def: "md" },
       { kind: "enum", prop: "padding", label: "padding", options: ["sm", "md", "lg", "xl"], def: "lg" },
     ],
     render: (st) => (
@@ -122,7 +122,7 @@ export const COMPONENTS: CompSpec[] = [
         border={b(st.border)}
         inverse={b(st.inverse)}
         shadow={s(st.shadow) === "none" ? undefined : (s(st.shadow) as "overlay" | "overlayMinimal")}
-        radius={s(st.radius) as "sm" | "md" | "lg" | "pill"}
+        radius={s(st.radius) as "sm" | "md" | "lg" | "full"}
         padding={s(st.padding) as "sm" | "md" | "lg" | "xl"}
         style={{ minWidth: "8rem" }}
       >
@@ -179,13 +179,14 @@ export const COMPONENTS: CompSpec[] = [
     slug: "button",
     name: "Button",
     group: "Atoms",
-    blurb: "두 축이 직교한다 — color(primary·의미 4색) × variant(solid·soft·outline·quiet, 시각 무게). 큰 면을 채우는 건 검정(primary)뿐, 색은 뜻을 질 때만.",
+    blurb: "두 축이 직교한다 — color(primary·의미 4색) × variant(solid·soft·outline·quiet, 시각 무게). 큰 면을 채우는 건 검정(primary)뿐, 색은 뜻을 질 때만. radius=\"full\" 은 알약 — 화면에서 가장 중요한 행동 한둘에만.",
     controls: [
       { kind: "enum", prop: "color", label: "color", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
       { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "outline", "quiet"], def: "solid" },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "bool", prop: "loading", label: "loading", def: false },
       { kind: "bool", prop: "fullWidth", label: "fullWidth", def: false },
+      { kind: "enum", prop: "radius", label: "radius", options: ["default", "full"], def: "default" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
       { kind: "text", prop: "children", label: "children", def: "버튼" },
     ],
@@ -196,30 +197,32 @@ export const COMPONENTS: CompSpec[] = [
         size={s(st.size) as "sm" | "md" | "lg"}
         loading={b(st.loading)}
         fullWidth={b(st.fullWidth)}
+        radius={s(st.radius) === "full" ? "full" : undefined}
         disabled={b(st.disabled)}
       >
         {s(st.children)}
       </Button>
     ),
     code: (st) =>
-      `<Button${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "solid")}${AE("size", s(st.size), "md")}${A("loading", b(st.loading))}${A("fullWidth", b(st.fullWidth))}${A("disabled", b(st.disabled))}>${s(st.children)}</Button>`,
+      `<Button${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "solid")}${AE("size", s(st.size), "md")}${A("loading", b(st.loading))}${A("fullWidth", b(st.fullWidth))}${AE("radius", s(st.radius), "default")}${A("disabled", b(st.disabled))}>${s(st.children)}</Button>`,
   },
   {
     slug: "badge",
     name: "Badge",
     group: "Atoms",
-    blurb: "상태 한 낱말. color × variant(soft·solid·outline·quiet). dot 으로 앞에 상태 점. 표시용이라 hover 없음.",
+    blurb: "상태 한 낱말. color × variant(soft·solid·outline·quiet). dot 으로 앞에 상태 점. 표시용이라 hover 없음. radius=\"full\" 이면 알약.",
     controls: [
       { kind: "enum", prop: "color", label: "color", options: ["none", "info", "success", "warning", "error"], def: "info" },
       { kind: "enum", prop: "variant", label: "variant", options: ["soft", "solid", "outline", "quiet"], def: "soft" },
       { kind: "bool", prop: "dot", label: "dot", def: false },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
+      { kind: "enum", prop: "radius", label: "radius", options: ["default", "full"], def: "default" },
       { kind: "text", prop: "children", label: "children", def: "진행" },
     ],
     render: (st) => (
-      <Badge color={st.color === "none" ? undefined : (s(st.color) as Color)} variant={s(st.variant) as Variant} dot={b(st.dot)} size={s(st.size) as "sm" | "md" | "lg"}>{s(st.children)}</Badge>
+      <Badge color={st.color === "none" ? undefined : (s(st.color) as Color)} variant={s(st.variant) as Variant} dot={b(st.dot)} size={s(st.size) as "sm" | "md" | "lg"} radius={s(st.radius) === "full" ? "full" : undefined}>{s(st.children)}</Badge>
     ),
-    code: (st) => `<Badge${st.color === "none" ? "" : A("color", s(st.color))}${AE("variant", s(st.variant), "soft")}${A("dot", b(st.dot))}${AE("size", s(st.size), "md")}>${s(st.children)}</Badge>`,
+    code: (st) => `<Badge${st.color === "none" ? "" : A("color", s(st.color))}${AE("variant", s(st.variant), "soft")}${A("dot", b(st.dot))}${AE("size", s(st.size), "md")}${AE("radius", s(st.radius), "default")}>${s(st.children)}</Badge>`,
   },
   {
     slug: "field",
@@ -468,11 +471,11 @@ export const COMPONENTS: CompSpec[] = [
     group: "Molecules",
     blurb: "옅은 면으로 정의되는 칸. 선도 그림자도 없다.",
     controls: [
-      { kind: "enum", prop: "radius", label: "radius", options: ["sm", "md", "lg", "pill"], def: "md" },
+      { kind: "enum", prop: "radius", label: "radius", options: ["sm", "md", "lg", "full"], def: "md" },
       { kind: "enum", prop: "padding", label: "padding", options: ["none", "sm", "md", "lg", "xl"], def: "lg" },
     ],
     render: (st) => (
-      <Card radius={s(st.radius) as "sm" | "md" | "lg" | "pill"} padding={s(st.padding) as "none" | "sm" | "md" | "lg" | "xl"} style={{ width: "18rem" }}>
+      <Card radius={s(st.radius) as "sm" | "md" | "lg" | "full"} padding={s(st.padding) as "none" | "sm" | "md" | "lg" | "xl"} style={{ width: "18rem" }}>
         <Stack gap="xs">
           <Text variant="subheading">카드 제목</Text>
           <Text variant="caption" ink="soft">옅은 면으로 정의되는 컨테이너.</Text>

@@ -30,6 +30,12 @@ export const buttonRoot = style({
   },
 });
 
+// 알약 — 모서리를 높이의 절반까지. 기본 곡선은 시스템이 정하지만(radius.interaction),
+// "이 버튼은 가장 중요한 행동" 이라는 뜻은 색만으로 다 못 실을 때가 있다 — hero CTA 가
+// 그 자리다. 값은 radius.full 하나뿐이라 앱이 자기 곡선을 고를 여지는 열지 않는다.
+// buttonRoot 뒤에 와서 같은 특정도를 순서로 이긴다.
+export const buttonRadiusFull = style({ borderRadius: tokens.shape.radius.full });
+
 const spin = keyframes({ to: { transform: "rotate(360deg)" } });
 
 // 로딩 스피너 — currentColor C-링이라 어느 variant(검정 solid·색·투명) 위에서도 글자색을
@@ -39,7 +45,7 @@ export const buttonSpinner = style({
   flexShrink: 0,
   width: "0.95em",
   height: "0.95em",
-  borderRadius: tokens.shape.constants.pillRadius,
+  borderRadius: tokens.shape.radius.full,
   borderWidth: "2px",
   borderStyle: "solid",
   borderColor: "currentColor",

@@ -144,6 +144,17 @@ test("button · disabled 는 비활성", async ({ page }) => {
   await expect(page.getByTestId("btn-disabled")).toBeDisabled();
 });
 
+// ── radius — 기본은 시스템 곡선 6, radius="full" 이면 알약 999 ───────────────
+//
+// 모디파이어 클래스와 root 클래스는 특정도가 같아 *순서* 로만 갈린다 — 나중에 import 가
+// 뒤집히면 알약이 조용히 안 먹는다. 계산값으로 못 박아 그 회귀를 여기서 잡는다.
+test("radius · 기본은 6, full 은 999 (Button·Badge 같은 어휘)", async ({ page }) => {
+  await expect(page.getByTestId("btn-radius-default")).toHaveCSS("border-radius", "6px");
+  await expect(page.getByTestId("btn-radius-full")).toHaveCSS("border-radius", "999px");
+  await expect(page.getByTestId("badge-radius-default")).toHaveCSS("border-radius", "6px");
+  await expect(page.getByTestId("badge-radius-full")).toHaveCSS("border-radius", "999px");
+});
+
 // ── Tabs — 활성 탭이 흰 pill 로 떠오르고 클릭으로 바뀐다 ────────────────────
 test("tabs · 클릭하면 활성이 바뀐다", async ({ page }) => {
   const two = page.getByRole("tab", { name: "둘" });

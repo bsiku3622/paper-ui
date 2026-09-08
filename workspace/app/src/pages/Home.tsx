@@ -67,10 +67,10 @@ const AppMockup = () => {
       <div className="home-mockup-bar">
         <Inline gap="xs">
           {[0, 1, 2].map((i) => (
-            <Box key={i} surface="well" radius="pill" style={{ width: "0.6rem", height: "0.6rem" }} />
+            <Box key={i} surface="well" radius="full" style={{ width: "0.6rem", height: "0.6rem" }} />
           ))}
         </Inline>
-        <Box surface="canvas" radius="pill" paddingX="sm" style={{ marginInline: "auto", border: `1px solid ${tokens.color.border.base}` }}>
+        <Box surface="canvas" radius="full" paddingX="sm" style={{ marginInline: "auto", border: `1px solid ${tokens.color.border.base}` }}>
           <Text variant="caption" as="span" ink="faint">app.studio-baeks.dev / issues</Text>
         </Box>
       </div>
@@ -87,7 +87,7 @@ const AppMockup = () => {
           <div className="home-nav">
             {NAV.map((n) => (
               <div key={n.label} className="home-navitem" data-active={n.active}>
-                <Box radius="pill" style={{ width: "0.4rem", height: "0.4rem", background: n.active ? tokens.color.ink.base : tokens.color.ink.faint }} />
+                <Box radius="full" style={{ width: "0.4rem", height: "0.4rem", background: n.active ? tokens.color.ink.base : tokens.color.ink.faint }} />
                 {n.label}
               </div>
             ))}
@@ -97,7 +97,7 @@ const AppMockup = () => {
             <Text variant="label" as="p" ink="soft" className="home-filterhead">필터</Text>
             {FILTERS.map((f) => (
               <Inline key={f.label} className="home-filterrow" gap="sm" align="center">
-                <Box className={`pui-${f.accent}-dot`} radius="pill" style={{ width: "0.55rem", height: "0.55rem" }} />
+                <Box className={`pui-${f.accent}-dot`} radius="full" style={{ width: "0.55rem", height: "0.55rem" }} />
                 <Text variant="caption" as="span" ink="soft">{f.label}</Text>
               </Inline>
             ))}
@@ -164,12 +164,16 @@ export const Home = () => (
             스물일곱 개의 컴포넌트로 실제 화면을 세웁니다. 색은 의미가 있을 때만 쓰고, 구조는 빌드가 지킵니다 — 순백 위에 부드럽게.
           </Text>
 
-          <Inline className="home-cta" gap="sm" style={{ marginTop: tokens.shape.gap.xl }}>
+          {/* CTA 둘은 알약을 고른다 — 세그먼트까지 합쳐 화면에 알약이 셋이고, 각각 자기
+              영역에서 가장 중요한 행동을 표시한다. 알약이 기본값이 아니라 *선택* 일 때
+              갖는 뜻이다. 예전엔 이걸 `.home-cta button` CSS 로 덮어썼다 — 앱이 라이브러리
+              밖에서 컴포넌트 모서리에 손을 넣던 자리라, radius prop 으로 안으로 들였다. */}
+          <Inline gap="sm" style={{ marginTop: tokens.shape.gap.xl }}>
             <Link to="/docs" style={{ textDecoration: "none" }}>
-              <Button size="lg">문서 읽기</Button>
+              <Button size="lg" radius="full">문서 읽기</Button>
             </Link>
             <Link to="/playground" style={{ textDecoration: "none" }}>
-              <Button size="lg" variant="outline">컴포넌트 보기</Button>
+              <Button size="lg" variant="outline" radius="full">컴포넌트 보기</Button>
             </Link>
           </Inline>
         </div>
