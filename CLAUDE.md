@@ -87,7 +87,12 @@ accent 는 hue 이름(blue 등)이 **API 에 없다** — 전부 의미색. 각 
 채운 면 위 글자는 `paper.raised` 가 아니라 **언제나 solidFg** 다 — 다크의 raised 는 최암이다.
 ⚠ 라이트 solidFg 는 채움 위에서 3.91~4.21 로 아직 AA 미달이다. 값의 문제라 팔레트 확정 뒤로 미뤄 뒀다.
 
-**`variant` 축 = 시각 무게:** `solid`(채움) · `soft`(옅은 면) · `outline`(테두리) · `quiet`(글자만).
+**`variant` 축 = 면의 무게:** `solid`(채움) · `soft`(옅은 면) · `outline`(또렷한 테두리) ·
+`plain`(헤어라인) · `quiet`(글자만). ⚠ **테두리만 있는 자리가 둘이고, 세기가 아니라 *어느 선이냐*
+로 갈린다** — `outline` 은 color family 가 소유한 선(`primary.edgeStrong` · accent `edgeStrong`,
+지면 대비 3:1)이고 `plain` 은 지면이 소유한 선(뉴트럴은 `border.base`, accent 는 그 색의 `edge`).
+그래서 plain 은 여러 개 깔려도 조용하고 outline 은 하나만 놓아야 말이 된다.
+⚠ **`outline` 의 뜻이 바뀌었다** — 예전 outline 이 지금의 `plain` 이다.
 - Button 예) 기본=`primary solid`(검정) · `variant="soft"`=회색 secondary · **`variant="outline"`=흰 기본
   버튼** · `color="error"`=빨강. 흰/회색 버튼은 색이 아니라 primary 의 무게로 나온다.
 - **Badge** 도 color × variant (기본 soft) + `dot`(상태 점) — solid=카운트·강조, outline=테두리 태그, quiet=글자만.
@@ -96,7 +101,8 @@ accent 는 hue 이름(blue 등)이 **API 에 없다** — 전부 의미색. 각 
 ⚠ **화면의 회색 선은 한 벌이다.** 카드 헤어라인 · 구획 · 빈 입력칸 · 꺼진 체크박스 ·
 outline 버튼이 전부 `border.base`(hover 는 `strong`)를 쓴다. 컨트롤 전용 회색을 따로 뒀다가
 물렸다 — 카드는 안 보이는데 그 위 검색창만 진하면 한 화면에 회색이 두 벌이 된다. 컨트롤을
-또렷하게 하려면 컨트롤만이 아니라 **표를 올린다.** (강도는 미정 — `?lab=edge` 로 고르는 중.)
+또렷하게 하려면 컨트롤만이 아니라 **표를 올린다** — 다만 강도는 지금 값(1.2)으로 확정했다.
+컨트롤 하나를 또렷하게 하고 싶으면 표가 아니라 **variant** 로 고른다.
 accent 는 다르다 — `edge`(wash 괘선)와 `edgeStrong`(outline 테두리)이 갈리는데, 색 있는 선은
 라벨 색과 맞아야 해서다. 톤은 램프 인덱스가 아니라 **대비**로 고른다(hue 마다 고유 명도가
 달라 400 톤으로 맞추면 초록·amber 가 옅다).

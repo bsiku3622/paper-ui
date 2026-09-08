@@ -59,11 +59,6 @@ export default [
       "packages/paper-ui/src/tokens/text.ts",
       "packages/paper-ui/src/styles/theme.css.ts",
       "**/*.test.{ts,tsx}",
-      // ⚠ 한시적 예외 — app/src/lab 은 **값을 고르는 도구**다. 후보 hex 를 나란히 놓고
-      //   사이트를 돌아다니며 눈으로 고르는 자리라, 여기서는 hex 가 우회가 아니라 주제다.
-      //   고르고 나면 값은 tokens/colors.ts 로 옮기고 이 폴더와 이 줄을 함께 지운다.
-      //   (라이브러리에는 안 들어간다 — app 전용이고 `?lab=` 로만 켜진다.)
-      "app/src/lab/**",
     ],
     rules: {
       "no-restricted-syntax": [

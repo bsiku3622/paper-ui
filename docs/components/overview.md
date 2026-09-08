@@ -17,13 +17,13 @@ raw HTML을 렌더하는 유일한 레이어입니다.
 
 단일 컨트롤·표시 단위입니다.
 
-- **Button** — `color`(primary + `info`·`success`·`warning`·`error`) × `variant`(시각 무게: `solid`·`soft`·`outline`·`quiet`) 두 축이 직교합니다. 흰/회색 기본 버튼은 색이 아니라 primary 의 무게(`outline`·`soft`)로 나오고, solid 는 모노크로매틱(진한 채움 + 옅은 같은 색 글자)입니다. 큰 면을 채우는 색은 검정(primary)뿐, accent 는 뜻을 질 때만. `shape="pill"`로 알약이 되는데, 곡선의 크기를 고르는 게 아니라 알약이냐 아니냐만 고릅니다 — 화면에서 가장 중요한 행동 한둘에 씁니다. 누르면 이동하는 자리라면 `as`로 태그를 갈아 끼웁니다(`<Button as={Link} to="/docs">`). 버튼을 링크로 감싸면 `<a>` 안에 `<button>`이 들어가 탭이 같은 자리에서 두 번 멈추고, 포커스 링도 두 모양으로 잡힙니다.
+- **Button** — `color`(primary + `info`·`success`·`warning`·`error`) × `variant`(면의 무게: `solid`·`soft`·`outline`·`plain`·`quiet`) 두 축이 직교합니다. 흰/회색 기본 버튼은 색이 아니라 primary 의 무게(`plain`·`soft`)로 나오고, solid 는 모노크로매틱(진한 채움 + 옅은 같은 색 글자)입니다. 큰 면을 채우는 색은 검정(primary)뿐, accent 는 뜻을 질 때만. `shape="pill"`로 알약이 되는데, 곡선의 크기를 고르는 게 아니라 알약이냐 아니냐만 고릅니다 — 화면에서 가장 중요한 행동 한둘에 씁니다. 누르면 이동하는 자리라면 `as`로 태그를 갈아 끼웁니다(`<Button as={Link} to="/docs">`). 버튼을 링크로 감싸면 `<a>` 안에 `<button>`이 들어가 탭이 같은 자리에서 두 번 멈추고, 포커스 링도 두 모양으로 잡힙니다.
 - **Field** — 한 줄 입력 그룹. 상태는 `status` 축 하나로(invalid boolean 아님), 양옆에 `leading`/`trailing` 어도먼트(아이콘·$·단위)와 `clearable`(×)·`showPasswordToggle`(👁). 포커스 때만 파란 링. `shape="pill"`은 Button·Badge와 같은 어휘이고, 검색창이 그 본진입니다 — 반경이 래퍼 하나에만 있고 포커스 링이 `outline`이라 링이 곡선을 저절로 따라갑니다.
 - **Textarea** — 여러 줄 입력. Field와 같은 `status`·`size` 축, 세로로만 resize. `shape="pill"`은 **없습니다** — 알약은 "높이의 절반"이라는 규칙이라 한 줄짜리 컨트롤에서만 성립합니다. 96px짜리 상자에 걸면 반경이 48이 되어 경기장 모양이 나오고, 첫 줄과 마지막 줄이 곡선 아래로 밀려 왼쪽 정렬이 무너집니다. 어휘가 여기서 멈추는 것은 빠뜨린 게 아니라 경계입니다. `size`가 움직이는 것은 여백과 글자뿐입니다 — 높이는 `rows`가 정하고, 첫 줄은 같은 `size`의 Field와 같은 자리에서 시작합니다. 가로 여백은 Field·Select와 같은 `inputPaddingX`라 글자가 사방 같은 거리에 앉습니다.
 - **Select** — native `<select>`를 종이 결로 감싼 것.
 - **Checkbox** · **Switch**(켬/끔 토글) · **Radio**(하나 고르기) — 켜지면 검정(색이 아니라 primary). 셋은 폼 한 줄에서 같은 열에 앉도록 묶여 있습니다: Radio는 Checkbox의 변 사다리를 그대로 쓰고, Switch의 손잡이는 Checkbox 변 − 2여서 트랙이 Checkbox + 2로 앉습니다.
 - **Label** · **Icon** · **Divider** · **Link**(파랑).
-- **Badge** — 짧은 표식. Button과 같은 `color × variant`(기본 `soft`) + `dot`(상태 점). `solid`=카운트·강조, `outline`=테두리 태그, `quiet`=글자만. Button과 같은 `shape="pill"`을 받아 두 알약이 나란히 서도 곡선이 갈리지 않습니다. `size`는 높이(20·22·24)만 움직이고 글자는 12로 고정입니다.
+- **Badge** — 짧은 표식. Button과 같은 `color × variant`(기본 `soft`) + `dot`(상태 점). `solid`=카운트·강조, `outline`=또렷한 테두리 태그, `plain`=조용한 테두리 태그, `quiet`=글자만. Button과 같은 `shape="pill"`을 받아 두 알약이 나란히 서도 곡선이 갈리지 않습니다. `size`는 높이(20·22·24)만 움직이고 글자는 12로 고정입니다.
 - **Spinner** — 진행 중 표시. 주기는 motion 토큰. Icon과 같은 사다리(16·18·20)라 나란히 두면 크기가 맞습니다. 속이 빈 링이라 같은 지름의 채운 사각형보다 가볍게 읽히는데, 그건 스피너가 지고 가는 성질이라 지름으로 보정하지 않습니다.
 
 ## Molecules (6)
@@ -35,7 +35,7 @@ Primitive + Atom 합성입니다. raw HTML 없이 하위 레이어 조합만.
 - **RadioGroup** — Radio + Label을 `options`로 묶어 한 그룹으로.
 - **Tabs** — 세그먼트 컨트롤. 활성은 흰 면, 화살표·Home/End로 이동(roving tabindex). `shape`은 Button·Badge·Field·Select와 같은 어휘인데, 여기서는 한 축이 **두 곡선**을 함께 정합니다 — 그릇(트랙)과 알맹이(항목)가 겹쳐 있어 따로 놀면 초승달 빈틈이 생기거나 활성 면이 트랙 밖으로 삐져나갑니다. 각진 쪽 안쪽 반경은 상수가 아니라 `바깥 반경 − 트랙 여백`(6 − 3 = 3)으로 **동심**을 맞춥니다. 알약은 계산이 필요 없습니다 — 999는 크기가 아니라 높이의 절반이라 저절로 동심이 됩니다.
 - **Tooltip** — 잠깐 뜨는 쪽지. 위 공간이 없으면 자동으로 아래로 뒤집습니다.
-- **Alert** — 상태 한 줄을 색이 깔린 면으로. Button·Badge와 **같은 `color × variant` 매트릭스**를 그대로 뭅니다(`color`는 `primary`까지 다섯, `variant`는 기본 `soft`). Alert만을 위한 surface 축을 새로 세우지 않은 이유는, 이 시스템의 `variant`가 이미 *면의 무게* 축이기 때문입니다 — `solid`(채운 면)·`soft`(옅은 면)·`outline`(테두리만)·`quiet`(면 없음)은 글자 스타일이 아니라 면의 종류입니다. 축을 하나 더 만들면 같은 뜻을 두 이름으로 부르게 됩니다. `error`·`warning`은 `role="alert"`, 나머지는 `role="status"`이고, 색으로만 뜻을 전하지 않도록 스크린리더용 접두어("오류:" 등)를 함께 심습니다.
+- **Alert** — 상태 한 줄을 색이 깔린 면으로. Button·Badge와 **같은 `color × variant` 매트릭스**를 그대로 뭅니다(`color`는 `primary`까지 다섯, `variant`는 기본 `soft`). Alert만을 위한 surface 축을 새로 세우지 않은 이유는, 이 시스템의 `variant`가 이미 *면의 무게* 축이기 때문입니다 — `solid`(채운 면)·`soft`(옅은 면)·`outline`·`plain`(테두리만)·`quiet`(면 없음)은 글자 스타일이 아니라 면의 종류입니다. 축을 하나 더 만들면 같은 뜻을 두 이름으로 부르게 됩니다. `error`·`warning`은 `role="alert"`, 나머지는 `role="status"`이고, 색으로만 뜻을 전하지 않도록 스크린리더용 접두어("오류:" 등)를 함께 심습니다.
 
 ## Components (4)
 

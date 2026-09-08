@@ -36,10 +36,18 @@ const primaryProfile: Record<Variant, ColorSpec> = {
   // raised 를 칠하고 있었는데, 이 팔레트에서는 raised(#ffffff)와 canvas(#fcfcfc)가
   // 거의 같아 티가 안 났을 뿐 이름과는 어긋난 자리였다.
   //
-  // 테두리는 border.base — **카드 헤어라인·빈 Field 와 같은 선이다.** 화면의 회색 선은
-  // 한 벌이라, 이 자리만 진하게 하면 같은 화면에 회색이 두 종류가 된다. 더 또렷하게
-  // 하려면 이 자리가 아니라 border 표를 올린다.
+  // outline — **컨트롤이 소유한 선.** 면을 안 칠하니 테두리가 곧 형태라, primary 자신의
+  // edgeStrong(지면 대비 3:1)을 쓴다. 강조가 필요한 자리에 고르는 변형이다.
   outline: {
+    background: "transparent",
+    color: tokens.color.ink.base,
+    borderColor: tokens.color.primary.edgeStrong,
+    hoverOverlay: tokens.color.interaction.hover,
+  },
+  // plain — **지면이 소유한 선.** 카드 헤어라인·빈 입력칸과 같은 border.base 를 두른다.
+  // 화면에 여러 개 깔려도 조용한 쪽이라, 폼의 보조 버튼처럼 수가 많은 자리가 여기다.
+  // (예전 `outline` 이 이 자리였다 — 이름만 옮겼고 값은 그대로다.)
+  plain: {
     background: "transparent",
     color: tokens.color.ink.base,
     borderColor: tokens.color.border.base,
@@ -82,6 +90,15 @@ const accentProfile = (c: AccentTones): Record<Variant, ColorSpec> => ({
     background: "transparent", // 면을 칠하지 않는다 — 밑면이 비친다
     color: c.ink,
     borderColor: c.edgeStrong,
+    hoverBackground: c.wash,
+  },
+  // plain — 색은 지되 선은 물러난다. 뉴트럴이 지면의 헤어라인을 쓰듯, 여기서는 그 색의
+  // 가장 옅은 괘선(edge)을 쓴다. 색 있는 자리에 뉴트럴 회색을 두르면 그 컴포넌트만
+  // 색 정체성을 잃는다 — 그래서 뉴트럴처럼 border.base 로 넘어가지 않는다.
+  plain: {
+    background: "transparent",
+    color: c.ink,
+    borderColor: c.edge,
     hoverBackground: c.wash,
   },
   quiet: {

@@ -424,7 +424,7 @@ test("switch · 손잡이 여백이 사방 같고, 켜짐 이동이 w − h 다"
 // 값이 아니라 **계약**을 못 박는다. 어느 hue 를 골랐느냐가 아니라 "지면에서 떨어져
 // 보이는가" 가 규칙이고, hue 마다 고유 명도가 달라 같은 램프 인덱스로는 그 규칙을 못
 // 지킨다. 예전엔 wash 의 괘선(edge, 200 톤)을 빌려 써서 넷 다 1.18~1.41 이었다.
-test("outline · accent 테두리가 지면 대비 3:1 을 넘는다 (네 색 전부)", async ({ page }) => {
+test("outline · 테두리가 지면 대비 3:1 을 넘는다 (다섯 색 전부)", async ({ page }) => {
   const ratios = await page.evaluate(() => {
     const lum = (rgb: string) => {
       const [r, g, b] = rgb.match(/[\d.]+/g)!.slice(0, 3).map((v) => Number(v) / 255)
@@ -437,9 +437,7 @@ test("outline · accent 테두리가 지면 대비 3:1 을 넘는다 (네 색 �
     };
     const bg = getComputedStyle(document.body).backgroundColor;
     const out: Record<string, number> = {};
-    // primary 는 여기 없다 — 그쪽 테두리는 border.control 이라 입력칸과 한 값을 쓰고,
-    // 그 강도는 아직 조율 중이다. accent 는 라벨 색과 맞아야 해 자기 edgeStrong 을 든다.
-    for (const c of ["info", "success", "warning", "error"]) {
+    for (const c of ["primary", "info", "success", "warning", "error"]) {
       const el = document.querySelector(`[data-testid="outline-${c}"]`)!;
       out[c] = ratio(bg, getComputedStyle(el).borderTopColor);
     }
@@ -457,9 +455,9 @@ test("outline · accent 테두리가 지면 대비 3:1 을 넘는다 (네 색 �
 // 표를 감싼 카드는 거의 안 보이는데 그 위 검색창만 진하면 한 화면에 회색이 두 벌이 된다.
 // 선의 *역할* 이 다르다고 *색* 까지 갈리면 화면은 그걸 두 팔레트로 읽는다.
 //
-// 그래서 잠그는 건 강도가 아니라 **한 벌이라는 것** 이다. 강도는 lab(`?lab=edge`)으로
-// 고르는 중이고, 올릴 때도 컨트롤만이 아니라 표 전체가 함께 움직여야 한다.
-test("edge · 입력·체크박스·카드가 같은 회색 선을 쓴다", async ({ page }) => {
+// 그래서 잠그는 건 강도가 아니라 **한 벌이라는 것** 이다. 컨트롤 하나를 또렷하게 하고 싶으면
+// 표를 올리는 게 아니라 variant 로 고른다 — 그게 `outline` 이고, 이 테스트에 없는 이유다.
+test("edge · 입력·카드·plain 이 같은 회색 선을 쓴다", async ({ page }) => {
   const colors = await page.evaluate(() => {
     const q = (sel: string) => document.querySelector(sel) as HTMLElement;
     return {
@@ -467,11 +465,28 @@ test("edge · 입력·체크박스·카드가 같은 회색 선을 쓴다", asyn
       field: getComputedStyle(q('[data-testid="base-field"]')).borderTopColor,
       select: getComputedStyle(q('[data-testid="base-select"]')).borderTopColor,
       textarea: getComputedStyle(q('[data-testid="base-textarea"]')).borderTopColor,
-      outlineBtn: getComputedStyle(q('[data-testid="outline-primary"]')).borderTopColor,
+      plainBtn: getComputedStyle(q('[data-testid="plain-primary"]')).borderTopColor,
     };
   });
   const distinct = new Set(Object.values(colors));
   expect(distinct.size, `한 벌이어야 한다: ${JSON.stringify(colors)}`).toBe(1);
+});
+
+// ── 테두리만 있는 변형이 둘 — 세기가 아니라 어느 선이냐로 갈린다 ─────────────
+//
+// outline 은 color family 가 소유한 선(edgeStrong)이고 plain 은 지면이 소유한 선이다.
+// 뉴트럴에서 plain 은 카드 헤어라인과 **같은 값**이지만, accent 에서는 그 색의 가장 옅은
+// 괘선(edge)으로 간다 — 색 있는 자리에 뉴트럴 회색을 두르면 그 컴포넌트만 색 정체성을 잃는다.
+test("variant · outline 과 plain 이 서로 다른 선을 든다", async ({ page }) => {
+  for (const c of ["primary", "info", "success", "warning", "error"]) {
+    const strong = await page.getByTestId(`outline-${c}`).evaluate((e: HTMLElement) => getComputedStyle(e).borderTopColor);
+    const weak = await page.getByTestId(`plain-${c}`).evaluate((e: HTMLElement) => getComputedStyle(e).borderTopColor);
+    expect(strong, `${c}: 두 변형이 같은 선을 들면 어휘가 하나 죽는다`).not.toBe(weak);
+  }
+  // 뉴트럴 plain 은 지면의 선 그대로 — 옆의 Field 와 한 값이다.
+  const btn = await page.getByTestId("plain-primary").evaluate((e: HTMLElement) => getComputedStyle(e).borderTopColor);
+  const field = await page.getByTestId("plain-field").evaluate((e: HTMLElement) => getComputedStyle(e).borderTopColor);
+  expect(btn).toBe(field);
 });
 
 // ── Alert — Button·Badge 와 같은 매트릭스를 물고, 글자는 면의 색을 받는다 ────
