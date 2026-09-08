@@ -107,14 +107,14 @@ export const COMPONENTS: CompSpec[] = [
     slug: "box",
     name: "Box",
     group: "Primitives",
-    blurb: "구조 패널. surface(면 깊이)에 border(카드 헤어라인)·radius·shadow·padding 을 얹는다. 색(잉크)은 여기 없다 — 큰 면은 색으로 안 채운다. 검은 판은 inverse. as 로 어떤 태그든.",
+    blurb: "구조 패널. surface(면 깊이)에 border(카드 헤어라인)·radius·shadow·padding 을 얹는다. 넷 다 안 주는 게 기본이라(none) 아무것도 안 준 Box 는 투명한 각진 칸이다. 색(잉크)은 여기 없다 — 큰 면은 색으로 안 채운다. 검은 판은 inverse. 간격 축은 padding 말고 paddingX·paddingY·gap 도 같은 사다리로 받는다. as 로 어떤 태그든.",
     controls: [
       { kind: "enum", prop: "surface", label: "surface", options: ["none", "raised", "canvas", "sunken", "well"], def: "raised" },
       { kind: "bool", prop: "border", label: "border", def: false },
       { kind: "bool", prop: "inverse", label: "inverse", def: false },
       { kind: "enum", prop: "shadow", label: "shadow", options: ["none", "overlay", "overlayMinimal"], def: "none" },
-      { kind: "enum", prop: "radius", label: "radius", options: ["sm", "md", "lg", "full"], def: "md" },
-      { kind: "enum", prop: "padding", label: "padding", options: ["sm", "md", "lg", "xl"], def: "lg" },
+      { kind: "enum", prop: "radius", label: "radius", options: ["none", "sm", "md", "lg", "full"], def: "md" },
+      { kind: "enum", prop: "padding", label: "padding", options: ["none", "sm", "md", "lg", "xl"], def: "lg" },
     ],
     render: (st) => (
       <Box
@@ -122,14 +122,14 @@ export const COMPONENTS: CompSpec[] = [
         border={b(st.border)}
         inverse={b(st.inverse)}
         shadow={s(st.shadow) === "none" ? undefined : (s(st.shadow) as "overlay" | "overlayMinimal")}
-        radius={s(st.radius) as "sm" | "md" | "lg" | "full"}
-        padding={s(st.padding) as "sm" | "md" | "lg" | "xl"}
+        radius={s(st.radius) === "none" ? undefined : (s(st.radius) as "sm" | "md" | "lg" | "full")}
+        padding={s(st.padding) === "none" ? undefined : (s(st.padding) as "sm" | "md" | "lg" | "xl")}
         style={{ minWidth: "8rem" }}
       >
         <Text variant="caption" as="span">surface={s(st.surface)}</Text>
       </Box>
     ),
-    code: (st) => `<Box${st.surface === "none" ? "" : A("surface", s(st.surface))}${A("border", b(st.border))}${A("inverse", b(st.inverse))}${AE("shadow", s(st.shadow), "none")} radius="${s(st.radius)}" padding="${s(st.padding)}">…</Box>`,
+    code: (st) => `<Box${st.surface === "none" ? "" : A("surface", s(st.surface))}${A("border", b(st.border))}${A("inverse", b(st.inverse))}${AE("shadow", s(st.shadow), "none")}${AE("radius", s(st.radius), "none")}${AE("padding", s(st.padding), "none")}>…</Box>`,
   },
   {
     slug: "stack",
@@ -186,25 +186,32 @@ export const COMPONENTS: CompSpec[] = [
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "bool", prop: "loading", label: "loading", def: false },
       { kind: "bool", prop: "fullWidth", label: "fullWidth", def: false },
+      { kind: "bool", prop: "iconOnly", label: "iconOnly(aria-label 필수)", def: false },
       { kind: "enum", prop: "radius", label: "radius", options: ["default", "full"], def: "default" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
       { kind: "text", prop: "children", label: "children", def: "버튼" },
     ],
-    render: (st) => (
-      <Button
-        color={s(st.color) as Color}
-        variant={s(st.variant) as Variant}
-        size={s(st.size) as "sm" | "md" | "lg"}
-        loading={b(st.loading)}
-        fullWidth={b(st.fullWidth)}
-        radius={s(st.radius) === "full" ? "full" : undefined}
-        disabled={b(st.disabled)}
-      >
-        {s(st.children)}
-      </Button>
-    ),
+    render: (st) => {
+      // iconOnly 는 접근 이름이 타입으로 강제된다 — 라벨 대신 aria-label 을 진다.
+      const common = {
+        color: s(st.color) as Color,
+        variant: s(st.variant) as Variant,
+        size: s(st.size) as "sm" | "md" | "lg",
+        loading: b(st.loading),
+        fullWidth: b(st.fullWidth),
+        radius: s(st.radius) === "full" ? ("full" as const) : undefined,
+        disabled: b(st.disabled),
+      };
+      return b(st.iconOnly) ? (
+        <Button {...common} iconOnly aria-label={s(st.children) || "추가"}>
+          <Icon><path d="M12 5v14M5 12h14" /></Icon>
+        </Button>
+      ) : (
+        <Button {...common}>{s(st.children)}</Button>
+      );
+    },
     code: (st) =>
-      `<Button${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "solid")}${AE("size", s(st.size), "md")}${A("loading", b(st.loading))}${A("fullWidth", b(st.fullWidth))}${AE("radius", s(st.radius), "default")}${A("disabled", b(st.disabled))}>${s(st.children)}</Button>`,
+      `<Button${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "solid")}${AE("size", s(st.size), "md")}${A("loading", b(st.loading))}${A("fullWidth", b(st.fullWidth))}${AE("radius", s(st.radius), "default")}${A("disabled", b(st.disabled))}${b(st.iconOnly) ? ` iconOnly aria-label="${s(st.children) || "추가"}"><Icon>…</Icon>` : `>${s(st.children)}`}</Button>`,
   },
   {
     slug: "badge",
@@ -212,7 +219,7 @@ export const COMPONENTS: CompSpec[] = [
     group: "Atoms",
     blurb: "상태 한 낱말. color × variant(soft·solid·outline·quiet). dot 으로 앞에 상태 점. 표시용이라 hover 없음. radius=\"full\" 이면 알약.",
     controls: [
-      { kind: "enum", prop: "color", label: "color", options: ["none", "info", "success", "warning", "error"], def: "info" },
+      { kind: "enum", prop: "color", label: "color", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
       { kind: "enum", prop: "variant", label: "variant", options: ["soft", "solid", "outline", "quiet"], def: "soft" },
       { kind: "bool", prop: "dot", label: "dot", def: false },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
@@ -220,9 +227,9 @@ export const COMPONENTS: CompSpec[] = [
       { kind: "text", prop: "children", label: "children", def: "진행" },
     ],
     render: (st) => (
-      <Badge color={st.color === "none" ? undefined : (s(st.color) as Color)} variant={s(st.variant) as Variant} dot={b(st.dot)} size={s(st.size) as "sm" | "md" | "lg"} radius={s(st.radius) === "full" ? "full" : undefined}>{s(st.children)}</Badge>
+      <Badge color={s(st.color) as Color} variant={s(st.variant) as Variant} dot={b(st.dot)} size={s(st.size) as "sm" | "md" | "lg"} radius={s(st.radius) === "full" ? "full" : undefined}>{s(st.children)}</Badge>
     ),
-    code: (st) => `<Badge${st.color === "none" ? "" : A("color", s(st.color))}${AE("variant", s(st.variant), "soft")}${A("dot", b(st.dot))}${AE("size", s(st.size), "md")}${AE("radius", s(st.radius), "default")}>${s(st.children)}</Badge>`,
+    code: (st) => `<Badge${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "soft")}${A("dot", b(st.dot))}${AE("size", s(st.size), "md")}${AE("radius", s(st.radius), "default")}>${s(st.children)}</Badge>`,
   },
   {
     slug: "field",
@@ -233,6 +240,7 @@ export const COMPONENTS: CompSpec[] = [
       { kind: "text", prop: "placeholder", label: "placeholder", def: "검색…" },
       { kind: "enum", prop: "type", label: "type", options: ["text", "password"], def: "text" },
       { kind: "bool", prop: "leading", label: "leading(검색 아이콘)", def: false },
+      { kind: "bool", prop: "trailing", label: "trailing(단위 kg)", def: false },
       { kind: "bool", prop: "clearable", label: "clearable", def: false },
       { kind: "bool", prop: "showPasswordToggle", label: "showPasswordToggle", def: false },
       { kind: "enum", prop: "align", label: "align", options: ["start", "center", "end"], def: "start" },
@@ -247,6 +255,7 @@ export const COMPONENTS: CompSpec[] = [
           placeholder={s(st.placeholder)}
           type={s(st.type)}
           leading={b(st.leading) ? <Icon size="sm"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon> : undefined}
+          trailing={b(st.trailing) ? <Text variant="caption" as="span" ink="faint">kg</Text> : undefined}
           clearable={b(st.clearable)}
           showPasswordToggle={b(st.showPasswordToggle)}
           defaultValue={b(st.clearable) ? "지울 값" : undefined}
@@ -259,7 +268,7 @@ export const COMPONENTS: CompSpec[] = [
       </Box>
     ),
     code: (st) =>
-      `<Field${A("placeholder", s(st.placeholder))}${AE("type", s(st.type), "text")}${b(st.leading) ? " leading={<Icon>…</Icon>}" : ""}${A("clearable", b(st.clearable))}${A("showPasswordToggle", b(st.showPasswordToggle))}${AE("align", s(st.align), "start")}${AE("status", s(st.status), "default")}${AE("size", s(st.size), "md")}${A("disabled", b(st.disabled))}${A("numeric", b(st.numeric))} />`,
+      `<Field${A("placeholder", s(st.placeholder))}${AE("type", s(st.type), "text")}${b(st.leading) ? " leading={<Icon>…</Icon>}" : ""}${b(st.trailing) ? ' trailing={<Text ink="faint">kg</Text>}' : ""}${A("clearable", b(st.clearable))}${A("showPasswordToggle", b(st.showPasswordToggle))}${AE("align", s(st.align), "start")}${AE("status", s(st.status), "default")}${AE("size", s(st.size), "md")}${A("disabled", b(st.disabled))}${A("numeric", b(st.numeric))} />`,
   },
   {
     slug: "checkbox",
@@ -331,16 +340,16 @@ export const COMPONENTS: CompSpec[] = [
     group: "Atoms",
     blurb: "24 그리드 stroke 아이콘. 자식 svg path 를 감싸 currentColor 로 그린다. ink 로 자기 색을 정한다(Text 로 감쌀 필요 없이).",
     controls: [
-      { kind: "enum", prop: "ink", label: "ink", options: ["base", "soft", "faint", "info", "success", "warning", "error"], def: "base" },
+      { kind: "enum", prop: "ink", label: "ink", options: ["default", "base", "soft", "faint", "info", "success", "warning", "error"], def: "default" },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
     ],
     render: (st) => (
-      <Icon aria-label="정보" ink={s(st.ink) as Ink} size={s(st.size) as "sm" | "md" | "lg"}>
+      <Icon aria-label="정보" ink={st.ink === "default" ? undefined : (s(st.ink) as Ink)} size={s(st.size) as "sm" | "md" | "lg"}>
         <circle cx="12" cy="12" r="9" />
         <path d="M12 11v5M12 8h.01" />
       </Icon>
     ),
-    code: (st) => `<Icon aria-label="정보"${AE("ink", s(st.ink), "base")}${AE("size", s(st.size), "md")}>\n  <circle cx="12" cy="12" r="9" />\n  <path d="M12 11v5M12 8h.01" />\n</Icon>`,
+    code: (st) => `<Icon aria-label="정보"${AE("ink", s(st.ink), "default")}${AE("size", s(st.size), "md")}>\n  <circle cx="12" cy="12" r="9" />\n  <path d="M12 11v5M12 8h.01" />\n</Icon>`,
   },
   {
     slug: "divider",
@@ -469,7 +478,7 @@ export const COMPONENTS: CompSpec[] = [
     slug: "card",
     name: "Card",
     group: "Molecules",
-    blurb: "옅은 면으로 정의되는 칸. 선도 그림자도 없다.",
+    blurb: "흰 면 + 헤어라인으로 정의되는 칸. 회색으로 감싸지 않고 그림자로 뜨지도 않는다 — 회색은 카드를 받치는 바닥에만 온다. padding=\"none\" 은 자기 여백을 스스로 갖는 것(Table 등)을 담을 때.",
     controls: [
       { kind: "enum", prop: "radius", label: "radius", options: ["sm", "md", "lg", "full"], def: "md" },
       { kind: "enum", prop: "padding", label: "padding", options: ["none", "sm", "md", "lg", "xl"], def: "lg" },
@@ -596,25 +605,20 @@ export const COMPONENTS: CompSpec[] = [
     ],
     render: (st) => (
       <Box style={{ width: "100%", borderRadius: tokens.shape.radius.layout.md, overflow: "hidden" }}>
+        {/* 글자색을 덮지 않는다. 채운 면 위 글자는 Banner 가 tone 마다 solidFg 로 정하고
+            자식이 그걸 상속한다 — 여기서 색을 박으면 tone 토글이 그 계약을 못 보여준다.
+            (Text 를 쓰면 variant 클래스가 자기 ink 를 들고 와 같은 문제가 난다.) */}
         <Banner
           tone={s(st.tone) as "solid" | StatusName}
-          action={
-            <Text variant="caption" as="span" style={{ color: tokens.color.paper.canvas, fontWeight: tokens.text.weight.medium }}>
-              ← 사이트로
-            </Text>
-          }
+          action={<span style={{ fontWeight: tokens.text.weight.medium }}>← 사이트로</span>}
         >
-          <Text variant="caption" as="span" style={{ color: tokens.color.paper.canvas, fontWeight: tokens.text.weight.semibold }}>
-            Paper UI
-          </Text>
-          <Text variant="caption" as="span" style={{ color: tokens.color.paper.well }}>
-            {s(st.children)}
-          </Text>
+          <span style={{ fontWeight: tokens.text.weight.semibold }}>Paper UI</span>
+          <span>{s(st.children)}</span>
         </Banner>
       </Box>
     ),
     code: (st) =>
-      `<Banner${AE("tone", s(st.tone), "solid")} action={<Link>← 사이트로</Link>}>\n  Paper UI · ${s(st.children)}\n</Banner>`,
+      `<Banner${AE("tone", s(st.tone), "solid")} action={<span>← 사이트로</span>}>\n  Paper UI · ${s(st.children)}\n</Banner>`,
   },
 ];
 

@@ -155,6 +155,18 @@ test("radius · 기본은 6, full 은 999 (Button·Badge 같은 어휘)", async 
   await expect(page.getByTestId("badge-radius-full")).toHaveCSS("border-radius", "999px");
 });
 
+// ── iconOnly — 정사각이다. size 사다리의 paddingInline 을 실제로 이기는가 ────────
+//
+// buttonIconOnly 와 buttonSize 는 특정도가 같아 소스 순서로만 갈린다. 순서가 뒤집히면
+// 사다리의 13px 이 살아남아 34 가 아니라 44 로 그려진다 — aspect-ratio 가 붙어 있어도
+// 콘텐츠 폭이 그걸 넘기므로 조용히 깨진다. 계산값으로 못 박는다.
+test("button · iconOnly 는 정사각(md 34×34)", async ({ page }) => {
+  const box = await page.getByTestId("btn-icononly").boundingBox();
+  expect(box).not.toBeNull();
+  expect(Math.round(box!.width)).toBe(34);
+  expect(Math.round(box!.height)).toBe(34);
+});
+
 // ── Tabs — 활성 탭이 흰 pill 로 떠오르고 클릭으로 바뀐다 ────────────────────
 test("tabs · 클릭하면 활성이 바뀐다", async ({ page }) => {
   const two = page.getByRole("tab", { name: "둘" });
