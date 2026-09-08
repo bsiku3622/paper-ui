@@ -213,12 +213,24 @@ export const CONTROL_FONT_SIZE = {
   lg: REM(14),
 } as const;
 
-// ───── dot — 작은 시각 요소 (Icon · status dot · Spinner 공용, 3 단) ────────
+// ───── icon — 아이콘·스피너의 아트보드 (3 단) ───────────────────────────────
+//
+// ⚠ **이 값은 아트보드지 잉크가 아니다.** Icon 은 viewBox 24 짜리 path 를 받아 그리는데,
+// 아이콘 규격(lucide 등)은 그 24 안에 여백을 두고 18~20 만 채운다. 그래서 아트보드 16 은
+// 화면에서 12~13 으로 읽힌다 — 같은 16 인 Checkbox 는 16 이 통째로 잉크(채운 사각형)라,
+// 숫자가 같은데도 아이콘만 한 단 작아 보였다.
+//
+// 그래서 한 단 올렸다(14 · 16 · 18 → 16 · 18 · 20). md 18 이면 잉크가 13.5~15 로 나와
+// Checkbox 16 과 같은 무게로 앉는다. 20 까지 올리면 이번엔 아이콘이 체크박스보다 커
+// 보인다(실측 비교로 고름).
+//
+// ⚠ 이름이 `dot` 이었다. status dot 은 이 축을 안 쓴다(Badge 는 0.5em, 유틸 dot 은 자기
+// 값) — 소비처는 Icon 과 Spinner 둘뿐이라 이름이 축을 잘못 가리키고 있었다.
 
-export const SHAPE_DOT = {
-  sm: REM(14),
-  md: REM(16), // ◀ anchor (Icon 기본)
-  lg: REM(18),
+export const SHAPE_ICON = {
+  sm: REM(16),
+  md: REM(18), // ◀ anchor (Icon 기본)
+  lg: REM(20),
 } as const;
 
 // ───── badge — 인라인 라벨 높이 사다리 (3 단) ───────────────────────────────
@@ -266,14 +278,24 @@ export const SHAPE_CHECKBOX = {
   lg: { box: REM(18), mark: REM(9), short: REM(4.5), radius: REM(3.5) },
 } as const;
 
-// ───── switch — 트랙·손잡이 사다리 (비례 스케일, 3 단) ──────────────────────
+// ───── switch — 트랙·손잡이 사다리 (3 단) ───────────────────────────────────
 //
-// w(트랙 가로) · h(트랙 세로) · thumb(손잡이). 켜짐 이동은 css 가 이 값으로 calc. md anchor.
+// w(트랙 가로) · h(트랙 세로) · thumb(손잡이). 켜짐 이동은 css 가 이 값으로 calc.
+//
+// **묶는 규칙이 뒤집혔다 — 이제 손잡이가 아니라 전체 실루엣이 Checkbox 를 따라간다.**
+//   옛 규칙: thumb = checkbox 변(16) → 트랙이 20 이 되어 체크박스보다 늘 4 컸다.
+//   새 규칙: thumb = checkbox 변 − 2 → 트랙 = checkbox + 2. 나란히 세우면 높이가 맞는다.
+// 스위치는 체크박스와 같은 자리(폼의 한 줄)에 서는데, 폭이 트랙 두 배라 같은 높이여도
+// 면적이 세 배다. 높이까지 크면 그 줄에서 스위치만 튄다.
+//
+// 가로는 손잡이가 자기 크기만큼 이동하는 폭이다 — w = thumb × 2 + 여백 2 × 2.
+// 그래서 **이동 거리 = w − h** 가 되고(양쪽 여백이 (h − thumb) / 2 로 같으므로),
+// Switch.css.ts 는 이 항등식 하나로 켜짐 위치를 계산한다.
 
 export const SHAPE_SWITCH = {
-  sm: { w: REM(32), h: REM(18), thumb: REM(14) },
-  md: { w: REM(36), h: REM(20), thumb: REM(16) }, // ◀ anchor
-  lg: { w: REM(42), h: REM(24), thumb: REM(19) },
+  sm: { w: REM(30), h: REM(17), thumb: REM(13) }, // checkbox 15
+  md: { w: REM(32), h: REM(18), thumb: REM(14) }, // ◀ anchor — checkbox 16
+  lg: { w: REM(36), h: REM(20), thumb: REM(16) }, // checkbox 18
 } as const;
 
 // ───── measure — prose 줄길이 ───────────────────────────────────────────────
@@ -332,6 +354,13 @@ export const SHAPE_CONSTANTS = {
 //
 // 5 단 ladder 에 안 맞아 자기 값을 갖는 자리. 여기 모아두면 컴포넌트가 raw 리터럴
 // 대신 토큰을 참조한다 (상위 레이어 하드코딩 제거의 근거).
+//
+// ⚠ **이 서랍은 절반이 안 쓰인다.** checkbox · checkMark · checkboxRadius · badgeHeight ·
+// radioDot · spinner 는 각자 3 단 사다리(SHAPE_CHECKBOX · SHAPE_BADGE · SHAPE_ICON)가
+// 생기면서 소비처를 잃었는데 값만 남아 있다. 지금 지우지 않는 건 이번 작업 범위 밖이라서고,
+// 남겨 두는 값이 아니라 **정리 대상**이다. 새 코드는 사다리를 본다.
+// (switchWidth · switchHeight · switchThumb 셋은 지웠다 — "손잡이 = checkbox" 라는 옛
+//  규칙을 주석으로 못 박고 있어, 뒤집힌 새 규칙과 나란히 두면 둘 중 뭐가 참인지 알 수 없다.)
 
 export const ATOM_INTRINSIC = {
   checkbox: REM(16), //        Checkbox 크기
@@ -351,9 +380,6 @@ export const ATOM_INTRINSIC = {
   tabsTrackPad: "3px", //      세그먼트 트랙 안쪽 여백 — 2px 면 활성 면이 트랙에 낀다
   modalWidth: REM(432), //     Modal 기본 최대 폭 (27rem)
   selectArrow: REM(10), //     Select 화살표 아이콘 크기 (0.625rem)
-  switchWidth: REM(36), //     Switch 트랙 가로
-  switchHeight: REM(20), //    Switch 트랙 세로
-  switchThumb: REM(16), //     Switch 손잡이 (= checkbox)
   radioDot: REM(8), //         Radio 채운 점
   spinner: REM(18), //         Spinner 크기
 } as const;
@@ -370,7 +396,7 @@ export const SHAPE_VALUES = {
   controlPaddingX: CONTROL_PADDING_X,
   controlPaddingY: CONTROL_PADDING_Y,
   controlFontSize: CONTROL_FONT_SIZE,
-  dot: SHAPE_DOT,
+  icon: SHAPE_ICON,
   badge: SHAPE_BADGE,
   badgePaddingX: BADGE_PADDING_X,
   checkbox: SHAPE_CHECKBOX,

@@ -14,11 +14,13 @@ export const switchRoot = style({
   cursor: "pointer",
   transition: stateTransition("background"),
   selectors: {
+    // 손잡이의 좌우 여백은 size 축이 (트랙 − 손잡이) / 2 로 준다 — 위아래 여백과 같은
+    // 값이라 손잡이가 트랙 안에서 사방 같은 간격으로 앉는다. 예전엔 좌우만 borderWidth
+    // (1px)를 빌려 써서 위아래 2 · 좌우 1 로 어긋나 있었다(스위치엔 테두리도 없다).
     "&::after": {
       content: "''",
       position: "absolute",
       top: "50%",
-      left: tokens.shape.constants.borderWidth,
       transform: "translate(0, -50%)",
       borderRadius: tokens.shape.radius.full,
       background: tokens.color.paper.raised,
@@ -34,21 +36,25 @@ export const switchRoot = style({
   },
 });
 
-// size 3 단 — 트랙(w·h) · 손잡이(thumb) · 켜짐 이동(트랙 − 손잡이 − 양쪽 여백).
+// size 3 단 — 트랙(w·h) · 손잡이(thumb) · 여백 · 켜짐 이동.
+//
+// 여백은 (h − thumb) / 2 한 값이 사방에 걸린다. 그러면 켜짐 이동은 **w − h** 로 떨어진다:
+//   이동 = w − 여백 2 개 − thumb = w − (h − thumb) − thumb = w − h
+// 값 셋을 따로 계산하지 않고 항등식 하나로 두는 게 요점이다 — 트랙이나 손잡이를 바꿔도
+// 손잡이가 반대쪽 끝에 정확히 붙는다.
 export const switchSize = styleVariants(
   Object.fromEntries(
     CONTROL_SIZES.map((s) => {
       const sw = tokens.shape.switch[s];
+      const inset = `calc((${sw.h} - ${sw.thumb}) / 2)`;
       return [
         s,
         {
           width: sw.w,
           height: sw.h,
           selectors: {
-            "&::after": { width: sw.thumb, height: sw.thumb },
-            "&:checked::after": {
-              transform: `translate(calc(${sw.w} - ${sw.thumb} - ${tokens.shape.constants.borderWidth} * 2), -50%)`,
-            },
+            "&::after": { width: sw.thumb, height: sw.thumb, left: inset },
+            "&:checked::after": { transform: `translate(calc(${sw.w} - ${sw.h}), -50%)` },
           },
         },
       ];

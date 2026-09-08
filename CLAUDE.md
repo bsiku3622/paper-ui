@@ -134,6 +134,9 @@ accent 는 hue 이름(blue 등)이 **API 에 없다** — 전부 의미색. 각 
   Badge 는 컨트롤이 아니라 자기 축 `badgePaddingX` 6/8/10 을 쓴다(높이 20/22/24 와 같은 Δ2).
   **Box 여백 사다리(8/12/16)를 컨트롤에 빌려 쓰지 말 것** — 비가 눌려 답답해지고 형제와 1~2px 어긋난다.
   Button·Field·Select·Textarea·Tabs 가 `internal/sizeLadder` 를 공유한다(Link 는 글자라 제외).
+  작은 표식은 따로 묶인다 — `icon` 16/18/20(**아트보드**지 잉크가 아니다. viewBox 24 안에서
+  path 는 18~20 만 채워 잉크는 75~83%. 그래서 Checkbox 와 같은 16 이면 아이콘만 작아 보인다),
+  `checkbox` 15/16/18, `switch` 손잡이 = checkbox − 2 → 트랙 = checkbox + 2, 이동 = w − h.
   Badge 는 자기 높이 사다리(20/22/24)를 쓰되 **글자는 12 고정** — 컨트롤 14 와 같은 규칙, 다른 tier.
 
 ---

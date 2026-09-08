@@ -225,6 +225,26 @@ export const Tokens = () => {
         </Section>
 
 
+        {/* ── Mark size ──────────────────────────────────────── */}
+        <Section id="tok-mark" title="Mark size (아이콘 · 체크박스 · 스위치)" desc="폼 한 줄에 나란히 서는 작은 표식들. 세 사다리가 따로지만 같은 열에 앉도록 묶여 있다. ⚠ icon 값은 아트보드지 잉크가 아니다 — viewBox 24 안에서 path 는 18~20 만 채우므로 화면의 잉크는 아트보드의 75~83% 다. 그래서 아트보드가 체크박스와 같은 16 이면 아이콘만 한 단 작아 보인다. 사다리를 한 단 올려(16·18·20) md 18 의 잉크가 체크박스 16 과 같은 무게로 앉는다. Switch 는 반대로 한 단 내렸다 — 옛 규칙은 손잡이를 체크박스에 맞춰(16) 트랙이 20 이 됐는데, 폭이 트랙 두 배라 같은 높이여도 면적이 세 배다. 이제 손잡이 = 체크박스 − 2 라 트랙이 체크박스 + 2 로 앉고, 켜짐 이동은 w − h 한 항등식으로 떨어진다.">
+          <Inline gap="xl" align="end" wrap>
+            {CONTROLS.map((c) => (
+              <Stack key={c} gap="sm" align="start">
+                <Inline gap="md" align="center" style={{ height: "1.5rem" }}>
+                  <Box style={{ width: tokens.shape.icon[c], height: tokens.shape.icon[c], borderRadius: tokens.shape.radius.full, border: `2px solid ${tokens.color.ink.soft}` }} />
+                  <Box style={{ width: tokens.shape.checkbox[c].box, height: tokens.shape.checkbox[c].box, borderRadius: tokens.shape.checkbox[c].radius, background: tokens.color.primary.base }} />
+                  <Box style={{ width: tokens.shape.switch[c].w, height: tokens.shape.switch[c].h, borderRadius: tokens.shape.radius.full, background: tokens.color.paper.well }} />
+                </Inline>
+                <Text variant="caption" family="mono" ink="faint" as="span">{c}</Text>
+                <Text variant="caption" family="mono" ink="faint" as="span">icon {val(tokens.shape.icon[c])}</Text>
+                <Text variant="caption" family="mono" ink="faint" as="span">box {val(tokens.shape.checkbox[c].box)}</Text>
+                <Text variant="caption" family="mono" ink="faint" as="span">switch {val(tokens.shape.switch[c].w)} × {val(tokens.shape.switch[c].h)}</Text>
+              </Stack>
+            ))}
+          </Inline>
+        </Section>
+
+
         {/* ── Shadow ─────────────────────────────────────────── */}
         <Section id="tok-shadow" title="Shadow (2단 — 떠 있는 것의 표식)" desc="원칙 4: 떠 있는 것만 그림자를 갖는다. 붙은 면(Button·Field·Card·Table)은 그림자 없음(prop 생략). overlay=자유롭게 뜬 것 · overlayMinimal=아주 살짝. radius 와 나란한 shape 토큰일 뿐 별도 'elevation' 축 아님. 다크에선 near-black 이 사라지므로 더 짙은 그림자로 교체(테마 인식) — 다크 토글로 확인.">
           <Inline gap="xl" wrap>
