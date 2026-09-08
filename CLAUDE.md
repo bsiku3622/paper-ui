@@ -110,15 +110,17 @@ accent 는 hue 이름(blue 등)이 **API 에 없다** — 전부 의미색. 각 
 
 ## 형태
 
-- **radius 넉넉하게** — `sm 8` (버튼·입력·배지) · `md 12` (카드) · `lg 16` (모달). ChatGPT
-  의 부드러운 라운드. 각진 데가 없다.
+- **radius 는 날만 죽인다** — `interaction` 단일 6 (버튼·입력·배지) · `layout` `sm 6`(Tooltip) ·
+  `md 8`(카드) · `lg 12`(모달) · `full 999`(알약). 사다리를 한 단 조인 건 큰 곡선이 밀도와
+  싸우기 때문 — 모서리가 물러날수록 면과 헤어라인이 앞으로 나온다. `full` 은 intent 로
+  갈리지 않아 두 가지와 나란한 셋째 가지다.
 - **회색은 받친다** — 카드는 흰 면 + 얇은 헤어라인으로 선다. 회색(`sunken`·`well`)은 그 아래
   well(table head · marker)에만 온다 — 회색 위에 회색을 얹지 않는다. 구획은 여백과 헤어라인으로.
 - **shadow 는 2 단 토큰(elevation 축 아님)** — 떠 있는 것만 그림자를 갖는다. `overlay`
   (Modal·Tooltip·Popover) · `overlayMinimal`(Switch 손잡이 등). 붙어있는 면(Button·Field·
   Card·Table)은 그림자 없음(prop 을 안 준다). 다크에선 near-black 이 사라지므로 더 짙은 그림자로
   교체(테마 인식). `raised` 는 이제 surface color 지 그림자가 아니다(옛 elevation.raised 충돌 해소).
-  radius 는 독립 — 면 크기가 정한다(작은 Tooltip 8, 큰 Modal 16).
+  radius 는 독립 — 면 크기가 정한다(작은 Tooltip 6, 큰 Modal 12).
 - **hover 는 조용히** — interaction 오버레이가 밑 면 위에 얹혀 한 단 어두워/밝아진다. 테두리 강조 없음.
 - **밀도** — 간격(Space) 5단(4px 배수 xs4~xl24)과 컨트롤 크기(ControlSize) 3단(sm·md·lg)을 분리한다. 컨트롤 크기가 바뀌어도 글자는 14 고정(controlFontSize 14/14/14). control 높이 md 34 · table 행 44.
 
