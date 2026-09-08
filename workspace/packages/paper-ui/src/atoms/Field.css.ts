@@ -19,6 +19,16 @@ export const fieldWrap = style({
   borderColor: tokens.color.border.base,
   color: tokens.color.ink.base,
   fontFamily: tokens.text.font.sans,
+  // ⚠ **굵기·자간을 명시한다.** 예전엔 fontFamily 만 정하고 둘을 안 줘서, 브라우저 기본값
+  // (400 · normal)으로 떨어져 있었다. 이 시스템의 `normal` 은 **450** 이다 — 작은 sans 가
+  // Retina 에서 힘이 빠지는 걸 잡으려고 half-step 을 얹은 값인데(tokens/text.ts), 정작
+  // 사람이 글자를 *써 넣는* 자리만 그 보정을 못 받고 있었다. 옆의 Button(550)과 나란히
+  // 두면 입력 글자가 눈에 띄게 얇고, 그게 "크기가 다른가?" 로 읽힌다(크기는 둘 다 14다).
+  //
+  // 자간은 body 다 — 입력칸에 든 건 UI 라벨이 아니라 사람이 쓴 *내용* 이라, Button 의
+  // label 자간(+0.01em)이 아니라 본문 자간(−0.006em)을 따른다.
+  fontWeight: tokens.text.weight.normal,
+  letterSpacing: tokens.text.tracking.body,
   cursor: "text",
   transition: stateTransition("border-color", "box-shadow", "background"),
   selectors: {
@@ -35,6 +45,11 @@ export const fieldWrap = style({
 });
 
 // 안쪽 input — 면·테두리·아웃라인 없음. 폰트·색은 래퍼에서 상속.
+//
+// ⚠ 자간은 `font: inherit` 로 안 따라온다. `font` 단축 속성은 font-* 만 다시 세우고
+// letter-spacing 은 안 건드리는데, 브라우저 기본 스타일시트가 폼 컨트롤에 letter-spacing:
+// normal 을 **명시** 해 두어 상속이 거기서 끊긴다. 그래서 따로 이어 붙인다 — 안 그러면
+// 래퍼(−0.006em)와 안쪽 글자(0)의 자간이 갈려 placeholder 와 입력값이 미세하게 다르게 앉는다.
 export const fieldInput = style({
   flex: 1,
   minWidth: 0,
@@ -42,6 +57,7 @@ export const fieldInput = style({
   background: "transparent",
   outline: "none",
   font: "inherit",
+  letterSpacing: "inherit",
   color: "inherit",
   padding: 0,
   margin: 0,

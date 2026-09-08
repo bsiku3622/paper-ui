@@ -127,6 +127,10 @@ chroma 는 저명도에서 지각이 약해지므로 다크 쪽을 조금 올려
 크기는 **5단 사다리(xs~xl) × intent(interaction·layout)** 구조입니다 — chrome(Button·Field)은 `interaction`, container(Card·Modal)는 `layout`을 씁니다. 값은 넉넉한 라운드·부드러운 밀도를 지킵니다.
 
 **height** — `interaction` 24/30/34/40/44 (control = `md.interaction` 34) · `layout` 64~320
+**입력 글자는 `weight.normal`(450)입니다.** 이 시스템의 `normal`은 400이 아니라 450인데 — 작은 sans가 Retina에서 힘이 빠지는 걸 잡는 half-step입니다 — 한동안 Field·Select·Textarea만 굵기를 안 정해 브라우저 기본값 400으로 떨어져 있었습니다. 사람이 글자를 *써 넣는* 자리만 그 보정을 못 받고 있었던 셈이고, 크기는 넷 다 14인데 입력만 얇아 보이던 원인입니다. 자간은 `tracking.body`입니다 — 입력칸에 든 것은 UI 라벨이 아니라 사람이 쓴 내용이라, Button의 label 자간(+0.01em)이 아니라 본문 자간을 따릅니다.
+
+⚠ Field의 안쪽 `<input>`은 자간을 따로 이어 붙여야 합니다. `font` 단축 속성은 font-* 만 다시 세우는데, 브라우저 기본 스타일시트가 폼 컨트롤에 `letter-spacing: normal`을 **명시**해 두어 상속이 거기서 끊깁니다.
+
 **controlSize** — 컴포넌트 `size` 3단(`sm`·`md`·`lg`), height·padding만 움직임 · **controlPaddingX** 10/13/17 · **inputPaddingX** 7/9/12 · **controlPaddingY** 3.5/5.5/8.5 · **controlFontSize** 14/14/14 (밀도와 분리 — 14가 하한이자 상한)
 
 세로 여백은 `(height − 테두리 2 − 줄상자 21) / 2`입니다. 높이를 못 박는 컨트롤을 위한 값입니다 — Textarea는 줄 수만큼 자라 `height`를 쓸 수 없어 세로 여백을 직접 받아야 하고, 그때 이 값을 쓰면 첫 줄이 같은 `size`의 Field와 같은 자리에서 시작합니다.
