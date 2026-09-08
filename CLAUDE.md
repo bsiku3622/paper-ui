@@ -125,6 +125,10 @@ accent 는 hue 이름(blue 등)이 **API 에 없다** — 전부 의미색. 각 
   radius 는 독립 — 면 크기가 정한다(작은 Tooltip 6, 큰 Modal 12).
 - **hover 는 조용히** — interaction 오버레이가 밑 면 위에 얹혀 한 단 어두워/밝아진다. 테두리 강조 없음.
 - **밀도** — 간격(Space) 5단(4px 배수 xs4~xl24)과 컨트롤 크기(ControlSize) 3단(sm·md·lg)을 분리한다. 컨트롤 크기가 바뀌어도 글자는 14 고정(controlFontSize 14/14/14). control 높이 md 34 · table 행 44.
+  여백도 컨트롤 전용 축이다 — `controlPaddingX` 10/13/17 · `controlPaddingY` 8/10/13(= (height−14)/2).
+  **Box 여백 사다리(8/12/16)를 컨트롤에 빌려 쓰지 말 것** — 비가 눌려 답답해지고 형제와 1~2px 어긋난다.
+  Button·Field·Select·Textarea·Tabs 가 `internal/sizeLadder` 를 공유한다(Link 는 글자라 제외).
+  Badge 는 자기 높이 사다리(20/22/24)를 쓰되 **글자는 12 고정** — 컨트롤 14 와 같은 규칙, 다른 tier.
 
 ---
 

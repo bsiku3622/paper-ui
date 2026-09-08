@@ -32,12 +32,18 @@ export const badgeDot = style({
   flexShrink: 0,
 });
 
-// size 3 단 — 배지 높이 + fontSize·padding(라벨 열이라 control 보다 한 단 낮춰 담백하게).
-const BADGE_FONT: Record<ControlSize, string> = {
-  sm: tokens.shape.fontSize.xs, // 11
-  md: tokens.shape.fontSize.sm, // 12 (anchor)
-  lg: tokens.shape.fontSize.md, // 14
-};
+// size 3 단 — 높이와 여백만 움직인다.
+//
+// **글자는 12 고정이다.** 배지도 컨트롤과 같은 규칙을 진다 — 밀도(height)와 가독성
+// (fontSize)은 다른 축이라, 배지가 작아진다고 글자가 따라 내려가지 않는다. 컨트롤이
+// 14 고정인 것과 같은 이유고, 12 인 것은 배지가 버튼 라벨보다 한 단 낮은 표식이라서다
+// (control 은 14, 배지는 12 — 각자 자기 tier 의 앵커를 하나씩 든다).
+//
+// ⚠ 예전엔 11 · 12 · 14 로 높이를 그대로 따라갔다. sm 의 11 은 시스템이 스스로 세운
+// 가독성 하한 아래였고, lg 의 14 는 배지를 버튼 라벨만큼 크게 읽히게 해 "표식" 이라는
+// 역할을 넘겼다. 높이 사다리(20·22·24)가 14 를 못 담는 게 원인이었는데, 컨트롤은 같은
+// 문제를 sm 높이를 28 → 30 으로 올려 풀었지 글자를 내려서 풀지 않았다.
+const BADGE_FONT = tokens.shape.fontSize.sm; // 12 — size 무관
 const BADGE_PAD: Record<ControlSize, string> = {
   sm: tokens.shape.padding.xs.interaction, // 4
   md: tokens.shape.padding.sm.interaction, // 8 (anchor)
@@ -51,7 +57,7 @@ export const badgeSize = styleVariants(
       {
         height: tokens.shape.badge[s],
         paddingInline: BADGE_PAD[s],
-        fontSize: BADGE_FONT[s],
+        fontSize: BADGE_FONT,
       },
     ]),
   ) as Record<ControlSize, { height: string; paddingInline: string; fontSize: string }>,

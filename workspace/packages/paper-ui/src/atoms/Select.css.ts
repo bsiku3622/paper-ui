@@ -1,9 +1,10 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
 import { tokens, stateTransition, CONTROL_SIZES, type ControlSize } from "../tokens";
+import { sizeLadderRules } from "../internal/sizeLadder";
 
-// 크기(height·fontSize·왼쪽 padding)는 size 축(selectSize)이 정한다 — Button·Field 와
-// 같은 사다리. 오른쪽 padding 은 화살표 자리라 size 무관하게 넉넉히 고정.
+// 크기(height·fontSize·좌우 padding)는 size 축(selectSize)이 정한다 — Button·Field 와
+// 같은 사다리를 그대로 가져온다. 오른쪽만 화살표 자리라 size 무관하게 넉넉히 고정.
 export const selectRoot = style({
   width: "100%",
   background: tokens.color.paper.raised,
@@ -40,18 +41,21 @@ export const selectRoot = style({
   },
 });
 
-// size 3 단 — Button·Field 와 같은 공통 사다리(fontSize 는 controlFontSize 로 분리).
-// 오른쪽은 화살표 자리라 넉넉히 고정.
+// size 3 단 — Button·Field 와 **같은 사다리를 실제로 가져다 쓴다**. 오른쪽만 화살표
+// 자리라 size 무관하게 넉넉히 덮는다.
+//
+// ⚠ 예전엔 사다리를 손으로 베껴 쓰면서 좌우 여백만 Box 사다리(`padding[s].interaction`
+// = 8·12·16)에서 가져왔다. 주석은 "Button·Field 와 같은 공통 사다리" 라고 말하는데 실제
+// 값은 컨트롤 여백(10·13·17)보다 매 단 1~2px 좁아서, Field 옆에 Select 를 세우면 글자
+// 시작점이 어긋났다. **사다리를 베끼면 언젠가 갈라진다 — 스프레드로 가져온다.**
+//
+// paddingInlineEnd 가 사다리의 paddingInline 뒤에 와서 오른쪽만 덮어쓴다(같은 규칙
+// 안에서는 나중 선언이 이긴다). 둘 다 논리 속성이라 RTL 에서도 화살표 쪽이 열린다.
 export const selectSize = styleVariants(
   Object.fromEntries(
     CONTROL_SIZES.map((s) => [
       s,
-      {
-        height: tokens.shape.height[s].interaction,
-        fontSize: tokens.shape.controlFontSize[s],
-        paddingLeft: tokens.shape.padding[s].interaction,
-        paddingRight: tokens.shape.padding.xl.interaction,
-      },
+      { ...sizeLadderRules[s], paddingInlineEnd: tokens.shape.padding.xl.interaction },
     ]),
-  ) as Record<ControlSize, { height: string; fontSize: string; paddingLeft: string; paddingRight: string }>,
+  ) as Record<ControlSize, (typeof sizeLadderRules)[ControlSize] & { paddingInlineEnd: string }>,
 );

@@ -384,19 +384,20 @@ export const COMPONENTS: CompSpec[] = [
     slug: "textarea",
     name: "Textarea",
     group: "Atoms",
-    blurb: "여러 줄 입력. Field 와 같은 status 축, 세로로만 resize.",
+    blurb: "여러 줄 입력. Field 와 같은 status·size 축, 세로로만 resize. size 는 여백과 글자만 움직인다 — 높이는 rows 가 정한다.",
     controls: [
       { kind: "text", prop: "placeholder", label: "placeholder", def: "여러 줄 입력…" },
       { kind: "enum", prop: "status", label: "status", options: ["default", "info", "success", "warning", "error"], def: "default" },
+      { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
     ],
     render: (st) => (
       <Box style={{ width: "18rem" }}>
-        <Textarea placeholder={s(st.placeholder)} status={s(st.status) as "default" | StatusName} disabled={b(st.disabled)} rows={3} />
+        <Textarea placeholder={s(st.placeholder)} status={s(st.status) as "default" | StatusName} size={s(st.size) as "sm" | "md" | "lg"} disabled={b(st.disabled)} rows={3} />
       </Box>
     ),
     code: (st) =>
-      `<Textarea${A("placeholder", s(st.placeholder))}${AE("status", s(st.status), "default")}${A("disabled", b(st.disabled))} />`,
+      `<Textarea${A("placeholder", s(st.placeholder))}${AE("status", s(st.status), "default")}${AE("size", s(st.size), "md")}${A("disabled", b(st.disabled))} />`,
   },
   {
     slug: "switch",

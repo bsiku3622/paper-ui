@@ -105,7 +105,13 @@ chroma 는 저명도에서 지각이 약해지므로 다크 쪽을 조금 올려
 크기는 **5단 사다리(xs~xl) × intent(interaction·layout)** 구조입니다 — chrome(Button·Field)은 `interaction`, container(Card·Modal)는 `layout`을 씁니다. 값은 넉넉한 라운드·부드러운 밀도를 지킵니다.
 
 **height** — `interaction` 24/30/34/40/44 (control = `md.interaction` 34) · `layout` 64~320
-**controlSize** — 컴포넌트 `size` 3단(`sm`·`md`·`lg`), height·padding만 움직임 · **controlFontSize** 14/14/14 (밀도와 분리 — 14가 하한이자 상한)
+**controlSize** — 컴포넌트 `size` 3단(`sm`·`md`·`lg`), height·padding만 움직임 · **controlPaddingX** 10/13/17 · **controlPaddingY** 8/10/13 · **controlFontSize** 14/14/14 (밀도와 분리 — 14가 하한이자 상한)
+
+세로 여백은 `(height − 14) / 2`입니다. 라벨이 14로 고정이니 한 줄짜리 컨트롤에서는 height가 이 값을 정해 버리고, 가로 여백도 그 세로를 분모로 삼은 비(1.25·1.30·1.31)로 잡습니다. 이 관계는 오래 주석에만 있었는데, 높이를 못 박는 컨트롤이 생기면서 토큰이 되었습니다 — Textarea는 줄 수만큼 자라 `height`를 쓸 수 없어 세로 여백을 직접 받아야 하고, 그때 이 값을 쓰면 첫 줄이 같은 `size`의 Field와 같은 높이에서 시작합니다.
+
+`Button`·`Field`·`Select`·`Textarea`·`Tabs`가 이 사다리를 공유합니다. Select는 오른쪽만 화살표 자리로 덮고, Textarea는 height를 뺀 나머지를 가져옵니다. Link는 여기 없습니다 — 상자가 아니라 글자라, 높이도 여백도 없이 주변 텍스트에 실려 갑니다.
+
+**badge** — 높이 20/22/24, **글자는 12 고정**입니다. 배지도 컨트롤과 같은 규칙을 집니다. 밀도와 가독성은 다른 축이라, 배지가 작아진다고 글자가 따라 내려가지 않습니다. 컨트롤이 14인 자리에서 배지가 12인 것은 배지가 버튼 라벨보다 한 단 낮은 표식이기 때문이고, 각 tier가 자기 앵커를 하나씩 듭니다.
 **padding** — `interaction` 4/8/12/16/24 (Box 여백) · `layout` 8/12/16/24/32 (container)
 **gap** — 4/8/12/16/24 (4px 배수)
 **radius** — `interaction` 단일 6 · `layout` `sm` 6 · `md` 8 · `lg` 12 · `full` 999(알약)

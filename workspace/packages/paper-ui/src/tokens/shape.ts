@@ -173,6 +173,22 @@ export const CONTROL_PADDING_X = {
   lg: REM(17),
 } as const;
 
+// ───── control paddingBlock — height 가 정해 버리는 세로 여백 (3 단) ────────
+//
+// (height − 14) / 2 다. 라벨이 14 로 고정이라 한 줄짜리 컨트롤에서는 이 값이 계산으로
+// 나오고, 위 X 축의 비(1.25·1.30·1.31)도 이 세로를 분모로 잡은 것이다 — 그동안 주석에만
+// 적혀 있고 토큰이 없었다.
+//
+// 필요한 곳은 **높이가 안 정해진 컨트롤**이다. Textarea 는 줄 수만큼 자라 height 를 못
+// 박으므로 세로 여백을 직접 줘야 하는데, 그때 이 값을 쓰면 첫 줄이 같은 size 의 Field 와
+// 같은 높이에서 시작한다. Box 여백 사다리(8·12·16)를 빌리면 그 정렬이 깨진다.
+
+export const CONTROL_PADDING_Y = {
+  sm: REM(8), //  (30 − 14) / 2
+  md: REM(10), // (34 − 14) / 2 ◀ anchor
+  lg: REM(13), // (40 − 14) / 2
+} as const;
+
 // ───── control fontSize — 밀도와 분리한 컨트롤 라벨 크기 (14 고정) ───────────
 //
 // 컨트롤 크기가 바뀌어도 글자는 14 로 고정 — 밀도(height·padding)와 가독성(fontSize)은
@@ -317,6 +333,7 @@ export const SHAPE_VALUES = {
   radius: SHAPE_RADIUS,
   fontSize: SHAPE_FONT_SIZE,
   controlPaddingX: CONTROL_PADDING_X,
+  controlPaddingY: CONTROL_PADDING_Y,
   controlFontSize: CONTROL_FONT_SIZE,
   dot: SHAPE_DOT,
   badge: SHAPE_BADGE,
