@@ -93,10 +93,12 @@ accent 는 hue 이름(blue 등)이 **API 에 없다** — 전부 의미색. 각 
 - **Badge** 도 color × variant (기본 soft) + `dot`(상태 점) — solid=카운트·강조, outline=테두리 태그, quiet=글자만.
   Alert 는 언제나 soft, `color` 는 accent 4 색.
 
-**`outline` 의 테두리는 `edgeStrong` 이다** — `edge`(wash 괘선 · soft hover 면)와 다른 자리다.
-면을 안 칠하는 변형에서 테두리는 장식이 아니라 형태 그 자체라, 지면 대비 3:1 로 맞춘다.
-톤은 램프 인덱스가 아니라 **대비**로 고른다(hue 마다 고유 명도가 달라 400 톤으로 맞추면
-초록·amber 가 옅다). primary 도 자기 `edgeStrong` 을 든다 — `border.*` 는 구조선이라 종류가 다르다.
+**선은 두 종류다.** `border.base`·`strong` 은 *면을 나누는 선*(카드·구획)이라 물러나 있고,
+`border.control`·`controlHover` 는 *그 자체가 컨트롤인 선*(빈 입력칸 · 꺼진 체크박스 ·
+outline 버튼)이라 자기 면 위에서 **3:1** 을 진다. 한 사다리를 쓰던 시절 빈 Field 경계가
+1.19 였다. accent 는 같은 이유로 `edge`(wash 괘선 · soft hover)와 `edgeStrong`(outline 테두리)
+을 가른다 — 톤은 램프 인덱스가 아니라 **대비**로 고른다(hue 마다 고유 명도가 달라 400 톤으로
+맞추면 초록·amber 가 옅다). primary 는 자기 edgeStrong 이 없다 — `border.control` 이 그 자리다.
 
 **마크 색(ink)은 면이 아니라 글자가 정한다** — `Text`·`Icon` 의 `ink`. `ink="inherit"` 는
 색면 위에서 자리를 비켜 면의 색을 그대로 받는 자리다(Alert 안 글자). 한 축에 뉴트럴

@@ -11,7 +11,7 @@ export const selectRoot = style({
   borderRadius: tokens.shape.radius.interaction,
   borderWidth: tokens.shape.constants.borderWidth,
   borderStyle: "solid",
-  borderColor: tokens.color.border.base,
+  borderColor: tokens.color.border.control,
   color: tokens.color.ink.base,
   fontFamily: tokens.text.font.sans,
   cursor: "pointer",
@@ -26,7 +26,7 @@ export const selectRoot = style({
   backgroundSize: tokens.shape.atom.selectArrow,
   transition: stateTransition("border-color", "box-shadow", "background-color"),
   selectors: {
-    "&:hover:not(:focus)": { borderColor: tokens.color.border.strong },
+    "&:hover:not(:focus)": { borderColor: tokens.color.border.controlHover },
     // 포커스 — 보더 *바깥* 에 파란 링(outline). 전역/Checkbox 와 같은 방식.
     "&:focus": {
       outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.focus.ring}`,
