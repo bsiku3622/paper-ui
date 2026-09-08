@@ -72,6 +72,7 @@ export const Playground = () => {
   const [tab, setTab] = useState("one");
   const [checked, setChecked] = useState(true);
   const [modal, setModal] = useState(false);
+  const [longModal, setLongModal] = useState(false);
 
   const columns: Column<{ id: string; k: string; s: "info" | "success" | "error"; n: number }>[] = [
     { key: "k", header: "키", render: (r) => <Text variant="body" as="span">{r.k}</Text> },
@@ -444,8 +445,16 @@ export const Playground = () => {
               <Table columns={columns} rows={rows} rowKey={(r) => r.id} />
             </Box>
           </Spec>
-          <Spec label="Modal (열기)">
-            <Button onClick={() => setModal(true)} data-testid="modal-open">모달 열기</Button>
+          {/* 긴 본문 모달이 따로 있는 이유 — backdrop 이 fixed 라 패널이 뷰포트보다 커지면
+              넘친 부분에 닿을 방법이 없다(body 스크롤도 잠겨 있다). 예전엔 700px 화면에서
+              패널이 1069px 로 자라 푸터 버튼이 화면 밖으로 나갔다. */}
+          <Spec label="Modal (열기 · 긴 본문은 본문만 구른다)">
+            <Inline gap="sm">
+              <Button onClick={() => setModal(true)} data-testid="modal-open">모달 열기</Button>
+              <Button variant="outline" onClick={() => setLongModal(true)} data-testid="modal-open-long">
+                긴 본문 열기
+              </Button>
+            </Inline>
           </Spec>
         </Section>
       </Stack>
@@ -462,6 +471,21 @@ export const Playground = () => {
         }
       >
         <Text variant="body">떠 있는 것만 그림자를 갖는다. Esc 로 닫힌다.</Text>
+      </Modal>
+
+      <Modal
+        open={longModal}
+        title="긴 본문"
+        onClose={() => setLongModal(false)}
+        footer={<Button onClick={() => setLongModal(false)} data-testid="long-modal-confirm">확인</Button>}
+      >
+        <Stack gap="md" data-testid="long-modal-body">
+          {Array.from({ length: 24 }, (_, i) => (
+            <Text key={i} variant="body">
+              {i + 1}. 패널에 높이 상한이 있어 이 본문만 구른다. 제목과 푸터는 붙박이다.
+            </Text>
+          ))}
+        </Stack>
       </Modal>
     </PlaygroundLayout>
   );

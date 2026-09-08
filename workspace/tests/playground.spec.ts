@@ -444,6 +444,40 @@ test("alert · variant 가 면의 무게를 정하고, 글자는 면 색을 받�
   }
 });
 
+// ── Modal — 긴 본문이어도 패널이 화면을 넘지 않는다 ──────────────────────────
+//
+// backdrop 이 position:fixed 이고 열려 있는 동안 body 스크롤도 잠근다 — 패널이 뷰포트보다
+// 커지면 넘친 부분에 닿을 방법이 **아예 없다.** 실제로 700px 화면에서 패널이 1069px 로
+// 자라 확인·취소 버튼이 화면 밖에 있었다. 상한을 두고 본문만 구른다.
+test("modal · 긴 본문이어도 패널이 화면 안에 있고 푸터가 보인다", async ({ page }) => {
+  await page.setViewportSize({ width: 1000, height: 640 });
+  await page.getByTestId("modal-open-long").click();
+  const panel = page.getByRole("dialog");
+  await expect(panel).toBeVisible();
+
+  const fits = await panel.evaluate((el: HTMLElement) => {
+    const r = el.getBoundingClientRect();
+    return { top: r.top, bottom: r.bottom, vh: window.innerHeight };
+  });
+  expect(fits.top).toBeGreaterThanOrEqual(0);
+  expect(fits.bottom).toBeLessThanOrEqual(fits.vh);
+
+  // 푸터가 잘리지 않아 실제로 누를 수 있다.
+  await expect(page.getByTestId("long-modal-confirm")).toBeInViewport();
+
+  // 넘치는 건 본문뿐 — 제목·푸터는 붙박이다.
+  const scrolls = await page
+    .getByTestId("long-modal-body")
+    .evaluate((el: HTMLElement) => {
+      const body = el.parentElement!; // Box padding="lg" (modalBody)
+      return { overflow: getComputedStyle(body).overflowY, taller: body.scrollHeight > body.clientHeight };
+    });
+  expect(scrolls.overflow).toBe("auto");
+  expect(scrolls.taller).toBe(true);
+
+  await page.keyboard.press("Escape");
+});
+
 // ── 홈 CTA — 버튼처럼 생긴 자리가 링크면, 링크 하나만 그린다 ──────────────────
 //
 // <Link><Button/></Link> 로 감싸면 <a> 안에 <button> 이라 같은 자리에서 탭이 두 번

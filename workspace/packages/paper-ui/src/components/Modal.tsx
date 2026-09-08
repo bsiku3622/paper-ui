@@ -10,7 +10,7 @@ import { createPortal } from "react-dom";
 
 import { Box, Stack, Inline, Text } from "../primitives";
 import { Button, Divider } from "../atoms";
-import { modalBackdrop, modalPanel } from "./Modal.css";
+import { modalBackdrop, modalPanel, modalStack, modalBody } from "./Modal.css";
 
 export type ModalProps = {
   open: boolean;
@@ -109,14 +109,17 @@ export const Modal = ({ open, title, onClose, children, footer }: ModalProps) =>
         className={modalPanel}
         onClick={(e) => e.stopPropagation()}
       >
-        <Stack>
+        {/* 제목·푸터는 붙박이고 본문만 구른다 — 패널에 높이 상한이 있어서다(Modal.css). */}
+        <Stack className={modalStack}>
           <Box padding="lg">
             <Text id={titleId} variant="heading">
               {title}
             </Text>
           </Box>
           <Divider />
-          <Box padding="lg">{children}</Box>
+          <Box padding="lg" className={modalBody}>
+            {children}
+          </Box>
           <Divider />
           <Inline padding="md" gap="sm" justify="end">
             {footer ?? (
