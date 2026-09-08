@@ -167,14 +167,18 @@ export const Home = () => (
           {/* CTA 둘은 알약을 고른다 — 세그먼트까지 합쳐 화면에 알약이 셋이고, 각각 자기
               영역에서 가장 중요한 행동을 표시한다. 알약이 기본값이 아니라 *선택* 일 때
               갖는 뜻이다. 예전엔 이걸 `.home-cta button` CSS 로 덮어썼다 — 앱이 라이브러리
-              밖에서 컴포넌트 모서리에 손을 넣던 자리라, radius prop 으로 안으로 들였다. */}
+              밖에서 컴포넌트 모서리에 손을 넣던 자리라, shape prop 으로 안으로 들였다.
+
+              둘 다 누르면 이동하는 자리라 Button 이 아니라 *링크* 다 — as={Link} 로 <a>
+              하나만 그린다. 감싸면(<Link><Button/></Link>) 탭 정지가 둘이 되고 같은 자리에
+              포커스 링이 두 번, 그것도 두 모양으로 잡힌다. */}
           <Inline gap="sm" style={{ marginTop: tokens.shape.gap.xl }}>
-            <Link to="/docs" style={{ textDecoration: "none" }}>
-              <Button size="lg" radius="full">문서 읽기</Button>
-            </Link>
-            <Link to="/playground" style={{ textDecoration: "none" }}>
-              <Button size="lg" variant="outline" radius="full">컴포넌트 보기</Button>
-            </Link>
+            <Button as={Link} to="/docs" size="lg" shape="pill" style={{ textDecoration: "none" }}>
+              문서 읽기
+            </Button>
+            <Button as={Link} to="/playground" size="lg" variant="outline" shape="pill" style={{ textDecoration: "none" }}>
+              컴포넌트 보기
+            </Button>
           </Inline>
         </div>
 

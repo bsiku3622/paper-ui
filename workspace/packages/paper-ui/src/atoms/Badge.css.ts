@@ -21,7 +21,7 @@ export const badgeRoot = style({
 // 알약 — 모서리를 높이의 절반까지. 배지는 낱말 하나를 담는 라벨이라 알약이 자연스러운
 // 자리지만, 기본값은 아니다 — 표 안에서 버튼·입력과 같은 곡선으로 줄을 서야 한다.
 // badgeRoot 뒤에 와서 같은 특정도를 순서로 이긴다.
-export const badgeRadiusFull = style({ borderRadius: tokens.shape.radius.full });
+export const badgePill = style({ borderRadius: tokens.shape.radius.full });
 
 // 상태 점 — 글자색(currentColor)을 따라 배지와 한 색. em 이라 size 에 비례.
 export const badgeDot = style({

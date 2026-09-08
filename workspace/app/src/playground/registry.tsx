@@ -179,7 +179,7 @@ export const COMPONENTS: CompSpec[] = [
     slug: "button",
     name: "Button",
     group: "Atoms",
-    blurb: "두 축이 직교한다 — color(primary·의미 4색) × variant(solid·soft·outline·quiet, 시각 무게). 큰 면을 채우는 건 검정(primary)뿐, 색은 뜻을 질 때만. radius=\"full\" 은 알약 — 화면에서 가장 중요한 행동 한둘에만.",
+    blurb: "두 축이 직교한다 — color(primary·의미 4색) × variant(solid·soft·outline·quiet, 시각 무게). 큰 면을 채우는 건 검정(primary)뿐, 색은 뜻을 질 때만. shape=\"pill\" 은 알약 — 화면에서 가장 중요한 행동 한둘에만. 누르면 이동하는 자리는 as={Link} 로 링크 하나만 그린다(감싸면 탭 정지가 둘이 된다).",
     controls: [
       { kind: "enum", prop: "color", label: "color", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
       { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "outline", "quiet"], def: "solid" },
@@ -187,7 +187,7 @@ export const COMPONENTS: CompSpec[] = [
       { kind: "bool", prop: "loading", label: "loading", def: false },
       { kind: "bool", prop: "fullWidth", label: "fullWidth", def: false },
       { kind: "bool", prop: "iconOnly", label: "iconOnly(aria-label 필수)", def: false },
-      { kind: "enum", prop: "radius", label: "radius", options: ["default", "full"], def: "default" },
+      { kind: "enum", prop: "shape", label: "shape", options: ["default", "pill"], def: "default" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
       { kind: "text", prop: "children", label: "children", def: "버튼" },
     ],
@@ -199,7 +199,7 @@ export const COMPONENTS: CompSpec[] = [
         size: s(st.size) as "sm" | "md" | "lg",
         loading: b(st.loading),
         fullWidth: b(st.fullWidth),
-        radius: s(st.radius) === "full" ? ("full" as const) : undefined,
+        shape: s(st.shape) as "default" | "pill",
         disabled: b(st.disabled),
       };
       return b(st.iconOnly) ? (
@@ -211,25 +211,25 @@ export const COMPONENTS: CompSpec[] = [
       );
     },
     code: (st) =>
-      `<Button${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "solid")}${AE("size", s(st.size), "md")}${A("loading", b(st.loading))}${A("fullWidth", b(st.fullWidth))}${AE("radius", s(st.radius), "default")}${A("disabled", b(st.disabled))}${b(st.iconOnly) ? ` iconOnly aria-label="${s(st.children) || "추가"}"><Icon>…</Icon>` : `>${s(st.children)}`}</Button>`,
+      `<Button${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "solid")}${AE("size", s(st.size), "md")}${A("loading", b(st.loading))}${A("fullWidth", b(st.fullWidth))}${AE("shape", s(st.shape), "default")}${A("disabled", b(st.disabled))}${b(st.iconOnly) ? ` iconOnly aria-label="${s(st.children) || "추가"}"><Icon>…</Icon>` : `>${s(st.children)}`}</Button>`,
   },
   {
     slug: "badge",
     name: "Badge",
     group: "Atoms",
-    blurb: "상태 한 낱말. color × variant(soft·solid·outline·quiet). dot 으로 앞에 상태 점. 표시용이라 hover 없음. radius=\"full\" 이면 알약.",
+    blurb: "상태 한 낱말. color × variant(soft·solid·outline·quiet). dot 으로 앞에 상태 점. 표시용이라 hover 없음. shape=\"pill\" 이면 알약 — Button 과 같은 어휘라 나란히 서도 곡선이 갈리지 않는다.",
     controls: [
       { kind: "enum", prop: "color", label: "color", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
       { kind: "enum", prop: "variant", label: "variant", options: ["soft", "solid", "outline", "quiet"], def: "soft" },
       { kind: "bool", prop: "dot", label: "dot", def: false },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
-      { kind: "enum", prop: "radius", label: "radius", options: ["default", "full"], def: "default" },
+      { kind: "enum", prop: "shape", label: "shape", options: ["default", "pill"], def: "default" },
       { kind: "text", prop: "children", label: "children", def: "진행" },
     ],
     render: (st) => (
-      <Badge color={s(st.color) as Color} variant={s(st.variant) as Variant} dot={b(st.dot)} size={s(st.size) as "sm" | "md" | "lg"} radius={s(st.radius) === "full" ? "full" : undefined}>{s(st.children)}</Badge>
+      <Badge color={s(st.color) as Color} variant={s(st.variant) as Variant} dot={b(st.dot)} size={s(st.size) as "sm" | "md" | "lg"} shape={s(st.shape) as "default" | "pill"}>{s(st.children)}</Badge>
     ),
-    code: (st) => `<Badge${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "soft")}${A("dot", b(st.dot))}${AE("size", s(st.size), "md")}${AE("radius", s(st.radius), "default")}>${s(st.children)}</Badge>`,
+    code: (st) => `<Badge${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "soft")}${A("dot", b(st.dot))}${AE("size", s(st.size), "md")}${AE("shape", s(st.shape), "default")}>${s(st.children)}</Badge>`,
   },
   {
     slug: "field",

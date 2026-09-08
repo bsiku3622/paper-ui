@@ -206,11 +206,11 @@ export const Playground = () => {
           </Spec>
           {/* 알약은 기본값이 아니라 선택이다 — 화면에 하나둘 있을 때만 "여기가 가장 중요한
               행동" 이라는 뜻을 진다. 고르는 건 곡선의 크기가 아니라 알약이냐 아니냐뿐. */}
-          <Spec label="radius — 시스템 곡선 ⇄ 알약(full)" testid="spec-button-radius">
-            <Button data-testid="btn-radius-default">기본</Button>
-            <Button radius="full" data-testid="btn-radius-full">알약</Button>
-            <Button variant="outline" radius="full">알약 outline</Button>
-            <Button size="lg" radius="full">알약 lg</Button>
+          <Spec label="shape — 시스템 곡선 ⇄ 알약(pill)" testid="spec-button-shape">
+            <Button data-testid="btn-shape-default">기본</Button>
+            <Button shape="pill" data-testid="btn-shape-pill">알약</Button>
+            <Button variant="outline" shape="pill">알약 outline</Button>
+            <Button size="lg" shape="pill">알약 lg</Button>
           </Spec>
         </Section>
 
@@ -293,11 +293,11 @@ export const Playground = () => {
             <Badge color="info" dot>진행</Badge>
             <Badge color="success" dot>정상</Badge>
           </Spec>
-          <Spec label="Badge — radius (Button 과 같은 어휘라 나란히 서면 곡선이 맞는다)" testid="spec-badge-radius">
-            <Badge color="success" data-testid="badge-radius-default">완료</Badge>
-            <Badge color="success" radius="full" data-testid="badge-radius-full">완료</Badge>
-            <Badge color="error" variant="solid" radius="full">3</Badge>
-            <Badge color="info" dot radius="full">진행</Badge>
+          <Spec label="Badge — shape (Button 과 같은 어휘라 나란히 서면 곡선이 맞는다)" testid="spec-badge-shape">
+            <Badge color="success" data-testid="badge-shape-default">완료</Badge>
+            <Badge color="success" shape="pill" data-testid="badge-shape-pill">완료</Badge>
+            <Badge color="error" variant="solid" shape="pill">3</Badge>
+            <Badge color="info" dot shape="pill">진행</Badge>
           </Spec>
           {/* Divider 는 세로로 세워 표본으로 보인다. 가로 한 줄을 그으면 섹션을 가르는
               선처럼 읽혀, 예제 화면이 줄무늬가 된다 — 두 축은 상세 페이지에서 전환한다. */}
