@@ -12,7 +12,7 @@ import type { TextVariant } from "../tokens";
 
 type OwnProps<As extends ElementType> = {
   variant?: TextVariant;
-  // 잉크 농도만 variant 기본값 위로 덮을 수 있다 (muted 처리용).
+  // 잉크 농도만 variant 기본값 위로 덮을 수 있다 (보조 글자를 ink.soft 로 내릴 때).
   ink?: Ink;
   // 서체 축 — variant 위에 교차한다. mono 는 .pui-mono 가 등폭 + 자간 리셋.
   family?: "sans" | "mono";

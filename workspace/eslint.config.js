@@ -120,7 +120,8 @@ export default [
   },
 
   // ── 규칙 4 — Primitive 위에서 raw HTML 금지 ─────────────────────────────
-  // Atom 부터는 Box/Stack/Inline/Text 로 합성한다. Primitive 만 raw 를 렌더한다.
+  // raw HTML 은 Primitive 와 Atom 까지다(Button→button · Field→input). Molecule 부터는
+  // Primitive·Atom 합성만 — raw 태그가 꼭 필요하면 <Box as="…"> 가 유일한 통로다.
   {
     files: [
       "packages/paper-ui/src/molecules/**/*.tsx",

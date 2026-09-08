@@ -61,7 +61,7 @@ const STATE_STATUS: Record<State, StatusName | undefined> = {
   blocked: "error",
 };
 
-// avatar — 전용 컴포넌트 없이 Box 조합으로. pill + muted 면 + 이니셜.
+// avatar — 전용 컴포넌트 없이 Box 조합으로. 알약(radius=full) + well 면 + 이니셜.
 const Avatar = ({ name }: { name: string }) => (
   <Box
     surface="well"

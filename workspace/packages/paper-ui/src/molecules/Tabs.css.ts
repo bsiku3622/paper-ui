@@ -41,7 +41,7 @@ export const tabItemSize = styleVariants(
   Object.fromEntries(CONTROL_SIZES.map((s) => [s, sizeLadderRules[s]])) as Record<ControlSize, (typeof sizeLadderRules)[ControlSize]>,
 );
 
-// 선택 = 흰 pill. muted 트랙 위 흰색 대비만으로 또렷하다 — 그림자 없음.
+// 선택 = 흰 pill. well 트랙 위 흰색 대비만으로 또렷하다 — 그림자 없음.
 // (탭은 overlay 가 아니므로 뜨지 않는다. 원칙 3.)
 export const tabItemActive = style({
   background: tokens.color.paper.raised,
