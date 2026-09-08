@@ -424,7 +424,7 @@ test("switch · 손잡이 여백이 사방 같고, 켜짐 이동이 w − h 다"
 // 값이 아니라 **계약**을 못 박는다. 어느 hue 를 골랐느냐가 아니라 "지면에서 떨어져
 // 보이는가" 가 규칙이고, hue 마다 고유 명도가 달라 같은 램프 인덱스로는 그 규칙을 못
 // 지킨다. 예전엔 wash 의 괘선(edge, 200 톤)을 빌려 써서 넷 다 1.18~1.41 이었다.
-test("outline · 테두리가 지면 대비 3:1 을 넘는다 (다섯 색 전부)", async ({ page }) => {
+test("outline · accent 테두리가 지면 대비 3:1 을 넘는다 (네 색 전부)", async ({ page }) => {
   const ratios = await page.evaluate(() => {
     const lum = (rgb: string) => {
       const [r, g, b] = rgb.match(/[\d.]+/g)!.slice(0, 3).map((v) => Number(v) / 255)
@@ -437,7 +437,9 @@ test("outline · 테두리가 지면 대비 3:1 을 넘는다 (다섯 색 전부
     };
     const bg = getComputedStyle(document.body).backgroundColor;
     const out: Record<string, number> = {};
-    for (const c of ["primary", "info", "success", "warning", "error"]) {
+    // primary 는 여기 없다 — 그쪽 테두리는 border.control 이라 입력칸과 한 값을 쓰고,
+    // 그 강도는 아직 조율 중이다. accent 는 라벨 색과 맞아야 해 자기 edgeStrong 을 든다.
+    for (const c of ["info", "success", "warning", "error"]) {
       const el = document.querySelector(`[data-testid="outline-${c}"]`)!;
       out[c] = ratio(bg, getComputedStyle(el).borderTopColor);
     }
@@ -448,12 +450,16 @@ test("outline · 테두리가 지면 대비 3:1 을 넘는다 (다섯 색 전부
   }
 });
 
-// ── 컨트롤의 경계는 자기 면 위에서 3:1 이다 ─────────────────────────────────
+// ── 컨트롤의 경계는 구조선보다 확실히 진하다 ────────────────────────────────
 //
 // 빈 Field 는 상자 말고 아무 단서가 없고, 꺼진 Checkbox 도 마찬가지다. 그 선이 안 보이면
-// 컴포넌트가 안 보인다(WCAG 1.4.11 이 비텍스트에 3:1 을 요구하는 자리). 카드 헤어라인은
-// 여기 없다 — 그건 면을 나누는 선이라 물러나 있는 게 맞고, 값도 따로 산다(border.base).
-test("control edge · 입력·체크박스의 경계가 자기 면 위에서 3:1 을 넘는다", async ({ page }) => {
+// 컴포넌트가 안 보인다. 카드 헤어라인은 여기 없다 — 그건 면을 나누는 선이라 물러나 있는
+// 게 맞고, 값도 따로 산다(border.base, 1.19).
+//
+// ⚠ **잠그는 건 값이 아니라 "구조선보다 진하다" 는 관계다.** 강도는 아직 미정이라
+// (WCAG 1.4.11 의 3:1 까지 올렸다가 눈으로 한 단 내렸다) 숫자를 못 박으면 그 조율이
+// 매번 테스트를 깨뜨린다. 대신 두 선이 뒤집히거나 같아지는 것만 막는다.
+test("control edge · 컨트롤의 경계가 구조 헤어라인보다 확실히 진하다", async ({ page }) => {
   const ratios = await page.evaluate(() => {
     const lum = (rgb: string) => {
       const [r, g, b] = rgb.match(/[\d.]+/g)!.slice(0, 3).map((v) => Number(v) / 255)
@@ -479,8 +485,9 @@ test("control edge · 입력·체크박스의 경계가 자기 면 위에서 3:1
     }
     return out;
   });
+  // 카드 헤어라인(base)이 기준선 — 컨트롤 경계는 그보다 확실히 위에 있어야 한다.
   for (const [name, r] of Object.entries(ratios)) {
-    expect(r, `${name} 경계 대비`).toBeGreaterThanOrEqual(2.9);
+    expect(r, `${name} 경계 대비`).toBeGreaterThan(1.6);
   }
 });
 
