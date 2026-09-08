@@ -178,10 +178,10 @@ export const COMPONENTS: CompSpec[] = [
     slug: "button",
     name: "Button",
     group: "Atoms",
-    blurb: "두 축이 직교한다 — color(primary·의미 4색) × variant(solid·soft·outline·plain·quiet, 면의 무게). 테두리만 있는 자리가 둘인데, 세기가 아니라 어느 선이냐로 갈린다 — outline 은 컨트롤이 소유한 또렷한 선(지면 대비 3:1), plain 은 지면이 소유한 헤어라인(카드·빈 입력칸과 같은 선). 큰 면을 채우는 건 검정(primary)뿐, 색은 뜻을 질 때만. shape=\"pill\" 은 알약 — 화면에서 가장 중요한 행동 한둘에만. 누르면 이동하는 자리는 as={Link} 로 링크 하나만 그린다(감싸면 탭 정지가 둘이 된다).",
+    blurb: "두 축이 직교한다 — color(primary·의미 4색) × variant(solid·soft·outline·hairline·quiet, 면의 무게). 테두리만 있는 자리가 둘인데, 세기가 아니라 어느 선이냐로 갈린다 — outline 은 컨트롤이 소유한 또렷한 선(지면 대비 3:1), hairline 은 지면이 소유한 헤어라인(카드·빈 입력칸과 같은 선). 큰 면을 채우는 건 검정(primary)뿐, 색은 뜻을 질 때만. shape=\"pill\" 은 알약 — 화면에서 가장 중요한 행동 한둘에만. 누르면 이동하는 자리는 as={Link} 로 링크 하나만 그린다(감싸면 탭 정지가 둘이 된다).",
     controls: [
       { kind: "enum", prop: "color", label: "color", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
-      { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "outline", "plain", "quiet"], def: "solid" },
+      { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "outline", "hairline", "quiet"], def: "solid" },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "bool", prop: "loading", label: "loading", def: false },
       { kind: "bool", prop: "fullWidth", label: "fullWidth", def: false },
@@ -219,7 +219,7 @@ export const COMPONENTS: CompSpec[] = [
     blurb: "상태 한 낱말. color × variant(soft·solid·outline·quiet). dot 으로 앞에 상태 점. 표시용이라 hover 없음. shape=\"pill\" 이면 알약 — Button 과 같은 어휘라 나란히 서도 곡선이 갈리지 않는다.",
     controls: [
       { kind: "enum", prop: "color", label: "color", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
-      { kind: "enum", prop: "variant", label: "variant", options: ["soft", "solid", "outline", "plain", "quiet"], def: "soft" },
+      { kind: "enum", prop: "variant", label: "variant", options: ["soft", "solid", "outline", "hairline", "quiet"], def: "soft" },
       { kind: "bool", prop: "dot", label: "dot", def: false },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "enum", prop: "shape", label: "shape", options: ["default", "pill"], def: "default" },
@@ -543,7 +543,7 @@ export const COMPONENTS: CompSpec[] = [
     blurb: "상태 한 줄을 색이 깔린 면으로 알린다. Button·Badge 와 같은 color × variant 매트릭스를 그대로 문다 — variant 가 이미 면의 무게 축이라 Alert 전용 surface 축을 따로 세우지 않았다.",
     controls: [
       { kind: "enum", prop: "color", label: "color", options: ["primary", "info", "success", "warning", "error"], def: "info" },
-      { kind: "enum", prop: "variant", label: "variant", options: ["soft", "solid", "outline", "plain", "quiet"], def: "soft" },
+      { kind: "enum", prop: "variant", label: "variant", options: ["soft", "solid", "outline", "hairline", "quiet"], def: "soft" },
       { kind: "text", prop: "title", label: "title", def: "확인이 필요합니다" },
       { kind: "text", prop: "children", label: "children", def: "이 작업은 되돌릴 수 없습니다." },
     ],

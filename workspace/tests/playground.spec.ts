@@ -457,7 +457,7 @@ test("outline · 테두리가 지면 대비 3:1 을 넘는다 (다섯 색 전부
 //
 // 그래서 잠그는 건 강도가 아니라 **한 벌이라는 것** 이다. 컨트롤 하나를 또렷하게 하고 싶으면
 // 표를 올리는 게 아니라 variant 로 고른다 — 그게 `outline` 이고, 이 테스트에 없는 이유다.
-test("edge · 입력·카드·plain 이 같은 회색 선을 쓴다", async ({ page }) => {
+test("edge · 입력·카드·hairline 이 같은 회색 선을 쓴다", async ({ page }) => {
   const colors = await page.evaluate(() => {
     const q = (sel: string) => document.querySelector(sel) as HTMLElement;
     return {
@@ -465,7 +465,7 @@ test("edge · 입력·카드·plain 이 같은 회색 선을 쓴다", async ({ p
       field: getComputedStyle(q('[data-testid="base-field"]')).borderTopColor,
       select: getComputedStyle(q('[data-testid="base-select"]')).borderTopColor,
       textarea: getComputedStyle(q('[data-testid="base-textarea"]')).borderTopColor,
-      plainBtn: getComputedStyle(q('[data-testid="plain-primary"]')).borderTopColor,
+      plainBtn: getComputedStyle(q('[data-testid="hairline-primary"]')).borderTopColor,
     };
   });
   const distinct = new Set(Object.values(colors));
@@ -474,18 +474,18 @@ test("edge · 입력·카드·plain 이 같은 회색 선을 쓴다", async ({ p
 
 // ── 테두리만 있는 변형이 둘 — 세기가 아니라 어느 선이냐로 갈린다 ─────────────
 //
-// outline 은 color family 가 소유한 선(edgeStrong)이고 plain 은 지면이 소유한 선이다.
-// 뉴트럴에서 plain 은 카드 헤어라인과 **같은 값**이지만, accent 에서는 그 색의 가장 옅은
+// outline 은 color family 가 소유한 선(edgeStrong)이고 hairline 은 지면이 소유한 선이다.
+// 뉴트럴에서 hairline 은 카드 헤어라인과 **같은 값**이지만, accent 에서는 그 색의 가장 옅은
 // 괘선(edge)으로 간다 — 색 있는 자리에 뉴트럴 회색을 두르면 그 컴포넌트만 색 정체성을 잃는다.
-test("variant · outline 과 plain 이 서로 다른 선을 든다", async ({ page }) => {
+test("variant · outline 과 hairline 이 서로 다른 선을 든다", async ({ page }) => {
   for (const c of ["primary", "info", "success", "warning", "error"]) {
     const strong = await page.getByTestId(`outline-${c}`).evaluate((e: HTMLElement) => getComputedStyle(e).borderTopColor);
-    const weak = await page.getByTestId(`plain-${c}`).evaluate((e: HTMLElement) => getComputedStyle(e).borderTopColor);
+    const weak = await page.getByTestId(`hairline-${c}`).evaluate((e: HTMLElement) => getComputedStyle(e).borderTopColor);
     expect(strong, `${c}: 두 변형이 같은 선을 들면 어휘가 하나 죽는다`).not.toBe(weak);
   }
-  // 뉴트럴 plain 은 지면의 선 그대로 — 옆의 Field 와 한 값이다.
-  const btn = await page.getByTestId("plain-primary").evaluate((e: HTMLElement) => getComputedStyle(e).borderTopColor);
-  const field = await page.getByTestId("plain-field").evaluate((e: HTMLElement) => getComputedStyle(e).borderTopColor);
+  // 뉴트럴 hairline 은 지면의 선 그대로 — 옆의 Field 와 한 값이다.
+  const btn = await page.getByTestId("hairline-primary").evaluate((e: HTMLElement) => getComputedStyle(e).borderTopColor);
+  const field = await page.getByTestId("hairline-field").evaluate((e: HTMLElement) => getComputedStyle(e).borderTopColor);
   expect(btn).toBe(field);
 });
 
