@@ -169,6 +169,7 @@ export const Playground = () => {
             <Button variant="solid" data-testid="btn-solid">solid</Button>
             <Button variant="soft" data-testid="btn-soft">soft</Button>
             <Button variant="outline" data-testid="btn-outline">outline</Button>
+            <Button variant="plain" data-testid="btn-plain">plain</Button>
             <Button variant="quiet" data-testid="btn-quiet">quiet</Button>
           </Spec>
           <Spec label="color — 의미 색 (variant 와 직교)">
@@ -408,7 +409,7 @@ export const Playground = () => {
               별도 축을 세우지 않은 건 variant 가 이미 *면의 무게* 축이기 때문이다. */}
           <Spec label="Alert — variant (같은 색, 네 가지 면의 무게)" testid="spec-alert-variant">
             <Inline gap="md" wrap align="start">
-              {(["soft", "solid", "outline", "quiet"] as const).map((v) => (
+              {(["soft", "solid", "outline", "plain", "quiet"] as const).map((v) => (
                 <Box key={v} style={{ width: "15rem" }} data-testid={`alert-${v}`}>
                   <Alert color="error" variant={v} title="확인이 필요합니다">
                     이 작업은 되돌릴 수 없습니다.
@@ -428,7 +429,11 @@ export const Playground = () => {
           </Spec>
           {/* outline 의 테두리는 wash 괘선(edge)이 아니라 edgeStrong 이다 — 면을 안 칠하는
               변형에서 테두리는 장식이 아니라 형태 그 자체라, 지면 대비 3:1 로 맞춰 뒀다. */}
-          <Spec label="outline — 테두리가 곧 형태 (지면 대비 3:1)" testid="spec-outline">
+          {/* 테두리만 있는 변형이 둘이다. 세기가 아니라 **어느 선이냐**로 갈린다 —
+              outline 은 컨트롤이 소유한 선(color family 의 edgeStrong), plain 은 지면이
+              소유한 선(카드 헤어라인·빈 입력칸과 같은 border.base). 그래서 plain 은 여러
+              개 깔려도 조용하고, outline 은 하나만 놓아야 말이 된다. */}
+          <Spec label="outline — 컨트롤이 소유한 선 (지면 대비 3:1)" testid="spec-outline">
             <Inline gap="sm" wrap align="center">
               <Button variant="outline" data-testid="outline-primary">기본</Button>
               {STATUSES.map((c) => (
@@ -437,6 +442,20 @@ export const Playground = () => {
               {STATUSES.map((c) => (
                 <Badge key={c} color={c} variant="outline">{c}</Badge>
               ))}
+            </Inline>
+          </Spec>
+          <Spec label="plain — 지면이 소유한 선 (카드·빈 입력칸과 같은 헤어라인)" testid="spec-plain">
+            <Inline gap="sm" wrap align="center">
+              <Button variant="plain" data-testid="plain-primary">기본</Button>
+              {STATUSES.map((c) => (
+                <Button key={c} color={c} variant="plain" data-testid={`plain-${c}`}>{c}</Button>
+              ))}
+              {STATUSES.map((c) => (
+                <Badge key={c} color={c} variant="plain">{c}</Badge>
+              ))}
+              <Box style={{ width: "9rem" }}>
+                <Field placeholder="같은 선" aria-label="같은 선" data-testid="plain-field" />
+              </Box>
             </Inline>
           </Spec>
         </Section>

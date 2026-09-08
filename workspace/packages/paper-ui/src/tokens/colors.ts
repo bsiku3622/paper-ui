@@ -138,6 +138,14 @@ export const PRIMARY = {
   base: "#18181b",
   hover: "#3f3f46", // 어두운 면은 hover 때 *밝아진다* — 이미 검정에 가까워 더 어둡게는 안 보인다. 한 단 확실히.
   fg: "#ffffff",
+  // variant `outline` 의 테두리. accent 의 edgeStrong 과 같은 자리다 — **색 family 가
+  // 자기 outline 선을 소유한다.**
+  //
+  // ⚠ 이 값은 위의 BORDER 표와 **다른 종류**다. BORDER 는 지면이 소유한 선이라 카드·구획·
+  // 빈 입력칸이 한 벌로 쓰고, 여기 이 값은 컨트롤 하나가 "나는 테두리로 존재한다" 고 말할 때
+  // 고르는 선이다. 한때 이 구분을 입력칸에까지 적용했다가 물렸는데(회색이 두 벌로 읽혔다),
+  // 차이는 **누가 고르느냐** 다: 지면의 선은 모든 화면에 깔리고, 이 선은 variant 로 고른다.
+  edgeStrong: "#92929b", // 흰 면 위 3.09:1
 } as const;
 
 // ⚠ primary 는 자기 `edgeStrong` 을 들지 않는다. 한때 뒀다가 `border.control` 로 합쳤는데,
@@ -368,6 +376,7 @@ const PRIMARY_DARK = {
   base: "#e8e8ea", // 일꾼 면 — 순백은 딥다크 위에서 튄다. soft white 로 눌러도 "가장 밝은 = primary" 유지
   hover: "#d6d6d9", // 밝은 면은 hover 때 살짝 어두워진다
   fg: "#18181b",
+  edgeStrong: "#6e6e75", // 가장 밝은 면(well) 위에서도 3:1 — accent edgeStrong 과 같은 기준
 } as const;
 
 const FOCUS_DARK = {

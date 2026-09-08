@@ -27,7 +27,19 @@ export type Accent = (typeof ACCENTS)[number];
 export const COLORS = ["primary", ...ACCENTS] as const;
 export type Color = (typeof COLORS)[number];
 
-export const VARIANTS = ["solid", "soft", "outline", "quiet"] as const;
+// 면의 무게 5 단. **테두리만 있는 자리가 둘**이고, 둘은 세기가 아니라 *어느 선이냐* 로
+// 갈린다 — 그래서 이름도 선의 종류를 말한다.
+//
+//   solid    채운 면
+//   soft     옅은 면
+//   outline  컨트롤이 소유한 또렷한 테두리 (color family 의 edgeStrong · 지면 대비 3:1)
+//   plain    지면이 소유한 헤어라인 (카드 · 빈 입력칸과 같은 선)
+//   quiet    면도 선도 없음
+//
+// ⚠ `outline` 의 뜻이 바뀌었다. 예전 outline 은 지금의 `plain` 이다 — 헤어라인을 두르던
+// 자리인데, 그것만으로는 "테두리가 곧 형태" 인 변형이 지면에서 안 떨어졌다(1.19:1).
+// 강조가 필요한 자리를 위해 진한 쪽을 새로 열고 이름을 옮겼다.
+export const VARIANTS = ["solid", "soft", "outline", "plain", "quiet"] as const;
 export type Variant = (typeof VARIANTS)[number];
 
 export const resolveColor = (color: Color | undefined, variant: Variant = "solid"): string =>

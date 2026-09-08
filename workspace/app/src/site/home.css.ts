@@ -55,7 +55,8 @@ globalStyle(".home-mockup-bar", {
   gap: tokens.shape.gap.sm,
   height: "2.6rem",
   paddingInline: tokens.shape.padding.md.interaction,
-  borderBottom: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
+  // 선 없음 — 면이 이미 나눈다. sunken 인 창 머리와 raised 인 본문 사이엔 톤 차이가 있고,
+  // 같은 sunken 인 사이드바와는 애초에 이어져야 하는 자리다.
   background: tokens.color.paper.sunken,
 });
 
@@ -74,8 +75,11 @@ globalStyle(".home-mockup-side", {
   flexDirection: "column",
   gap: tokens.shape.gap.md,
   padding: tokens.shape.padding.md.interaction,
-  borderRight: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
   // 사이드바는 well 로 가라앉는다 — 흰 본문과 대비해 ChatGPT 결(흰 메인 · 회색 사이드바).
+  //
+  // ⚠ 선을 두르지 않는다. **면이 이미 나눈 자리에 선을 더하면 같은 말을 두 번 한다.**
+  // 원칙 2("회색은 카드를 감싸지 않고 받친다")가 여기서도 그대로다 — 받치는 면은 자기
+  // 톤으로 경계를 만들고, 괘선은 톤이 같은 것끼리 나눌 때만 나선다.
   background: tokens.color.paper.sunken,
   "@media": {
     [`screen and (max-width: ${BP.md})`]: { display: "none" },
