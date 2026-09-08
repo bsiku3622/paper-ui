@@ -11,6 +11,7 @@
 import { Fragment, useState } from "react";
 
 import {
+  Alert,
   Badge,
   Box,
   Button,
@@ -398,6 +399,45 @@ export const Playground = () => {
         </Section>
 
         {/* ── Components ─────────────────────────────────────── */}
+        <Section id="sec-feedback" title="Alert · outline">
+          {/* Alert 은 Button·Badge 와 같은 color × variant 매트릭스를 문다. 면을 위한
+              별도 축을 세우지 않은 건 variant 가 이미 *면의 무게* 축이기 때문이다. */}
+          <Spec label="Alert — variant (같은 색, 네 가지 면의 무게)" testid="spec-alert-variant">
+            <Inline gap="md" wrap align="start">
+              {(["soft", "solid", "outline", "quiet"] as const).map((v) => (
+                <Box key={v} style={{ width: "15rem" }} data-testid={`alert-${v}`}>
+                  <Alert color="error" variant={v} title="확인이 필요합니다">
+                    이 작업은 되돌릴 수 없습니다.
+                  </Alert>
+                </Box>
+              ))}
+            </Inline>
+          </Spec>
+          <Spec label="Alert — color (primary 는 중립 안내)" testid="spec-alert-color">
+            <Inline gap="md" wrap align="start">
+              {(["primary", "info", "success", "warning", "error"] as const).map((c) => (
+                <Box key={c} style={{ width: "11rem" }}>
+                  <Alert color={c} title={c} />
+                </Box>
+              ))}
+            </Inline>
+          </Spec>
+          {/* outline 의 테두리는 wash 괘선(edge)이 아니라 edgeStrong 이다 — 면을 안 칠하는
+              변형에서 테두리는 장식이 아니라 형태 그 자체라, 지면 대비 3:1 로 맞춰 뒀다. */}
+          <Spec label="outline — 테두리가 곧 형태 (지면 대비 3:1)" testid="spec-outline">
+            <Inline gap="sm" wrap align="center">
+              <Button variant="outline" data-testid="outline-primary">기본</Button>
+              {STATUSES.map((c) => (
+                <Button key={c} color={c} variant="outline" data-testid={`outline-${c}`}>{c}</Button>
+              ))}
+              {STATUSES.map((c) => (
+                <Badge key={c} color={c} variant="outline">{c}</Badge>
+              ))}
+            </Inline>
+          </Spec>
+        </Section>
+
+
         <Section id="sec-comp" title="Table · Modal">
           <Spec label="Table">
             <Box surface="raised" border radius="md" style={{ overflow: "hidden", width: "28rem" }}>

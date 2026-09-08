@@ -386,6 +386,64 @@ test("switch · 손잡이 여백이 사방 같고, 켜짐 이동이 w − h 다"
   expect(g.tx).toBeCloseTo(g.travel, 1); // 이동 = w − h
 });
 
+// ── outline — 테두리가 곧 형태라, 지면 대비 3:1 을 진다 ─────────────────────
+//
+// 값이 아니라 **계약**을 못 박는다. 어느 hue 를 골랐느냐가 아니라 "지면에서 떨어져
+// 보이는가" 가 규칙이고, hue 마다 고유 명도가 달라 같은 램프 인덱스로는 그 규칙을 못
+// 지킨다. 예전엔 wash 의 괘선(edge, 200 톤)을 빌려 써서 넷 다 1.18~1.41 이었다.
+test("outline · 테두리가 지면 대비 3:1 을 넘는다 (다섯 색 전부)", async ({ page }) => {
+  const ratios = await page.evaluate(() => {
+    const lum = (rgb: string) => {
+      const [r, g, b] = rgb.match(/[\d.]+/g)!.slice(0, 3).map((v) => Number(v) / 255)
+        .map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
+      return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
+    };
+    const ratio = (a: string, b: string) => {
+      const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m);
+      return (x! + 0.05) / (y! + 0.05);
+    };
+    const bg = getComputedStyle(document.body).backgroundColor;
+    const out: Record<string, number> = {};
+    for (const c of ["primary", "info", "success", "warning", "error"]) {
+      const el = document.querySelector(`[data-testid="outline-${c}"]`)!;
+      out[c] = ratio(bg, getComputedStyle(el).borderTopColor);
+    }
+    return out;
+  });
+  for (const [name, r] of Object.entries(ratios)) {
+    expect(r, `${name} outline 테두리 대비`).toBeGreaterThanOrEqual(2.9);
+  }
+});
+
+// ── Alert — Button·Badge 와 같은 매트릭스를 물고, 글자는 면의 색을 받는다 ────
+//
+// Text 는 variant 마다 자기 잉크를 못 박는다(caption = ink.soft). 색이 깔린 면 안에서
+// 그러면 면이 정한 글자색을 덮어써 — 예전엔 옅은 빨강 면 위에 회색 본문이 있었다.
+// ink="inherit" 가 그 자리를 비켜 준다.
+test("alert · variant 가 면의 무게를 정하고, 글자는 면 색을 받는다", async ({ page }) => {
+  const soft = page.getByTestId("alert-soft");
+  const solid = page.getByTestId("alert-solid");
+
+  // 면의 무게가 실제로 갈린다 — soft 는 옅은 면, solid 는 채운 면.
+  const bgs = await page.evaluate(() =>
+    ["alert-soft", "alert-solid", "alert-quiet"].map(
+      (id) =>
+        getComputedStyle(document.querySelector(`[data-testid="${id}"] > *`)!).backgroundColor,
+    ),
+  );
+  expect(new Set(bgs).size).toBe(3); // 셋이 서로 다른 면
+
+  // 글자색 = 면이 정한 색. 어느 variant 든 컨테이너와 본문이 같은 색이어야 한다.
+  for (const root of [soft, solid]) {
+    const same = await root.evaluate((el: HTMLElement) => {
+      const box = el.firstElementChild as HTMLElement;
+      const body = box.querySelector(".pui-text-caption:not([class*=srOnly])") as HTMLElement;
+      return getComputedStyle(box).color === getComputedStyle(body).color;
+    });
+    expect(same).toBe(true);
+  }
+});
+
 // ── 홈 CTA — 버튼처럼 생긴 자리가 링크면, 링크 하나만 그린다 ──────────────────
 //
 // <Link><Button/></Link> 로 감싸면 <a> 안에 <button> 이라 같은 자리에서 탭이 두 번

@@ -33,15 +33,28 @@ export {
 
 const NEUTRAL_INKS = ["base", "soft", "faint"] as const;
 export { NEUTRAL_INKS };
-export const INKS = [...NEUTRAL_INKS, ...ACCENTS] as const;
+
+// `inherit` — 농도도 색도 아니라 **부모에게 맡긴다**. 글자가 색면 위에 놓일 때 쓴다.
+//
+// Text 는 variant 마다 자기 잉크를 못 박는다(caption 은 ink.soft 등). 그건 흰 지면 위에서
+// 맞는 규칙인데, 색이 깔린 면(Alert 의 solid · soft) 안에서는 면이 이미 자기 글자색을
+// 정해 둔 상태라 Text 가 그걸 덮어써 버린다 — 색면 위에 회색 글자가 남는다. 이 값을 주면
+// Text 가 자리를 비켜 면의 색이 그대로 내려온다.
+//
+// ⚠ 어휘가 닫혀 있다는 원칙과 어긋나지 않는다 — 임의 색을 여는 게 아니라 "내 색을 내가
+// 정하지 않는다" 는 한 낱말을 더하는 것이다.
+const INHERIT_INK = "inherit" as const;
+export const INKS = [...NEUTRAL_INKS, ...ACCENTS, INHERIT_INK] as const;
 export type Ink = (typeof INKS)[number];
 
 export const resolveInk = (i: Ink | undefined): string =>
   !i
     ? ""
-    : (NEUTRAL_INKS as readonly string[]).includes(i)
-      ? `pui-ink-${i}`
-      : `pui-${i}-ink`;
+    : i === INHERIT_INK
+      ? "pui-ink-inherit"
+      : (NEUTRAL_INKS as readonly string[]).includes(i)
+        ? `pui-ink-${i}`
+        : `pui-${i}-ink`;
 
 // ───── tone — accent 를 글자/면/점으로 ─────────────────────────────────────────
 //
