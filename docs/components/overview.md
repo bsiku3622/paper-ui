@@ -33,7 +33,7 @@ Primitive + Atom 합성입니다. raw HTML 없이 하위 레이어 조합만.
 - **Card** — 흰 면 + 헤어라인으로 정의되는 칸. 그림자로 뜨지 않고, 회색은 그 아래 well에만 옵니다.
 - **TextField** — Label + Field + 도움말 한 묶음. id 연결을 대신합니다. `error` 문구가 있으면 그것만으로 error 상태(테두리 빨강 + `aria-invalid`).
 - **RadioGroup** — Radio + Label을 `options`로 묶어 한 그룹으로.
-- **Tabs** — 세그먼트 컨트롤. 활성은 흰 pill, 화살표·Home/End로 이동(roving tabindex).
+- **Tabs** — 세그먼트 컨트롤. 활성은 흰 면, 화살표·Home/End로 이동(roving tabindex). `shape`은 Button·Badge·Field·Select와 같은 어휘인데, 여기서는 한 축이 **두 곡선**을 함께 정합니다 — 그릇(트랙)과 알맹이(항목)가 겹쳐 있어 따로 놀면 초승달 빈틈이 생기거나 활성 면이 트랙 밖으로 삐져나갑니다. 각진 쪽 안쪽 반경은 상수가 아니라 `바깥 반경 − 트랙 여백`(6 − 3 = 3)으로 **동심**을 맞춥니다. 알약은 계산이 필요 없습니다 — 999는 크기가 아니라 높이의 절반이라 저절로 동심이 됩니다.
 - **Tooltip** — 잠깐 뜨는 쪽지. 위 공간이 없으면 자동으로 아래로 뒤집습니다.
 - **Alert** — 상태 한 줄을 옅은 색 면(soft)으로 알립니다. `color`(accent 4색)를 받고 언제나 soft. error·warning은 `role="alert"`, info·success는 `role="status"`.
 

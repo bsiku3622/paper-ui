@@ -167,9 +167,11 @@ test("button · iconOnly 는 정사각(md 34×34)", async ({ page }) => {
   expect(Math.round(box!.height)).toBe(34);
 });
 
-// ── Tabs — 활성 탭이 흰 pill 로 떠오르고 클릭으로 바뀐다 ────────────────────
+// ── Tabs — 활성 탭이 흰 면으로 떠오르고 클릭으로 바뀐다 ────────────────────
+//
+// shape 표본이 둘이라 이름만으로는 탭이 특정되지 않는다 — 각진 쪽 트랙 안에서 찾는다.
 test("tabs · 클릭하면 활성이 바뀐다", async ({ page }) => {
-  const two = page.getByRole("tab", { name: "둘" });
+  const two = page.getByTestId("tabs-shape-default").getByRole("tab", { name: "둘" });
   await two.click();
   await expect(two).toHaveCSS("background-color", hexToRgb("#ffffff"));
 });
@@ -272,8 +274,29 @@ test("control base · md 는 넷 다 왼쪽 여백 13 · 글자 14", async ({ pa
   }
   // 화살표 자리는 오른쪽만 넓다 — 공통 base 를 덮는 건 이 한 축뿐이다.
   await expect(page.getByTestId("base-select")).toHaveCSS("padding-right", "24px");
-  // Textarea 의 세로 여백은 (34 − 14) / 2 — 첫 줄이 md Field 와 같은 높이에서 시작한다.
-  await expect(page.getByTestId("base-textarea")).toHaveCSS("padding-top", "10px");
+  // Textarea 의 세로 여백은 (34 − 테두리 2 − 줄상자 21) / 2 = 5.5.
+  await expect(page.getByTestId("base-textarea")).toHaveCSS("padding-top", "5.5px");
+});
+
+// ── Field 와 Textarea 의 첫 줄은 같은 자리에서 시작한다 ─────────────────────
+//
+// 두 값이 아니라 두 *결과* 를 비교한다. Field 는 34 짜리 상자에 21 짜리 줄상자를 가운데
+// 두고(계산은 브라우저가), Textarea 는 padding 으로 같은 자리를 만든다 — 산식이 어긋나면
+// 여기서 갈린다. 실제로 예전 산식((height − 14) / 2)에서는 4.5px 어긋나 있었다.
+test("control base · Field 와 Textarea 의 첫 줄이 같은 높이에서 시작한다", async ({ page }) => {
+  const tops = await page.evaluate(() => {
+    const q = (id: string) => document.querySelector(`[data-testid="${id}"]`) as HTMLElement;
+    const field = q("base-field");
+    const input = field.tagName === "INPUT" ? field : (field.querySelector("input") as HTMLElement);
+    const wrap = input.closest("div") as HTMLElement;
+    const ta = q("base-textarea");
+    const cs = getComputedStyle(ta);
+    return {
+      field: input.getBoundingClientRect().top - wrap.getBoundingClientRect().top,
+      textarea: parseFloat(cs.borderTopWidth) + parseFloat(cs.paddingTop),
+    };
+  });
+  expect(tops.field).toBeCloseTo(tops.textarea, 1);
 });
 
 // ── shape=pill — 컨트롤 어휘 하나. 여백은 안 따라 움직인다 ──────────────────
@@ -287,14 +310,35 @@ test("pill · Field·Select·Button 이 같은 곡선, 여백은 그대로 13", 
   }
 });
 
+// ── Tabs shape — 트랙과 항목이 함께 갈리고, 각진 쪽은 동심이다 ─────────────
+//
+// 안쪽 반경을 상수로 박지 않고 `바깥 − 트랙 여백` 으로 계산한다. 두 곡선의 중심이 같아야
+// 트랙과 활성 면 사이 간격이 모서리에서도 일정하다. 여백은 shape 을 안 따라간다.
+test("tabs · shape 이 트랙·항목에 함께 걸리고 안쪽은 동심(6 − 3 = 3)", async ({ page }) => {
+  const def = page.getByTestId("tabs-shape-default");
+  await expect(def.getByRole("tablist")).toHaveCSS("border-radius", "6px");
+  await expect(def.getByRole("tab").first()).toHaveCSS("border-radius", "3px");
+
+  const pill = page.getByTestId("tabs-shape-pill");
+  await expect(pill.getByRole("tablist")).toHaveCSS("border-radius", "999px");
+  await expect(pill.getByRole("tab").first()).toHaveCSS("border-radius", "999px");
+
+  // 여백은 두 shape 이 같다 — 실루엣 축이지 밀도 축이 아니다(sm 사다리 10).
+  for (const root of [def, pill]) {
+    await expect(root.getByRole("tab").first()).toHaveCSS("padding-left", "10px");
+  }
+});
+
 // ── Badge — 높이는 세 단, 글자는 12 고정 ────────────────────────────────────
 //
 // 밀도와 가독성은 다른 축이다. 예전엔 11·12·14 로 높이를 따라가서 sm 이 가독성 하한
 // 아래로 떨어졌다. 글자가 다시 height 를 따라가면 여기서 걸린다.
-test("badge · 높이는 20·22·24 인데 글자는 셋 다 12", async ({ page }) => {
-  const H = { "badge-sm": 20, "badge-md": 22, "badge-lg": 24 };
-  for (const [id, h] of Object.entries(H)) {
+test("badge · 높이 20·22·24 와 여백 6·8·10 이 같은 보폭, 글자는 셋 다 12", async ({ page }) => {
+  const SPEC = { "badge-sm": [20, "6px"], "badge-md": [22, "8px"], "badge-lg": [24, "10px"] } as const;
+  for (const [id, [h, padX]] of Object.entries(SPEC)) {
     await expect(page.getByTestId(id)).toHaveCSS("font-size", "12px");
+    // 여백이 Δ2 로 높이(Δ2)와 나란히 움직인다 — 예전 Box 여백 사다리는 Δ4 라 두 배 빨랐다.
+    await expect(page.getByTestId(id)).toHaveCSS("padding-left", padX);
     const box = await page.getByTestId(id).boundingBox();
     expect(Math.round(box!.height)).toBe(h);
   }

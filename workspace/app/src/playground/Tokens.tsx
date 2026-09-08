@@ -210,7 +210,7 @@ export const Tokens = () => {
 
 
         {/* ── Control size ───────────────────────────────────── */}
-        <Section id="tok-control" title="Control size (3단)" desc="Button·Field·Select·Textarea·Tabs 의 size. height 와 여백만 세 단으로 움직이고 글자는 14 로 고정. 라벨이 14 고정이라 세로 여백은 height 가 정해 버리므로 두 축을 함께 잡는다 — 세로 controlPaddingY 8·10·13, 가로 controlPaddingX 10·13·17. sm 높이가 30 인 것도 세로 8 을 만들기 위해서다. Textarea 는 줄 수만큼 자라 height 를 못 박는 대신 controlPaddingY 를 직접 써서 첫 줄이 Field 와 같은 자리에서 시작한다.">
+        <Section id="tok-control" title="Control size (3단)" desc="Button·Field·Select·Textarea·Tabs 의 size. height 와 여백만 세 단으로 움직이고 글자는 14 로 고정. 가로 controlPaddingX 는 10·13·17, 세로 controlPaddingY 는 3.5·5.5·8.5 — (height − 테두리 2 − 줄상자 21) / 2 다. 브라우저가 가운데 두는 건 글리프가 아니라 줄상자(14 × 1.5 = 21)라, 이 산식이라야 Textarea 의 첫 줄이 같은 size 의 Field 와 같은 자리에서 시작한다. 아래 캡션은 세로 × 가로.">
           <Inline gap="lg" align="end" wrap>
             {CONTROLS.map((c) => (
               <Stack key={c} gap="xs" align="start">

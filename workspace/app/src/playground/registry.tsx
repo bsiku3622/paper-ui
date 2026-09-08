@@ -503,13 +503,14 @@ export const COMPONENTS: CompSpec[] = [
     slug: "tabs",
     name: "Tabs",
     group: "Molecules",
-    blurb: "세그먼트 컨트롤. 활성은 흰 pill 로 떠오른다(그림자 없이).",
+    blurb: "세그먼트 컨트롤. 활성은 흰 면으로 떠오른다(그림자 없이). shape 은 트랙과 항목에 함께 걸리고, 각진 쪽 안쪽 반경은 바깥에서 트랙 여백을 뺀 동심 값이다.",
     controls: [
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "sm" },
+      { kind: "enum", prop: "shape", label: "shape", options: ["default", "pill"], def: "default" },
     ],
-    render: (st) => <TabsDemo size={s(st.size) as "sm" | "md" | "lg"} />,
+    render: (st) => <TabsDemo size={s(st.size) as "sm" | "md" | "lg"} shape={s(st.shape) as "default" | "pill"} />,
     code: (st) =>
-      `const [tab, setTab] = useState("one");\n<Tabs value={tab} onChange={setTab}${AE("size", s(st.size), "sm")} items={[\n  { value: "one", label: "하나" },\n  { value: "two", label: "둘" },\n  { value: "three", label: "셋" },\n]} />`,
+      `const [tab, setTab] = useState("one");\n<Tabs value={tab} onChange={setTab}${AE("size", s(st.size), "sm")}${AE("shape", s(st.shape), "default")} items={[\n  { value: "one", label: "하나" },\n  { value: "two", label: "둘" },\n  { value: "three", label: "셋" },\n]} />`,
   },
   {
     slug: "tooltip",
@@ -628,13 +629,14 @@ export const COMPONENTS: CompSpec[] = [
 ];
 
 // ── 상태가 필요한 미리보기(내부 컴포넌트) ────────────────────────────────────
-const TabsDemo = ({ size }: { size?: "sm" | "md" | "lg" }) => {
+const TabsDemo = ({ size, shape }: { size?: "sm" | "md" | "lg"; shape?: "default" | "pill" }) => {
   const [tab, setTab] = useState("one");
   return (
     <Tabs
       value={tab}
       onChange={setTab}
       size={size}
+      shape={shape}
       items={[
         { value: "one", label: "하나" },
         { value: "two", label: "둘" },

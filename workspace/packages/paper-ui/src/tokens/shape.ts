@@ -175,18 +175,29 @@ export const CONTROL_PADDING_X = {
 
 // ───── control paddingBlock — height 가 정해 버리는 세로 여백 (3 단) ────────
 //
-// (height − 14) / 2 다. 라벨이 14 로 고정이라 한 줄짜리 컨트롤에서는 이 값이 계산으로
-// 나오고, 위 X 축의 비(1.25·1.30·1.31)도 이 세로를 분모로 잡은 것이다 — 그동안 주석에만
-// 적혀 있고 토큰이 없었다.
+// **(height − 테두리 2 − 줄상자) / 2** 다. 필요한 곳은 높이가 안 정해진 컨트롤이다 —
+// Textarea 는 줄 수만큼 자라 height 를 못 박으므로 세로 여백을 직접 줘야 하고, 그때 이
+// 값을 쓰면 첫 줄이 같은 size 의 Field 와 같은 자리에서 시작한다.
 //
-// 필요한 곳은 **높이가 안 정해진 컨트롤**이다. Textarea 는 줄 수만큼 자라 height 를 못
-// 박으므로 세로 여백을 직접 줘야 하는데, 그때 이 값을 쓰면 첫 줄이 같은 size 의 Field 와
-// 같은 높이에서 시작한다. Box 여백 사다리(8·12·16)를 빌리면 그 정렬이 깨진다.
+// ⚠ **분모는 글자 크기(14)가 아니라 줄상자(21)다.** 예전엔 (height − 14) / 2 로 잡아
+// 8 · 10 · 13 이었는데, 브라우저가 세로로 중앙에 놓는 건 글리프가 아니라 *줄상자* 다
+// (line-height 1.5 → 14 × 1.5 = 21). Field 는 34 짜리 상자 안에 21 짜리 줄상자를 가운데
+// 두므로 첫 줄이 위에서 5.5 에서 시작하는데, Textarea 는 10 을 그대로 밀어 11 에서
+// 시작했다 — 나란히 두면 **첫 줄이 4.5px 어긋난다.** 토큰의 주석은 정렬을 약속하고
+// 있었지만 산식이 그 약속을 못 지켰다.
+//
+// 테두리 2 를 빼는 것도 같은 이유다. Field 의 중앙 정렬은 *content box* 안에서 일어나
+// 테두리 뒤의 32 를 나누는데, Textarea 의 padding 은 테두리 *안쪽* 부터 재기 때문이다.
+//
+// 값이 4px 그리드를 벗어난 건(3.5 · 5.5 · 8.5) CONTROL_PADDING_X 와 같은 사정이다 —
+// 이 축은 격자에 앉는 값이 아니라 다른 축(height · leading)이 계산해 주는 값이다.
+//
+// height 든 leading.body 든 바뀌면 이 표도 같이 계산해야 한다. 셋은 한 식의 세 변이다.
 
 export const CONTROL_PADDING_Y = {
-  sm: REM(8), //  (30 − 14) / 2
-  md: REM(10), // (34 − 14) / 2 ◀ anchor
-  lg: REM(13), // (40 − 14) / 2
+  sm: REM(3.5), // (30 − 2 − 21) / 2
+  md: REM(5.5), // (34 − 2 − 21) / 2 ◀ anchor
+  lg: REM(8.5), // (40 − 2 − 21) / 2
 } as const;
 
 // ───── control fontSize — 밀도와 분리한 컨트롤 라벨 크기 (14 고정) ───────────
@@ -218,6 +229,27 @@ export const SHAPE_BADGE = {
   sm: REM(20),
   md: REM(22), // ◀ anchor
   lg: REM(24),
+} as const;
+
+// ───── badge paddingInline — 배지 전용 가로 여백 (3 단) ─────────────────────
+//
+// 배지는 컨트롤이 아니다. 컨트롤의 가로 여백은 세로 여백에 대한 비(1.25~1.31)로
+// 잡히는데, 배지는 20~24 짜리 상자에 18 짜리 줄상자가 들어가 세로가 0~2 밖에 안 남는다
+// — 나눌 분모가 없다. 그래서 자기 사다리를 따로 든다.
+//
+// **높이와 같은 보폭으로 움직인다(20·22·24 ↔ 6·8·10, 둘 다 Δ2).** 그래야 세 크기가
+// 같은 실루엣의 축소·확대로 읽힌다.
+//
+// ⚠ 예전엔 Box 여백 사다리(padding.{xs,sm,md}.interaction = 4 · 8 · 12)를 빌려 썼다.
+// 그 사다리는 Δ4 라 높이보다 두 배 빨리 벌어졌고, 글자가 12 로 고정된 뒤 어긋남이
+// 드러났다 — sm 은 4px 여백에 12px 글자가 눌려 답답했고 lg 는 12px 이 헐거웠다.
+// **Box 여백을 컨트롤에 빌리지 말 것** 이라는 규칙이 배지에도 그대로 걸린다
+// (CONTROL_PADDING_X 가 같은 이유로 떨어져 나왔다).
+
+export const BADGE_PADDING_X = {
+  sm: REM(6),
+  md: REM(8), // ◀ anchor (값은 그대로 — 양 끝만 안으로 모았다)
+  lg: REM(10),
 } as const;
 
 // ───── checkbox — 변·틱·모서리 사다리 (3 단) ────────────────────────────────
@@ -308,12 +340,15 @@ export const ATOM_INTRINSIC = {
   badgeHeight: REM(22), //     Badge 높이 (control 34 보다 낮은 인라인 라벨)
   navbar: REM(52), //          Navbar · 사이트 GNB 바 높이
   navItem: REM(32), //         Navbar 항목 높이
-  // ⚠ 알약은 자기 여백을 먹는다. 항목이 pill 이면 좌우 반경이 높이의 절반까지 커져 곡선이
-  //   padding 위에 얹히고, 글자와 가장자리 사이가 실측보다 넓어 보인다. 그래서 간격과
-  //   항목 여백을 각진 상태 기준보다 한 단씩 내렸다 — 트랙이 429px 에서 369px 로 줄며 읽힘이 맞다.
+  // ⚠ tabsTrackPad 는 여백이면서 **동심 반경의 분모**다. 각진 탭(shape="default")의 항목
+  //   반경을 `radius.interaction − tabsTrackPad` 로 계산하므로, 이 값을 건드리면 안쪽
+  //   곡선이 같이 움직인다. 3 → 6 이면 항목 반경이 0 이 되어 안쪽만 직각이 된다.
+  //
+  // ⚠ 옛 `tabsItemPadX`(9px)는 지웠다. 항목 여백을 사다리보다 한 단 좁게 두려던 값인데,
+  //   tabItemSize 가 뒤에 와서 공통 사다리(10 · 13 · 17)로 덮고 있었다 — 살아 있는 척만
+  //   하는 값이었다. 탭도 컨트롤이라 사다리를 그대로 진다.
   tabsTrackGap: "1px", //      세그먼트 트랙 항목 간격
-  tabsTrackPad: "3px", //      세그먼트 트랙 안쪽 여백 — 2px 면 활성 pill 이 트랙에 낀다
-  tabsItemPadX: "9px", //      세그먼트 항목 좌우 여백 (control 사다리의 10px 보다 한 단 좁게)
+  tabsTrackPad: "3px", //      세그먼트 트랙 안쪽 여백 — 2px 면 활성 면이 트랙에 낀다
   modalWidth: REM(432), //     Modal 기본 최대 폭 (27rem)
   selectArrow: REM(10), //     Select 화살표 아이콘 크기 (0.625rem)
   switchWidth: REM(36), //     Switch 트랙 가로
@@ -337,6 +372,7 @@ export const SHAPE_VALUES = {
   controlFontSize: CONTROL_FONT_SIZE,
   dot: SHAPE_DOT,
   badge: SHAPE_BADGE,
+  badgePaddingX: BADGE_PADDING_X,
   checkbox: SHAPE_CHECKBOX,
   switch: SHAPE_SWITCH,
   measure: SHAPE_MEASURE,
