@@ -144,15 +144,15 @@ test("button · disabled 는 비활성", async ({ page }) => {
   await expect(page.getByTestId("btn-disabled")).toBeDisabled();
 });
 
-// ── radius — 기본은 시스템 곡선 6, radius="full" 이면 알약 999 ───────────────
+// ── shape — 기본은 시스템 곡선 6, shape="pill" 이면 알약 999 ─────────────────
 //
 // 모디파이어 클래스와 root 클래스는 특정도가 같아 *순서* 로만 갈린다 — 나중에 import 가
 // 뒤집히면 알약이 조용히 안 먹는다. 계산값으로 못 박아 그 회귀를 여기서 잡는다.
-test("radius · 기본은 6, full 은 999 (Button·Badge 같은 어휘)", async ({ page }) => {
-  await expect(page.getByTestId("btn-radius-default")).toHaveCSS("border-radius", "6px");
-  await expect(page.getByTestId("btn-radius-full")).toHaveCSS("border-radius", "999px");
-  await expect(page.getByTestId("badge-radius-default")).toHaveCSS("border-radius", "6px");
-  await expect(page.getByTestId("badge-radius-full")).toHaveCSS("border-radius", "999px");
+test("shape · 기본은 6, pill 은 999 (Button·Badge 같은 어휘)", async ({ page }) => {
+  await expect(page.getByTestId("btn-shape-default")).toHaveCSS("border-radius", "6px");
+  await expect(page.getByTestId("btn-shape-pill")).toHaveCSS("border-radius", "999px");
+  await expect(page.getByTestId("badge-shape-default")).toHaveCSS("border-radius", "6px");
+  await expect(page.getByTestId("badge-shape-pill")).toHaveCSS("border-radius", "999px");
 });
 
 // ── iconOnly — 정사각이다. size 사다리의 paddingInline 을 실제로 이기는가 ────────
@@ -257,4 +257,24 @@ test("no console errors on playground", async ({ page }: { page: Page }) => {
   await page.getByTestId("text-title").waitFor();
   await page.waitForTimeout(500);
   expect(errs).toEqual([]);
+});
+
+// ── 홈 CTA — 버튼처럼 생긴 자리가 링크면, 링크 하나만 그린다 ──────────────────
+//
+// <Link><Button/></Link> 로 감싸면 <a> 안에 <button> 이라 같은 자리에서 탭이 두 번
+// 멈추고 링 모양도 둘로 갈린다 — <a> 는 자기 반경이 없어 전역 :focus-visible 의 6px 을
+// 쓰고, 안쪽 <button> 은 알약 999px 을 쓴다. 중첩 자체도 유효하지 않은 마크업이다.
+// as={Link} 로 하나만 그리게 한 뒤, 그 회귀를 탭 이동으로 잡는다.
+test("home · CTA 는 링크 하나 — 탭 정지도 링도 하나", async ({ page }) => {
+  await page.goto("/");
+  const docs = page.getByRole("link", { name: "문서 읽기" });
+  await expect(docs).toHaveCount(1);
+  // 버튼이 안에 들어앉아 있지 않다.
+  await expect(docs.locator("button")).toHaveCount(0);
+  // 알약 곡선은 링크 자신이 든다.
+  await expect(docs).toHaveCSS("border-radius", "999px");
+  // 한 번의 Tab 이 다음 CTA 로 간다 — 같은 자리에 두 번 멈추지 않는다.
+  await docs.focus();
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("link", { name: "컴포넌트 보기" })).toBeFocused();
 });

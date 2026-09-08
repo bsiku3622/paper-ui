@@ -117,6 +117,8 @@ chroma 는 저명도에서 지각이 약해지므로 다크 쪽을 조금 올려
 
 이 값은 원래 `constants.pillRadius`였습니다. 이름은 맞았지만 자리가 틀렸습니다. radius 축을 읽는 사람에게 알약이 보이지 않았고, 쓰려면 축 바깥의 서랍을 뒤져야 했습니다. 그러는 동안 데모의 hero CTA는 라이브러리 밖에서 CSS로 버튼 모서리를 덮어쓰고 있었습니다. 축이 자기 최대값을 API로 들지 않으면 소비처는 축을 우회합니다.
 
+토큰의 이름은 `radius.full`이지만 컴포넌트가 여는 prop은 `shape="pill"`입니다. 이름이 갈리는 데는 이유가 있습니다. Box는 곡선의 크기를 고릅니다 — `sm`·`md`·`lg`·`full`이 한 사다리 위에 있고, `radius`는 그중 어느 칸이냐를 묻습니다. Button과 Badge는 사다리를 아예 열지 않습니다. 물어보는 것은 실루엣이 알약이냐 아니냐 하나뿐이라, `radius`라는 이름은 있지도 않은 선택지를 암시합니다. 같은 999px을 두 이름으로 부르는 게 아니라, 서로 다른 두 질문에 각자의 이름을 준 것입니다.
+
 ## Motion · Layout
 
 **motion** — `duration`(instant~slow) · `easing`(standard·decelerate·accelerate·overshoot) · `loop`(spin·pulse) · `role`(hover·state·enter…). 유일하게 CSS 변수로 굽지 않고 값을 직접 듭니다 — `stateTransition("background", "color")`로 인라인됩니다.

@@ -39,6 +39,8 @@ Primitives(4) → Atoms(13) → Molecules(6) → Components(4)
 
 **raw HTML은 Primitive와 Atom까지입니다.** `Box · Stack · Inline · Text`(Primitive)가 기본 태그 레이어이고, Atom도 자기 시맨틱 태그를 직접 렌더합니다(`Button`→`button` · `Field`→`input` · `Link`→`a`). **Molecule부터는** raw 태그를 직접 쓰지 않고 Primitive·Atom으로 합성합니다 — raw 태그가 꼭 필요하면 `<Box as="button">`이 유일한 통로입니다. eslint는 이 금지를 Molecule·Component 레이어에 강제합니다(규칙 4).
 
+Atom에도 `as`가 있지만(`<Button as={Link} to="/docs">`) 그건 raw 태그를 뚫는 구멍이 아니라 같은 자리의 역할을 바꾸는 축입니다. 버튼처럼 생겼는데 실제로 하는 일이 이동이라면 그것은 링크여야 하고, 그렇다고 `<Link>`로 `<Button>`을 감싸면 `<a>` 안에 `<button>`이 들어가 탭 정지가 둘로 늘어납니다. 태그 하나만 그리게 하는 것이 `as`의 몫입니다.
+
 ## 절대 규칙 4
 
 원칙은 기억이 아니라 빌드가 지킵니다. 넷 다 eslint가 강제합니다.

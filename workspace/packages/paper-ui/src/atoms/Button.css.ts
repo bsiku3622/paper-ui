@@ -27,14 +27,18 @@ export const buttonRoot = style({
     // 눌림 — 살짝 들어가는 촉각 피드백. 색 오버레이 대신 scale 이라 테마·variant 무관.
     "&:active:not(:disabled)": { transform: "scale(0.97)" },
     "&:disabled": { cursor: "not-allowed", opacity: 0.5 },
+    // `as` 로 <a> 가 된 버튼은 `:disabled` 가 안 걸린다 — 링크엔 disabled 속성이
+    // 없어서다. 같은 자리를 aria-disabled 로 받고, 포인터까지 끊어 실제로 못 누르게
+    // 한다(속성만 걸어두면 링크는 그대로 이동한다).
+    '&[aria-disabled="true"]': { cursor: "not-allowed", opacity: 0.5, pointerEvents: "none" },
   },
 });
 
 // 알약 — 모서리를 높이의 절반까지. 기본 곡선은 시스템이 정하지만(radius.interaction),
 // "이 버튼은 가장 중요한 행동" 이라는 뜻은 색만으로 다 못 실을 때가 있다 — hero CTA 가
-// 그 자리다. 값은 radius.full 하나뿐이라 앱이 자기 곡선을 고를 여지는 열지 않는다.
+// 그 자리다. 고르는 건 shape 이지 곡선의 크기가 아니라, 앱이 자기 반경을 들일 틈은 없다.
 // buttonRoot 뒤에 와서 같은 특정도를 순서로 이긴다.
-export const buttonRadiusFull = style({ borderRadius: tokens.shape.radius.full });
+export const buttonPill = style({ borderRadius: tokens.shape.radius.full });
 
 const spin = keyframes({ to: { transform: "rotate(360deg)" } });
 
