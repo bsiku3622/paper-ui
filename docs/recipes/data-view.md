@@ -34,7 +34,7 @@
 
 ## 표와 status 배지
 
-`Table`은 `columns`를 data로 받습니다. 각 열의 `render`가 그 칸에 무엇을 그릴지 정하고, 상태 칸은 `Badge`에 `status`를 넘겨 옅은 색 면으로 냅니다. 숫자 열은 `numeric: true`만 주면 tabular-nums·우측정렬이 자동입니다(등폭 아님 — 표가 시끄러워지지 않게).
+`Table`은 `columns`를 data로 받습니다. 각 열의 `render`가 그 칸에 무엇을 그릴지 정하고, 상태 칸은 `Badge`에 `color`를 넘겨 옅은 색 면으로 냅니다(`status`는 Field 계열의 validation 축이라 여기서는 쓰지 않습니다). 숫자 열은 `numeric: true`만 주면 tabular-nums·우측정렬이 자동입니다(등폭 아님 — 표가 시끄러워지지 않게).
 
 ```tsx
 type Issue = { id: string; key: string; title: string; state: StatusName; count: number };
@@ -42,16 +42,16 @@ type Issue = { id: string; key: string; title: string; state: StatusName; count:
 const columns: Column<Issue>[] = [
   { key: "key", header: "키", render: (r) => <Text variant="body" as="span">{r.key}</Text> },
   { key: "title", header: "제목", render: (r) => r.title },
-  { key: "state", header: "상태", render: (r) => <Badge status={r.state}>{label(r.state)}</Badge> },
+  { key: "state", header: "상태", render: (r) => <Badge color={r.state}>{label(r.state)}</Badge> },
   { key: "count", header: "건수", numeric: true, render: (r) => r.count.toLocaleString() },
 ];
 
-<Box paper="subtle" radius="md" style={{ overflow: "hidden" }}>
+<Box surface="raised" border radius="md" style={{ overflow: "hidden" }}>
   <Table columns={columns} rows={rows} rowKey={(r) => r.id} />
 </Box>
 ```
 
-표는 옅은 면(`paper="subtle"`) 카드 안에 넣어 테두리 없이 감쌉니다 — 테두리 대신 면으로 구획하는 결입니다. 행 hover는 `Table`이 알아서 한 단 어두워집니다.
+표는 흰 면 + 헤어라인(`surface="raised" border`) 카드 안에 넣어 감쌉니다 — 회색으로 감싸는 게 아니라 흰 면으로 세우고, 회색은 그 안의 table head에만 옵니다. 행 hover는 `Table`이 알아서 한 단 어두워집니다.
 
 ## 왜 이렇게
 

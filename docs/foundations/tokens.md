@@ -96,7 +96,7 @@ chroma 는 저명도에서 지각이 약해지므로 다크 쪽을 조금 올려
 ⚠ **`Banner`가 조용히 깨져 있었습니다.** 채운 면 위 글자를 `paper.raised`로 하드코딩하고 있었는데("종이색"이라는 뜻이었습니다), 다크의 `raised`는 최암입니다. 그래서 status Banner 의 글자가 다크에서 **`2.24~2.45`**였습니다. 지금은 Banner 도 `solidFg`를 씁니다 — 채움 위 글자의 정본은 처음부터 그 자리였습니다. 중립 tone 만 `paper.raised`를 그대로 씁니다: 거기 배경은 `ink.base`인데 둘이 테마마다 함께 뒤집혀 저절로 맞습니다.
 
 ⚠ **라이트 `solidFg`는 아직 AA 미달입니다.** 옅은 글자가 진한 채움 위에서 `3.91~4.21`로 4.5를 못 넘습니다(`error` `3.91`이 최악). 다크와 달리 라이트는 채움을 더 진하게 내리면 풀리므로 구조가 아니라 값의 문제입니다.
-**color × variant — 잉크색을 입는 컴포넌트(Button·Badge·Alert).** `color`(primary + 4 accent) × `variant`(`solid`·`soft`·`outline`·`quiet`)로 색을 받습니다. 이건 면(surface)과 **다른 종류**라 Box 는 `color` 를 안 받습니다. `status`(validation)는 Field·Textarea 만 받고, 이름은 accent 와 같습니다(`danger` 폐기 → `error`).
+**color × variant — 잉크색을 입는 컴포넌트(Button·Badge·Alert).** `color`(primary + 4 accent) × `variant`(`solid`·`soft`·`outline`·`quiet`)로 색을 받습니다. 이건 면(surface)과 **다른 종류**라 Box 는 `color` 를 안 받습니다. `status`(validation)는 Field·TextField·Textarea 만 받고, 이름은 accent 와 같습니다(`danger` 폐기 → `error`).
 
 **primary / focus / interaction.** `primary`는 검정 일꾼(`base` `#18181b` · `hover` `#3f3f46` · `fg` `#ffffff`, 다크선 흰 채움으로 반전). 검정 면은 hover 때 *밝아진다* — 이미 검정에 가까워 더 어둡게는 눈에 안 보이기 때문(원칙 3의 예외). `focus.ring`은 파란 링 `#2563eb`(= `accent.info.solid`, 한 곳에서 굳힘). hover·selected·active 는 solid 회색이 아니라 **interaction 오버레이**(ink 계열 alpha — 어느 면 위든 밑을 그대로 어둡게, 다크는 흰빛 alpha)로 얹고, `scrim`(모달 뒤)도 테마 인식입니다.
 
@@ -104,13 +104,13 @@ chroma 는 저명도에서 지각이 약해지므로 다크 쪽을 조금 올려
 
 크기는 **5단 사다리(xs~xl) × intent(interaction·layout)** 구조입니다 — chrome(Button·Field)은 `interaction`, container(Card·Modal)는 `layout`을 씁니다. 값은 넉넉한 라운드·부드러운 밀도를 지킵니다.
 
-**height** — `interaction` 24/28/34/40/44 (control = `md.interaction` 34) · `layout` 64~320
-**controlSize** — 컴포넌트 `size` 3단(`sm`·`md`·`lg`), height·padding만 움직임 · **controlFontSize** 14/14/16 (밀도와 분리, 14가 가독성 하한)
+**height** — `interaction` 24/30/34/40/44 (control = `md.interaction` 34) · `layout` 64~320
+**controlSize** — 컴포넌트 `size` 3단(`sm`·`md`·`lg`), height·padding만 움직임 · **controlFontSize** 14/14/14 (밀도와 분리 — 14가 하한이자 상한)
 **padding** — `interaction` 4/8/12/16/24 (Box 여백) · `layout` 8/12/16/24/32 (container)
 **gap** — 4/8/12/16/24 (4px 배수)
 **radius** — `interaction` 단일 6 · `layout` `sm` 6 · `md` 8 · `lg` 12 · `full` 999(알약)
 **fontSize**(chrome text) · **dot**(아이콘) · **measure**(읽기 폭) — 각 5단
-**shadow** (2단, overlay만 뜬다) — `raised` · `overlay`
+**shadow** (2단, 떠 있는 것만) — `overlay`(Modal·Tooltip) · `overlayMinimal`(Switch 손잡이)
 **constants** — `borderWidth` 1 · `focusRingWidth` 2 · `overlayBlur` 2 등, **atom** — Checkbox·Switch·Radio 등 사다리 밖 치수
 
 `radius.full`은 사다리의 끝이 아니라 사다리 밖입니다. 999px은 크기가 아니라 "높이의 절반까지"라는 규칙이어서, 같은 값이 34px 버튼에서는 17px 곡선이 되고 22px 배지에서는 11px 곡선이 됩니다. 어디에 얹히느냐가 실제 반경을 정하니 intent(interaction·layout)로 갈릴 이유가 없고, 그래서 둘과 나란한 셋째 가지로 섭니다.

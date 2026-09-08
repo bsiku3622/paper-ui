@@ -1,6 +1,7 @@
-// Card — 옅은 면으로 정의되는 칸.
+// Card — 흰 면 + 헤어라인으로 정의되는 칸.
 //
-// 선도 그림자도 없다. paper.sunken 이 흰 캔버스 위에서 카드를 조용히 들어올린다.
+// 회색으로 감싸지 않고, 그림자로 뜨지도 않는다. 회색(paper.sunken)은 카드를 *받치는*
+// 바닥에만 오고, 그림자는 떠 있는 것(overlay)의 표식이다. 값은 Card.css.ts 에 있다.
 
 import type { ReactNode } from "react";
 

@@ -12,7 +12,7 @@ import { tableRoot, tableHead, tableTh, tableTr, tableTd, tableNumeric } from ".
 export type Column<T> = {
   key: string;
   header: ReactNode;
-  // 숫자 열 — mono·tabular·우측정렬이 자동으로 붙는다.
+  // 숫자 열 — tabular-nums·우측정렬이 자동으로 붙는다(등폭 서체는 아니다 — 표가 시끄러워진다).
   numeric?: boolean;
   render: (row: T) => ReactNode;
 };
