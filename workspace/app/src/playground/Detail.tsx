@@ -11,51 +11,49 @@
 import { useMemo, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 
-import { Box, Button, Inline, Select, Stack, Text, tokens } from "@studio-baeks/paper-ui";
+import { Box, Button, Field, Inline, Select, Stack, Switch, Text, tokens } from "@studio-baeks/paper-ui";
 
 import { PlaygroundLayout } from "./shell";
 import { bySlug, defaultState, type CompSpec, type Control, type State } from "./registry";
 import "./detail.css";
 
-// prop 토글 한 줄. bool 은 켬/끔 pill, enum 은 Select, text 는 입력.
-const ControlRow = ({ control, value, onChange }: { control: Control; value: string | boolean | undefined; onChange: (v: string | boolean) => void }) => (
-  <Stack gap="xs">
-    <Text variant="label">{control.label}</Text>
-    {control.kind === "bool" && (
-      <Inline gap="xs">
-        <Button variant={value ? "solid" : "outline"} onClick={() => onChange(true)}>true</Button>
-        <Button variant={!value ? "solid" : "outline"} onClick={() => onChange(false)}>false</Button>
+// prop 토글 한 줄.
+//
+// ⚠ **패널이 미리보기보다 시끄러우면 안 된다.** bool 을 true/false 두 버튼으로 그렸더니
+// 고른 쪽이 검정 solid 라, 불리언 prop 이 넷인 컴포넌트에서는 검정 덩어리가 넷 쌓여
+// 조종하려는 대상(작은 버튼 하나)보다 패널이 눈에 먼저 들어왔다. 불리언은 이 시스템에
+// 이미 자기 컨트롤이 있다 — Switch 다. 라벨과 한 줄에 앉아 세로도 절반으로 준다.
+//
+// 텍스트도 Box as="input" 을 손으로 꾸미지 않고 Field 를 쓴다. "값이 곧장 preview 로
+// 흐르는 편집 필드라서" 안 썼다고 적혀 있었는데, Field 는 controlled 입력을 그대로 받는다.
+const ControlRow = ({ control, value, onChange }: { control: Control; value: string | boolean | undefined; onChange: (v: string | boolean) => void }) => {
+  if (control.kind === "bool") {
+    return (
+      <Inline as="label" justify="between" align="center" gap="sm">
+        <Text variant="label" as="span">{control.label}</Text>
+        <Switch checked={Boolean(value)} onChange={(e) => onChange(e.currentTarget.checked)} />
       </Inline>
-    )}
-    {control.kind === "enum" && (
-      <Select
-        value={value === undefined ? "" : String(value)}
-        onChange={(e) => onChange(e.currentTarget.value)}
-        options={control.options.map((o) => ({ value: o, label: o }))}
-      />
-    )}
-    {control.kind === "text" && (
-      <Box
-        as="input"
-        // Field 를 쓰지 않는 건 여기 값이 곧장 preview 로 흐르는 편집 필드라서.
-        // paper 프리미티브(Box as=input)로 최소 구성. raised(떠오른 면) + 옅은 테두리(Field 결).
-        surface="raised"
-        radius="sm"
-        paddingX="sm"
-        value={value === undefined ? "" : String(value)}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.currentTarget.value)}
-        style={{
-          height: tokens.shape.height.md.interaction,
-          border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
-          fontSize: tokens.text.size.caption,
-          // input 은 color 를 상속하지 않아 다크에서 UA 기본색(어두움)으로 떨어진다 — 명시.
-          color: tokens.color.ink.base,
-          width: "100%",
-        }}
-      />
-    )}
-  </Stack>
-);
+    );
+  }
+  return (
+    <Stack gap="xs">
+      <Text variant="label">{control.label}</Text>
+      {control.kind === "enum" ? (
+        <Select
+          value={value === undefined ? "" : String(value)}
+          onChange={(e) => onChange(e.currentTarget.value)}
+          options={control.options.map((o) => ({ value: o, label: o }))}
+        />
+      ) : (
+        <Field
+          value={value === undefined ? "" : String(value)}
+          onChange={(e) => onChange(e.currentTarget.value)}
+          aria-label={control.label}
+        />
+      )}
+    </Stack>
+  );
+};
 
 const CodeBlock = ({ code }: { code: string }) => {
   const [copied, setCopied] = useState(false);
@@ -117,14 +115,11 @@ const DetailView = ({ spec }: { spec: CompSpec }) => {
           <Stack gap="lg">
             <Inline justify="between" align="center">
               <Text variant="label">Props</Text>
+              {/* 손으로 꾸민 raw <button> 이었다 — quiet 변형이 바로 그 자리다. */}
               {spec.controls.length > 0 && (
-                <button
-                  type="button"
-                  onClick={() => setState(defaultState(spec))}
-                  style={{ appearance: "none", background: "none", border: "none", cursor: "pointer", fontSize: tokens.text.size.label, color: tokens.color.ink.soft, padding: 0 }}
-                >
+                <Button variant="quiet" size="sm" onClick={() => setState(defaultState(spec))}>
                   초기화
-                </button>
+                </Button>
               )}
             </Inline>
             {spec.controls.length === 0 ? (
