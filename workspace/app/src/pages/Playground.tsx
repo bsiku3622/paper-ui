@@ -130,7 +130,7 @@ export const Playground = () => {
           <Spec label="accent — 작게 얹는 색 (dot=채운 점, ink=글자, wash=옅은 면)">
             {ACCENTS.map((a) => (
               <Inline key={a} gap="sm" align="center">
-                <Box className={`pui-${a}-dot`} radius="pill" data-testid={`dot-${a}`}
+                <Box className={`pui-${a}-dot`} radius="full" data-testid={`dot-${a}`}
                   style={{ width: "1rem", height: "1rem" }} />
                 <Text variant="body" as="span" ink={a} data-testid={`ink-${a}`}>{a}</Text>
                 <Badge color={STATUSES[ACCENTS.indexOf(a)]}>{STATUSES[ACCENTS.indexOf(a)]}</Badge>
@@ -203,6 +203,14 @@ export const Playground = () => {
             <Box style={{ width: "20rem" }}>
               <Button fullWidth data-testid="btn-fullwidth">가로 꽉 (폼·모바일)</Button>
             </Box>
+          </Spec>
+          {/* 알약은 기본값이 아니라 선택이다 — 화면에 하나둘 있을 때만 "여기가 가장 중요한
+              행동" 이라는 뜻을 진다. 고르는 건 곡선의 크기가 아니라 알약이냐 아니냐뿐. */}
+          <Spec label="radius — 시스템 곡선 ⇄ 알약(full)" testid="spec-button-radius">
+            <Button data-testid="btn-radius-default">기본</Button>
+            <Button radius="full" data-testid="btn-radius-full">알약</Button>
+            <Button variant="outline" radius="full">알약 outline</Button>
+            <Button size="lg" radius="full">알약 lg</Button>
           </Spec>
         </Section>
 
@@ -284,6 +292,12 @@ export const Playground = () => {
             <Badge color="warning" variant="quiet">주의</Badge>
             <Badge color="info" dot>진행</Badge>
             <Badge color="success" dot>정상</Badge>
+          </Spec>
+          <Spec label="Badge — radius (Button 과 같은 어휘라 나란히 서면 곡선이 맞는다)" testid="spec-badge-radius">
+            <Badge color="success" data-testid="badge-radius-default">완료</Badge>
+            <Badge color="success" radius="full" data-testid="badge-radius-full">완료</Badge>
+            <Badge color="error" variant="solid" radius="full">3</Badge>
+            <Badge color="info" dot radius="full">진행</Badge>
           </Spec>
           {/* Divider 는 세로로 세워 표본으로 보인다. 가로 한 줄을 그으면 섹션을 가르는
               선처럼 읽혀, 예제 화면이 줄무늬가 된다 — 두 축은 상세 페이지에서 전환한다. */}

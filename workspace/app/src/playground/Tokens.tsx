@@ -190,14 +190,14 @@ export const Tokens = () => {
 
 
         {/* ── Radius ─────────────────────────────────────────── */}
-        <Section id="tok-radius" title="Radius" desc="절제된 곡선 — 모서리의 날만 죽인다. interaction 은 단일 6, layout 은 큰 면일수록 한 호흡 더(6·8·12).">
+        <Section id="tok-radius" title="Radius" desc="절제된 곡선 — 모서리의 날만 죽인다. interaction 은 단일 6, layout 은 큰 면일수록 한 호흡 더(6·8·12). full 은 사다리의 끝이 아니라 사다리 밖 — 크기가 아니라 ‘높이의 절반’ 이라는 규칙이라 intent 로 갈리지 않는다.">
           <Inline gap="lg" wrap>
             {[
               { name: "interaction", token: tokens.shape.radius.interaction },
               { name: "layout.sm", token: tokens.shape.radius.layout.sm },
               { name: "layout.md", token: tokens.shape.radius.layout.md },
               { name: "layout.lg", token: tokens.shape.radius.layout.lg },
-              { name: "pill", token: tokens.shape.constants.pillRadius },
+              { name: "full", token: tokens.shape.radius.full },
             ].map((r) => (
               <Stack key={r.name} gap="xs" style={{ width: "7rem" }}>
                 <Box style={{ height: "3.5rem", borderRadius: r.token, background: tokens.color.paper.sunken, border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.strong}` }} />

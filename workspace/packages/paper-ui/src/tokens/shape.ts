@@ -100,7 +100,7 @@ export const SHAPE_GAP = {
   xl: REM(24), // 섹션 사이
 } as const;
 
-// ───── radius — interaction(단일) · layout(3 단) ────────────────────────────
+// ───── radius — interaction(단일) · layout(3 단) · full(scope 없음) ─────────
 //
 // 절제된 곡선 — 모서리의 날만 죽인다. interaction 은 단일(chrome 은 size 별 radius
 // 차이가 거의 안 보임), layout 은 3 단(큰 면일수록 한 호흡 곡선).
@@ -111,6 +111,16 @@ export const SHAPE_GAP = {
 //   · 곡선이 얕아지면 면과 헤어라인이 앞으로 나온다. 이 시스템은 선이 아니라
 //     면으로 나누므로, 모서리가 물러날수록 그 면이 또렷해진다.
 // 비율은 유지한다 — layout 은 interaction 보다 크고, 큰 면일수록 크다.
+//
+// `full` 은 사다리의 끝이 아니라 **사다리 밖**이다 — 999px 은 크기가 아니라 "높이의
+// 절반까지" 라는 규칙이라, 어디에 얹히느냐로 실제 반경이 달라진다. 그래서 intent 로
+// 갈리지 않는다(알약 버튼도 알약 컨테이너도 같은 값을 쓴다). interaction·layout 과
+// 나란한 셋째 가지로 둔다.
+//
+// ⚠ 이 값은 constants 서랍(옛 `pillRadius`)에 있었다. 이름은 맞았는데 자리가 틀렸다 —
+// radius 축을 읽는 사람에게 알약이 안 보였고, 쓰려면 축 밖을 뒤져야 했다. 실제로 데모의
+// hero CTA 는 라이브러리 밖에서 CSS 로 버튼 모서리를 덮어쓰고 있었다.
+// **축이 자기 최대값을 못 들면 소비처가 축을 우회한다.**
 
 export const RADIUS_LAYOUT_SIZES = ["sm", "md", "lg"] as const;
 export type RadiusLayoutSize = (typeof RADIUS_LAYOUT_SIZES)[number];
@@ -122,6 +132,7 @@ export const SHAPE_RADIUS = {
     md: REM(8), // Card ◀ anchor
     lg: REM(12), // Modal·큰 면
   },
+  full: "999px", // 알약 — 높이의 절반. intent 로 안 갈린다(어느 면에나 같은 값)
 } as const;
 
 // ───── fontSize — chrome text (interaction 자리, text variant 와 직교) ──────
@@ -265,7 +276,6 @@ export const SHAPE_CONSTANTS = {
   focusRingWidth: "2px",
   focusRingOffset: "2px",
   iconStrokeWidth: "1.75",
-  pillRadius: "999px",
   overlayBlur: "2px",
   textureCell: "16px",
 } as const;

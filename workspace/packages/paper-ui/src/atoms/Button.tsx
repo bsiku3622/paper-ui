@@ -8,6 +8,7 @@
 //     <Button color="error" variant="quiet">…</Button>  빨강 텍스트
 //     <Button loading>저장 중</Button>              스피너 + aria-busy
 //     <Button iconOnly aria-label="닫기"><Icon>…</Icon></Button>  정사각
+//     <Button radius="full">시작하기</Button>       알약 (hero CTA 자리)
 //
 // ref 를 전달한다 — 폼 라이브러리·툴팁·메뉴가 버튼을 앵커로 잡을 수 있게(공개 계약).
 
@@ -16,7 +17,14 @@ import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react";
 import { joinClass } from "../internal/joinClass";
 import { resolveColor, INTERACTIVE, type Color, type Variant } from "../resolvers";
 import type { ControlSize } from "../tokens";
-import { buttonRoot, buttonSize, buttonSpinner, buttonIconOnly, buttonFull } from "./Button.css";
+import {
+  buttonRoot,
+  buttonSize,
+  buttonSpinner,
+  buttonIconOnly,
+  buttonFull,
+  buttonRadiusFull,
+} from "./Button.css";
 
 type ButtonBase = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className"> & {
   // 큰 면을 채우는 기본은 검정(primary) — 색은 의미가 있을 때만.
@@ -29,6 +37,9 @@ type ButtonBase = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className"> & {
   loading?: boolean;
   // 가로 꽉 — 폼·모바일.
   fullWidth?: boolean;
+  // 모서리 — 생략하면 시스템 곡선(radius.interaction). "full" 이면 알약.
+  // 값이 하나뿐인 건 의도다 — 고를 수 있는 건 *알약이냐 아니냐* 지 곡선의 크기가 아니다.
+  radius?: "full";
   children?: ReactNode;
   className?: string;
 };
@@ -50,6 +61,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     loading,
     iconOnly,
     fullWidth,
+    radius,
     disabled,
     children,
     className,
@@ -72,6 +84,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
         resolveColor(color, variant),
         iconOnly && buttonIconOnly,
         fullWidth && buttonFull,
+        radius === "full" && buttonRadiusFull,
         className,
       )}
       {...rest}

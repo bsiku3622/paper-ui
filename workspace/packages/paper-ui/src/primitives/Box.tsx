@@ -21,8 +21,8 @@ type OwnProps<As extends ElementType> = BoxLike & {
   as?: As;
   // 카드 헤어라인 — 켜면 border.base 로 얇은 선. 면 위에 얹는다.
   border?: boolean;
-  // 모서리 — 안 주면 각지게 둔다.
-  radius?: "sm" | "md" | "lg" | "pill";
+  // 모서리 — 안 주면 각지게 둔다. full 은 알약(높이의 절반).
+  radius?: "sm" | "md" | "lg" | "full";
   // 뜨는 건 overlay 뿐이다 (Modal · Popover). 면은 그림자로 뜨지 않는다.
   shadow?: "overlay" | "overlayMinimal";
   // 이 면을 주변의 반대 테마로 — 라이트 위 어두운 판, 다크 위 밝은 판. ThemeScope

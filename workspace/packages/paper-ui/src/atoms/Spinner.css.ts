@@ -9,7 +9,7 @@ const spin = keyframes({ to: { transform: "rotate(360deg)" } });
 export const spinnerRoot = style({
   display: "inline-block",
   flexShrink: 0,
-  borderRadius: tokens.shape.constants.pillRadius,
+  borderRadius: tokens.shape.radius.full,
   borderWidth: tokens.shape.constants.focusRingWidth,
   borderStyle: "solid",
   borderColor: tokens.color.border.base,

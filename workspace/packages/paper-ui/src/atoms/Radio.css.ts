@@ -12,7 +12,7 @@ export const radioRoot = style({
   borderWidth: tokens.shape.constants.borderWidth,
   borderStyle: "solid",
   borderColor: tokens.color.border.strong,
-  borderRadius: tokens.shape.constants.pillRadius,
+  borderRadius: tokens.shape.radius.full,
   cursor: "pointer",
   display: "grid",
   placeContent: "center",
@@ -21,7 +21,7 @@ export const radioRoot = style({
     "&:checked": { borderColor: tokens.color.primary.base },
     "&:checked::after": {
       content: "''",
-      borderRadius: tokens.shape.constants.pillRadius,
+      borderRadius: tokens.shape.radius.full,
       background: tokens.color.primary.base,
     },
     "&:focus-visible": {

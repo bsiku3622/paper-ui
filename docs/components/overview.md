@@ -17,13 +17,13 @@ raw HTML을 렌더하는 유일한 레이어입니다.
 
 단일 컨트롤·표시 단위입니다.
 
-- **Button** — `color`(primary + `info`·`success`·`warning`·`error`) × `variant`(시각 무게: `solid`·`soft`·`outline`·`quiet`) 두 축이 직교합니다. 흰/회색 기본 버튼은 색이 아니라 primary 의 무게(`outline`·`soft`)로 나오고, solid 는 모노크로매틱(진한 채움 + 옅은 같은 색 글자)입니다. 큰 면을 채우는 색은 검정(primary)뿐, accent 는 뜻을 질 때만.
+- **Button** — `color`(primary + `info`·`success`·`warning`·`error`) × `variant`(시각 무게: `solid`·`soft`·`outline`·`quiet`) 두 축이 직교합니다. 흰/회색 기본 버튼은 색이 아니라 primary 의 무게(`outline`·`soft`)로 나오고, solid 는 모노크로매틱(진한 채움 + 옅은 같은 색 글자)입니다. 큰 면을 채우는 색은 검정(primary)뿐, accent 는 뜻을 질 때만. `radius="full"`로 알약이 되는데, 곡선의 크기를 고르는 게 아니라 알약이냐 아니냐만 고릅니다 — 화면에서 가장 중요한 행동 한둘에 씁니다.
 - **Field** — 한 줄 입력 그룹. 상태는 `status` 축 하나로(invalid boolean 아님), 양옆에 `leading`/`trailing` 어도먼트(아이콘·$·단위)와 `clearable`(×)·`showPasswordToggle`(👁). 포커스 때만 파란 링.
 - **Textarea** — 여러 줄 입력. Field와 같은 `status` 축, 세로로만 resize.
 - **Select** — native `<select>`를 종이 결로 감싼 것.
 - **Checkbox** · **Switch**(켬/끔 토글) · **Radio**(하나 고르기) — 켜지면 검정(색이 아니라 primary).
 - **Label** · **Icon** · **Divider** · **Link**(파랑).
-- **Badge** — 짧은 표식. Button과 같은 `color × variant`(기본 `soft`) + `dot`(상태 점). `solid`=카운트·강조, `outline`=테두리 태그, `quiet`=글자만.
+- **Badge** — 짧은 표식. Button과 같은 `color × variant`(기본 `soft`) + `dot`(상태 점). `solid`=카운트·강조, `outline`=테두리 태그, `quiet`=글자만. Button과 같은 `radius="full"`을 받아 두 알약이 나란히 서도 곡선이 갈리지 않습니다.
 - **Spinner** — 진행 중 표시. 주기는 motion 토큰.
 
 ## Molecules (6)

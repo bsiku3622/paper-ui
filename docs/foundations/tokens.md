@@ -108,10 +108,14 @@ chroma 는 저명도에서 지각이 약해지므로 다크 쪽을 조금 올려
 **controlSize** — 컴포넌트 `size` 3단(`sm`·`md`·`lg`), height·padding만 움직임 · **controlFontSize** 14/14/16 (밀도와 분리, 14가 가독성 하한)
 **padding** — `interaction` 4/8/12/16/24 (Box 여백) · `layout` 8/12/16/24/32 (container)
 **gap** — 4/8/12/16/24 (4px 배수)
-**radius** — `interaction` 단일 8 · `layout` `sm` 8 · `md` 12 · `lg` 16
+**radius** — `interaction` 단일 6 · `layout` `sm` 6 · `md` 8 · `lg` 12 · `full` 999(알약)
 **fontSize**(chrome text) · **dot**(아이콘) · **measure**(읽기 폭) — 각 5단
 **shadow** (2단, overlay만 뜬다) — `raised` · `overlay`
-**constants** — `borderWidth` 1 · `focusRingWidth` 2 · `pillRadius` 999 등, **atom** — Checkbox·Switch·Radio 등 사다리 밖 치수
+**constants** — `borderWidth` 1 · `focusRingWidth` 2 · `overlayBlur` 2 등, **atom** — Checkbox·Switch·Radio 등 사다리 밖 치수
+
+`radius.full`은 사다리의 끝이 아니라 사다리 밖입니다. 999px은 크기가 아니라 "높이의 절반까지"라는 규칙이어서, 같은 값이 34px 버튼에서는 17px 곡선이 되고 22px 배지에서는 11px 곡선이 됩니다. 어디에 얹히느냐가 실제 반경을 정하니 intent(interaction·layout)로 갈릴 이유가 없고, 그래서 둘과 나란한 셋째 가지로 섭니다.
+
+이 값은 원래 `constants.pillRadius`였습니다. 이름은 맞았지만 자리가 틀렸습니다. radius 축을 읽는 사람에게 알약이 보이지 않았고, 쓰려면 축 바깥의 서랍을 뒤져야 했습니다. 그러는 동안 데모의 hero CTA는 라이브러리 밖에서 CSS로 버튼 모서리를 덮어쓰고 있었습니다. 축이 자기 최대값을 API로 들지 않으면 소비처는 축을 우회합니다.
 
 ## Motion · Layout
 

@@ -10,7 +10,7 @@ export const tabsList = style({
   background: tokens.color.paper.well,
   // ⚠ 트랙은 layout 사다리가 아니라 pill 을 쓴다. 안쪽 항목이 알약인데 그릇이 각지면
   //   곡선과 직각 사이에 초승달 모양 빈틈이 생긴다 — 알약을 담는 그릇은 알약이어야 한다.
-  borderRadius: tokens.shape.constants.pillRadius,
+  borderRadius: tokens.shape.radius.full,
 });
 
 // 크기(height·paddingInline·fontSize)는 size 축(tabItemSize)이 정한다 — Button·Field 와
@@ -21,7 +21,7 @@ export const tabItem = style({
   border: "none",
   cursor: "pointer",
   // 세그먼트는 알약을 고르는 자리다 — Button·Field 는 사다리 값을 그대로 쓴다.
-  borderRadius: tokens.shape.constants.pillRadius,
+  borderRadius: tokens.shape.radius.full,
   paddingInline: tokens.shape.atom.tabsItemPadX,
   fontFamily: tokens.text.font.sans,
   fontWeight: tokens.text.weight.medium,
