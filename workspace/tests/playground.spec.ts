@@ -259,6 +259,36 @@ test("no console errors on playground", async ({ page }: { page: Page }) => {
   expect(errs).toEqual([]);
 });
 
+// ── 컨트롤 공통 base — 넷이 같은 여백·글자를 쓰는가 ──────────────────────────
+//
+// Button·Field 는 공통 사다리를 쓰고, Select 는 그걸 스프레드로 가져오며(오른쪽만 화살표
+// 자리로 덮는다), Textarea 는 height 를 뺀 두 축을 같은 토큰에서 가져온다. 넷 중 하나가
+// 사다리를 손으로 베끼기 시작하면 여기서 걸린다 — 실제로 Select 가 Box 여백(12)을 쓰고
+// 있어서 Field 보다 1px 좁았다.
+test("control base · md 는 넷 다 왼쪽 여백 13 · 글자 14", async ({ page }) => {
+  for (const id of ["base-button", "base-field", "base-select", "base-textarea"]) {
+    await expect(page.getByTestId(id)).toHaveCSS("padding-left", "13px");
+    await expect(page.getByTestId(id)).toHaveCSS("font-size", "14px");
+  }
+  // 화살표 자리는 오른쪽만 넓다 — 공통 base 를 덮는 건 이 한 축뿐이다.
+  await expect(page.getByTestId("base-select")).toHaveCSS("padding-right", "24px");
+  // Textarea 의 세로 여백은 (34 − 14) / 2 — 첫 줄이 md Field 와 같은 높이에서 시작한다.
+  await expect(page.getByTestId("base-textarea")).toHaveCSS("padding-top", "10px");
+});
+
+// ── Badge — 높이는 세 단, 글자는 12 고정 ────────────────────────────────────
+//
+// 밀도와 가독성은 다른 축이다. 예전엔 11·12·14 로 높이를 따라가서 sm 이 가독성 하한
+// 아래로 떨어졌다. 글자가 다시 height 를 따라가면 여기서 걸린다.
+test("badge · 높이는 20·22·24 인데 글자는 셋 다 12", async ({ page }) => {
+  const H = { "badge-sm": 20, "badge-md": 22, "badge-lg": 24 };
+  for (const [id, h] of Object.entries(H)) {
+    await expect(page.getByTestId(id)).toHaveCSS("font-size", "12px");
+    const box = await page.getByTestId(id).boundingBox();
+    expect(Math.round(box!.height)).toBe(h);
+  }
+});
+
 // ── 홈 CTA — 버튼처럼 생긴 자리가 링크면, 링크 하나만 그린다 ──────────────────
 //
 // <Link><Button/></Link> 로 감싸면 <a> 안에 <button> 이라 같은 자리에서 탭이 두 번

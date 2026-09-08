@@ -27,6 +27,7 @@ import {
   Table,
   Tabs,
   Text,
+  Textarea,
   TextField,
   Tooltip,
   type Column,
@@ -264,6 +265,15 @@ export const Playground = () => {
             <Box style={{ width: "9rem" }}><Select size="lg" options={[{ value: "a", label: "Select" }]} /></Box>
             <Button size="lg">Button</Button>
           </Spec>
+          {/* 공통 base — 넷이 같은 컨트롤 여백을 쓰는가. 높이가 아니라 *글자 시작점* 을 본다:
+              Textarea 는 줄 수만큼 자라 높이로는 줄을 못 세우고, Select 는 화살표 때문에
+              오른쪽만 넓다. 왼쪽 여백 하나가 넷을 한 세로선에 세운다. */}
+          <Spec label="base — Button · Field · Select · Textarea 가 같은 여백(md 13)" testid="spec-control-base">
+            <Button size="md" data-testid="base-button">Button</Button>
+            <Box style={{ width: "9rem" }}><Field size="md" placeholder="Field" aria-label="field base" data-testid="base-field" /></Box>
+            <Box style={{ width: "9rem" }}><Select size="md" options={[{ value: "a", label: "Select" }]} data-testid="base-select" /></Box>
+            <Box style={{ width: "12rem" }}><Textarea size="md" rows={2} placeholder="Textarea" aria-label="textarea base" data-testid="base-textarea" /></Box>
+          </Spec>
           <Spec label="Checkbox">
             <Inline as="label" gap="sm">
               <Checkbox checked={checked} onChange={(e) => setChecked(e.currentTarget.checked)} data-testid="checkbox" />
@@ -292,6 +302,13 @@ export const Playground = () => {
             <Badge color="warning" variant="quiet">주의</Badge>
             <Badge color="info" dot>진행</Badge>
             <Badge color="success" dot>정상</Badge>
+          </Spec>
+          {/* 배지도 컨트롤과 같은 규칙 — 높이만 움직이고 글자는 12 로 고정이다. 예전엔
+              11·12·14 로 높이를 따라가서, 작은 배지의 글자가 가독성 하한 아래로 떨어졌다. */}
+          <Spec label="Badge — size (높이 20·22·24, 글자는 12 고정)" testid="spec-badge-size">
+            <Badge size="sm" color="info" data-testid="badge-sm">sm</Badge>
+            <Badge size="md" color="info" data-testid="badge-md">md</Badge>
+            <Badge size="lg" color="info" data-testid="badge-lg">lg</Badge>
           </Spec>
           <Spec label="Badge — shape (Button 과 같은 어휘라 나란히 서면 곡선이 맞는다)" testid="spec-badge-shape">
             <Badge color="success" data-testid="badge-shape-default">완료</Badge>

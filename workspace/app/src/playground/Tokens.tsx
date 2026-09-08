@@ -210,7 +210,7 @@ export const Tokens = () => {
 
 
         {/* ── Control size ───────────────────────────────────── */}
-        <Section id="tok-control" title="Control size (3단)" desc="Button·Field·Select·Tabs 의 size. height 와 가로 여백만 세 단으로 움직이고 글자는 14 로 고정. 라벨이 14 고정이라 세로 여백은 height 가 정해 버리므로(8·10·13) 가로(controlPaddingX 10·13·17)와 함께 잡는다 — sm 높이가 30 인 것도 세로 8 을 만들기 위해서다.">
+        <Section id="tok-control" title="Control size (3단)" desc="Button·Field·Select·Textarea·Tabs 의 size. height 와 여백만 세 단으로 움직이고 글자는 14 로 고정. 라벨이 14 고정이라 세로 여백은 height 가 정해 버리므로 두 축을 함께 잡는다 — 세로 controlPaddingY 8·10·13, 가로 controlPaddingX 10·13·17. sm 높이가 30 인 것도 세로 8 을 만들기 위해서다. Textarea 는 줄 수만큼 자라 height 를 못 박는 대신 controlPaddingY 를 직접 써서 첫 줄이 Field 와 같은 자리에서 시작한다.">
           <Inline gap="lg" align="end" wrap>
             {CONTROLS.map((c) => (
               <Stack key={c} gap="xs" align="start">
@@ -218,7 +218,7 @@ export const Tokens = () => {
                   <Text variant="body" as="span" style={{ fontSize: tokens.shape.controlFontSize[c] }}>텍스트</Text>
                 </Box>
                 <Text variant="caption" family="mono" ink="faint" as="span">{c} · h {val(tokens.shape.height[c].interaction)}</Text>
-                <Text variant="caption" family="mono" ink="faint" as="span">px {val(tokens.shape.controlPaddingX[c])}</Text>
+                <Text variant="caption" family="mono" ink="faint" as="span">{val(tokens.shape.controlPaddingY[c])} × {val(tokens.shape.controlPaddingX[c])}</Text>
               </Stack>
             ))}
           </Inline>
