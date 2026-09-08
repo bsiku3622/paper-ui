@@ -134,12 +134,18 @@ accent 는 hue 이름(blue 등)이 **API 에 없다** — 전부 의미색. 각 
   radius 는 독립 — 면 크기가 정한다(작은 Tooltip 6, 큰 Modal 12).
 - **hover 는 조용히** — interaction 오버레이가 밑 면 위에 얹혀 한 단 어두워/밝아진다. 테두리 강조 없음.
 - **밀도** — 간격(Space) 5단(4px 배수 xs4~xl24)과 컨트롤 크기(ControlSize) 3단(sm·md·lg)을 분리한다. 컨트롤 크기가 바뀌어도 글자는 14 고정(controlFontSize 14/14/14). control 높이 md 34 · table 행 44.
-  여백도 컨트롤 전용 축이다 — `controlPaddingX` 10/13/17 · `controlPaddingY` 3.5/5.5/8.5
+  여백도 컨트롤 전용 축이다 — `controlPaddingX` 10/13/17(버튼·탭) · `inputPaddingX` 7/9/12
+  (Field·Select·Textarea. = (height − 테두리 2 − 글자 14) / 2 라 **글자가 사방 같은 거리**에
+  앉는다. 버튼은 라벨이 상자를 정의해 좌우가 넉넉해야 하고, 입력칸은 상자가 먼저다)
+  · `controlPaddingY` 3.5/5.5/8.5
   (= (height − 테두리 2 − 줄상자 21) / 2). 분모는 글자 크기가 아니라 **줄상자**다 — 브라우저가
   세로 가운데 두는 게 줄상자라, 이 산식이라야 Textarea 첫 줄이 Field 와 같은 자리에 앉는다.
   Badge 는 컨트롤이 아니라 자기 축 `badgePaddingX` 6/8/10 을 쓴다(높이 20/22/24 와 같은 Δ2).
   **Box 여백 사다리(8/12/16)를 컨트롤에 빌려 쓰지 말 것** — 비가 눌려 답답해지고 형제와 1~2px 어긋난다.
   Button·Field·Select·Textarea·Tabs 가 `internal/sizeLadder` 를 공유한다(Link 는 글자라 제외).
+  ⚠ **공유하는 건 height 와 글자고, 벗어나는 축은 통로로 나간다** — `ladderRules(patch)`.
+  인자 없으면 베이스 그대로, 키를 돌려주면 그 축만 교체, `null` 이면 그 축을 뺀다(Textarea height).
+  사다리를 손으로 베끼지 말 것 — Select 가 그래서 갈라졌다.
   작은 표식은 따로 묶인다 — `icon` 16/18/20(**아트보드**지 잉크가 아니다. viewBox 24 안에서
   path 는 18~20 만 채워 잉크는 75~83%. 그래서 Checkbox 와 같은 16 이면 아이콘만 작아 보인다),
   `checkbox` 15/16/18, `switch` 손잡이 = checkbox − 2 → 트랙 = checkbox + 2, 이동 = w − h.

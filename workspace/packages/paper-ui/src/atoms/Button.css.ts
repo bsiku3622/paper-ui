@@ -1,7 +1,7 @@
 import { style, styleVariants, keyframes } from "@vanilla-extract/css";
 
-import { tokens, stateTransition, CONTROL_SIZES, type ControlSize } from "../tokens";
-import { sizeLadderRules } from "../internal/sizeLadder";
+import { tokens, stateTransition, type ControlSize } from "../tokens";
+import { ladderRules } from "../internal/sizeLadder";
 
 // geometry·motion 만. 색(background·color·border-color)은 resolveColor 가 붙이는 pui-c-*
 // 클래스가 정한다 — Button 은 어떤 색인지 모른다.
@@ -68,11 +68,12 @@ const BUTTON_WEIGHT: Record<ControlSize, string> = {
   lg: tokens.text.weight.semibold,
 };
 
-// size 3 단 — 공통 사다리 + 버튼 weight. Field·Select 와 같은 height.interaction.
+// size 3 단 — 공통 사다리 + 버튼 weight. 가로 여백은 베이스 그대로(10 · 13 · 17)다.
+// 버튼은 라벨이 상자를 정의하는 자리라 좌우가 넉넉해야 형태가 산다 — 입력류는 반대로
+// 상자가 먼저 있고 글자가 그 안에 놓여서, 가로를 더 좁게 가져간다(inputPaddingX).
+// height 와 fontSize 는 양쪽이 계속 공유한다 — 폼 한 줄에서 같은 높이에 서는 건 별개 문제.
 export const buttonSize = styleVariants(
-  Object.fromEntries(
-    CONTROL_SIZES.map((s) => [s, { ...sizeLadderRules[s], fontWeight: BUTTON_WEIGHT[s] }]),
-  ) as Record<ControlSize, (typeof sizeLadderRules)[ControlSize] & { fontWeight: string }>,
+  ladderRules((s) => ({ fontWeight: BUTTON_WEIGHT[s] })),
 );
 
 // 아이콘 전용 — 정사각(높이=너비), 좌우 패딩 제거. aria-label 은 필수(호출부 책임).

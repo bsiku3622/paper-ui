@@ -210,7 +210,7 @@ export const Tokens = () => {
 
 
         {/* ── Control size ───────────────────────────────────── */}
-        <Section id="tok-control" title="Control size (3단)" desc="Button·Field·Select·Textarea·Tabs 의 size. height 와 여백만 세 단으로 움직이고 글자는 14 로 고정. 가로 controlPaddingX 는 10·13·17, 세로 controlPaddingY 는 3.5·5.5·8.5 — (height − 테두리 2 − 줄상자 21) / 2 다. 브라우저가 가운데 두는 건 글리프가 아니라 줄상자(14 × 1.5 = 21)라, 이 산식이라야 Textarea 의 첫 줄이 같은 size 의 Field 와 같은 자리에서 시작한다. 아래 캡션은 세로 × 가로.">
+        <Section id="tok-control" title="Control size (3단)" desc="Button·Field·Select·Textarea·Tabs 의 size. **공유하는 건 height 와 글자(14 고정)** 고, 가로 여백은 역할로 갈린다 — 버튼·탭은 controlPaddingX(10·13·17), 입력류는 inputPaddingX(7·9·12). 버튼은 라벨이 상자를 정의하니 좌우가 넉넉해야 하고, 입력칸은 상자가 먼저 있고 글자가 그 안에 놓이는 자리다. inputPaddingX = (height − 테두리 2 − 글자 14) / 2 라, 34 짜리 Field 가 세로로 이미 갖고 있는 9 를 가로에도 그대로 준다 — 글자가 사방 같은 거리에 앉는다. 세로 controlPaddingY(3.5·5.5·8.5)는 높이를 못 박는 Textarea 용인데, 분모가 글자가 아니라 줄상자(14 × 1.5 = 21)다. 아래 캡션은 세로 × 가로(버튼 기준).">
           <Inline gap="lg" align="end" wrap>
             {CONTROLS.map((c) => (
               <Stack key={c} gap="xs" align="start">
