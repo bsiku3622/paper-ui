@@ -53,9 +53,6 @@ export const buttonSpinner = style({
   animation: `${spin} ${tokens.motion.loop.spin} linear infinite`,
 });
 
-// 아이콘 전용 — 정사각(높이=너비), 좌우 패딩 제거. aria-label 은 필수(호출부 책임).
-export const buttonIconOnly = style({ paddingInline: 0, aspectRatio: "1" });
-
 // 가로 꽉 — 폼·모바일. 나란한 형제와 같은 폭.
 export const buttonFull = style({ width: "100%" });
 
@@ -73,3 +70,11 @@ export const buttonSize = styleVariants(
     CONTROL_SIZES.map((s) => [s, { ...sizeLadderRules[s], fontWeight: BUTTON_WEIGHT[s] }]),
   ) as Record<ControlSize, (typeof sizeLadderRules)[ControlSize] & { fontWeight: string }>,
 );
+
+// 아이콘 전용 — 정사각(높이=너비), 좌우 패딩 제거. aria-label 은 필수(호출부 책임).
+//
+// ⚠ **buttonSize 뒤에 와야 한다.** 사다리도 paddingInline 을 정하는데 둘은 특정도가
+// 같아 소스 순서로만 갈린다. 위에 두었더니 사다리의 13px 이 이겨서 md 아이콘 버튼이
+// 34 가 아니라 44 로 그려지고 있었다 — aspect-ratio 는 붙어 있는데 콘텐츠 폭이 그걸
+// 넘겨 정사각이 깨진 채였다.
+export const buttonIconOnly = style({ paddingInline: 0, aspectRatio: "1" });
