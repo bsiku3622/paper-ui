@@ -210,7 +210,7 @@ export const Tokens = () => {
 
 
         {/* ── Control size ───────────────────────────────────── */}
-        <Section id="tok-control" title="Control size (3단)" desc="Button·Field·Select·Textarea·Tabs 의 size. **공유하는 건 height 와 글자(14 고정)** 고, 가로 여백은 역할로 갈린다 — 버튼·탭은 controlPaddingX(10·13·17), 입력류는 inputPaddingX(7·9·12). 버튼은 라벨이 상자를 정의하니 좌우가 넉넉해야 하고, 입력칸은 상자가 먼저 있고 글자가 그 안에 놓이는 자리다. inputPaddingX = (height − 테두리 2 − 글자 14) / 2 라, 34 짜리 Field 가 세로로 이미 갖고 있는 9 를 가로에도 그대로 준다 — 글자가 사방 같은 거리에 앉는다. 세로 controlPaddingY(3.5·5.5·8.5)는 높이를 못 박는 Textarea 용인데, 분모가 글자가 아니라 줄상자(14 × 1.5 = 21)다. 아래 캡션은 세로 × 가로(버튼 기준).">
+        <Section id="tok-control" title="Control size (3단)" desc="Button·Field·Select·Textarea·Tabs 가 한 사다리를 공유한다 — height · 가로 여백(controlPaddingX 10·13·17) · 글자(14 고정). ⚠ 한때 입력류만 가로를 따로 뺐다(높이에서 유도한 7·9·12). 세로와 값을 맞추려던 건데, 34 짜리 상자에 14 짜리 글자면 세로로 남는 게 9 뿐이라 그 9 를 가로로 옮기는 순간 답답해졌다 — 정사각의 기준점이 화면에서 가장 좁은 값이었다. 한 줄짜리 컨트롤의 세로는 애초에 여백이 아니라 높이 안의 중앙 정렬이라 맞출 대상도 아니다. 정사각이 뜻을 갖는 건 글이 여러 줄로 흐르는 Textarea 뿐이고, 거기서는 방향을 뒤집어 **가로에서 세로를 계산한다**(textareaPaddingY = 가로 − 테두리 1 − 반 줄 3.5).">
           <Inline gap="lg" align="end" wrap>
             {CONTROLS.map((c) => (
               <Stack key={c} gap="xs" align="start">
@@ -218,7 +218,7 @@ export const Tokens = () => {
                   <Text variant="body" as="span" style={{ fontSize: tokens.shape.controlFontSize[c] }}>텍스트</Text>
                 </Box>
                 <Text variant="caption" family="mono" ink="faint" as="span">{c} · h {val(tokens.shape.height[c].interaction)}</Text>
-                <Text variant="caption" family="mono" ink="faint" as="span">{val(tokens.shape.controlPaddingY[c])} × {val(tokens.shape.controlPaddingX[c])}</Text>
+                <Text variant="caption" family="mono" ink="faint" as="span">가로 {val(tokens.shape.controlPaddingX[c])}</Text>
               </Stack>
             ))}
           </Inline>
