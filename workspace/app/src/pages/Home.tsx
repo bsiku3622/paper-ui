@@ -121,6 +121,7 @@ const AppMockup = () => {
 
             <Inline align="center" justify="between" gap="sm">
               <Tabs
+                shape="pill"
                 value={tab}
                 onChange={setTab}
                 items={[

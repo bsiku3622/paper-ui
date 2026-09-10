@@ -64,17 +64,17 @@ export const fieldInput = style({
   selectors: { "&::placeholder": { color: tokens.color.ink.faint } },
 });
 
-// size 3 단 — 공통 사다리 그대로(height × paddingInline × fontSize).
+// size 3 단 — 베이스에서 **가로 여백만** inputPaddingX(10 · 12 · 15)로 갈아 끼운다.
+// height 와 글자는 베이스 그대로라 폼 한 줄에서 버튼과 같은 높이에 선다.
 //
-// ⚠ 한때 가로만 따로 뺐다(높이에서 유도한 7 · 9 · 12). 세로 여백과 값을 맞추려던 건데,
-// **34 짜리 상자에 14 짜리 글자면 세로로 남는 게 9 뿐이라** 그 9 를 가로로 옮기는 순간
-// 답답해졌다. 정사각의 기준점이 화면에서 가장 좁은 값이었던 셈이다.
+// 세로 잉크는 높이가 정해 버린다((34 − 14) / 2 = 10). 가로를 거기 딱 맞추면 답답하고,
+// 버튼 사다리(13)까지 벌리면 1.4 배라 눌려 보인다 — 1.3 에서 멈춘 값이 12 다.
 //
-// 여기 세로는 애초에 여백이 아니라 **높이 안의 중앙 정렬**이다 — 한 줄짜리 값이 상자
-// 가운데 앉는 걸 여백으로 읽는 사람은 없다. 그래서 맞출 대상이 아니고, 가로는 라벨의
-// 비율(10 · 13 · 17)을 그대로 쓴다. 정사각이 뜻을 갖는 건 글이 여러 줄로 흐르는
-// Textarea 뿐이고, 거기서는 **가로를 기준으로 세로를 계산한다**(tokens 의 textareaPaddingY).
-export const fieldSize = styleVariants(ladderRules());
+// ⚠ **정사각은 높이를 안 올리는 한 불가능하다.** 잉크를 사방 14 로 맞추려면 높이가 42 여야
+// 하고, 그러면 같은 줄의 버튼과 8 이 어긋난다. 자세한 계산은 tokens/shape.ts.
+export const fieldSize = styleVariants(
+  ladderRules((s) => ({ paddingInline: tokens.shape.inputPaddingX[s] })),
+);
 
 // status — 래퍼 테두리 색. 포커스 링은 이제 바깥 outline 이라 status 테두리와 겹치지 않고
 // 공존한다 (빨간 error 테두리 + 그 밖의 파란 포커스 링).

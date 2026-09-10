@@ -51,7 +51,8 @@ export const selectRoot = style({
   },
 });
 
-// size 3 단 — 베이스 그대로 쓰고 오른쪽만 화살표 자리로 덮는다.
+// size 3 단 — 가로는 Field 와 같은 입력칸 여백으로 갈아 끼우고, 오른쪽만 화살표 자리로
+// 한 번 더 덮는다. Select 는 값을 *고르는* 상자라 값을 *쓰는* 상자와 같은 열에 서야 한다.
 //
 // ⚠ 예전엔 사다리를 손으로 베껴 쓰면서 좌우 여백만 Box 사다리(`padding[s].interaction`
 // = 8·12·16)에서 가져왔다. 주석은 "Button·Field 와 같은 공통 사다리" 라고 말하는데 실제
@@ -60,7 +61,10 @@ export const selectRoot = style({
 // paddingInlineEnd 가 paddingInline 뒤에 와서 오른쪽만 덮어쓴다(같은 규칙 안에서는 나중
 // 선언이 이긴다). 둘 다 논리 속성이라 RTL 에서도 화살표 쪽이 열린다.
 export const selectSize = styleVariants(
-  ladderRules(() => ({ paddingInlineEnd: tokens.shape.padding.xl.interaction })),
+  ladderRules((s) => ({
+    paddingInline: tokens.shape.inputPaddingX[s],
+    paddingInlineEnd: tokens.shape.padding.xl.interaction,
+  })),
 );
 
 // 알약 — Field 와 같은 어휘. 화살표는 오른쪽 여백 24 안에 앉아 곡선과 안 부딪친다
