@@ -22,7 +22,11 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
   ref,
 ) {
   return (
-    <select ref={ref} className={joinClass(selectRoot, selectSize[size], shape === "pill" && selectPill, className)} {...rest}>
+    <select
+      ref={ref}
+      className={joinClass(selectRoot, selectSize[size], shape === "pill" && selectPill, className)}
+      {...rest}
+    >
       {options.map((o) => (
         <option key={o.value} value={o.value}>
           {o.label}

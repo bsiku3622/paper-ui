@@ -17,10 +17,9 @@ export const bannerRoot = style({
 
 // tone — solid(검정) 기본 + status 색 면. 채운 면 위 대비쌍 글자.
 //
-// ⚠ status 면 위 글자는 **`solidFg`** 다. 예전엔 `paper.raised` 를 하드코딩했는데
-// ("종이색" 이라는 뜻이었다), 다크에서 raised 는 최암(#151515)이라 색면 위 글자가
-// **2.24~2.45** 까지 떨어져 있었다 — 조용한 AA 실패였다. 채움 위 글자의 정본은
-// 처음부터 각 색의 on-solid 대비쌍이다(→ tokens/colors.ts 의 solidFg).
+// ⚠ status 면 위 글자는 같은 hue의 반대 끝인 **`wash`** 다. 예전엔 `paper.raised` 를
+// 하드코딩해 다크에서 무너졌고, 별도 solidFg는 wash와 자리가 겹쳤다. wash는 테마별로
+// solid와 반대 방향에 있어 한 슬롯으로 양쪽 대비를 만든다.
 //
 // 중립 tone 만 `paper.raised` 를 그대로 쓴다. 거기 배경은 `ink.base` 인데 둘이 테마마다
 // 함께 뒤집혀(검정 면/흰 글자 ↔ 흰 면/검정 글자) 저절로 맞는다.
@@ -31,7 +30,7 @@ export const bannerTone = styleVariants({
       s,
       {
         background: tokens.color.accent[STATUS_ACCENT[s]].solid,
-        color: tokens.color.accent[STATUS_ACCENT[s]].solidFg,
+        color: tokens.color.accent[STATUS_ACCENT[s]].wash,
       },
     ]),
   ) as Record<StatusName, { background: string; color: string }>),

@@ -53,7 +53,9 @@ const VARS: Record<string, string> = {
   "--pui-color-ink-soft": "#71717a",
   "--pui-color-ink-faint": "#a1a1aa",
   "--pui-color-border-base": "#e8e8ea",
+  "--pui-color-border-strong": "#ccccd1",
   "--pui-color-accent-info-solid": "#2563eb",
+  "--pui-color-accent-info-wash": "#f5f9fe",
   "--pui-color-accent-success-solid": "#15803d",
   "--pui-color-accent-warning-solid": "#b45309",
   "--pui-color-accent-error-solid": "#dc2626",
@@ -81,13 +83,11 @@ const DARK_VARS: Record<string, string> = {
   "--pui-color-paper-raised": "#0d0d10", // ⚠ 최암 — 다크는 사다리가 라이트의 거울이다(BLACK 에 raised 가 가장 가깝다)
   "--pui-color-ink-base": "#e9e9eb",
   "--pui-color-primary-base": "#e8e8ea",
-  // ⚠ **다크 채움(accent solid)은 밝다** — 라이트(L .53~.58)를 canvas 축으로 접은 L .645 다.
-  // 여기를 눌러 두면 두 계약이 한꺼번에 깨진다: solid→면 대비가 3:1 을 못 넘고
-  // (예전 .44 에서 1.79~2.45), status Banner 의 글자가 2.2~2.5 로 무너진다. 채움 위 글자는
-  // paper.raised 가 아니라 **solid-fg** 다 — 다크의 raised 는 최암이라 종이색이 아니다.
+  // ⚠ 다크 채움(accent solid)은 밝다. 채움 위 글자는 같은 hue의 반대 끝인 wash다.
+  // 다크 wash는 어두워 밝은 solid와 AA를 만들고, 라이트 wash는 반대로 옅게 올라간다.
   "--pui-color-accent-info-solid": "#5492ec",
   "--pui-color-accent-error-solid": "#df6768",
-  "--pui-color-accent-info-solid-fg": "#0a1930",
+  "--pui-color-accent-info-wash": "#0d1c32",
 };
 test("dark · [data-theme=dark] 로 색 var 가 다크 세트로 바뀐다", async ({ page }) => {
   await page.evaluate(() => document.documentElement.setAttribute("data-theme", "dark"));
@@ -119,6 +119,20 @@ test("focus · Field 포커스 시 보더 바깥 파란 링(outline)", async ({ 
   await expect(wrap).toHaveCSS("outline-offset", "2px");
 });
 
+// 쉬는 선은 화면의 hairline과 한 벌로 두고, hover에서만 한 단 또렷해진다.
+// semantic 상태도 solid/ink를 빌려 소리치지 않고 edge → edgeStrong으로 같은 동작을 한다.
+test("field · hover에서만 neutral·semantic 테두리가 또렷해진다", async ({ page }) => {
+  const neutral = page.getByTestId("field-default");
+  await expect(neutral).toHaveCSS("border-color", hexToRgb("#e8e8ea"));
+  await neutral.hover();
+  await expect(neutral).toHaveCSS("border-color", hexToRgb("#ccccd1"));
+
+  const error = page.getByTestId("field-invalid");
+  await expect(error).toHaveCSS("border-color", hexToRgb("#f4d8d8"));
+  await error.hover();
+  await expect(error).toHaveCSS("border-color", hexToRgb("#ed6969"));
+});
+
 // ── Badge status → 색 (info·success·warning·danger) ─────────────────────────
 const BADGE = { info: "#1d4ed8", success: "#15803d", warning: "#b45309", error: "#b91c1c" } as const;
 for (const [status, ink] of Object.entries(BADGE)) {
@@ -139,6 +153,7 @@ test("button · soft 는 회색 면(muted)", async ({ page }) => {
 test("button · status=danger 는 빨강 채움", async ({ page }) => {
   // 기본 variant=solid 에 status=danger → error.solid 배경
   await expect(page.getByTestId("btn-danger")).toHaveCSS("background-color", hexToRgb("#dc2626"));
+  await expect(page.getByTestId("btn-danger")).toHaveCSS("color", hexToRgb("#fdf7f7"));
 });
 test("button · disabled 는 비활성", async ({ page }) => {
   await expect(page.getByTestId("btn-disabled")).toBeDisabled();
@@ -271,16 +286,16 @@ test("control base · 높이·글자는 공유, 가로 여백은 라벨과 값�
   for (const id of ["base-button", "base-field", "base-select", "base-textarea"]) {
     await expect(page.getByTestId(id)).toHaveCSS("font-size", "14px");
   }
-  // 버튼 라벨은 상자를 정의하는 글자라 좌우가 넉넉하고(13), 입력칸은 상자가 먼저 있고
-  // 값이 그 안에 놓이는 자리라 한 단 좁다(12 — 잉크 가로:세로 1.3).
+  // 버튼 라벨은 상자를 정의하는 글자라 좌우가 넉넉하고(13), 입력칸은 높이가 정한 세로
+  // 잉크와 사방을 맞춘다(md: border 1 + padding 9 = 10).
   await expect(page.getByTestId("base-button")).toHaveCSS("padding-left", "13px");
   for (const id of ["base-field", "base-select", "base-textarea"]) {
-    await expect(page.getByTestId(id)).toHaveCSS("padding-left", "12px");
+    await expect(page.getByTestId(id)).toHaveCSS("padding-left", "9px");
   }
   // 화살표 자리는 오른쪽만 넓다 — 통로로 한 축 더 덮는다.
   await expect(page.getByTestId("base-select")).toHaveCSS("padding-right", "24px");
-  // Textarea 의 세로만 자기 값이다 — 가로에서 계산한다(12 − 반 줄 3.5).
-  await expect(page.getByTestId("base-textarea")).toHaveCSS("padding-top", "8.5px");
+  // Textarea 의 세로만 자기 값이다 — 가로에서 계산한다(9 − 반 줄 3.5).
+  await expect(page.getByTestId("base-textarea")).toHaveCSS("padding-top", "5.5px");
 });
 
 // ── 입력 글자는 시스템 굵기를 든다 ───────────────────────────────────────────
@@ -315,33 +330,25 @@ test("type · 입력 글자가 본문과 같은 굵기, 버튼 라벨은 그보�
   expect(track[1]).toBe(track[0]);
 });
 
-// ── Field 의 잉크는 가로가 세로보다 조금 넉넉하다 ────────────────────────────
+// ── Field 의 잉크는 사방 같은 거리에 앉는다 ─────────────────────────────────
 //
-// 정사각은 높이를 안 올리는 한 불가능하다 — 34 짜리 상자에 14 짜리 글자면 세로로 남는 게
-// 10 뿐이고, 사방 14 로 맞추려면 높이가 42 라 같은 줄의 버튼과 8 이 어긋난다. 목표는
-// 정사각 자체가 아니라 **가로가 세로보다 조금 넉넉한 것** 이고, 그 폭을 1.2~1.4 로 가둔다.
-// 아래로 내려가면 답답해지고(9 에서 실제로 그랬다) 위로 가면 글자가 눌려 보인다(13 = 1.4).
-test("field · 잉크 가로:세로가 1.2~1.4 사이다", async ({ page }) => {
+// 높이와 글자를 유지하고 x padding을 줄였다. md는 세로 10, 가로 border 1 + padding 9로
+// 정사각이다. 이 관계는 Field·Select·Textarea의 공통 form geometry다.
+test("field · 잉크 가로:세로가 정사각이다", async ({ page }) => {
   const r = await page.getByTestId("base-field").evaluate((el: HTMLElement) => {
     const c = getComputedStyle(el);
     const vertical = (el.getBoundingClientRect().height - parseFloat(c.fontSize)) / 2;
     const horizontal = parseFloat(c.borderLeftWidth) + parseFloat(c.paddingLeft);
     return horizontal / vertical;
   });
-  expect(r).toBeGreaterThanOrEqual(1.2);
-  expect(r).toBeLessThanOrEqual(1.4);
+  expect(r).toBeCloseTo(1, 2);
 });
 
 // ── Textarea 의 글자는 사방 같은 거리에 앉는다 ───────────────────────────────
 //
-// 선언값이 아니라 **잉크의 자리**를 잰다. 세로 선언은 9.5 지만 줄상자에 반 줄 여백(3.5)이
-// 들어 있어 잉크는 14 — 가로(1 + 13)와 같은 자리다. 선언값을 정사각으로 맞추면 되레 첫 줄이
+// 선언값이 아니라 **잉크의 자리**를 잰다. 세로 선언은 5.5지만 줄상자에 반 줄 여백(3.5)이
+// 들어 있어 잉크는 10 — 가로(1 + 9)와 같은 자리다. 선언값을 정사각으로 맞추면 되레 첫 줄이
 // 왼쪽 여백보다 3.5 내려간다.
-//
-// ⚠ **기준은 가로다.** 반대로 세로에서 가로를 유도하던 시절엔 (34 − 2 − 14) / 2 = 9 가 나와
-// 가로가 9 로 좁아졌다 — 정사각이긴 한데 기준점이 화면에서 가장 좁은 값이라 답답했고,
-// 여러 줄은 줄마다 오른쪽 벽에 닿아 특히 심했다. Field 는 여기 없다: 거기 세로는 여백이
-// 아니라 높이 안의 중앙 정렬이라 맞출 대상이 아니다.
 test("textarea · 글자가 테두리에서 사방 같은 거리에 앉는다", async ({ page }) => {
   const ink = await page.getByTestId("base-textarea").evaluate((el: HTMLElement) => {
     const c = getComputedStyle(el);
@@ -363,8 +370,8 @@ test("pill · 곡선만 바뀌고 각자의 가로 여백은 그대로다", asyn
     await expect(page.getByTestId(id)).toHaveCSS("border-radius", "999px");
   }
   // 알약이 됐다고 여백이 따라 움직이지 않는다 — 각진 형제와 글자 시작점이 같다.
-  await expect(page.getByTestId("field-pill")).toHaveCSS("padding-left", "12px");
-  await expect(page.getByTestId("select-pill")).toHaveCSS("padding-left", "12px");
+  await expect(page.getByTestId("field-pill")).toHaveCSS("padding-left", "9px");
+  await expect(page.getByTestId("select-pill")).toHaveCSS("padding-left", "9px");
   await expect(page.getByTestId("button-pill-row")).toHaveCSS("padding-left", "13px");
 });
 

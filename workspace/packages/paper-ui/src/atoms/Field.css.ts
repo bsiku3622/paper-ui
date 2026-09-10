@@ -33,7 +33,9 @@ export const fieldWrap = style({
   transition: stateTransition("border-color", "box-shadow", "background"),
   selectors: {
     // hover 는 배경을 흔들지 않고 테두리만 한 단 또렷하게 (흰 면 유지)
-    "&:hover:not(:focus-within):has(input:enabled)": { borderColor: tokens.color.border.strong },
+    '&[data-pui-status="default"]:hover:not(:focus-within):has(input:enabled)': {
+      borderColor: tokens.color.border.strong,
+    },
     // 포커스 — 안쪽 input 이 포커스되면 래퍼 *바깥* 에 파란 링(outline). 전역 :focus-visible·
     // Checkbox·Switch 와 같은 outside-the-border 방식 — 보더 위가 아니라 보더 밖에 뜬다.
     "&:focus-within": {
@@ -64,14 +66,11 @@ export const fieldInput = style({
   selectors: { "&::placeholder": { color: tokens.color.ink.faint } },
 });
 
-// size 3 단 — 베이스에서 **가로 여백만** inputPaddingX(10 · 12 · 15)로 갈아 끼운다.
+// size 3 단 — 베이스에서 **가로 여백만** inputPaddingX(7 · 9 · 12)로 갈아 끼운다.
 // height 와 글자는 베이스 그대로라 폼 한 줄에서 버튼과 같은 높이에 선다.
 //
-// 세로 잉크는 높이가 정해 버린다((34 − 14) / 2 = 10). 가로를 거기 딱 맞추면 답답하고,
-// 버튼 사다리(13)까지 벌리면 1.4 배라 눌려 보인다 — 1.3 에서 멈춘 값이 12 다.
-//
-// ⚠ **정사각은 높이를 안 올리는 한 불가능하다.** 잉크를 사방 14 로 맞추려면 높이가 42 여야
-// 하고, 그러면 같은 줄의 버튼과 8 이 어긋난다. 자세한 계산은 tokens/shape.ts.
+// md의 세로 잉크는 (34 − 14) / 2 = 10이고, 가로는 border 1 + padding 9 = 10이다.
+// Field·Select·Textarea가 같은 form geometry를 공유한다. 자세한 계산은 tokens/shape.ts.
 export const fieldSize = styleVariants(
   ladderRules((s) => ({ paddingInline: tokens.shape.inputPaddingX[s] })),
 );
@@ -80,8 +79,24 @@ export const fieldSize = styleVariants(
 // 공존한다 (빨간 error 테두리 + 그 밖의 파란 포커스 링).
 export const fieldStatus = styleVariants(
   Object.fromEntries(
-    STATUS.map((s) => [s, { borderColor: tokens.color.accent[STATUS_ACCENT[s]].solid }]),
-  ) as Record<StatusName, { borderColor: string }>,
+    STATUS.map((s) => {
+      const accent = tokens.color.accent[STATUS_ACCENT[s]];
+      return [
+        s,
+        {
+          // 쉬는 상태는 wash 와 한 벌인 옅은 선. 의미는 보이되 입력보다 먼저 소리치지 않는다.
+          borderColor: accent.edge,
+          selectors: {
+            // hover 에서만 독립적으로 형태를 만들 수 있는 strong edge 로 올라간다.
+            // Field wrapper 와 Textarea 양쪽에서 쓰므로 disabled·focus 조건을 둘 다 막는다.
+            "&:hover:not(:focus):not(:focus-within):not(:disabled):not(:has(input:disabled))": {
+              borderColor: accent.edgeStrong,
+            },
+          },
+        },
+      ];
+    }),
+  ) as unknown as Record<StatusName, { borderColor: string; selectors: Record<string, { borderColor: string }> }>,
 );
 
 // 어도먼트 — leading/trailing 슬롯(아이콘·$·단위). 흐린 잉크, 축소 안 됨.

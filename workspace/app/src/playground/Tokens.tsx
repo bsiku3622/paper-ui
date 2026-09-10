@@ -52,7 +52,7 @@ const INKS = ["base", "soft", "faint"] as const;
 const BORDERS = ["base", "strong"] as const;
 const PRIMARIES = ["base", "hover", "fg"] as const;
 const ACCENTS = ["info", "success", "warning", "error"] as const;
-const TONES = ["solid", "solidFg", "ink", "wash", "edge"] as const;
+const TONES = ["solid", "ink", "wash", "edge"] as const;
 const SIZES = ["xs", "sm", "md", "lg", "xl"] as const;
 const CONTROLS = ["sm", "md", "lg"] as const;
 const VARIANTS = ["display", "title", "heading", "subheading", "body", "caption", "label"] as const;
@@ -128,7 +128,7 @@ export const Tokens = () => {
 
 
         {/* ── Color · accent ─────────────────────────────────── */}
-        <Section id="tok-accent" title="Color · accent (4색 × 5자리)" desc="이름이 곧 의미 — info · success · warning · error (hue 이름 없음). solid 채운 면 · solidFg solid 위 글자(대비쌍 — 밝은 배경은 어두운 잉크) · ink 흰 배경 위 글자(AA) · wash 옅은 면 · edge wash 괘선. ⚠ **다크에서 채움(solid)은 뒤집힌다 — 밝은 면 + 어두운 글자다.** 라이트를 canvas 축으로 접은 값이다(라이트 canvas .991→solid .53~.58 / 다크 canvas .205→solid .645, solidFg 는 .92~.94 / .245). 오래 다크 solid 를 .44 로 눌러 뒀는데 — 옅은 글자를 얹어야 하니 면이 어두워야 한다는 생각이었다 — 그러면 **채움이 면에서 안 떨어진다**: solid→면 대비가 1.79~2.45 였다(라이트 3.74~5.17). 비텍스트 3:1 을 못 넘기니 배지·버튼의 윤곽 자체가 계약을 깬 것이고, 글자 없는 상태 점은 아예 안 보였다. 눌러서는 못 고친다 — 가장 밝은 면(well)의 상대휘도가 .022 라 그 아래로 3:1 을 만들려면 채움의 휘도가 음수여야 한다. 위로 가는 길뿐이다. primary 는 이미 뒤집고 있었고(흰 채움/검정 글자) accent solid 만 안 뒤집힌 축으로 남아 있었다. 뒤집으면 solid→면 4.20~5.84 · solidFg→solid 4.76~5.13 으로 라이트와 나란해진다. 곁딸려 Banner 도 고쳤다 — 채운 면 위 글자를 paper.raised 로 박아 뒀는데 다크의 raised 는 최암이라 status Banner 가 2.2~2.5 였다. ⚠ 라이트 solidFg 는 아직 3.91~4.21 로 AA 미달이다 — 구조가 아니라 값의 문제라 이번 범위 밖으로 남겨 뒀다.">
+        <Section id="tok-accent" title="Color · accent (4색 × 5자리)" desc="이름이 곧 의미 — info · success · warning · error. solid는 채운 면, ink는 지면 위 글자, wash는 옅은 면이자 solid 위 글자, edge는 wash의 괘선, edgeStrong은 홀로 서는 outline 선입니다. 별도 solidFg는 wash와 같은 끝점을 중복하면서 라이트 대비가 약해 제거했습니다. 다크에서는 solid가 밝고 wash가 어두워져 같은 두 슬롯이 반대 방향으로 AA 대비를 만듭니다.">
           <Stack gap="lg">
             {ACCENTS.map((a) => (
               <Inline key={a} gap="lg" align="center" wrap>
@@ -210,7 +210,7 @@ export const Tokens = () => {
 
 
         {/* ── Control size ───────────────────────────────────── */}
-        <Section id="tok-control" title="Control size (3단)" desc="Button·Field·Select·Textarea·Tabs 가 height 와 글자(14 고정)를 공유한다. 가로 여백만 갈린다 — 버튼·탭은 controlPaddingX(10·13·17), 입력칸은 inputPaddingX(10·12·15). 버튼 라벨은 상자를 정의하는 글자라 좌우가 넉넉해야 하고, 입력칸은 상자가 먼저 있고 값이 그 안에 놓이는 자리다. 입력칸 값은 잉크 가로:세로를 1.3 으로 둔 것이다 — 세로 잉크는 높이가 (34 − 14) / 2 = 10 으로 정해 버리는데, 가로를 거기 딱 맞추면(정사각) 답답하고 버튼 사다리까지 벌리면 1.4 라 눌려 보인다. ⚠ 정사각은 높이를 안 올리는 한 불가능하다 — 사방 14 로 맞추려면 높이가 42 여야 하고 같은 줄의 버튼과 8 이 어긋난다. 정사각이 뜻을 갖는 건 사방이 다 보이는 Textarea 뿐이고, 거기서는 가로에서 세로를 계산한다(textareaPaddingY = 가로 − 반 줄 3.5).">
+        <Section id="tok-control" title="Control size (3단)" desc="Button·Field·Select·Textarea·Tabs가 height와 글자(14 고정)를 공유합니다. 버튼·탭은 controlPaddingX(10·13·17), Field·Select·Textarea는 정사각 form geometry인 inputPaddingX(7·9·12)를 씁니다. md는 세로 (34 − 14) / 2 = 10, 가로 border 1 + padding 9 = 10입니다. Textarea는 줄상자 반 여백 3.5를 빼 textareaPaddingY(3.5·5.5·8.5)를 계산합니다.">
           <Inline gap="lg" align="end" wrap>
             {CONTROLS.map((c) => (
               <Stack key={c} gap="xs" align="start">
