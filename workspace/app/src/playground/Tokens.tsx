@@ -210,7 +210,7 @@ export const Tokens = () => {
 
 
         {/* ── Control size ───────────────────────────────────── */}
-        <Section id="tok-control" title="Control size (3단)" desc="Button·Field·Select·Textarea·Tabs 가 한 사다리를 공유한다 — height · 가로 여백(controlPaddingX 10·13·17) · 글자(14 고정). ⚠ 한때 입력류만 가로를 따로 뺐다(높이에서 유도한 7·9·12). 세로와 값을 맞추려던 건데, 34 짜리 상자에 14 짜리 글자면 세로로 남는 게 9 뿐이라 그 9 를 가로로 옮기는 순간 답답해졌다 — 정사각의 기준점이 화면에서 가장 좁은 값이었다. 한 줄짜리 컨트롤의 세로는 애초에 여백이 아니라 높이 안의 중앙 정렬이라 맞출 대상도 아니다. 정사각이 뜻을 갖는 건 글이 여러 줄로 흐르는 Textarea 뿐이고, 거기서는 방향을 뒤집어 **가로에서 세로를 계산한다**(textareaPaddingY = 가로 − 테두리 1 − 반 줄 3.5).">
+        <Section id="tok-control" title="Control size (3단)" desc="Button·Field·Select·Textarea·Tabs 가 height 와 글자(14 고정)를 공유한다. 가로 여백만 갈린다 — 버튼·탭은 controlPaddingX(10·13·17), 입력칸은 inputPaddingX(10·12·15). 버튼 라벨은 상자를 정의하는 글자라 좌우가 넉넉해야 하고, 입력칸은 상자가 먼저 있고 값이 그 안에 놓이는 자리다. 입력칸 값은 잉크 가로:세로를 1.3 으로 둔 것이다 — 세로 잉크는 높이가 (34 − 14) / 2 = 10 으로 정해 버리는데, 가로를 거기 딱 맞추면(정사각) 답답하고 버튼 사다리까지 벌리면 1.4 라 눌려 보인다. ⚠ 정사각은 높이를 안 올리는 한 불가능하다 — 사방 14 로 맞추려면 높이가 42 여야 하고 같은 줄의 버튼과 8 이 어긋난다. 정사각이 뜻을 갖는 건 사방이 다 보이는 Textarea 뿐이고, 거기서는 가로에서 세로를 계산한다(textareaPaddingY = 가로 − 반 줄 3.5).">
           <Inline gap="lg" align="end" wrap>
             {CONTROLS.map((c) => (
               <Stack key={c} gap="xs" align="start">
