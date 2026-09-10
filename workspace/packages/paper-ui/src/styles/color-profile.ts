@@ -65,13 +65,14 @@ const primaryProfile: Record<Variant, ColorSpec> = {
 // ── accent — 의미 4색 ────────────────────────────────────────────────────────
 // solid=채운 색면 · soft=옅은 면(wash) · outline=흰 면+색 테두리 · quiet=색 글자만.
 // 색 면은 그 색의 의미를 짊어질 때만 (error 버튼처럼). hover 는 색 스텝(오버레이 아님).
-// solid 위 글자는 각 색의 solidFg(on-solid 대비쌍) — 배경 밝기 따라 흰/어두운 잉크가 갈린다.
-type AccentTones = { solid: string; solidFg: string; ink: string; wash: string; edge: string; edgeStrong: string };
+// solid 위 글자는 같은 hue의 반대 끝인 wash를 재사용한다. 별도 on-solid 슬롯을 두지 않아도
+// 라이트의 진한 solid에는 옅은 wash, 다크의 밝은 solid에는 어두운 wash가 올라간다.
+type AccentTones = { solid: string; ink: string; wash: string; edge: string; edgeStrong: string };
 
 const accentProfile = (c: AccentTones): Record<Variant, ColorSpec> => ({
   solid: {
     background: c.solid,
-    color: c.solidFg,
+    color: c.wash,
     borderColor: "transparent",
     // 진한 색면 위에 어둠을 얹어(darken) hover — solid 가 ink(700톤)와 같아 색 교체로는
     // hover 가 안 뜬다. 검정 틴트라 라이트·다크 어느 색면에서도 한 단 어두워진다(비테마).

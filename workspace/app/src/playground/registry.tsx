@@ -617,7 +617,7 @@ export const COMPONENTS: CompSpec[] = [
     ],
     render: (st) => (
       <Box style={{ width: "100%", borderRadius: tokens.shape.radius.layout.md, overflow: "hidden" }}>
-        {/* 글자색을 덮지 않는다. 채운 면 위 글자는 Banner 가 tone 마다 solidFg 로 정하고
+        {/* 글자색을 덮지 않는다. 채운 면 위 글자는 Banner 가 tone 마다 wash 로 정하고
             자식이 그걸 상속한다 — 여기서 색을 박으면 tone 토글이 그 계약을 못 보여준다.
             (Text 를 쓰면 variant 클래스가 자기 ink 를 들고 와 같은 문제가 난다.) */}
         <Banner

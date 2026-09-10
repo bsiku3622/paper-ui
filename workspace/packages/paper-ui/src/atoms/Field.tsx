@@ -132,6 +132,7 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
       className={joinClass(fieldWrap, fieldSize[size], shape === "pill" && fieldPill, status !== "default" && fieldStatus[status], className)}
       style={style}
       data-testid={testid}
+      data-pui-status={status}
       // 래퍼 여백을 클릭해도 input 이 포커스되게 (액션 버튼은 제외)
       onMouseDown={(e) => {
         const t = e.target as HTMLElement;

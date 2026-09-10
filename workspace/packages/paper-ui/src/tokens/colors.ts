@@ -51,31 +51,26 @@ export const INK = {
 // 거의 안 보이는데 그 위 검색창만 진하니, 한 화면에 회색이 두 벌이 된다. 선의 *역할* 이
 // 다르다고 *색* 까지 갈리면, 화면은 그걸 두 팔레트로 읽는다(백재원, 2026-09-09).
 //
-// 그래서 컨트롤도 이 두 값을 그대로 쓴다 — 쉬는 상태 base, hover 는 strong.
-// 컨트롤을 더 또렷하게 하려면 컨트롤만 진하게 하는 게 아니라 **이 표를 올린다.**
-// 그러면 카드·구획·입력이 함께 움직여 회색은 계속 한 벌로 남는다.
-//
-// ⚠ 강도는 아직 확정이 아니다. 지금 값(1.19 · 1.42)은 원래 값이고, 빈 입력칸 경계로는
-// 비텍스트 기준(3:1)에 한참 못 미친다. lab 으로 훑어 고르는 중이다.
+// 그래서 쉬는 상태는 base 한 벌을 유지하고, 상호작용 중인 컨트롤만 strong 으로 올린다.
+// strong 을 raised 대비 1.60까지 벌려 hover가 손가락 아래에서 분명히 보이게 했다. 구조선
+// 전체를 올리지 않으므로 정적인 화면에는 여전히 회색이 한 벌만 남는다.
 //
 // accent 는 사정이 다르다 — 그쪽은 `edge`(wash 괘선)와 `edgeStrong`(outline 테두리)이
 // 갈려 있는데, 색이 있는 선은 *라벨 색과 맞아야* 하므로 애초에 뉴트럴 괘선과 다른 물건이다.
 
 export const BORDER = {
   base: "#e8e8ea", // 쉬는 경계 — 카드 헤어라인 · 구획 · 입력칸 · 체크박스 · outline
-  strong: "#d8d8dc", // 한 단 또렷하게 — table head 밑 · 컨트롤 hover
+  strong: "#ccccd1", // 한 단 또렷하게 — table head 밑 · 컨트롤 hover (raised 위 1.60:1)
 } as const;
 
 // ───── accent — 작게 얹는 점 ────────────────────────────────────────────────
 //
 // 4 색. 이름이 곧 의미다 — info(정보/상호작용) · success(성공) · warning(주의) ·
-// error(위험). API 에 hue 이름(blue 등)은 없다. 각 색은 4 자리를 갖는다:
+// error(위험). API 에 hue 이름(blue 등)은 없다. 각 색은 5 자리를 갖는다:
 //   solid   — 채운 면/점 (dot · 채운 배지 · status 버튼). 진한 톤(그 위 옅은 색 글자와 대비).
-//   solidFg — solid 위 *글자* 색. **같은 hue 의 옅은 톤**(모노크로매틱, 한 방향으로 통일) —
-//             흰색이 아니라 그 색의 옅은 톤. 채움은 다 진하게 맞춰(green·amber 포함) 늘 옅은
-//             글자가 얹힌다. 버튼 전체가 한 색으로 통일된다.
 //   ink     — 흰 배경 위 *글자* 색 (AA 대비). 700 톤.
-//   wash    — 아주 옅은 면 (subtle 배지 · soft 버튼 · 선택 행). 50 톤.
+//   wash    — 아주 옅은 면 (subtle 배지 · soft 버튼 · 선택 행), 그리고 solid 위 글자.
+//             같은 hue의 양끝을 재사용해 별도 on-solid 토큰 없이 모노크로매틱 대비를 만든다.
 //   edge    — wash 의 괘선, 그리고 soft 의 hover 면. 200 톤.
 //   edgeStrong — **홀로 서는 테두리** (outline 변형). canvas 대비 3:1 로 맞춘 값.
 //
@@ -95,34 +90,30 @@ export const BORDER = {
 export const ACCENT = {
   info: {
     solid: "#2563eb",
-    solidFg: "#d6e4fd", // 옅은 파랑 글자
     ink: "#1d4ed8",
-    wash: "#eff6ff",
-    edge: "#bfdbfe",
+    wash: "#f5f9fe", // Veil — 현 pigment를 paper.canvas 쪽으로 45% 접은 옅은 면
+    edge: "#d1e1f5", // Veil — 현 pigment를 border.base 쪽으로 45% 접은 괘선
     edgeStrong: "#5694e9", // canvas 3.01
   },
   success: {
     solid: "#15803d", // 진한 초록으로 낮춤(옅은 글자 대비 확보)
-    solidFg: "#d6f2df", // 옅은 초록 글자
     ink: "#15803d",
-    wash: "#f0fdf4",
-    edge: "#bbf7d0",
+    wash: "#f5fdf8",
+    edge: "#cff0dc",
     edgeStrong: "#35a75f", // canvas 2.99
   },
   warning: {
     solid: "#b45309", // 진한 amber 로 낮춤
-    solidFg: "#fbe7b4", // 옅은 amber 글자
     ink: "#b45309",
-    wash: "#fffbeb",
-    edge: "#fde68a",
+    wash: "#fefbf3",
+    edge: "#f4e7b5",
     edgeStrong: "#c5861b", // canvas 3.01
   },
   error: {
     solid: "#dc2626",
-    solidFg: "#ffe0e0", // 옅은 빨강 글자
     ink: "#b91c1c",
-    wash: "#fef2f2",
-    edge: "#fecaca",
+    wash: "#fdf7f7",
+    edge: "#f4d8d8",
     edgeStrong: "#ed6969", // canvas 3.00
   },
 } as const;
@@ -342,7 +333,7 @@ const BORDER_DARK = {
 //     wash    .225 / .048   면 — 지면 바로 위, 색으로만 갈린다
 //     edge    .330 / .078   wash 의 hover · outline 테두리
 //     solid   .660 / .150   채운 면 (밝은 채움 + 어두운 글자 — 불변식 C)
-//     solidFg .215 / .050   solid 위 글자
+//     wash    .225 / .048   solid 위 글자도 겸한다
 //     ink     .790 / .110   어두운 면 위 글자
 //
 // ⚠ edge 만 접기에서 벗어난다(엄밀한 거울은 L .305). 거기서는 canvas 위 1.42 로
@@ -357,19 +348,16 @@ const BORDER_DARK = {
 //
 // 계약 (전 항목 통과):
 //     solid↔well     4.56~5.25  (비텍스트 3:1)
-//     solidFg↔solid  5.29~5.93  (AA 4.5)
+//     wash↔solid     5.16~5.80  (AA 4.5)
 //     ink↔wash       8.55~9.09  · ink↔raised 9.60~10.46
 //
-// ⚠ **라이트 solidFg 는 아직 AA 미달이다** (3.91~4.21, error 가 최악). 라이트는 채움을
-// 더 진하게 내리면 풀리므로 구조가 아니라 값의 문제다. 이번 범위 밖이라 남겨 둔다.
-//
-// ⚠ **Banner 는 채운 면 위 글자를 solidFg 로 쓴다.** 한때 `paper.raised` 로 하드코딩돼
-// 있었는데 다크의 raised 는 최암이라 2.24~2.45 였다. 되돌리지 말 것.
+// ⚠ 채운 면 위 글자는 wash를 쓴다. 별도 solidFg가 wash와 거의 같은 끝점을 중복하고,
+// 라이트에서는 대비도 3.91~4.21로 약했다. Veil wash는 양 테마 모두 AA를 넘는다.
 const ACCENT_DARK = {
-  info: { solid: "#5492ec", solidFg: "#0a1930", ink: "#8ebcff", wash: "#0d1c32", edge: "#1a355d", edgeStrong: "#4c6fa3" },
-  success: { solid: "#32ac64", solidFg: "#03200e", ink: "#81cf99", wash: "#062211", edge: "#094021", edgeStrong: "#3a7b52" },
-  warning: { solid: "#c58300", solidFg: "#271500", ink: "#e4b066", wash: "#291800", edge: "#4c2e00", edgeStrong: "#8e672c" },
-  error: { solid: "#df6768", solidFg: "#2d0f0f", ink: "#f99e9b", wash: "#2f1211", edge: "#572223", edgeStrong: "#a15a59" },
+  info: { solid: "#5492ec", ink: "#8ebcff", wash: "#0d1c32", edge: "#1a355d", edgeStrong: "#4c6fa3" },
+  success: { solid: "#32ac64", ink: "#81cf99", wash: "#062211", edge: "#094021", edgeStrong: "#3a7b52" },
+  warning: { solid: "#c58300", ink: "#e4b066", wash: "#291800", edge: "#4c2e00", edgeStrong: "#8e672c" },
+  error: { solid: "#df6768", ink: "#f99e9b", wash: "#2f1211", edge: "#572223", edgeStrong: "#a15a59" },
 } as const;
 
 const PRIMARY_DARK = {

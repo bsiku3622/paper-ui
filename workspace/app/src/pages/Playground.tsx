@@ -274,7 +274,7 @@ export const Playground = () => {
           {/* 공통 base — 넷이 같은 컨트롤 여백을 쓰는가. 높이가 아니라 *글자 시작점* 을 본다:
               Textarea 는 줄 수만큼 자라 높이로는 줄을 못 세우고, Select 는 화살표 때문에
               오른쪽만 넓다. 왼쪽 여백 하나가 넷을 한 세로선에 세운다. */}
-          <Spec label="base — 높이·글자는 공유, 가로는 라벨 13 · 값 12 로 갈린다" testid="spec-control-base">
+          <Spec label="base — 높이·글자는 공유, 가로는 라벨 13 · 값 9로 갈린다" testid="spec-control-base">
             <Button size="md" data-testid="base-button">Button</Button>
             <Box style={{ width: "9rem" }}><Field size="md" placeholder="Field" aria-label="field base" data-testid="base-field" /></Box>
             <Box style={{ width: "9rem" }}><Select size="md" options={[{ value: "a", label: "Select" }]} data-testid="base-select" /></Box>

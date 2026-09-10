@@ -31,6 +31,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
     <textarea
       ref={ref}
       aria-invalid={status === "error" || undefined}
+      data-pui-status={status}
       className={joinClass(textareaRoot, textareaSize[size], status !== "default" && fieldStatus[status], className)}
       {...rest}
     />

@@ -77,15 +77,15 @@ chroma 만 저명도 보정으로 다크에서 올린다(라이트 면 `C .001~.
 | `warning` | `#b45309` | `#c58300` | 주의 |
 | `error` | `#dc2626` | `#df6768` | 위험 |
 
-accent 는 hue 이름(blue 등)이 **API 에 없다** — 전부 의미색. 각 accent 는 solid·**solidFg**·ink·wash·edge
-5 자리. **solid 버튼은 모노크로매틱** — 채움(solid)과 그 위 글자(solidFg)가 **같은 hue** 라 버튼 전체가
-한 색으로 통일된다(흰색 아님). 라이트는 채움을 다 진한 대역(green·amber 도 700 톤)으로 맞춰 늘 옅은 색
-글자가 얹힌다 — 색마다 글자 밝기가 갈리는 문제를 없앤다.
+accent 는 hue 이름(blue 등)이 **API 에 없다** — 전부 의미색. 각 accent 는 solid·ink·wash·edge·
+edgeStrong 5 자리. **solid 버튼은 모노크로매틱** — 채움(solid)과 그 위 글자(wash)가 같은 hue라 버튼 전체가
+한 색으로 통일된다(흰색 아님). 별도 solidFg는 wash와 끝점이 겹쳐 제거했다.
 ⚠ **채움은 테마마다 방향이 반대다** — 라이트는 진한 면 + 옅은 글자(L .53~.58 / .92~.94), 다크는 **옅은
 면 + 진한 글자**(L .660 / .215). 라이트를 canvas 축으로 접은 값이고, primary 가 이미 그렇게 한다. 다크
 채움을 눌러 두면 solid→면 대비가 3:1 을 못 넘고(1.79~2.45) status Banner 글자가 2.2~2.5 로 무너진다.
-채운 면 위 글자는 `paper.raised` 가 아니라 **언제나 solidFg** 다 — 다크의 raised 는 최암이다.
-⚠ 라이트 solidFg 는 채움 위에서 3.91~4.21 로 아직 AA 미달이다. 값의 문제라 팔레트 확정 뒤로 미뤄 뒀다.
+채운 면 위 글자는 `paper.raised`가 아니라 **언제나 wash**다 — 다크의 raised는 최암이다.
+⚠ 라이트 accent 는 **Veil**이다. solid·ink·edgeStrong의 명료함은 유지하고, 넓게 닿는 wash와
+쉬는 edge만 paper neutral에 45% 섞어 옅은 색의 시트러스한 채도를 줄인다.
 
 **`variant` 축 = 면의 무게:** `solid`(채움) · `soft`(옅은 면) · `outline`(또렷한 테두리) ·
 `hairline`(헤어라인) · `quiet`(글자만). ⚠ **테두리만 있는 자리가 둘이고, 세기가 아니라 *어느 선이냐*
@@ -100,10 +100,10 @@ accent 는 hue 이름(blue 등)이 **API 에 없다** — 전부 의미색. 각 
   Alert 는 언제나 soft, `color` 는 accent 4 색.
 
 ⚠ **화면의 회색 선은 한 벌이다.** 카드 헤어라인 · 구획 · 빈 입력칸 · 꺼진 체크박스 ·
-outline 버튼이 전부 `border.base`(hover 는 `strong`)를 쓴다. 컨트롤 전용 회색을 따로 뒀다가
+hairline 버튼이 전부 `border.base`를 쓴다. 컨트롤 전용 회색을 따로 뒀다가
 물렸다 — 카드는 안 보이는데 그 위 검색창만 진하면 한 화면에 회색이 두 벌이 된다. 컨트롤을
-또렷하게 하려면 컨트롤만이 아니라 **표를 올린다** — 다만 강도는 지금 값(1.2)으로 확정했다.
-컨트롤 하나를 또렷하게 하고 싶으면 표가 아니라 **variant** 로 고른다.
+가리킨 순간에만 `border.strong`(raised 대비 1.60)으로 올라가며, 정적인 화면의 한 벌 원칙은
+그대로 남는다. semantic Field도 쉬는 상태는 accent `edge`, hover만 `edgeStrong`이다.
 accent 는 다르다 — `edge`(wash 괘선)와 `edgeStrong`(outline 테두리)이 갈리는데, 색 있는 선은
 라벨 색과 맞아야 해서다. 톤은 램프 인덱스가 아니라 **대비**로 고른다(hue 마다 고유 명도가
 달라 400 톤으로 맞추면 초록·amber 가 옅다).
@@ -142,14 +142,12 @@ accent 는 다르다 — `edge`(wash 괘선)와 `edgeStrong`(outline 테두리)�
   Card·Table)은 그림자 없음(prop 을 안 준다). 다크에선 near-black 이 사라지므로 더 짙은 그림자로
   교체(테마 인식). `raised` 는 이제 surface color 지 그림자가 아니다(옛 elevation.raised 충돌 해소).
   radius 는 독립 — 면 크기가 정한다(작은 Tooltip 6, 큰 Modal 12).
-- **hover 는 조용히** — interaction 오버레이가 밑 면 위에 얹혀 한 단 어두워/밝아진다. 테두리 강조 없음.
+- **hover 는 조용히** — 면은 interaction 오버레이로 한 단 움직이고, 입력류는 면을 흔들지 않고 `border.strong`으로 올라간다.
 - **밀도** — 간격(Space) 5단(4px 배수 xs4~xl24)과 컨트롤 크기(ControlSize) 3단(sm·md·lg)을 분리한다. 컨트롤 크기가 바뀌어도 글자는 14 고정(controlFontSize 14/14/14). control 높이 md 34 · table 행 44.
   가로 여백은 **라벨과 값이 갈린다** — 버튼·탭은 `controlPaddingX` 10/13/17, 입력칸은
-  `inputPaddingX` 10/12/15(잉크 가로:세로 1.3). ⚠ **정사각은 높이를 안 올리는 한 불가능하다** —
-  34 에 14 짜리 글자면 세로 잉크가 10 이라, 사방 14 로 맞추려면 높이가 42 고 버튼과 8 이 어긋난다.
-  ⚠ 정사각이 뜻을 갖는 건 사방이 다 보이는 **Textarea 뿐**이고, 거기선 `textareaPaddingY`
-  6.5/8.5/11.5 = 가로 − 반 줄 3.5. 반대로 세로에서 가로를 유도했다가 물렸다(가로가 9 로 좁아져
-  답답했다 — 여러 줄은 줄마다 오른쪽 벽에 닿아 더 심하다)
+  `inputPaddingX` 7/9/12. Field·Select·Textarea의 보이는 잉크가 사방 같은 거리다. md는 세로
+  `(34 − 14) / 2 = 10`, 가로 `border 1 + padding 9 = 10`이다. Textarea의 `textareaPaddingY`는
+  3.5/5.5/8.5 = 가로 − 반 줄 3.5
   (= (height − 테두리 2 − 줄상자 21) / 2). 분모는 글자 크기가 아니라 **줄상자**다 — 브라우저가
   세로 가운데 두는 게 줄상자라, 이 산식이라야 Textarea 첫 줄이 Field 와 같은 자리에 앉는다.
   Badge 는 컨트롤이 아니라 자기 축 `badgePaddingX` 6/8/10 을 쓴다(높이 20/22/24 와 같은 Δ2).
