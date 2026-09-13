@@ -255,6 +255,7 @@ export const Playground = () => {
           <Spec label="Select">
             <Box style={{ width: "12rem" }}>
               <Select data-testid="select" options={[
+                { value: "", label: "선택하세요" },
                 { value: "a", label: "옵션 A" },
                 { value: "b", label: "옵션 B" },
               ]} />
