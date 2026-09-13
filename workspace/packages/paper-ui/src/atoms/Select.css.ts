@@ -28,7 +28,8 @@ export const selectRoot = style({
   appearance: "none",
   // 드롭다운 화살표는 background-image data-URI 라 currentColor 를 못 물려받는다(배경
   // SVG 의 알려진 한계). 그래서 stroke 색을 ink.soft 로 박되, 다크에선 아래 selector 로
-  // 다크 ink.soft 색 이미지로 통째 교체한다(테마마다 한 장씩).
+  // 다크 ink.soft 색 이미지로 통째 교체한다(테마마다 한 장씩). 빈 value option 이 선택된
+  // 동안에는 글자와 같이 ink.faint 로 낮춘다.
   backgroundImage:
     "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%2371717a' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E\")",
   backgroundRepeat: "no-repeat",
@@ -36,6 +37,14 @@ export const selectRoot = style({
   backgroundSize: tokens.shape.atom.selectArrow,
   transition: stateTransition("border-color", "box-shadow", "background-color"),
   selectors: {
+    // native select 에는 placeholder 속성이 없으므로, value="" option 이 선택된 상태가
+    // 곧 placeholder 상태다. :has()로 option의 실제 선택 상태를 읽어 controlled·uncontrolled
+    // 양쪽에서 별도 상태 관리 없이 같은 색을 쓴다.
+    "&:has(option[value=\"\"]:checked)": {
+      color: tokens.color.ink.faint,
+      backgroundImage:
+        "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%23a1a1aa' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E\")",
+    },
     "&:hover:not(:focus)": { borderColor: tokens.color.primary.base },
     // 포커스 — 보더 *바깥* 에 파란 링(outline). 전역/Checkbox 와 같은 방식.
     "&:focus": {
@@ -47,6 +56,10 @@ export const selectRoot = style({
     ':where([data-theme="dark"]) &': {
       backgroundImage:
         "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%23a1a1aa' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E\")",
+    },
+    ':where([data-theme="dark"]) &:has(option[value=""]:checked)': {
+      backgroundImage:
+        "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%238b8b92' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E\")",
     },
   },
 });
