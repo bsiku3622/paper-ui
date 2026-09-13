@@ -119,18 +119,28 @@ test("focus · Field 포커스 시 보더 바깥 파란 링(outline)", async ({ 
   await expect(wrap).toHaveCSS("outline-offset", "2px");
 });
 
-// 쉬는 선은 화면의 hairline과 한 벌로 두고, hover에서만 한 단 또렷해진다.
-// semantic 상태도 solid/ink를 빌려 소리치지 않고 edge → edgeStrong으로 같은 동작을 한다.
-test("field · hover에서만 neutral·semantic 테두리가 또렷해진다", async ({ page }) => {
+// neutral Form은 쉬는 동안 hairline과 한 벌이고 hover에서 primary solid 선으로 올라간다.
+// semantic Form은 처음부터 accent solid 선이며 hover에서는 선 대신 같은 pigment가 번진다.
+test("form · neutral은 solid hover, semantic은 pigment shadow", async ({ page }) => {
   const neutral = page.getByTestId("field-default");
   await expect(neutral).toHaveCSS("border-color", hexToRgb("#e8e8ea"));
   await neutral.hover();
-  await expect(neutral).toHaveCSS("border-color", hexToRgb("#ccccd1"));
+  await expect(neutral).toHaveCSS("border-color", hexToRgb("#18181b"));
+  await expect(neutral).toHaveCSS("box-shadow", "none");
+
+  for (const testId of ["base-select", "base-textarea"]) {
+    const control = page.getByTestId(testId);
+    await control.hover();
+    await expect(control).toHaveCSS("border-color", hexToRgb("#18181b"));
+    await expect(control).toHaveCSS("box-shadow", "none");
+  }
 
   const error = page.getByTestId("field-invalid");
-  await expect(error).toHaveCSS("border-color", hexToRgb("#f4d8d8"));
+  await expect(error).toHaveCSS("border-color", hexToRgb("#dc2626"));
+  await expect(error).toHaveCSS("box-shadow", "none");
   await error.hover();
-  await expect(error).toHaveCSS("border-color", hexToRgb("#ed6969"));
+  await expect(error).toHaveCSS("border-color", hexToRgb("#dc2626"));
+  await expect(error).toHaveCSS("box-shadow", /12px/);
 });
 
 // ── Badge status → 색 (info·success·warning·danger) ─────────────────────────

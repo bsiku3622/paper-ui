@@ -102,8 +102,9 @@ edgeStrong 5 자리. **solid 버튼은 모노크로매틱** — 채움(solid)과
 ⚠ **화면의 회색 선은 한 벌이다.** 카드 헤어라인 · 구획 · 빈 입력칸 · 꺼진 체크박스 ·
 hairline 버튼이 전부 `border.base`를 쓴다. 컨트롤 전용 회색을 따로 뒀다가
 물렸다 — 카드는 안 보이는데 그 위 검색창만 진하면 한 화면에 회색이 두 벌이 된다. 컨트롤을
-가리킨 순간에만 `border.strong`(raised 대비 1.60)으로 올라가며, 정적인 화면의 한 벌 원칙은
-그대로 남는다. semantic Field도 쉬는 상태는 accent `edge`, hover만 `edgeStrong`이다.
+가리킨 순간에는 neutral Form만 `primary.base` solid 선으로 올라가며, 정적인 화면의 한 벌 원칙은
+그대로 남는다. semantic Form은 쉬는 상태부터 accent `solid` 선을 쓰고, hover에서는 같은
+pigment가 중앙 shadow로 번진다. `solid / solid / semantic Form only`가 최종 규칙이다.
 accent 는 다르다 — `edge`(wash 괘선)와 `edgeStrong`(outline 테두리)이 갈리는데, 색 있는 선은
 라벨 색과 맞아야 해서다. 톤은 램프 인덱스가 아니라 **대비**로 고른다(hue 마다 고유 명도가
 달라 400 톤으로 맞추면 초록·amber 가 옅다).
@@ -137,12 +138,14 @@ accent 는 다르다 — `edge`(wash 괘선)와 `edgeStrong`(outline 테두리)�
   갈리지 않아 두 가지와 나란한 셋째 가지다.
 - **회색은 받친다** — 카드는 흰 면 + 얇은 헤어라인으로 선다. 회색(`sunken`·`well`)은 그 아래
   well(table head · marker)에만 온다 — 회색 위에 회색을 얹지 않는다. 구획은 여백과 헤어라인으로.
-- **shadow 는 2 단 토큰(elevation 축 아님)** — 떠 있는 것만 그림자를 갖는다. `overlay`
+- **shadow 는 2 단 토큰(elevation 축 아님)** — 떠 있는 것만 지속 그림자를 갖는다. `overlay`
   (Modal·Tooltip·Popover) · `overlayMinimal`(Switch 손잡이 등). 붙어있는 면(Button·Field·
   Card·Table)은 그림자 없음(prop 을 안 준다). 다크에선 near-black 이 사라지므로 더 짙은 그림자로
   교체(테마 인식). `raised` 는 이제 surface color 지 그림자가 아니다(옛 elevation.raised 충돌 해소).
-  radius 는 독립 — 면 크기가 정한다(작은 Tooltip 6, 큰 Modal 12).
-- **hover 는 조용히** — 면은 interaction 오버레이로 한 단 움직이고, 입력류는 면을 흔들지 않고 `border.strong`으로 올라간다.
+  radius 는 독립 — 면 크기가 정한다(작은 Tooltip 6, 큰 Modal 12). semantic Form hover의 중앙
+  pigment shadow는 elevation이 아니라 상태를 잃지 않고 hover를 보이는 일시적 예외다.
+- **hover 는 조용히** — 면은 interaction 오버레이로 한 단 움직인다. neutral Form은 면을 흔들지
+  않고 `primary.base` solid 선으로 올라가고, semantic Form만 같은 accent의 중앙 shadow를 더한다.
 - **밀도** — 간격(Space) 5단(4px 배수 xs4~xl24)과 컨트롤 크기(ControlSize) 3단(sm·md·lg)을 분리한다. 컨트롤 크기가 바뀌어도 글자는 14 고정(controlFontSize 14/14/14). control 높이 md 34 · table 행 44.
   가로 여백은 **라벨과 값이 갈린다** — 버튼·탭은 `controlPaddingX` 10/13/17, 입력칸은
   `inputPaddingX` 7/9/12. Field·Select·Textarea의 보이는 잉크가 사방 같은 거리다. md는 세로

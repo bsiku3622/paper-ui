@@ -325,8 +325,9 @@ export const SHAPE_MEASURE = {
 
 // ───── shadow — 떠 있는 것의 표식 (2단, 축 아님) ────────────────────────────
 //
-// 원칙 4: "떠 있는 것만 그림자를 갖는다". 붙어있는 면(Button·Field·Card·Table)은
-// 그림자 없음 — 그냥 prop 을 안 준다. radius·size 와 나란한 shape 토큰일 뿐,
+// 원칙 4: "떠 있는 것만 지속 그림자를 갖는다". 붙어있는 면(Button·Field·Card·Table)은
+// resting 그림자 없음 — semantic Form hover의 일시적 pigment 피드백만 아래 helper로 예외다.
+// radius·size 와 나란한 shape 토큰일 뿐,
 // "elevation" 같은 추상 축이 아니다 (그 이름은 surface 의 'raised' 와 충돌했다 —
 // 떠오른 흰 면(raised)은 그림자 없이 뜨는데 elevation.raised 는 그림자였다).
 //
@@ -351,6 +352,12 @@ export const SHADOW_DARK = {
   overlay: "0 8px 22px -5px rgba(0, 0, 0, 0.62), 0 3px 7px -2px rgba(0, 0, 0, 0.5)",
   overlayMinimal: "0 1px 2px 0 rgba(0, 0, 0, 0.45)",
 } as const;
+
+// semantic Form의 hover는 elevation이 아니라 상태 pigment가 잠깐 번지는 피드백이다.
+// 색은 status마다 달라 CSS var 하나로 고정할 수 없으므로, geometry와 농도를 이 helper에
+// 모으고 소비처는 accent.solid만 건넨다. 아래로 떨어뜨리지 않은 0/0 offset이 핵심이다.
+export const semanticFormHoverShadow = (pigment: string): string =>
+  `0 0 ${REM(12)} color-mix(in srgb, ${pigment} 22%, transparent)`;
 
 // z 층 tier 는 shape 가 아니라 layout 책임 — tokens/layout.ts 로 옮겼다.
 

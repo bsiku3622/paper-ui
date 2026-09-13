@@ -60,7 +60,7 @@ export const INK = {
 
 export const BORDER = {
   base: "#e8e8ea", // 쉬는 경계 — 카드 헤어라인 · 구획 · 입력칸 · 체크박스 · outline
-  strong: "#ccccd1", // 한 단 또렷하게 — table head 밑 · 컨트롤 hover (raised 위 1.60:1)
+  strong: "#ccccd1", // 중간 회색 선 — table head 밑 · Checkbox/Radio 외곽 (raised 위 1.60:1)
 } as const;
 
 // ───── accent — 작게 얹는 점 ────────────────────────────────────────────────

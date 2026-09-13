@@ -1,6 +1,6 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
-import { tokens, STATUS, STATUS_ACCENT, stateTransition } from "../tokens";
+import { tokens, STATUS, STATUS_ACCENT, semanticFormHoverShadow, stateTransition } from "../tokens";
 import type { StatusName } from "../tokens";
 import { ladderRules } from "../internal/sizeLadder";
 
@@ -32,9 +32,9 @@ export const fieldWrap = style({
   cursor: "text",
   transition: stateTransition("border-color", "box-shadow", "background"),
   selectors: {
-    // hover 는 배경을 흔들지 않고 테두리만 한 단 또렷하게 (흰 면 유지)
+    // neutral hover는 배경을 흔들지 않고 primary solid 선으로 형태를 확실히 세운다.
     '&[data-pui-status="default"]:hover:not(:focus-within):has(input:enabled)': {
-      borderColor: tokens.color.border.strong,
+      borderColor: tokens.color.primary.base,
     },
     // 포커스 — 안쪽 input 이 포커스되면 래퍼 *바깥* 에 파란 링(outline). 전역 :focus-visible·
     // Checkbox·Switch 와 같은 outside-the-border 방식 — 보더 위가 아니라 보더 밖에 뜬다.
@@ -75,8 +75,9 @@ export const fieldSize = styleVariants(
   ladderRules((s) => ({ paddingInline: tokens.shape.inputPaddingX[s] })),
 );
 
-// status — 래퍼 테두리 색. 포커스 링은 이제 바깥 outline 이라 status 테두리와 겹치지 않고
-// 공존한다 (빨간 error 테두리 + 그 밖의 파란 포커스 링).
+// status — semantic Form은 처음부터 solid 선으로 상태를 분명히 보이고, hover에서는 선을 더
+// 바꾸는 대신 같은 pigment를 중앙 halo로 번지게 한다. 포커스 때는 shadow를 끄고 바깥의
+// 파란 outline만 남겨 keyboard focus와 pointer hover가 겹치지 않게 한다.
 export const fieldStatus = styleVariants(
   Object.fromEntries(
     STATUS.map((s) => {
@@ -84,19 +85,16 @@ export const fieldStatus = styleVariants(
       return [
         s,
         {
-          // 쉬는 상태는 wash 와 한 벌인 옅은 선. 의미는 보이되 입력보다 먼저 소리치지 않는다.
-          borderColor: accent.edge,
+          borderColor: accent.solid,
           selectors: {
-            // hover 에서만 독립적으로 형태를 만들 수 있는 strong edge 로 올라간다.
-            // Field wrapper 와 Textarea 양쪽에서 쓰므로 disabled·focus 조건을 둘 다 막는다.
             "&:hover:not(:focus):not(:focus-within):not(:disabled):not(:has(input:disabled))": {
-              borderColor: accent.edgeStrong,
+              boxShadow: semanticFormHoverShadow(accent.solid),
             },
           },
         },
       ];
     }),
-  ) as unknown as Record<StatusName, { borderColor: string; selectors: Record<string, { borderColor: string }> }>,
+  ) as unknown as Record<StatusName, { borderColor: string; selectors: Record<string, { boxShadow: string }> }>,
 );
 
 // 어도먼트 — leading/trailing 슬롯(아이콘·$·단위). 흐린 잉크, 축소 안 됨.
