@@ -32,7 +32,7 @@ export const tokens = {
 export { COLOR_VALUES, ACCENT_NAMES, STATUS, STATUS_ACCENT } from "./colors";
 export type { AccentName, StatusName } from "./colors";
 
-export { SHAPE_VALUES, SPACE_KEYS, CONTROL_SIZES, CONTROL_FONT_SIZE } from "./shape";
+export { SHAPE_VALUES, SPACE_KEYS, CONTROL_SIZES, CONTROL_FONT_SIZE, semanticFormHoverShadow } from "./shape";
 export type { Space, ControlSize } from "./shape";
 
 export { TEXT_VALUES, TEXT_VARIANTS, TEXT_SPEC, TEXT_INK, WEIGHT } from "./text";

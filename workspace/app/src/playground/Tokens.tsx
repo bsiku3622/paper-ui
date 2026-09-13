@@ -99,7 +99,7 @@ export const Tokens = () => {
 
       <Stack gap="xl">
         {/* ── Color · 흰과 검정 ─────────────────────────────── */}
-        <Section id="tok-neutral" title="Color · surface (면 깊이) · ink · border · primary" desc="surface 는 Box 의 깊이 축(색 아님) — raised(최명)·canvas(기준면)·sunken·well. 토큰은 color.paper.*. 다크는 YouTube·ChatGPT 결의 깊은 중립 base. ⚠ **다크 사다리는 라이트의 거울이다 — 순서가 반대다.** 각 테마에는 목표가 있고 raised 가 거기 가장 가깝다: 라이트는 WHITE|raised|canvas|sunken|well|GRAY, 다크는 BLACK|raised|canvas|sunken|well|GRAY. 그래서 **다크에서는 raised 가 최암, well 이 최명**이다. 간격은 canvas 를 축으로 라이트를 접은 값이라 쌍의 거리가 양 테마에서 거의 같다(canvas↔raised 1.019 vs 1.026). primary(검정 일꾼, 면 채우는 유일한 색)·ink(마크)·border·focus·scrim 은 잉크·경계·오버레이. ⚠ **화면의 회색 선은 한 벌이다** — 카드 헤어라인·구획·빈 입력칸·꺼진 체크박스·outline 버튼이 전부 border.base 를 쓰고 hover 만 strong 으로 간다. 컨트롤 전용 회색을 따로 뒀다가 물렸는데, 카드는 거의 안 보이는데 그 위 검색창만 진하니 한 화면에 회색이 두 벌로 읽혔다. 컨트롤을 또렷하게 하려면 컨트롤만이 아니라 이 표를 올린다. 강도는 아직 미정이라 ?lab=edge 로 사이트를 돌아다니며 고르는 중이다. 값은 현재 테마로 표시된다.">
+        <Section id="tok-neutral" title="Color · surface (면 깊이) · ink · border · primary" desc="surface 는 Box 의 깊이 축(색 아님) — raised(최명)·canvas(기준면)·sunken·well. 토큰은 color.paper.*. 다크는 YouTube·ChatGPT 결의 깊은 중립 base. ⚠ **다크 사다리는 라이트의 거울이다 — 순서가 반대다.** 각 테마에는 목표가 있고 raised 가 거기 가장 가깝다: 라이트는 WHITE|raised|canvas|sunken|well|GRAY, 다크는 BLACK|raised|canvas|sunken|well|GRAY. 그래서 **다크에서는 raised 가 최암, well 이 최명**이다. 간격은 canvas 를 축으로 라이트를 접은 값이라 쌍의 거리가 양 테마에서 거의 같다(canvas↔raised 1.019 vs 1.026). primary(검정 일꾼, 면 채우는 유일한 색)·ink(마크)·border·focus·scrim 은 잉크·경계·오버레이. ⚠ **화면의 회색 선은 한 벌이다** — 카드 헤어라인·구획·빈 입력칸·꺼진 체크박스·hairline 버튼이 모두 border.base 를 쓴다. 컨트롤 전용 회색을 따로 뒀다가 물렸는데, 카드는 거의 안 보이는데 그 위 검색창만 진하니 한 화면에 회색이 두 벌로 읽혔다. 쉬는 neutral Form은 base를 유지하고 hover에서 primary solid 선으로 올라간다. semantic Form은 처음부터 accent solid 선을 쓰고, hover에서 같은 pigment가 중앙 shadow로 번진다. 값은 현재 테마로 표시된다.">
           <Inline gap="lg" wrap>
             {PAPERS.map((s) => <Swatch key={`p-${s}`} name={`surface.${s}`} token={tokens.color.paper[s]} />)}
             {INKS.map((s) => <Swatch key={`i-${s}`} name={`ink.${s}`} token={tokens.color.ink[s]} />)}
@@ -246,7 +246,7 @@ export const Tokens = () => {
 
 
         {/* ── Shadow ─────────────────────────────────────────── */}
-        <Section id="tok-shadow" title="Shadow (2단 — 떠 있는 것의 표식)" desc="원칙 4: 떠 있는 것만 그림자를 갖는다. 붙은 면(Button·Field·Card·Table)은 그림자 없음(prop 생략). overlay=자유롭게 뜬 것 · overlayMinimal=아주 살짝. radius 와 나란한 shape 토큰일 뿐 별도 'elevation' 축 아님. 다크에선 near-black 이 사라지므로 더 짙은 그림자로 교체(테마 인식) — 다크 토글로 확인.">
+        <Section id="tok-shadow" title="Shadow (2단 — 떠 있는 것의 표식)" desc="원칙 4: 떠 있는 것만 지속 그림자를 갖는다. 붙은 면(Button·Field·Card·Table)은 resting shadow가 없다. 예외는 semantic Form hover의 중앙 pigment halo뿐이며 elevation이 아니라 interaction 피드백이다. overlay=자유롭게 뜬 것 · overlayMinimal=아주 살짝. radius 와 나란한 shape 토큰일 뿐 별도 'elevation' 축 아님. 다크에선 near-black 이 사라지므로 더 짙은 그림자로 교체(테마 인식) — 다크 토글로 확인.">
           <Inline gap="xl" wrap>
             {[
               { name: "overlay", desc: "Modal · Tooltip · Popover · 목업", token: tokens.shape.shadow.overlay },

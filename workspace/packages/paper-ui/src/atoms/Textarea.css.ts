@@ -33,7 +33,7 @@ export const textareaRoot = style({
   selectors: {
     "&::placeholder": { color: tokens.color.ink.faint },
     '&[data-pui-status="default"]:hover:not(:focus):not(:disabled)': {
-      borderColor: tokens.color.border.strong,
+      borderColor: tokens.color.primary.base,
     },
     // 포커스 — 보더 *바깥* 에 파란 링(outline). 전역/Checkbox 와 같은 방식.
     "&:focus": {
