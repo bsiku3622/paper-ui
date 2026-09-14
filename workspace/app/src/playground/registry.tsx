@@ -29,7 +29,6 @@ import {
   EmptyState,
   PageHeader,
   Pagination,
-  SearchField,
   Select,
   Stack,
   Steps,
@@ -37,7 +36,6 @@ import {
   TableOfContents,
   Tabs,
   Text,
-  TextField,
   Textarea,
   Switch,
   Radio,
@@ -473,71 +471,32 @@ export const COMPONENTS: CompSpec[] = [
 
   // ─ Molecules ─
   {
-    slug: "textfield",
-    name: "TextField",
-    group: "Molecules",
-    blurb: "Label + Field + 도움말 한 묶음. id 연결을 대신한다.",
-    controls: [
-      { kind: "text", prop: "label", label: "label", def: "이름" },
-      { kind: "text", prop: "placeholder", label: "placeholder", def: "입력" },
-      { kind: "text", prop: "hint", label: "hint", def: "공백 없이" },
-      { kind: "text", prop: "error", label: "error", def: "" },
-      { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
-      { kind: "enum", prop: "status", label: "status", options: ["default", "info", "success", "warning", "error"], def: "default" },
-      { kind: "bool", prop: "numeric", label: "numeric", def: false },
-      { kind: "bool", prop: "disabled", label: "disabled", def: false },
-    ],
-    render: (st) => (
-      <Box style={{ width: "18rem" }}>
-        <TextField label={s(st.label)} placeholder={s(st.placeholder)} hint={s(st.hint) || undefined} error={s(st.error) || undefined} size={s(st.size) as "sm" | "md" | "lg"} status={s(st.status) as "default" | StatusName} numeric={b(st.numeric)} disabled={b(st.disabled)} />
-      </Box>
-    ),
-    code: (st) =>
-      `<TextField${A("label", s(st.label))}${A("placeholder", s(st.placeholder))}${A("hint", s(st.hint))}${A("error", s(st.error))}${AE("size", s(st.size), "md")}${AE("status", s(st.status), "default")}${A("numeric", b(st.numeric))}${A("disabled", b(st.disabled))} />`,
-  },
-  {
     slug: "formfield",
-    change: "new",
+    change: "mod",
     name: "FormField",
     group: "Molecules",
-    blurb: "Select·Textarea처럼 Field가 아닌 컨트롤까지 Label·설명·오류의 수직 리듬과 aria 연결로 감싼다. 색 상태는 컨트롤 Atom이 계속 소유한다.",
+    blurb: "Field·Select·Textarea를 Label·설명·오류의 한 구조로 감싸는 유일한 form composition이다. align은 묶음의 배치를, 각 control의 align은 입력값 정렬을 맡는다.",
     controls: [
+      { kind: "enum", prop: "control", label: "control", options: ["field", "select", "textarea"], def: "field" },
+      { kind: "enum", prop: "align", label: "align", options: ["start", "center", "end", "stretch"], def: "stretch" },
       { kind: "text", prop: "label", label: "label", def: "우선순위" },
       { kind: "text", prop: "hint", label: "hint", def: "저장 후에도 변경할 수 있습니다." },
       { kind: "text", prop: "error", label: "error", def: "" },
     ],
     render: (st) => (
       <Box style={{ width: "18rem" }}>
-        <FormField>
+        <FormField align={s(st.align) as "start" | "center" | "end" | "stretch"}>
           <FormField.Label>{s(st.label)}</FormField.Label>
-          <FormField.Control><Select><Select.Option value="">선택하세요</Select.Option><Select.Option value="high">높음</Select.Option><Select.Option value="normal">보통</Select.Option></Select></FormField.Control>
+          <FormField.Control>
+            {s(st.control) === "select" ? <Select><Select.Option value="">선택하세요</Select.Option><Select.Option value="high">높음</Select.Option><Select.Option value="normal">보통</Select.Option></Select> : s(st.control) === "textarea" ? <Textarea status={s(st.error) ? "error" : "default"} placeholder="내용을 입력하세요" /> : <Field status={s(st.error) ? "error" : "default"} placeholder="입력하세요" />}
+          </FormField.Control>
           {s(st.hint) ? <FormField.Hint>{s(st.hint)}</FormField.Hint> : null}
           {s(st.error) ? <FormField.Error>{s(st.error)}</FormField.Error> : null}
         </FormField>
       </Box>
     ),
     code: (st) =>
-      `<FormField>\n  <FormField.Label>${s(st.label)}</FormField.Label>\n  <FormField.Control>\n    <Select>\n      <Select.Option value="">선택하세요</Select.Option>\n      <Select.Option value="high">높음</Select.Option>\n    </Select>\n  </FormField.Control>${s(st.error) ? `\n  <FormField.Error>${s(st.error)}</FormField.Error>` : s(st.hint) ? `\n  <FormField.Hint>${s(st.hint)}</FormField.Hint>` : ""}\n</FormField>`,
-  },
-  {
-    slug: "searchfield",
-    change: "new",
-    name: "SearchField",
-    group: "Molecules",
-    blurb: "돋보기·type=search·clearable을 Field의 같은 형태와 상태 규칙 안에서 묶는다. 검색창마다 아이콘 간격을 다시 조립하지 않는다.",
-    controls: [
-      { kind: "text", prop: "placeholder", label: "placeholder", def: "이슈 검색" },
-      { kind: "text", prop: "defaultValue", label: "defaultValue", def: "" },
-      { kind: "enum", prop: "shape", label: "shape", options: ["default", "pill"], def: "default" },
-      { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
-    ],
-    render: (st) => (
-      <Box style={{ width: "18rem" }}>
-        <SearchField placeholder={s(st.placeholder)} defaultValue={s(st.defaultValue)} shape={s(st.shape) as "default" | "pill"} size={s(st.size) as "sm" | "md" | "lg"} />
-      </Box>
-    ),
-    code: (st) =>
-      `<SearchField${A("placeholder", s(st.placeholder))}${A("defaultValue", s(st.defaultValue))}${AE("shape", s(st.shape), "default")}${AE("size", s(st.size), "md")} />`,
+      `<FormField${AE("align", s(st.align), "stretch")}>\n  <FormField.Label>${s(st.label)}</FormField.Label>\n  <FormField.Control>\n    ${s(st.control) === "select" ? `<Select>\n      <Select.Option value="">선택하세요</Select.Option>\n      <Select.Option value="high">높음</Select.Option>\n    </Select>` : s(st.control) === "textarea" ? `<Textarea${s(st.error) ? ' status="error"' : ""} placeholder="내용을 입력하세요" />` : `<Field${s(st.error) ? ' status="error"' : ""} placeholder="입력하세요" />`}\n  </FormField.Control>${s(st.error) ? `\n  <FormField.Error>${s(st.error)}</FormField.Error>` : s(st.hint) ? `\n  <FormField.Hint>${s(st.hint)}</FormField.Hint>` : ""}\n</FormField>`,
   },
   {
     slug: "card",

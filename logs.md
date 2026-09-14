@@ -1,3 +1,14 @@
+## 2026-09-14 — Collapse form composition into FormField
+
+- 변경 파일: FormField API, TextField·SearchField exports, Playground·Demo·docs·tests
+- 요약: 겹치던 TextField와 SearchField를 제거하고, Field·Select·Textarea가 하나의 FormField compound 문법을 쓰도록 통합했습니다.
+
+TextField는 `Field + Label + Hint/Error`를 prop으로 감싼 두 번째 문법이라 FormField와 책임이 겹쳤고, SearchField는 Field의 `type="search" + leading + clearable` 조합 외에 독립된 상태나 형태가 없었습니다. 두 컴포넌트를 public API와 구현에서 제거하고 기존 사용처를 각각 FormField composition과 Field recipe로 옮겼습니다. CommandMenu의 검색 input도 내부에서 Field anatomy를 직접 조합합니다.
+
+FormField에는 `align="start | center | end | stretch"`를 추가했습니다. 이 align은 Label·Control·메시지 묶음의 배치를 정하고, Field의 기존 align은 입력값 정렬을 계속 맡습니다. 기본 `stretch`는 control이 가용 폭을 채우는 기존 폼 동작을 보존합니다. Playground 상세에서는 control을 Field·Select·Textarea로 바꿔 끼우고 align 네 값을 비교할 수 있습니다.
+
+⚠ `TextField`, `TextFieldProps`, `SearchField`, `SearchFieldProps` export는 제거된 breaking API입니다. FormField는 임의 control을 받으므로 Error가 시각 pigment를 추측하지 않습니다. Error가 접근성 상태를 연결하고, Field·Textarea의 `status`는 해당 Atom이 명시적으로 소유하는 경계를 유지했습니다.
+
 ## 2026-09-14 — Unify component state prop naming
 
 - 변경 파일: selection·navigation components, Banner·Pagination, Playground·docs·tests

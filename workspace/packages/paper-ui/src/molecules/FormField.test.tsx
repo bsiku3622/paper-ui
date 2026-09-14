@@ -1,9 +1,8 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 
-import { Select } from "../atoms";
+import { Field, Select } from "../atoms";
 import { FormField } from "./FormField";
-import { SearchField } from "./SearchField";
 
 describe("FormField", () => {
   it("라벨·컨트롤·도움말을 한 접근성 관계로 잇는다", () => {
@@ -33,18 +32,17 @@ describe("FormField", () => {
     expect(select.getAttribute("aria-invalid")).toBe("true");
     expect(select.getAttribute("aria-describedby")).toBe(screen.getByText("하나를 골라주세요.").id);
   });
-});
 
-describe("SearchField", () => {
-  it("검색 type·돋보기·clear 동작을 Field 계약으로 묶는다", () => {
-    const onClear = vi.fn();
-    render(<SearchField defaultValue="token" onClear={onClear} />);
-    const input = screen.getByRole("searchbox", { name: "검색" });
-    expect(input.getAttribute("type")).toBe("search");
-    fireEvent.change(input, { target: { value: "" } });
-    // 값이 있을 때만 clear 버튼이 생기므로 새 값으로 다시 확인한다.
-    fireEvent.change(input, { target: { value: "tokens" } });
-    fireEvent.click(screen.getByRole("button", { name: "지우기" }));
-    expect(onClear).toHaveBeenCalledOnce();
+  it("Field도 같은 compound 구조로 감싸고 align을 Root에서 정한다", () => {
+    const { container } = render(
+      <FormField align="center">
+        <FormField.Label>이름</FormField.Label>
+        <FormField.Control><Field /></FormField.Control>
+        <FormField.Hint>실명을 입력하세요.</FormField.Hint>
+      </FormField>,
+    );
+
+    expect(screen.getByLabelText("이름")).toBeTruthy();
+    expect(container.firstElementChild?.className).toContain("stackAlign_center");
   });
 });

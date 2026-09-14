@@ -115,7 +115,7 @@ chroma 는 저명도에서 지각이 약해지므로 다크 쪽을 조금 올려
 
 그래서 `hairline`은 여러 개 깔려도 조용하고 — 폼의 보조 버튼처럼 수가 많은 자리가 여기입니다 — `outline`은 하나만 놓아야 말이 됩니다.
 
-한때 `outline` 하나뿐이었고 그게 지금의 `hairline`이었습니다. 헤어라인만으로는 "테두리가 곧 형태"인 변형이 지면에서 떨어지지 않아(1.19:1) 진한 쪽을 새로 열고 이름을 옮겼습니다. 그렇다고 지면의 선 자체를 올리지는 않았는데, 그러면 카드는 안 보이는데 그 위 컨트롤만 진해져 한 화면에 회색이 두 벌이 됩니다 — 어느 쪽을 쓸지는 **variant로 고릅니다.** 이건 면(surface)과 **다른 종류**라 Box 는 `color` 를 안 받습니다. `status`(validation)는 Field·TextField·Textarea 만 받고, 이름은 accent 와 같습니다(`danger` 폐기 → `error`).
+한때 `outline` 하나뿐이었고 그게 지금의 `hairline`이었습니다. 헤어라인만으로는 "테두리가 곧 형태"인 변형이 지면에서 떨어지지 않아(1.19:1) 진한 쪽을 새로 열고 이름을 옮겼습니다. 그렇다고 지면의 선 자체를 올리지는 않았는데, 그러면 카드는 안 보이는데 그 위 컨트롤만 진해져 한 화면에 회색이 두 벌이 됩니다 — 어느 쪽을 쓸지는 **variant로 고릅니다.** 이건 면(surface)과 **다른 종류**라 Box 는 `color` 를 안 받습니다. `status`(validation)는 Field·Textarea가 받고, 이름은 accent와 같습니다(`danger` 폐기 → `error`).
 
 **primary / focus / interaction.** `primary`는 검정 일꾼(`base` `#18181b` · `hover` `#3f3f46` · `fg` `#ffffff`, 다크선 흰 채움으로 반전). 검정 면은 hover 때 *밝아진다* — 이미 검정에 가까워 더 어둡게는 눈에 안 보이기 때문(원칙 3의 예외). `focus.ring`은 파란 링 `#2563eb`(= `accent.info.solid`, 한 곳에서 굳힘). hover·selected·active 는 solid 회색이 아니라 **interaction 오버레이**(ink 계열 alpha — 어느 면 위든 밑을 그대로 어둡게, 다크는 흰빛 alpha)로 얹고, `scrim`(모달 뒤)도 테마 인식입니다.
 

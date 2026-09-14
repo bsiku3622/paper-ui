@@ -32,7 +32,10 @@ Modal 본문은 `Modal.Body` 안에 [폼 한 벌](/docs/recipes/form)의 조각�
 
 ```tsx
 <Modal.Body><Stack gap="lg">
-  <TextField label="제목" placeholder="무엇을 해야 하나요" />
+  <FormField>
+    <FormField.Label>제목</FormField.Label>
+    <FormField.Control><Field placeholder="무엇을 해야 하나요" /></FormField.Control>
+  </FormField>
   <Inline gap="md" align="start">
     <Box style={{ flex: 1 }}><FormField>
       <FormField.Label>상태</FormField.Label>

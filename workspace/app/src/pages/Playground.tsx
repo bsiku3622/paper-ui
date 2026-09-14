@@ -34,7 +34,6 @@ import {
   Radio,
   RadioGroup,
   Select,
-  SearchField,
   Spinner,
   Stack,
   Sidebar,
@@ -45,7 +44,6 @@ import {
   Tabs,
   Text,
   Textarea,
-  TextField,
   Tooltip,
   TreeNavigation,
 } from "@studio-baeks/paper-ui";
@@ -72,6 +70,7 @@ const Spec = ({ label, testid, children }: { label: string; testid?: string; chi
 );
 
 const TEXT_VARIANTS = ["display", "title", "heading", "subheading", "body", "caption", "label"] as const;
+const searchIcon = <Icon size="sm" aria-hidden><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon>;
 // family=mono 표본 — 해당 variant 행 바로 밑에 같은 크기 mono 로 깔아 sans 와 비교시킨다.
 const MONO_DEMO: Partial<Record<(typeof TEXT_VARIANTS)[number], string>> = {
   title: "paper-ui",
@@ -111,7 +110,7 @@ export const Playground = () => {
         <Stack gap="xs">
           <Text variant="label">Studio Baeks · Design System</Text>
           <Text variant="title">Component Playground</Text>
-          <Text variant="caption">40 컴포넌트 · variant · state 전수. 이 페이지가 자동 테스트의 대상이다. 개별 컴포넌트는 사이드바에서 상세로.</Text>
+          <Text variant="caption">38 컴포넌트 · variant · state 전수. 이 페이지가 자동 테스트의 대상이다. 개별 컴포넌트는 사이드바에서 상세로.</Text>
         </Stack>
 
         {/* ── Tokens ─────────────────────────────────────────── */}
@@ -338,12 +337,20 @@ export const Playground = () => {
               <Button size="sm" data-testid="mark-button">버튼</Button>
             </Inline>
           </Spec>
-          <Spec label="TextField (Label + Field + hint/error)">
+          <Spec label="FormField + Field — label · hint · error">
             <Box style={{ width: "16rem" }}>
-              <TextField label="이름" placeholder="입력" hint="공백 없이" data-testid="textfield" />
+              <FormField>
+                <FormField.Label>이름</FormField.Label>
+                <FormField.Control><Field placeholder="입력" data-testid="formfield-field" /></FormField.Control>
+                <FormField.Hint>공백 없이</FormField.Hint>
+              </FormField>
             </Box>
             <Box style={{ width: "16rem" }}>
-              <TextField label="금액" numeric align="end" placeholder="0" error="숫자만 입력하세요" />
+              <FormField align="end">
+                <FormField.Label>금액</FormField.Label>
+                <FormField.Control><Field numeric align="end" status="error" placeholder="0" /></FormField.Control>
+                <FormField.Error>숫자만 입력하세요</FormField.Error>
+              </FormField>
             </Box>
           </Spec>
         </Section>
@@ -388,7 +395,7 @@ export const Playground = () => {
         </Section>
 
         {/* ── Molecules ─────────────────────────────────────── */}
-        <Section id="sec-mol" title="Card · FormField · SearchField · Tabs · Tooltip">
+        <Section id="sec-mol" title="Card · FormField · Tabs · Tooltip">
           <Spec label="Card — shared variant (solid · soft · plain · outline · hairline · quiet)" testid="spec-card-variant">
             {(["solid", "soft", "plain", "outline", "hairline", "quiet"] as const).map((variant) => (
               <Card key={variant} variant={variant} style={{ width: "14rem" }} data-testid={`card-${variant}`}>
@@ -439,9 +446,9 @@ export const Playground = () => {
               </FormField>
             </Box>
           </Spec>
-          <Spec label="SearchField — 돋보기 · search · clearable 조합">
+          <Spec label="검색 Field — type · leading · clearable 조합">
             <Box style={{ width: "16rem" }}>
-              <SearchField placeholder="이슈 검색" defaultValue="focus" />
+              <Field type="search" leading={searchIcon} clearable aria-label="검색" placeholder="이슈 검색" defaultValue="focus" />
             </Box>
           </Spec>
           <Spec label="Tooltip — trigger와 content가 드러나는 구조">

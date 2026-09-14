@@ -2,14 +2,14 @@
 
 import { Children, createContext, isValidElement, useContext, useId, useState, type ReactNode } from "react";
 
-import { Divider } from "../atoms";
-import { SearchField } from "../molecules";
+import { Divider, Field, Icon } from "../atoms";
 import { Box, Stack, Text, type BoxProps } from "../primitives";
 import { joinClass } from "../internal/joinClass";
 import { commandCopy, commandEmpty, commandGroup, commandGroupLabel, commandIcon, commandItem, commandList, commandRoot, commandSearch, commandShortcut } from "./CommandMenu.css";
 
 type CommandContextValue = { query: string; active?: string; setActive: (value: string) => void; choose: (value: string) => void };
 const CommandContext = createContext<CommandContextValue | null>(null);
+const searchIcon = <Icon size="sm" aria-hidden><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon>;
 const matches = (label: ReactNode, keywords: readonly string[] | undefined, query: string) => !query.trim() || [typeof label === "string" ? label : "", ...(keywords ?? [])].join(" ").toLocaleLowerCase().includes(query.trim().toLocaleLowerCase());
 
 export type CommandMenuProps = Omit<BoxProps<"div">, "children" | "onSelect"> & { query?: string; defaultQuery?: string; onQueryChange?: (query: string) => void; onSelect?: (value: string) => void; placeholder?: string; empty?: ReactNode; children: ReactNode };
@@ -18,7 +18,7 @@ const CommandMenuRoot = ({ query, defaultQuery = "", onQueryChange, onSelect, pl
   const options = () => Array.from(document.getElementById(id)?.querySelectorAll<HTMLElement>('[role="option"]:not([aria-disabled="true"])') ?? []);
   const move = (direction: 1 | -1 | "first" | "last") => { const rows = options(); if (!rows.length) return; const index = rows.findIndex((row) => row.dataset.commandValue === active); const next = direction === "first" ? 0 : direction === "last" ? rows.length - 1 : index < 0 ? 0 : (index + direction + rows.length) % rows.length; setActive(rows[next]?.dataset.commandValue); };
   return <CommandContext.Provider value={{ query: text, active, setActive, choose: (value) => onSelect?.(value) }}><Box id={id} surface="raised" border radius="md" className={joinClass(commandRoot, className)} {...rest}>
-    <Box className={commandSearch}><SearchField value={text} placeholder={placeholder} aria-label={placeholder} onChange={(event) => { if (!controlled) setInternalQuery(event.currentTarget.value); setActive(undefined); onQueryChange?.(event.currentTarget.value); }} onKeyDown={(event) => { if (event.key === "ArrowDown") { event.preventDefault(); move(1); } if (event.key === "ArrowUp") { event.preventDefault(); move(-1); } if (event.key === "Home") { event.preventDefault(); move("first"); } if (event.key === "End") { event.preventDefault(); move("last"); } if (event.key === "Enter") { event.preventDefault(); const row = options().find((item) => item.dataset.commandValue === active) ?? options()[0]; row?.click(); } }} /></Box>
+    <Box className={commandSearch}><Field type="search" leading={searchIcon} clearable value={text} placeholder={placeholder} aria-label={placeholder} onChange={(event) => { if (!controlled) setInternalQuery(event.currentTarget.value); setActive(undefined); onQueryChange?.(event.currentTarget.value); }} onKeyDown={(event) => { if (event.key === "ArrowDown") { event.preventDefault(); move(1); } if (event.key === "ArrowUp") { event.preventDefault(); move(-1); } if (event.key === "Home") { event.preventDefault(); move("first"); } if (event.key === "End") { event.preventDefault(); move("last"); } if (event.key === "Enter") { event.preventDefault(); const row = options().find((item) => item.dataset.commandValue === active) ?? options()[0]; row?.click(); } }} /></Box>
     <Divider /><Box role="listbox" aria-label="명령" className={commandList}>{children}<Text variant="caption" ink="soft" className={commandEmpty}>{empty}</Text></Box>
   </Box></CommandContext.Provider>;
 };
