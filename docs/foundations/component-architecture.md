@@ -45,7 +45,7 @@ Paper UI의 상위 레이어는 아래 일곱 축에서 필요한 것만 고릅�
 │ 제목 · 설명                              주 행동  │
 └────────────────────────────────────────────────────┘
 
-┌─ Tabs / SearchField / filters ─────────────────────┐
+┌─ Tabs / search Field / filters ────────────────────┐
 │ 범위                                             조건│
 └────────────────────────────────────────────────────┘
 
@@ -95,9 +95,7 @@ row               row               row
 | 컴포넌트 | 축 | 결정 |
 | --- | --- | --- |
 | Card | compound `Header · Body · Footer`, shared `color × variant` | 기본 `primary × hairline`, hover gate·shadow는 없음 |
-| TextField | Field의 `size · shape · status` | 별도 variant를 만들지 않음 |
-| FormField | compound `Label · Control · Hint · Error` | 접근성 관계만 소유. 시각 status는 control이 소유 |
-| SearchField | Field의 `size · shape · status` | 검색 전용 외형을 만들지 않음 |
+| FormField | compound `Label · Control · Hint · Error` + `align` | 모든 입력의 유일한 form composition. 시각 status와 입력값 정렬은 control이 소유 |
 | RadioGroup | compound `Item` + `orientation · size` | 세로 기본, 좁은 선택지는 가로 배치 가능 |
 | Tabs | compound `Item` + `variant · size · shape` | `segmented · underline`. underline에서는 shape가 의미 없음 |
 | Tooltip | compound `Trigger · Content`, placement 자동 결정 | 복합 내용을 허용하되 외형 variant는 없음 |

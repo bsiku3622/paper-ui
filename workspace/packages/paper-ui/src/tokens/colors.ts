@@ -187,7 +187,7 @@ export const SCRIM = "rgba(24, 25, 28, 0.32)";
 
 // ───── status — 의미 → 색 ───────────────────────────────────────────────────
 //
-// 4 종. **validation 축이다** — Field · TextField · Textarea 만 받는다. Button · Badge ·
+// 4 종. **validation 축이다** — Field · Textarea 만 받는다. Button · Badge ·
 // Alert 는 status 가 아니라 color × variant 로 색을 받는다(그쪽은 검증이 아니라 의미다).
 // boolean(invalid · error) 을 난립시키지 않고 이 하나의 축으로 말한다. info 도 색을
 // 갖는다 — 파랑을 포인트로 쓰기로 한 정체성의 귀결. 이름은 accent 와 항등이다.

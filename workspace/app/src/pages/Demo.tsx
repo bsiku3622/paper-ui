@@ -13,6 +13,7 @@ import {
   Button,
   Checkbox,
   EmptyState,
+  Field,
   FormField,
   Icon,
   Inline,
@@ -21,13 +22,11 @@ import {
   Navbar,
   PageHeader,
   Pagination,
-  SearchField,
   Select,
   Stack,
   Table,
   Tabs,
   Text,
-  TextField,
   Tooltip,
   tokens,
   type StatusName,
@@ -63,6 +62,8 @@ const STATE_STATUS: Record<State, StatusName | undefined> = {
   done: "success",
   blocked: "error",
 };
+
+const searchIcon = <Icon size="sm" aria-hidden><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon>;
 
 // avatar — 전용 컴포넌트 없이 Box 조합으로. 알약(radius=full) + well 면 + 이니셜.
 const Avatar = ({ name }: { name: string }) => (
@@ -135,7 +136,7 @@ export const Demo = () => {
         <Navbar.Actions>
           <Inline gap="sm">
             <Box style={{ width: "16rem" }}>
-              <SearchField placeholder="검색…" />
+              <Field type="search" leading={searchIcon} clearable aria-label="검색" placeholder="검색…" />
             </Box>
             <Tooltip>
               <Tooltip.Trigger asChild><Button onClick={() => setOpen(true)}>새 이슈</Button></Tooltip.Trigger>
@@ -198,7 +199,10 @@ export const Demo = () => {
           <Modal.Description>새 작업의 제목과 분류를 정합니다.</Modal.Description>
         </Modal.Header>
         <Modal.Body><Stack gap="lg">
-          <TextField label="제목" placeholder="무엇을 해야 하나요" />
+          <FormField>
+            <FormField.Label>제목</FormField.Label>
+            <FormField.Control><Field placeholder="무엇을 해야 하나요" /></FormField.Control>
+          </FormField>
           <Inline gap="md" align="start">
             <Box style={{ flex: 1 }}>
               <FormField>

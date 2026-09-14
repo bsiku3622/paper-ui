@@ -2,7 +2,7 @@
 
 import { Children, cloneElement, createContext, isValidElement, useContext, useId, type ReactElement, type ReactNode } from "react";
 
-import { Stack, Text } from "../primitives";
+import { Stack, Text, type StackProps } from "../primitives";
 import { Label } from "../atoms";
 
 type ControlProps = {
@@ -30,9 +30,10 @@ const joinIds = (...ids: Array<string | undefined>): string | undefined => {
   return joined || undefined;
 };
 
-export type FormFieldProps = { children: ReactNode; className?: string; id?: string };
+export type FormFieldAlign = NonNullable<StackProps["align"]>;
+export type FormFieldProps = { children: ReactNode; className?: string; id?: string; align?: FormFieldAlign };
 
-const FormFieldRoot = ({ children, className, id }: FormFieldProps) => {
+const FormFieldRoot = ({ children, className, id, align = "stretch" }: FormFieldProps) => {
   const uid = useId();
   const parts = Children.toArray(children);
   const hasError = parts.some(
@@ -42,7 +43,7 @@ const FormFieldRoot = ({ children, className, id }: FormFieldProps) => {
   const controlId = id ?? `${uid}-control`;
   return (
     <FormFieldContext.Provider value={{ controlId, noteId: `${controlId}-note`, hasError, hasNote }}>
-      <Stack gap="xs" className={className}>{children}</Stack>
+      <Stack gap="xs" align={align} className={className}>{children}</Stack>
     </FormFieldContext.Provider>
   );
 };
