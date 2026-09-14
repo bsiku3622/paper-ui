@@ -34,20 +34,20 @@ Modal 본문은 `Modal.Body` 안에 [폼 한 벌](/docs/recipes/form)의 조각�
 <Modal.Body><Stack gap="lg">
   <TextField label="제목" placeholder="무엇을 해야 하나요" />
   <Inline gap="md" align="start">
-    <Stack gap="xs" style={{ flex: 1 }}>
-      <Label htmlFor="state">상태</Label>
-      <Select id="state" options={[
-        { value: "todo", label: "할 일" },
-        { value: "doing", label: "진행" },
-      ]} />
-    </Stack>
-    <Stack gap="xs" style={{ flex: 1 }}>
-      <Label htmlFor="priority">우선순위</Label>
-      <Select id="priority" options={[
-        { value: "normal", label: "보통" },
-        { value: "high", label: "높음" },
-      ]} />
-    </Stack>
+    <Box style={{ flex: 1 }}><FormField>
+      <FormField.Label>상태</FormField.Label>
+      <FormField.Control><Select>
+        <Select.Option value="todo">할 일</Select.Option>
+        <Select.Option value="doing">진행</Select.Option>
+      </Select></FormField.Control>
+    </FormField></Box>
+    <Box style={{ flex: 1 }}><FormField>
+      <FormField.Label>우선순위</FormField.Label>
+      <FormField.Control><Select>
+        <Select.Option value="normal">보통</Select.Option>
+        <Select.Option value="high">높음</Select.Option>
+      </Select></FormField.Control>
+    </FormField></Box>
   </Inline>
 </Stack></Modal.Body>
 ```

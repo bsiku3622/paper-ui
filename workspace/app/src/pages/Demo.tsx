@@ -163,13 +163,12 @@ export const Demo = () => {
                 <Select
                   value={priority}
                   onChange={(e) => setPriority(e.currentTarget.value)}
-                  options={[
-                    { value: "all", label: "우선순위 전체" },
-                    { value: "높음", label: "높음" },
-                    { value: "보통", label: "보통" },
-                    { value: "낮음", label: "낮음" },
-                  ]}
-                />
+                >
+                  <Select.Option value="all">우선순위 전체</Select.Option>
+                  <Select.Option value="높음">높음</Select.Option>
+                  <Select.Option value="보통">보통</Select.Option>
+                  <Select.Option value="낮음">낮음</Select.Option>
+                </Select>
               </Box>
             </Inline>
           </Inline>
@@ -204,25 +203,21 @@ export const Demo = () => {
             <Box style={{ flex: 1 }}>
               <FormField>
                 <FormField.Label>상태</FormField.Label>
-                <FormField.Control><Select
-                  options={[
-                    { value: "todo", label: "할 일" },
-                    { value: "progress", label: "진행" },
-                    { value: "done", label: "완료" },
-                  ]}
-                /></FormField.Control>
+                <FormField.Control><Select>
+                  <Select.Option value="todo">할 일</Select.Option>
+                  <Select.Option value="progress">진행</Select.Option>
+                  <Select.Option value="done">완료</Select.Option>
+                </Select></FormField.Control>
               </FormField>
             </Box>
             <Box style={{ flex: 1 }}>
               <FormField>
                 <FormField.Label>우선순위</FormField.Label>
-                <FormField.Control><Select
-                  options={[
-                    { value: "보통", label: "보통" },
-                    { value: "높음", label: "높음" },
-                    { value: "낮음", label: "낮음" },
-                  ]}
-                /></FormField.Control>
+                <FormField.Control><Select>
+                  <Select.Option value="보통">보통</Select.Option>
+                  <Select.Option value="높음">높음</Select.Option>
+                  <Select.Option value="낮음">낮음</Select.Option>
+                </Select></FormField.Control>
               </FormField>
             </Box>
           </Inline>

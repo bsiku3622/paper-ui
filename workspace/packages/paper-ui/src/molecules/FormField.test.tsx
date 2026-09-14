@@ -10,7 +10,7 @@ describe("FormField", () => {
     render(
       <FormField>
         <FormField.Label>우선순위</FormField.Label>
-        <FormField.Control><Select options={[{ value: "", label: "선택하세요" }, { value: "high", label: "높음" }]} /></FormField.Control>
+        <FormField.Control><Select><Select.Option value="">선택하세요</Select.Option><Select.Option value="high">높음</Select.Option></Select></FormField.Control>
         <FormField.Hint>저장 후에도 변경할 수 있습니다.</FormField.Hint>
       </FormField>,
     );
@@ -24,7 +24,7 @@ describe("FormField", () => {
     render(
       <FormField>
         <FormField.Label>우선순위</FormField.Label>
-        <FormField.Control><Select options={[{ value: "", label: "선택하세요" }, { value: "high", label: "높음" }]} /></FormField.Control>
+        <FormField.Control><Select><Select.Option value="">선택하세요</Select.Option><Select.Option value="high">높음</Select.Option></Select></FormField.Control>
         <FormField.Error>하나를 골라주세요.</FormField.Error>
       </FormField>,
     );

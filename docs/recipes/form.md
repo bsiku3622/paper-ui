@@ -13,11 +13,11 @@
 
   <FormField>
     <FormField.Label>역할</FormField.Label>
-    <FormField.Control><Select options={[
-      { value: "dev", label: "개발" },
-      { value: "design", label: "디자인" },
-      { value: "pm", label: "기획" },
-    ]} /></FormField.Control>
+    <FormField.Control><Select>
+      <Select.Option value="dev">개발</Select.Option>
+      <Select.Option value="design">디자인</Select.Option>
+      <Select.Option value="pm">기획</Select.Option>
+    </Select></FormField.Control>
   </FormField>
 
   <Inline as="label" gap="sm" align="center">

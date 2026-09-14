@@ -275,22 +275,18 @@ export const Playground = () => {
           </Spec>
           <Spec label="Select">
             <Box style={{ width: "12rem" }}>
-              <Select data-testid="select" options={[
-                { value: "", label: "선택하세요" },
-                { value: "a", label: "옵션 A" },
-                { value: "b", label: "옵션 B" },
-              ]} />
+              <Select data-testid="select"><Select.Option value="">선택하세요</Select.Option><Select.Option value="a">옵션 A</Select.Option><Select.Option value="b">옵션 B</Select.Option></Select>
             </Box>
           </Spec>
           {/* size 정렬 — Field·Select·Button 이 같은 사다리라 나란히 두면 높이가 맞는다 */}
           <Spec label="size md — Field · Select · Button 같은 높이" testid="spec-size-md">
             <Box style={{ width: "10rem" }}><Field size="md" placeholder="Field" aria-label="field md" /></Box>
-            <Box style={{ width: "9rem" }}><Select size="md" options={[{ value: "a", label: "Select" }]} /></Box>
+            <Box style={{ width: "9rem" }}><Select size="md"><Select.Option value="a">Select</Select.Option></Select></Box>
             <Button size="md">Button</Button>
           </Spec>
           <Spec label="size lg — 셋이 함께 커진다" testid="spec-size-lg">
             <Box style={{ width: "10rem" }}><Field size="lg" placeholder="Field" aria-label="field lg" /></Box>
-            <Box style={{ width: "9rem" }}><Select size="lg" options={[{ value: "a", label: "Select" }]} /></Box>
+            <Box style={{ width: "9rem" }}><Select size="lg"><Select.Option value="a">Select</Select.Option></Select></Box>
             <Button size="lg">Button</Button>
           </Spec>
           {/* 공통 base — 넷이 같은 컨트롤 여백을 쓰는가. 높이가 아니라 *글자 시작점* 을 본다:
@@ -299,7 +295,7 @@ export const Playground = () => {
           <Spec label="base — 높이·글자는 공유, 가로는 라벨 13 · 값 9로 갈린다" testid="spec-control-base">
             <Button size="md" data-testid="base-button">Button</Button>
             <Box style={{ width: "9rem" }}><Field size="md" placeholder="Field" aria-label="field base" data-testid="base-field" /></Box>
-            <Box style={{ width: "9rem" }}><Select size="md" options={[{ value: "a", label: "Select" }]} data-testid="base-select" /></Box>
+            <Box style={{ width: "9rem" }}><Select size="md" data-testid="base-select"><Select.Option value="a">Select</Select.Option></Select></Box>
             <Box style={{ width: "12rem" }}><Textarea size="md" rows={2} placeholder="Textarea" aria-label="textarea base" data-testid="base-textarea" /></Box>
           </Spec>
           {/* 알약은 컨트롤 어휘 하나다 — Button·Field·Select 가 같은 곡선을 든다. 검색
@@ -312,7 +308,7 @@ export const Playground = () => {
                 leading={<Icon size="sm"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon>} />
             </Box>
             <Box style={{ width: "8rem" }}>
-              <Select shape="pill" options={[{ value: "a", label: "전체" }]} data-testid="select-pill" />
+              <Select shape="pill" data-testid="select-pill"><Select.Option value="a">전체</Select.Option></Select>
             </Box>
             <Button shape="pill" data-testid="button-pill-row">검색</Button>
           </Spec>
@@ -438,7 +434,7 @@ export const Playground = () => {
             <Box style={{ width: "16rem" }}>
               <FormField>
                 <FormField.Label>우선순위</FormField.Label>
-                <FormField.Control><Select options={[{ value: "", label: "선택하세요" }, { value: "high", label: "높음" }, { value: "normal", label: "보통" }]} /></FormField.Control>
+                <FormField.Control><Select><Select.Option value="">선택하세요</Select.Option><Select.Option value="high">높음</Select.Option><Select.Option value="normal">보통</Select.Option></Select></FormField.Control>
                 <FormField.Hint>저장 후에도 변경할 수 있습니다.</FormField.Hint>
               </FormField>
             </Box>
