@@ -1,4 +1,4 @@
-import { style, keyframes } from "@vanilla-extract/css";
+import { style, styleVariants, keyframes } from "@vanilla-extract/css";
 
 import { tokens } from "../tokens";
 
@@ -23,7 +23,6 @@ export const modalBackdrop = style({
 
 export const modalPanel = style({
   width: "100%",
-  maxWidth: tokens.shape.atom.modalWidth,
   animation: `${rise} ${enter.duration} ${enter.easing}`,
   // ⚠ **높이의 상한이 있어야 한다.** backdrop 은 position:fixed 이고 열려 있는 동안
   // body 스크롤도 잠근다 — 패널이 뷰포트보다 커지면 넘친 부분에 닿을 방법이 아예 없다.
@@ -42,8 +41,16 @@ export const modalPanel = style({
   },
 });
 
+export const modalSize = styleVariants({
+  sm: { maxWidth: tokens.shape.component.modalWidth.sm },
+  md: { maxWidth: tokens.shape.component.modalWidth.md },
+  lg: { maxWidth: tokens.shape.component.modalWidth.lg },
+});
+
 // 패널 안의 세로 축 — Stack 이 패널 높이를 그대로 받아야 본문이 남는 자리를 계산한다.
 export const modalStack = style({ flex: 1, minHeight: 0 });
+
+export const modalHeaderCopy = style({ flex: 1, minWidth: 0 });
 
 // 본문 — 넘치면 여기만 구른다. `minHeight: 0` 이 없으면 flex 자식의 기본 최소 높이가
 // 콘텐츠 크기라 스크롤이 안 생기고 패널이 그대로 밀린다.

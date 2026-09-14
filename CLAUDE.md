@@ -77,8 +77,8 @@ chroma 만 저명도 보정으로 다크에서 올린다(라이트 면 `C .001~.
 | `warning` | `#b45309` | `#c58300` | 주의 |
 | `error` | `#dc2626` | `#df6768` | 위험 |
 
-accent 는 hue 이름(blue 등)이 **API 에 없다** — 전부 의미색. 각 accent 는 solid·ink·wash·edge·
-edgeStrong 5 자리. **solid 버튼은 모노크로매틱** — 채움(solid)과 그 위 글자(wash)가 같은 hue라 버튼 전체가
+accent 는 hue 이름(blue 등)이 **API 에 없다** — 전부 의미색. 각 accent 는 solid·ink·wash·soft·softInk·edge·
+edgeStrong 7 자리. `soft`는 OKLCH에서 accent hue를 고정하고 L은 wash→primary soft, C는 wash→edge의 1:3 지점이다. **solid 버튼은 모노크로매틱** — 채움(solid)과 그 위 글자(wash)가 같은 hue라 버튼 전체가
 한 색으로 통일된다(흰색 아님). 별도 solidFg는 wash와 끝점이 겹쳐 제거했다.
 ⚠ **채움은 테마마다 방향이 반대다** — 라이트는 진한 면 + 옅은 글자(L .53~.58 / .92~.94), 다크는 **옅은
 면 + 진한 글자**(L .660 / .215). 라이트를 canvas 축으로 접은 값이고, primary 가 이미 그렇게 한다. 다크
@@ -87,7 +87,7 @@ edgeStrong 5 자리. **solid 버튼은 모노크로매틱** — 채움(solid)과
 ⚠ 라이트 accent 는 **Veil**이다. solid·ink·edgeStrong의 명료함은 유지하고, 넓게 닿는 wash와
 쉬는 edge만 paper neutral에 45% 섞어 옅은 색의 시트러스한 채도를 줄인다.
 
-**`variant` 축 = 면의 무게:** `solid`(채움) · `soft`(옅은 면) · `outline`(또렷한 테두리) ·
+**공유 `variant` 축 = 면의 무게:** `solid`(채움) · `soft`(옅은 면) · `plain`(옅은 면 + 또렷한 테두리) · `outline`(또렷한 테두리) ·
 `hairline`(헤어라인) · `quiet`(글자만). ⚠ **테두리만 있는 자리가 둘이고, 세기가 아니라 *어느 선이냐*
 로 갈린다** — `outline` 은 color family 가 소유한 선(`primary.edgeStrong` · accent `edgeStrong`,
 지면 대비 3:1)이고 `hairline` 은 지면이 소유한 선(뉴트럴은 `border.base`, accent 는 그 색의 `edge`).
@@ -136,8 +136,9 @@ accent 는 다르다 — `edge`(wash 괘선)와 `edgeStrong`(outline 테두리)�
   알약은 "높이의 절반" 이라 한 줄짜리에서만 성립하고, 여러 줄 상자에선 경기장이 된다. 사다리를 한 단 조인 건 큰 곡선이 밀도와
   싸우기 때문 — 모서리가 물러날수록 면과 헤어라인이 앞으로 나온다. `full` 은 intent 로
   갈리지 않아 두 가지와 나란한 셋째 가지다.
-- **회색은 받친다** — 카드는 흰 면 + 얇은 헤어라인으로 선다. 회색(`sunken`·`well`)은 그 아래
-  well(table head · marker)에만 온다 — 회색 위에 회색을 얹지 않는다. 구획은 여백과 헤어라인으로.
+- **회색은 받친다** — Card의 기본은 shared `primary × hairline`이고, 강조가 필요할 때도
+  별도 Card variant를 만들지 않고 shared `color × variant` 안에서 고릅니다. `well`은 table head·marker·segmented track처럼
+  구조를 받치는 더 깊은 면입니다. 같은 깊이의 회색 위에 같은 회색을 겹치지 않습니다.
 - **shadow 는 2 단 토큰(elevation 축 아님)** — 떠 있는 것만 지속 그림자를 갖는다. `overlay`
   (Modal·Tooltip·Popover) · `overlayMinimal`(Switch 손잡이 등). 붙어있는 면(Button·Field·
   Card·Table)은 그림자 없음(prop 을 안 준다). 다크에선 near-black 이 사라지므로 더 짙은 그림자로
@@ -163,6 +164,12 @@ accent 는 다르다 — `edge`(wash 괘선)와 `edgeStrong`(outline 테두리)�
   path 는 18~20 만 채워 잉크는 75~83%. 그래서 Checkbox 와 같은 16 이면 아이콘만 작아 보인다),
   `checkbox` 15/16/18, `switch` 손잡이 = checkbox − 2 → 트랙 = checkbox + 2, 이동 = w − h.
   Badge 는 자기 높이 사다리(20/22/24)를 쓰되 **글자는 12 고정** — 컨트롤 14 와 같은 규칙, 다른 tier.
+
+- **상위 레이어의 축** — 공유 `color × variant`는 레이어와 무관하게 의미색과 시각 무게가 필요한
+  컴포넌트가 우선 사용합니다(Button·Badge·Alert·Card). 지역 `variant`는 shared 축으로 표현할 수 없는
+  구조만 고릅니다(Table `plain·ruled·striped`, Tabs `segmented·underline`). Table의 `density`는 같은 14px 정보의 행 높이(36·44·52)이고, Modal의
+  `size`는 담는 일의 폭(360·432·640)입니다. 상태(`selected·open·error`)는 이 축들과 섞지 않습니다.
+  전체 매트릭스와 금지 조합은 `docs/foundations/component-architecture.md`가 정본입니다.
 
 ---
 
@@ -199,11 +206,12 @@ Tokens → Primitives → Atoms → Molecules → Components
 |---|---|---|
 | Primitives | 4 | `Box · Stack · Inline · Text` — raw HTML 을 렌더하는 유일한 자리 |
 | Atoms | 13 | `Button · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Icon · Spinner · Divider · Link` |
-| Molecules | 6 | `Card · TextField · RadioGroup · Tabs · Tooltip · Alert` |
-| Components | 4 | `Table · Modal · Navbar · Banner` |
+| Molecules | 9 | `Card · TextField · FormField · SearchField · RadioGroup · Tabs · Tooltip · Alert · Breadcrumb` |
+| Components | 8 | `Table · Modal · Navbar · Banner · PageHeader · EmptyState · Pagination · Sidebar` |
 
-**= 27(기준선).** 폼(Textarea·Switch·Radio)·피드백(Alert)·로딩(Spinner)까지 시스템이
-완결되는 최소 집합. Banner 는 데모·공지 chrome 의 얇은 풀폭 바(검정 solid + status).
+**= 34(기준선).** 폼의 라벨 연결(FormField)·검색(SearchField)·피드백(Alert)·로딩(Spinner)과
+데이터 화면의 위치·시작·빈 상태·이동(Breadcrumb·PageHeader·EmptyState·Pagination·Sidebar)까지 시스템이 완결되는 최소 집합.
+Banner 는 데모·공지 chrome 의 얇은 풀폭 바(검정 solid + status).
 
 **컴포넌트 추가 잣대는 단계로 갈린다.** *"실제 화면에서 두 번 이상 필요했다는 증거"* 는
 **v1 배포 이후** 의 규칙이다 — 배포 전엔 소비자가 없어 "수요 2회" 가 성립할 수 없다. **v1 로

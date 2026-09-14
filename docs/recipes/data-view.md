@@ -34,7 +34,9 @@
 
 ## 표와 status 배지
 
-`Table`은 `columns`를 data로 받습니다. 각 열의 `render`가 그 칸에 무엇을 그릴지 정하고, 상태 칸은 `Badge`에 `color`를 넘겨 옅은 색 면으로 냅니다(`status`는 Field 계열의 validation 축이라 여기서는 쓰지 않습니다). 숫자 열은 `numeric: true`만 주면 tabular-nums·우측정렬이 자동입니다(등폭 아님 — 표가 시끄러워지지 않게).
+반복되는 행은 `Table`의 data API가 가장 짧습니다. `columns`의 각 `render`가 칸의 내용을 정하고, 상태 칸은 `Badge`에 `color`를 넘겨 옅은 색 면으로 냅니다(`status`는 Field 계열의 validation 축이라 여기서는 쓰지 않습니다). 숫자 열은 `numeric: true`만 주면 tabular-nums·우측정렬이 자동입니다(등폭 아님 — 표가 시끄러워지지 않게). `align="start · center · end"`로 열마다 정렬을 직접 정할 수도 있습니다.
+
+표의 축은 둘입니다. `variant="plain · ruled · striped"`는 행을 **어떻게 구분할지**, `density="compact · default · comfortable"`는 같은 14px 정보를 **얼마나 촘촘히 담을지** 정합니다. 선과 줄무늬를 동시에 넣는 prop 조합은 없습니다. 둘이 같은 정보를 두 번 말하지 않게 막은 것입니다. 운영 도구처럼 반복 정보가 많은 화면은 `ruled + compact`, 읽기 중심 목록은 `plain + default`가 안정적인 시작점입니다.
 
 ```tsx
 type Issue = { id: string; key: string; title: string; state: StatusName; count: number };
@@ -46,12 +48,34 @@ const columns: Column<Issue>[] = [
   { key: "count", header: "건수", numeric: true, render: (r) => r.count.toLocaleString() },
 ];
 
-<Box surface="raised" border radius="md" style={{ overflow: "hidden" }}>
-  <Table columns={columns} rows={rows} rowKey={(r) => r.id} />
-</Box>
+<Table variant="plain" density="default"
+  columns={columns} rows={rows} rowKey={(r) => r.id} />
 ```
 
-표는 흰 면 + 헤어라인(`surface="raised" border`) 카드 안에 넣어 감쌉니다 — 회색으로 감싸는 게 아니라 흰 면으로 세우고, 회색은 그 안의 table head에만 옵니다. 행 hover는 `Table`이 알아서 한 단 어두워집니다.
+기본 표는 별도 Card나 외곽선 없이 페이지에 바로 놓습니다. 회색은 header 면에만 쓰고, body의 행 간격과 hover가 구분을 맡습니다. 사용자가 보낸 홈 예제처럼 가장 조용하고 읽기 쉬운 시작점입니다. 실제 패널 경계가 필요한 화면에서만 바깥 Card를 더합니다.
+
+열 구조가 동적이거나 `colSpan`, 복합 header처럼 data 배열로 표현하기 어려우면 같은 스타일 계약의 compound API를 씁니다. `Table.Column`과 `Table.Cell`이 각각 정렬을 소유하므로 header와 body가 우연히 어긋나지 않습니다.
+
+```tsx
+<Table.Root variant="plain" density="default">
+  <Table.Header>
+    <Table.Column>키</Table.Column>
+    <Table.Column>이슈</Table.Column>
+    <Table.Column align="center">담당</Table.Column>
+    <Table.Column align="end">건수</Table.Column>
+  </Table.Header>
+  <Table.Body>
+    {rows.map((row) => (
+      <Table.Row key={row.id}>
+        <Table.Cell>{row.key}</Table.Cell>
+        <Table.Cell>{row.title}</Table.Cell>
+        <Table.Cell align="center">{row.owner}</Table.Cell>
+        <Table.Cell numeric>{row.count}</Table.Cell>
+      </Table.Row>
+    ))}
+  </Table.Body>
+</Table.Root>
+```
 
 ## 왜 이렇게
 

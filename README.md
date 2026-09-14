@@ -13,8 +13,9 @@ Atlassian, finished like SwiftUI.
 
 The seven principles behind every visual decision: **[docs/get-started/philosophy.md](docs/get-started/philosophy.md)**.
 
-- **27 components — the baseline.** Forms, feedback and loading included, this is
-  the smallest set that finishes a real screen. After v1 a 28th needs evidence it
+- **34 components — the baseline.** Forms, feedback, loading, location and page-level data
+  flows included, this is
+  the smallest set that finishes a real screen. After v1 a 33rd needs evidence it
   was needed twice; until then it has to be a standard primitive or fill a real
   semantic gap, and extending an existing component comes first either way.
 - **Black is the workhorse.** Primary actions are black, not blue — a blue button
@@ -30,8 +31,8 @@ The seven principles behind every visual decision: **[docs/get-started/philosoph
 |---|---|---|
 | Primitives | 4 | `Box · Stack · Inline · Text` |
 | Atoms | 13 | `Button · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Icon · Spinner · Divider · Link` |
-| Molecules | 6 | `Card · TextField · RadioGroup · Tabs · Tooltip · Alert` |
-| Components | 4 | `Table · Modal · Navbar · Banner` |
+| Molecules | 9 | `Card · TextField · FormField · SearchField · RadioGroup · Tabs · Tooltip · Alert · Breadcrumb` |
+| Components | 8 | `Table · Modal · Navbar · Banner · PageHeader · EmptyState · Pagination · Sidebar` |
 
 Raw HTML stops at Atoms — each renders its own semantic tag. From Molecules up,
 everything is composed from Primitives and Atoms, and `<Box as="…">` is the only

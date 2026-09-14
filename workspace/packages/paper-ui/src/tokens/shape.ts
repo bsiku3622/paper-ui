@@ -399,10 +399,27 @@ export const ATOM_INTRINSIC = {
   //   하는 값이었다. 탭도 컨트롤이라 사다리를 그대로 진다.
   tabsTrackGap: "1px", //      세그먼트 트랙 항목 간격
   tabsTrackPad: "3px", //      세그먼트 트랙 안쪽 여백 — 2px 면 활성 면이 트랙에 낀다
-  modalWidth: REM(432), //     Modal 기본 최대 폭 (27rem)
   selectArrow: REM(10), //     Select 화살표 아이콘 크기 (0.625rem)
   radioDot: REM(8), //         Radio 채운 점
   spinner: REM(18), //         Spinner 크기
+} as const;
+
+// ───── component intrinsic — 상위 구조가 소유하는 크기 ────────────────────
+//
+// 컨트롤 사다리(size)와 섞지 않는다. Modal 폭은 담는 일의 범위이고, Table 행 높이는
+// 같은 정보를 얼마나 촘촘하게 읽는가(density)다. 둘 다 컴포넌트가 소유하는 축이라 atom
+// 서랍에 두면 이름과 책임이 어긋난다.
+export const COMPONENT_INTRINSIC = {
+  modalWidth: {
+    sm: REM(360),
+    md: REM(432),
+    lg: REM(640),
+  },
+  tableRowHeight: {
+    compact: REM(36),
+    default: REM(44),
+    comfortable: REM(52),
+  },
 } as const;
 
 // ───── VALUES — emit 대상 트리 ─────────────────────────────────────────────
@@ -427,6 +444,7 @@ export const SHAPE_VALUES = {
   shadow: SHADOW,
   constants: SHAPE_CONSTANTS,
   atom: ATOM_INTRINSIC,
+  component: COMPONENT_INTRINSIC,
 } as const;
 
 // ───── Box override prop keys ───────────────────────────────────────────────

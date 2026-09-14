@@ -54,11 +54,11 @@ white, black, and whitespace.
 |---|---|---|
 | Primitives | 4 | `Box · Stack · Inline · Text` |
 | Atoms | 13 | `Button · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Icon · Spinner · Divider · Link` |
-| Molecules | 6 | `Card · TextField · RadioGroup · Tabs · Tooltip · Alert` |
-| Components | 4 | `Table · Modal · Navbar · Banner` |
+| Molecules | 9 | `Card · TextField · FormField · SearchField · RadioGroup · Tabs · Tooltip · Alert · Breadcrumb` |
+| Components | 8 | `Table · Modal · Navbar · Banner · PageHeader · EmptyState · Pagination · Sidebar` |
 
-Twenty-seven components is the baseline — with forms, feedback and loading
-included, it is the smallest set that finishes a real screen.
+Thirty-four components is the baseline — with forms, feedback, loading, location
+and page-level data flows included, it is the smallest set that finishes a real screen.
 
 Raw HTML stops at Atoms; each renders its own semantic tag. From Molecules up,
 everything is composed from Primitives and Atoms.
@@ -67,7 +67,9 @@ everything is composed from Primitives and Atoms.
 
 Two axes run through the colour system: `color` says what something means
 (`primary` plus `info` · `success` · `warning` · `error`) and `variant` says how
-much visual weight it carries (`solid` · `soft` · `outline` · `quiet`). Primary
+much visual weight it carries (`solid` · `soft` · `plain` · `outline` · `hairline` · `quiet`).
+`plain` combines the soft surface with the strong outline edge; it is part of this
+shared variant contract rather than a component-local option. Primary
 actions are black rather than blue — a blue button on every screen stops being a
 point.
 

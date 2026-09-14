@@ -55,25 +55,25 @@ chroma 는 저명도에서 지각이 약해지므로 다크 쪽을 조금 올려
 
 ⚠ 한동안 다크가 **완전 무채**(`C .0000`, 전 항목)였습니다. 라이트만 캐스트를 갖고 있어서 다크가 밋밋하게 읽혔습니다 — 사다리 순서·`accent.solid` 방향에 이어 **뒤집히지 않은 채 남아 있던 셋째 축**이었습니다.
 
-**accent — 4색 × 5자리.** 이름이 곧 의미(`info`·`success`·`warning`·`error`) — API 에 hue 이름(blue 등)은 없습니다. 각 색은 다섯 자리: `solid`(채운 면/점) · `ink`(면 위 글자, AA) · `wash`(옅은 면이자 solid 위 글자) · `edge`(wash의 괘선) · `edgeStrong`(홀로 서는 outline 선).
+**accent — 4색 × 7자리.** 이름이 곧 의미(`info`·`success`·`warning`·`error`) — API 에 hue 이름(blue 등)은 없습니다. 각 색은 일곱 자리: `solid`(채운 면/점) · `ink`(일반 지면 위 글자) · `wash`(가장 옅은 색이자 solid 위 글자) · `soft`(shared soft/plain의 면) · `softInk`(soft 위 AA 글자) · `edge`(hover 면) · `edgeStrong`(홀로 서는 outline 선).
 
 라이트
 
-| | solid | ink | wash | edge | edgeStrong |
-|---|---|---|---|---|---|
-| **info** | `#2563eb` | `#1d4ed8` | `#f5f9fe` | `#d1e1f5` | `#5694e9` |
-| **success** | `#15803d` | `#15803d` | `#f5fdf8` | `#cff0dc` | `#35a75f` |
-| **warning** | `#b45309` | `#b45309` | `#fefbf3` | `#f4e7b5` | `#c5861b` |
-| **error** | `#dc2626` | `#b91c1c` | `#fdf7f7` | `#f4d8d8` | `#ed6969` |
+| | solid | ink | wash | soft | softInk | edge | edgeStrong |
+|---|---|---|---|---|---|---|---|
+| **info** | `#2563eb` | `#1d4ed8` | `#f5f9fe` | `oklch(.9304 .0263 254)` | `#1d4ed8` | `#d1e1f5` | `#5694e9` |
+| **success** | `#15803d` | `#15803d` | `#f5fdf8` | `oklch(.9319 .0355 158.8)` | `oklch(.5024 .1371 150.1)` | `#cff0dc` | `#35a75f` |
+| **warning** | `#b45309` | `#b45309` | `#fefbf3` | `oklch(.9323 .0524 95.2)` | `oklch(.5298 .1455 49)` | `#f4e7b5` | `#c5861b` |
+| **error** | `#dc2626` | `#b91c1c` | `#fdf7f7` | `oklch(.9304 .025 17.7)` | `#b91c1c` | `#f4d8d8` | `#ed6969` |
 
-다크 — **accent 하나당 hue 하나** (`info` 258 · `success` 153 · `warning` 75 · `error` 22). 라이트는 Tailwind 램프를 섞어 쓴 흔적이 남아 `warning` 이 `solid` H49(주황) / `wash` H95(노랑)로 46° 벌어져 있습니다. 다크는 다섯 톤이 한 각을 공유합니다.
+다크 — **accent 하나당 hue 하나** (`info` 258 · `success` 153 · `warning` 75 · `error` 22). 라이트는 Tailwind 램프를 섞어 쓴 흔적이 남아 `warning` 이 `solid` H49(주황) / `wash` H95(노랑)로 46° 벌어져 있습니다. 다크는 여섯 톤이 한 각을 공유합니다.
 
-| | solid | ink | wash | edge | edgeStrong |
-|---|---|---|---|---|---|
-| **info** | `#5492ec` | `#8ebcff` | `#0d1c32` | `#1a355d` | `#4c6fa3` |
-| **success** | `#32ac64` | `#81cf99` | `#062211` | `#094021` | `#3a7b52` |
-| **warning** | `#c58300` | `#e4b066` | `#291800` | `#4c2e00` | `#8e672c` |
-| **error** | `#df6768` | `#f99e9b` | `#2f1211` | `#572223` | `#a15a59` |
+| | solid | ink | wash | soft | softInk | edge | edgeStrong |
+|---|---|---|---|---|---|---|---|
+| **info** | `#5492ec` | `#8ebcff` | `#0d1c32` | `oklch(.2561 .0708 258.2)` | `#8ebcff` | `#1a355d` | `#4c6fa3` |
+| **success** | `#32ac64` | `#81cf99` | `#062211` | `oklch(.2558 .07 153.2)` | `#81cf99` | `#094021` | `#3a7b52` |
+| **warning** | `#c58300` | `#e4b066` | `#291800` | `oklch(.2561 .0654 70.9)` | `#e4b066` | `#4c2e00` | `#8e672c` |
+| **error** | `#df6768` | `#f99e9b` | `#2f1211` | `oklch(.2562 .0711 21.3)` | `#f99e9b` | `#572223` | `#a15a59` |
 
 톤별 자리(다크, OKLCH `L / C`) — `wash` `.225/.048` · `edge` `.330/.078` · `solid` `.660/.150` · `ink` `.790/.110`.
 
@@ -101,15 +101,15 @@ chroma 는 저명도에서 지각이 약해지므로 다크 쪽을 조금 올려
 
 ⚠ **채운 면 위 글자는 `wash`입니다.** `paper.raised`는 다크에서 최암이라 쓸 수 없고, 별도 `solidFg`는 wash와 거의 같은 끝점을 중복하면서 라이트 대비가 `3.91~4.21`로 약했습니다. Veil wash를 재사용하면 라이트 `4.56~4.89`, 다크 `5.16~5.80`으로 양쪽 모두 AA를 넘습니다.
 
-**accent 5자리** — `solid`(채운 면) · `ink`(지면 위 글자, AA) · `wash`(옅은 면이자 solid 위 글자) · `edge`(wash의 괘선, 그리고 `soft`의 hover 면) · `edgeStrong`(**홀로 서는 테두리** — `outline` 변형).
+**accent 7자리** — `solid`(채운 면) · `ink`(지면 위 글자) · `wash`(가장 옅은 색이자 solid 위 글자) · `soft`(shared soft/plain 면) · `softInk`(soft 위 AA 글자) · `edge`(soft의 hover 면) · `edgeStrong`(**홀로 서는 테두리** — `outline` 변형).
 
-**중립 outline의 테두리는 `border.base`입니다** — 카드 헤어라인·빈 Field와 같은 선입니다. primary가 자기 `edgeStrong`을 들지 않는 이유이고, accent는 반대로 각 색이 자기 것을 소유합니다.
+**중립 outline의 테두리는 `primary.edgeStrong`입니다.** 카드 헤어라인·빈 Field와 같은 `border.base`는 `hairline`이 맡습니다. primary와 accent 모두 outline에서는 각 color family의 강한 선을, hairline에서는 지면이나 옅은 색의 선을 사용합니다.
 
 `edge`와 `edgeStrong`을 가르는 이유는, 두 자리가 요구하는 세기가 다르기 때문입니다. wash의 괘선은 이미 색이 깔린 면의 가장자리라 살짝만 진하면 되지만, **`outline`은 그 선이 곧 컴포넌트입니다** — 흰 면 위에서 혼자 형태를 만들어야 합니다. 한동안 outline이 `edge`(200톤)를 빌려 써서 지면 대비 1.18~1.41이었는데, 비텍스트 기준 3:1의 절반도 안 되는 값입니다. 다크 팔레트 주석이 "edge가 두 일을 겸하는 구조 문제"라고 이미 적어 둔 그 문제였습니다.
 
 **톤은 램프 인덱스가 아니라 대비로 고릅니다.** 넷을 다 400톤으로 맞춰 보면 초록·amber가 파랑·빨강보다 눈에 띄게 옅습니다 — hue마다 고유 명도가 달라서입니다. 그래서 각자 지면 대비 3.0이 되는 자리를 따로 찾았습니다(`solid`를 "진한 톤으로 낮춤" 한 것과 같은 이유). primary는 자기 `edgeStrong`을 들지 않습니다 — 위의 `border.control`이 그 자리입니다.
 
-**color × variant — 잉크색을 입는 컴포넌트(Button·Badge·Alert).** `color`(primary + 4 accent) × `variant`(`solid`·`soft`·`outline`·`hairline`·`quiet`)로 색을 받습니다.
+**color × shared variant — 잉크색을 입는 컴포넌트(Button·Badge·Alert).** `color`(primary + 4 accent) × `variant`(`solid`·`soft`·`plain`·`outline`·`hairline`·`quiet`)로 색을 받습니다. `plain`은 soft 면과 outline 선을 함께 쓰는 공통 단계이며 Card·Table의 지역 `plain`과 타입이 다릅니다. Accent의 `soft`·`plain` 배경은 OKLCH에서 hue를 각 accent에 고정합니다. `L`은 wash에서 primary soft로 75%, `C`는 같은 hue의 wash에서 edge로 75% 이동합니다. 그래서 primary 사다리에 가까운 진하기를 얻되 zinc hue가 섞인 탁한 중간색은 만들지 않습니다. solid 위 전경으로도 쓰이는 raw wash의 대비 계약은 그대로입니다.
 
 **테두리만 있는 변형이 둘인데, 세기가 아니라 *어느 선이냐*로 갈립니다.** `outline`은 color family가 소유한 선입니다 — primary는 `primary.edgeStrong`, accent는 각자의 `edgeStrong`이고 둘 다 지면 대비 3:1입니다. 면을 안 칠하니 테두리가 곧 형태여서, 강조가 필요한 자리에 고르는 변형입니다. `hairline`은 지면이 소유한 선입니다 — 뉴트럴은 카드 헤어라인·빈 입력칸과 같은 `border.base`를 그대로 두르고, accent는 그 색의 가장 옅은 괘선(`edge`)으로 갑니다(색 있는 자리에 뉴트럴 회색을 두르면 그 컴포넌트만 색 정체성을 잃습니다).
 
@@ -137,6 +137,8 @@ chroma 는 저명도에서 지각이 약해지므로 다크 쪽을 조금 올려
 `textareaPaddingY`는 **가로에서 세로를 계산합니다** — `inputPaddingX − 반 줄 여백 3.5`입니다. 반 줄 여백은 `(줄상자 21 − 글자 14) / 2`로, 줄상자가 글자 위아래에 이미 갖고 있는 몫입니다. md에서 `1 + 5.5 + 3.5 = 10`이 되어 가로(`1 + 9`)와 같은 자리에 앉습니다. 눈이 읽는 것은 선언값이 아니라 잉크의 자리입니다.
 
 `Button`·`Field`·`Select`·`Textarea`·`Tabs`가 이 사다리를 공유합니다 — height와 글자 크기입니다. Select는 오른쪽을 화살표 자리로 한 번 더 덮고, Textarea는 height를 빼고 세로 여백을 더합니다.
+
+상위 구조의 크기는 control 사다리에 넣지 않습니다. `shape.component.modalWidth`의 360·432·640px은 Modal이 담는 일의 폭이고, `shape.component.tableRowHeight`의 36·44·52px은 Table의 정보 밀도입니다. 전자는 `size`, 후자는 `density`로 노출됩니다. 이름과 값이 비슷해 보여도 누르는 표적 크기와 정보량은 서로 따라 움직이지 않습니다.
 
 Link는 여기 없습니다 — 상자가 아니라 글자라, 높이도 여백도 없이 주변 텍스트에 실려 갑니다.
 

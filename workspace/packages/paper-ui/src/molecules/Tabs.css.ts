@@ -11,6 +11,18 @@ export const tabsList = style({
   background: tokens.color.paper.well,
 });
 
+export const tabsListVariant = styleVariants({
+  segmented: {},
+  underline: {
+    gap: 0,
+    padding: 0,
+    background: "transparent",
+    borderBottomWidth: tokens.shape.constants.borderWidth,
+    borderBottomStyle: "solid",
+    borderBottomColor: tokens.color.border.base,
+  },
+});
+
 // 크기(height·paddingInline·fontSize)는 size 축(tabItemSize)이 정한다 — Button·Field 와
 // 같은 공통 사다리. 세그먼트는 컴팩트해서 기본 sm.
 //
@@ -36,6 +48,18 @@ export const tabItem = style({
   },
 });
 
+export const tabItemVariant = styleVariants({
+  segmented: {},
+  underline: {
+    borderRadius: 0,
+    borderBottomWidth: tokens.shape.constants.focusRingWidth,
+    borderBottomStyle: "solid",
+    borderBottomColor: "transparent",
+    marginBottom: `calc(${tokens.shape.constants.borderWidth} * -1)`,
+    selectors: { "&:hover": { backgroundImage: "none" } },
+  },
+});
+
 // 탭 항목은 버튼과 같은 자리다 — 라벨이 상자를 정의하므로 베이스를 그대로 쓴다.
 export const tabItemSize = styleVariants(ladderRules());
 
@@ -44,6 +68,14 @@ export const tabItemSize = styleVariants(ladderRules());
 export const tabItemActive = style({
   background: tokens.color.paper.raised,
   color: tokens.color.ink.base,
+});
+
+export const tabItemActiveVariant = styleVariants({
+  segmented: {},
+  underline: {
+    background: "transparent",
+    borderBottomColor: tokens.color.primary.base,
+  },
 });
 
 // ───── shape — 실루엣 축 (Button·Badge·Field·Select 와 같은 어휘) ───────────

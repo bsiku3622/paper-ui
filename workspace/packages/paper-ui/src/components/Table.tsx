@@ -1,55 +1,133 @@
-// Table — 장부의 본체. 이 시스템이 존재하는 이유에 가장 가까운 컴포넌트.
-//
-// column 을 data 로 받는다. 행을 손으로 그리게 두면 숫자 열 정렬을 매번 다시
-// 정하게 되고, 그 순간 장부가 무너진다.
+// Table — data API와 semantic anatomy를 같은 스타일 계약 위에 둔다.
 
-import type { ReactNode } from "react";
+import { createContext, useContext, type ReactNode } from "react";
 
-import { Box } from "../primitives";
+import { Box, type BoxProps } from "../primitives";
 import { joinClass } from "../internal/joinClass";
-import { tableRoot, tableHead, tableTh, tableTr, tableTd, tableNumeric } from "./Table.css";
+import {
+  tableRoot,
+  tableCaption,
+  tableHead,
+  tableHeadSticky,
+  tableTh,
+  tableTr,
+  tableTd,
+  tableNumeric,
+  tableRowVariant,
+  tableRowDensity,
+  tableHeadDensity,
+  tableCellDensity,
+  tableEmptyCell,
+  tableAlign,
+} from "./Table.css";
+
+export type TableVariant = "plain" | "ruled" | "striped";
+export type TableDensity = "compact" | "default" | "comfortable";
+export type TableAlign = "start" | "center" | "end";
+
+type TableContextValue = { variant: TableVariant; density: TableDensity };
+const TableContext = createContext<TableContextValue>({ variant: "plain", density: "default" });
+const useTable = () => useContext(TableContext);
+
+export type TableRootProps = Omit<BoxProps<"table">, "as"> & {
+  variant?: TableVariant;
+  density?: TableDensity;
+};
+
+export const TableRoot = ({ variant = "plain", density = "default", className, children, ...rest }: TableRootProps) => (
+  <TableContext.Provider value={{ variant, density }}>
+    <Box as="table" className={joinClass(tableRoot, className)} {...rest}>{children}</Box>
+  </TableContext.Provider>
+);
+
+export type TableCaptionProps = Omit<BoxProps<"caption">, "as">;
+export const TableCaption = ({ className, ...rest }: TableCaptionProps) => (
+  <Box as="caption" className={joinClass("pui-text-caption", tableCaption, className)} {...rest} />
+);
+
+export type TableHeaderProps = Omit<BoxProps<"thead">, "as"> & { sticky?: boolean };
+export const TableHeader = ({ sticky, className, children, ...rest }: TableHeaderProps) => (
+  <Box as="thead" className={joinClass(tableHead, sticky && tableHeadSticky, className)} {...rest}>
+    <Box as="tr">{children}</Box>
+  </Box>
+);
+
+export type TableBodyProps = Omit<BoxProps<"tbody">, "as">;
+export const TableBody = (props: TableBodyProps) => <Box as="tbody" {...props} />;
+
+export type TableRowProps = Omit<BoxProps<"tr">, "as">;
+export const TableRow = ({ className, ...rest }: TableRowProps) => {
+  const { variant, density } = useTable();
+  return <Box as="tr" className={joinClass(tableTr, tableRowVariant[variant], tableRowDensity[density], className)} {...rest} />;
+};
+
+type CellAxis = { align?: TableAlign; numeric?: boolean };
+export type TableColumnProps = Omit<BoxProps<"th">, "as" | "align"> & CellAxis;
+export const TableColumn = ({ align, numeric, className, ...rest }: TableColumnProps) => {
+  const { density } = useTable();
+  const resolved = align ?? (numeric ? "end" : "start");
+  return (
+    <Box
+      as="th"
+      scope="col"
+      className={joinClass("pui-text-label", tableTh, tableHeadDensity[density], tableCellDensity[density], tableAlign[resolved], numeric && tableNumeric, className)}
+      {...rest}
+    />
+  );
+};
+
+export type TableCellProps = Omit<BoxProps<"td">, "as" | "align"> & CellAxis;
+export const TableCell = ({ align, numeric, className, ...rest }: TableCellProps) => {
+  const { density } = useTable();
+  const resolved = align ?? (numeric ? "end" : "start");
+  return <Box as="td" className={joinClass(tableTd, tableCellDensity[density], tableAlign[resolved], numeric && tableNumeric, className)} {...rest} />;
+};
 
 export type Column<T> = {
   key: string;
   header: ReactNode;
-  // 숫자 열 — tabular-nums·우측정렬이 자동으로 붙는다(등폭 서체는 아니다 — 표가 시끄러워진다).
   numeric?: boolean;
+  align?: TableAlign;
   render: (row: T) => ReactNode;
 };
 
-export type TableProps<T> = {
+export type TableProps<T> = Omit<TableRootProps, "children"> & {
   columns: readonly Column<T>[];
   rows: readonly T[];
   rowKey: (row: T) => string;
-  className?: string;
+  caption?: ReactNode;
+  empty?: ReactNode;
+  stickyHeader?: boolean;
 };
 
-export const Table = <T,>({ columns, rows, rowKey, className }: TableProps<T>) => (
-  <Box as="table" className={joinClass(tableRoot, className)}>
-    <Box as="thead" className={tableHead}>
-      <Box as="tr">
-        {columns.map((c) => (
-          <Box
-            as="th"
-            key={c.key}
-            scope="col"
-            className={joinClass("pui-text-label", tableTh, c.numeric && tableNumeric)}
-          >
-            {c.header}
-          </Box>
-        ))}
-      </Box>
-    </Box>
-    <Box as="tbody">
-      {rows.map((r) => (
-        <Box as="tr" key={rowKey(r)} className={tableTr}>
-          {columns.map((c) => (
-            <Box as="td" key={c.key} className={joinClass(tableTd, c.numeric && tableNumeric)}>
-              {c.render(r)}
-            </Box>
-          ))}
-        </Box>
+const DataTable = <T,>({ columns, rows, rowKey, variant = "plain", density = "default", caption, empty, stickyHeader, ...rest }: TableProps<T>) => (
+  <TableRoot variant={variant} density={density} {...rest}>
+    {caption != null ? <TableCaption>{caption}</TableCaption> : null}
+    <TableHeader sticky={stickyHeader}>
+      {columns.map((column) => (
+        <TableColumn key={column.key} align={column.align} numeric={column.numeric}>{column.header}</TableColumn>
       ))}
-    </Box>
-  </Box>
+    </TableHeader>
+    <TableBody>
+      {rows.length === 0 && empty != null ? (
+        <Box as="tr"><Box as="td" colSpan={columns.length} className={tableEmptyCell}>{empty}</Box></Box>
+      ) : rows.map((row) => (
+        <TableRow key={rowKey(row)}>
+          {columns.map((column) => (
+            <TableCell key={column.key} align={column.align} numeric={column.numeric}>{column.render(row)}</TableCell>
+          ))}
+        </TableRow>
+      ))}
+    </TableBody>
+  </TableRoot>
 );
+
+export const Table = Object.assign(DataTable, {
+  Root: TableRoot,
+  Caption: TableCaption,
+  Header: TableHeader,
+  Body: TableBody,
+  Row: TableRow,
+  Column: TableColumn,
+  Cell: TableCell,
+});

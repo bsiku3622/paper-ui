@@ -4,11 +4,14 @@
 
 import { useId, type ReactNode } from "react";
 
-import { Stack, Inline, Text } from "../primitives";
+import { Box, Inline, Text } from "../primitives";
 import { Radio } from "../atoms";
 import type { ControlSize } from "../tokens";
+import { joinClass } from "../internal/joinClass";
+import { radioGroupOrientation } from "./RadioGroup.css";
 
 export type RadioOption = { value: string; label: ReactNode; disabled?: boolean };
+export type RadioGroupOrientation = "vertical" | "horizontal";
 
 export type RadioGroupProps = {
   options: readonly RadioOption[];
@@ -17,6 +20,7 @@ export type RadioGroupProps = {
   name?: string;
   // 라디오 크기 3 단 (sm·md·lg). 그룹의 모든 라디오에 적용.
   size?: ControlSize;
+  orientation?: RadioGroupOrientation;
   // 그룹의 접근 이름 — 라디오들을 무엇으로 묶는지(예: "결제 수단"). 눈에 보이는 라벨이
   // 있으면 그 id 를 aria-labelledby 로.
   "aria-label"?: string;
@@ -30,6 +34,7 @@ export const RadioGroup = ({
   onChange,
   name,
   size = "md",
+  orientation = "vertical",
   "aria-label": ariaLabel,
   "aria-labelledby": ariaLabelledby,
   className,
@@ -37,7 +42,7 @@ export const RadioGroup = ({
   const auto = useId();
   const group = name ?? auto;
   return (
-    <Stack gap="sm" role="radiogroup" aria-label={ariaLabel} aria-labelledby={ariaLabelledby} className={className}>
+    <Box role="radiogroup" aria-label={ariaLabel} aria-labelledby={ariaLabelledby} className={joinClass(radioGroupOrientation[orientation], className)}>
       {options.map((o) => (
         <Inline as="label" gap="sm" align="center" key={o.value}>
           <Radio
@@ -53,6 +58,6 @@ export const RadioGroup = ({
           </Text>
         </Inline>
       ))}
-    </Stack>
+    </Box>
   );
 };

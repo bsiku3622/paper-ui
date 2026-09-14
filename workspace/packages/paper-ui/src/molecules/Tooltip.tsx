@@ -10,11 +10,11 @@ import { Box } from "../primitives";
 import { tooltipWrap, tooltipBubble, tooltipPlacement } from "./Tooltip.css";
 
 export type TooltipProps = {
-  label: string;
+  content: ReactNode;
   children?: ReactNode;
 };
 
-export const Tooltip = ({ label, children }: TooltipProps) => {
+export const Tooltip = ({ content, children }: TooltipProps) => {
   const [open, setOpen] = useState(false);
   const [placement, setPlacement] = useState<"top" | "bottom">("top");
   const id = useId();
@@ -42,7 +42,7 @@ export const Tooltip = ({ label, children }: TooltipProps) => {
       <Box aria-describedby={open ? id : undefined}>{children}</Box>
       {open ? (
         <Box id={id} role="tooltip" className={`${tooltipBubble} ${tooltipPlacement[placement]}`}>
-          {label}
+          {content}
         </Box>
       ) : null}
     </Box>
