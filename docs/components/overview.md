@@ -1,6 +1,6 @@
 # Overview
 
-서른네 개입니다. 한 화면에서 훑으려면 [플레이그라운드](/playground)로, 한 컴포넌트의 prop을 토글하며 코드까지 보려면 사이드바에서 그 컴포넌트의 상세(`/playground/<이름>`)로 들어가세요 — 이 문서는 무엇이 있고 어느 레이어에 사는지를 잡아줍니다. 상위 레이어의 variant가 무엇을 바꾸고 어디서 멈추는지는 [컴포넌트 축](../foundations/component-architecture.md)에 따로 정리했습니다.
+마흔 개입니다. 한 화면에서 훑으려면 [플레이그라운드](/playground)로, 한 컴포넌트의 prop을 토글하며 코드까지 보려면 사이드바에서 그 컴포넌트의 상세(`/playground/<이름>`)로 들어가세요 — 이 문서는 무엇이 있고 어느 레이어에 사는지를 잡아줍니다. 상위 레이어의 variant가 무엇을 바꾸고 어디서 멈추는지는 [컴포넌트 축](../foundations/component-architecture.md)에 따로 정리했습니다.
 
 레이어는 자기보다 아래만 씁니다. `Tokens → Primitives → Atoms → Molecules → Components`.
 
@@ -26,7 +26,7 @@ raw HTML을 렌더하는 유일한 레이어입니다.
 - **Badge** — 짧은 표식. Button과 같은 공유 `color × variant`(기본 `soft`) + `dot`(상태 점). `solid`=카운트·강조, `plain`=옅은 면+또렷한 선, `outline`=또렷한 테두리 태그, `hairline`=조용한 테두리 태그, `quiet`=글자만. Button과 같은 `shape="pill"`을 받아 두 알약이 나란히 서도 곡선이 갈리지 않습니다. `size`는 높이(20·22·24)만 움직이고 글자는 12로 고정입니다.
 - **Spinner** — 진행 중 표시. 주기는 motion 토큰. Icon과 같은 사다리(16·18·20)라 나란히 두면 크기가 맞습니다. 속이 빈 링이라 같은 지름의 채운 사각형보다 가볍게 읽히는데, 그건 스피너가 지고 가는 성질이라 지름으로 보정하지 않습니다.
 
-## Molecules (9)
+## Molecules (12)
 
 Primitive + Atom 합성입니다. raw HTML 없이 하위 레이어 조합만.
 
@@ -39,8 +39,11 @@ Primitive + Atom 합성입니다. raw HTML 없이 하위 레이어 조합만.
 - **Tooltip** — 잠깐 뜨는 쪽지. `content`가 `ReactNode`라 제목·설명·단축키 같은 조합을 담을 수 있고, 위 공간이 없으면 자동으로 아래로 뒤집습니다.
 - **Alert** — 상태 한 줄을 색이 깔린 면으로. Button·Badge와 **같은 `color × variant` 매트릭스**를 그대로 뭅니다(`color`는 `primary`까지 다섯, `variant`는 기본 `soft`). Alert만을 위한 surface 축을 새로 세우지 않은 이유는, 이 시스템의 `variant`가 이미 *면의 무게* 축이기 때문입니다 — `solid`(채운 면)·`soft`(옅은 면)·`outline`·`hairline`(테두리만)·`quiet`(면 없음)은 글자 스타일이 아니라 면의 종류입니다. 축을 하나 더 만들면 같은 뜻을 두 이름으로 부르게 됩니다. `error`·`warning`은 `role="alert"`, 나머지는 `role="status"`이고, 색으로만 뜻을 전하지 않도록 스크린리더용 접두어("오류:" 등)를 함께 심습니다.
 - **Breadcrumb** — 현재 위치의 계층을 짧게 표시합니다. 마지막 항목은 기본으로 현재 페이지가 되며, 앞 항목은 `as`를 통해 router Link나 anchor로 바꿀 수 있습니다.
+- **Menu** — action과 navigation을 한 열에 놓는 기본 목록입니다. 현재 위치·설명·단축키·위험·비활성 상태를 한 item 문법으로 다루고 방향키·Home·End로 이동합니다.
+- **Steps** — 실제 순서가 있는 흐름의 완료·현재·예정을 번호와 연결선으로 표시합니다. 가로·세로 방향은 같은 상태 문법을 공유합니다.
+- **TableOfContents** — 한 문서 안의 현재 위치를 깊이 3단으로 제한해 보여줍니다. 전체 사이트 계층을 맡지 않고 문서 내부 navigation에만 머뭅니다.
 
-## Components (8)
+## Components (11)
 
 복잡한 상태를 가질 수 있는 고수준 UI입니다.
 
@@ -51,8 +54,11 @@ Primitive + Atom 합성입니다. raw HTML 없이 하위 레이어 조합만.
 - **PageHeader** — `location` → 큰 제목 → 설명 → 행동의 읽기 순서를 만듭니다. hero나 card를 강요하지 않고, 폭이 좁아지면 자연스럽게 두 줄로 풀립니다.
 - **EmptyState** — 빈 결과를 막다른 곳으로 두지 않습니다. 왜 비었는지와 다음 행동 하나를 남기되, 새 색면·카드는 만들지 않습니다.
 - **Pagination** — 현재 위치와 앞뒤 이동. `outlined · soft · minimal` variant로 주변 데이터 화면의 밀도에 맞추되, 어느 쪽도 page state와 섞이지 않습니다.
-- **Sidebar** — group·현재 항목·선택적 `badge`를 data API로 받는 local navigation rail입니다. 항목의 `as`를 바꿔 button과 router Link를 모두 지원하며, NEW/MOD 같은 release 표식도 시스템 `Badge`로 렌더합니다. Badge는 selected 상태에서도 `soft` pigment를 유지하되 행과 같은 neutral selected overlay를 한 겹 더 받아, 색의 뜻은 남고 작은 면만 따로 튀어나오지 않습니다. 필요하면 `variant`와 `activeVariant`로 두 상태를 각각 바꿉니다.
+- **Sidebar** — `Sidebar.Group/Item/Badge`를 조합하는 compound local navigation rail입니다. JSX가 실제 계층과 항목 안의 구성을 그대로 드러내며, Item의 `as`를 바꿔 button과 router Link를 모두 지원합니다. Badge는 selected 상태에서도 `soft` pigment를 유지하되 행과 같은 neutral selected overlay를 한 겹 더 받습니다.
+- **DropdownMenu** — trigger에 `Menu`를 붙이는 떠 있는 action surface입니다. 바깥 클릭·Escape·초기 포커스·선택 후 닫힘을 맡고, navigation 계열 중 실제로 떠 있는 이 surface만 overlay shadow를 갖습니다.
+- **CommandMenu** — 검색 Field와 키보드 선택 listbox를 묶습니다. label·keywords 검색, group·설명·단축키를 지원해 빠른 이동과 실행을 맡습니다.
+- **TreeNavigation** — 깊은 정보 구조를 접고 펴는 계층 navigation입니다. branch의 expanded state와 leaf의 active state를 분리하고 방향키로 탐색합니다.
 
-## 서른네 개인 이유
+## 마흔 개인 이유
 
-폼의 구조(FormField)·검색(SearchField)·피드백(Alert)·로딩(Spinner)과 데이터 화면의 위치·시작·빈 상태·이동(Breadcrumb·PageHeader·EmptyState·Pagination·Sidebar)까지, 시스템이 실제 화면을 완결할 수 있는 기준선입니다. 더 늘리는 잣대는 단계로 갈립니다 — 정식 배포(v1) 이후엔 *실제 화면에서 두 번 이상 필요했다는 증거*가 있어야 하고, v1로 가는 지금은 아직 소비자가 없어 "표준 primitive인가, 실제 semantic 공백을 메우는가"를 봅니다(그래도 기존 것의 확장을 먼저). "있으면 좋을 것 같아서"는 어느 단계에서도 증거가 아닙니다. Avatar가 필요하면 Box 조합으로 이니셜 원을 만들 수 있고(데모가 그렇게 합니다), Popover가 필요하면 그게 정말 두 번 이상 나왔는지 먼저 봅니다. 선택지를 늘리는 방향은 시스템의 목표에 역행한다고 봅니다 — 자세히는 [원칙](../get-started/philosophy.md)의 "시스템이 형태를 정한다".
+폼의 구조(FormField)·검색(SearchField)·피드백(Alert)·로딩(Spinner)과 데이터 화면의 위치·순서·명령·계층 탐색·빈 상태·이동까지, 시스템이 실제 화면을 완결할 수 있는 기준선입니다. 더 늘리는 잣대는 단계로 갈립니다 — 정식 배포(v1) 이후엔 *실제 화면에서 두 번 이상 필요했다는 증거*가 있어야 하고, v1로 가는 지금은 아직 소비자가 없어 "표준 primitive인가, 실제 semantic 공백을 메우는가"를 봅니다(그래도 기존 것의 확장을 먼저). "있으면 좋을 것 같아서"는 어느 단계에서도 증거가 아닙니다. Avatar가 필요하면 Box 조합으로 이니셜 원을 만들 수 있고(데모가 그렇게 합니다), Popover가 필요하면 그게 정말 두 번 이상 나왔는지 먼저 봅니다. 선택지를 늘리는 방향은 시스템의 목표에 역행한다고 봅니다 — 자세히는 [원칙](../get-started/philosophy.md)의 "시스템이 형태를 정한다".

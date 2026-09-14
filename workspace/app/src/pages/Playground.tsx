@@ -18,13 +18,16 @@ import {
   Button,
   Card,
   Checkbox,
+  CommandMenu,
   Divider,
+  DropdownMenu,
   Field,
   FormField,
   Icon,
   Inline,
   Link,
   Modal,
+  Menu,
   EmptyState,
   PageHeader,
   Pagination,
@@ -35,13 +38,16 @@ import {
   Spinner,
   Stack,
   Sidebar,
+  Steps,
   Switch,
   Table,
+  TableOfContents,
   Tabs,
   Text,
   Textarea,
   TextField,
   Tooltip,
+  TreeNavigation,
   type Column,
 } from "@studio-baeks/paper-ui";
 
@@ -83,6 +89,10 @@ export const Playground = () => {
   const [longModal, setLongModal] = useState(false);
   const [page, setPage] = useState(4);
   const [radio, setRadio] = useState("one");
+  const [menuActive, setMenuActive] = useState("overview");
+  const [step, setStep] = useState("review");
+  const [tocActive, setTocActive] = useState("props");
+  const [treeActive, setTreeActive] = useState("button");
 
   const columns: Column<{ id: string; k: string; s: "info" | "success" | "error"; n: number }>[] = [
     { key: "k", header: "키", render: (r) => <Text variant="body" as="span">{r.k}</Text> },
@@ -101,7 +111,7 @@ export const Playground = () => {
         <Stack gap="xs">
           <Text variant="label">Studio Baeks · Design System</Text>
           <Text variant="title">Component Playground</Text>
-          <Text variant="caption">34 컴포넌트 · variant · state 전수. 이 페이지가 자동 테스트의 대상이다. 개별 컴포넌트는 사이드바에서 상세로.</Text>
+          <Text variant="caption">40 컴포넌트 · variant · state 전수. 이 페이지가 자동 테스트의 대상이다. 개별 컴포넌트는 사이드바에서 상세로.</Text>
         </Stack>
 
         {/* ── Tokens ─────────────────────────────────────────── */}
@@ -457,14 +467,70 @@ export const Playground = () => {
           <Spec label="Breadcrumb · Sidebar — location과 local navigation">
             <Breadcrumb items={[{ value: "atoms", label: "Atoms" }, { value: "component", label: "Component" }, { value: "checkbox", label: "Checkbox" }]} />
             <Box style={{ width: "14rem" }}>
-              <Sidebar
-                active="components"
-                groups={[{ value: "docs", label: "문서", items: [
-                  { value: "overview", label: "개요" },
-                  { value: "tokens", label: "토큰", badge: { label: "MOD", color: "warning" } },
-                  { value: "components", label: "컴포넌트", badge: { label: "NEW", color: "info" } },
-                ] }]}
-              />
+              <Sidebar active="components">
+                <Sidebar.Group label="문서">
+                  <Sidebar.Item value="overview">개요</Sidebar.Item>
+                  <Sidebar.Item value="tokens">토큰<Sidebar.Badge color="warning">MOD</Sidebar.Badge></Sidebar.Item>
+                  <Sidebar.Item value="components">컴포넌트<Sidebar.Badge color="info">NEW</Sidebar.Badge></Sidebar.Item>
+                </Sidebar.Group>
+              </Sidebar>
+            </Box>
+          </Spec>
+        </Section>
+
+        <Section id="sec-navigation" title="Menu · Steps · TableOfContents · DropdownMenu · CommandMenu · TreeNavigation">
+          <Spec label="Menu — 한 열의 action과 현재 위치">
+            <Box style={{ width: "18rem" }}>
+              <Menu active={menuActive} onSelect={setMenuActive} items={[
+                { value: "overview", label: "개요", description: "시스템의 기본 원칙" },
+                { value: "tokens", label: "토큰", shortcut: "⌘ T" },
+                { value: "archive", label: "보관하기", danger: true },
+              ]} />
+            </Box>
+          </Spec>
+          <Spec label="Steps — 실제 순서를 번호와 연결선으로">
+            <Box style={{ width: "32rem", maxWidth: "100%" }}>
+              <Steps current={step} onChange={setStep} items={[
+                { value: "draft", label: "초안", description: "내용 작성" },
+                { value: "review", label: "검토", description: "구조 확인" },
+                { value: "publish", label: "배포", description: "문서 공개" },
+              ]} />
+            </Box>
+          </Spec>
+          <Spec label="TableOfContents — 문서 내부의 현재 위치">
+            <Box style={{ width: "16rem" }}>
+              <TableOfContents active={tocActive} onSelect={setTocActive} items={[
+                { value: "overview", label: "개요" },
+                { value: "props", label: "Props", depth: 1 },
+                { value: "examples", label: "예제", depth: 1 },
+              ]} />
+            </Box>
+          </Spec>
+          <Spec label="DropdownMenu — 떠 있는 action surface만 overlay shadow">
+            <DropdownMenu
+              trigger={<Button variant="outline">문서 작업</Button>}
+              items={[
+                { value: "duplicate", label: "복제", shortcut: "⌘ D" },
+                { value: "move", label: "이동" },
+                { value: "delete", label: "삭제", danger: true },
+              ]}
+            />
+          </Spec>
+          <Spec label="CommandMenu — 검색과 키보드 선택을 한 listbox로">
+            <Box style={{ width: "28rem", maxWidth: "100%" }}>
+              <CommandMenu commands={[
+                { value: "button", label: "Button", description: "Atoms", group: "컴포넌트", shortcut: "B" },
+                { value: "sidebar", label: "Sidebar", description: "Components", group: "컴포넌트", shortcut: "S" },
+                { value: "colors", label: "Color tokens", description: "Foundations", group: "문서", keywords: ["palette"] },
+              ]} />
+            </Box>
+          </Spec>
+          <Spec label="TreeNavigation — 접고 펴는 계층 탐색">
+            <Box style={{ width: "18rem" }}>
+              <TreeNavigation active={treeActive} onSelect={setTreeActive} defaultExpanded={["components", "atoms"]} items={[
+                { value: "foundations", label: "Foundations", children: [{ value: "colors", label: "Color" }, { value: "shape", label: "Shape" }] },
+                { value: "components", label: "Components", children: [{ value: "atoms", label: "Atoms", children: [{ value: "button", label: "Button" }, { value: "badge", label: "Badge" }] }, { value: "molecules", label: "Molecules" }] },
+              ]} />
             </Box>
           </Spec>
         </Section>

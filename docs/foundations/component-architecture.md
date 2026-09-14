@@ -94,6 +94,9 @@ row               row               row
 | Tooltip | `content`, placement 자동 결정 | `ReactNode`를 받아 복합 내용을 허용하되 외형 variant는 없음 |
 | Alert | `color × shared variant` | Button·Badge와 같은 6단 매트릭스를 유지 |
 | Breadcrumb | `items · separator` | location 계층만 소유. 마지막 항목은 현재 위치 |
+| Menu | `active · item state` | 한 열의 action/navigation과 키보드 이동을 소유 |
+| Steps | `current · orientation` | 실제 순서의 완료·현재·예정을 번호와 연결선으로 구분 |
+| TableOfContents | `active · depth` | 문서 내부 위치만 소유하고 깊이는 3단으로 제한 |
 
 ### Components
 
@@ -106,7 +109,10 @@ row               row               row
 | PageHeader | slots | location·제목·설명·actions의 관계가 본체라 외형 variant 없음 |
 | EmptyState | content slots | 빈 상태는 장식 강도를 고르는 자리가 아님 |
 | Pagination | local `variant`, page state | `outlined · soft · minimal`; Table density와 독립 |
-| Sidebar | `groups · active · badge` | local navigation과 release 표식을 data API로 소유. selected badge의 soft 면에도 같은 neutral overlay를 합성 |
+| Sidebar | compound `Group · Item · Badge` + `active` | JSX로 local navigation 계층과 release 표식을 조합. selected badge의 soft 면에도 같은 neutral overlay를 합성 |
+| DropdownMenu | `align · open`, Menu items | 떠 있는 action surface의 열기·닫기·포커스와 overlay shadow를 소유 |
+| CommandMenu | `query · commands` | 검색 Field와 키보드 선택 listbox를 결합 |
+| TreeNavigation | `active · expanded` | branch 확장과 leaf 선택을 분리한 계층 navigation |
 
 ## 금지 조합
 

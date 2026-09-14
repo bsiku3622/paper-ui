@@ -206,11 +206,11 @@ Tokens → Primitives → Atoms → Molecules → Components
 |---|---|---|
 | Primitives | 4 | `Box · Stack · Inline · Text` — raw HTML 을 렌더하는 유일한 자리 |
 | Atoms | 13 | `Button · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Icon · Spinner · Divider · Link` |
-| Molecules | 9 | `Card · TextField · FormField · SearchField · RadioGroup · Tabs · Tooltip · Alert · Breadcrumb` |
-| Components | 8 | `Table · Modal · Navbar · Banner · PageHeader · EmptyState · Pagination · Sidebar` |
+| Molecules | 12 | `Card · TextField · FormField · SearchField · RadioGroup · Tabs · Tooltip · Alert · Breadcrumb · Menu · Steps · TableOfContents` |
+| Components | 11 | `Table · Modal · Navbar · Banner · PageHeader · EmptyState · Pagination · Sidebar · DropdownMenu · CommandMenu · TreeNavigation` |
 
-**= 34(기준선).** 폼의 라벨 연결(FormField)·검색(SearchField)·피드백(Alert)·로딩(Spinner)과
-데이터 화면의 위치·시작·빈 상태·이동(Breadcrumb·PageHeader·EmptyState·Pagination·Sidebar)까지 시스템이 완결되는 최소 집합.
+**= 40(기준선).** 폼의 라벨 연결(FormField)·검색(SearchField)·피드백(Alert)·로딩(Spinner)과
+데이터 화면의 위치·시작·빈 상태·이동·계층 탐색까지 시스템이 완결되는 최소 집합.
 Banner 는 데모·공지 chrome 의 얇은 풀폭 바(검정 solid + status).
 
 **컴포넌트 추가 잣대는 단계로 갈린다.** *"실제 화면에서 두 번 이상 필요했다는 증거"* 는

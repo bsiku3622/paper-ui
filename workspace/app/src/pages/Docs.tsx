@@ -8,7 +8,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 
-import { Box, Sidebar, Stack, Text, tokens, type SidebarGroup } from "@studio-baeks/paper-ui";
+import { Box, Sidebar, Stack, Text, tokens } from "@studio-baeks/paper-ui";
 
 import { SiteNav, NAV_HEIGHT } from "../site/chrome";
 import "../site/markdown.css";
@@ -47,27 +47,25 @@ export const Docs = () => {
     return () => { cancelled = true; };
   }, [activeFile]);
 
-  const sidebarGroups: SidebarGroup[] = groups.map((group) => ({
-    value: group.group,
-    label: group.label || undefined,
-    items: group.docs.map((doc) => ({
-      value: doc.slug,
-      label: doc.title,
-      as: Link,
-      to: `/docs/${doc.slug}`,
-    })),
-  }));
-
   return (
     <Stack>
       <SiteNav />
       <Box style={{ display: "grid", gridTemplateColumns: `${tokens.shape.width.lg.layout} 1fr`, maxWidth: tokens.layout.container.content, marginInline: "auto", width: "100%" }}>
         <Sidebar
-          groups={sidebarGroups}
           active={slug}
           aria-label="문서 목차"
           style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, top: NAV_HEIGHT, position: "sticky" }}
-        />
+        >
+          {groups.map((group) => (
+            <Sidebar.Group key={group.group} label={group.label || undefined}>
+              {group.docs.map((doc) => (
+                <Sidebar.Item key={doc.slug || "overview"} value={doc.slug} as={Link} to={`/docs/${doc.slug}`}>
+                  {doc.title}
+                </Sidebar.Item>
+              ))}
+            </Sidebar.Group>
+          ))}
+        </Sidebar>
 
         {/* 본문 */}
         <Box paddingX="xl" paddingY="xl">

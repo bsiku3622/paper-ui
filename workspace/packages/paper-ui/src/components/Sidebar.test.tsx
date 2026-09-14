@@ -1,45 +1,40 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 
 import { Sidebar } from "./Sidebar";
 import { sidebarBadgeSelectedOverlay } from "./Sidebar.css";
 
 describe("Sidebar", () => {
-  it("활성 항목의 soft badge에도 selected overlay를 합성한다", () => {
+  it("compound item과 badge가 root의 active context를 읽는다", () => {
     render(
-      <Sidebar
-        active="components"
-        groups={[{
-          value: "docs",
-          items: [
-            { value: "components", label: "컴포넌트", badge: { label: "NEW", color: "info" } },
-            { value: "tokens", label: "토큰", badge: { label: "MOD", color: "warning" } },
-          ],
-        }]}
-      />,
+      <Sidebar active="components">
+        <Sidebar.Group label="문서">
+          <Sidebar.Item value="components">컴포넌트<Sidebar.Badge color="info">NEW</Sidebar.Badge></Sidebar.Item>
+          <Sidebar.Item value="tokens">토큰<Sidebar.Badge color="warning">MOD</Sidebar.Badge></Sidebar.Item>
+        </Sidebar.Group>
+      </Sidebar>,
     );
 
+    expect(screen.getByText("컴포넌트").closest("button")?.getAttribute("aria-current")).toBe("page");
     expect(screen.getByText("NEW").className).toContain("pui-c-info-soft");
     expect(screen.getByText("NEW").className).toContain(sidebarBadgeSelectedOverlay);
-    expect(screen.getByText("MOD").className).toContain("pui-c-warning-soft");
     expect(screen.getByText("MOD").className).not.toContain(sidebarBadgeSelectedOverlay);
   });
 
-  it("badge의 resting·active variant를 명시적으로 바꿀 수 있다", () => {
+  it("item 선택과 badge activeVariant를 각각 위임한다", () => {
+    const onSelect = vi.fn();
     render(
-      <Sidebar
-        active="components"
-        groups={[{
-          value: "docs",
-          items: [{
-            value: "components",
-            label: "컴포넌트",
-            badge: { label: "NEW", color: "info", variant: "hairline", activeVariant: "outline" },
-          }],
-        }]}
-      />,
+      <Sidebar active="components" onSelect={onSelect}>
+        <Sidebar.Group>
+          <Sidebar.Item value="components">
+            컴포넌트<Sidebar.Badge color="info" activeVariant="outline">NEW</Sidebar.Badge>
+          </Sidebar.Item>
+        </Sidebar.Group>
+      </Sidebar>,
     );
 
+    fireEvent.click(screen.getByRole("button", { name: "컴포넌트NEW" }));
+    expect(onSelect).toHaveBeenCalledWith("components");
     expect(screen.getByText("NEW").className).toContain("pui-c-info-outline");
   });
 });

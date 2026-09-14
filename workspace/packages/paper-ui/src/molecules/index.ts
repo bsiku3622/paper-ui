@@ -7,3 +7,6 @@ export { Alert, type AlertProps } from "./Alert";
 export { FormField, type FormFieldProps } from "./FormField";
 export { SearchField, type SearchFieldProps } from "./SearchField";
 export { Breadcrumb, type BreadcrumbProps, type BreadcrumbItem } from "./Breadcrumb";
+export { Menu, type MenuProps, type MenuItem } from "./Menu";
+export { Steps, type StepsProps, type StepItem } from "./Steps";
+export { TableOfContents, type TableOfContentsProps, type TableOfContentsItem } from "./TableOfContents";
