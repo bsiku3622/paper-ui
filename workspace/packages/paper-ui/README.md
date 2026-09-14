@@ -54,10 +54,10 @@ white, black, and whitespace.
 |---|---|---|
 | Primitives | 4 | `Box · Stack · Inline · Text` |
 | Atoms | 13 | `Button · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Icon · Spinner · Divider · Link` |
-| Molecules | 9 | `Card · TextField · FormField · SearchField · RadioGroup · Tabs · Tooltip · Alert · Breadcrumb` |
-| Components | 8 | `Table · Modal · Navbar · Banner · PageHeader · EmptyState · Pagination · Sidebar` |
+| Molecules | 9 | `FormField · RadioGroup · Tabs · Tooltip · Alert · Breadcrumb · Menu · Steps · TableOfContents` |
+| Components | 11 | `Table · Modal · Navbar · Banner · PageHeader · EmptyState · Pagination · Sidebar · DropdownMenu · CommandMenu · TreeNavigation` |
 
-Thirty-four components is the baseline — with forms, feedback, loading, location
+Thirty-seven components is the baseline — with forms, feedback, loading, location
 and page-level data flows included, it is the smallest set that finishes a real screen.
 
 Raw HTML stops at Atoms; each renders its own semantic tag. From Molecules up,

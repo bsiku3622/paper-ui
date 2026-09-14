@@ -109,7 +109,7 @@ chroma 는 저명도에서 지각이 약해지므로 다크 쪽을 조금 올려
 
 **톤은 램프 인덱스가 아니라 대비로 고릅니다.** 넷을 다 400톤으로 맞춰 보면 초록·amber가 파랑·빨강보다 눈에 띄게 옅습니다 — hue마다 고유 명도가 달라서입니다. 그래서 각자 지면 대비 3.0이 되는 자리를 따로 찾았습니다(`solid`를 "진한 톤으로 낮춤" 한 것과 같은 이유). primary는 자기 `edgeStrong`을 들지 않습니다 — 위의 `border.control`이 그 자리입니다.
 
-**color × shared variant — 잉크색을 입는 컴포넌트(Button·Badge·Alert).** `color`(primary + 4 accent) × `variant`(`solid`·`soft`·`plain`·`outline`·`hairline`·`quiet`)로 색을 받습니다. `plain`은 soft 면과 outline 선을 함께 쓰는 공통 단계이며 Card·Table의 지역 `plain`과 타입이 다릅니다. Accent의 `soft`·`plain` 배경은 OKLCH에서 hue를 각 accent에 고정합니다. `L`은 wash에서 primary soft로 75%, `C`는 같은 hue의 wash에서 edge로 75% 이동합니다. 그래서 primary 사다리에 가까운 진하기를 얻되 zinc hue가 섞인 탁한 중간색은 만들지 않습니다. solid 위 전경으로도 쓰이는 raw wash의 대비 계약은 그대로입니다.
+**color × shared variant — 잉크색을 입는 컴포넌트(Button·Badge·Alert).** `color`(primary + 4 accent) × `variant`(`solid`·`soft`·`plain`·`outline`·`hairline`·`quiet`)로 색을 받습니다. `plain`은 soft 면과 outline 선을 함께 쓰는 공통 단계이며 Table의 지역 `plain`과 타입이 다릅니다. Accent의 `soft`·`plain` 배경은 OKLCH에서 hue를 각 accent에 고정합니다. `L`은 wash에서 primary soft로 75%, `C`는 같은 hue의 wash에서 edge로 75% 이동합니다. 그래서 primary 사다리에 가까운 진하기를 얻되 zinc hue가 섞인 탁한 중간색은 만들지 않습니다. solid 위 전경으로도 쓰이는 raw wash의 대비 계약은 그대로입니다.
 
 **테두리만 있는 변형이 둘인데, 세기가 아니라 *어느 선이냐*로 갈립니다.** `outline`은 color family가 소유한 선입니다 — primary는 `primary.edgeStrong`, accent는 각자의 `edgeStrong`이고 둘 다 지면 대비 3:1입니다. 면을 안 칠하니 테두리가 곧 형태여서, 강조가 필요한 자리에 고르는 변형입니다. `hairline`은 지면이 소유한 선입니다 — 뉴트럴은 카드 헤어라인·빈 입력칸과 같은 `border.base`를 그대로 두르고, accent는 그 색의 가장 옅은 괘선(`edge`)으로 갑니다(색 있는 자리에 뉴트럴 회색을 두르면 그 컴포넌트만 색 정체성을 잃습니다).
 
@@ -121,7 +121,7 @@ chroma 는 저명도에서 지각이 약해지므로 다크 쪽을 조금 올려
 
 ## Shape
 
-크기는 **5단 사다리(xs~xl) × intent(interaction·layout)** 구조입니다 — chrome(Button·Field)은 `interaction`, container(Card·Modal)는 `layout`을 씁니다. 값은 넉넉한 라운드·부드러운 밀도를 지킵니다.
+크기는 **5단 사다리(xs~xl) × intent(interaction·layout)** 구조입니다 — chrome(Button·Field)은 `interaction`, container(Box·Modal)는 `layout`을 씁니다. 값은 넉넉한 라운드·부드러운 밀도를 지킵니다.
 
 **height** — `interaction` 24/30/34/40/44 (control = `md.interaction` 34) · `layout` 64~320
 **입력 글자는 `weight.normal`(450)입니다.** 이 시스템의 `normal`은 400이 아니라 450인데 — 작은 sans가 Retina에서 힘이 빠지는 걸 잡는 half-step입니다 — 한동안 Field·Select·Textarea만 굵기를 안 정해 브라우저 기본값 400으로 떨어져 있었습니다. 사람이 글자를 *써 넣는* 자리만 그 보정을 못 받고 있었던 셈이고, 크기는 넷 다 14인데 입력만 얇아 보이던 원인입니다. 자간은 `tracking.body`입니다 — 입력칸에 든 것은 UI 라벨이 아니라 사람이 쓴 내용이라, Button의 label 자간(+0.01em)이 아니라 본문 자간을 따릅니다.

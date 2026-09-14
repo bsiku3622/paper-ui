@@ -16,7 +16,6 @@ import {
   Box,
   Breadcrumb,
   Button,
-  Card,
   Checkbox,
   CommandMenu,
   Divider,
@@ -110,7 +109,7 @@ export const Playground = () => {
         <Stack gap="xs">
           <Text variant="label">Studio Baeks · Design System</Text>
           <Text variant="title">Component Playground</Text>
-          <Text variant="caption">38 컴포넌트 · variant · state 전수. 이 페이지가 자동 테스트의 대상이다. 개별 컴포넌트는 사이드바에서 상세로.</Text>
+          <Text variant="caption">37 컴포넌트 · variant · state 전수. 이 페이지가 자동 테스트의 대상이다. 개별 컴포넌트는 사이드바에서 상세로.</Text>
         </Stack>
 
         {/* ── Tokens ─────────────────────────────────────────── */}
@@ -166,11 +165,11 @@ export const Playground = () => {
 
         {/* ── Primitives · Box ──────────────────────────────── */}
         <Section id="sec-box" title="Box · 구조 패널">
-          <Spec label="surface + border (카드 헤어라인) · inverse (검은 판)">
+          <Spec label="surface + border (붙은 면의 헤어라인) · inverse (검은 판)">
             <Box surface="raised" padding="md" radius="md">
               <Text variant="caption" as="span">raised</Text>
             </Box>
-            <Box surface="raised" border padding="md" radius="md">
+            <Box surface="raised" border padding="md" radius="md" data-testid="box-border">
               <Text variant="caption" as="span">raised + border</Text>
             </Box>
             <Box surface="sunken" padding="md" radius="md">
@@ -395,27 +394,7 @@ export const Playground = () => {
         </Section>
 
         {/* ── Molecules ─────────────────────────────────────── */}
-        <Section id="sec-mol" title="Card · FormField · Tabs · Tooltip">
-          <Spec label="Card — shared variant (solid · soft · plain · outline · hairline · quiet)" testid="spec-card-variant">
-            {(["solid", "soft", "plain", "outline", "hairline", "quiet"] as const).map((variant) => (
-              <Card key={variant} variant={variant} style={{ width: "14rem" }} data-testid={`card-${variant}`}>
-                <Card.Body><Stack gap="xs">
-                  <Text variant="subheading">{variant}</Text>
-                  <Text variant="caption">같은 내용, 다른 구조.</Text>
-                </Stack></Card.Body>
-              </Card>
-            ))}
-          </Spec>
-          <Spec label="Card — semantic color도 같은 shared 축" testid="spec-card-color">
-            {(["info", "success", "warning", "error"] as const).map((color) => (
-              <Card key={color} color={color} variant="soft" style={{ width: "14rem" }} data-testid={`card-${color}-soft`}>
-                <Card.Body><Stack gap="xs">
-                  <Text variant="subheading">{color}</Text>
-                  <Text variant="caption">상태를 담는 같은 Card.</Text>
-                </Stack></Card.Body>
-              </Card>
-            ))}
-          </Spec>
+        <Section id="sec-mol" title="FormField · Tabs · Tooltip">
           <Spec label="Tabs — segmented shape + underline variant" testid="spec-tabs-shape">
             <Inline gap="lg" wrap align="center">
               <Box data-testid="tabs-shape-default">
@@ -531,7 +510,7 @@ export const Playground = () => {
               변형에서 테두리는 장식이 아니라 형태 그 자체라, 지면 대비 3:1 로 맞춰 뒀다. */}
           {/* 테두리만 있는 변형이 둘이다. 세기가 아니라 **어느 선이냐**로 갈린다 —
               outline 은 컨트롤이 소유한 선(color family 의 edgeStrong), hairline 은 지면이
-              소유한 선(카드 헤어라인·빈 입력칸과 같은 border.base). 그래서 hairline 은 여러
+              소유한 선(붙은 면의 헤어라인·빈 입력칸과 같은 border.base). 그래서 hairline 은 여러
               개 깔려도 조용하고, outline 은 하나만 놓아야 말이 된다. */}
           <Spec label="outline — 컨트롤이 소유한 선 (지면 대비 3:1)" testid="spec-outline">
             <Inline gap="sm" wrap align="center">
@@ -544,7 +523,7 @@ export const Playground = () => {
               ))}
             </Inline>
           </Spec>
-          <Spec label="hairline — 지면이 소유한 선 (카드·빈 입력칸과 같은 헤어라인)" testid="spec-hairline">
+          <Spec label="hairline — 지면이 소유한 선 (붙은 면·빈 입력칸과 같은 헤어라인)" testid="spec-hairline">
             <Inline gap="sm" wrap align="center">
               <Button variant="hairline" data-testid="hairline-primary">기본</Button>
               {STATUSES.map((c) => (

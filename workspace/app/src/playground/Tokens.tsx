@@ -246,7 +246,7 @@ export const Tokens = () => {
 
 
         {/* ── Shadow ─────────────────────────────────────────── */}
-        <Section id="tok-shadow" title="Shadow (2단 — 떠 있는 것의 표식)" desc="원칙 4: 떠 있는 것만 지속 그림자를 갖는다. 붙은 면(Button·Field·Card·Table)은 resting shadow가 없다. 예외는 semantic Form hover의 중앙 pigment halo뿐이며 elevation이 아니라 interaction 피드백이다. overlay=자유롭게 뜬 것 · overlayMinimal=아주 살짝. radius 와 나란한 shape 토큰일 뿐 별도 'elevation' 축 아님. 다크에선 near-black 이 사라지므로 더 짙은 그림자로 교체(테마 인식) — 다크 토글로 확인.">
+        <Section id="tok-shadow" title="Shadow (2단 — 떠 있는 것의 표식)" desc="원칙 4: 떠 있는 것만 지속 그림자를 갖는다. 붙은 면(Button·Field·Box·Table)은 resting shadow가 없다. 예외는 semantic Form hover의 중앙 pigment halo뿐이며 elevation이 아니라 interaction 피드백이다. overlay=자유롭게 뜬 것 · overlayMinimal=아주 살짝. radius 와 나란한 shape 토큰일 뿐 별도 'elevation' 축 아님. 다크에선 near-black 이 사라지므로 더 짙은 그림자로 교체(테마 인식) — 다크 토글로 확인.">
           <Inline gap="xl" wrap>
             {[
               { name: "overlay", desc: "Modal · Tooltip · Popover · 목업", token: tokens.shape.shadow.overlay },

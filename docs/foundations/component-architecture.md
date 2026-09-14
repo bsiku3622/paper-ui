@@ -16,7 +16,7 @@ Paper UI의 상위 레이어는 아래 일곱 축에서 필요한 것만 고릅�
 | `shape` | 한 줄 컨트롤이 기본 곡선인가 알약인가 | `default · pill` |
 | state | 지금 어떤 상태인가 | `open · selected · disabled · error` 등 |
 
-`color × variant`는 레이어와 무관하게 의미색과 시각 무게를 표현하는 요소가 **하나의 `Variant` 타입으로 공유**합니다. Button·Badge·Alert뿐 아니라 Card도 같은 매트릭스를 씁니다. 여기서 `plain`은 `soft`의 옅은 면과 `outline`의 또렷한 선을 동시에 쓰는 공통 단계입니다. 지역 `variant`는 Table의 행 구분이나 Tabs의 navigation 구조처럼 shared 축으로 표현할 수 없는 경우에만 둡니다. 같은 prop 이름을 쓰더라도 shared `Variant`에 지역 선택지를 섞지 않습니다.
+`color × variant`는 레이어와 무관하게 의미색과 시각 무게를 표현하는 요소가 **하나의 `Variant` 타입으로 공유**합니다. Button·Badge·Alert가 같은 매트릭스를 씁니다. 여기서 `plain`은 `soft`의 옅은 면과 `outline`의 또렷한 선을 동시에 쓰는 공통 단계입니다. 지역 `variant`는 Table의 행 구분이나 Tabs의 navigation 구조처럼 shared 축으로 표현할 수 없는 경우에만 둡니다. 같은 prop 이름을 쓰더라도 shared `Variant`에 지역 선택지를 섞지 않습니다.
 
 `density`와 `size`는 다릅니다. Table의 행 간격은 정보량이고, Pagination 버튼의 크기는 누르는 표적입니다. 표를 촘촘하게 만들려고 페이지 버튼까지 줄이지 않으며, 큰 버튼을 쓴다고 표의 행이 커지지도 않습니다.
 
@@ -59,7 +59,7 @@ Pagination
 
 왼쪽 정렬이 기본입니다. 제목, 필터의 시작점, 첫 열이 같은 수직선에 서야 합니다. 중앙 정렬은 EmptyState처럼 읽을 데이터가 없고 다음 행동 하나만 남는 경우에 한정합니다.
 
-Card는 페이지를 잘게 자르는 기본 단위가 아닙니다. 실제로 경계나 상태를 설명해야 할 때만 사용합니다. 그때도 Card만의 외형 이름을 만들지 않고 shared matrix에서 고릅니다.
+붙은 면은 별도 Card 컴포넌트가 아니라 Box의 `surface · border · radius · padding`을 조합합니다. 콘텐츠마다 구조가 다른 일반명 Card에 고정 anatomy나 색 문법을 부여하지 않습니다.
 
 ```text
 hairline          soft              plain             solid
@@ -94,7 +94,6 @@ row               row               row
 
 | 컴포넌트 | 축 | 결정 |
 | --- | --- | --- |
-| Card | compound `Header · Body · Footer`, shared `color × variant` | 기본 `primary × hairline`, hover gate·shadow는 없음 |
 | FormField | compound `Label · Control · Hint · Error` + `align` | 모든 입력의 유일한 form composition. 시각 status와 입력값 정렬은 control이 소유 |
 | RadioGroup | compound `Item` + `orientation · size` | 세로 기본, 좁은 선택지는 가로 배치 가능 |
 | Tabs | compound `Item` + `variant · size · shape` | `segmented · underline`. underline에서는 shape가 의미 없음 |
@@ -123,7 +122,7 @@ row               row               row
 
 ## 금지 조합
 
-- Card에 `shadow`나 interactive hover를 열지 않습니다. Card는 붙어 있는 정적 면이고, shadow는 Modal·Tooltip처럼 뜬 것의 표식입니다.
+- Box로 만든 붙은 면에 interactive hover나 지속 shadow를 열지 않습니다. shadow는 Modal·Tooltip처럼 뜬 것의 표식입니다.
 - Table의 `striped`에 행 divider를 함께 넣지 않습니다. 행 구분을 두 번 말하게 됩니다.
 - `Tabs variant="underline"`에는 `shape="pill"`을 적용하지 않습니다. 선형 탭에는 닫힌 실루엣이 없습니다.
 - FormField의 `error`가 control의 pigment를 몰래 바꾸지 않습니다. Field·Textarea의 `status`와 Select의 API는 서로 다르므로 접근성 관계만 공통화합니다.
@@ -131,6 +130,6 @@ row               row               row
 
 ## 검증 기준
 
-Card는 shared matrix의 여섯 variant와 다섯 color가 실제 profile과 일치하는지 보고, Table은 한 화면의 행 리듬을 정하므로 지역 variant를 나란히 둡니다. Tabs와 RadioGroup은 시각 차이뿐 아니라 키보드 이동과 배치가 유지되는지 보고, Modal은 세 폭 모두 viewport 안에서 본문만 scroll되는지 확인합니다. 선택지가 있다는 사실이 아니라 선택지마다 맡은 문장이 다르다는 것을 computed style과 접근성 동작으로 고정합니다.
+Table은 한 화면의 행 리듬을 정하므로 지역 variant를 나란히 둡니다. Tabs와 RadioGroup은 시각 차이뿐 아니라 키보드 이동과 배치가 유지되는지 보고, Modal은 세 폭 모두 viewport 안에서 본문만 scroll되는지 확인합니다. 선택지가 있다는 사실이 아니라 선택지마다 맡은 문장이 다르다는 것을 computed style과 접근성 동작으로 고정합니다.
 
 마지막으로 실제 이슈 트래커 데모에 한 가지 variant만 선택해 사용합니다. 데모가 모든 선택지를 한꺼번에 쓰면 시스템 검증이 아니라 갤러리가 됩니다. Playground는 폭을 보여주고, Demo는 판단을 보여줍니다.
