@@ -25,7 +25,7 @@ import {
   Select,
   Stack,
   Table,
-  Tabs,
+  SegmentedControl,
   Text,
   Tooltip,
   tokens,
@@ -154,7 +154,7 @@ export const Demo = () => {
           </PageHeader>
 
           <Inline gap="md" justify="between" wrap>
-            <Tabs value={tab} onValueChange={setTab}><Tabs.Item value="all">전체</Tabs.Item><Tabs.Item value="open">열림</Tabs.Item><Tabs.Item value="done">완료</Tabs.Item></Tabs>
+            <SegmentedControl value={tab} onValueChange={setTab}><SegmentedControl.Item value="all">전체</SegmentedControl.Item><SegmentedControl.Item value="open">열림</SegmentedControl.Item><SegmentedControl.Item value="done">완료</SegmentedControl.Item></SegmentedControl>
             <Inline gap="md">
               <Inline as="label" gap="sm">
                 <Checkbox checked={mineOnly} onChange={(e) => setMineOnly(e.currentTarget.checked)} />

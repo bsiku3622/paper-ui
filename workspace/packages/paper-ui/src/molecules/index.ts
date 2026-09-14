@@ -1,4 +1,5 @@
-export { Tabs, TabItem, type TabsProps, type TabItemProps, type TabsVariant } from "./Tabs";
+export { Tabs, TabsList, TabsTrigger, TabsContent, type TabsProps, type TabsListProps, type TabsTriggerProps, type TabsContentProps } from "./Tabs";
+export { SegmentedControl, SegmentedControlItem, type SegmentedControlProps, type SegmentedControlItemProps } from "./SegmentedControl";
 export { Tooltip, TooltipTrigger, TooltipContent, type TooltipProps, type TooltipTriggerProps, type TooltipContentProps } from "./Tooltip";
 export { RadioGroup, RadioGroupItem, type RadioGroupProps, type RadioGroupItemProps, type RadioGroupOrientation } from "./RadioGroup";
 export { Alert, AlertIcon, AlertTitle, AlertDescription, type AlertProps, type AlertPartProps } from "./Alert";

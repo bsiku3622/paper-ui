@@ -390,15 +390,15 @@ export const ATOM_INTRINSIC = {
   checkboxRadius: REM(3), //   Checkbox 모서리 (작아서 radius 사다리와 별도)
   badgeHeight: REM(22), //     Badge 높이 (control 34 보다 낮은 인라인 라벨)
   navbar: REM(52), //          Navbar · 사이트 GNB 바 높이
-  // ⚠ tabsTrackPad 는 여백이면서 **동심 반경의 분모**다. 각진 탭(shape="default")의 항목
-  //   반경을 `radius.interaction − tabsTrackPad` 로 계산하므로, 이 값을 건드리면 안쪽
+  // ⚠ segmentedTrackPad 는 여백이면서 **동심 반경의 분모**다. 각진 segment의 항목
+  //   반경을 `radius.interaction − segmentedTrackPad` 로 계산하므로, 이 값을 건드리면 안쪽
   //   곡선이 같이 움직인다. 3 → 6 이면 항목 반경이 0 이 되어 안쪽만 직각이 된다.
   //
   // ⚠ 옛 `tabsItemPadX`(9px)는 지웠다. 항목 여백을 사다리보다 한 단 좁게 두려던 값인데,
-  //   tabItemSize 가 뒤에 와서 공통 사다리(10 · 13 · 17)로 덮고 있었다 — 살아 있는 척만
-  //   하는 값이었다. 탭도 컨트롤이라 사다리를 그대로 진다.
-  tabsTrackGap: "1px", //      세그먼트 트랙 항목 간격
-  tabsTrackPad: "3px", //      세그먼트 트랙 안쪽 여백 — 2px 면 활성 면이 트랙에 낀다
+  //   item size가 뒤에 와서 공통 사다리(10 · 13 · 17)로 덮고 있었다 — 살아 있는 척만
+  //   하는 값이었다. SegmentedControl도 컨트롤이라 사다리를 그대로 진다.
+  segmentedTrackGap: "1px", // 세그먼트 트랙 항목 간격
+  segmentedTrackPad: "3px", // 세그먼트 트랙 안쪽 여백 — 2px 면 활성 면이 트랙에 낀다
   selectArrow: REM(10), //     Select 화살표 아이콘 크기 (0.625rem)
   radioDot: REM(8), //         Radio 채운 점
   spinner: REM(18), //         Spinner 크기

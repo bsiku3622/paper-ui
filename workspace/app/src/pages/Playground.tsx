@@ -32,6 +32,7 @@ import {
   Pagination,
   Radio,
   RadioGroup,
+  SegmentedControl,
   Select,
   Spinner,
   Stack,
@@ -109,7 +110,7 @@ export const Playground = () => {
         <Stack gap="xs">
           <Text variant="label">Studio Baeks · Design System</Text>
           <Text variant="title">Component Playground</Text>
-          <Text variant="caption">37 컴포넌트 · variant · state 전수. 이 페이지가 자동 테스트의 대상이다. 개별 컴포넌트는 사이드바에서 상세로.</Text>
+          <Text variant="caption">38 컴포넌트 · variant · state 전수. 이 페이지가 자동 테스트의 대상이다. 개별 컴포넌트는 사이드바에서 상세로.</Text>
         </Stack>
 
         {/* ── Tokens ─────────────────────────────────────────── */}
@@ -394,19 +395,26 @@ export const Playground = () => {
         </Section>
 
         {/* ── Molecules ─────────────────────────────────────── */}
-        <Section id="sec-mol" title="FormField · Tabs · Tooltip">
-          <Spec label="Tabs — segmented shape + underline variant" testid="spec-tabs-shape">
+        <Section id="sec-mol" title="FormField · SegmentedControl · Tabs · Tooltip">
+          <Spec label="SegmentedControl — sm 기본 · default/pill shape" testid="spec-segmented-shape">
             <Inline gap="lg" wrap align="center">
-              <Box data-testid="tabs-shape-default">
-                <Tabs value={tab} onValueChange={setTab}><Tabs.Item value="one">하나</Tabs.Item><Tabs.Item value="two">둘</Tabs.Item><Tabs.Item value="three">셋</Tabs.Item></Tabs>
+              <Box data-testid="segmented-shape-default">
+                <SegmentedControl value={tab} onValueChange={setTab}><SegmentedControl.Item value="one">하나</SegmentedControl.Item><SegmentedControl.Item value="two">둘</SegmentedControl.Item><SegmentedControl.Item value="three">셋</SegmentedControl.Item></SegmentedControl>
               </Box>
-              <Box data-testid="tabs-shape-pill">
-                <Tabs value={tab} onValueChange={setTab} shape="pill"><Tabs.Item value="one">하나</Tabs.Item><Tabs.Item value="two">둘</Tabs.Item><Tabs.Item value="three">셋</Tabs.Item></Tabs>
-              </Box>
-              <Box data-testid="tabs-variant-underline">
-                <Tabs value={tab} onValueChange={setTab} variant="underline"><Tabs.Item value="one">하나</Tabs.Item><Tabs.Item value="two">둘</Tabs.Item><Tabs.Item value="three">셋</Tabs.Item></Tabs>
+              <Box data-testid="segmented-shape-pill">
+                <SegmentedControl value={tab} onValueChange={setTab} shape="pill"><SegmentedControl.Item value="one">하나</SegmentedControl.Item><SegmentedControl.Item value="two">둘</SegmentedControl.Item><SegmentedControl.Item value="three">셋</SegmentedControl.Item></SegmentedControl>
               </Box>
             </Inline>
+          </Spec>
+          <Spec label="Tabs — md 기본 · underline trigger와 panel" testid="spec-tabs">
+            <Box style={{ width: "24rem", maxWidth: "100%" }}>
+              <Tabs value={tab} onValueChange={setTab}>
+                <Tabs.List aria-label="컴포넌트 문서"><Tabs.Trigger value="one">개요</Tabs.Trigger><Tabs.Trigger value="two">Props</Tabs.Trigger><Tabs.Trigger value="three">예제</Tabs.Trigger></Tabs.List>
+                <Tabs.Content value="one"><Stack gap="xs"><Text variant="subheading">컴포넌트 개요</Text><Text ink="soft">역할과 기본 사용 원칙을 읽습니다.</Text></Stack></Tabs.Content>
+                <Tabs.Content value="two"><Stack gap="xs"><Text variant="subheading">Props 문서</Text><Text ink="soft">공개된 축과 기본값을 확인합니다.</Text></Stack></Tabs.Content>
+                <Tabs.Content value="three"><Stack gap="xs"><Text variant="subheading">사용 예제</Text><Text ink="soft">실제 content composition을 살펴봅니다.</Text></Stack></Tabs.Content>
+              </Tabs>
+            </Box>
           </Spec>
           <Spec label="RadioGroup — 세로 질문과 가로 선택지">
             <RadioGroup
