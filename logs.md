@@ -1,3 +1,14 @@
+## 2026-09-15 — Widen Tooltip content through Box layout props
+
+- 변경 파일: Box·Tooltip API, Playground registry, component docs·tests
+- 요약: Tooltip의 shrink-to-fit 폭이 trigger 주변에서 세로로 찌그러지던 문제를 고치고, Box에 재사용 가능한 dimension·overflow API를 추가했습니다.
+
+기존 Tooltip은 `max-width`만 정하고 실제 width를 두지 않아 absolute positioning의 shrink-to-fit 계산에 따라 긴 한국어 문장이 한두 글자씩 꺾였습니다. Content의 기본을 `width="max-content"`, `maxWidth="xl"`로 바꿔 짧은 설명은 가로로 읽고 긴 설명만 360px에서 줄바꿈하게 했습니다. `Tooltip.Content`는 Box props를 이어받으므로 `maxWidth="sm | md | lg | xl"`이나 앱 고유 CSS 길이로 정보량에 맞는 폭을 정할 수 있습니다.
+
+Box는 임의의 CSS prop 전체를 복제하지 않고 box model의 크기와 잘림만 공통 API로 열었습니다. `width/minWidth/maxWidth`, `height/minHeight/maxHeight`, `overflow/overflowX/overflowY`가 그 범위이며, `xs~xl`은 기존 layout token으로 해석합니다. `full/fit/min-content/max-content`는 반복되는 intent, 그 밖의 CSS 길이는 저수준 primitive의 escape hatch입니다. position과 flex 배치는 소비처 className 및 Stack·Inline의 책임으로 남겨 Box가 두 번째 layout engine이 되지 않게 했습니다.
+
+Playground의 Box 상세에서 width·maxWidth·overflow를, Tooltip 상세에서 maxWidth 사다리를 직접 바꿀 수 있습니다. 기본 Tooltip이 충분히 가로로 펼쳐지는지는 실제 bounding box와 360px 상한을 E2E로 고정했습니다.
+
 ## 2026-09-14 — Split segmented selection from Tabs
 
 - 변경 파일: Tabs·SegmentedControl API, selection tokens, Playground·Demo·docs·tests

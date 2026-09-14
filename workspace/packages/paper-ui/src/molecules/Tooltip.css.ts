@@ -15,7 +15,6 @@ export const tooltipBubble = style({
   left: "50%",
   transform: "translateX(-50%)",
   zIndex: tokens.layout.z.overlay,
-  maxWidth: tokens.shape.width.lg.layout,
   whiteSpace: "normal",
   padding: `${tokens.shape.padding.xs.interaction} ${tokens.shape.padding.sm.interaction}`,
   borderRadius: tokens.shape.radius.interaction,

@@ -62,6 +62,8 @@ and page-level data flows included, it is the smallest set that finishes a real 
 
 Raw HTML stops at Atoms; each renders its own semantic tag. From Molecules up,
 everything is composed from Primitives and Atoms.
+`Box` also exposes typed dimension and overflow props; named `xs`–`xl` values resolve
+to layout tokens, while CSS lengths remain available for application-specific layout.
 
 ## How it decides
 
