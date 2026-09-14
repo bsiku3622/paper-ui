@@ -59,7 +59,7 @@ Table은 화면에 보이는 열과 셀을 그대로 JSX에 적습니다. 상태
 </Table>
 ```
 
-기본 표는 별도 Card나 외곽선 없이 페이지에 바로 놓습니다. 회색은 직각 header 면에만 쓰고, body의 행 간격과 hover가 구분을 맡습니다. 실제 패널 경계가 필요한 화면에서만 바깥 Card를 더합니다. 서버 스키마에서 곧바로 표를 만드는 제한적인 경우에는 별도 `DataTable` adapter를 쓸 수 있지만, 제품 화면의 기본 API는 위 compound anatomy입니다.
+기본 표는 별도 container나 외곽선 없이 페이지에 바로 놓습니다. 회색은 직각 header 면에만 쓰고, body의 행 간격과 hover가 구분을 맡습니다. 실제 패널 경계가 필요한 화면에서만 바깥에 Box의 surface·border를 조합합니다. 서버 스키마에서 곧바로 표를 만드는 제한적인 경우에는 별도 `DataTable` adapter를 쓸 수 있지만, 제품 화면의 기본 API는 위 compound anatomy입니다.
 
 ## 왜 이렇게
 

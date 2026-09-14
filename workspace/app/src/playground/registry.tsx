@@ -11,7 +11,6 @@ import {
   Badge,
   Box,
   Button,
-  Card,
   Checkbox,
   CommandMenu,
   Divider,
@@ -118,7 +117,7 @@ export const COMPONENTS: CompSpec[] = [
     slug: "box",
     name: "Box",
     group: "Primitives",
-    blurb: "구조 패널. surface(면 깊이)에 border(카드 헤어라인)·radius·shadow·padding 을 얹는다. 넷 다 안 주는 게 기본이라(none) 아무것도 안 준 Box 는 투명한 각진 칸이다. 색(잉크)은 여기 없다 — 큰 면은 색으로 안 채운다. 검은 판은 inverse. 간격 축은 padding 말고 paddingX·paddingY·gap 도 같은 사다리로 받는다. as 로 어떤 태그든.",
+    blurb: "구조 패널. surface(면 깊이)에 border(붙은 면의 헤어라인)·radius·shadow·padding 을 얹는다. 넷 다 안 주는 게 기본이라(none) 아무것도 안 준 Box 는 투명한 각진 칸이다. 색(잉크)은 여기 없다 — 큰 면은 색으로 안 채운다. 검은 판은 inverse. 간격 축은 padding 말고 paddingX·paddingY·gap 도 같은 사다리로 받는다. as 로 어떤 태그든.",
     controls: [
       { kind: "enum", prop: "surface", label: "surface", options: ["none", "raised", "canvas", "sunken", "well"], def: "raised" },
       { kind: "bool", prop: "border", label: "border", def: false },
@@ -499,28 +498,6 @@ export const COMPONENTS: CompSpec[] = [
       `<FormField${AE("align", s(st.align), "stretch")}>\n  <FormField.Label>${s(st.label)}</FormField.Label>\n  <FormField.Control>\n    ${s(st.control) === "select" ? `<Select>\n      <Select.Option value="">선택하세요</Select.Option>\n      <Select.Option value="high">높음</Select.Option>\n    </Select>` : s(st.control) === "textarea" ? `<Textarea${s(st.error) ? ' status="error"' : ""} placeholder="내용을 입력하세요" />` : `<Field${s(st.error) ? ' status="error"' : ""} placeholder="입력하세요" />`}\n  </FormField.Control>${s(st.error) ? `\n  <FormField.Error>${s(st.error)}</FormField.Error>` : s(st.hint) ? `\n  <FormField.Hint>${s(st.hint)}</FormField.Hint>` : ""}\n</FormField>`,
   },
   {
-    slug: "card",
-    change: "mod",
-    name: "Card",
-    group: "Molecules",
-    blurb: "Button·Badge·Alert와 같은 shared color × variant를 쓴다. Card만의 시각 문법을 만들지 않고, 정적인 컨테이너라 hover gate와 shadow만 제외한다.",
-    controls: [
-      { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "plain", "outline", "hairline", "quiet"], def: "hairline" },
-      { kind: "enum", prop: "color", label: "color", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
-      { kind: "enum", prop: "radius", label: "radius", options: ["sm", "md", "lg", "full"], def: "md" },
-      { kind: "enum", prop: "padding", label: "padding", options: ["none", "sm", "md", "lg", "xl"], def: "lg" },
-    ],
-    render: (st) => (
-      <Card color={s(st.color) as Color} variant={s(st.variant) as Variant} radius={s(st.radius) as "sm" | "md" | "lg" | "full"} style={{ width: "18rem" }}>
-        <Card.Header><Text variant="subheading">카드 제목</Text></Card.Header>
-        <Card.Body><Text variant="caption">shared 축을 따르는 정적 컨테이너.</Text></Card.Body>
-        <Card.Footer><Inline justify="end"><Button size="sm" variant="quiet">자세히</Button></Inline></Card.Footer>
-      </Card>
-    ),
-    code: (st) =>
-      `<Card${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "hairline")}${AE("radius", s(st.radius), "md")}>\n  <Card.Header><Text variant="subheading">카드 제목</Text></Card.Header>\n  <Card.Body><Text variant="caption">…</Text></Card.Body>\n  <Card.Footer><Button size="sm">자세히</Button></Card.Footer>\n</Card>`,
-  },
-  {
     slug: "tabs",
     change: "mod",
     name: "Tabs",
@@ -640,7 +617,7 @@ export const COMPONENTS: CompSpec[] = [
     change: "new",
     name: "PageHeader",
     group: "Components",
-    blurb: "location → display title → description의 읽기 순서를 만들고 actions를 제목 기준선에 맞춘다. Card나 eyebrow 장식을 강요하지 않는다.",
+    blurb: "location → display title → description의 읽기 순서를 만들고 actions를 제목 기준선에 맞춘다. 별도 container나 eyebrow 장식을 강요하지 않는다.",
     controls: [
       { kind: "text", prop: "title", label: "title", def: "이슈" },
       { kind: "text", prop: "description", label: "description", def: "12건이 현재 필터와 일치합니다." },
@@ -682,7 +659,7 @@ export const COMPONENTS: CompSpec[] = [
     change: "new",
     name: "EmptyState",
     group: "Components",
-    blurb: "빈 결과를 막다른 곳으로 두지 않는다. 이유와 다음 행동 하나만 남기고 새 색면·카드는 만들지 않는다.",
+    blurb: "빈 결과를 막다른 곳으로 두지 않는다. 이유와 다음 행동 하나만 남기고 별도 container를 만들지 않는다.",
     controls: [
       { kind: "text", prop: "title", label: "title", def: "일치하는 이슈가 없습니다" },
       { kind: "text", prop: "description", label: "description", def: "필터를 바꾸거나 새 이슈를 만들어 시작하세요." },
@@ -715,7 +692,7 @@ export const COMPONENTS: CompSpec[] = [
     name: "Table",
     group: "Components",
     preview: "flush",
-    blurb: "외곽 Card 없이 직각으로 서는 표. Header·Column·Body·Row·Cell의 semantic anatomy가 기본 API이며 variant는 행 구분법, density는 같은 14px 정보를 담는 높이만 정한다.",
+    blurb: "외곽 container 없이 직각으로 서는 표. Header·Column·Body·Row·Cell의 semantic anatomy가 기본 API이며 variant는 행 구분법, density는 같은 14px 정보를 담는 높이만 정한다.",
     controls: [
       { kind: "enum", prop: "variant", label: "variant", options: ["plain", "ruled", "striped"], def: "plain" },
       { kind: "enum", prop: "density", label: "density", options: ["compact", "default", "comfortable"], def: "default" },

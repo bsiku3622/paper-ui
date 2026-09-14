@@ -52,7 +52,7 @@ export type ShapeIntent = (typeof SHAPE_INTENTS)[number];
 //
 // interaction: chrome (Button · Field · Select · NavItem). md=34 anchor
 //   (shadcn 36 · Atlassian 32 사이의 paper-ui 밀도). 차분한 범위 24~44.
-// layout: container surface (Card · Sidebar · Modal). endpoint-driven.
+// layout: container surface (Box · Sidebar · Modal). endpoint-driven.
 
 export const SHAPE_HEIGHT = {
   xs: { interaction: REM(24), layout: REM(64) },
@@ -78,7 +78,7 @@ export const SHAPE_WIDTH = {
 //
 // interaction: interactive·chrome 여백 (Button·Field·Tab·Box). 4px 배수, md=12
 //   anchor — 기존 space 사다리와 같은 값이라 Box padding 심미성이 그대로 유지된다.
-// layout: block container uniform padding (Card·block). 한 단 더 넉넉히. md=16.
+// layout: block container uniform padding (Box·block). 한 단 더 넉넉히. md=16.
 
 export const SHAPE_PADDING = {
   xs: { interaction: REM(4), layout: REM(8) },
@@ -95,7 +95,7 @@ export const SHAPE_PADDING = {
 export const SHAPE_GAP = {
   xs: REM(4), // inline icon + label
   sm: REM(8), // 기본 Inline 짝 간격
-  md: REM(12), // Card 내부 · 기본 Stack ◀ default
+  md: REM(12), // Box 내부 · 기본 Stack ◀ default
   lg: REM(16), // 블록 사이
   xl: REM(24), // 섹션 사이
 } as const;
@@ -129,7 +129,7 @@ export const SHAPE_RADIUS = {
   interaction: REM(6), // Button·Field·Badge·Select — 날만 죽인 6
   layout: {
     sm: REM(6), // Tooltip·Popover — 작은 면은 interaction 과 같은 곡선
-    md: REM(8), // Card ◀ anchor
+    md: REM(8), // Box ◀ anchor
     lg: REM(12), // Modal·큰 면
   },
   full: "999px", // 알약 — 높이의 절반. intent 로 안 갈린다(어느 면에나 같은 값)
@@ -325,7 +325,7 @@ export const SHAPE_MEASURE = {
 
 // ───── shadow — 떠 있는 것의 표식 (2단, 축 아님) ────────────────────────────
 //
-// 원칙 4: "떠 있는 것만 지속 그림자를 갖는다". 붙어있는 면(Button·Field·Card·Table)은
+// 원칙 4: "떠 있는 것만 지속 그림자를 갖는다". 붙어있는 면(Button·Field·Box·Table)은
 // resting 그림자 없음 — semantic Form hover의 일시적 pigment 피드백만 아래 helper로 예외다.
 // radius·size 와 나란한 shape 토큰일 뿐,
 // "elevation" 같은 추상 축이 아니다 (그 이름은 surface 의 'raised' 와 충돌했다 —

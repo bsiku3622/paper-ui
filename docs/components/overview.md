@@ -1,6 +1,6 @@
 # Overview
 
-서른여덟 개입니다. 한 화면에서 훑으려면 [플레이그라운드](/playground)로, 한 컴포넌트의 prop을 토글하며 코드까지 보려면 사이드바에서 그 컴포넌트의 상세(`/playground/<이름>`)로 들어가세요 — 이 문서는 무엇이 있고 어느 레이어에 사는지를 잡아줍니다. 상위 레이어의 variant가 무엇을 바꾸고 어디서 멈추는지는 [컴포넌트 축](../foundations/component-architecture.md)에 따로 정리했습니다.
+서른일곱 개입니다. 한 화면에서 훑으려면 [플레이그라운드](/playground)로, 한 컴포넌트의 prop을 토글하며 코드까지 보려면 사이드바에서 그 컴포넌트의 상세(`/playground/<이름>`)로 들어가세요 — 이 문서는 무엇이 있고 어느 레이어에 사는지를 잡아줍니다. 상위 레이어의 variant가 무엇을 바꾸고 어디서 멈추는지는 [컴포넌트 축](../foundations/component-architecture.md)에 따로 정리했습니다.
 
 레이어는 자기보다 아래만 씁니다. `Tokens → Primitives → Atoms → Molecules → Components`.
 
@@ -26,11 +26,10 @@ raw HTML을 렌더하는 유일한 레이어입니다.
 - **Badge** — 짧은 표식. Button과 같은 공유 `color × variant`(기본 `soft`) + `dot`(상태 점). `solid`=카운트·강조, `plain`=옅은 면+또렷한 선, `outline`=또렷한 테두리 태그, `hairline`=조용한 테두리 태그, `quiet`=글자만. Button과 같은 `shape="pill"`을 받아 두 알약이 나란히 서도 곡선이 갈리지 않습니다. `size`는 높이(20·22·24)만 움직이고 글자는 12로 고정입니다.
 - **Spinner** — 진행 중 표시. 주기는 motion 토큰. Icon과 같은 사다리(16·18·20)라 나란히 두면 크기가 맞습니다. 속이 빈 링이라 같은 지름의 채운 사각형보다 가볍게 읽히는데, 그건 스피너가 지고 가는 성질이라 지름으로 보정하지 않습니다.
 
-## Molecules (10)
+## Molecules (9)
 
 Primitive + Atom 합성입니다. raw HTML 없이 하위 레이어 조합만.
 
-- **Card** — Button·Badge·Alert와 같은 공유 `color × variant`를 씁니다. 기본은 `primary × hairline`이고, `Card.Header/Body/Footer`가 내부 anatomy를 드러냅니다. parts를 쓰지 않는 단순 Card는 기존처럼 root `padding` 안에 임의 콘텐츠를 둘 수 있습니다. Card는 정적인 면이라 hover gate와 shadow를 붙이지 않습니다.
 - **FormField** — `FormField.Label/Control/Hint/Error`로 Field·Select·Textarea의 구조와 접근성 관계를 하나의 문법으로 드러냅니다. Root가 label·description id와 `aria-invalid`를 연결하고 `align="start | center | end | stretch"`로 묶음의 정렬을 정합니다. 입력값 정렬과 시각적인 `status`는 계속 각 Atom의 책임입니다.
 - **RadioGroup** — `RadioGroup.Item`으로 Radio + Label을 한 그룹 안에 조합합니다. 질문지는 세로가 기본이고, 짧고 서로 대등한 선택지는 `orientation="horizontal"`로 한 줄에 둡니다. 좁은 화면에서는 wrap합니다.
 - **Tabs** — `variant="segmented"`는 닫힌 트랙 안에서 범위를 바꾸고, `underline`은 넓은 페이지의 형제 구역을 가릅니다. 화살표·Home/End 이동(roving tabindex)은 둘이 같습니다. `shape`은 segmented에서만 Button·Badge·Field·Select와 같은 어휘로 작동합니다. 한 축이 **두 곡선**을 함께 정합니다 — 그릇(트랙)과 알맹이(항목)가 겹쳐 있어 따로 놀면 초승달 빈틈이 생기거나 활성 면이 트랙 밖으로 삐져나갑니다. 각진 쪽 안쪽 반경은 상수가 아니라 `바깥 반경 − 트랙 여백`(6 − 3 = 3)으로 **동심**을 맞춥니다. underline에는 닫힌 실루엣이 없으므로 shape를 무시합니다.
@@ -45,7 +44,7 @@ Primitive + Atom 합성입니다. raw HTML 없이 하위 레이어 조합만.
 
 복잡한 상태를 가질 수 있는 고수준 UI입니다.
 
-- **Table** — 외곽 Card 없이 직각으로 서는 `Table.Header/Column/Body/Row/Cell` compound anatomy가 기본 API입니다. `variant`는 행 구분법(`plain · ruled · striped`), `density`는 같은 14px 정보를 담는 높이(`compact · default · comfortable`)이며, `align`과 `numeric`은 Column과 Cell이 명시적으로 소유합니다. 데이터 어댑터가 필요한 경우에만 별도 `DataTable`을 사용합니다.
+- **Table** — 외곽 container 없이 직각으로 서는 `Table.Header/Column/Body/Row/Cell` compound anatomy가 기본 API입니다. `variant`는 행 구분법(`plain · ruled · striped`), `density`는 같은 14px 정보를 담는 높이(`compact · default · comfortable`)이며, `align`과 `numeric`은 Column과 Cell이 명시적으로 소유합니다. 데이터 어댑터가 필요한 경우에만 별도 `DataTable`을 사용합니다.
 - **Modal** — `Modal.Header/Title/Description/Body/Footer/Close`로 구조가 드러나는 compound dialog입니다. `size="sm · md · lg"`는 확인 한 줄, 일반 form, 비교·복합 form처럼 **담는 일의 폭**을 고릅니다. body로 portal해 배경을 inert로 잠그고 포커스를 가둡니다(trap) — 열면 포커스 진입, Esc·배경 클릭으로 닫히며 트리거로 복귀. 제목·설명의 접근성 연결은 compound part가 자동으로 만들고, 패널 높이를 넘는 것은 Body만 구릅니다.
 - **Navbar** — `Navbar.Brand/Item/Actions`가 한 줄의 구조를 그대로 드러냅니다. Item은 `as`로 버튼과 링크를 오가며 활성 표시는 양쪽 다 `aria-current="page"`입니다. `width`는 안쪽 줄의 폭만 정하고 면과 괘선은 화면 끝까지 갑니다.
 - **Banner** — `Banner.Content/Action`으로 풀폭 바의 양쪽 역할을 명시합니다. 검정 solid가 기본이고, 공지·경고를 짊어질 때만 status 색을 채웁니다.
@@ -57,6 +56,6 @@ Primitive + Atom 합성입니다. raw HTML 없이 하위 레이어 조합만.
 - **CommandMenu** — 검색 Field와 키보드 선택 listbox를 묶습니다. label·keywords 검색, group·설명·단축키를 지원해 빠른 이동과 실행을 맡습니다.
 - **TreeNavigation** — 깊은 정보 구조를 접고 펴는 계층 navigation입니다. leaf 선택은 `value`, branch 확장은 `expandedValues`로 분리하고 방향키로 탐색합니다.
 
-## 서른여덟 개인 이유
+## 서른일곱 개인 이유
 
-폼의 구조(FormField)·피드백(Alert)·로딩(Spinner)과 데이터 화면의 위치·순서·명령·계층 탐색·빈 상태·이동까지, 시스템이 실제 화면을 완결할 수 있는 기준선입니다. 검색은 별도 컴포넌트가 아니라 Field의 `type · leading · clearable` 조합으로 표현합니다. 더 늘리는 잣대는 단계로 갈립니다 — 정식 배포(v1) 이후엔 *실제 화면에서 두 번 이상 필요했다는 증거*가 있어야 하고, v1로 가는 지금은 아직 소비자가 없어 "표준 primitive인가, 실제 semantic 공백을 메우는가"를 봅니다(그래도 기존 것의 확장을 먼저). "있으면 좋을 것 같아서"는 어느 단계에서도 증거가 아닙니다. Avatar가 필요하면 Box 조합으로 이니셜 원을 만들 수 있고(데모가 그렇게 합니다), Popover가 필요하면 그게 정말 두 번 이상 나왔는지 먼저 봅니다. 선택지를 늘리는 방향은 시스템의 목표에 역행한다고 봅니다 — 자세히는 [원칙](../get-started/philosophy.md)의 "시스템이 형태를 정한다".
+폼의 구조(FormField)·피드백(Alert)·로딩(Spinner)과 데이터 화면의 위치·순서·명령·계층 탐색·빈 상태·이동까지, 시스템이 실제 화면을 완결할 수 있는 기준선입니다. 검색은 Field 조합으로, 일반적인 붙은 면은 Box 조합으로 표현합니다. 더 늘리는 잣대는 단계로 갈립니다 — 정식 배포(v1) 이후엔 *실제 화면에서 두 번 이상 필요했다는 증거*가 있어야 하고, v1로 가는 지금은 아직 소비자가 없어 "표준 primitive인가, 실제 semantic 공백을 메우는가"를 봅니다(그래도 기존 것의 확장을 먼저). "있으면 좋을 것 같아서"는 어느 단계에서도 증거가 아닙니다. Avatar가 필요하면 Box 조합으로 이니셜 원을 만들 수 있고(데모가 그렇게 합니다), Popover가 필요하면 그게 정말 두 번 이상 나왔는지 먼저 봅니다. 선택지를 늘리는 방향은 시스템의 목표에 역행한다고 봅니다 — 자세히는 [원칙](../get-started/philosophy.md)의 "시스템이 형태를 정한다".

@@ -4,7 +4,7 @@
 // 규칙을 여기서 굳힌다. 둘 다 같은 COLORS·VARIANTS 배열을 도니 조합이 어긋날 수 없다.
 //
 // hover 는 .pui-interactive 가 함께 있을 때만 문다 — 눌리는 것(Button)만 gate 를 붙이고,
-// 표시용(Badge)·정적 면(Card)은 안 붙여 hover 색이 뜨지 않는다.
+// 표시용(Badge)에는 안 붙여 hover 색이 뜨지 않는다.
 
 import { globalStyle } from "@vanilla-extract/css";
 

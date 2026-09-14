@@ -1,3 +1,14 @@
+## 2026-09-14 — Remove generic Card abstraction
+
+- 변경 파일: Card implementation·exports, Box Playground, component docs·tests
+- 요약: Box와 책임이 겹치고 실제 제품 사용처가 없던 Card를 제거해 일반적인 붙은 면을 Box 조합 하나로 통일했습니다.
+
+Card가 추가하던 것은 shared color variant, 기본 radius, Header·Body·Footer padding과 divider였지만 의미·상태·접근성 계약은 없었습니다. 실제 Demo에서는 사용되지 않고 Playground 표본만 존재했으며, semantic 색면은 Alert와 겹치고 고정 anatomy는 사용처마다 다른 card content를 제대로 설명하지 못했습니다. 따라서 더 강한 visual preset으로 확장하지 않고 public implementation과 export를 제거했습니다.
+
+일반적인 붙은 면은 `Box surface + border + radius + padding`으로 조합합니다. semantic 상태는 Alert, 실제로 뜨는 surface는 Modal·Tooltip·DropdownMenu가 계속 맡습니다. E2E의 shared Card variant 검증은 제거했지만 화면의 헤어라인이 한 벌이라는 계약은 `Box border`를 기준으로 이관해 Field·Select·Textarea·hairline과 계속 비교합니다.
+
+⚠ `Card`, `Card.Header/Body/Footer`, `CardProps`, `CardPartProps` export는 제거된 breaking API입니다. 기준선은 37개(Primitives 4 · Atoms 13 · Molecules 9 · Components 11)로 줄었고 Playground Sidebar와 문서의 수치도 함께 갱신했습니다.
+
 ## 2026-09-14 — Collapse form composition into FormField
 
 - 변경 파일: FormField API, TextField·SearchField exports, Playground·Demo·docs·tests

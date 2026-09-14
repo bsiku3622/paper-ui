@@ -1,4 +1,3 @@
-export { Card, CardHeader, CardBody, CardFooter, type CardProps, type CardPartProps } from "./Card";
 export { Tabs, TabItem, type TabsProps, type TabItemProps, type TabsVariant } from "./Tabs";
 export { Tooltip, TooltipTrigger, TooltipContent, type TooltipProps, type TooltipTriggerProps, type TooltipContentProps } from "./Tooltip";
 export { RadioGroup, RadioGroupItem, type RadioGroupProps, type RadioGroupItemProps, type RadioGroupOrientation } from "./RadioGroup";

@@ -211,36 +211,6 @@ test("tabs · 클릭하면 활성이 바뀐다", async ({ page }) => {
   await expect(two).toHaveCSS("background-color", hexToRgb("#ffffff"));
 });
 
-// ── 상위 레이어 축 — 같은 내용에서 경계·밀도·배치만 독립적으로 바뀐다 ──────
-test("card · shared variant 매트릭스를 그대로 쓴다", async ({ page }) => {
-  const solid = page.getByTestId("card-solid");
-  const soft = page.getByTestId("card-soft");
-  const plain = page.getByTestId("card-plain");
-  const outline = page.getByTestId("card-outline");
-  const hairline = page.getByTestId("card-hairline");
-  const quiet = page.getByTestId("card-quiet");
-
-  await expect(solid).toHaveCSS("background-color", hexToRgb("#18181b"));
-  await expect(solid.getByText("solid", { exact: true })).toHaveCSS("color", hexToRgb("#ffffff"));
-  await expect(soft).toHaveCSS("background-color", hexToRgb("#e2e2e5"));
-  await expect(plain).toHaveCSS("background-color", hexToRgb("#e2e2e5"));
-  await expect(plain).toHaveCSS("border-top-color", hexToRgb("#92929b"));
-  await expect(outline).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-  await expect(outline).toHaveCSS("border-top-color", hexToRgb("#92929b"));
-  await expect(hairline).toHaveCSS("border-top-color", hexToRgb("#e8e8ea"));
-  await expect(quiet).toHaveCSS("border-top-color", "rgba(0, 0, 0, 0)");
-
-  // Card는 shared 색 문법을 쓰되 붙어 있는 정적 면이라 hover gate와 shadow는 없다.
-  for (const card of [solid, soft, plain, outline, hairline, quiet]) await expect(card).toHaveCSS("box-shadow", "none");
-});
-
-test("card · semantic color도 shared profile을 쓴다", async ({ page }) => {
-  await expect(page.getByTestId("card-info-soft")).toHaveClass(/pui-c-info-soft/);
-  await expect(page.getByTestId("card-success-soft")).toHaveClass(/pui-c-success-soft/);
-  await expect(page.getByTestId("card-warning-soft")).toHaveClass(/pui-c-warning-soft/);
-  await expect(page.getByTestId("card-error-soft")).toHaveClass(/pui-c-error-soft/);
-});
-
 test("tabs · underline은 열린 선형 구조라 shape를 갖지 않는다", async ({ page }) => {
   const root = page.getByTestId("tabs-variant-underline");
   const list = root.getByRole("tablist");
@@ -590,18 +560,18 @@ test("outline · 테두리가 지면 대비 3:1 을 넘는다 (다섯 색 전부
 
 // ── 화면의 회색 선은 한 벌이다 ──────────────────────────────────────────────
 //
-// 빈 Field 는 상자 말고 아무 단서가 없으니 카드 헤어라인보다 진해야 한다 — 그럴듯해서
+// 빈 Field는 상자 말고 아무 단서가 없으니 붙은 면의 헤어라인보다 진해야 한다 — 그럴듯해서
 // 한동안 컨트롤 전용 회색을 따로 뒀는데, **실물에서는 그게 바로 어긋남으로 읽혔다.**
-// 표를 감싼 카드는 거의 안 보이는데 그 위 검색창만 진하면 한 화면에 회색이 두 벌이 된다.
+// 붙은 면은 거의 안 보이는데 그 위 검색창만 진하면 한 화면에 회색이 두 벌이 된다.
 // 선의 *역할* 이 다르다고 *색* 까지 갈리면 화면은 그걸 두 팔레트로 읽는다.
 //
 // 그래서 잠그는 건 강도가 아니라 **한 벌이라는 것** 이다. 컨트롤 하나를 또렷하게 하고 싶으면
 // 표를 올리는 게 아니라 variant 로 고른다 — 그게 `outline` 이고, 이 테스트에 없는 이유다.
-test("edge · 입력·카드·hairline 이 같은 회색 선을 쓴다", async ({ page }) => {
+test("edge · 입력·Box·hairline 이 같은 회색 선을 쓴다", async ({ page }) => {
   const colors = await page.evaluate(() => {
     const q = (sel: string) => document.querySelector(sel) as HTMLElement;
     return {
-      card: getComputedStyle(q('[data-testid="card-hairline"]')).borderTopColor,
+      box: getComputedStyle(q('[data-testid="box-border"]')).borderTopColor,
       field: getComputedStyle(q('[data-testid="base-field"]')).borderTopColor,
       select: getComputedStyle(q('[data-testid="base-select"]')).borderTopColor,
       textarea: getComputedStyle(q('[data-testid="base-textarea"]')).borderTopColor,
