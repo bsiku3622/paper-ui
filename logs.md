@@ -1,3 +1,14 @@
+## 2026-09-14 — Unify component state prop naming
+
+- 변경 파일: selection·navigation components, Banner·Pagination, Playground·docs·tests
+- 요약: compound selection을 `value / defaultValue / onValueChange`로 통일하고, native event와 domain state의 이름 규칙을 분리했습니다.
+
+Tabs·RadioGroup·Menu·Steps·TableOfContents·Navbar·Sidebar·DropdownMenu·TreeNavigation은 모두 같은 controlled/uncontrolled 문법을 씁니다. 반복 구현은 내부 `useControllableState`로 모아 callback 호출과 local state 전환도 동일하게 유지했습니다. `onChange`는 Field·Select·Checkbox처럼 React DOM event object를 그대로 전달하는 native control에만 남기고, `onSelect`는 CommandMenu의 command activation처럼 지속 상태가 아닌 실행 사건에만 남겼습니다.
+
+값 하나로 환원되지 않는 상태는 대상을 이름에 보존했습니다. Pagination은 `page / onPageChange`, Tree branch는 `expandedValues / defaultExpandedValues / onExpandedValuesChange`, disclosure는 `open / defaultOpen / onOpenChange`를 씁니다. 의미색은 shared `color`로 통일해 Banner의 `tone`을 제거했고, Pagination의 local variant도 shared 철자인 `outline`에 맞췄습니다.
+
+⚠ `active`, `current`, selection용 `onSelect/onChange`, Banner `tone`, Pagination `outlined`, Sidebar Badge `activeVariant`, Tree `expanded/defaultExpanded/onExpandedChange`는 제거된 breaking API입니다. Playground·Demo·문서와 테스트를 새 이름으로 함께 이관했습니다.
+
 ## 2026-09-14 — Make native Select anatomy compound
 
 - 변경 파일: Select API·Playground·Demo·recipes·tests

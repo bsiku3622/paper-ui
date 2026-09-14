@@ -88,7 +88,7 @@ export const Tokens = () => {
   useThemeAttr();
 
   return (
-    <PlaygroundLayout active="tokens">
+    <PlaygroundLayout value="tokens">
       <Stack gap="xs" style={{ marginBottom: tokens.shape.gap.lg }}>
         <Crumb group="Reference" name="Foundations" />
         <Text variant="title">Tokens</Text>

@@ -4,19 +4,19 @@ import type { ReactNode } from "react";
 
 import { Inline, Box } from "../primitives";
 import { joinClass } from "../internal/joinClass";
-import type { StatusName } from "../tokens";
-import { bannerRoot, bannerTone } from "./Banner.css";
+import type { Color } from "../resolvers";
+import { bannerColor, bannerRoot } from "./Banner.css";
 
 export type BannerProps = {
-  tone?: "solid" | StatusName;
+  color?: Color;
   children: ReactNode;
   className?: string;
 };
 
-const BannerRoot = ({ tone = "solid", children, className }: BannerProps) => {
-  const live = tone === "error" || tone === "warning" ? "alert" : tone === "info" || tone === "success" ? "status" : undefined;
+const BannerRoot = ({ color = "primary", children, className }: BannerProps) => {
+  const live = color === "error" || color === "warning" ? "alert" : color === "info" || color === "success" ? "status" : undefined;
   return (
-    <Inline as="header" role={live} justify="between" align="center" gap="md" className={joinClass(bannerRoot, bannerTone[tone], className)}>
+    <Inline as="header" role={live} justify="between" align="center" gap="md" className={joinClass(bannerRoot, bannerColor[color], className)}>
       {children}
     </Inline>
   );

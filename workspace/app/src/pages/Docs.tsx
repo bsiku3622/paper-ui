@@ -52,7 +52,7 @@ export const Docs = () => {
       <SiteNav />
       <Box style={{ display: "grid", gridTemplateColumns: `${tokens.shape.width.lg.layout} 1fr`, maxWidth: tokens.layout.container.content, marginInline: "auto", width: "100%" }}>
         <Sidebar
-          active={slug}
+          value={slug}
           aria-label="문서 목차"
           style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, top: NAV_HEIGHT, position: "sticky" }}
         >

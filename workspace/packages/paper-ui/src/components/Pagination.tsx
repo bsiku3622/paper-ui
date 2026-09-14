@@ -11,16 +11,16 @@ import { paginationEllipsis, paginationPage, paginationRoot } from "./Pagination
 export type PaginationProps = {
   page: number;
   totalPages: number;
-  onChange: (page: number) => void;
+  onPageChange: (page: number) => void;
   "aria-label"?: string;
   className?: string;
   variant?: PaginationVariant;
 };
 
-export type PaginationVariant = "outlined" | "soft" | "minimal";
+export type PaginationVariant = "outline" | "soft" | "minimal";
 
 const PAGE_VARIANT = {
-  outlined: { current: "solid", rest: "hairline" },
+  outline: { current: "solid", rest: "hairline" },
   soft: { current: "solid", rest: "soft" },
   minimal: { current: "soft", rest: "quiet" },
 } as const;
@@ -34,7 +34,7 @@ const pageItems = (page: number, total: number): PageItem[] => {
   return [1, "ellipsis", page - 1, page, page + 1, "ellipsis", total];
 };
 
-export const Pagination = ({ page, totalPages, onChange, "aria-label": ariaLabel = "페이지 이동", className, variant = "outlined" }: PaginationProps) => {
+export const Pagination = ({ page, totalPages, onPageChange, "aria-label": ariaLabel = "페이지 이동", className, variant = "outline" }: PaginationProps) => {
   const total = Math.max(1, totalPages);
   const current = Math.min(Math.max(1, page), total);
   const items = pageItems(current, total);
@@ -42,7 +42,7 @@ export const Pagination = ({ page, totalPages, onChange, "aria-label": ariaLabel
 
   return (
     <Inline as="nav" aria-label={ariaLabel} className={joinClass(paginationRoot, className)}>
-      <Button size="sm" variant="quiet" disabled={current === 1} onClick={() => onChange(current - 1)}>
+      <Button size="sm" variant="quiet" disabled={current === 1} onClick={() => onPageChange(current - 1)}>
         이전
       </Button>
       {items.map((item, index) =>
@@ -56,13 +56,13 @@ export const Pagination = ({ page, totalPages, onChange, "aria-label": ariaLabel
             aria-current={item === current ? "page" : undefined}
             aria-label={`${item}페이지`}
             className={paginationPage}
-            onClick={() => onChange(item)}
+            onClick={() => onPageChange(item)}
           >
             {item}
           </Button>
         ),
       )}
-      <Button size="sm" variant="quiet" disabled={current === total} onClick={() => onChange(current + 1)}>
+      <Button size="sm" variant="quiet" disabled={current === total} onClick={() => onPageChange(current + 1)}>
         다음
       </Button>
     </Inline>

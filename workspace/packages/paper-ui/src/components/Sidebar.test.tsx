@@ -5,9 +5,9 @@ import { Sidebar } from "./Sidebar";
 import { sidebarBadgeSelectedOverlay } from "./Sidebar.css";
 
 describe("Sidebar", () => {
-  it("compound item과 badge가 root의 active context를 읽는다", () => {
+  it("compound item과 badge가 root의 value context를 읽는다", () => {
     render(
-      <Sidebar active="components">
+      <Sidebar value="components">
         <Sidebar.Group label="문서">
           <Sidebar.Item value="components">컴포넌트<Sidebar.Badge color="info">NEW</Sidebar.Badge></Sidebar.Item>
           <Sidebar.Item value="tokens">토큰<Sidebar.Badge color="warning">MOD</Sidebar.Badge></Sidebar.Item>
@@ -21,20 +21,20 @@ describe("Sidebar", () => {
     expect(screen.getByText("MOD").className).not.toContain(sidebarBadgeSelectedOverlay);
   });
 
-  it("item 선택과 badge activeVariant를 각각 위임한다", () => {
-    const onSelect = vi.fn();
+  it("item 선택과 badge selectedVariant를 각각 위임한다", () => {
+    const onValueChange = vi.fn();
     render(
-      <Sidebar active="components" onSelect={onSelect}>
+      <Sidebar value="components" onValueChange={onValueChange}>
         <Sidebar.Group>
           <Sidebar.Item value="components">
-            컴포넌트<Sidebar.Badge color="info" activeVariant="outline">NEW</Sidebar.Badge>
+            컴포넌트<Sidebar.Badge color="info" selectedVariant="outline">NEW</Sidebar.Badge>
           </Sidebar.Item>
         </Sidebar.Group>
       </Sidebar>,
     );
 
     fireEvent.click(screen.getByRole("button", { name: "컴포넌트NEW" }));
-    expect(onSelect).toHaveBeenCalledWith("components");
+    expect(onValueChange).toHaveBeenCalledWith("components");
     expect(screen.getByText("NEW").className).toContain("pui-c-info-outline");
   });
 });

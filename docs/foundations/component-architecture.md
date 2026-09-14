@@ -81,6 +81,15 @@ row               row               row
 
 ## 컴포넌트별 축
 
+### Prop naming
+
+- 선택 상태를 소유하는 compound Root는 `value / defaultValue / onValueChange`를 기본 문법으로 씁니다. Tabs·RadioGroup·Menu·Steps·TableOfContents·Navbar·Sidebar·DropdownMenu·TreeNavigation이 같은 이름을 공유합니다.
+- 열림 상태는 `open / defaultOpen / onOpenChange`입니다. 서로 다른 boolean 상태를 `active`, `shown`, `visible`로 바꾸어 부르지 않습니다.
+- native input event는 React DOM 계약을 따라 `onChange`를 유지합니다. Field·Select·Checkbox의 event object와 compound Root의 값 callback을 같은 이름으로 섞지 않습니다.
+- 값 하나로 환원되지 않는 도메인 상태는 대상을 이름에 남깁니다. Pagination은 `page / onPageChange`, CommandMenu 검색은 `query / defaultQuery / onQueryChange`, TreeNavigation branch는 `expandedValues / defaultExpandedValues / onExpandedValuesChange`입니다.
+- `onSelect`는 상태 setter가 아니라 항목을 실행하는 사건에만 씁니다. 현재는 CommandMenu command activation이 이 경우입니다.
+- 의미색은 shared `color`를 씁니다. 고정된 solid surface인 Banner도 별도 `tone` 대신 `color="primary | info | success | warning | error"`를 받습니다.
+
 ### Molecules
 
 | 컴포넌트 | 축 | 결정 |
@@ -94,9 +103,9 @@ row               row               row
 | Tooltip | compound `Trigger · Content`, placement 자동 결정 | 복합 내용을 허용하되 외형 variant는 없음 |
 | Alert | compound `Icon · Title · Description`, `color × shared variant` | Button·Badge와 같은 6단 매트릭스를 유지 |
 | Breadcrumb | compound `Item` + `separator` | location 계층을 JSX 순서로 소유. current를 명시 |
-| Menu | compound `Item` + `active` | 한 열의 action/navigation과 키보드 이동을 소유 |
-| Steps | compound `Item` + `current · orientation` | 실제 순서의 완료·현재·예정을 번호와 연결선으로 구분 |
-| TableOfContents | compound `Item` + `active · depth` | 문서 내부 위치만 소유하고 깊이는 3단으로 제한 |
+| Menu | compound `Item` + `value` | 한 열의 action/navigation과 키보드 이동을 소유 |
+| Steps | compound `Item` + `value · orientation` | 실제 순서의 완료·현재·예정을 번호와 연결선으로 구분 |
+| TableOfContents | compound `Item` + `value · depth` | 문서 내부 위치만 소유하고 깊이는 3단으로 제한 |
 
 ### Components
 
@@ -105,14 +114,14 @@ row               row               row
 | Table | compound `Header · Column · Body · Row · Cell` + local `variant · density` | 직각 plain이 기본. 데이터 편의는 별도 DataTable로 격리 |
 | Modal | `size` | `sm · md · lg`. 종류가 아니라 담는 일의 폭 |
 | Navbar | compound `Brand · Item · Actions` + `width` | 구조를 JSX에 노출. 외형 variant는 사이트 정체성을 불필요하게 분기 |
-| Banner | compound `Content · Action`, `tone` | 검정 기본 + 의미색. 양쪽 slot을 JSX로 노출 |
+| Banner | compound `Content · Action`, `color` | primary 검정 기본 + 의미색. 양쪽 slot을 JSX로 노출 |
 | PageHeader | compound `Location · Content · Title · Description · Actions` | 관계가 본체라 외형 variant 없음 |
 | EmptyState | compound `Title · Description · Action` | 빈 상태는 장식 강도를 고르는 자리가 아님 |
-| Pagination | local `variant`, page state | `outlined · soft · minimal`; Table density와 독립 |
-| Sidebar | compound `Group · Item · Badge` + `active` | JSX로 local navigation 계층과 release 표식을 조합. selected badge의 soft 면에도 같은 neutral overlay를 합성 |
+| Pagination | local `variant`, `page` | `outline · soft · minimal`; Table density와 독립 |
+| Sidebar | compound `Group · Item · Badge` + `value` | JSX로 local navigation 계층과 release 표식을 조합. selected badge의 soft 면에도 같은 neutral overlay를 합성 |
 | DropdownMenu | compound `Trigger · Content · Item` + `align · open` | 떠 있는 action surface의 열기·닫기·포커스와 overlay shadow를 소유 |
 | CommandMenu | compound `Group · Item · Empty` + `query` | 검색 Field와 키보드 선택 listbox를 결합 |
-| TreeNavigation | 중첩 compound `Item` + `active · expanded` | JSX 중첩이 실제 계층이며 branch 확장과 leaf 선택을 분리 |
+| TreeNavigation | 중첩 compound `Item` + `value · expandedValues` | JSX 중첩이 실제 계층이며 branch 확장과 leaf 선택을 분리 |
 
 ## 금지 조합
 

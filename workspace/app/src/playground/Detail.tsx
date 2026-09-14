@@ -144,7 +144,7 @@ export const ComponentDetail = () => {
   const spec = bySlug(slug);
   if (!spec) return <Navigate to="/playground" replace />;
   return (
-    <PlaygroundLayout active={spec.slug}>
+    <PlaygroundLayout value={spec.slug}>
       {/* key=slug — 컴포넌트가 바뀌면 상태를 새로 시작 */}
       <DetailView spec={spec} key={spec.slug} />
     </PlaygroundLayout>

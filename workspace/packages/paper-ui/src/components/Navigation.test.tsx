@@ -17,21 +17,21 @@ describe("navigation family", () => {
   });
 
   it("Steps는 현재 순서를 aria-current로 함께 전달한다", () => {
-    render(<Steps current="review"><Steps.Item value="draft">작성</Steps.Item><Steps.Item value="review">검토</Steps.Item><Steps.Item value="publish">게시</Steps.Item></Steps>);
+    render(<Steps value="review"><Steps.Item value="draft">작성</Steps.Item><Steps.Item value="review">검토</Steps.Item><Steps.Item value="publish">게시</Steps.Item></Steps>);
     expect(screen.getByText("검토").closest("li")?.getAttribute("aria-current")).toBe("step");
   });
 
   it("TableOfContents는 문서 안의 현재 위치를 표시한다", () => {
-    render(<TableOfContents active="shape"><TableOfContents.Item value="color">Color</TableOfContents.Item><TableOfContents.Item value="shape" depth={1}>Shape</TableOfContents.Item></TableOfContents>);
+    render(<TableOfContents value="shape"><TableOfContents.Item value="color">Color</TableOfContents.Item><TableOfContents.Item value="shape" depth={1}>Shape</TableOfContents.Item></TableOfContents>);
     expect(screen.getByRole("link", { name: "Shape" }).getAttribute("aria-current")).toBe("location");
   });
 
   it("DropdownMenu는 trigger와 선택 후 닫힘을 연결한다", () => {
-    const onSelect = vi.fn();
-    render(<DropdownMenu onSelect={onSelect}><DropdownMenu.Trigger><Button>더 보기</Button></DropdownMenu.Trigger><DropdownMenu.Content><DropdownMenu.Item value="edit">편집</DropdownMenu.Item></DropdownMenu.Content></DropdownMenu>);
+    const onValueChange = vi.fn();
+    render(<DropdownMenu onValueChange={onValueChange}><DropdownMenu.Trigger><Button>더 보기</Button></DropdownMenu.Trigger><DropdownMenu.Content><DropdownMenu.Item value="edit">편집</DropdownMenu.Item></DropdownMenu.Content></DropdownMenu>);
     fireEvent.click(screen.getByRole("button", { name: "더 보기" }));
     fireEvent.click(screen.getByRole("menuitem", { name: "편집" }));
-    expect(onSelect).toHaveBeenCalledWith("edit");
+    expect(onValueChange).toHaveBeenCalledWith("edit");
     expect(screen.queryByRole("menu")).toBeNull();
   });
 
@@ -45,7 +45,7 @@ describe("navigation family", () => {
   });
 
   it("TreeNavigation은 branch를 접고 펼친다", () => {
-    render(<TreeNavigation defaultExpanded={["docs"]}><TreeNavigation.Item value="docs" label="문서"><TreeNavigation.Item value="tokens" label="토큰" /></TreeNavigation.Item></TreeNavigation>);
+    render(<TreeNavigation defaultExpandedValues={["docs"]}><TreeNavigation.Item value="docs" label="문서"><TreeNavigation.Item value="tokens" label="토큰" /></TreeNavigation.Item></TreeNavigation>);
     const branch = screen.getByRole("treeitem", { name: "문서" });
     expect(branch.getAttribute("aria-expanded")).toBe("true");
     fireEvent.click(branch);
