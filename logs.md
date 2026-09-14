@@ -1,3 +1,12 @@
+## 2026-09-14 — Make native Select anatomy compound
+
+- 변경 파일: Select API·Playground·Demo·recipes·tests
+- 요약: `options` 객체 배열을 제거하고 `Select.Option/Group`으로 native option 구조를 JSX에 드러냈습니다.
+
+Select의 option은 단순 계산 결과처럼 보이지만 순서·disabled·optgroup이 실제 사용자 인터페이스 구조이므로, 다른 compound 컴포넌트와 같은 기준을 적용했습니다. API에서 받은 배열은 `options.map(option => <Select.Option …>)`으로 조립할 수 있어 별도 data adapter를 유지할 이유가 적습니다.
+
+⚠ native `<select>`의 option은 rich content를 안정적으로 렌더링하지 못합니다. `Select.Option`의 children 타입을 `string | number`로 제한해 Badge·Icon 같은 조합이 가능하다는 잘못된 기대를 막았습니다. 빈 value option을 placeholder로 읽는 기존 색상 규칙은 실제 `<option>` 구조에서도 그대로 유지됩니다.
+
 ## 2026-09-14 — Expose remaining visible anatomy as compound parts
 
 - 변경 파일: Tooltip·FormField·Card·Alert·Banner·PageHeader·EmptyState, Playground·Demo·docs·tests

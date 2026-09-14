@@ -327,9 +327,10 @@ export const COMPONENTS: CompSpec[] = [
   },
   {
     slug: "select",
+    change: "mod",
     name: "Select",
     group: "Atoms",
-    blurb: "native select 를 종이 결로 감싼 것. options 를 data 로 받는다. Button·Field 와 같은 사다리를 그대로 쓰고(오른쪽만 화살표 자리로 넓다) shape=\"pill\" 도 같은 어휘다.",
+    blurb: "native select anatomy를 Select.Option과 Select.Group으로 드러낸다. Button·Field와 같은 사다리를 쓰고, option 안에는 native 계약에 맞게 텍스트만 둔다.",
     controls: [
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "enum", prop: "shape", label: "shape", options: ["default", "pill"], def: "default" },
@@ -341,16 +342,17 @@ export const COMPONENTS: CompSpec[] = [
           size={s(st.size) as "sm" | "md" | "lg"}
           shape={s(st.shape) as "default" | "pill"}
           disabled={b(st.disabled)}
-          options={[
-            { value: "a", label: "옵션 A" },
-            { value: "b", label: "옵션 B" },
-            { value: "c", label: "옵션 C" },
-          ]}
-        />
+        >
+          <Select.Option value="a">옵션 A</Select.Option>
+          <Select.Group label="추가 옵션">
+            <Select.Option value="b">옵션 B</Select.Option>
+            <Select.Option value="c">옵션 C</Select.Option>
+          </Select.Group>
+        </Select>
       </Box>
     ),
     code: (st) =>
-      `<Select${AE("size", s(st.size), "md")}${AE("shape", s(st.shape), "default")}${A("disabled", b(st.disabled))}\n  options={[\n    { value: "a", label: "옵션 A" },\n    { value: "b", label: "옵션 B" },\n  ]}\n/>`,
+      `<Select${AE("size", s(st.size), "md")}${AE("shape", s(st.shape), "default")}${A("disabled", b(st.disabled))}>\n  <Select.Option value="a">옵션 A</Select.Option>\n  <Select.Group label="추가 옵션">\n    <Select.Option value="b">옵션 B</Select.Option>\n  </Select.Group>\n</Select>`,
   },
   {
     slug: "icon",
@@ -508,14 +510,14 @@ export const COMPONENTS: CompSpec[] = [
       <Box style={{ width: "18rem" }}>
         <FormField>
           <FormField.Label>{s(st.label)}</FormField.Label>
-          <FormField.Control><Select options={[{ value: "", label: "선택하세요" }, { value: "high", label: "높음" }, { value: "normal", label: "보통" }]} /></FormField.Control>
+          <FormField.Control><Select><Select.Option value="">선택하세요</Select.Option><Select.Option value="high">높음</Select.Option><Select.Option value="normal">보통</Select.Option></Select></FormField.Control>
           {s(st.hint) ? <FormField.Hint>{s(st.hint)}</FormField.Hint> : null}
           {s(st.error) ? <FormField.Error>{s(st.error)}</FormField.Error> : null}
         </FormField>
       </Box>
     ),
     code: (st) =>
-      `<FormField>\n  <FormField.Label>${s(st.label)}</FormField.Label>\n  <FormField.Control>\n    <Select options={[\n      { value: "", label: "선택하세요" },\n      { value: "high", label: "높음" },\n    ]} />\n  </FormField.Control>${s(st.error) ? `\n  <FormField.Error>${s(st.error)}</FormField.Error>` : s(st.hint) ? `\n  <FormField.Hint>${s(st.hint)}</FormField.Hint>` : ""}\n</FormField>`,
+      `<FormField>\n  <FormField.Label>${s(st.label)}</FormField.Label>\n  <FormField.Control>\n    <Select>\n      <Select.Option value="">선택하세요</Select.Option>\n      <Select.Option value="high">높음</Select.Option>\n    </Select>\n  </FormField.Control>${s(st.error) ? `\n  <FormField.Error>${s(st.error)}</FormField.Error>` : s(st.hint) ? `\n  <FormField.Hint>${s(st.hint)}</FormField.Hint>` : ""}\n</FormField>`,
   },
   {
     slug: "searchfield",

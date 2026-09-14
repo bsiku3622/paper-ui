@@ -20,11 +20,11 @@
       <Text variant="caption" as="span">내 담당만</Text>
     </Inline>
     <Box style={{ width: "9rem" }}>
-      <Select value={priority} onChange={(e) => setPriority(e.currentTarget.value)} options={[
-        { value: "all", label: "우선순위 전체" },
-        { value: "high", label: "높음" },
-        { value: "low", label: "낮음" },
-      ]} />
+      <Select value={priority} onChange={(e) => setPriority(e.currentTarget.value)}>
+        <Select.Option value="all">우선순위 전체</Select.Option>
+        <Select.Option value="high">높음</Select.Option>
+        <Select.Option value="low">낮음</Select.Option>
+      </Select>
     </Box>
   </Inline>
 </Inline>
