@@ -4,14 +4,18 @@ import { createContext, useContext, type ComponentPropsWithoutRef, type ElementT
 
 import { Box, Inline } from "../primitives";
 import { joinClass } from "../internal/joinClass";
+import { useControllableState } from "../internal/useControllableState";
 import { navbarActions, navbarBrand, navbarInner, navbarRoot, navItem, navItemActive } from "./Navbar.css";
 
-type NavbarContextValue = { active?: string; onSelect?: (value: string) => void };
+type NavbarContextValue = { value?: string; onValueChange?: (value: string) => void };
 const NavbarContext = createContext<NavbarContextValue>({});
-export type NavbarProps = { active?: string; onSelect?: (value: string) => void; width?: "full" | "content"; children: ReactNode };
-const NavbarRoot = ({ active, onSelect, width = "full", children }: NavbarProps) => <NavbarContext.Provider value={{ active, onSelect }}>
+export type NavbarProps = { value?: string; defaultValue?: string; onValueChange?: (value: string) => void; width?: "full" | "content"; children: ReactNode };
+const NavbarRoot = ({ value: controlledValue, defaultValue = "", onValueChange, width = "full", children }: NavbarProps) => {
+  const [value, setValue] = useControllableState({ value: controlledValue, defaultValue, onValueChange });
+  return <NavbarContext.Provider value={{ value, onValueChange: setValue }}>
   <Box as="header" surface="canvas" paddingX="lg" className={navbarRoot}><Inline as="nav" gap="xs" align="center" className={navbarInner[width]}>{children}</Inline></Box>
 </NavbarContext.Provider>;
+};
 
 export type NavbarBrandProps = { children: ReactNode; className?: string };
 export const NavbarBrand = ({ children, className }: NavbarBrandProps) => <Box className={joinClass(navbarBrand, className)}>{children}</Box>;
@@ -21,9 +25,9 @@ export const NavbarActions = ({ children, className }: NavbarActionsProps) => <B
 type NavbarItemOwn<As extends ElementType> = { as?: As; value: string; children: ReactNode; className?: string };
 export type NavbarItemProps<As extends ElementType = "button"> = NavbarItemOwn<As> & Omit<ComponentPropsWithoutRef<As>, keyof NavbarItemOwn<As>>;
 const NavbarItemImpl = <As extends ElementType = "button">({ as, value, children, className, onClick, ...rest }: NavbarItemProps<As>) => {
-  const { active, onSelect } = useContext(NavbarContext); const Tag = as ?? "button";
-  return <Box as={Tag as ElementType} {...(Tag === "button" ? { type: "button" as const } : null)} {...(rest as object)} aria-current={value === active ? "page" : undefined} className={joinClass(navItem, value === active && navItemActive, className)} onClick={(event: MouseEvent<HTMLElement>) => {
-    (onClick as ((event: MouseEvent<HTMLElement>) => void) | undefined)?.(event); if (!event.defaultPrevented) onSelect?.(value);
+  const { value: selectedValue, onValueChange } = useContext(NavbarContext); const Tag = as ?? "button";
+  return <Box as={Tag as ElementType} {...(Tag === "button" ? { type: "button" as const } : null)} {...(rest as object)} aria-current={value === selectedValue ? "page" : undefined} className={joinClass(navItem, value === selectedValue && navItemActive, className)} onClick={(event: MouseEvent<HTMLElement>) => {
+    (onClick as ((event: MouseEvent<HTMLElement>) => void) | undefined)?.(event); if (!event.defaultPrevented) onValueChange?.(value);
   }}>{children}</Box>;
 };
 export const NavbarItem = NavbarItemImpl as <As extends ElementType = "button">(props: NavbarItemProps<As>) => ReactElement;

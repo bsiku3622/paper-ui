@@ -8,7 +8,7 @@
 
 ```tsx
 <Inline justify="between" wrap gap="md">
-  <Tabs value={tab} onChange={setTab}>
+  <Tabs value={tab} onValueChange={setTab}>
     <Tabs.Item value="all">전체</Tabs.Item>
     <Tabs.Item value="open">열림</Tabs.Item>
     <Tabs.Item value="done">완료</Tabs.Item>

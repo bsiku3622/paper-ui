@@ -13,12 +13,12 @@ const CHANGE_BADGE = {
   mod: { label: "MOD", color: "warning" },
 } as const;
 
-export const PlaygroundLayout = ({ active, children }: { active: string; children: ReactNode }) => (
+export const PlaygroundLayout = ({ value, children }: { value: string; children: ReactNode }) => (
   <Stack>
     <SiteNav />
     <Box style={{ display: "grid", gridTemplateColumns: `${tokens.shape.width.lg.layout} 1fr`, maxWidth: tokens.layout.container.content, marginInline: "auto", width: "100%" }}>
       <Sidebar
-        active={active}
+        value={value}
         aria-label="컴포넌트 레퍼런스"
         style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, top: NAV_HEIGHT, position: "sticky" }}
       >

@@ -1,17 +1,21 @@
 // Tabs — 탭 목록을 JSX item으로 드러내는 compound control.
 
-import { createContext, useContext, type KeyboardEvent, type ReactNode } from "react";
+import { Children, createContext, isValidElement, useContext, type KeyboardEvent, type ReactElement, type ReactNode } from "react";
 
 import { Box, Inline } from "../primitives";
 import { joinClass } from "../internal/joinClass";
+import { useControllableState } from "../internal/useControllableState";
 import type { ControlSize } from "../tokens";
 import { tabsList, tabsListVariant, tabsListShape, tabItem, tabItemVariant, tabItemSize, tabItemShape, tabItemActive, tabItemActiveVariant } from "./Tabs.css";
 
 export type TabsVariant = "segmented" | "underline";
-type TabsContextValue = { value: string; onChange: (value: string) => void; size: ControlSize; variant: TabsVariant; shape: "default" | "pill" };
+type TabsContextValue = { value: string; onValueChange: (value: string) => void; size: ControlSize; variant: TabsVariant; shape: "default" | "pill" };
 const TabsContext = createContext<TabsContextValue | null>(null);
-export type TabsProps = { value: string; onChange: (value: string) => void; size?: ControlSize; variant?: TabsVariant; shape?: "default" | "pill"; className?: string; children: ReactNode };
-const TabsRoot = ({ value, onChange, size = "sm", variant = "segmented", shape = "default", className, children }: TabsProps) => <TabsContext.Provider value={{ value, onChange, size, variant, shape }}>
+export type TabsProps = { value?: string; defaultValue?: string; onValueChange?: (value: string) => void; size?: ControlSize; variant?: TabsVariant; shape?: "default" | "pill"; className?: string; children: ReactNode };
+const TabsRoot = ({ value: controlledValue, defaultValue, onValueChange, size = "sm", variant = "segmented", shape = "default", className, children }: TabsProps) => {
+  const firstValue = Children.toArray(children).find((child): child is ReactElement<TabItemProps> => isValidElement(child))?.props.value ?? "";
+  const [value, setValue] = useControllableState({ value: controlledValue, defaultValue: defaultValue ?? firstValue, onValueChange });
+  return <TabsContext.Provider value={{ value, onValueChange: setValue, size, variant, shape }}>
   <Inline role="tablist" className={joinClass(tabsList, tabsListVariant[variant], variant === "segmented" && tabsListShape[shape], className)} onKeyDown={(event: KeyboardEvent<HTMLDivElement>) => {
     const tabs = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('[role="tab"]'));
     const current = tabs.indexOf(document.activeElement as HTMLElement);
@@ -22,6 +26,7 @@ const TabsRoot = ({ value, onChange, size = "sm", variant = "segmented", shape =
     event.preventDefault(); tabs[next]?.click(); tabs[next]?.focus();
   }}>{children}</Inline>
 </TabsContext.Provider>;
+};
 
 export type TabItemProps = { value: string; panelId?: string; children: ReactNode };
 export const TabItem = ({ value, panelId, children }: TabItemProps) => {
@@ -30,6 +35,6 @@ export const TabItem = ({ value, panelId, children }: TabItemProps) => {
   const selected = value === context.value;
   return <Box as="button" type="button" role="tab" aria-selected={selected} aria-controls={panelId} tabIndex={selected ? 0 : -1}
     className={joinClass(tabItem, tabItemVariant[context.variant], tabItemSize[context.size], context.variant === "segmented" && tabItemShape[context.shape], selected && tabItemActive, selected && tabItemActiveVariant[context.variant])}
-    onClick={() => context.onChange(value)}>{children}</Box>;
+    onClick={() => context.onValueChange(value)}>{children}</Box>;
 };
 export const Tabs = Object.assign(TabsRoot, { Item: TabItem });

@@ -53,11 +53,11 @@ Primitive + Atom 합성입니다. raw HTML 없이 하위 레이어 조합만.
 - **Banner** — `Banner.Content/Action`으로 풀폭 바의 양쪽 역할을 명시합니다. 검정 solid가 기본이고, 공지·경고를 짊어질 때만 status 색을 채웁니다.
 - **PageHeader** — `PageHeader.Location/Content/Title/Description/Actions`로 읽기 순서와 정렬 구조를 드러냅니다. hero나 card를 강요하지 않고, 폭이 좁아지면 action이 아래 시작선으로 풀립니다.
 - **EmptyState** — `EmptyState.Title/Description/Action`으로 이유와 다음 행동 하나를 명시하되, 새 색면·카드는 만들지 않습니다.
-- **Pagination** — 현재 위치와 앞뒤 이동. `outlined · soft · minimal` variant로 주변 데이터 화면의 밀도에 맞추되, 어느 쪽도 page state와 섞이지 않습니다.
+- **Pagination** — 현재 위치와 앞뒤 이동. `outline · soft · minimal` variant로 주변 데이터 화면의 밀도에 맞추되, 어느 쪽도 page state와 섞이지 않습니다.
 - **Sidebar** — `Sidebar.Group/Item/Badge`를 조합하는 compound local navigation rail입니다. JSX가 실제 계층과 항목 안의 구성을 그대로 드러내며, Item의 `as`를 바꿔 button과 router Link를 모두 지원합니다. Badge는 selected 상태에서도 `soft` pigment를 유지하되 행과 같은 neutral selected overlay를 한 겹 더 받습니다.
 - **DropdownMenu** — trigger에 `Menu`를 붙이는 떠 있는 action surface입니다. 바깥 클릭·Escape·초기 포커스·선택 후 닫힘을 맡고, navigation 계열 중 실제로 떠 있는 이 surface만 overlay shadow를 갖습니다.
 - **CommandMenu** — 검색 Field와 키보드 선택 listbox를 묶습니다. label·keywords 검색, group·설명·단축키를 지원해 빠른 이동과 실행을 맡습니다.
-- **TreeNavigation** — 깊은 정보 구조를 접고 펴는 계층 navigation입니다. branch의 expanded state와 leaf의 active state를 분리하고 방향키로 탐색합니다.
+- **TreeNavigation** — 깊은 정보 구조를 접고 펴는 계층 navigation입니다. leaf 선택은 `value`, branch 확장은 `expandedValues`로 분리하고 방향키로 탐색합니다.
 
 ## 마흔 개인 이유
 

@@ -112,7 +112,7 @@ const AppMockup = () => {
             </Inline>
 
             <Inline align="center" justify="between" gap="sm">
-              <Tabs shape="pill" value={tab} onChange={setTab}><Tabs.Item value="all">전체</Tabs.Item><Tabs.Item value="open">열림</Tabs.Item><Tabs.Item value="done">완료</Tabs.Item></Tabs>
+              <Tabs shape="pill" value={tab} onValueChange={setTab}><Tabs.Item value="all">전체</Tabs.Item><Tabs.Item value="open">열림</Tabs.Item><Tabs.Item value="done">완료</Tabs.Item></Tabs>
               <Text variant="caption" as="span" ink="soft">6건 · 열림 4</Text>
             </Inline>
           </Stack>

@@ -106,7 +106,7 @@ export const Playground = () => {
   );
 
   return (
-    <PlaygroundLayout active="all">
+    <PlaygroundLayout value="all">
       <Stack gap="xl" style={{ maxWidth: "48rem" }}>
         <Stack gap="xs">
           <Text variant="label">Studio Baeks · Design System</Text>
@@ -412,20 +412,20 @@ export const Playground = () => {
           <Spec label="Tabs — segmented shape + underline variant" testid="spec-tabs-shape">
             <Inline gap="lg" wrap align="center">
               <Box data-testid="tabs-shape-default">
-                <Tabs value={tab} onChange={setTab}><Tabs.Item value="one">하나</Tabs.Item><Tabs.Item value="two">둘</Tabs.Item><Tabs.Item value="three">셋</Tabs.Item></Tabs>
+                <Tabs value={tab} onValueChange={setTab}><Tabs.Item value="one">하나</Tabs.Item><Tabs.Item value="two">둘</Tabs.Item><Tabs.Item value="three">셋</Tabs.Item></Tabs>
               </Box>
               <Box data-testid="tabs-shape-pill">
-                <Tabs value={tab} onChange={setTab} shape="pill"><Tabs.Item value="one">하나</Tabs.Item><Tabs.Item value="two">둘</Tabs.Item><Tabs.Item value="three">셋</Tabs.Item></Tabs>
+                <Tabs value={tab} onValueChange={setTab} shape="pill"><Tabs.Item value="one">하나</Tabs.Item><Tabs.Item value="two">둘</Tabs.Item><Tabs.Item value="three">셋</Tabs.Item></Tabs>
               </Box>
               <Box data-testid="tabs-variant-underline">
-                <Tabs value={tab} onChange={setTab} variant="underline"><Tabs.Item value="one">하나</Tabs.Item><Tabs.Item value="two">둘</Tabs.Item><Tabs.Item value="three">셋</Tabs.Item></Tabs>
+                <Tabs value={tab} onValueChange={setTab} variant="underline"><Tabs.Item value="one">하나</Tabs.Item><Tabs.Item value="two">둘</Tabs.Item><Tabs.Item value="three">셋</Tabs.Item></Tabs>
               </Box>
             </Inline>
           </Spec>
           <Spec label="RadioGroup — 세로 질문과 가로 선택지">
             <RadioGroup
               value={radio}
-              onChange={setRadio}
+              onValueChange={setRadio}
               orientation="horizontal"
               aria-label="보기 방식"
             ><RadioGroup.Item value="one">목록</RadioGroup.Item><RadioGroup.Item value="two">보드</RadioGroup.Item><RadioGroup.Item value="three">달력</RadioGroup.Item></RadioGroup>
@@ -453,7 +453,7 @@ export const Playground = () => {
           <Spec label="Breadcrumb · Sidebar — location과 local navigation">
             <Breadcrumb><Breadcrumb.Item>Atoms</Breadcrumb.Item><Breadcrumb.Item>Component</Breadcrumb.Item><Breadcrumb.Item current>Checkbox</Breadcrumb.Item></Breadcrumb>
             <Box style={{ width: "14rem" }}>
-              <Sidebar active="components">
+              <Sidebar value="components">
                 <Sidebar.Group label="문서">
                   <Sidebar.Item value="overview">개요</Sidebar.Item>
                   <Sidebar.Item value="tokens">토큰<Sidebar.Badge color="warning">MOD</Sidebar.Badge></Sidebar.Item>
@@ -467,17 +467,17 @@ export const Playground = () => {
         <Section id="sec-navigation" title="Menu · Steps · TableOfContents · DropdownMenu · CommandMenu · TreeNavigation">
           <Spec label="Menu — 한 열의 action과 현재 위치">
             <Box style={{ width: "18rem" }}>
-              <Menu active={menuActive} onSelect={setMenuActive}><Menu.Item value="overview" description="시스템의 기본 원칙">개요</Menu.Item><Menu.Item value="tokens" shortcut="⌘ T">토큰</Menu.Item><Menu.Item value="archive" danger>보관하기</Menu.Item></Menu>
+              <Menu value={menuActive} onValueChange={setMenuActive}><Menu.Item value="overview" description="시스템의 기본 원칙">개요</Menu.Item><Menu.Item value="tokens" shortcut="⌘ T">토큰</Menu.Item><Menu.Item value="archive" danger>보관하기</Menu.Item></Menu>
             </Box>
           </Spec>
           <Spec label="Steps — 실제 순서를 번호와 연결선으로">
             <Box style={{ width: "32rem", maxWidth: "100%" }}>
-              <Steps current={step} onChange={setStep}><Steps.Item value="draft" description="내용 작성">초안</Steps.Item><Steps.Item value="review" description="구조 확인">검토</Steps.Item><Steps.Item value="publish" description="문서 공개">배포</Steps.Item></Steps>
+              <Steps value={step} onValueChange={setStep}><Steps.Item value="draft" description="내용 작성">초안</Steps.Item><Steps.Item value="review" description="구조 확인">검토</Steps.Item><Steps.Item value="publish" description="문서 공개">배포</Steps.Item></Steps>
             </Box>
           </Spec>
           <Spec label="TableOfContents — 문서 내부의 현재 위치">
             <Box style={{ width: "16rem" }}>
-              <TableOfContents active={tocActive} onSelect={setTocActive}><TableOfContents.Item value="overview">개요</TableOfContents.Item><TableOfContents.Item value="props" depth={1}>Props</TableOfContents.Item><TableOfContents.Item value="examples" depth={1}>예제</TableOfContents.Item></TableOfContents>
+              <TableOfContents value={tocActive} onValueChange={setTocActive}><TableOfContents.Item value="overview">개요</TableOfContents.Item><TableOfContents.Item value="props" depth={1}>Props</TableOfContents.Item><TableOfContents.Item value="examples" depth={1}>예제</TableOfContents.Item></TableOfContents>
             </Box>
           </Spec>
           <Spec label="DropdownMenu — 떠 있는 action surface만 overlay shadow">
@@ -490,7 +490,7 @@ export const Playground = () => {
           </Spec>
           <Spec label="TreeNavigation — 접고 펴는 계층 탐색">
             <Box style={{ width: "18rem" }}>
-              <TreeNavigation active={treeActive} onSelect={setTreeActive} defaultExpanded={["components", "atoms"]}><TreeNavigation.Item value="foundations" label="Foundations"><TreeNavigation.Item value="colors" label="Color" /><TreeNavigation.Item value="shape" label="Shape" /></TreeNavigation.Item><TreeNavigation.Item value="components" label="Components"><TreeNavigation.Item value="atoms" label="Atoms"><TreeNavigation.Item value="button" label="Button" /><TreeNavigation.Item value="badge" label="Badge" /></TreeNavigation.Item><TreeNavigation.Item value="molecules" label="Molecules" /></TreeNavigation.Item></TreeNavigation>
+              <TreeNavigation value={treeActive} onValueChange={setTreeActive} defaultExpandedValues={["components", "atoms"]}><TreeNavigation.Item value="foundations" label="Foundations"><TreeNavigation.Item value="colors" label="Color" /><TreeNavigation.Item value="shape" label="Shape" /></TreeNavigation.Item><TreeNavigation.Item value="components" label="Components"><TreeNavigation.Item value="atoms" label="Atoms"><TreeNavigation.Item value="button" label="Button" /><TreeNavigation.Item value="badge" label="Badge" /></TreeNavigation.Item><TreeNavigation.Item value="molecules" label="Molecules" /></TreeNavigation.Item></TreeNavigation>
             </Box>
           </Spec>
         </Section>
@@ -573,9 +573,9 @@ export const Playground = () => {
               </EmptyState>
             </Box>
           </Spec>
-          <Spec label="Pagination — outlined · soft · minimal">
-            {(["outlined", "soft", "minimal"] as const).map((variant) => (
-              <Pagination key={variant} variant={variant} page={page} totalPages={12} onChange={setPage} />
+          <Spec label="Pagination — outline · soft · minimal">
+            {(["outline", "soft", "minimal"] as const).map((variant) => (
+              <Pagination key={variant} variant={variant} page={page} totalPages={12} onPageChange={setPage} />
             ))}
           </Spec>
           <Spec label="Table — 행을 구분하는 방식" testid="spec-table-variant">

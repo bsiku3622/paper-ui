@@ -574,7 +574,7 @@ export const COMPONENTS: CompSpec[] = [
     ],
     render: (st) => <TabsDemo variant={s(st.variant) as "segmented" | "underline"} size={s(st.size) as "sm" | "md" | "lg"} shape={s(st.shape) as "default" | "pill"} />,
     code: (st) =>
-      `const [tab, setTab] = useState("one");\n<Tabs value={tab} onChange={setTab}${AE("variant", s(st.variant), "segmented")}${AE("size", s(st.size), "sm")}${s(st.variant) === "underline" ? "" : AE("shape", s(st.shape), "default")}>\n  <Tabs.Item value="one">하나</Tabs.Item>\n  <Tabs.Item value="two">둘</Tabs.Item>\n  <Tabs.Item value="three">셋</Tabs.Item>\n</Tabs>`,
+      `const [tab, setTab] = useState("one");\n<Tabs value={tab} onValueChange={setTab}${AE("variant", s(st.variant), "segmented")}${AE("size", s(st.size), "sm")}${s(st.variant) === "underline" ? "" : AE("shape", s(st.shape), "default")}>\n  <Tabs.Item value="one">하나</Tabs.Item>\n  <Tabs.Item value="two">둘</Tabs.Item>\n  <Tabs.Item value="three">셋</Tabs.Item>\n</Tabs>`,
   },
   {
     slug: "tooltip",
@@ -615,7 +615,7 @@ export const COMPONENTS: CompSpec[] = [
     ],
     render: (st) => <RadioGroupDemo size={s(st.size) as "sm" | "md" | "lg"} orientation={s(st.orientation) as "vertical" | "horizontal"} />,
     code: (st) =>
-      `const [v, setV] = useState("a");\n<RadioGroup value={v} onChange={setV}${AE("size", s(st.size), "md")}${AE("orientation", s(st.orientation), "vertical")}>\n  <RadioGroup.Item value="a">옵션 A</RadioGroup.Item>\n  <RadioGroup.Item value="b">옵션 B</RadioGroup.Item>\n  <RadioGroup.Item value="c">옵션 C</RadioGroup.Item>\n</RadioGroup>`,
+      `const [value, setValue] = useState("a");\n<RadioGroup value={value} onValueChange={setValue}${AE("size", s(st.size), "md")}${AE("orientation", s(st.orientation), "vertical")}>\n  <RadioGroup.Item value="a">옵션 A</RadioGroup.Item>\n  <RadioGroup.Item value="b">옵션 B</RadioGroup.Item>\n  <RadioGroup.Item value="c">옵션 C</RadioGroup.Item>\n</RadioGroup>`,
   },
   {
     slug: "alert",
@@ -647,9 +647,9 @@ export const COMPONENTS: CompSpec[] = [
     name: "Menu",
     group: "Molecules",
     blurb: "action과 navigation을 한 열에 놓는 기본 목록. 현재 위치·설명·단축키·위험·비활성 상태를 한 item 문법으로 다룬다.",
-    controls: [{ kind: "enum", prop: "active", label: "active", options: ["overview", "tokens", "none"], def: "overview" }],
-    render: (st) => <Box style={{ width: "18rem" }}><MenuDemo active={s(st.active) === "none" ? undefined : s(st.active)} /></Box>,
-    code: (st) => `const [active, setActive] = useState("${s(st.active)}");\n<Menu active={active} onSelect={setActive}>\n  <Menu.Item value="overview" description="시스템의 기본 원칙">개요</Menu.Item>\n  <Menu.Item value="tokens" shortcut="⌘ T">토큰</Menu.Item>\n  <Menu.Item value="archive" danger>보관하기</Menu.Item>\n</Menu>`,
+    controls: [{ kind: "enum", prop: "value", label: "value", options: ["overview", "tokens", "none"], def: "overview" }],
+    render: (st) => <Box style={{ width: "18rem" }}><MenuDemo value={s(st.value) === "none" ? undefined : s(st.value)} /></Box>,
+    code: (st) => `const [value, setValue] = useState("${s(st.value)}");\n<Menu value={value} onValueChange={setValue}>\n  <Menu.Item value="overview" description="시스템의 기본 원칙">개요</Menu.Item>\n  <Menu.Item value="tokens" shortcut="⌘ T">토큰</Menu.Item>\n  <Menu.Item value="archive" danger>보관하기</Menu.Item>\n</Menu>`,
   },
   {
     slug: "steps",
@@ -658,11 +658,11 @@ export const COMPONENTS: CompSpec[] = [
     group: "Molecules",
     blurb: "실제 순서가 있는 흐름만 번호와 연결선으로 보여준다. 완료·현재·예정의 무게가 다르고 가로·세로 방향을 공유한다.",
     controls: [
-      { kind: "enum", prop: "current", label: "current", options: ["draft", "review", "publish"], def: "review" },
+      { kind: "enum", prop: "value", label: "value", options: ["draft", "review", "publish"], def: "review" },
       { kind: "enum", prop: "orientation", label: "orientation", options: ["horizontal", "vertical"], def: "horizontal" },
     ],
-    render: (st) => <StepsDemo current={s(st.current)} orientation={s(st.orientation) as "horizontal" | "vertical"} />,
-    code: (st) => `<Steps current="${s(st.current)}"${AE("orientation", s(st.orientation), "horizontal")}>\n  <Steps.Item value="draft" description="내용 작성">초안</Steps.Item>\n  <Steps.Item value="review" description="구조 확인">검토</Steps.Item>\n  <Steps.Item value="publish" description="문서 공개">배포</Steps.Item>\n</Steps>`,
+    render: (st) => <StepsDemo value={s(st.value)} orientation={s(st.orientation) as "horizontal" | "vertical"} />,
+    code: (st) => `<Steps value="${s(st.value)}"${AE("orientation", s(st.orientation), "horizontal")}>\n  <Steps.Item value="draft" description="내용 작성">초안</Steps.Item>\n  <Steps.Item value="review" description="구조 확인">검토</Steps.Item>\n  <Steps.Item value="publish" description="문서 공개">배포</Steps.Item>\n</Steps>`,
   },
   {
     slug: "tableofcontents",
@@ -670,9 +670,9 @@ export const COMPONENTS: CompSpec[] = [
     name: "TableOfContents",
     group: "Molecules",
     blurb: "한 문서 안의 현재 위치를 깊이 3단과 왼쪽 rule로 표시한다. 전체 사이트 계층을 맡는 Sidebar·TreeNavigation과 범위를 나눈다.",
-    controls: [{ kind: "enum", prop: "active", label: "active", options: ["overview", "props", "examples"], def: "props" }],
-    render: (st) => <Box style={{ width: "16rem" }}><TableOfContentsDemo active={s(st.active)} /></Box>,
-    code: (st) => `<TableOfContents active="${s(st.active)}">\n  <TableOfContents.Item value="overview">개요</TableOfContents.Item>\n  <TableOfContents.Item value="props" depth={1}>Props</TableOfContents.Item>\n  <TableOfContents.Item value="examples" depth={1}>예제</TableOfContents.Item>\n</TableOfContents>`,
+    controls: [{ kind: "enum", prop: "value", label: "value", options: ["overview", "props", "examples"], def: "props" }],
+    render: (st) => <Box style={{ width: "16rem" }}><TableOfContentsDemo value={s(st.value)} /></Box>,
+    code: (st) => `<TableOfContents value="${s(st.value)}">\n  <TableOfContents.Item value="overview">개요</TableOfContents.Item>\n  <TableOfContents.Item value="props" depth={1}>Props</TableOfContents.Item>\n  <TableOfContents.Item value="examples" depth={1}>예제</TableOfContents.Item>\n</TableOfContents>`,
   },
 
   // ─ Components ─
@@ -703,11 +703,11 @@ export const COMPONENTS: CompSpec[] = [
     change: "new",
     name: "Sidebar",
     group: "Components",
-    blurb: "Group·Item·Badge를 조합하는 compound local navigation rail. 내부 요소의 구성과 링크 교체가 JSX에 그대로 드러나며 active 상태와 release 표식은 Root가 공유한다.",
-    controls: [{ kind: "enum", prop: "active", label: "active", options: ["overview", "tokens", "components"], def: "components" }],
+    blurb: "Group·Item·Badge를 조합하는 compound local navigation rail. 선택 상태는 다른 collection과 같은 value/onValueChange를 쓰고 release 표식은 Root가 공유한다.",
+    controls: [{ kind: "enum", prop: "value", label: "value", options: ["overview", "tokens", "components"], def: "components" }],
     render: (st) => (
       <Box style={{ width: "15rem", border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }}>
-        <Sidebar active={s(st.active)}>
+        <Sidebar value={s(st.value)}>
           <Sidebar.Group label="문서">
             <Sidebar.Item value="overview">개요</Sidebar.Item>
             <Sidebar.Item value="tokens">토큰<Sidebar.Badge color="warning">MOD</Sidebar.Badge></Sidebar.Item>
@@ -716,7 +716,7 @@ export const COMPONENTS: CompSpec[] = [
         </Sidebar>
       </Box>
     ),
-    code: (st) => `<Sidebar active="${s(st.active)}">\n  <Sidebar.Group label="문서">\n    <Sidebar.Item value="overview">개요</Sidebar.Item>\n    <Sidebar.Item value="tokens">토큰<Sidebar.Badge color="warning">MOD</Sidebar.Badge></Sidebar.Item>\n    <Sidebar.Item value="components">컴포넌트<Sidebar.Badge color="info">NEW</Sidebar.Badge></Sidebar.Item>\n  </Sidebar.Group>\n</Sidebar>`,
+    code: (st) => `<Sidebar value="${s(st.value)}">\n  <Sidebar.Group label="문서">\n    <Sidebar.Item value="overview">개요</Sidebar.Item>\n    <Sidebar.Item value="tokens">토큰<Sidebar.Badge color="warning">MOD</Sidebar.Badge></Sidebar.Item>\n    <Sidebar.Item value="components">컴포넌트<Sidebar.Badge color="info">NEW</Sidebar.Badge></Sidebar.Item>\n  </Sidebar.Group>\n</Sidebar>`,
   },
   {
     slug: "emptystate",
@@ -741,14 +741,14 @@ export const COMPONENTS: CompSpec[] = [
     change: "new",
     name: "Pagination",
     group: "Components",
-    blurb: "현재 위치와 앞뒤 이동. outlined는 선, soft는 면, minimal은 현재 위치만 옅은 면으로 남겨 주변 화면의 밀도에 맞춘다.",
+    blurb: "현재 위치와 앞뒤 이동. outline은 선, soft는 면, minimal은 현재 위치만 옅은 면으로 남겨 주변 화면의 밀도에 맞춘다.",
     controls: [
-      { kind: "enum", prop: "variant", label: "variant", options: ["outlined", "soft", "minimal"], def: "outlined" },
+      { kind: "enum", prop: "variant", label: "variant", options: ["outline", "soft", "minimal"], def: "outline" },
       { kind: "enum", prop: "totalPages", label: "totalPages", options: ["3", "7", "12"], def: "12" },
     ],
-    render: (st) => <PaginationDemo totalPages={Number(s(st.totalPages))} variant={s(st.variant) as "outlined" | "soft" | "minimal"} />,
+    render: (st) => <PaginationDemo totalPages={Number(s(st.totalPages))} variant={s(st.variant) as "outline" | "soft" | "minimal"} />,
     code: (st) =>
-      `const [page, setPage] = useState(1);\n<Pagination${AE("variant", s(st.variant), "outlined")} page={page} totalPages={${s(st.totalPages)}} onChange={setPage} />`,
+      `const [page, setPage] = useState(1);\n<Pagination${AE("variant", s(st.variant), "outline")} page={page} totalPages={${s(st.totalPages)}} onPageChange={setPage} />`,
   },
   {
     slug: "table",
@@ -781,6 +781,7 @@ export const COMPONENTS: CompSpec[] = [
   },
   {
     slug: "navbar",
+    change: "mod",
     name: "Navbar",
     group: "Components",
     blurb: "지면 맨 위 한 줄. Brand·Item·Actions를 JSX로 조합하고 Item은 as로 버튼과 링크를 오간다. width는 안쪽 줄의 폭만 정하며 괘선은 화면 끝까지 간다.",
@@ -789,7 +790,7 @@ export const COMPONENTS: CompSpec[] = [
     ],
     render: (st) => (
       <Box style={{ width: "100%", border: `1px solid ${tokens.color.border.base}`, borderRadius: tokens.shape.radius.layout.md, overflow: "hidden" }}>
-        <Navbar width={s(st.width) as "full" | "content"} active="issues">
+        <Navbar width={s(st.width) as "full" | "content"} value="issues">
           <Navbar.Brand><Text variant="subheading">Studio</Text></Navbar.Brand>
           <Navbar.Item value="issues">이슈</Navbar.Item><Navbar.Item value="boards">보드</Navbar.Item><Navbar.Item value="docs" as="a" href="#/">문서</Navbar.Item>
           <Navbar.Actions><Button>새 이슈</Button></Navbar.Actions>
@@ -797,16 +798,16 @@ export const COMPONENTS: CompSpec[] = [
       </Box>
     ),
     code: (st) =>
-      `<Navbar${AE("width", s(st.width), "full")} active="issues">\n  <Navbar.Brand><Text variant="subheading">Studio</Text></Navbar.Brand>\n  <Navbar.Item value="issues">이슈</Navbar.Item>\n  <Navbar.Item value="docs" as={Link} to="/docs">문서</Navbar.Item>\n  <Navbar.Actions><Button>새 이슈</Button></Navbar.Actions>\n</Navbar>`,
+      `<Navbar${AE("width", s(st.width), "full")} value="issues">\n  <Navbar.Brand><Text variant="subheading">Studio</Text></Navbar.Brand>\n  <Navbar.Item value="issues">이슈</Navbar.Item>\n  <Navbar.Item value="docs" as={Link} to="/docs">문서</Navbar.Item>\n  <Navbar.Actions><Button>새 이슈</Button></Navbar.Actions>\n</Navbar>`,
   },
   {
     slug: "banner",
     change: "mod",
     name: "Banner",
     group: "Components",
-    blurb: "얇은 풀폭 상단 바. 화면을 채우는 색은 검정(solid)뿐 — status 색은 그 색의 의미를 짊어질 때(공지·경고)만. 좌 콘텐츠 + 우 액션.",
+    blurb: "얇은 풀폭 상단 바. 고정된 solid surface의 의미색도 shared color 이름을 쓴다. primary가 기본이고 status 색은 공지·경고의 의미를 짊어질 때만 고른다.",
     controls: [
-      { kind: "enum", prop: "tone", label: "tone", options: ["solid", "info", "success", "warning", "error"], def: "solid" },
+      { kind: "enum", prop: "color", label: "color", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
       { kind: "text", prop: "children", label: "children", def: "데모 · 이슈 트래커" },
     ],
     render: (st) => (
@@ -814,14 +815,14 @@ export const COMPONENTS: CompSpec[] = [
         {/* 글자색을 덮지 않는다. 채운 면 위 글자는 Banner 가 tone 마다 wash 로 정하고
             자식이 그걸 상속한다 — 여기서 색을 박으면 tone 토글이 그 계약을 못 보여준다.
             (Text 를 쓰면 variant 클래스가 자기 ink 를 들고 와 같은 문제가 난다.) */}
-        <Banner tone={s(st.tone) as "solid" | StatusName}>
+        <Banner color={s(st.color) as Color}>
           <Banner.Content><span style={{ fontWeight: tokens.text.weight.semibold }}>Paper UI</span><span>{s(st.children)}</span></Banner.Content>
           <Banner.Action><span style={{ fontWeight: tokens.text.weight.medium }}>← 사이트로</span></Banner.Action>
         </Banner>
       </Box>
     ),
     code: (st) =>
-      `<Banner${AE("tone", s(st.tone), "solid")}>\n  <Banner.Content>Paper UI · ${s(st.children)}</Banner.Content>\n  <Banner.Action><span>← 사이트로</span></Banner.Action>\n</Banner>`,
+      `<Banner${AE("color", s(st.color), "primary")}>\n  <Banner.Content>Paper UI · ${s(st.children)}</Banner.Content>\n  <Banner.Action><span>← 사이트로</span></Banner.Action>\n</Banner>`,
   },
   {
     slug: "dropdownmenu",
@@ -849,54 +850,54 @@ export const COMPONENTS: CompSpec[] = [
     name: "TreeNavigation",
     group: "Components",
     blurb: "깊은 정보 구조를 접고 펴는 계층 navigation. branch는 확장 상태를, leaf는 선택을 맡으며 키보드 화살표로 같은 구조를 탐색한다.",
-    controls: [{ kind: "enum", prop: "active", label: "active", options: ["button", "badge", "colors"], def: "button" }],
-    render: (st) => <Box style={{ width: "18rem" }}><TreeNavigationDemo active={s(st.active)} /></Box>,
-    code: (st) => `<TreeNavigation active="${s(st.active)}" defaultExpanded={["components", "atoms"]}>\n  <TreeNavigation.Item value="foundations" label="Foundations">\n    <TreeNavigation.Item value="colors" label="Color" />\n  </TreeNavigation.Item>\n  <TreeNavigation.Item value="components" label="Components">\n    <TreeNavigation.Item value="atoms" label="Atoms">\n      <TreeNavigation.Item value="button" label="Button" />\n      <TreeNavigation.Item value="badge" label="Badge" />\n    </TreeNavigation.Item>\n  </TreeNavigation.Item>\n</TreeNavigation>`,
+    controls: [{ kind: "enum", prop: "value", label: "value", options: ["button", "badge", "colors"], def: "button" }],
+    render: (st) => <Box style={{ width: "18rem" }}><TreeNavigationDemo value={s(st.value)} /></Box>,
+    code: (st) => `<TreeNavigation value="${s(st.value)}" defaultExpandedValues={["components", "atoms"]}>\n  <TreeNavigation.Item value="foundations" label="Foundations">\n    <TreeNavigation.Item value="colors" label="Color" />\n  </TreeNavigation.Item>\n  <TreeNavigation.Item value="components" label="Components">\n    <TreeNavigation.Item value="atoms" label="Atoms">\n      <TreeNavigation.Item value="button" label="Button" />\n      <TreeNavigation.Item value="badge" label="Badge" />\n    </TreeNavigation.Item>\n  </TreeNavigation.Item>\n</TreeNavigation>`,
   },
 ];
 
 // ── 상태가 필요한 미리보기(내부 컴포넌트) ────────────────────────────────────
-const MenuDemo = ({ active: initialActive }: { active?: string }) => {
-  const [active, setActive] = useState(initialActive);
-  return <Menu active={active} onSelect={setActive}><Menu.Item value="overview" description="시스템의 기본 원칙">개요</Menu.Item><Menu.Item value="tokens" shortcut="⌘ T">토큰</Menu.Item><Menu.Item value="archive" danger>보관하기</Menu.Item></Menu>;
+const MenuDemo = ({ value: initialValue }: { value?: string }) => {
+  const [value, setValue] = useState(initialValue);
+  return <Menu value={value} onValueChange={setValue}><Menu.Item value="overview" description="시스템의 기본 원칙">개요</Menu.Item><Menu.Item value="tokens" shortcut="⌘ T">토큰</Menu.Item><Menu.Item value="archive" danger>보관하기</Menu.Item></Menu>;
 };
 
-const StepsDemo = ({ current: initialCurrent, orientation }: { current: string; orientation: "horizontal" | "vertical" }) => {
-  const [current, setCurrent] = useState(initialCurrent);
-  return <Steps current={current} orientation={orientation} onChange={setCurrent}><Steps.Item value="draft" description="내용 작성">초안</Steps.Item><Steps.Item value="review" description="구조 확인">검토</Steps.Item><Steps.Item value="publish" description="문서 공개">배포</Steps.Item></Steps>;
+const StepsDemo = ({ value: initialValue, orientation }: { value: string; orientation: "horizontal" | "vertical" }) => {
+  const [value, setValue] = useState(initialValue);
+  return <Steps value={value} orientation={orientation} onValueChange={setValue}><Steps.Item value="draft" description="내용 작성">초안</Steps.Item><Steps.Item value="review" description="구조 확인">검토</Steps.Item><Steps.Item value="publish" description="문서 공개">배포</Steps.Item></Steps>;
 };
 
-const TableOfContentsDemo = ({ active: initialActive }: { active: string }) => {
-  const [active, setActive] = useState(initialActive);
-  return <TableOfContents active={active} onSelect={setActive}><TableOfContents.Item value="overview">개요</TableOfContents.Item><TableOfContents.Item value="props" depth={1}>Props</TableOfContents.Item><TableOfContents.Item value="examples" depth={1}>예제</TableOfContents.Item></TableOfContents>;
+const TableOfContentsDemo = ({ value: initialValue }: { value: string }) => {
+  const [value, setValue] = useState(initialValue);
+  return <TableOfContents value={value} onValueChange={setValue}><TableOfContents.Item value="overview">개요</TableOfContents.Item><TableOfContents.Item value="props" depth={1}>Props</TableOfContents.Item><TableOfContents.Item value="examples" depth={1}>예제</TableOfContents.Item></TableOfContents>;
 };
 
 const CommandMenuDemo = ({ placeholder }: { placeholder: string }) => (
   <CommandMenu placeholder={placeholder}><CommandMenu.Group label="컴포넌트"><CommandMenu.Item value="button" description="Atoms" shortcut="B">Button</CommandMenu.Item><CommandMenu.Item value="sidebar" description="Components" shortcut="S">Sidebar</CommandMenu.Item></CommandMenu.Group><CommandMenu.Group label="문서"><CommandMenu.Item value="colors" description="Foundations" keywords={["palette"]}>Color tokens</CommandMenu.Item></CommandMenu.Group></CommandMenu>
 );
 
-const TreeNavigationDemo = ({ active: initialActive }: { active: string }) => {
-  const [active, setActive] = useState(initialActive);
-  return <TreeNavigation active={active} onSelect={setActive} defaultExpanded={["components", "atoms"]}><TreeNavigation.Item value="foundations" label="Foundations"><TreeNavigation.Item value="colors" label="Color" /><TreeNavigation.Item value="shape" label="Shape" /></TreeNavigation.Item><TreeNavigation.Item value="components" label="Components"><TreeNavigation.Item value="atoms" label="Atoms"><TreeNavigation.Item value="button" label="Button" /><TreeNavigation.Item value="badge" label="Badge" /></TreeNavigation.Item><TreeNavigation.Item value="molecules" label="Molecules" /></TreeNavigation.Item></TreeNavigation>;
+const TreeNavigationDemo = ({ value: initialValue }: { value: string }) => {
+  const [value, setValue] = useState(initialValue);
+  return <TreeNavigation value={value} onValueChange={setValue} defaultExpandedValues={["components", "atoms"]}><TreeNavigation.Item value="foundations" label="Foundations"><TreeNavigation.Item value="colors" label="Color" /><TreeNavigation.Item value="shape" label="Shape" /></TreeNavigation.Item><TreeNavigation.Item value="components" label="Components"><TreeNavigation.Item value="atoms" label="Atoms"><TreeNavigation.Item value="button" label="Button" /><TreeNavigation.Item value="badge" label="Badge" /></TreeNavigation.Item><TreeNavigation.Item value="molecules" label="Molecules" /></TreeNavigation.Item></TreeNavigation>;
 };
 
 const TabsDemo = ({ variant, size, shape }: { variant?: "segmented" | "underline"; size?: "sm" | "md" | "lg"; shape?: "default" | "pill" }) => {
   const [tab, setTab] = useState("one");
   return (
-    <Tabs value={tab} onChange={setTab} variant={variant} size={size} shape={shape}><Tabs.Item value="one">하나</Tabs.Item><Tabs.Item value="two">둘</Tabs.Item><Tabs.Item value="three">셋</Tabs.Item></Tabs>
+    <Tabs value={tab} onValueChange={setTab} variant={variant} size={size} shape={shape}><Tabs.Item value="one">하나</Tabs.Item><Tabs.Item value="two">둘</Tabs.Item><Tabs.Item value="three">셋</Tabs.Item></Tabs>
   );
 };
 
 const RadioGroupDemo = ({ size, orientation }: { size?: "sm" | "md" | "lg"; orientation?: "vertical" | "horizontal" }) => {
   const [v, setV] = useState("a");
   return (
-    <RadioGroup value={v} onChange={setV} size={size} orientation={orientation}><RadioGroup.Item value="a">옵션 A</RadioGroup.Item><RadioGroup.Item value="b">옵션 B</RadioGroup.Item><RadioGroup.Item value="c">옵션 C</RadioGroup.Item></RadioGroup>
+    <RadioGroup value={v} onValueChange={setV} size={size} orientation={orientation}><RadioGroup.Item value="a">옵션 A</RadioGroup.Item><RadioGroup.Item value="b">옵션 B</RadioGroup.Item><RadioGroup.Item value="c">옵션 C</RadioGroup.Item></RadioGroup>
   );
 };
 
-const PaginationDemo = ({ totalPages, variant }: { totalPages: number; variant?: "outlined" | "soft" | "minimal" }) => {
+const PaginationDemo = ({ totalPages, variant }: { totalPages: number; variant?: "outline" | "soft" | "minimal" }) => {
   const [page, setPage] = useState(1);
-  return <Pagination variant={variant} page={page} totalPages={totalPages} onChange={setPage} />;
+  return <Pagination variant={variant} page={page} totalPages={totalPages} onPageChange={setPage} />;
 };
 
 type Row = { id: string; k: string; st: StatusName; n: number };

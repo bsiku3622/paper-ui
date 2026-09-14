@@ -67,7 +67,7 @@ export const SiteNav = () => {
   return (
     <Navbar
       width="content"
-      active={active}
+      value={active}
     >
       <Navbar.Brand><Brand /></Navbar.Brand>
       {SITE_NAV.map((n) => <Navbar.Item key={n.to} value={n.to} as={Link} to={n.to}>{n.label}</Navbar.Item>)}

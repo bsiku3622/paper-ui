@@ -109,7 +109,7 @@ export const Demo = () => {
     <Stack>
       {/* 데모는 실제 제품처럼 자체 Navbar 를 갖고, 통합 DemoBar 로 사이트에 이어진다 */}
       <DemoBar />
-      <Navbar active="issues">
+      <Navbar value="issues">
         <Navbar.Brand>
           <Inline gap="sm">
             <Box
@@ -153,7 +153,7 @@ export const Demo = () => {
           </PageHeader>
 
           <Inline gap="md" justify="between" wrap>
-            <Tabs value={tab} onChange={setTab}><Tabs.Item value="all">전체</Tabs.Item><Tabs.Item value="open">열림</Tabs.Item><Tabs.Item value="done">완료</Tabs.Item></Tabs>
+            <Tabs value={tab} onValueChange={setTab}><Tabs.Item value="all">전체</Tabs.Item><Tabs.Item value="open">열림</Tabs.Item><Tabs.Item value="done">완료</Tabs.Item></Tabs>
             <Inline gap="md">
               <Inline as="label" gap="sm">
                 <Checkbox checked={mineOnly} onChange={(e) => setMineOnly(e.currentTarget.checked)} />
@@ -180,7 +180,7 @@ export const Demo = () => {
             </Table.Row>) : <Table.Row><Table.Cell colSpan={6}><EmptyState><EmptyState.Title>일치하는 이슈가 없습니다</EmptyState.Title><EmptyState.Description>필터를 바꾸거나 새 이슈를 만들어 시작하세요.</EmptyState.Description><EmptyState.Action><Button size="sm" onClick={() => { setTab("all"); setPriority("all"); setMineOnly(false); }}>필터 초기화</Button></EmptyState.Action></EmptyState></Table.Cell></Table.Row>}</Table.Body>
           </Table>
 
-          {rows.length ? <Pagination page={page} totalPages={totalPages} onChange={setPage} /> : null}
+          {rows.length ? <Pagination page={page} totalPages={totalPages} onPageChange={setPage} /> : null}
 
           <Inline gap="sm">
             <Icon aria-label="정보">
