@@ -362,6 +362,17 @@ test("detail · 컴포넌트 전환 시 상태가 초기화된다", async ({ pag
   await expect(code).not.toContainText('variant=""');
 });
 
+test("sidebar · 클릭 직후 hover보다 selected 면이 즉시 우선한다", async ({ page }) => {
+  await page.goto("/playground/button");
+  const badgeLink = page.locator('a[href="/playground/badge"]');
+  await badgeLink.click();
+  await expect(page).toHaveURL(/\/playground\/badge$/);
+
+  const active = page.locator('a[href="/playground/badge"]');
+  await expect(active).toHaveCSS("background-color", "rgba(24, 25, 28, 0.13)");
+  await expect(active).toHaveCSS("transition-property", "color");
+});
+
 // ── 콘솔 에러가 없다 ────────────────────────────────────────────────────────
 test("no console errors on playground", async ({ page }: { page: Page }) => {
   const errs: string[] = [];
