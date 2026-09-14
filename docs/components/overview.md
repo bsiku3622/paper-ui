@@ -51,7 +51,7 @@ Primitive + Atom 합성입니다. raw HTML 없이 하위 레이어 조합만.
 - **PageHeader** — `location` → 큰 제목 → 설명 → 행동의 읽기 순서를 만듭니다. hero나 card를 강요하지 않고, 폭이 좁아지면 자연스럽게 두 줄로 풀립니다.
 - **EmptyState** — 빈 결과를 막다른 곳으로 두지 않습니다. 왜 비었는지와 다음 행동 하나를 남기되, 새 색면·카드는 만들지 않습니다.
 - **Pagination** — 현재 위치와 앞뒤 이동. `outlined · soft · minimal` variant로 주변 데이터 화면의 밀도에 맞추되, 어느 쪽도 page state와 섞이지 않습니다.
-- **Sidebar** — group·현재 항목·선택적 `badge`를 data API로 받는 local navigation rail입니다. 항목의 `as`를 바꿔 button과 router Link를 모두 지원하며, NEW/MOD 같은 release 표식도 시스템 `Badge`로 렌더합니다.
+- **Sidebar** — group·현재 항목·선택적 `badge`를 data API로 받는 local navigation rail입니다. 항목의 `as`를 바꿔 button과 router Link를 모두 지원하며, NEW/MOD 같은 release 표식도 시스템 `Badge`로 렌더합니다. Badge는 비활성 항목에서 `soft`, selected 면 위에서는 `quiet`가 기본이라 작은 색면이 선택 면 위로 따로 튀어나오지 않습니다. 필요하면 `variant`와 `activeVariant`로 두 상태를 각각 바꿉니다.
 
 ## 서른네 개인 이유
 
