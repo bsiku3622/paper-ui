@@ -11,9 +11,20 @@ import { useId, type KeyboardEvent } from "react";
 import { Box, Inline } from "../primitives";
 import { joinClass } from "../internal/joinClass";
 import type { ControlSize } from "../tokens";
-import { tabsList, tabsListShape, tabItem, tabItemSize, tabItemShape, tabItemActive } from "./Tabs.css";
+import {
+  tabsList,
+  tabsListVariant,
+  tabsListShape,
+  tabItem,
+  tabItemVariant,
+  tabItemSize,
+  tabItemShape,
+  tabItemActive,
+  tabItemActiveVariant,
+} from "./Tabs.css";
 
 export type TabItem = { value: string; label: string; panelId?: string };
+export type TabsVariant = "segmented" | "underline";
 
 export type TabsProps = {
   items: readonly TabItem[];
@@ -21,13 +32,15 @@ export type TabsProps = {
   onChange: (value: string) => void;
   // 크기 3 단 (sm·md·lg). 세그먼트는 컴팩트해서 기본 sm.
   size?: ControlSize;
+  // 항목을 닫힌 면으로 고르면 segmented, 문서·페이지 장을 선으로 가르면 underline.
+  variant?: TabsVariant;
   // 실루엣 — Button·Badge·Field·Select 와 같은 어휘. 트랙과 항목이 함께 갈린다
   // (default 의 안쪽 반경은 바깥 − 트랙 여백으로 동심을 맞춘다).
   shape?: "default" | "pill";
   className?: string;
 };
 
-export const Tabs = ({ items, value, onChange, size = "sm", shape = "default", className }: TabsProps) => {
+export const Tabs = ({ items, value, onChange, size = "sm", variant = "segmented", shape = "default", className }: TabsProps) => {
   const uid = useId();
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -49,7 +62,7 @@ export const Tabs = ({ items, value, onChange, size = "sm", shape = "default", c
   return (
     <Inline
       role="tablist"
-      className={joinClass(tabsList, tabsListShape[shape], className)}
+      className={joinClass(tabsList, tabsListVariant[variant], variant === "segmented" && tabsListShape[shape], className)}
       onKeyDown={onKeyDown}
     >
       {items.map((t) => {
@@ -64,7 +77,14 @@ export const Tabs = ({ items, value, onChange, size = "sm", shape = "default", c
             aria-selected={selected}
             aria-controls={t.panelId}
             tabIndex={selected ? 0 : -1}
-            className={joinClass(tabItem, tabItemSize[size], tabItemShape[shape], selected && tabItemActive)}
+            className={joinClass(
+              tabItem,
+              tabItemVariant[variant],
+              tabItemSize[size],
+              variant === "segmented" && tabItemShape[shape],
+              selected && tabItemActive,
+              selected && tabItemActiveVariant[variant],
+            )}
             onClick={() => onChange(t.value)}
           >
             {t.label}

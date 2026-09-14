@@ -32,6 +32,12 @@ const primaryProfile: Record<Variant, ColorSpec> = {
     borderColor: "transparent",
     hoverOverlay: tokens.color.interaction.hover,
   },
+  plain: {
+    background: tokens.color.paper.well,
+    color: tokens.color.ink.base,
+    borderColor: tokens.color.primary.edgeStrong,
+    hoverOverlay: tokens.color.interaction.hover,
+  },
   // outline 은 **면을 칠하지 않는다** — 테두리만 두르고 밑면이 그대로 비친다.
   // raised 를 칠하고 있었는데, 이 팔레트에서는 raised(#ffffff)와 canvas(#fcfcfc)가
   // 거의 같아 티가 안 났을 뿐 이름과는 어긋난 자리였다.
@@ -67,7 +73,7 @@ const primaryProfile: Record<Variant, ColorSpec> = {
 // 색 면은 그 색의 의미를 짊어질 때만 (error 버튼처럼). hover 는 색 스텝(오버레이 아님).
 // solid 위 글자는 같은 hue의 반대 끝인 wash를 재사용한다. 별도 on-solid 슬롯을 두지 않아도
 // 라이트의 진한 solid에는 옅은 wash, 다크의 밝은 solid에는 어두운 wash가 올라간다.
-type AccentTones = { solid: string; ink: string; wash: string; edge: string; edgeStrong: string };
+type AccentTones = { solid: string; ink: string; wash: string; soft: string; softInk: string; edge: string; edgeStrong: string };
 
 const accentProfile = (c: AccentTones): Record<Variant, ColorSpec> => ({
   solid: {
@@ -79,10 +85,16 @@ const accentProfile = (c: AccentTones): Record<Variant, ColorSpec> => ({
     hoverOverlay: "rgba(0, 0, 0, 0.14)",
   },
   soft: {
-    background: c.wash,
-    color: c.ink,
+    background: c.soft,
+    color: c.softInk,
     borderColor: "transparent",
-    hoverBackground: c.edge,
+    hoverOverlay: tokens.color.interaction.hover,
+  },
+  plain: {
+    background: c.soft,
+    color: c.softInk,
+    borderColor: c.edgeStrong,
+    hoverOverlay: tokens.color.interaction.hover,
   },
   // 테두리는 edge(wash 의 괘선)가 아니라 edgeStrong 이다. 두 자리가 요구하는 세기가
   // 다르다 — wash 의 괘선은 이미 색이 깔린 면의 가장자리지만, outline 은 그 선이 곧

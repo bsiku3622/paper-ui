@@ -8,7 +8,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 
-import { Box, Stack, Text, tokens } from "@studio-baeks/paper-ui";
+import { Box, Sidebar, Stack, Text, tokens, type SidebarGroup } from "@studio-baeks/paper-ui";
 
 import { SiteNav, NAV_HEIGHT } from "../site/chrome";
 import "../site/markdown.css";
@@ -47,25 +47,27 @@ export const Docs = () => {
     return () => { cancelled = true; };
   }, [activeFile]);
 
-  const active = (s: string) => s === slug;
+  const sidebarGroups: SidebarGroup[] = groups.map((group) => ({
+    value: group.group,
+    label: group.label || undefined,
+    items: group.docs.map((doc) => ({
+      value: doc.slug,
+      label: doc.title,
+      as: Link,
+      to: `/docs/${doc.slug}`,
+    })),
+  }));
 
   return (
     <Stack>
       <SiteNav />
       <Box style={{ display: "grid", gridTemplateColumns: `${tokens.shape.width.lg.layout} 1fr`, maxWidth: tokens.layout.container.content, marginInline: "auto", width: "100%" }}>
-        {/* 사이드바 — playground 와 같은 .side-* 언어 */}
-        <Box as="nav" paddingX="md" paddingY="lg" className="side-nav" style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, top: NAV_HEIGHT }}>
-          {groups.map((g) => (
-            <div className="side-group" key={g.group}>
-              {g.label && <div className="side-group-label">{g.label}</div>}
-              {g.docs.map((d) => (
-                <Link key={d.slug} to={`/docs/${d.slug}`} className="side-link" data-active={active(d.slug)}>
-                  {d.title}
-                </Link>
-              ))}
-            </div>
-          ))}
-        </Box>
+        <Sidebar
+          groups={sidebarGroups}
+          active={slug}
+          aria-label="문서 목차"
+          style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, top: NAV_HEIGHT, position: "sticky" }}
+        />
 
         {/* 본문 */}
         <Box paddingX="xl" paddingY="xl">
@@ -102,4 +104,3 @@ export const Docs = () => {
     </Stack>
   );
 };
-

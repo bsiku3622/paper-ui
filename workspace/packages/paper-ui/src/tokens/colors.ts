@@ -66,12 +66,15 @@ export const BORDER = {
 // ───── accent — 작게 얹는 점 ────────────────────────────────────────────────
 //
 // 4 색. 이름이 곧 의미다 — info(정보/상호작용) · success(성공) · warning(주의) ·
-// error(위험). API 에 hue 이름(blue 등)은 없다. 각 색은 5 자리를 갖는다:
+// error(위험). API 에 hue 이름(blue 등)은 없다. 각 색은 7 자리를 갖는다:
 //   solid   — 채운 면/점 (dot · 채운 배지 · status 버튼). 진한 톤(그 위 옅은 색 글자와 대비).
 //   ink     — 흰 배경 위 *글자* 색 (AA 대비). 700 톤.
 //   wash    — 아주 옅은 면 (subtle 배지 · soft 버튼 · 선택 행), 그리고 solid 위 글자.
 //             같은 hue의 양끝을 재사용해 별도 on-solid 토큰 없이 모노크로매틱 대비를 만든다.
-//   edge    — wash 의 괘선, 그리고 soft 의 hover 면. 200 톤.
+//   soft    — shared variant의 옅은 면. L은 wash:primary soft = 1:3, C는 wash:edge = 1:3,
+//             h는 accent hue에 고정한다. zinc hue를 섞지 않아 진해져도 탁해지지 않는다.
+//   softInk — soft 위 전용 잉크. 같은 hue에서 L만 내려 작은 Badge 글자의 AA를 유지한다.
+//   edge    — wash/soft 계열의 다음 색 단계. outline보다 옅은 괘선. 200 톤.
 //   edgeStrong — **홀로 서는 테두리** (outline 변형). canvas 대비 3:1 로 맞춘 값.
 //
 // ⚠ edge 와 edgeStrong 을 가르는 이유. 예전엔 outline 이 edge 를 빌려 썼는데, 두 자리가
@@ -92,6 +95,8 @@ export const ACCENT = {
     solid: "#2563eb",
     ink: "#1d4ed8",
     wash: "#f5f9fe", // Veil — 현 pigment를 paper.canvas 쪽으로 45% 접은 옅은 면
+    soft: "oklch(0.9304 0.0263 254)",
+    softInk: "#1d4ed8", // 기존 ink로 5.45:1
     edge: "#d1e1f5", // Veil — 현 pigment를 border.base 쪽으로 45% 접은 괘선
     edgeStrong: "#5694e9", // canvas 3.01
   },
@@ -99,6 +104,8 @@ export const ACCENT = {
     solid: "#15803d", // 진한 초록으로 낮춤(옅은 글자 대비 확보)
     ink: "#15803d",
     wash: "#f5fdf8",
+    soft: "oklch(0.9319 0.0355 158.8)",
+    softInk: "oklch(0.5024 0.1371 150.1)", // 같은 C·h, L만 내려 4.65:1
     edge: "#cff0dc",
     edgeStrong: "#35a75f", // canvas 2.99
   },
@@ -106,6 +113,8 @@ export const ACCENT = {
     solid: "#b45309", // 진한 amber 로 낮춤
     ink: "#b45309",
     wash: "#fefbf3",
+    soft: "oklch(0.9323 0.0524 95.2)",
+    softInk: "oklch(0.5298 0.1455 49)", // 같은 C·h, L만 내려 4.61:1
     edge: "#f4e7b5",
     edgeStrong: "#c5861b", // canvas 3.01
   },
@@ -113,6 +122,8 @@ export const ACCENT = {
     solid: "#dc2626",
     ink: "#b91c1c",
     wash: "#fdf7f7",
+    soft: "oklch(0.9304 0.0250 17.7)",
+    softInk: "#b91c1c", // 기존 ink로 5.23:1
     edge: "#f4d8d8",
     edgeStrong: "#ed6969", // canvas 3.00
   },
@@ -326,7 +337,7 @@ const BORDER_DARK = {
 // chroma 는 .048 로 올렸다(저명도 보정 — 라이트 .013~.021 과 같은 세기로 읽힌다).
 //
 // **accent 하나당 hue 하나.** 라이트는 Tailwind 램프를 섞어 쓴 흔적이 남아 warning 이
-// solid H49(주황) / wash H95(노랑) 로 46° 벌어져 있다. 다크는 5 톤이 한 각을 공유한다:
+// solid H49(주황) / wash H95(노랑) 로 46° 벌어져 있다. 다크는 7 톤이 한 각을 공유한다:
 //     info 258 · success 153 · warning 75 · error 22
 //
 // 톤별 자리 (L / C):
@@ -342,7 +353,7 @@ const BORDER_DARK = {
 //
 // ✅ **그 구조 문제는 풀렸다** (2026-09-09). 여기 "edge 가 두 일(테두리 · hover 면)을
 // 겸한다" 고 적어 둔 게 원인이었고, 자리를 갈라 `edgeStrong` 을 신설했다. edge 는 이제
-// wash 의 괘선 + soft 의 hover 면만 지고, outline 테두리는 edgeStrong 이 진다.
+// wash 의 괘선과 soft chroma의 다음 기준을 지고, outline 테두리는 edgeStrong 이 진다.
 // 다크 edgeStrong 은 **가장 밝은 면(well)** 위에서 3:1 이 되는 자리다 — 이 파일이
 // solid 를 well 기준으로 잡은 것과 같은 기준이라, 트랙 위에 얹혀도 테두리가 산다.
 //
@@ -354,10 +365,10 @@ const BORDER_DARK = {
 // ⚠ 채운 면 위 글자는 wash를 쓴다. 별도 solidFg가 wash와 거의 같은 끝점을 중복하고,
 // 라이트에서는 대비도 3.91~4.21로 약했다. Veil wash는 양 테마 모두 AA를 넘는다.
 const ACCENT_DARK = {
-  info: { solid: "#5492ec", ink: "#8ebcff", wash: "#0d1c32", edge: "#1a355d", edgeStrong: "#4c6fa3" },
-  success: { solid: "#32ac64", ink: "#81cf99", wash: "#062211", edge: "#094021", edgeStrong: "#3a7b52" },
-  warning: { solid: "#c58300", ink: "#e4b066", wash: "#291800", edge: "#4c2e00", edgeStrong: "#8e672c" },
-  error: { solid: "#df6768", ink: "#f99e9b", wash: "#2f1211", edge: "#572223", edgeStrong: "#a15a59" },
+  info: { solid: "#5492ec", ink: "#8ebcff", wash: "#0d1c32", soft: "oklch(0.2561 0.0708 258.2)", softInk: "#8ebcff", edge: "#1a355d", edgeStrong: "#4c6fa3" },
+  success: { solid: "#32ac64", ink: "#81cf99", wash: "#062211", soft: "oklch(0.2558 0.0700 153.2)", softInk: "#81cf99", edge: "#094021", edgeStrong: "#3a7b52" },
+  warning: { solid: "#c58300", ink: "#e4b066", wash: "#291800", soft: "oklch(0.2561 0.0654 70.9)", softInk: "#e4b066", edge: "#4c2e00", edgeStrong: "#8e672c" },
+  error: { solid: "#df6768", ink: "#f99e9b", wash: "#2f1211", soft: "oklch(0.2562 0.0711 21.3)", softInk: "#f99e9b", edge: "#572223", edgeStrong: "#a15a59" },
 } as const;
 
 const PRIMARY_DARK = {

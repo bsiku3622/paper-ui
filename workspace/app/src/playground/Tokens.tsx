@@ -52,7 +52,7 @@ const INKS = ["base", "soft", "faint"] as const;
 const BORDERS = ["base", "strong"] as const;
 const PRIMARIES = ["base", "hover", "fg"] as const;
 const ACCENTS = ["info", "success", "warning", "error"] as const;
-const TONES = ["solid", "ink", "wash", "edge"] as const;
+const TONES = ["solid", "ink", "wash", "soft", "softInk", "edge", "edgeStrong"] as const;
 const SIZES = ["xs", "sm", "md", "lg", "xl"] as const;
 const CONTROLS = ["sm", "md", "lg"] as const;
 const VARIANTS = ["display", "title", "heading", "subheading", "body", "caption", "label"] as const;
@@ -128,7 +128,7 @@ export const Tokens = () => {
 
 
         {/* ── Color · accent ─────────────────────────────────── */}
-        <Section id="tok-accent" title="Color · accent (4색 × 5자리)" desc="이름이 곧 의미 — info · success · warning · error. solid는 채운 면, ink는 지면 위 글자, wash는 옅은 면이자 solid 위 글자, edge는 wash의 괘선, edgeStrong은 홀로 서는 outline 선입니다. 별도 solidFg는 wash와 같은 끝점을 중복하면서 라이트 대비가 약해 제거했습니다. 다크에서는 solid가 밝고 wash가 어두워져 같은 두 슬롯이 반대 방향으로 AA 대비를 만듭니다.">
+        <Section id="tok-accent" title="Color · accent (4색 × 7자리)" desc="이름이 곧 의미 — info · success · warning · error. solid는 채운 면, ink는 일반 지면 위 글자, wash는 solid 위 글자까지 겸하는 가장 옅은 색입니다. shared variant 전용 soft는 OKLCH에서 h를 고정하고, L은 wash→primary soft의 75%, C는 wash→edge의 75% 지점으로 옮겨 진하지만 탁하지 않습니다. softInk는 그 면 위 작은 글자의 AA를 보장합니다. edge는 hover, edgeStrong은 홀로 서는 outline 선입니다.">
           <Stack gap="lg">
             {ACCENTS.map((a) => (
               <Inline key={a} gap="lg" align="center" wrap>

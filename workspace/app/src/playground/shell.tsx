@@ -1,70 +1,55 @@
-// PlaygroundLayout — 플레이그라운드 공용 껍데기.
-//
-// SiteNav + 컴포넌트 사이드바 + 본문. 전수 레퍼런스(/playground)와 컴포넌트별
-// 상세(/playground/:slug)가 같은 사이드바를 공유해 어디에 있든 길을 잃지 않는다.
-// 사이드바 시각은 site.css 의 .side-* — 옅은 면 위 rounded rect, active 는 흰 pill.
+// PlaygroundLayout — 시스템 Sidebar로 세우는 공용 reference shell.
 
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 
-import { Box, Stack, Text, tokens } from "@studio-baeks/paper-ui";
+import { Box, Breadcrumb, Sidebar, Stack, tokens, type SidebarBadge, type SidebarGroup } from "@studio-baeks/paper-ui";
 
 import { SiteNav, NAV_HEIGHT } from "../site/chrome";
 import { COMPONENTS, GROUPS } from "./registry";
 
-// 사이드바 항목 = nav 전용 밀도(.side-link). 컨트롤(Button)의 size 체계를 상속하지
-// 않는다 — nav 는 행 높이만 촘촘하게(28) 두고 글자는 14 로 고정한다(가독성). Button
-// size="sm" 에 태우면 밀도 축이 폰트 축을 끌고 내려가 맥없어진다(VS Code·Atlassian·
-// Linear 전부 nav 를 버튼 스케일과 분리). active 는 옅은 면 + weight 로 보상.
-const SideLink = ({ to, label, active }: { to: string; label: string; active: boolean }) => (
-  <Link to={to} className="side-link" data-active={active}>
-    {label}
-  </Link>
-);
+const CHANGE_BADGE: Record<"new" | "mod", SidebarBadge> = {
+  new: { label: "NEW", color: "info" },
+  mod: { label: "MOD", color: "warning" },
+};
 
-const SideGroup = ({ label, children }: { label: string; children: ReactNode }) => (
-  <div className="side-group">
-    <div className="side-group-label">{label}</div>
-    {children}
-  </div>
-);
+const sidebarGroups = (): SidebarGroup[] => [
+  {
+    value: "reference",
+    label: "레퍼런스",
+    items: [
+      { value: "tokens", label: "토큰 · Foundations", as: Link, to: "/playground/tokens" },
+      { value: "all", label: "전수 · 한 화면", as: Link, to: "/playground" },
+    ],
+  },
+  ...GROUPS.map((group) => ({
+    value: group.toLowerCase(),
+    label: group,
+    items: COMPONENTS.filter((component) => component.group === group).map((component) => ({
+      value: component.slug,
+      label: component.name,
+      as: Link,
+      to: `/playground/${component.slug}`,
+      badge: component.change ? CHANGE_BADGE[component.change] : undefined,
+    })),
+  })),
+];
 
 export const PlaygroundLayout = ({ active, children }: { active: string; children: ReactNode }) => (
   <Stack>
     <SiteNav />
     <Box style={{ display: "grid", gridTemplateColumns: `${tokens.shape.width.lg.layout} 1fr`, maxWidth: tokens.layout.container.content, marginInline: "auto", width: "100%" }}>
-      <Box
-        as="nav"
-        paddingX="md"
-        paddingY="lg"
-        className="side-nav"
-        style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, top: NAV_HEIGHT }}
-      >
-        <SideGroup label="레퍼런스">
-          <SideLink to="/playground/tokens" label="토큰 · Foundations" active={active === "tokens"} />
-          <SideLink to="/playground" label="전수 · 한 화면" active={active === "all"} />
-        </SideGroup>
-        {GROUPS.map((g) => {
-          const items = COMPONENTS.filter((c) => c.group === g);
-          if (items.length === 0) return null;
-          return (
-            <SideGroup key={g} label={g}>
-              {items.map((c) => (
-                <SideLink key={c.slug} to={`/playground/${c.slug}`} label={c.name} active={active === c.slug} />
-              ))}
-            </SideGroup>
-          );
-        })}
-      </Box>
-
-      <Box paddingX="xl" paddingY="xl" style={{ minWidth: 0 }}>
-        {children}
-      </Box>
+      <Sidebar
+        groups={sidebarGroups()}
+        active={active}
+        aria-label="컴포넌트 레퍼런스"
+        style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, top: NAV_HEIGHT, position: "sticky" }}
+      />
+      <Box paddingX="xl" paddingY="xl" style={{ minWidth: 0 }}>{children}</Box>
     </Box>
   </Stack>
 );
 
-// 사이드바 헤더에서 재사용할 수 있는 브레드크럼 한 줄.
 export const Crumb = ({ group, name }: { group: string; name: string }) => (
-  <Text variant="caption" ink="faint" as="span">{group} / {name}</Text>
+  <Breadcrumb items={[{ value: "group", label: group }, { value: "name", label: name }]} />
 );

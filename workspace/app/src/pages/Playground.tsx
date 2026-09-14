@@ -14,19 +14,27 @@ import {
   Alert,
   Badge,
   Box,
+  Breadcrumb,
   Button,
   Card,
   Checkbox,
   Divider,
   Field,
+  FormField,
   Icon,
   Inline,
   Link,
   Modal,
+  EmptyState,
+  PageHeader,
+  Pagination,
   Radio,
+  RadioGroup,
   Select,
+  SearchField,
   Spinner,
   Stack,
+  Sidebar,
   Switch,
   Table,
   Tabs,
@@ -73,6 +81,8 @@ export const Playground = () => {
   const [checked, setChecked] = useState(true);
   const [modal, setModal] = useState(false);
   const [longModal, setLongModal] = useState(false);
+  const [page, setPage] = useState(4);
+  const [radio, setRadio] = useState("one");
 
   const columns: Column<{ id: string; k: string; s: "info" | "success" | "error"; n: number }>[] = [
     { key: "k", header: "키", render: (r) => <Text variant="body" as="span">{r.k}</Text> },
@@ -91,7 +101,7 @@ export const Playground = () => {
         <Stack gap="xs">
           <Text variant="label">Studio Baeks · Design System</Text>
           <Text variant="title">Component Playground</Text>
-          <Text variant="caption">27 컴포넌트 · variant · state 전수. 이 페이지가 자동 테스트의 대상이다. 개별 컴포넌트는 사이드바에서 상세로.</Text>
+          <Text variant="caption">34 컴포넌트 · variant · state 전수. 이 페이지가 자동 테스트의 대상이다. 개별 컴포넌트는 사이드바에서 상세로.</Text>
         </Stack>
 
         {/* ── Tokens ─────────────────────────────────────────── */}
@@ -168,14 +178,15 @@ export const Playground = () => {
           <Spec label="variant — 시각 무게" testid="spec-button-variants">
             <Button variant="solid" data-testid="btn-solid">solid</Button>
             <Button variant="soft" data-testid="btn-soft">soft</Button>
+            <Button variant="plain" data-testid="btn-plain">plain</Button>
             <Button variant="outline" data-testid="btn-outline">outline</Button>
             <Button variant="hairline" data-testid="btn-hairline">hairline</Button>
             <Button variant="quiet" data-testid="btn-quiet">quiet</Button>
           </Spec>
           <Spec label="color — 의미 색 (variant 와 직교)">
             <Button color="error" data-testid="btn-danger">삭제</Button>
-            <Button variant="soft" color="success">완료</Button>
-            <Button variant="soft" color="warning">주의</Button>
+            <Button variant="soft" color="success" data-testid="btn-soft-success">완료</Button>
+            <Button variant="soft" color="warning" data-testid="btn-soft-warning">주의</Button>
             <Button variant="quiet" color="error">지우기</Button>
           </Spec>
           <Spec label="solid — 텍스트도 그 색의 톤으로 (모노크로매틱, 버튼 전체가 한 색)">
@@ -336,9 +347,10 @@ export const Playground = () => {
             {STATUSES.map((s) => <Badge key={s} color={s} data-testid={`badge-${s}`}>{s}</Badge>)}
             <Badge data-testid="badge-neutral">중립</Badge>
           </Spec>
-          <Spec label="Badge — variant (solid·outline·quiet) · dot">
+          <Spec label="Badge — shared variant · dot">
             <Badge color="error" variant="solid">3</Badge>
             <Badge color="success" variant="solid">완료</Badge>
+            <Badge color="info" variant="plain">plain</Badge>
             <Badge color="info" variant="outline">검토</Badge>
             <Badge color="warning" variant="quiet">주의</Badge>
             <Badge color="info" dot>진행</Badge>
@@ -370,16 +382,28 @@ export const Playground = () => {
         </Section>
 
         {/* ── Molecules ─────────────────────────────────────── */}
-        <Section id="sec-mol" title="Card · Tabs · Tooltip">
-          <Spec label="Card">
-            <Card style={{ width: "16rem" }} data-testid="card">
-              <Stack gap="xs">
-                <Text variant="subheading">카드 제목</Text>
-                <Text variant="caption">흰 면 + 헤어라인으로 정의되는 컨테이너.</Text>
-              </Stack>
-            </Card>
+        <Section id="sec-mol" title="Card · FormField · SearchField · Tabs · Tooltip">
+          <Spec label="Card — shared variant (solid · soft · plain · outline · hairline · quiet)" testid="spec-card-variant">
+            {(["solid", "soft", "plain", "outline", "hairline", "quiet"] as const).map((variant) => (
+              <Card key={variant} variant={variant} style={{ width: "14rem" }} data-testid={`card-${variant}`}>
+                <Stack gap="xs">
+                  <Text variant="subheading">{variant}</Text>
+                  <Text variant="caption">같은 내용, 다른 구조.</Text>
+                </Stack>
+              </Card>
+            ))}
           </Spec>
-          <Spec label="Tabs — shape (트랙·항목이 함께 갈린다. 각진 쪽 안쪽 반경 = 6 − 트랙 여백 3)" testid="spec-tabs-shape">
+          <Spec label="Card — semantic color도 같은 shared 축" testid="spec-card-color">
+            {(["info", "success", "warning", "error"] as const).map((color) => (
+              <Card key={color} color={color} variant="soft" style={{ width: "14rem" }} data-testid={`card-${color}-soft`}>
+                <Stack gap="xs">
+                  <Text variant="subheading">{color}</Text>
+                  <Text variant="caption">상태를 담는 같은 Card.</Text>
+                </Stack>
+              </Card>
+            ))}
+          </Spec>
+          <Spec label="Tabs — segmented shape + underline variant" testid="spec-tabs-shape">
             <Inline gap="lg" wrap align="center">
               <Box data-testid="tabs-shape-default">
                 <Tabs value={tab} onChange={setTab} items={[
@@ -395,12 +419,53 @@ export const Playground = () => {
                   { value: "three", label: "셋" },
                 ]} />
               </Box>
+              <Box data-testid="tabs-variant-underline">
+                <Tabs value={tab} onChange={setTab} variant="underline" items={[
+                  { value: "one", label: "하나" },
+                  { value: "two", label: "둘" },
+                  { value: "three", label: "셋" },
+                ]} />
+              </Box>
             </Inline>
           </Spec>
-          <Spec label="Tooltip (hover)">
-            <Tooltip label="툴팁 내용">
+          <Spec label="RadioGroup — 세로 질문과 가로 선택지">
+            <RadioGroup
+              value={radio}
+              onChange={setRadio}
+              orientation="horizontal"
+              aria-label="보기 방식"
+              options={[{ value: "one", label: "목록" }, { value: "two", label: "보드" }, { value: "three", label: "달력" }]}
+            />
+          </Spec>
+          <Spec label="FormField — Select·Textarea도 Label·설명 연결을 같은 리듬으로">
+            <Box style={{ width: "16rem" }}>
+              <FormField label="우선순위" hint="저장 후에도 변경할 수 있습니다.">
+                <Select options={[{ value: "", label: "선택하세요" }, { value: "high", label: "높음" }, { value: "normal", label: "보통" }]} />
+              </FormField>
+            </Box>
+          </Spec>
+          <Spec label="SearchField — 돋보기 · search · clearable 조합">
+            <Box style={{ width: "16rem" }}>
+              <SearchField placeholder="이슈 검색" defaultValue="focus" />
+            </Box>
+          </Spec>
+          <Spec label="Tooltip — text 대신 임의의 조합을 content로">
+            <Tooltip content={<Stack gap="xs"><Text variant="label">단축키</Text><Text variant="caption" ink="soft">새 이슈 · C</Text></Stack>}>
               <Button variant="outline" data-testid="tooltip-trigger">hover 해보세요</Button>
             </Tooltip>
+          </Spec>
+          <Spec label="Breadcrumb · Sidebar — location과 local navigation">
+            <Breadcrumb items={[{ value: "atoms", label: "Atoms" }, { value: "component", label: "Component" }, { value: "checkbox", label: "Checkbox" }]} />
+            <Box style={{ width: "14rem" }}>
+              <Sidebar
+                active="components"
+                groups={[{ value: "docs", label: "문서", items: [
+                  { value: "overview", label: "개요" },
+                  { value: "tokens", label: "토큰", badge: { label: "MOD", color: "warning" } },
+                  { value: "components", label: "컴포넌트", badge: { label: "NEW", color: "info" } },
+                ] }]}
+              />
+            </Box>
           </Spec>
         </Section>
 
@@ -410,7 +475,7 @@ export const Playground = () => {
               별도 축을 세우지 않은 건 variant 가 이미 *면의 무게* 축이기 때문이다. */}
           <Spec label="Alert — variant (같은 색, 네 가지 면의 무게)" testid="spec-alert-variant">
             <Inline gap="md" wrap align="start">
-              {(["soft", "solid", "outline", "hairline", "quiet"] as const).map((v) => (
+              {(["soft", "solid", "plain", "outline", "hairline", "quiet"] as const).map((v) => (
                 <Box key={v} style={{ width: "15rem" }} data-testid={`alert-${v}`}>
                   <Alert color="error" variant={v} title="확인이 필요합니다">
                     이 작업은 되돌릴 수 없습니다.
@@ -462,10 +527,69 @@ export const Playground = () => {
         </Section>
 
 
-        <Section id="sec-comp" title="Table · Modal">
-          <Spec label="Table">
-            <Box surface="raised" border radius="md" style={{ overflow: "hidden", width: "28rem" }}>
-              <Table columns={columns} rows={rows} rowKey={(r) => r.id} />
+        <Section id="sec-comp" title="PageHeader · EmptyState · Pagination · Table · Modal">
+          <Spec label="PageHeader — 페이지 제목과 행동의 시작선">
+            <Box style={{ width: "28rem" }}>
+              <PageHeader
+                location={<Breadcrumb items={[{ value: "components", label: "Components" }, { value: "checkbox", label: "Checkbox" }]} />}
+                title="이슈"
+                description="12건이 현재 필터와 일치합니다."
+                actions={<Button size="sm">새 이슈</Button>}
+              />
+            </Box>
+          </Spec>
+          <Spec label="EmptyState — 빈 결과에서 다음 행동 하나를 남긴다">
+            <Box surface="raised" border radius="md" style={{ width: "28rem" }}>
+              <EmptyState
+                title="일치하는 이슈가 없습니다"
+                description="필터를 바꾸거나 새 이슈를 만들어 시작하세요."
+                action={<Button size="sm">필터 초기화</Button>}
+              />
+            </Box>
+          </Spec>
+          <Spec label="Pagination — outlined · soft · minimal">
+            {(["outlined", "soft", "minimal"] as const).map((variant) => (
+              <Pagination key={variant} variant={variant} page={page} totalPages={12} onChange={setPage} />
+            ))}
+          </Spec>
+          <Spec label="Table — 행을 구분하는 방식" testid="spec-table-variant">
+            {(["plain", "ruled", "striped"] as const).map((variant) => (
+              <Box key={variant} surface="raised" border radius="md" style={{ overflow: "hidden", width: "15rem" }} data-testid={`table-${variant}`}>
+                <Table variant={variant} columns={columns} rows={rows} rowKey={(r) => r.id} caption={variant} />
+              </Box>
+            ))}
+          </Spec>
+          <Spec label="Table — 같은 14px 글자, 다른 정보 밀도" testid="spec-table-density">
+            {(["compact", "default", "comfortable"] as const).map((density) => (
+              <Box key={density} surface="raised" border radius="md" style={{ overflow: "hidden", width: "15rem" }} data-testid={`table-density-${density}`}>
+                <Table density={density} columns={columns} rows={rows.slice(0, 2)} rowKey={(r) => r.id} caption={density} />
+              </Box>
+            ))}
+          </Spec>
+          <Spec label="Table anatomy — Column별 align과 조합 가능한 semantic parts">
+            <Box style={{ width: "30rem", maxWidth: "100%" }}>
+              <Table.Root variant="plain">
+                <Table.Header>
+                  <Table.Column>키</Table.Column>
+                  <Table.Column>이슈</Table.Column>
+                  <Table.Column align="center">담당</Table.Column>
+                  <Table.Column align="end">상태</Table.Column>
+                </Table.Header>
+                <Table.Body>
+                  <Table.Row>
+                    <Table.Cell><Text as="span" variant="caption" ink="soft">STU-142</Text></Table.Cell>
+                    <Table.Cell>토큰 트리를 두 번 걷는 emit 파이프라인</Table.Cell>
+                    <Table.Cell align="center">재원</Table.Cell>
+                    <Table.Cell align="end"><Badge color="info">진행</Badge></Table.Cell>
+                  </Table.Row>
+                  <Table.Row>
+                    <Table.Cell><Text as="span" variant="caption" ink="soft">STU-139</Text></Table.Cell>
+                    <Table.Cell>Select 포커스 링이 사파리에서 잘림</Table.Cell>
+                    <Table.Cell align="center">민주</Table.Cell>
+                    <Table.Cell align="end"><Badge color="error">막힘</Badge></Table.Cell>
+                  </Table.Row>
+                </Table.Body>
+              </Table.Root>
             </Box>
           </Spec>
           {/* 긴 본문 모달이 따로 있는 이유 — backdrop 이 fixed 라 패널이 뷰포트보다 커지면
@@ -482,33 +606,30 @@ export const Playground = () => {
         </Section>
       </Stack>
 
-      <Modal
-        open={modal}
-        title="모달 제목"
-        onClose={() => setModal(false)}
-        footer={
-          <>
-            <Button variant="quiet" onClick={() => setModal(false)}>취소</Button>
-            <Button onClick={() => setModal(false)}>확인</Button>
-          </>
-        }
-      >
-        <Text variant="body">떠 있는 것만 그림자를 갖는다. Esc 로 닫힌다.</Text>
+      <Modal open={modal} onOpenChange={setModal} size="sm">
+        <Modal.Header>
+          <Modal.Title>모달 제목</Modal.Title>
+          <Modal.Description>변경할 내용을 확인하세요.</Modal.Description>
+        </Modal.Header>
+        <Modal.Body><Text variant="body">떠 있는 것만 그림자를 갖는다. Esc 로 닫힌다.</Text></Modal.Body>
+        <Modal.Footer>
+          <Modal.Close variant="quiet">취소</Modal.Close>
+          <Modal.Close>확인</Modal.Close>
+        </Modal.Footer>
       </Modal>
 
-      <Modal
-        open={longModal}
-        title="긴 본문"
-        onClose={() => setLongModal(false)}
-        footer={<Button onClick={() => setLongModal(false)} data-testid="long-modal-confirm">확인</Button>}
-      >
-        <Stack gap="md" data-testid="long-modal-body">
-          {Array.from({ length: 24 }, (_, i) => (
-            <Text key={i} variant="body">
-              {i + 1}. 패널에 높이 상한이 있어 이 본문만 구른다. 제목과 푸터는 붙박이다.
-            </Text>
-          ))}
-        </Stack>
+      <Modal open={longModal} onOpenChange={setLongModal} size="lg">
+        <Modal.Header><Modal.Title>긴 본문</Modal.Title></Modal.Header>
+        <Modal.Body>
+          <Stack gap="md" data-testid="long-modal-body">
+            {Array.from({ length: 24 }, (_, i) => (
+              <Text key={i} variant="body">
+                {i + 1}. 패널에 높이 상한이 있어 이 본문만 구른다. 제목과 푸터는 붙박이다.
+              </Text>
+            ))}
+          </Stack>
+        </Modal.Body>
+        <Modal.Footer><Modal.Close data-testid="long-modal-confirm">확인</Modal.Close></Modal.Footer>
       </Modal>
     </PlaygroundLayout>
   );

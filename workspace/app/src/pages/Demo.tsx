@@ -4,20 +4,24 @@
 // 상단 nav · 세그먼트 탭 · 필터 · 데이터 표 · status 배지 · 생성 모달.
 // 이걸로 화면이 서면 시스템이 충분한 것이고, 안 서면 뭐가 빠졌는지 여기서 드러난다.
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   Badge,
   Box,
+  Breadcrumb,
   Button,
   Checkbox,
-  Field,
+  EmptyState,
+  FormField,
   Icon,
   Inline,
-  Label,
   Link,
   Modal,
   Navbar,
+  PageHeader,
+  Pagination,
+  SearchField,
   Select,
   Stack,
   Table,
@@ -86,6 +90,7 @@ export const Demo = () => {
   const [priority, setPriority] = useState("all");
   const [mineOnly, setMineOnly] = useState(false);
   const [open, setOpen] = useState(false);
+  const [page, setPage] = useState(1);
 
   const rows = useMemo(
     () =>
@@ -94,6 +99,12 @@ export const Demo = () => {
         .filter((i) => (mineOnly ? i.assignee === "재원" : true)),
     [tab, priority, mineOnly],
   );
+  const totalPages = Math.max(1, Math.ceil(rows.length / 3));
+  const visibleRows = rows.slice((page - 1) * 3, page * 3);
+
+  // 필터가 바뀌면 이전 목록의 페이지는 더 이상 의미가 없다. 첫 페이지로 돌아가야 빈 표가
+  // "결과 없음"처럼 보이는 오해를 막는다.
+  useEffect(() => setPage(1), [tab, priority, mineOnly]);
 
   const columns: Column<Issue>[] = [
     {
@@ -167,9 +178,9 @@ export const Demo = () => {
         trailing={
           <Inline gap="sm">
             <Box style={{ width: "16rem" }}>
-              <Field placeholder="검색…" aria-label="검색" />
+              <SearchField placeholder="검색…" />
             </Box>
-            <Tooltip label="새 이슈 (C)">
+            <Tooltip content={<Stack gap="xs"><Text variant="label">새 이슈</Text><Text variant="caption" ink="soft">단축키 C</Text></Stack>}>
               <Button onClick={() => setOpen(true)}>
                 새 이슈
               </Button>
@@ -180,13 +191,11 @@ export const Demo = () => {
 
       <Box paddingX="xl" paddingY="xl">
         <Stack gap="xl" style={{ maxWidth: tokens.layout.container.content, marginInline: "auto" }}>
-          <Stack gap="xs">
-            <Text variant="label">프로젝트 · Studio UI</Text>
-            <Inline justify="between" align="baseline">
-              <Text variant="title">이슈</Text>
-              <Text variant="caption">{rows.length}건 표시 중 · 전체 {ISSUES.length}건</Text>
-            </Inline>
-          </Stack>
+          <PageHeader
+            location={<Breadcrumb items={[{ value: "projects", label: "Projects" }, { value: "studio", label: "Studio UI" }, { value: "issues", label: "Issues" }]} />}
+            title="이슈"
+            description={`${rows.length}건 표시 중 · 전체 ${ISSUES.length}건`}
+          />
 
           <Inline gap="md" justify="between" wrap>
             <Tabs
@@ -218,10 +227,33 @@ export const Demo = () => {
             </Inline>
           </Inline>
 
-          {/* 흰 면 + 헤어라인 카드 위의 표. 회색은 그 안의 table head 에만 온다 */}
-          <Box surface="raised" border radius="md" style={{ overflow: "hidden" }}>
-            <Table columns={columns} rows={rows} rowKey={(r) => r.id} />
-          </Box>
+          <Table
+            variant="plain"
+            density="comfortable"
+            columns={columns}
+            rows={visibleRows}
+            rowKey={(r) => r.id}
+            empty={
+              <EmptyState
+                title="일치하는 이슈가 없습니다"
+                description="필터를 바꾸거나 새 이슈를 만들어 시작하세요."
+                action={
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      setTab("all");
+                      setPriority("all");
+                      setMineOnly(false);
+                    }}
+                  >
+                    필터 초기화
+                  </Button>
+                }
+              />
+            }
+          />
+
+          {rows.length ? <Pagination page={page} totalPages={totalPages} onChange={setPage} /> : null}
 
           <Inline gap="sm">
             <Icon aria-label="정보">
@@ -233,42 +265,42 @@ export const Demo = () => {
         </Stack>
       </Box>
 
-      <Modal
-        open={open}
-        title="새 이슈"
-        onClose={() => setOpen(false)}
-        footer={
-          <>
-            <Button variant="quiet" onClick={() => setOpen(false)}>취소</Button>
-            <Button onClick={() => setOpen(false)}>만들기</Button>
-          </>
-        }
-      >
-        <Stack gap="lg">
+      <Modal open={open} onOpenChange={setOpen}>
+        <Modal.Header>
+          <Modal.Title>새 이슈</Modal.Title>
+          <Modal.Description>새 작업의 제목과 분류를 정합니다.</Modal.Description>
+        </Modal.Header>
+        <Modal.Body><Stack gap="lg">
           <TextField label="제목" placeholder="무엇을 해야 하나요" />
           <Inline gap="md" align="start">
-            <Stack gap="xs" style={{ flex: 1 }}>
-              <Label>상태</Label>
-              <Select
-                options={[
-                  { value: "todo", label: "할 일" },
-                  { value: "progress", label: "진행" },
-                  { value: "done", label: "완료" },
-                ]}
-              />
-            </Stack>
-            <Stack gap="xs" style={{ flex: 1 }}>
-              <Label>우선순위</Label>
-              <Select
-                options={[
-                  { value: "보통", label: "보통" },
-                  { value: "높음", label: "높음" },
-                  { value: "낮음", label: "낮음" },
-                ]}
-              />
-            </Stack>
+            <Box style={{ flex: 1 }}>
+              <FormField label="상태">
+                <Select
+                  options={[
+                    { value: "todo", label: "할 일" },
+                    { value: "progress", label: "진행" },
+                    { value: "done", label: "완료" },
+                  ]}
+                />
+              </FormField>
+            </Box>
+            <Box style={{ flex: 1 }}>
+              <FormField label="우선순위">
+                <Select
+                  options={[
+                    { value: "보통", label: "보통" },
+                    { value: "높음", label: "높음" },
+                    { value: "낮음", label: "낮음" },
+                  ]}
+                />
+              </FormField>
+            </Box>
           </Inline>
-        </Stack>
+        </Stack></Modal.Body>
+        <Modal.Footer>
+          <Modal.Close variant="quiet">취소</Modal.Close>
+          <Modal.Close>만들기</Modal.Close>
+        </Modal.Footer>
       </Modal>
     </Stack>
   );

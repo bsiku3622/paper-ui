@@ -144,12 +144,22 @@ test("form · neutral은 solid hover, semantic은 pigment shadow", async ({ page
 });
 
 // ── Badge status → 색 (info·success·warning·danger) ─────────────────────────
-const BADGE = { info: "#1d4ed8", success: "#15803d", warning: "#b45309", error: "#b91c1c" } as const;
+const BADGE = {
+  info: hexToRgb("#1d4ed8"),
+  success: "oklch(0.5024 0.1371 150.1)",
+  warning: "oklch(0.5298 0.1455 49)",
+  error: hexToRgb("#b91c1c"),
+} as const;
 for (const [status, ink] of Object.entries(BADGE)) {
   test(`badge · ${status} 글자색 = ${ink}`, async ({ page }) => {
-    await expect(page.getByTestId(`badge-${status}`)).toHaveCSS("color", hexToRgb(ink));
+    await expect(page.getByTestId(`badge-${status}`)).toHaveCSS("color", ink);
   });
 }
+
+test("accent soft · OKLCH에서 hue를 지키며 primary soft 쪽으로 진해진다", async ({ page }) => {
+  await expect(page.getByTestId("btn-soft-success")).toHaveCSS("background-color", "oklch(0.9319 0.0355 158.8)");
+  await expect(page.getByTestId("btn-soft-warning")).toHaveCSS("background-color", "oklch(0.9323 0.0524 95.2)");
+});
 
 // ── Button — variant × status. solid=검정 채움, soft=회색 면, status=danger=빨강 ─
 test("button · solid 는 검정 채움 + weight 550", async ({ page }) => {
@@ -201,6 +211,72 @@ test("tabs · 클릭하면 활성이 바뀐다", async ({ page }) => {
   await expect(two).toHaveCSS("background-color", hexToRgb("#ffffff"));
 });
 
+// ── 상위 레이어 축 — 같은 내용에서 경계·밀도·배치만 독립적으로 바뀐다 ──────
+test("card · shared variant 매트릭스를 그대로 쓴다", async ({ page }) => {
+  const solid = page.getByTestId("card-solid");
+  const soft = page.getByTestId("card-soft");
+  const plain = page.getByTestId("card-plain");
+  const outline = page.getByTestId("card-outline");
+  const hairline = page.getByTestId("card-hairline");
+  const quiet = page.getByTestId("card-quiet");
+
+  await expect(solid).toHaveCSS("background-color", hexToRgb("#18181b"));
+  await expect(solid.getByText("solid", { exact: true })).toHaveCSS("color", hexToRgb("#ffffff"));
+  await expect(soft).toHaveCSS("background-color", hexToRgb("#e2e2e5"));
+  await expect(plain).toHaveCSS("background-color", hexToRgb("#e2e2e5"));
+  await expect(plain).toHaveCSS("border-top-color", hexToRgb("#92929b"));
+  await expect(outline).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  await expect(outline).toHaveCSS("border-top-color", hexToRgb("#92929b"));
+  await expect(hairline).toHaveCSS("border-top-color", hexToRgb("#e8e8ea"));
+  await expect(quiet).toHaveCSS("border-top-color", "rgba(0, 0, 0, 0)");
+
+  // Card는 shared 색 문법을 쓰되 붙어 있는 정적 면이라 hover gate와 shadow는 없다.
+  for (const card of [solid, soft, plain, outline, hairline, quiet]) await expect(card).toHaveCSS("box-shadow", "none");
+});
+
+test("card · semantic color도 shared profile을 쓴다", async ({ page }) => {
+  await expect(page.getByTestId("card-info-soft")).toHaveClass(/pui-c-info-soft/);
+  await expect(page.getByTestId("card-success-soft")).toHaveClass(/pui-c-success-soft/);
+  await expect(page.getByTestId("card-warning-soft")).toHaveClass(/pui-c-warning-soft/);
+  await expect(page.getByTestId("card-error-soft")).toHaveClass(/pui-c-error-soft/);
+});
+
+test("tabs · underline은 열린 선형 구조라 shape를 갖지 않는다", async ({ page }) => {
+  const root = page.getByTestId("tabs-variant-underline");
+  const list = root.getByRole("tablist");
+  const active = root.getByRole("tab", { selected: true });
+
+  await expect(list).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  await expect(active).toHaveCSS("border-bottom-width", "2px");
+  await expect(active).toHaveCSS("border-bottom-color", hexToRgb("#18181b"));
+  await expect(active).toHaveCSS("border-radius", "0px");
+});
+
+test("radiogroup · horizontal은 짧은 선택지를 한 행에 배치한다", async ({ page }) => {
+  await expect(page.getByRole("radiogroup", { name: "보기 방식" })).toHaveCSS("flex-direction", "row");
+});
+
+test("table · variant는 행 구분법을 중복하지 않는다", async ({ page }) => {
+  const ruledRow = page.getByTestId("table-ruled").locator("tbody tr").first();
+  const stripedEven = page.getByTestId("table-striped").locator("tbody tr").nth(1);
+  const plainRow = page.getByTestId("table-plain").locator("tbody tr").first();
+
+  await expect(ruledRow).toHaveCSS("border-bottom-color", hexToRgb("#e8e8ea"));
+  await expect(ruledRow).toHaveCSS("border-bottom-style", "solid");
+  await expect(stripedEven).toHaveCSS("background-color", hexToRgb("#f4f4f5"));
+  await expect(plainRow).toHaveCSS("border-bottom-style", "none");
+});
+
+test("table · density는 14px 글자를 유지하고 행 높이만 36·44·52로 바꾼다", async ({ page }) => {
+  const expected = { compact: 36, default: 44, comfortable: 52 } as const;
+  for (const [density, height] of Object.entries(expected)) {
+    const row = page.getByTestId(`table-density-${density}`).locator("tbody tr").first();
+    const box = await row.boundingBox();
+    expect(Math.round(box!.height), density).toBe(height);
+    await expect(row.locator("td").first()).toHaveCSS("font-size", "14px");
+  }
+});
+
 // ── Modal — 포커스 트랩·복귀·배경 inert + Esc 닫힘 (a11y 계약) ────────────────
 test("modal · 열리면 포커스 진입·배경 inert, Esc 닫힘·포커스 복귀", async ({ page }) => {
   const trigger = page.getByTestId("modal-open");
@@ -229,6 +305,17 @@ test("modal · 열리면 포커스 진입·배경 inert, Esc 닫힘·포커스 �
   await page.keyboard.press("Escape");
   await expect(dialog).toHaveCount(0);
   await expect(trigger).toBeFocused();
+});
+
+test("modal · size는 담는 일의 폭 사다리를 따른다", async ({ page }) => {
+  await page.setViewportSize({ width: 1000, height: 800 });
+  await page.getByTestId("modal-open").click();
+  await expect(page.getByRole("dialog")).toHaveCSS("max-width", "360px");
+  await page.keyboard.press("Escape");
+
+  await page.getByTestId("modal-open-long").click();
+  await expect(page.getByRole("dialog")).toHaveCSS("max-width", "640px");
+  await page.keyboard.press("Escape");
 });
 
 // ── Tooltip — hover 시 나타난다 ────────────────────────────────────────────
@@ -503,7 +590,7 @@ test("edge · 입력·카드·hairline 이 같은 회색 선을 쓴다", async (
   const colors = await page.evaluate(() => {
     const q = (sel: string) => document.querySelector(sel) as HTMLElement;
     return {
-      card: getComputedStyle(q('[data-testid="card"]')).borderTopColor,
+      card: getComputedStyle(q('[data-testid="card-hairline"]')).borderTopColor,
       field: getComputedStyle(q('[data-testid="base-field"]')).borderTopColor,
       select: getComputedStyle(q('[data-testid="base-select"]')).borderTopColor,
       textarea: getComputedStyle(q('[data-testid="base-textarea"]')).borderTopColor,

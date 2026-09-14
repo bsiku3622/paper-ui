@@ -15,6 +15,7 @@ import {
   Checkbox,
   Divider,
   Field,
+  FormField,
   Icon,
   Inline,
   Label,
@@ -22,6 +23,10 @@ import {
   Modal,
   Navbar,
   Banner,
+  EmptyState,
+  PageHeader,
+  Pagination,
+  SearchField,
   Select,
   Stack,
   Table,
@@ -34,6 +39,8 @@ import {
   RadioGroup,
   Spinner,
   Alert,
+  Breadcrumb,
+  Sidebar,
   Tooltip,
   tokens,
   type Column,
@@ -57,6 +64,7 @@ export type CompSpec = {
   slug: string;
   name: string;
   group: "Primitives" | "Atoms" | "Molecules" | "Components";
+  change?: "new" | "mod";
   blurb: string;
   controls: Control[];
   render: (s: State) => ReactNode;
@@ -176,12 +184,13 @@ export const COMPONENTS: CompSpec[] = [
   // ─ Atoms ─
   {
     slug: "button",
+    change: "mod",
     name: "Button",
     group: "Atoms",
-    blurb: "두 축이 직교한다 — color(primary·의미 4색) × variant(solid·soft·outline·hairline·quiet, 면의 무게). 테두리만 있는 자리가 둘인데, 세기가 아니라 어느 선이냐로 갈린다 — outline 은 컨트롤이 소유한 또렷한 선(지면 대비 3:1), hairline 은 지면이 소유한 헤어라인(카드·빈 입력칸과 같은 선). 큰 면을 채우는 건 검정(primary)뿐, 색은 뜻을 질 때만. shape=\"pill\" 은 알약 — 화면에서 가장 중요한 행동 한둘에만. 누르면 이동하는 자리는 as={Link} 로 링크 하나만 그린다(감싸면 탭 정지가 둘이 된다).",
+    blurb: "두 축이 직교한다 — color(primary·의미 4색) × variant(solid·soft·plain·outline·hairline·quiet). plain은 soft 면과 outline 선을 함께 든다. 큰 면을 채우는 건 검정(primary)뿐, 색은 뜻을 질 때만.",
     controls: [
       { kind: "enum", prop: "color", label: "color", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
-      { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "outline", "hairline", "quiet"], def: "solid" },
+      { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "plain", "outline", "hairline", "quiet"], def: "solid" },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "bool", prop: "loading", label: "loading", def: false },
       { kind: "bool", prop: "fullWidth", label: "fullWidth", def: false },
@@ -214,12 +223,13 @@ export const COMPONENTS: CompSpec[] = [
   },
   {
     slug: "badge",
+    change: "mod",
     name: "Badge",
     group: "Atoms",
     blurb: "상태 한 낱말. color × variant(soft·solid·outline·quiet). dot 으로 앞에 상태 점. 표시용이라 hover 없음. shape=\"pill\" 이면 알약 — Button 과 같은 어휘라 나란히 서도 곡선이 갈리지 않는다.",
     controls: [
       { kind: "enum", prop: "color", label: "color", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
-      { kind: "enum", prop: "variant", label: "variant", options: ["soft", "solid", "outline", "hairline", "quiet"], def: "soft" },
+      { kind: "enum", prop: "variant", label: "variant", options: ["soft", "solid", "plain", "outline", "hairline", "quiet"], def: "soft" },
       { kind: "bool", prop: "dot", label: "dot", def: false },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "enum", prop: "shape", label: "shape", options: ["default", "pill"], def: "default" },
@@ -479,71 +489,137 @@ export const COMPONENTS: CompSpec[] = [
       `<TextField${A("label", s(st.label))}${A("placeholder", s(st.placeholder))}${A("hint", s(st.hint))}${A("error", s(st.error))}${AE("size", s(st.size), "md")}${AE("status", s(st.status), "default")}${A("numeric", b(st.numeric))}${A("disabled", b(st.disabled))} />`,
   },
   {
+    slug: "formfield",
+    change: "new",
+    name: "FormField",
+    group: "Molecules",
+    blurb: "Select·Textarea처럼 Field가 아닌 컨트롤까지 Label·설명·오류의 수직 리듬과 aria 연결로 감싼다. 색 상태는 컨트롤 Atom이 계속 소유한다.",
+    controls: [
+      { kind: "text", prop: "label", label: "label", def: "우선순위" },
+      { kind: "text", prop: "hint", label: "hint", def: "저장 후에도 변경할 수 있습니다." },
+      { kind: "text", prop: "error", label: "error", def: "" },
+    ],
+    render: (st) => (
+      <Box style={{ width: "18rem" }}>
+        <FormField label={s(st.label)} hint={s(st.hint) || undefined} error={s(st.error) || undefined}>
+          <Select options={[{ value: "", label: "선택하세요" }, { value: "high", label: "높음" }, { value: "normal", label: "보통" }]} />
+        </FormField>
+      </Box>
+    ),
+    code: (st) =>
+      `<FormField label="${s(st.label)}"${A("hint", s(st.hint))}${A("error", s(st.error))}>\n  <Select options={[\n    { value: "", label: "선택하세요" },\n    { value: "high", label: "높음" },\n  ]} />\n</FormField>`,
+  },
+  {
+    slug: "searchfield",
+    change: "new",
+    name: "SearchField",
+    group: "Molecules",
+    blurb: "돋보기·type=search·clearable을 Field의 같은 형태와 상태 규칙 안에서 묶는다. 검색창마다 아이콘 간격을 다시 조립하지 않는다.",
+    controls: [
+      { kind: "text", prop: "placeholder", label: "placeholder", def: "이슈 검색" },
+      { kind: "text", prop: "defaultValue", label: "defaultValue", def: "" },
+      { kind: "enum", prop: "shape", label: "shape", options: ["default", "pill"], def: "default" },
+      { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
+    ],
+    render: (st) => (
+      <Box style={{ width: "18rem" }}>
+        <SearchField placeholder={s(st.placeholder)} defaultValue={s(st.defaultValue)} shape={s(st.shape) as "default" | "pill"} size={s(st.size) as "sm" | "md" | "lg"} />
+      </Box>
+    ),
+    code: (st) =>
+      `<SearchField${A("placeholder", s(st.placeholder))}${A("defaultValue", s(st.defaultValue))}${AE("shape", s(st.shape), "default")}${AE("size", s(st.size), "md")} />`,
+  },
+  {
     slug: "card",
+    change: "mod",
     name: "Card",
     group: "Molecules",
-    blurb: "흰 면 + 헤어라인으로 정의되는 칸. 회색으로 감싸지 않고 그림자로 뜨지도 않는다 — 회색은 카드를 받치는 바닥에만 온다. padding=\"none\" 은 자기 여백을 스스로 갖는 것(Table 등)을 담을 때.",
+    blurb: "Button·Badge·Alert와 같은 shared color × variant를 쓴다. Card만의 시각 문법을 만들지 않고, 정적인 컨테이너라 hover gate와 shadow만 제외한다.",
     controls: [
+      { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "plain", "outline", "hairline", "quiet"], def: "hairline" },
+      { kind: "enum", prop: "color", label: "color", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
       { kind: "enum", prop: "radius", label: "radius", options: ["sm", "md", "lg", "full"], def: "md" },
       { kind: "enum", prop: "padding", label: "padding", options: ["none", "sm", "md", "lg", "xl"], def: "lg" },
     ],
     render: (st) => (
-      <Card radius={s(st.radius) as "sm" | "md" | "lg" | "full"} padding={s(st.padding) as "none" | "sm" | "md" | "lg" | "xl"} style={{ width: "18rem" }}>
+      <Card color={s(st.color) as Color} variant={s(st.variant) as Variant} radius={s(st.radius) as "sm" | "md" | "lg" | "full"} padding={s(st.padding) as "none" | "sm" | "md" | "lg" | "xl"} style={{ width: "18rem" }}>
         <Stack gap="xs">
           <Text variant="subheading">카드 제목</Text>
-          <Text variant="caption" ink="soft">옅은 면으로 정의되는 컨테이너.</Text>
+          <Text variant="caption">shared 축을 따르는 정적 컨테이너.</Text>
         </Stack>
       </Card>
     ),
     code: (st) =>
-      `<Card${AE("radius", s(st.radius), "md")}${AE("padding", s(st.padding), "lg")}>\n  <Stack gap="xs">\n    <Text variant="subheading">카드 제목</Text>\n    <Text variant="caption" ink="soft">…</Text>\n  </Stack>\n</Card>`,
+      `<Card${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "hairline")}${AE("radius", s(st.radius), "md")}${AE("padding", s(st.padding), "lg")}>\n  <Stack gap="xs">\n    <Text variant="subheading">카드 제목</Text>\n    <Text variant="caption">…</Text>\n  </Stack>\n</Card>`,
   },
   {
     slug: "tabs",
+    change: "mod",
     name: "Tabs",
     group: "Molecules",
-    blurb: "세그먼트 컨트롤. 활성은 흰 면으로 떠오른다(그림자 없이). shape 은 트랙과 항목에 함께 걸리고, 각진 쪽 안쪽 반경은 바깥에서 트랙 여백을 뺀 동심 값이다.",
+    blurb: "segmented는 닫힌 트랙 안의 범위를, underline은 넓은 페이지 구역을 바꾼다. shape은 segmented의 트랙과 항목에 함께 걸리고 underline에서는 의미가 없어 무시한다. 키보드 roving tabindex는 두 variant가 같다.",
     controls: [
+      { kind: "enum", prop: "variant", label: "variant", options: ["segmented", "underline"], def: "segmented" },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "sm" },
       { kind: "enum", prop: "shape", label: "shape", options: ["default", "pill"], def: "default" },
     ],
-    render: (st) => <TabsDemo size={s(st.size) as "sm" | "md" | "lg"} shape={s(st.shape) as "default" | "pill"} />,
+    render: (st) => <TabsDemo variant={s(st.variant) as "segmented" | "underline"} size={s(st.size) as "sm" | "md" | "lg"} shape={s(st.shape) as "default" | "pill"} />,
     code: (st) =>
-      `const [tab, setTab] = useState("one");\n<Tabs value={tab} onChange={setTab}${AE("size", s(st.size), "sm")}${AE("shape", s(st.shape), "default")} items={[\n  { value: "one", label: "하나" },\n  { value: "two", label: "둘" },\n  { value: "three", label: "셋" },\n]} />`,
+      `const [tab, setTab] = useState("one");\n<Tabs value={tab} onChange={setTab}${AE("variant", s(st.variant), "segmented")}${AE("size", s(st.size), "sm")}${s(st.variant) === "underline" ? "" : AE("shape", s(st.shape), "default")} items={[\n  { value: "one", label: "하나" },\n  { value: "two", label: "둘" },\n  { value: "three", label: "셋" },\n]} />`,
   },
   {
     slug: "tooltip",
+    change: "mod",
     name: "Tooltip",
     group: "Molecules",
-    blurb: "잠깐 뜨는 쪽지. 위 공간이 없으면 자동으로 아래로 뒤집는다.",
-    controls: [{ kind: "text", prop: "label", label: "label", def: "툴팁 내용" }],
+    blurb: "잠깐 뜨는 비상호작용 설명. content는 ReactNode라 아이콘·여러 Text를 담을 수 있고, 위 공간이 없으면 아래로 뒤집는다. 버튼·폼은 Popover의 책임이다.",
+    controls: [{ kind: "text", prop: "content", label: "content", def: "단축키 C로도 열 수 있습니다." }],
     render: (st) => (
-      <Tooltip label={s(st.label)}>
+      <Tooltip content={<Stack gap="xs"><Text variant="label" ink="inherit">새 이슈</Text><Text variant="caption" ink="inherit">{s(st.content)}</Text></Stack>}>
         <Button variant="outline">hover 해보세요</Button>
       </Tooltip>
     ),
-    code: (st) => `<Tooltip label="${s(st.label)}">\n  <Button variant="outline">hover</Button>\n</Tooltip>`,
+    code: (st) => `<Tooltip content={<Stack><Text>새 이슈</Text><Text>${s(st.content)}</Text></Stack>}>\n  <Button variant="outline">hover</Button>\n</Tooltip>`,
+  },
+  {
+    slug: "breadcrumb",
+    change: "new",
+    name: "Breadcrumb",
+    group: "Molecules",
+    blurb: "현재 위치의 계층만 보여주는 location navigation. 마지막 항목은 aria-current=page이며 앞 항목은 실제 링크로 교체할 수 있다.",
+    controls: [{ kind: "text", prop: "current", label: "current", def: "Checkbox" }],
+    render: (st) => (
+      <Breadcrumb items={[
+        { value: "atoms", label: "Atoms" },
+        { value: "component", label: "Component" },
+        { value: "current", label: s(st.current) },
+      ]} />
+    ),
+    code: (st) => `<Breadcrumb items={[\n  { value: "atoms", label: "Atoms", as: Link, to: "/atoms" },\n  { value: "component", label: "Component" },\n  { value: "current", label: "${s(st.current)}" },\n]} />`,
   },
   {
     slug: "radiogroup",
+    change: "mod",
     name: "RadioGroup",
     group: "Molecules",
-    blurb: "여럿 중 하나. Radio + Label 을 options 로 묶고 한 그룹으로 만든다.",
+    blurb: "여럿 중 하나. Radio + Label을 options로 묶고 한 그룹으로 만든다. 세로가 기본이며 짧고 대등한 선택지는 horizontal로 두고 좁으면 wrap한다.",
     controls: [
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
+      { kind: "enum", prop: "orientation", label: "orientation", options: ["vertical", "horizontal"], def: "vertical" },
     ],
-    render: (st) => <RadioGroupDemo size={s(st.size) as "sm" | "md" | "lg"} />,
+    render: (st) => <RadioGroupDemo size={s(st.size) as "sm" | "md" | "lg"} orientation={s(st.orientation) as "vertical" | "horizontal"} />,
     code: (st) =>
-      `const [v, setV] = useState("a");\n<RadioGroup value={v} onChange={setV}${AE("size", s(st.size), "md")} options={[\n  { value: "a", label: "옵션 A" },\n  { value: "b", label: "옵션 B" },\n  { value: "c", label: "옵션 C" },\n]} />`,
+      `const [v, setV] = useState("a");\n<RadioGroup value={v} onChange={setV}${AE("size", s(st.size), "md")}${AE("orientation", s(st.orientation), "vertical")} options={[\n  { value: "a", label: "옵션 A" },\n  { value: "b", label: "옵션 B" },\n  { value: "c", label: "옵션 C" },\n]} />`,
   },
   {
     slug: "alert",
+    change: "mod",
     name: "Alert",
     group: "Molecules",
     blurb: "상태 한 줄을 색이 깔린 면으로 알린다. Button·Badge 와 같은 color × variant 매트릭스를 그대로 문다 — variant 가 이미 면의 무게 축이라 Alert 전용 surface 축을 따로 세우지 않았다.",
     controls: [
       { kind: "enum", prop: "color", label: "color", options: ["primary", "info", "success", "warning", "error"], def: "info" },
-      { kind: "enum", prop: "variant", label: "variant", options: ["soft", "solid", "outline", "hairline", "quiet"], def: "soft" },
+      { kind: "enum", prop: "variant", label: "variant", options: ["soft", "solid", "plain", "outline", "hairline", "quiet"], def: "soft" },
       { kind: "text", prop: "title", label: "title", def: "확인이 필요합니다" },
       { kind: "text", prop: "children", label: "children", def: "이 작업은 되돌릴 수 없습니다." },
     ],
@@ -560,24 +636,107 @@ export const COMPONENTS: CompSpec[] = [
 
   // ─ Components ─
   {
+    slug: "pageheader",
+    change: "new",
+    name: "PageHeader",
+    group: "Components",
+    blurb: "location → display title → description의 읽기 순서를 만들고 actions를 제목 기준선에 맞춘다. Card나 eyebrow 장식을 강요하지 않는다.",
+    controls: [
+      { kind: "text", prop: "title", label: "title", def: "이슈" },
+      { kind: "text", prop: "description", label: "description", def: "12건이 현재 필터와 일치합니다." },
+    ],
+    render: (st) => (
+      <Box style={{ width: "28rem", maxWidth: "100%" }}>
+        <PageHeader
+          location={<Breadcrumb items={[{ value: "components", label: "Components" }, { value: "current", label: s(st.title) }]} />}
+          title={s(st.title)}
+          description={s(st.description) || undefined}
+          actions={<Button>새 이슈</Button>}
+        />
+      </Box>
+    ),
+    code: (st) =>
+      `<PageHeader\n  location={<Breadcrumb items={[{ value: "components", label: "Components" }, { value: "current", label: "${s(st.title)}" }]} />}\n  title="${s(st.title)}"${A("description", s(st.description))}\n  actions={<Button>새 이슈</Button>}\n/>`,
+  },
+  {
+    slug: "sidebar",
+    change: "new",
+    name: "Sidebar",
+    group: "Components",
+    blurb: "group·active item·optional badge를 data API로 받는 local navigation rail. 링크와 버튼을 모두 지원하며 NEW/MOD 같은 release 표식도 시스템 Badge로 렌더한다.",
+    controls: [{ kind: "enum", prop: "active", label: "active", options: ["overview", "tokens", "components"], def: "components" }],
+    render: (st) => (
+      <Box style={{ width: "15rem", border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }}>
+        <Sidebar active={s(st.active)} groups={[
+          { value: "docs", label: "문서", items: [
+            { value: "overview", label: "개요" },
+            { value: "tokens", label: "토큰", badge: { label: "MOD", color: "warning" } },
+            { value: "components", label: "컴포넌트", badge: { label: "NEW", color: "info" } },
+          ] },
+        ]} />
+      </Box>
+    ),
+    code: (st) => `<Sidebar active="${s(st.active)}" groups={[{\n  value: "docs", label: "문서", items: [\n    { value: "overview", label: "개요" },\n    { value: "components", label: "컴포넌트", badge: { label: "NEW", color: "info" } },\n  ],\n}]} />`,
+  },
+  {
+    slug: "emptystate",
+    change: "new",
+    name: "EmptyState",
+    group: "Components",
+    blurb: "빈 결과를 막다른 곳으로 두지 않는다. 이유와 다음 행동 하나만 남기고 새 색면·카드는 만들지 않는다.",
+    controls: [
+      { kind: "text", prop: "title", label: "title", def: "일치하는 이슈가 없습니다" },
+      { kind: "text", prop: "description", label: "description", def: "필터를 바꾸거나 새 이슈를 만들어 시작하세요." },
+    ],
+    render: (st) => (
+      <Box surface="raised" border radius="md" style={{ width: "28rem", maxWidth: "100%" }}>
+        <EmptyState title={s(st.title)} description={s(st.description) || undefined} action={<Button size="sm">필터 초기화</Button>} />
+      </Box>
+    ),
+    code: (st) =>
+      `<EmptyState title="${s(st.title)}"${A("description", s(st.description))}\n  action={<Button size="sm">필터 초기화</Button>}\n/>`,
+  },
+  {
+    slug: "pagination",
+    change: "new",
+    name: "Pagination",
+    group: "Components",
+    blurb: "현재 위치와 앞뒤 이동. outlined는 선, soft는 면, minimal은 현재 위치만 옅은 면으로 남겨 주변 화면의 밀도에 맞춘다.",
+    controls: [
+      { kind: "enum", prop: "variant", label: "variant", options: ["outlined", "soft", "minimal"], def: "outlined" },
+      { kind: "enum", prop: "totalPages", label: "totalPages", options: ["3", "7", "12"], def: "12" },
+    ],
+    render: (st) => <PaginationDemo totalPages={Number(s(st.totalPages))} variant={s(st.variant) as "outlined" | "soft" | "minimal"} />,
+    code: (st) =>
+      `const [page, setPage] = useState(1);\n<Pagination${AE("variant", s(st.variant), "outlined")} page={page} totalPages={${s(st.totalPages)}} onChange={setPage} />`,
+  },
+  {
     slug: "table",
+    change: "mod",
     name: "Table",
     group: "Components",
-    blurb: "column 을 data 로 받는다. numeric 열은 sans 그대로 tabular·우측정렬(등폭 아님).",
-    controls: [],
-    render: () => <TableDemo />,
-    code: () =>
-      `const columns = [\n  { key: "k", header: "키", render: (r) => r.k },\n  { key: "s", header: "상태", render: (r) => <Badge color={r.s}>{r.s}</Badge> },\n  { key: "n", header: "값", numeric: true, render: (r) => r.n.toLocaleString() },\n];\n<Table columns={columns} rows={rows} rowKey={(r) => r.id} />`,
+    blurb: "variant는 행을 구분하는 방식(plain·ruled·striped), density는 같은 14px 정보를 세로로 담는 양이다. numeric 열은 sans 그대로 tabular·우측정렬한다.",
+    controls: [
+      { kind: "enum", prop: "variant", label: "variant", options: ["plain", "ruled", "striped"], def: "plain" },
+      { kind: "enum", prop: "density", label: "density", options: ["compact", "default", "comfortable"], def: "default" },
+    ],
+    render: (st) => <TableDemo variant={s(st.variant) as "plain" | "ruled" | "striped"} density={s(st.density) as "compact" | "default" | "comfortable"} />,
+    code: (st) =>
+      `const columns = [\n  { key: "k", header: "키", render: (r) => r.k },\n  { key: "s", header: "상태", render: (r) => <Badge color={r.s}>{r.s}</Badge> },\n  { key: "n", header: "값", numeric: true, render: (r) => r.n.toLocaleString() },\n];\n<Table${AE("variant", s(st.variant), "plain")}${AE("density", s(st.density), "default")} columns={columns} rows={rows} rowKey={(r) => r.id} />`,
   },
   {
     slug: "modal",
+    change: "mod",
     name: "Modal",
     group: "Components",
-    blurb: "떠 있는 것만 그림자를 갖는다. Esc 로 닫힌다.",
-    controls: [{ kind: "text", prop: "title", label: "title", def: "새 이슈" }],
-    render: (st) => <ModalDemo title={s(st.title)} />,
+    blurb: "Header·Title·Description·Body·Footer·Close로 구조를 드러내는 compound dialog. size는 담는 일의 폭이며 포커스 trap과 복귀를 Root가 맡는다.",
+    controls: [
+      { kind: "text", prop: "title", label: "title", def: "새 이슈" },
+      { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
+    ],
+    render: (st) => <ModalDemo title={s(st.title)} size={s(st.size) as "sm" | "md" | "lg"} />,
     code: (st) =>
-      `const [open, setOpen] = useState(false);\n<Modal open={open} title="${s(st.title)}" onClose={() => setOpen(false)}\n  footer={<><Button variant="quiet" onClick={() => setOpen(false)}>취소</Button>\n           <Button onClick={() => setOpen(false)}>확인</Button></>}>\n  <Text variant="body">본문</Text>\n</Modal>`,
+      `const [open, setOpen] = useState(false);\n<Modal open={open} onOpenChange={setOpen}${AE("size", s(st.size), "md")}>\n  <Modal.Header><Modal.Title>${s(st.title)}</Modal.Title><Modal.Description>설명</Modal.Description></Modal.Header>\n  <Modal.Body><Text variant="body">본문</Text></Modal.Body>\n  <Modal.Footer><Modal.Close variant="quiet">취소</Modal.Close><Modal.Close>확인</Modal.Close></Modal.Footer>\n</Modal>`,
   },
   {
     slug: "navbar",
@@ -635,12 +794,13 @@ export const COMPONENTS: CompSpec[] = [
 ];
 
 // ── 상태가 필요한 미리보기(내부 컴포넌트) ────────────────────────────────────
-const TabsDemo = ({ size, shape }: { size?: "sm" | "md" | "lg"; shape?: "default" | "pill" }) => {
+const TabsDemo = ({ variant, size, shape }: { variant?: "segmented" | "underline"; size?: "sm" | "md" | "lg"; shape?: "default" | "pill" }) => {
   const [tab, setTab] = useState("one");
   return (
     <Tabs
       value={tab}
       onChange={setTab}
+      variant={variant}
       size={size}
       shape={shape}
       items={[
@@ -652,13 +812,14 @@ const TabsDemo = ({ size, shape }: { size?: "sm" | "md" | "lg"; shape?: "default
   );
 };
 
-const RadioGroupDemo = ({ size }: { size?: "sm" | "md" | "lg" }) => {
+const RadioGroupDemo = ({ size, orientation }: { size?: "sm" | "md" | "lg"; orientation?: "vertical" | "horizontal" }) => {
   const [v, setV] = useState("a");
   return (
     <RadioGroup
       value={v}
       onChange={setV}
       size={size}
+      orientation={orientation}
       options={[
         { value: "a", label: "옵션 A" },
         { value: "b", label: "옵션 B" },
@@ -668,8 +829,13 @@ const RadioGroupDemo = ({ size }: { size?: "sm" | "md" | "lg" }) => {
   );
 };
 
+const PaginationDemo = ({ totalPages, variant }: { totalPages: number; variant?: "outlined" | "soft" | "minimal" }) => {
+  const [page, setPage] = useState(1);
+  return <Pagination variant={variant} page={page} totalPages={totalPages} onChange={setPage} />;
+};
+
 type Row = { id: string; k: string; st: StatusName; n: number };
-const TableDemo = () => {
+const TableDemo = ({ variant, density }: { variant?: "plain" | "ruled" | "striped"; density?: "compact" | "default" | "comfortable" }) => {
   const columns: Column<Row>[] = [
     { key: "k", header: "키", render: (r) => <Text variant="body" as="span">{r.k}</Text> },
     { key: "st", header: "상태", render: (r) => <Badge color={r.st}>{r.st}</Badge> },
@@ -682,28 +848,30 @@ const TableDemo = () => {
   ];
   return (
     <Box surface="raised" border radius="md" style={{ overflow: "hidden", width: "28rem", maxWidth: "100%" }}>
-      <Table columns={columns} rows={rows} rowKey={(r) => r.id} />
+      <Table variant={variant} density={density} columns={columns} rows={rows} rowKey={(r) => r.id} />
     </Box>
   );
 };
 
-const ModalDemo = ({ title }: { title: string }) => {
+const ModalDemo = ({ title, size }: { title: string; size?: "sm" | "md" | "lg" }) => {
   const [open, setOpen] = useState(false);
   return (
     <>
       <Button onClick={() => setOpen(true)}>모달 열기</Button>
       <Modal
         open={open}
-        title={title}
-        onClose={() => setOpen(false)}
-        footer={
-          <>
-            <Button variant="quiet" onClick={() => setOpen(false)}>취소</Button>
-            <Button onClick={() => setOpen(false)}>확인</Button>
-          </>
-        }
+        size={size}
+        onOpenChange={setOpen}
       >
-        <Text variant="body">떠 있는 것만 그림자를 갖는다. Esc 로 닫힌다.</Text>
+        <Modal.Header>
+          <Modal.Title>{title}</Modal.Title>
+          <Modal.Description>변경할 내용을 확인하세요.</Modal.Description>
+        </Modal.Header>
+        <Modal.Body><Text variant="body">떠 있는 것만 그림자를 갖는다. Esc로 닫힌다.</Text></Modal.Body>
+        <Modal.Footer>
+          <Modal.Close variant="quiet">취소</Modal.Close>
+          <Modal.Close>확인</Modal.Close>
+        </Modal.Footer>
       </Modal>
     </>
   );
