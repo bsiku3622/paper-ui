@@ -38,4 +38,16 @@ export { Banner, type BannerProps } from "./Banner";
 export { PageHeader, type PageHeaderProps } from "./PageHeader";
 export { EmptyState, type EmptyStateProps } from "./EmptyState";
 export { Pagination, type PaginationProps, type PaginationVariant } from "./Pagination";
-export { Sidebar, type SidebarProps, type SidebarGroup, type SidebarItem, type SidebarBadge } from "./Sidebar";
+export {
+  Sidebar,
+  SidebarGroup,
+  SidebarItem,
+  SidebarBadge,
+  type SidebarProps,
+  type SidebarGroupProps,
+  type SidebarItemProps,
+  type SidebarBadgeProps,
+} from "./Sidebar";
+export { DropdownMenu, type DropdownMenuProps } from "./DropdownMenu";
+export { CommandMenu, type CommandMenuProps, type CommandItem } from "./CommandMenu";
+export { TreeNavigation, type TreeNavigationProps, type TreeNavigationItem } from "./TreeNavigation";

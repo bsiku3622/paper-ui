@@ -13,9 +13,9 @@ Atlassian, finished like SwiftUI.
 
 The seven principles behind every visual decision: **[docs/get-started/philosophy.md](docs/get-started/philosophy.md)**.
 
-- **34 components — the baseline.** Forms, feedback, loading, location and page-level data
+- **40 components — the baseline.** Forms, feedback, loading, location and page-level data
   flows included, this is
-  the smallest set that finishes a real screen. After v1 a 33rd needs evidence it
+  the smallest set that finishes a real screen. After v1 a 41st needs evidence it
   was needed twice; until then it has to be a standard primitive or fill a real
   semantic gap, and extending an existing component comes first either way.
 - **Black is the workhorse.** Primary actions are black, not blue — a blue button

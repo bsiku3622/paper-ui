@@ -1,4 +1,4 @@
-import { style } from "@vanilla-extract/css";
+import { globalStyle, style } from "@vanilla-extract/css";
 
 import { tokens, stateTransition } from "../tokens";
 
@@ -13,7 +13,7 @@ export const sidebarRoot = style({
 });
 
 export const sidebarGroup = style({ display: "flex", flexDirection: "column", gap: tokens.shape.gap.xs });
-export const sidebarGroupAfter = style({ marginTop: tokens.shape.gap.lg });
+globalStyle(`${sidebarGroup} + ${sidebarGroup}`, { marginTop: tokens.shape.gap.lg });
 
 export const sidebarGroupLabel = style({
   paddingInline: tokens.shape.padding.md.interaction,
@@ -57,7 +57,7 @@ export const sidebarItemActive = style({
   },
 });
 
-export const sidebarItemLabel = style({ flex: 1, minWidth: 0 });
+export const sidebarBadge = style({ marginLeft: "auto", flex: "0 0 auto" });
 
 // selected는 행과 badge를 같은 neutral overlay 아래에 둔다. soft pigment를 없애지 않고
 // 그 위에 행과 같은 selected tint를 합성하므로, 색의 뜻은 남되 별도 층처럼 뜨지 않는다.

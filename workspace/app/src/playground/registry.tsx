@@ -13,7 +13,9 @@ import {
   Button,
   Card,
   Checkbox,
+  CommandMenu,
   Divider,
+  DropdownMenu,
   Field,
   FormField,
   Icon,
@@ -21,6 +23,7 @@ import {
   Label,
   Link,
   Modal,
+  Menu,
   Navbar,
   Banner,
   EmptyState,
@@ -29,7 +32,9 @@ import {
   SearchField,
   Select,
   Stack,
+  Steps,
   Table,
+  TableOfContents,
   Tabs,
   Text,
   TextField,
@@ -42,6 +47,7 @@ import {
   Breadcrumb,
   Sidebar,
   Tooltip,
+  TreeNavigation,
   tokens,
   type Column,
   type Surface,
@@ -634,6 +640,40 @@ export const COMPONENTS: CompSpec[] = [
       `<Alert color="${s(st.color)}"${AE("variant", s(st.variant), "soft")} title="${s(st.title)}">${s(st.children)}</Alert>`,
   },
 
+  {
+    slug: "menu",
+    change: "new",
+    name: "Menu",
+    group: "Molecules",
+    blurb: "action과 navigation을 한 열에 놓는 기본 목록. 현재 위치·설명·단축키·위험·비활성 상태를 한 item 문법으로 다룬다.",
+    controls: [{ kind: "enum", prop: "active", label: "active", options: ["overview", "tokens", "none"], def: "overview" }],
+    render: (st) => <Box style={{ width: "18rem" }}><MenuDemo active={s(st.active) === "none" ? undefined : s(st.active)} /></Box>,
+    code: (st) => `const [active, setActive] = useState("${s(st.active)}");\n<Menu active={active} onSelect={setActive} items={[\n  { value: "overview", label: "개요", description: "시스템의 기본 원칙" },\n  { value: "tokens", label: "토큰", shortcut: "⌘ T" },\n  { value: "archive", label: "보관하기", danger: true },\n]} />`,
+  },
+  {
+    slug: "steps",
+    change: "new",
+    name: "Steps",
+    group: "Molecules",
+    blurb: "실제 순서가 있는 흐름만 번호와 연결선으로 보여준다. 완료·현재·예정의 무게가 다르고 가로·세로 방향을 공유한다.",
+    controls: [
+      { kind: "enum", prop: "current", label: "current", options: ["draft", "review", "publish"], def: "review" },
+      { kind: "enum", prop: "orientation", label: "orientation", options: ["horizontal", "vertical"], def: "horizontal" },
+    ],
+    render: (st) => <StepsDemo current={s(st.current)} orientation={s(st.orientation) as "horizontal" | "vertical"} />,
+    code: (st) => `<Steps current="${s(st.current)}"${AE("orientation", s(st.orientation), "horizontal")} items={[\n  { value: "draft", label: "초안", description: "내용 작성" },\n  { value: "review", label: "검토", description: "구조 확인" },\n  { value: "publish", label: "배포", description: "문서 공개" },\n]} />`,
+  },
+  {
+    slug: "tableofcontents",
+    change: "new",
+    name: "TableOfContents",
+    group: "Molecules",
+    blurb: "한 문서 안의 현재 위치를 깊이 3단과 왼쪽 rule로 표시한다. 전체 사이트 계층을 맡는 Sidebar·TreeNavigation과 범위를 나눈다.",
+    controls: [{ kind: "enum", prop: "active", label: "active", options: ["overview", "props", "examples"], def: "props" }],
+    render: (st) => <Box style={{ width: "16rem" }}><TableOfContentsDemo active={s(st.active)} /></Box>,
+    code: (st) => `<TableOfContents active="${s(st.active)}" items={[\n  { value: "overview", label: "개요" },\n  { value: "props", label: "Props", depth: 1 },\n  { value: "examples", label: "예제", depth: 1 },\n]} />`,
+  },
+
   // ─ Components ─
   {
     slug: "pageheader",
@@ -663,20 +703,20 @@ export const COMPONENTS: CompSpec[] = [
     change: "new",
     name: "Sidebar",
     group: "Components",
-    blurb: "group·active item·optional badge를 data API로 받는 local navigation rail. 링크와 버튼을 모두 지원하며 NEW/MOD 같은 release 표식도 시스템 Badge로 렌더한다.",
+    blurb: "Group·Item·Badge를 조합하는 compound local navigation rail. 내부 요소의 구성과 링크 교체가 JSX에 그대로 드러나며 active 상태와 release 표식은 Root가 공유한다.",
     controls: [{ kind: "enum", prop: "active", label: "active", options: ["overview", "tokens", "components"], def: "components" }],
     render: (st) => (
       <Box style={{ width: "15rem", border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }}>
-        <Sidebar active={s(st.active)} groups={[
-          { value: "docs", label: "문서", items: [
-            { value: "overview", label: "개요" },
-            { value: "tokens", label: "토큰", badge: { label: "MOD", color: "warning" } },
-            { value: "components", label: "컴포넌트", badge: { label: "NEW", color: "info" } },
-          ] },
-        ]} />
+        <Sidebar active={s(st.active)}>
+          <Sidebar.Group label="문서">
+            <Sidebar.Item value="overview">개요</Sidebar.Item>
+            <Sidebar.Item value="tokens">토큰<Sidebar.Badge color="warning">MOD</Sidebar.Badge></Sidebar.Item>
+            <Sidebar.Item value="components">컴포넌트<Sidebar.Badge color="info">NEW</Sidebar.Badge></Sidebar.Item>
+          </Sidebar.Group>
+        </Sidebar>
       </Box>
     ),
-    code: (st) => `<Sidebar active="${s(st.active)}" groups={[{\n  value: "docs", label: "문서", items: [\n    { value: "overview", label: "개요" },\n    { value: "components", label: "컴포넌트", badge: { label: "NEW", color: "info" } },\n  ],\n}]} />`,
+    code: (st) => `<Sidebar active="${s(st.active)}">\n  <Sidebar.Group label="문서">\n    <Sidebar.Item value="overview">개요</Sidebar.Item>\n    <Sidebar.Item value="tokens">토큰<Sidebar.Badge color="warning">MOD</Sidebar.Badge></Sidebar.Item>\n    <Sidebar.Item value="components">컴포넌트<Sidebar.Badge color="info">NEW</Sidebar.Badge></Sidebar.Item>\n  </Sidebar.Group>\n</Sidebar>`,
   },
   {
     slug: "emptystate",
@@ -791,9 +831,63 @@ export const COMPONENTS: CompSpec[] = [
     code: (st) =>
       `<Banner${AE("tone", s(st.tone), "solid")} action={<span>← 사이트로</span>}>\n  Paper UI · ${s(st.children)}\n</Banner>`,
   },
+  {
+    slug: "dropdownmenu",
+    change: "new",
+    name: "DropdownMenu",
+    group: "Components",
+    blurb: "Menu를 trigger에 붙이는 떠 있는 action surface. 바깥 클릭·Escape·초기 포커스·선택 후 닫힘을 Root가 맡고 이 surface만 overlay shadow를 갖는다.",
+    controls: [{ kind: "enum", prop: "align", label: "align", options: ["start", "end"], def: "start" }],
+    render: (st) => <Box style={{ paddingBottom: tokens.shape.height.xs.layout }}><DropdownMenu align={s(st.align) as "start" | "end"} trigger={<Button variant="outline">문서 작업</Button>} items={[{ value: "duplicate", label: "복제", shortcut: "⌘ D" }, { value: "move", label: "이동" }, { value: "delete", label: "삭제", danger: true }]} /></Box>,
+    code: (st) => `<DropdownMenu${AE("align", s(st.align), "start")} trigger={<Button variant="outline">문서 작업</Button>} items={[\n  { value: "duplicate", label: "복제", shortcut: "⌘ D" },\n  { value: "move", label: "이동" },\n  { value: "delete", label: "삭제", danger: true },\n]} />`,
+  },
+  {
+    slug: "commandmenu",
+    change: "new",
+    name: "CommandMenu",
+    group: "Components",
+    blurb: "검색 Field와 키보드 선택 listbox를 묶은 빠른 이동 surface. label과 keywords를 검색하고 group·설명·단축키를 유지한다.",
+    controls: [{ kind: "text", prop: "placeholder", label: "placeholder", def: "명령 또는 페이지 검색" }],
+    render: (st) => <Box style={{ width: "28rem", maxWidth: "100%" }}><CommandMenuDemo placeholder={s(st.placeholder)} /></Box>,
+    code: (st) => `<CommandMenu placeholder="${s(st.placeholder)}" commands={[\n  { value: "button", label: "Button", group: "컴포넌트", shortcut: "B" },\n  { value: "sidebar", label: "Sidebar", group: "컴포넌트", shortcut: "S" },\n  { value: "colors", label: "Color tokens", group: "문서", keywords: ["palette"] },\n]} onSelect={openPage} />`,
+  },
+  {
+    slug: "treenavigation",
+    change: "new",
+    name: "TreeNavigation",
+    group: "Components",
+    blurb: "깊은 정보 구조를 접고 펴는 계층 navigation. branch는 확장 상태를, leaf는 선택을 맡으며 키보드 화살표로 같은 구조를 탐색한다.",
+    controls: [{ kind: "enum", prop: "active", label: "active", options: ["button", "badge", "colors"], def: "button" }],
+    render: (st) => <Box style={{ width: "18rem" }}><TreeNavigationDemo active={s(st.active)} /></Box>,
+    code: (st) => `<TreeNavigation active="${s(st.active)}" defaultExpanded={["components", "atoms"]} items={[\n  { value: "foundations", label: "Foundations", children: [\n    { value: "colors", label: "Color" },\n  ] },\n  { value: "components", label: "Components", children: [\n    { value: "atoms", label: "Atoms", children: [\n      { value: "button", label: "Button" },\n      { value: "badge", label: "Badge" },\n    ] },\n  ] },\n]} />`,
+  },
 ];
 
 // ── 상태가 필요한 미리보기(내부 컴포넌트) ────────────────────────────────────
+const MenuDemo = ({ active: initialActive }: { active?: string }) => {
+  const [active, setActive] = useState(initialActive);
+  return <Menu active={active} onSelect={setActive} items={[{ value: "overview", label: "개요", description: "시스템의 기본 원칙" }, { value: "tokens", label: "토큰", shortcut: "⌘ T" }, { value: "archive", label: "보관하기", danger: true }]} />;
+};
+
+const StepsDemo = ({ current: initialCurrent, orientation }: { current: string; orientation: "horizontal" | "vertical" }) => {
+  const [current, setCurrent] = useState(initialCurrent);
+  return <Steps current={current} orientation={orientation} onChange={setCurrent} items={[{ value: "draft", label: "초안", description: "내용 작성" }, { value: "review", label: "검토", description: "구조 확인" }, { value: "publish", label: "배포", description: "문서 공개" }]} />;
+};
+
+const TableOfContentsDemo = ({ active: initialActive }: { active: string }) => {
+  const [active, setActive] = useState(initialActive);
+  return <TableOfContents active={active} onSelect={setActive} items={[{ value: "overview", label: "개요" }, { value: "props", label: "Props", depth: 1 }, { value: "examples", label: "예제", depth: 1 }]} />;
+};
+
+const CommandMenuDemo = ({ placeholder }: { placeholder: string }) => (
+  <CommandMenu placeholder={placeholder} commands={[{ value: "button", label: "Button", description: "Atoms", group: "컴포넌트", shortcut: "B" }, { value: "sidebar", label: "Sidebar", description: "Components", group: "컴포넌트", shortcut: "S" }, { value: "colors", label: "Color tokens", description: "Foundations", group: "문서", keywords: ["palette"] }]} />
+);
+
+const TreeNavigationDemo = ({ active: initialActive }: { active: string }) => {
+  const [active, setActive] = useState(initialActive);
+  return <TreeNavigation active={active} onSelect={setActive} defaultExpanded={["components", "atoms"]} items={[{ value: "foundations", label: "Foundations", children: [{ value: "colors", label: "Color" }, { value: "shape", label: "Shape" }] }, { value: "components", label: "Components", children: [{ value: "atoms", label: "Atoms", children: [{ value: "button", label: "Button" }, { value: "badge", label: "Badge" }] }, { value: "molecules", label: "Molecules" }] }]} />;
+};
+
 const TabsDemo = ({ variant, size, shape }: { variant?: "segmented" | "underline"; size?: "sm" | "md" | "lg"; shape?: "default" | "pill" }) => {
   const [tab, setTab] = useState("one");
   return (
