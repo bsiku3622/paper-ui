@@ -48,6 +48,13 @@ export const sidebarItemActive = style({
   background: tokens.color.interaction.selected,
   color: tokens.color.ink.base,
   fontWeight: tokens.text.weight.medium,
+  // route 전환 직후 badge overlay는 즉시 생긴다. 행 배경도 같은 프레임에 selected로
+  // 바뀌어야 둘이 갈라지지 않으므로, active에서는 background transition을 끈다.
+  transition: stateTransition("color"),
+  // 포인터가 클릭 위치에 남아 있어도 일반 hover가 selected 면을 덮지 못하게 한다.
+  selectors: {
+    "&:hover": { background: tokens.color.interaction.selected, color: tokens.color.ink.base },
+  },
 });
 
 export const sidebarItemLabel = style({ flex: 1, minWidth: 0 });
