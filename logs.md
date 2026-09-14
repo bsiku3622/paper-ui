@@ -1,3 +1,14 @@
+## 2026-09-14 — Split segmented selection from Tabs
+
+- 변경 파일: Tabs·SegmentedControl API, selection tokens, Playground·Demo·docs·tests
+- 요약: 서로 다른 역할과 권장 크기를 한 variant 축에 묶던 Tabs를 panel navigation과 compact single-selection 두 컴포넌트로 분리했습니다.
+
+기존 Tabs의 `segmented`와 `underline`은 단순한 외형 차이가 아니었습니다. segmented는 닫힌 track 안에서 값을 고르는 radio 관계이고 `sm`이 자연스러운 반면, underline은 실제 content panel을 전환하는 tab 관계이고 `md`가 기본입니다. 한 Root에서 variant로 바꾸면 shape가 한쪽에서만 의미를 갖고 기본 size도 역할에 따라 달라지는 invalid matrix가 생겼습니다.
+
+따라서 `SegmentedControl.Item`은 `radiogroup/radio`, `size="sm"`, `shape="default | pill"`을 소유하고, Tabs는 `Tabs.List/Trigger/Content`, `tablist/tab/tabpanel`, `size="md"`만 소유합니다. 둘의 controlled 문법은 `value / defaultValue / onValueChange`로 유지했고 방향키·Home/End 이동도 각각의 접근성 역할 안에서 보존했습니다. Tabs.Content는 빈 wrapper로 끝내지 않고 trigger와 본문 사이의 12px 리듬, reduced-motion을 존중하는 짧은 reveal, keyboard focus box를 맡기되 surface는 강제하지 않았습니다. Playground에는 실제 heading과 body를 넣어 content composition도 함께 확인하도록 했습니다. SegmentedControl은 NEW, 재설계한 Tabs는 MOD로 표시합니다.
+
+⚠ `Tabs.Item`, `variant="segmented | underline"`, Tabs의 `shape`는 제거된 breaking API입니다. 필터·보기 방식은 SegmentedControl로, 실제 panel 전환은 Tabs로 이관해야 합니다.
+
 ## 2026-09-14 — Remove generic Card abstraction
 
 - 변경 파일: Card implementation·exports, Box Playground, component docs·tests

@@ -28,6 +28,7 @@ import {
   EmptyState,
   PageHeader,
   Pagination,
+  SegmentedControl,
   Select,
   Stack,
   Steps,
@@ -498,19 +499,31 @@ export const COMPONENTS: CompSpec[] = [
       `<FormField${AE("align", s(st.align), "stretch")}>\n  <FormField.Label>${s(st.label)}</FormField.Label>\n  <FormField.Control>\n    ${s(st.control) === "select" ? `<Select>\n      <Select.Option value="">선택하세요</Select.Option>\n      <Select.Option value="high">높음</Select.Option>\n    </Select>` : s(st.control) === "textarea" ? `<Textarea${s(st.error) ? ' status="error"' : ""} placeholder="내용을 입력하세요" />` : `<Field${s(st.error) ? ' status="error"' : ""} placeholder="입력하세요" />`}\n  </FormField.Control>${s(st.error) ? `\n  <FormField.Error>${s(st.error)}</FormField.Error>` : s(st.hint) ? `\n  <FormField.Hint>${s(st.hint)}</FormField.Hint>` : ""}\n</FormField>`,
   },
   {
+    slug: "segmentedcontrol",
+    change: "new",
+    name: "SegmentedControl",
+    group: "Molecules",
+    blurb: "닫힌 track 안에서 필터·보기 방식처럼 값 하나를 고른다. sm이 기본이며 default와 pill은 같은 geometry 사다리에서 shape만 바꾼다.",
+    controls: [
+      { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "sm" },
+      { kind: "enum", prop: "shape", label: "shape", options: ["default", "pill"], def: "default" },
+    ],
+    render: (st) => <SegmentedControlDemo size={s(st.size) as "sm" | "md" | "lg"} shape={s(st.shape) as "default" | "pill"} />,
+    code: (st) =>
+      `const [filter, setFilter] = useState("all");\n<SegmentedControl value={filter} onValueChange={setFilter}${AE("size", s(st.size), "sm")}${AE("shape", s(st.shape), "default")}>\n  <SegmentedControl.Item value="all">전체</SegmentedControl.Item>\n  <SegmentedControl.Item value="open">열림</SegmentedControl.Item>\n  <SegmentedControl.Item value="done">완료</SegmentedControl.Item>\n</SegmentedControl>`,
+  },
+  {
     slug: "tabs",
     change: "mod",
     name: "Tabs",
     group: "Molecules",
-    blurb: "segmented는 닫힌 트랙 안의 범위를, underline은 넓은 페이지 구역을 바꾼다. shape은 segmented의 트랙과 항목에 함께 걸리고 underline에서는 의미가 없어 무시한다. 키보드 roving tabindex는 두 variant가 같다.",
+    blurb: "넓은 페이지의 실제 content panel을 underline trigger로 전환한다. md가 기본이며 List·Trigger·Content가 aria 관계와 키보드 이동을 함께 소유한다.",
     controls: [
-      { kind: "enum", prop: "variant", label: "variant", options: ["segmented", "underline"], def: "segmented" },
-      { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "sm" },
-      { kind: "enum", prop: "shape", label: "shape", options: ["default", "pill"], def: "default" },
+      { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
     ],
-    render: (st) => <TabsDemo variant={s(st.variant) as "segmented" | "underline"} size={s(st.size) as "sm" | "md" | "lg"} shape={s(st.shape) as "default" | "pill"} />,
+    render: (st) => <TabsDemo size={s(st.size) as "sm" | "md" | "lg"} />,
     code: (st) =>
-      `const [tab, setTab] = useState("one");\n<Tabs value={tab} onValueChange={setTab}${AE("variant", s(st.variant), "segmented")}${AE("size", s(st.size), "sm")}${s(st.variant) === "underline" ? "" : AE("shape", s(st.shape), "default")}>\n  <Tabs.Item value="one">하나</Tabs.Item>\n  <Tabs.Item value="two">둘</Tabs.Item>\n  <Tabs.Item value="three">셋</Tabs.Item>\n</Tabs>`,
+      `const [tab, setTab] = useState("overview");\n<Tabs value={tab} onValueChange={setTab}${AE("size", s(st.size), "md")}>\n  <Tabs.List aria-label="문서 구역">\n    <Tabs.Trigger value="overview">개요</Tabs.Trigger>\n    <Tabs.Trigger value="props">Props</Tabs.Trigger>\n  </Tabs.List>\n  <Tabs.Content value="overview">\n    <Stack gap="xs">\n      <Text variant="subheading">페이지 구역을 나누는 Tabs</Text>\n      <Text ink="soft">선택한 panel의 실제 내용을 구성합니다.</Text>\n    </Stack>\n  </Tabs.Content>\n  <Tabs.Content value="props">\n    <Text>List·Trigger·Content가 접근성 관계를 소유합니다.</Text>\n  </Tabs.Content>\n</Tabs>`,
   },
   {
     slug: "tooltip",
@@ -817,11 +830,14 @@ const TreeNavigationDemo = ({ value: initialValue }: { value: string }) => {
   return <TreeNavigation value={value} onValueChange={setValue} defaultExpandedValues={["components", "atoms"]}><TreeNavigation.Item value="foundations" label="Foundations"><TreeNavigation.Item value="colors" label="Color" /><TreeNavigation.Item value="shape" label="Shape" /></TreeNavigation.Item><TreeNavigation.Item value="components" label="Components"><TreeNavigation.Item value="atoms" label="Atoms"><TreeNavigation.Item value="button" label="Button" /><TreeNavigation.Item value="badge" label="Badge" /></TreeNavigation.Item><TreeNavigation.Item value="molecules" label="Molecules" /></TreeNavigation.Item></TreeNavigation>;
 };
 
-const TabsDemo = ({ variant, size, shape }: { variant?: "segmented" | "underline"; size?: "sm" | "md" | "lg"; shape?: "default" | "pill" }) => {
-  const [tab, setTab] = useState("one");
-  return (
-    <Tabs value={tab} onValueChange={setTab} variant={variant} size={size} shape={shape}><Tabs.Item value="one">하나</Tabs.Item><Tabs.Item value="two">둘</Tabs.Item><Tabs.Item value="three">셋</Tabs.Item></Tabs>
-  );
+const SegmentedControlDemo = ({ size, shape }: { size?: "sm" | "md" | "lg"; shape?: "default" | "pill" }) => {
+  const [value, setValue] = useState("all");
+  return <SegmentedControl value={value} onValueChange={setValue} size={size} shape={shape}><SegmentedControl.Item value="all">전체</SegmentedControl.Item><SegmentedControl.Item value="open">열림</SegmentedControl.Item><SegmentedControl.Item value="done">완료</SegmentedControl.Item></SegmentedControl>;
+};
+
+const TabsDemo = ({ size }: { size?: "sm" | "md" | "lg" }) => {
+  const [tab, setTab] = useState("overview");
+  return <Box style={{ width: "22rem", maxWidth: "100%" }}><Tabs value={tab} onValueChange={setTab} size={size}><Tabs.List aria-label="문서 구역"><Tabs.Trigger value="overview">개요</Tabs.Trigger><Tabs.Trigger value="props">Props</Tabs.Trigger></Tabs.List><Tabs.Content value="overview"><Stack gap="xs"><Text variant="subheading">페이지 구역을 나누는 Tabs</Text><Text ink="soft">선택한 trigger와 연결된 panel만 보여주며, 본문의 surface는 강제하지 않습니다.</Text></Stack></Tabs.Content><Tabs.Content value="props"><Stack gap="xs"><Text variant="subheading">명시적인 compound anatomy</Text><Text ink="soft">List·Trigger·Content가 키보드 이동과 tab-panel 관계를 함께 소유합니다.</Text></Stack></Tabs.Content></Tabs></Box>;
 };
 
 const RadioGroupDemo = ({ size, orientation }: { size?: "sm" | "md" | "lg"; orientation?: "vertical" | "horizontal" }) => {

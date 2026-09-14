@@ -202,24 +202,30 @@ test("button · iconOnly 는 정사각(md 34×34)", async ({ page }) => {
   expect(Math.round(box!.height)).toBe(34);
 });
 
-// ── Tabs — 활성 탭이 흰 면으로 떠오르고 클릭으로 바뀐다 ────────────────────
+// ── SegmentedControl / Tabs — 닫힌 선택과 열린 panel navigation을 분리한다 ──
 //
-// shape 표본이 둘이라 이름만으로는 탭이 특정되지 않는다 — 각진 쪽 트랙 안에서 찾는다.
-test("tabs · 클릭하면 활성이 바뀐다", async ({ page }) => {
-  const two = page.getByTestId("tabs-shape-default").getByRole("tab", { name: "둘" });
+// SegmentedControl은 sm 닫힌 track, Tabs는 md underline과 panel 관계가 기본이다.
+test("segmented control · 클릭하면 단일 선택이 바뀐다", async ({ page }) => {
+  const root = page.getByTestId("segmented-shape-default");
+  const two = root.getByRole("radio", { name: "둘" });
   await two.click();
   await expect(two).toHaveCSS("background-color", hexToRgb("#ffffff"));
+  await expect(two).toHaveAttribute("aria-checked", "true");
+  await expect(two).toHaveCSS("height", "30px");
 });
 
-test("tabs · underline은 열린 선형 구조라 shape를 갖지 않는다", async ({ page }) => {
-  const root = page.getByTestId("tabs-variant-underline");
+test("tabs · underline trigger가 md panel을 전환한다", async ({ page }) => {
+  const root = page.getByTestId("spec-tabs");
   const list = root.getByRole("tablist");
-  const active = root.getByRole("tab", { selected: true });
+  const props = root.getByRole("tab", { name: "Props" });
+  await props.click();
 
   await expect(list).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-  await expect(active).toHaveCSS("border-bottom-width", "2px");
-  await expect(active).toHaveCSS("border-bottom-color", hexToRgb("#18181b"));
-  await expect(active).toHaveCSS("border-radius", "0px");
+  await expect(props).toHaveCSS("height", "34px");
+  await expect(props).toHaveCSS("border-bottom-width", "2px");
+  await expect(props).toHaveCSS("border-bottom-color", hexToRgb("#18181b"));
+  await expect(props).toHaveCSS("border-radius", "0px");
+  await expect(root.getByRole("tabpanel")).toContainText("Props 문서");
 });
 
 test("radiogroup · horizontal은 짧은 선택지를 한 행에 배치한다", async ({ page }) => {
@@ -453,22 +459,22 @@ test("pill · 곡선만 바뀌고 각자의 가로 여백은 그대로다", asyn
   await expect(page.getByTestId("button-pill-row")).toHaveCSS("padding-left", "13px");
 });
 
-// ── Tabs shape — 트랙과 항목이 함께 갈리고, 각진 쪽은 동심이다 ─────────────
+// ── SegmentedControl shape — 트랙과 항목이 함께 갈리고, 각진 쪽은 동심이다 ─
 //
 // 안쪽 반경을 상수로 박지 않고 `바깥 − 트랙 여백` 으로 계산한다. 두 곡선의 중심이 같아야
 // 트랙과 활성 면 사이 간격이 모서리에서도 일정하다. 여백은 shape 을 안 따라간다.
-test("tabs · shape 이 트랙·항목에 함께 걸리고 안쪽은 동심(6 − 3 = 3)", async ({ page }) => {
-  const def = page.getByTestId("tabs-shape-default");
-  await expect(def.getByRole("tablist")).toHaveCSS("border-radius", "6px");
-  await expect(def.getByRole("tab").first()).toHaveCSS("border-radius", "3px");
+test("segmented control · shape이 트랙·항목에 함께 걸리고 안쪽은 동심", async ({ page }) => {
+  const def = page.getByTestId("segmented-shape-default");
+  await expect(def.getByRole("radiogroup")).toHaveCSS("border-radius", "6px");
+  await expect(def.getByRole("radio").first()).toHaveCSS("border-radius", "3px");
 
-  const pill = page.getByTestId("tabs-shape-pill");
-  await expect(pill.getByRole("tablist")).toHaveCSS("border-radius", "999px");
-  await expect(pill.getByRole("tab").first()).toHaveCSS("border-radius", "999px");
+  const pill = page.getByTestId("segmented-shape-pill");
+  await expect(pill.getByRole("radiogroup")).toHaveCSS("border-radius", "999px");
+  await expect(pill.getByRole("radio").first()).toHaveCSS("border-radius", "999px");
 
   // 여백은 두 shape 이 같다 — 실루엣 축이지 밀도 축이 아니다(sm 사다리 10).
   for (const root of [def, pill]) {
-    await expect(root.getByRole("tab").first()).toHaveCSS("padding-left", "10px");
+    await expect(root.getByRole("radio").first()).toHaveCSS("padding-left", "10px");
   }
 });
 

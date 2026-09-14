@@ -16,7 +16,7 @@ import {
   Inline,
   Stack,
   Table,
-  Tabs,
+  SegmentedControl,
   Text,
   tokens,
   type StatusName,
@@ -112,7 +112,7 @@ const AppMockup = () => {
             </Inline>
 
             <Inline align="center" justify="between" gap="sm">
-              <Tabs shape="pill" value={tab} onValueChange={setTab}><Tabs.Item value="all">전체</Tabs.Item><Tabs.Item value="open">열림</Tabs.Item><Tabs.Item value="done">완료</Tabs.Item></Tabs>
+              <SegmentedControl shape="pill" value={tab} onValueChange={setTab}><SegmentedControl.Item value="all">전체</SegmentedControl.Item><SegmentedControl.Item value="open">열림</SegmentedControl.Item><SegmentedControl.Item value="done">완료</SegmentedControl.Item></SegmentedControl>
               <Text variant="caption" as="span" ink="soft">6건 · 열림 4</Text>
             </Inline>
           </Stack>
@@ -145,7 +145,7 @@ export const Home = () => (
           </h1>
 
           <Text variant="subheading" as="p" ink="soft" className="home-sub">
-            서른일곱 개의 컴포넌트로 실제 화면을 세웁니다. 색은 의미가 있을 때만 쓰고, 구조는 빌드가 지킵니다 — 순백 위에 부드럽게.
+            서른여덟 개의 컴포넌트로 실제 화면을 세웁니다. 색은 의미가 있을 때만 쓰고, 구조는 빌드가 지킵니다 — 순백 위에 부드럽게.
           </Text>
 
           {/* CTA 둘은 알약을 고른다 — 세그먼트까지 합쳐 화면에 알약이 셋이고, 각각 자기

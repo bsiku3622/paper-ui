@@ -1,18 +1,18 @@
 # Data Table
 
-표 위에 필터 바를 얹어 데이터 화면을 짓습니다. 데모(이슈 트래커)의 뼈대가 이것입니다 — `Tabs`·`Select`·`Checkbox`로 짠 필터 한 줄 아래, `Table`과 status `Badge`.
+표 위에 필터 바를 얹어 데이터 화면을 짓습니다. 데모(이슈 트래커)의 뼈대가 이것입니다 — `SegmentedControl`·`Select`·`Checkbox`로 짠 필터 한 줄 아래, `Table`과 status `Badge`.
 
 ## 필터 바
 
-세그먼트로 나뉘는 큰 분류는 `Tabs`, 값을 좁히는 필터는 `Select`, 참/거짓 토글은 `Checkbox`로 냅니다. 한 줄에 두되 왼쪽(분류)과 오른쪽(필터)을 `Inline justify="between"`으로 갈라 놓습니다.
+세그먼트로 나뉘는 큰 분류는 `SegmentedControl`, 값을 좁히는 필터는 `Select`, 참/거짓 토글은 `Checkbox`로 냅니다. 한 줄에 두되 왼쪽(분류)과 오른쪽(필터)을 `Inline justify="between"`으로 갈라 놓습니다.
 
 ```tsx
 <Inline justify="between" wrap gap="md">
-  <Tabs value={tab} onValueChange={setTab}>
-    <Tabs.Item value="all">전체</Tabs.Item>
-    <Tabs.Item value="open">열림</Tabs.Item>
-    <Tabs.Item value="done">완료</Tabs.Item>
-  </Tabs>
+  <SegmentedControl value={filter} onValueChange={setFilter}>
+    <SegmentedControl.Item value="all">전체</SegmentedControl.Item>
+    <SegmentedControl.Item value="open">열림</SegmentedControl.Item>
+    <SegmentedControl.Item value="done">완료</SegmentedControl.Item>
+  </SegmentedControl>
 
   <Inline gap="md">
     <Inline as="label" gap="sm" align="center">

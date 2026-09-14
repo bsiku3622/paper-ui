@@ -45,7 +45,7 @@ Paper UI의 상위 레이어는 아래 일곱 축에서 필요한 것만 고릅�
 │ 제목 · 설명                              주 행동  │
 └────────────────────────────────────────────────────┘
 
-┌─ Tabs / search Field / filters ────────────────────┐
+┌─ SegmentedControl / search Field / filters ────────┐
 │ 범위                                             조건│
 └────────────────────────────────────────────────────┘
 
@@ -83,7 +83,7 @@ row               row               row
 
 ### Prop naming
 
-- 선택 상태를 소유하는 compound Root는 `value / defaultValue / onValueChange`를 기본 문법으로 씁니다. Tabs·RadioGroup·Menu·Steps·TableOfContents·Navbar·Sidebar·DropdownMenu·TreeNavigation이 같은 이름을 공유합니다.
+- 선택 상태를 소유하는 compound Root는 `value / defaultValue / onValueChange`를 기본 문법으로 씁니다. SegmentedControl·Tabs·RadioGroup·Menu·Steps·TableOfContents·Navbar·Sidebar·DropdownMenu·TreeNavigation이 같은 이름을 공유합니다.
 - 열림 상태는 `open / defaultOpen / onOpenChange`입니다. 서로 다른 boolean 상태를 `active`, `shown`, `visible`로 바꾸어 부르지 않습니다.
 - native input event는 React DOM 계약을 따라 `onChange`를 유지합니다. Field·Select·Checkbox의 event object와 compound Root의 값 callback을 같은 이름으로 섞지 않습니다.
 - 값 하나로 환원되지 않는 도메인 상태는 대상을 이름에 남깁니다. Pagination은 `page / onPageChange`, CommandMenu 검색은 `query / defaultQuery / onQueryChange`, TreeNavigation branch는 `expandedValues / defaultExpandedValues / onExpandedValuesChange`입니다.
@@ -96,7 +96,8 @@ row               row               row
 | --- | --- | --- |
 | FormField | compound `Label · Control · Hint · Error` + `align` | 모든 입력의 유일한 form composition. 시각 status와 입력값 정렬은 control이 소유 |
 | RadioGroup | compound `Item` + `orientation · size` | 세로 기본, 좁은 선택지는 가로 배치 가능 |
-| Tabs | compound `Item` + `variant · size · shape` | `segmented · underline`. underline에서는 shape가 의미 없음 |
+| SegmentedControl | compound `Item` + `size · shape` | 닫힌 단일 선택. 기본 `sm`, `default · pill`은 곡선만 다름 |
+| Tabs | compound `List · Trigger · Content` + `size` | underline panel navigation. 기본 `md`, variant·shape 없음 |
 | Tooltip | compound `Trigger · Content`, placement 자동 결정 | 복합 내용을 허용하되 외형 variant는 없음 |
 | Alert | compound `Icon · Title · Description`, `color × shared variant` | Button·Badge와 같은 6단 매트릭스를 유지 |
 | Breadcrumb | compound `Item` + `separator` | location 계층을 JSX 순서로 소유. current를 명시 |
@@ -124,7 +125,7 @@ row               row               row
 
 - Box로 만든 붙은 면에 interactive hover나 지속 shadow를 열지 않습니다. shadow는 Modal·Tooltip처럼 뜬 것의 표식입니다.
 - Table의 `striped`에 행 divider를 함께 넣지 않습니다. 행 구분을 두 번 말하게 됩니다.
-- `Tabs variant="underline"`에는 `shape="pill"`을 적용하지 않습니다. 선형 탭에는 닫힌 실루엣이 없습니다.
+- Tabs에 segmented 외형이나 shape를 다시 넣지 않습니다. 닫힌 단일 선택은 SegmentedControl의 책임입니다.
 - FormField의 `error`가 control의 pigment를 몰래 바꾸지 않습니다. Field·Textarea의 `status`와 Select의 API는 서로 다르므로 접근성 관계만 공통화합니다.
 - Component variant에 `blue`, `gray` 같은 색 이름을 넣지 않습니다. 색은 의미를 질 때만 `color`로 고릅니다.
 
