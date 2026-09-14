@@ -60,8 +60,9 @@ Modal 본문은 `Modal.Body` 안에 [폼 한 벌](/docs/recipes/form)의 조각�
 <Modal open={open} onOpenChange={setOpen} size="sm">
   <Modal.Header><Modal.Title>이슈 삭제</Modal.Title></Modal.Header>
   <Modal.Body>
-    <Alert color="error" title="되돌릴 수 없습니다">
-      이 이슈와 하위 댓글이 모두 지워집니다.
+    <Alert color="error">
+      <Alert.Title>되돌릴 수 없습니다</Alert.Title>
+      <Alert.Description>이 이슈와 하위 댓글이 모두 지워집니다.</Alert.Description>
     </Alert>
   </Modal.Body>
   <Modal.Footer>

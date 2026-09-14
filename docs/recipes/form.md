@@ -11,14 +11,14 @@
   <TextField label="이름" placeholder="홍길동" />
   <TextField label="이메일" type="email" placeholder="you@example.com" hint="로그인에 씁니다" />
 
-  <Stack gap="xs">
-    <Label htmlFor="role">역할</Label>
-    <Select id="role" options={[
+  <FormField>
+    <FormField.Label>역할</FormField.Label>
+    <FormField.Control><Select options={[
       { value: "dev", label: "개발" },
       { value: "design", label: "디자인" },
       { value: "pm", label: "기획" },
-    ]} />
-  </Stack>
+    ]} /></FormField.Control>
+  </FormField>
 
   <Inline as="label" gap="sm" align="center">
     <Checkbox />
@@ -32,7 +32,7 @@
 </Stack>
 ```
 
-`Select`는 라벨을 스스로 갖지 않으므로, 라벨이 필요하면 `Label` + `Select`를 `Stack gap="xs"`로 묶습니다. `Checkbox`·`Switch`는 라벨과 나란히 두어 `Inline as="label"`로 감싸면 글자를 눌러도 토글됩니다.
+`Select`처럼 라벨을 스스로 갖지 않는 컨트롤은 `FormField.Label/Control`로 묶습니다. hint나 error part를 추가하면 Root가 `aria-describedby`와 `aria-invalid`까지 연결합니다. `Checkbox`·`Switch`는 라벨과 나란히 두어 `Inline as="label"`로 감싸면 글자를 눌러도 토글됩니다.
 
 ## 검증은 status로
 

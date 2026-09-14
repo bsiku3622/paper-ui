@@ -94,21 +94,22 @@ export const SiteNav = () => {
 // 데모용 얇은 통합 바 — 라이브러리 Banner(검정 solid)로 브랜드를 이어 붙이고 사이트로
 // 돌아가는 escape 를 준다. 데모의 제품 Navbar 는 이 아래에 그대로 살아 사실감을 지킨다.
 export const DemoBar = () => (
-  <Banner
-    action={
+  <Banner>
+    <Banner.Content>
+      <Link to="/" style={{ textDecoration: "none", color: tokens.color.paper.canvas, display: "inline-flex" }} aria-label="Paper UI 홈">
+        <Logo height={17} />
+      </Link>
+      <Text variant="caption" as="span" style={{ color: tokens.color.paper.well }}>
+        데모 · 이슈 트래커
+      </Text>
+    </Banner.Content>
+    <Banner.Action>
       <Link to="/" style={{ textDecoration: "none" }}>
         <Text variant="caption" as="span" style={{ color: tokens.color.paper.canvas, fontWeight: tokens.text.weight.medium }}>
           ← 사이트로
         </Text>
       </Link>
-    }
-  >
-    <Link to="/" style={{ textDecoration: "none", color: tokens.color.paper.canvas, display: "inline-flex" }} aria-label="Paper UI 홈">
-      <Logo height={17} />
-    </Link>
-    <Text variant="caption" as="span" style={{ color: tokens.color.paper.well }}>
-      데모 · 이슈 트래커
-    </Text>
+    </Banner.Action>
   </Banner>
 );
 

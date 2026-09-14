@@ -11,6 +11,18 @@ export const cardRoot = style({
 });
 export const cardSolid = style({});
 
+export const cardHeader = style({
+  borderBottom: `${tokens.shape.constants.borderWidth} solid currentColor`,
+  borderBottomColor: "color-mix(in srgb, currentColor 18%, transparent)",
+});
+
+export const cardBody = style({ minWidth: 0 });
+
+export const cardFooter = style({
+  borderTop: `${tokens.shape.constants.borderWidth} solid currentColor`,
+  borderTopColor: "color-mix(in srgb, currentColor 18%, transparent)",
+});
+
 // Text variant의 기본 ink만 solid Card의 on-solid 잉크로 돌린다. 명시적인 ink prop은
 // 보존해 Badge·상태 문구처럼 의도적으로 색을 준 자리가 사라지지 않게 한다.
 globalStyle(`${cardSolid} [class*="pui-text-"]:not([class*="pui-ink-"])`, {

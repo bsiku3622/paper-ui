@@ -36,9 +36,9 @@ export {
   type ModalCloseProps,
 } from "./Modal";
 export { Navbar, NavbarBrand, NavbarItem, NavbarActions, type NavbarProps, type NavbarBrandProps, type NavbarItemProps, type NavbarActionsProps } from "./Navbar";
-export { Banner, type BannerProps } from "./Banner";
-export { PageHeader, type PageHeaderProps } from "./PageHeader";
-export { EmptyState, type EmptyStateProps } from "./EmptyState";
+export { Banner, BannerContent, BannerAction, type BannerProps, type BannerPartProps } from "./Banner";
+export { PageHeader, PageHeaderLocation, PageHeaderContent, PageHeaderTitle, PageHeaderDescription, PageHeaderActions, type PageHeaderProps, type PageHeaderPartProps } from "./PageHeader";
+export { EmptyState, EmptyStateTitle, EmptyStateDescription, EmptyStateAction, type EmptyStateProps, type EmptyStatePartProps } from "./EmptyState";
 export { Pagination, type PaginationProps, type PaginationVariant } from "./Pagination";
 export {
   Sidebar,

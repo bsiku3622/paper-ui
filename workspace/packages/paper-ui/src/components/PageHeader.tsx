@@ -1,31 +1,37 @@
-// PageHeader — 페이지가 무엇인지와 지금 할 행동을 한 줄에 놓는다.
-//
-// 제품마다 다른 hero나 card를 강요하지 않는다. 제목·설명·actions만 정렬해, 데이터 화면의
-// 첫 줄을 매번 손으로 맞추지 않게 한다.
+// PageHeader — location · copy · actions의 페이지 anatomy를 그대로 드러낸다.
 
 import type { ReactNode } from "react";
 
 import { Box, Inline, Stack, Text } from "../primitives";
 import { joinClass } from "../internal/joinClass";
-import { pageHeaderActions, pageHeaderCopy, pageHeaderRoot, pageHeaderRow } from "./PageHeader.css";
+import { pageHeaderActions, pageHeaderContent, pageHeaderLocation, pageHeaderRoot } from "./PageHeader.css";
 
-export type PageHeaderProps = {
-  title: ReactNode;
-  location?: ReactNode;
-  description?: ReactNode;
-  actions?: ReactNode;
-  className?: string;
-};
-
-export const PageHeader = ({ title, location, description, actions, className }: PageHeaderProps) => (
-  <Box className={joinClass(pageHeaderRoot, className)}>
-    {location}
-    <Box className={pageHeaderRow}>
-      <Stack gap="sm" className={pageHeaderCopy}>
-        <Text variant="display">{title}</Text>
-        {description ? <Text variant="body" ink="soft">{description}</Text> : null}
-      </Stack>
-      {actions ? <Inline className={pageHeaderActions}>{actions}</Inline> : null}
-    </Box>
-  </Box>
+export type PageHeaderProps = { children: ReactNode; className?: string };
+const PageHeaderRoot = ({ children, className }: PageHeaderProps) => (
+  <Box className={joinClass(pageHeaderRoot, className)}>{children}</Box>
 );
+
+export type PageHeaderPartProps = { children: ReactNode; className?: string };
+export const PageHeaderLocation = ({ children, className }: PageHeaderPartProps) => (
+  <Box className={joinClass(pageHeaderLocation, className)}>{children}</Box>
+);
+export const PageHeaderContent = ({ children, className }: PageHeaderPartProps) => (
+  <Stack gap="sm" className={joinClass(pageHeaderContent, className)}>{children}</Stack>
+);
+export const PageHeaderTitle = ({ children, className }: PageHeaderPartProps) => (
+  <Text variant="display" className={className}>{children}</Text>
+);
+export const PageHeaderDescription = ({ children, className }: PageHeaderPartProps) => (
+  <Text variant="body" ink="soft" className={className}>{children}</Text>
+);
+export const PageHeaderActions = ({ children, className }: PageHeaderPartProps) => (
+  <Inline className={joinClass(pageHeaderActions, className)}>{children}</Inline>
+);
+
+export const PageHeader = Object.assign(PageHeaderRoot, {
+  Location: PageHeaderLocation,
+  Content: PageHeaderContent,
+  Title: PageHeaderTitle,
+  Description: PageHeaderDescription,
+  Actions: PageHeaderActions,
+});
