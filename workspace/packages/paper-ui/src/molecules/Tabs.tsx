@@ -1,96 +1,35 @@
-// Tabs — 같은 자리에 다른 장(章).
-//
-// raw <button> 대신 <Box as="button"> — Molecule 이 raw 태그에 닿는 유일한 통로.
-//
-// 접근성(WAI-ARIA Tabs): 활성 탭만 Tab 순서에 있고(roving tabindex), 좌우(·상하) 화살표와
-// Home/End 로 탭 사이를 옮긴다(포커스를 따라 활성도 바뀐다). 패널을 쓰면 `panelId` 로
-// aria-controls 를 잇는다 — 탭 id 는 `${panelId}-tab` 라, 패널에서 aria-labelledby 로 되짚는다.
+// Tabs — 탭 목록을 JSX item으로 드러내는 compound control.
 
-import { useId, type KeyboardEvent } from "react";
+import { createContext, useContext, type KeyboardEvent, type ReactNode } from "react";
 
 import { Box, Inline } from "../primitives";
 import { joinClass } from "../internal/joinClass";
 import type { ControlSize } from "../tokens";
-import {
-  tabsList,
-  tabsListVariant,
-  tabsListShape,
-  tabItem,
-  tabItemVariant,
-  tabItemSize,
-  tabItemShape,
-  tabItemActive,
-  tabItemActiveVariant,
-} from "./Tabs.css";
+import { tabsList, tabsListVariant, tabsListShape, tabItem, tabItemVariant, tabItemSize, tabItemShape, tabItemActive, tabItemActiveVariant } from "./Tabs.css";
 
-export type TabItem = { value: string; label: string; panelId?: string };
 export type TabsVariant = "segmented" | "underline";
+type TabsContextValue = { value: string; onChange: (value: string) => void; size: ControlSize; variant: TabsVariant; shape: "default" | "pill" };
+const TabsContext = createContext<TabsContextValue | null>(null);
+export type TabsProps = { value: string; onChange: (value: string) => void; size?: ControlSize; variant?: TabsVariant; shape?: "default" | "pill"; className?: string; children: ReactNode };
+const TabsRoot = ({ value, onChange, size = "sm", variant = "segmented", shape = "default", className, children }: TabsProps) => <TabsContext.Provider value={{ value, onChange, size, variant, shape }}>
+  <Inline role="tablist" className={joinClass(tabsList, tabsListVariant[variant], variant === "segmented" && tabsListShape[shape], className)} onKeyDown={(event: KeyboardEvent<HTMLDivElement>) => {
+    const tabs = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('[role="tab"]'));
+    const current = tabs.indexOf(document.activeElement as HTMLElement);
+    let next = current;
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") next = (current + 1) % tabs.length;
+    else if (event.key === "ArrowLeft" || event.key === "ArrowUp") next = (current - 1 + tabs.length) % tabs.length;
+    else if (event.key === "Home") next = 0; else if (event.key === "End") next = tabs.length - 1; else return;
+    event.preventDefault(); tabs[next]?.click(); tabs[next]?.focus();
+  }}>{children}</Inline>
+</TabsContext.Provider>;
 
-export type TabsProps = {
-  items: readonly TabItem[];
-  value: string;
-  onChange: (value: string) => void;
-  // 크기 3 단 (sm·md·lg). 세그먼트는 컴팩트해서 기본 sm.
-  size?: ControlSize;
-  // 항목을 닫힌 면으로 고르면 segmented, 문서·페이지 장을 선으로 가르면 underline.
-  variant?: TabsVariant;
-  // 실루엣 — Button·Badge·Field·Select 와 같은 어휘. 트랙과 항목이 함께 갈린다
-  // (default 의 안쪽 반경은 바깥 − 트랙 여백으로 동심을 맞춘다).
-  shape?: "default" | "pill";
-  className?: string;
+export type TabItemProps = { value: string; panelId?: string; children: ReactNode };
+export const TabItem = ({ value, panelId, children }: TabItemProps) => {
+  const context = useContext(TabsContext);
+  if (!context) throw new Error("Tabs.Item must be used inside Tabs");
+  const selected = value === context.value;
+  return <Box as="button" type="button" role="tab" aria-selected={selected} aria-controls={panelId} tabIndex={selected ? 0 : -1}
+    className={joinClass(tabItem, tabItemVariant[context.variant], tabItemSize[context.size], context.variant === "segmented" && tabItemShape[context.shape], selected && tabItemActive, selected && tabItemActiveVariant[context.variant])}
+    onClick={() => context.onChange(value)}>{children}</Box>;
 };
-
-export const Tabs = ({ items, value, onChange, size = "sm", variant = "segmented", shape = "default", className }: TabsProps) => {
-  const uid = useId();
-
-  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    const idx = items.findIndex((t) => t.value === value);
-    let next = idx;
-    if (e.key === "ArrowRight" || e.key === "ArrowDown") next = (idx + 1) % items.length;
-    else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = (idx - 1 + items.length) % items.length;
-    else if (e.key === "Home") next = 0;
-    else if (e.key === "End") next = items.length - 1;
-    else return;
-    e.preventDefault();
-    const t = items[next];
-    if (!t) return;
-    onChange(t.value);
-    // 활성이 바뀌면 그 탭으로 포커스도 옮긴다(roving).
-    e.currentTarget.querySelectorAll<HTMLElement>('[role="tab"]')[next]?.focus();
-  };
-
-  return (
-    <Inline
-      role="tablist"
-      className={joinClass(tabsList, tabsListVariant[variant], variant === "segmented" && tabsListShape[shape], className)}
-      onKeyDown={onKeyDown}
-    >
-      {items.map((t) => {
-        const selected = t.value === value;
-        return (
-          <Box
-            key={t.value}
-            as="button"
-            type="button"
-            role="tab"
-            id={`${uid}-${t.value}`}
-            aria-selected={selected}
-            aria-controls={t.panelId}
-            tabIndex={selected ? 0 : -1}
-            className={joinClass(
-              tabItem,
-              tabItemVariant[variant],
-              tabItemSize[size],
-              variant === "segmented" && tabItemShape[shape],
-              selected && tabItemActive,
-              selected && tabItemActiveVariant[variant],
-            )}
-            onClick={() => onChange(t.value)}
-          >
-            {t.label}
-          </Box>
-        );
-      })}
-    </Inline>
-  );
-};
+export const Tabs = Object.assign(TabsRoot, { Item: TabItem });

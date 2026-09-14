@@ -1,4 +1,4 @@
-// Table — data API와 semantic anatomy를 같은 스타일 계약 위에 둔다.
+// Table — 화면에 보이는 table anatomy를 JSX 구조로 그대로 드러낸다.
 
 import { createContext, useContext, type ReactNode } from "react";
 
@@ -91,7 +91,7 @@ export type Column<T> = {
   render: (row: T) => ReactNode;
 };
 
-export type TableProps<T> = Omit<TableRootProps, "children"> & {
+export type DataTableProps<T> = Omit<TableRootProps, "children"> & {
   columns: readonly Column<T>[];
   rows: readonly T[];
   rowKey: (row: T) => string;
@@ -100,7 +100,7 @@ export type TableProps<T> = Omit<TableRootProps, "children"> & {
   stickyHeader?: boolean;
 };
 
-const DataTable = <T,>({ columns, rows, rowKey, variant = "plain", density = "default", caption, empty, stickyHeader, ...rest }: TableProps<T>) => (
+export const DataTable = <T,>({ columns, rows, rowKey, variant = "plain", density = "default", caption, empty, stickyHeader, ...rest }: DataTableProps<T>) => (
   <TableRoot variant={variant} density={density} {...rest}>
     {caption != null ? <TableCaption>{caption}</TableCaption> : null}
     <TableHeader sticky={stickyHeader}>
@@ -122,8 +122,9 @@ const DataTable = <T,>({ columns, rows, rowKey, variant = "plain", density = "de
   </TableRoot>
 );
 
-export const Table = Object.assign(DataTable, {
-  Root: TableRoot,
+export type TableProps = TableRootProps;
+
+export const Table = Object.assign(TableRoot, {
   Caption: TableCaption,
   Header: TableHeader,
   Body: TableBody,

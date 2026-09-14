@@ -1,12 +1,12 @@
 export { Card, type CardProps } from "./Card";
 export { TextField, type TextFieldProps } from "./TextField";
-export { Tabs, type TabsProps, type TabItem, type TabsVariant } from "./Tabs";
+export { Tabs, TabItem, type TabsProps, type TabItemProps, type TabsVariant } from "./Tabs";
 export { Tooltip, type TooltipProps } from "./Tooltip";
-export { RadioGroup, type RadioGroupProps, type RadioOption, type RadioGroupOrientation } from "./RadioGroup";
+export { RadioGroup, RadioGroupItem, type RadioGroupProps, type RadioGroupItemProps, type RadioGroupOrientation } from "./RadioGroup";
 export { Alert, type AlertProps } from "./Alert";
 export { FormField, type FormFieldProps } from "./FormField";
 export { SearchField, type SearchFieldProps } from "./SearchField";
-export { Breadcrumb, type BreadcrumbProps, type BreadcrumbItem } from "./Breadcrumb";
-export { Menu, type MenuProps, type MenuItem } from "./Menu";
-export { Steps, type StepsProps, type StepItem } from "./Steps";
-export { TableOfContents, type TableOfContentsProps, type TableOfContentsItem } from "./TableOfContents";
+export { Breadcrumb, BreadcrumbItem, type BreadcrumbProps, type BreadcrumbItemProps } from "./Breadcrumb";
+export { Menu, MenuItem, type MenuProps, type MenuItemProps } from "./Menu";
+export { Steps, StepItem, type StepsProps, type StepItemProps } from "./Steps";
+export { TableOfContents, TableOfContentsItem, type TableOfContentsProps, type TableOfContentsItemProps } from "./TableOfContents";

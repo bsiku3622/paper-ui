@@ -34,11 +34,11 @@ Primitive + Atom 합성입니다. raw HTML 없이 하위 레이어 조합만.
 - **TextField** — Label + Field + 도움말 한 묶음. id 연결을 대신합니다. `error` 문구가 있으면 그것만으로 error 상태(테두리 빨강 + `aria-invalid`).
 - **FormField** — Select·Textarea처럼 Field가 아닌 컨트롤까지 Label·설명·오류의 세로 리듬으로 묶습니다. control의 기존 `id`·`aria-describedby`는 보존하고, 없으면 연결을 자동으로 만듭니다. 시각적인 `status`는 계속 각 Atom의 책임입니다.
 - **SearchField** — `Field`의 돋보기·`type="search"`·clear 동작을 묶은 검색 입력입니다. 별도 형태는 없고 Field의 size·shape·status를 그대로 받습니다.
-- **RadioGroup** — Radio + Label을 `options`로 묶어 한 그룹으로. 질문지는 세로가 기본이고, 짧고 서로 대등한 선택지는 `orientation="horizontal"`로 한 줄에 둡니다. 좁은 화면에서는 wrap합니다.
+- **RadioGroup** — `RadioGroup.Item`으로 Radio + Label을 한 그룹 안에 조합합니다. 질문지는 세로가 기본이고, 짧고 서로 대등한 선택지는 `orientation="horizontal"`로 한 줄에 둡니다. 좁은 화면에서는 wrap합니다.
 - **Tabs** — `variant="segmented"`는 닫힌 트랙 안에서 범위를 바꾸고, `underline`은 넓은 페이지의 형제 구역을 가릅니다. 화살표·Home/End 이동(roving tabindex)은 둘이 같습니다. `shape`은 segmented에서만 Button·Badge·Field·Select와 같은 어휘로 작동합니다. 한 축이 **두 곡선**을 함께 정합니다 — 그릇(트랙)과 알맹이(항목)가 겹쳐 있어 따로 놀면 초승달 빈틈이 생기거나 활성 면이 트랙 밖으로 삐져나갑니다. 각진 쪽 안쪽 반경은 상수가 아니라 `바깥 반경 − 트랙 여백`(6 − 3 = 3)으로 **동심**을 맞춥니다. underline에는 닫힌 실루엣이 없으므로 shape를 무시합니다.
 - **Tooltip** — 잠깐 뜨는 쪽지. `content`가 `ReactNode`라 제목·설명·단축키 같은 조합을 담을 수 있고, 위 공간이 없으면 자동으로 아래로 뒤집습니다.
 - **Alert** — 상태 한 줄을 색이 깔린 면으로. Button·Badge와 **같은 `color × variant` 매트릭스**를 그대로 뭅니다(`color`는 `primary`까지 다섯, `variant`는 기본 `soft`). Alert만을 위한 surface 축을 새로 세우지 않은 이유는, 이 시스템의 `variant`가 이미 *면의 무게* 축이기 때문입니다 — `solid`(채운 면)·`soft`(옅은 면)·`outline`·`hairline`(테두리만)·`quiet`(면 없음)은 글자 스타일이 아니라 면의 종류입니다. 축을 하나 더 만들면 같은 뜻을 두 이름으로 부르게 됩니다. `error`·`warning`은 `role="alert"`, 나머지는 `role="status"`이고, 색으로만 뜻을 전하지 않도록 스크린리더용 접두어("오류:" 등)를 함께 심습니다.
-- **Breadcrumb** — 현재 위치의 계층을 짧게 표시합니다. 마지막 항목은 기본으로 현재 페이지가 되며, 앞 항목은 `as`를 통해 router Link나 anchor로 바꿀 수 있습니다.
+- **Breadcrumb** — `Breadcrumb.Item` 순서가 현재 위치의 계층을 그대로 드러냅니다. 현재 항목은 `current`, 앞 항목은 `as`를 통해 router Link나 anchor로 바꿉니다.
 - **Menu** — action과 navigation을 한 열에 놓는 기본 목록입니다. 현재 위치·설명·단축키·위험·비활성 상태를 한 item 문법으로 다루고 방향키·Home·End로 이동합니다.
 - **Steps** — 실제 순서가 있는 흐름의 완료·현재·예정을 번호와 연결선으로 표시합니다. 가로·세로 방향은 같은 상태 문법을 공유합니다.
 - **TableOfContents** — 한 문서 안의 현재 위치를 깊이 3단으로 제한해 보여줍니다. 전체 사이트 계층을 맡지 않고 문서 내부 navigation에만 머뭅니다.
@@ -47,9 +47,9 @@ Primitive + Atom 합성입니다. raw HTML 없이 하위 레이어 조합만.
 
 복잡한 상태를 가질 수 있는 고수준 UI입니다.
 
-- **Table** — `variant`는 행을 구분하는 방법(`plain · ruled · striped`), `density`는 같은 14px 정보를 담는 높이(`compact · default · comfortable`)입니다. 둘은 직교하고 ruled와 striped를 겹치지 않습니다. data API의 column별 `numeric`·`align` 외에 `Table.Root/Header/Body/Row/Column/Cell` compound anatomy를 제공해 상호작용 열이나 복합 셀도 semantic table 구조로 조립합니다. `caption`·`empty` slot·`stickyHeader`까지 표의 문맥과 긴 목록을 맡습니다.
+- **Table** — 외곽 Card 없이 직각으로 서는 `Table.Header/Column/Body/Row/Cell` compound anatomy가 기본 API입니다. `variant`는 행 구분법(`plain · ruled · striped`), `density`는 같은 14px 정보를 담는 높이(`compact · default · comfortable`)이며, `align`과 `numeric`은 Column과 Cell이 명시적으로 소유합니다. 데이터 어댑터가 필요한 경우에만 별도 `DataTable`을 사용합니다.
 - **Modal** — `Modal.Header/Title/Description/Body/Footer/Close`로 구조가 드러나는 compound dialog입니다. `size="sm · md · lg"`는 확인 한 줄, 일반 form, 비교·복합 form처럼 **담는 일의 폭**을 고릅니다. body로 portal해 배경을 inert로 잠그고 포커스를 가둡니다(trap) — 열면 포커스 진입, Esc·배경 클릭으로 닫히며 트리거로 복귀. 제목·설명의 접근성 연결은 compound part가 자동으로 만들고, 패널 높이를 넘는 것은 Body만 구릅니다.
-- **Navbar** — 지면 맨 위 한 줄. **항목은 버튼일 수도 링크일 수도 있습니다.** `as`로 태그를 갈아 끼우면 나머지 키(`href`·`to`·`target`)가 그대로 흘러가고, 활성 표시는 양쪽 다 `aria-current="page"`입니다. 오래 `<button>`만 그렸는데, 그러면 실제 사이트의 GNB를 이걸로 못 짭니다 — 가운데 클릭으로 새 탭을 못 열고, 주소가 없어 크롤러도 못 따라가고, 라우터와도 안 붙습니다. 이 저장소의 사이트 헤더 자체가 그래서 라이브러리를 안 쓰고 손으로 다시 짜고 있었습니다. Button의 `as`와 같은 결함이고 같은 해법입니다. `width`는 **안쪽 줄의 폭만** 정합니다 — `full`은 제품 chrome, `content`는 본문 격자에 맞춘 사이트 헤더이고, 면과 괘선은 어느 쪽이든 화면 끝까지 갑니다. 항목 크기는 컨트롤 사다리 `md`라 옆의 Button·Field와 같은 열에 섭니다.
+- **Navbar** — `Navbar.Brand/Item/Actions`가 한 줄의 구조를 그대로 드러냅니다. Item은 `as`로 버튼과 링크를 오가며 활성 표시는 양쪽 다 `aria-current="page"`입니다. `width`는 안쪽 줄의 폭만 정하고 면과 괘선은 화면 끝까지 갑니다.
 - **Banner** — 지면 맨 위에 붙는 얇은 풀폭 바. 검정 solid가 기본이고, 공지·경고를 짊어질 때만 status 색을 채웁니다.
 - **PageHeader** — `location` → 큰 제목 → 설명 → 행동의 읽기 순서를 만듭니다. hero나 card를 강요하지 않고, 폭이 좁아지면 자연스럽게 두 줄로 풀립니다.
 - **EmptyState** — 빈 결과를 막다른 곳으로 두지 않습니다. 왜 비었는지와 다음 행동 하나를 남기되, 새 색면·카드는 만들지 않습니다.

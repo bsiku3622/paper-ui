@@ -46,5 +46,5 @@ export const PlaygroundLayout = ({ active, children }: { active: string; childre
 );
 
 export const Crumb = ({ group, name }: { group: string; name: string }) => (
-  <Breadcrumb items={[{ value: "group", label: group }, { value: "name", label: name }]} />
+  <Breadcrumb><Breadcrumb.Item>{group}</Breadcrumb.Item><Breadcrumb.Item current>{name}</Breadcrumb.Item></Breadcrumb>
 );

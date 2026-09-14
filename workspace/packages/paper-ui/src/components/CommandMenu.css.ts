@@ -1,4 +1,4 @@
-import { style } from "@vanilla-extract/css";
+import { globalStyle, style } from "@vanilla-extract/css";
 
 import { tokens, stateTransition } from "../tokens";
 
@@ -10,7 +10,7 @@ export const commandList = style({
   padding: tokens.shape.padding.xs.interaction,
 });
 export const commandGroup = style({ display: "flex", flexDirection: "column", gap: tokens.shape.gap.xs });
-export const commandGroupAfter = style({ marginTop: tokens.shape.gap.sm });
+globalStyle(`${commandGroup} + ${commandGroup}`, { marginTop: tokens.shape.gap.sm });
 export const commandGroupLabel = style({ paddingInline: tokens.shape.padding.sm.interaction, paddingBlock: tokens.shape.gap.xs });
 export const commandItem = style({
   width: "100%",
@@ -36,3 +36,4 @@ export const commandIcon = style({ display: "inline-flex", color: tokens.color.i
 export const commandCopy = style({ flex: 1, minWidth: 0 });
 export const commandShortcut = style({ color: tokens.color.ink.faint, whiteSpace: "nowrap" });
 export const commandEmpty = style({ padding: tokens.shape.padding.lg.interaction, textAlign: "center" });
+globalStyle(`${commandList}:has([role="option"]) > ${commandEmpty}`, { display: "none" });

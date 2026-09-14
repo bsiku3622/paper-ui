@@ -30,7 +30,6 @@ import {
   TextField,
   Tooltip,
   tokens,
-  type Column,
   type StatusName,
 } from "@studio-baeks/paper-ui";
 
@@ -106,49 +105,12 @@ export const Demo = () => {
   // "결과 없음"처럼 보이는 오해를 막는다.
   useEffect(() => setPage(1), [tab, priority, mineOnly]);
 
-  const columns: Column<Issue>[] = [
-    {
-      key: "key",
-      header: "키",
-      render: (r) => (
-        <Link href="#" onClick={(e) => e.preventDefault()}>
-          <Text variant="body" as="span">
-            {r.key}
-          </Text>
-        </Link>
-      ),
-    },
-    { key: "title", header: "제목", render: (r) => r.title },
-    {
-      key: "state",
-      header: "상태",
-      render: (r) => <Badge color={STATE_STATUS[r.state]}>{STATE_LABEL[r.state]}</Badge>,
-    },
-    { key: "priority", header: "우선순위", render: (r) => <Text variant="caption" as="span">{r.priority}</Text> },
-    {
-      key: "assignee",
-      header: "담당",
-      render: (r) => (
-        <Inline gap="sm">
-          <Avatar name={r.assignee} />
-          <Text variant="body" as="span">{r.assignee}</Text>
-        </Inline>
-      ),
-    },
-    {
-      key: "updated",
-      header: "수정",
-      numeric: true,
-      render: (r) => <Text variant="caption" as="span">{r.updated}</Text>,
-    },
-  ];
-
   return (
     <Stack>
       {/* 데모는 실제 제품처럼 자체 Navbar 를 갖고, 통합 DemoBar 로 사이트에 이어진다 */}
       <DemoBar />
-      <Navbar
-        brand={
+      <Navbar active="issues">
+        <Navbar.Brand>
           <Inline gap="sm">
             <Box
               radius="sm"
@@ -168,14 +130,9 @@ export const Demo = () => {
             </Box>
             <Text variant="subheading">Studio</Text>
           </Inline>
-        }
-        items={[
-          { value: "issues", label: "이슈" },
-          { value: "boards", label: "보드" },
-          { value: "reports", label: "리포트" },
-        ]}
-        active="issues"
-        trailing={
+        </Navbar.Brand>
+        <Navbar.Item value="issues">이슈</Navbar.Item><Navbar.Item value="boards">보드</Navbar.Item><Navbar.Item value="reports">리포트</Navbar.Item>
+        <Navbar.Actions>
           <Inline gap="sm">
             <Box style={{ width: "16rem" }}>
               <SearchField placeholder="검색…" />
@@ -186,27 +143,19 @@ export const Demo = () => {
               </Button>
             </Tooltip>
           </Inline>
-        }
-      />
+        </Navbar.Actions>
+      </Navbar>
 
       <Box paddingX="xl" paddingY="xl">
         <Stack gap="xl" style={{ maxWidth: tokens.layout.container.content, marginInline: "auto" }}>
           <PageHeader
-            location={<Breadcrumb items={[{ value: "projects", label: "Projects" }, { value: "studio", label: "Studio UI" }, { value: "issues", label: "Issues" }]} />}
+            location={<Breadcrumb><Breadcrumb.Item>Projects</Breadcrumb.Item><Breadcrumb.Item>Studio UI</Breadcrumb.Item><Breadcrumb.Item current>Issues</Breadcrumb.Item></Breadcrumb>}
             title="이슈"
             description={`${rows.length}건 표시 중 · 전체 ${ISSUES.length}건`}
           />
 
           <Inline gap="md" justify="between" wrap>
-            <Tabs
-              value={tab}
-              onChange={setTab}
-              items={[
-                { value: "all", label: "전체" },
-                { value: "open", label: "열림" },
-                { value: "done", label: "완료" },
-              ]}
-            />
+            <Tabs value={tab} onChange={setTab}><Tabs.Item value="all">전체</Tabs.Item><Tabs.Item value="open">열림</Tabs.Item><Tabs.Item value="done">완료</Tabs.Item></Tabs>
             <Inline gap="md">
               <Inline as="label" gap="sm">
                 <Checkbox checked={mineOnly} onChange={(e) => setMineOnly(e.currentTarget.checked)} />
@@ -227,31 +176,12 @@ export const Demo = () => {
             </Inline>
           </Inline>
 
-          <Table
-            variant="plain"
-            density="comfortable"
-            columns={columns}
-            rows={visibleRows}
-            rowKey={(r) => r.id}
-            empty={
-              <EmptyState
-                title="일치하는 이슈가 없습니다"
-                description="필터를 바꾸거나 새 이슈를 만들어 시작하세요."
-                action={
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      setTab("all");
-                      setPriority("all");
-                      setMineOnly(false);
-                    }}
-                  >
-                    필터 초기화
-                  </Button>
-                }
-              />
-            }
-          />
+          <Table variant="plain" density="comfortable">
+            <Table.Header><Table.Column>키</Table.Column><Table.Column>제목</Table.Column><Table.Column>상태</Table.Column><Table.Column>우선순위</Table.Column><Table.Column>담당</Table.Column><Table.Column align="end">수정</Table.Column></Table.Header>
+            <Table.Body>{visibleRows.length ? visibleRows.map((issue) => <Table.Row key={issue.id}>
+              <Table.Cell><Link href="#" onClick={(event) => event.preventDefault()}>{issue.key}</Link></Table.Cell><Table.Cell>{issue.title}</Table.Cell><Table.Cell><Badge color={STATE_STATUS[issue.state]}>{STATE_LABEL[issue.state]}</Badge></Table.Cell><Table.Cell><Text variant="caption" as="span">{issue.priority}</Text></Table.Cell><Table.Cell><Inline gap="sm"><Avatar name={issue.assignee} /><Text variant="body" as="span">{issue.assignee}</Text></Inline></Table.Cell><Table.Cell align="end"><Text variant="caption" as="span">{issue.updated}</Text></Table.Cell>
+            </Table.Row>) : <Table.Row><Table.Cell colSpan={6}><EmptyState title="일치하는 이슈가 없습니다" description="필터를 바꾸거나 새 이슈를 만들어 시작하세요." action={<Button size="sm" onClick={() => { setTab("all"); setPriority("all"); setMineOnly(false); }}>필터 초기화</Button>} /></Table.Cell></Table.Row>}</Table.Body>
+          </Table>
 
           {rows.length ? <Pagination page={page} totalPages={totalPages} onChange={setPage} /> : null}
 

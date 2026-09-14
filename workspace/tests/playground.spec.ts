@@ -701,10 +701,11 @@ test("modal · 긴 본문이어도 패널이 화면 안에 있고 푸터가 보�
 test("navbar · GNB 항목이 <a href> 이고 현재 항목만 aria-current", async ({ page }) => {
   await page.goto("/docs");
   const nav = page.locator("header nav");
-  const links = nav.locator("a");
+  // compound Navbar의 Brand도 nav 안의 홈 링크다. GNB item 계약은 Brand를 제외해 본다.
+  const links = nav.locator('a:not([aria-label="Paper UI 홈"])');
   await expect(links).toHaveCount(4);
   for (const href of ["/", "/demo", "/playground", "/docs"]) {
-    await expect(nav.locator(`a[href="${href}"]`)).toHaveCount(1);
+    await expect(nav.locator(`a:not([aria-label="Paper UI 홈"])[href="${href}"]`)).toHaveCount(1);
   }
   await expect(nav.locator('[aria-current="page"]')).toHaveCount(1);
   await expect(nav.locator('[aria-current="page"]')).toHaveAttribute("href", "/docs");

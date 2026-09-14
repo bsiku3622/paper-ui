@@ -1,8 +1,6 @@
-// RadioGroup — Radio + Label 한 벌. options 를 data 로 받아 하나만 고르게 한다.
-// name 을 자동 부여해 라디오들을 한 그룹으로 묶는다. Molecule 이라 raw 태그를
-// 렌더하지 않고 Primitive(Stack·Inline·Text) + Atom(Radio) 조합만 쓴다.
+// RadioGroup — Radio + Label을 JSX item으로 조합한다.
 
-import { useId, type ReactNode } from "react";
+import { createContext, useContext, useId, type ReactNode } from "react";
 
 import { Box, Inline, Text } from "../primitives";
 import { Radio } from "../atoms";
@@ -10,54 +8,18 @@ import type { ControlSize } from "../tokens";
 import { joinClass } from "../internal/joinClass";
 import { radioGroupOrientation } from "./RadioGroup.css";
 
-export type RadioOption = { value: string; label: ReactNode; disabled?: boolean };
 export type RadioGroupOrientation = "vertical" | "horizontal";
-
-export type RadioGroupProps = {
-  options: readonly RadioOption[];
-  value?: string;
-  onChange?: (value: string) => void;
-  name?: string;
-  // 라디오 크기 3 단 (sm·md·lg). 그룹의 모든 라디오에 적용.
-  size?: ControlSize;
-  orientation?: RadioGroupOrientation;
-  // 그룹의 접근 이름 — 라디오들을 무엇으로 묶는지(예: "결제 수단"). 눈에 보이는 라벨이
-  // 있으면 그 id 를 aria-labelledby 로.
-  "aria-label"?: string;
-  "aria-labelledby"?: string;
-  className?: string;
-};
-
-export const RadioGroup = ({
-  options,
-  value,
-  onChange,
-  name,
-  size = "md",
-  orientation = "vertical",
-  "aria-label": ariaLabel,
-  "aria-labelledby": ariaLabelledby,
-  className,
-}: RadioGroupProps) => {
+type RadioGroupContextValue = { value?: string; onChange?: (value: string) => void; name: string; size: ControlSize };
+const RadioGroupContext = createContext<RadioGroupContextValue | null>(null);
+export type RadioGroupProps = { value?: string; onChange?: (value: string) => void; name?: string; size?: ControlSize; orientation?: RadioGroupOrientation; "aria-label"?: string; "aria-labelledby"?: string; className?: string; children: ReactNode };
+const RadioGroupRoot = ({ value, onChange, name, size = "md", orientation = "vertical", "aria-label": ariaLabel, "aria-labelledby": ariaLabelledby, className, children }: RadioGroupProps) => {
   const auto = useId();
-  const group = name ?? auto;
-  return (
-    <Box role="radiogroup" aria-label={ariaLabel} aria-labelledby={ariaLabelledby} className={joinClass(radioGroupOrientation[orientation], className)}>
-      {options.map((o) => (
-        <Inline as="label" gap="sm" align="center" key={o.value}>
-          <Radio
-            name={group}
-            value={o.value}
-            checked={value === o.value}
-            disabled={o.disabled}
-            size={size}
-            onChange={() => onChange?.(o.value)}
-          />
-          <Text variant="body" as="span" ink={o.disabled ? "faint" : "base"}>
-            {o.label}
-          </Text>
-        </Inline>
-      ))}
-    </Box>
-  );
+  return <RadioGroupContext.Provider value={{ value, onChange, name: name ?? auto, size }}><Box role="radiogroup" aria-label={ariaLabel} aria-labelledby={ariaLabelledby} className={joinClass(radioGroupOrientation[orientation], className)}>{children}</Box></RadioGroupContext.Provider>;
 };
+export type RadioGroupItemProps = { value: string; disabled?: boolean; children: ReactNode };
+export const RadioGroupItem = ({ value, disabled, children }: RadioGroupItemProps) => {
+  const context = useContext(RadioGroupContext);
+  if (!context) throw new Error("RadioGroup.Item must be used inside RadioGroup");
+  return <Inline as="label" gap="sm" align="center"><Radio name={context.name} value={value} checked={context.value === value} disabled={disabled} size={context.size} onChange={() => context.onChange?.(value)} /><Text variant="body" as="span" ink={disabled ? "faint" : "base"}>{children}</Text></Inline>;
+};
+export const RadioGroup = Object.assign(RadioGroupRoot, { Item: RadioGroupItem });

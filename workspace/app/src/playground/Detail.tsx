@@ -103,7 +103,7 @@ const DetailView = ({ spec }: { spec: CompSpec }) => {
       <div className="detail-body">
         {/* preview + code */}
         <Stack gap="md" style={{ minWidth: 0 }}>
-          <div className="preview-stage">{preview}</div>
+          <div className={`preview-stage${spec.preview === "flush" ? " preview-stage--flush" : ""}`}>{preview}</div>
           <Stack gap="xs">
             <Text variant="label">코드</Text>
             <CodeBlock code={code} />

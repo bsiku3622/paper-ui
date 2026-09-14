@@ -1,45 +1,39 @@
-// Breadcrumb — 현재 위치의 계층을 짧게 보여주는 location navigation.
+// Breadcrumb — JSX 계층이 실제 location 계층과 같은 compound API.
 
-import type { ElementType, ReactNode } from "react";
+import { createContext, useContext, type ComponentPropsWithoutRef, type ElementType, type ReactElement, type ReactNode } from "react";
 
-import { Box } from "../primitives";
+import { Box, type BoxProps } from "../primitives";
 import { joinClass } from "../internal/joinClass";
 import { breadcrumbCurrent, breadcrumbItem, breadcrumbLink, breadcrumbList, breadcrumbSeparator } from "./Breadcrumb.css";
 
-export type BreadcrumbItem = {
-  value: string;
-  label: ReactNode;
-  as?: ElementType;
-  current?: boolean;
-  [prop: string]: unknown;
-};
+const BreadcrumbContext = createContext<ReactNode>("/");
 
-export type BreadcrumbProps = {
-  items: readonly BreadcrumbItem[];
-  separator?: ReactNode;
-  "aria-label"?: string;
-  className?: string;
-};
-
-export const Breadcrumb = ({ items, separator = "/", "aria-label": ariaLabel = "현재 위치", className }: BreadcrumbProps) => (
-  <Box as="nav" aria-label={ariaLabel} className={className}>
-    <Box as="ol" className={breadcrumbList}>
-      {items.map(({ value, label, as, current, ...rest }, index) => {
-        const isCurrent = current ?? index === items.length - 1;
-        return (
-          <Box as="li" key={value} className={breadcrumbItem}>
-            <Box
-              as={isCurrent ? "span" : (as ?? "span")}
-              aria-current={isCurrent ? "page" : undefined}
-              className={joinClass("pui-text-caption", isCurrent ? breadcrumbCurrent : breadcrumbLink)}
-              {...(isCurrent ? {} : rest)}
-            >
-              {label}
-            </Box>
-            {index < items.length - 1 ? <Box as="span" aria-hidden className={joinClass("pui-text-caption", breadcrumbSeparator)}>{separator}</Box> : null}
-          </Box>
-        );
-      })}
+export type BreadcrumbProps = Omit<BoxProps<"nav">, "as"> & { separator?: ReactNode };
+const BreadcrumbRoot = ({ separator = "/", "aria-label": ariaLabel = "현재 위치", className, children, ...rest }: BreadcrumbProps) => (
+  <BreadcrumbContext.Provider value={separator}>
+    <Box as="nav" aria-label={ariaLabel} className={className} {...rest}>
+      <Box as="ol" className={breadcrumbList}>{children}</Box>
     </Box>
-  </Box>
+  </BreadcrumbContext.Provider>
 );
+
+type BreadcrumbItemOwn<As extends ElementType> = { as?: As; current?: boolean; children: ReactNode; className?: string };
+export type BreadcrumbItemProps<As extends ElementType = "span"> = BreadcrumbItemOwn<As> & Omit<ComponentPropsWithoutRef<As>, keyof BreadcrumbItemOwn<As>>;
+const BreadcrumbItemImpl = <As extends ElementType = "span">({ as, current, children, className, ...rest }: BreadcrumbItemProps<As>) => {
+  const separator = useContext(BreadcrumbContext);
+  const Tag = current ? "span" : (as ?? "span");
+  return (
+    <Box as="li" className={breadcrumbItem}>
+      <Box
+        as={Tag as ElementType}
+        {...(current ? {} : (rest as object))}
+        aria-current={current ? "page" : undefined}
+        className={joinClass("pui-text-caption", current ? breadcrumbCurrent : breadcrumbLink, className)}
+      >{children}</Box>
+      <Box as="span" aria-hidden className={joinClass("pui-text-caption", breadcrumbSeparator)}>{separator}</Box>
+    </Box>
+  );
+};
+export const BreadcrumbItem = BreadcrumbItemImpl as <As extends ElementType = "span">(props: BreadcrumbItemProps<As>) => ReactElement;
+
+export const Breadcrumb = Object.assign(BreadcrumbRoot, { Item: BreadcrumbItem });

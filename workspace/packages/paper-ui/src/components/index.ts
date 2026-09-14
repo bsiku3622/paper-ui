@@ -1,5 +1,6 @@
 export {
   Table,
+  DataTable,
   TableRoot,
   TableCaption,
   TableHeader,
@@ -8,6 +9,7 @@ export {
   TableColumn,
   TableCell,
   type TableProps,
+  type DataTableProps,
   type Column,
   type TableVariant,
   type TableDensity,
@@ -33,7 +35,7 @@ export {
   type ModalHeaderProps,
   type ModalCloseProps,
 } from "./Modal";
-export { Navbar, type NavbarProps, type NavItem } from "./Navbar";
+export { Navbar, NavbarBrand, NavbarItem, NavbarActions, type NavbarProps, type NavbarBrandProps, type NavbarItemProps, type NavbarActionsProps } from "./Navbar";
 export { Banner, type BannerProps } from "./Banner";
 export { PageHeader, type PageHeaderProps } from "./PageHeader";
 export { EmptyState, type EmptyStateProps } from "./EmptyState";
@@ -48,6 +50,6 @@ export {
   type SidebarItemProps,
   type SidebarBadgeProps,
 } from "./Sidebar";
-export { DropdownMenu, type DropdownMenuProps } from "./DropdownMenu";
-export { CommandMenu, type CommandMenuProps, type CommandItem } from "./CommandMenu";
-export { TreeNavigation, type TreeNavigationProps, type TreeNavigationItem } from "./TreeNavigation";
+export { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, type DropdownMenuProps, type DropdownMenuTriggerProps, type DropdownMenuContentProps } from "./DropdownMenu";
+export { CommandMenu, CommandMenuGroup, CommandMenuItem, CommandMenuEmpty, type CommandMenuProps, type CommandMenuGroupProps, type CommandMenuItemProps, type CommandMenuEmptyProps } from "./CommandMenu";
+export { TreeNavigation, TreeNavigationItem, type TreeNavigationProps, type TreeNavigationItemProps } from "./TreeNavigation";

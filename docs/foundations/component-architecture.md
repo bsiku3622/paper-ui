@@ -89,30 +89,30 @@ row               row               row
 | TextField | Field의 `size · shape · status` | 별도 variant를 만들지 않음 |
 | FormField | `hint · error` | 접근성 관계만 소유. 시각 status는 control이 소유 |
 | SearchField | Field의 `size · shape · status` | 검색 전용 외형을 만들지 않음 |
-| RadioGroup | `orientation · size` | 세로 기본, 좁은 선택지는 가로 배치 가능 |
-| Tabs | `variant · size · shape` | `segmented · underline`. underline에서는 shape가 의미 없음 |
+| RadioGroup | compound `Item` + `orientation · size` | 세로 기본, 좁은 선택지는 가로 배치 가능 |
+| Tabs | compound `Item` + `variant · size · shape` | `segmented · underline`. underline에서는 shape가 의미 없음 |
 | Tooltip | `content`, placement 자동 결정 | `ReactNode`를 받아 복합 내용을 허용하되 외형 variant는 없음 |
 | Alert | `color × shared variant` | Button·Badge와 같은 6단 매트릭스를 유지 |
-| Breadcrumb | `items · separator` | location 계층만 소유. 마지막 항목은 현재 위치 |
-| Menu | `active · item state` | 한 열의 action/navigation과 키보드 이동을 소유 |
-| Steps | `current · orientation` | 실제 순서의 완료·현재·예정을 번호와 연결선으로 구분 |
-| TableOfContents | `active · depth` | 문서 내부 위치만 소유하고 깊이는 3단으로 제한 |
+| Breadcrumb | compound `Item` + `separator` | location 계층을 JSX 순서로 소유. current를 명시 |
+| Menu | compound `Item` + `active` | 한 열의 action/navigation과 키보드 이동을 소유 |
+| Steps | compound `Item` + `current · orientation` | 실제 순서의 완료·현재·예정을 번호와 연결선으로 구분 |
+| TableOfContents | compound `Item` + `active · depth` | 문서 내부 위치만 소유하고 깊이는 3단으로 제한 |
 
 ### Components
 
 | 컴포넌트 | 축 | 결정 |
 | --- | --- | --- |
-| Table | local `variant · density · align` | `plain · ruled · striped`, `compact · default · comfortable`; compound anatomy 제공 |
+| Table | compound `Header · Column · Body · Row · Cell` + local `variant · density` | 직각 plain이 기본. 데이터 편의는 별도 DataTable로 격리 |
 | Modal | `size` | `sm · md · lg`. 종류가 아니라 담는 일의 폭 |
-| Navbar | `width` | `full · content`. 외형 variant는 사이트 정체성을 불필요하게 분기 |
+| Navbar | compound `Brand · Item · Actions` + `width` | 구조를 JSX에 노출. 외형 variant는 사이트 정체성을 불필요하게 분기 |
 | Banner | `tone` | 검정 기본 + 의미색. 이미 역할에 맞는 축이 있음 |
 | PageHeader | slots | location·제목·설명·actions의 관계가 본체라 외형 variant 없음 |
 | EmptyState | content slots | 빈 상태는 장식 강도를 고르는 자리가 아님 |
 | Pagination | local `variant`, page state | `outlined · soft · minimal`; Table density와 독립 |
 | Sidebar | compound `Group · Item · Badge` + `active` | JSX로 local navigation 계층과 release 표식을 조합. selected badge의 soft 면에도 같은 neutral overlay를 합성 |
-| DropdownMenu | `align · open`, Menu items | 떠 있는 action surface의 열기·닫기·포커스와 overlay shadow를 소유 |
-| CommandMenu | `query · commands` | 검색 Field와 키보드 선택 listbox를 결합 |
-| TreeNavigation | `active · expanded` | branch 확장과 leaf 선택을 분리한 계층 navigation |
+| DropdownMenu | compound `Trigger · Content · Item` + `align · open` | 떠 있는 action surface의 열기·닫기·포커스와 overlay shadow를 소유 |
+| CommandMenu | compound `Group · Item · Empty` + `query` | 검색 Field와 키보드 선택 listbox를 결합 |
+| TreeNavigation | 중첩 compound `Item` + `active · expanded` | JSX 중첩이 실제 계층이며 branch 확장과 leaf 선택을 분리 |
 
 ## 금지 조합
 

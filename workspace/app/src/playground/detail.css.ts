@@ -31,6 +31,17 @@ globalStyle(".preview-stage", {
   overflow: "auto",
 });
 
+// Table처럼 자체 면과 외곽 형상이 사용성의 일부인 컴포넌트는 showcase용 Card에
+// 다시 가두지 않는다. 실제 페이지에 놓였을 때의 직각 silhouette를 그대로 평가한다.
+globalStyle(".preview-stage--flush", {
+  justifyContent: "stretch",
+  minHeight: "auto",
+  padding: 0,
+  border: 0,
+  borderRadius: 0,
+  backgroundColor: "transparent",
+});
+
 globalStyle(".code-block", {
   position: "relative",
   border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,

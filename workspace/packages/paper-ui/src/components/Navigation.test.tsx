@@ -9,11 +9,7 @@ import { TreeNavigation } from "./TreeNavigation";
 
 describe("navigation family", () => {
   it("Menu는 방향키로 disabled item을 건너뛴다", () => {
-    render(<Menu items={[
-      { value: "one", label: "하나" },
-      { value: "two", label: "둘", disabled: true },
-      { value: "three", label: "셋" },
-    ]} />);
+    render(<Menu><Menu.Item value="one">하나</Menu.Item><Menu.Item value="two" disabled>둘</Menu.Item><Menu.Item value="three">셋</Menu.Item></Menu>);
     const first = screen.getByRole("menuitem", { name: "하나" });
     first.focus();
     fireEvent.keyDown(first, { key: "ArrowDown" });
@@ -21,25 +17,18 @@ describe("navigation family", () => {
   });
 
   it("Steps는 현재 순서를 aria-current로 함께 전달한다", () => {
-    render(<Steps current="review" items={[
-      { value: "draft", label: "작성" },
-      { value: "review", label: "검토" },
-      { value: "publish", label: "게시" },
-    ]} />);
+    render(<Steps current="review"><Steps.Item value="draft">작성</Steps.Item><Steps.Item value="review">검토</Steps.Item><Steps.Item value="publish">게시</Steps.Item></Steps>);
     expect(screen.getByText("검토").closest("li")?.getAttribute("aria-current")).toBe("step");
   });
 
   it("TableOfContents는 문서 안의 현재 위치를 표시한다", () => {
-    render(<TableOfContents active="shape" items={[
-      { value: "color", label: "Color" },
-      { value: "shape", label: "Shape", depth: 1 },
-    ]} />);
+    render(<TableOfContents active="shape"><TableOfContents.Item value="color">Color</TableOfContents.Item><TableOfContents.Item value="shape" depth={1}>Shape</TableOfContents.Item></TableOfContents>);
     expect(screen.getByRole("link", { name: "Shape" }).getAttribute("aria-current")).toBe("location");
   });
 
   it("DropdownMenu는 trigger와 선택 후 닫힘을 연결한다", () => {
     const onSelect = vi.fn();
-    render(<DropdownMenu trigger={<Button>더 보기</Button>} items={[{ value: "edit", label: "편집" }]} onSelect={onSelect} />);
+    render(<DropdownMenu onSelect={onSelect}><DropdownMenu.Trigger><Button>더 보기</Button></DropdownMenu.Trigger><DropdownMenu.Content><DropdownMenu.Item value="edit">편집</DropdownMenu.Item></DropdownMenu.Content></DropdownMenu>);
     fireEvent.click(screen.getByRole("button", { name: "더 보기" }));
     fireEvent.click(screen.getByRole("menuitem", { name: "편집" }));
     expect(onSelect).toHaveBeenCalledWith("edit");
@@ -48,10 +37,7 @@ describe("navigation family", () => {
 
   it("CommandMenu는 검색된 명령을 Enter로 선택한다", () => {
     const onSelect = vi.fn();
-    render(<CommandMenu commands={[
-      { value: "issues", label: "이슈 열기" },
-      { value: "docs", label: "문서 열기", keywords: ["가이드"] },
-    ]} onSelect={onSelect} />);
+    render(<CommandMenu onSelect={onSelect}><CommandMenu.Item value="issues">이슈 열기</CommandMenu.Item><CommandMenu.Item value="docs" keywords={["가이드"]}>문서 열기</CommandMenu.Item></CommandMenu>);
     const search = screen.getByRole("searchbox");
     fireEvent.change(search, { target: { value: "문서" } });
     fireEvent.keyDown(search, { key: "Enter" });
@@ -59,9 +45,7 @@ describe("navigation family", () => {
   });
 
   it("TreeNavigation은 branch를 접고 펼친다", () => {
-    render(<TreeNavigation defaultExpanded={["docs"]} items={[
-      { value: "docs", label: "문서", children: [{ value: "tokens", label: "토큰" }] },
-    ]} />);
+    render(<TreeNavigation defaultExpanded={["docs"]}><TreeNavigation.Item value="docs" label="문서"><TreeNavigation.Item value="tokens" label="토큰" /></TreeNavigation.Item></TreeNavigation>);
     const branch = screen.getByRole("treeitem", { name: "문서" });
     expect(branch.getAttribute("aria-expanded")).toBe("true");
     fireEvent.click(branch);
