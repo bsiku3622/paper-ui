@@ -85,14 +85,14 @@ row               row               row
 
 | 컴포넌트 | 축 | 결정 |
 | --- | --- | --- |
-| Card | shared `color × variant`, local `padding · radius` | 여섯 shared variant를 그대로 사용. 기본 `primary × hairline`, hover gate·shadow는 없음 |
+| Card | compound `Header · Body · Footer`, shared `color × variant` | 기본 `primary × hairline`, hover gate·shadow는 없음 |
 | TextField | Field의 `size · shape · status` | 별도 variant를 만들지 않음 |
-| FormField | `hint · error` | 접근성 관계만 소유. 시각 status는 control이 소유 |
+| FormField | compound `Label · Control · Hint · Error` | 접근성 관계만 소유. 시각 status는 control이 소유 |
 | SearchField | Field의 `size · shape · status` | 검색 전용 외형을 만들지 않음 |
 | RadioGroup | compound `Item` + `orientation · size` | 세로 기본, 좁은 선택지는 가로 배치 가능 |
 | Tabs | compound `Item` + `variant · size · shape` | `segmented · underline`. underline에서는 shape가 의미 없음 |
-| Tooltip | `content`, placement 자동 결정 | `ReactNode`를 받아 복합 내용을 허용하되 외형 variant는 없음 |
-| Alert | `color × shared variant` | Button·Badge와 같은 6단 매트릭스를 유지 |
+| Tooltip | compound `Trigger · Content`, placement 자동 결정 | 복합 내용을 허용하되 외형 variant는 없음 |
+| Alert | compound `Icon · Title · Description`, `color × shared variant` | Button·Badge와 같은 6단 매트릭스를 유지 |
 | Breadcrumb | compound `Item` + `separator` | location 계층을 JSX 순서로 소유. current를 명시 |
 | Menu | compound `Item` + `active` | 한 열의 action/navigation과 키보드 이동을 소유 |
 | Steps | compound `Item` + `current · orientation` | 실제 순서의 완료·현재·예정을 번호와 연결선으로 구분 |
@@ -105,9 +105,9 @@ row               row               row
 | Table | compound `Header · Column · Body · Row · Cell` + local `variant · density` | 직각 plain이 기본. 데이터 편의는 별도 DataTable로 격리 |
 | Modal | `size` | `sm · md · lg`. 종류가 아니라 담는 일의 폭 |
 | Navbar | compound `Brand · Item · Actions` + `width` | 구조를 JSX에 노출. 외형 variant는 사이트 정체성을 불필요하게 분기 |
-| Banner | `tone` | 검정 기본 + 의미색. 이미 역할에 맞는 축이 있음 |
-| PageHeader | slots | location·제목·설명·actions의 관계가 본체라 외형 variant 없음 |
-| EmptyState | content slots | 빈 상태는 장식 강도를 고르는 자리가 아님 |
+| Banner | compound `Content · Action`, `tone` | 검정 기본 + 의미색. 양쪽 slot을 JSX로 노출 |
+| PageHeader | compound `Location · Content · Title · Description · Actions` | 관계가 본체라 외형 variant 없음 |
+| EmptyState | compound `Title · Description · Action` | 빈 상태는 장식 강도를 고르는 자리가 아님 |
 | Pagination | local `variant`, page state | `outlined · soft · minimal`; Table density와 독립 |
 | Sidebar | compound `Group · Item · Badge` + `active` | JSX로 local navigation 계층과 release 표식을 조합. selected badge의 soft 면에도 같은 neutral overlay를 합성 |
 | DropdownMenu | compound `Trigger · Content · Item` + `align · open` | 떠 있는 action surface의 열기·닫기·포커스와 overlay shadow를 소유 |

@@ -137,10 +137,9 @@ export const Demo = () => {
             <Box style={{ width: "16rem" }}>
               <SearchField placeholder="검색…" />
             </Box>
-            <Tooltip content={<Stack gap="xs"><Text variant="label">새 이슈</Text><Text variant="caption" ink="soft">단축키 C</Text></Stack>}>
-              <Button onClick={() => setOpen(true)}>
-                새 이슈
-              </Button>
+            <Tooltip>
+              <Tooltip.Trigger asChild><Button onClick={() => setOpen(true)}>새 이슈</Button></Tooltip.Trigger>
+              <Tooltip.Content><Stack gap="xs"><Text variant="label" ink="inherit">새 이슈</Text><Text variant="caption" ink="inherit">단축키 C</Text></Stack></Tooltip.Content>
             </Tooltip>
           </Inline>
         </Navbar.Actions>
@@ -148,11 +147,10 @@ export const Demo = () => {
 
       <Box paddingX="xl" paddingY="xl">
         <Stack gap="xl" style={{ maxWidth: tokens.layout.container.content, marginInline: "auto" }}>
-          <PageHeader
-            location={<Breadcrumb><Breadcrumb.Item>Projects</Breadcrumb.Item><Breadcrumb.Item>Studio UI</Breadcrumb.Item><Breadcrumb.Item current>Issues</Breadcrumb.Item></Breadcrumb>}
-            title="이슈"
-            description={`${rows.length}건 표시 중 · 전체 ${ISSUES.length}건`}
-          />
+          <PageHeader>
+            <PageHeader.Location><Breadcrumb><Breadcrumb.Item>Projects</Breadcrumb.Item><Breadcrumb.Item>Studio UI</Breadcrumb.Item><Breadcrumb.Item current>Issues</Breadcrumb.Item></Breadcrumb></PageHeader.Location>
+            <PageHeader.Content><PageHeader.Title>이슈</PageHeader.Title><PageHeader.Description>{rows.length}건 표시 중 · 전체 {ISSUES.length}건</PageHeader.Description></PageHeader.Content>
+          </PageHeader>
 
           <Inline gap="md" justify="between" wrap>
             <Tabs value={tab} onChange={setTab}><Tabs.Item value="all">전체</Tabs.Item><Tabs.Item value="open">열림</Tabs.Item><Tabs.Item value="done">완료</Tabs.Item></Tabs>
@@ -180,7 +178,7 @@ export const Demo = () => {
             <Table.Header><Table.Column>키</Table.Column><Table.Column>제목</Table.Column><Table.Column>상태</Table.Column><Table.Column>우선순위</Table.Column><Table.Column>담당</Table.Column><Table.Column align="end">수정</Table.Column></Table.Header>
             <Table.Body>{visibleRows.length ? visibleRows.map((issue) => <Table.Row key={issue.id}>
               <Table.Cell><Link href="#" onClick={(event) => event.preventDefault()}>{issue.key}</Link></Table.Cell><Table.Cell>{issue.title}</Table.Cell><Table.Cell><Badge color={STATE_STATUS[issue.state]}>{STATE_LABEL[issue.state]}</Badge></Table.Cell><Table.Cell><Text variant="caption" as="span">{issue.priority}</Text></Table.Cell><Table.Cell><Inline gap="sm"><Avatar name={issue.assignee} /><Text variant="body" as="span">{issue.assignee}</Text></Inline></Table.Cell><Table.Cell align="end"><Text variant="caption" as="span">{issue.updated}</Text></Table.Cell>
-            </Table.Row>) : <Table.Row><Table.Cell colSpan={6}><EmptyState title="일치하는 이슈가 없습니다" description="필터를 바꾸거나 새 이슈를 만들어 시작하세요." action={<Button size="sm" onClick={() => { setTab("all"); setPriority("all"); setMineOnly(false); }}>필터 초기화</Button>} /></Table.Cell></Table.Row>}</Table.Body>
+            </Table.Row>) : <Table.Row><Table.Cell colSpan={6}><EmptyState><EmptyState.Title>일치하는 이슈가 없습니다</EmptyState.Title><EmptyState.Description>필터를 바꾸거나 새 이슈를 만들어 시작하세요.</EmptyState.Description><EmptyState.Action><Button size="sm" onClick={() => { setTab("all"); setPriority("all"); setMineOnly(false); }}>필터 초기화</Button></EmptyState.Action></EmptyState></Table.Cell></Table.Row>}</Table.Body>
           </Table>
 
           {rows.length ? <Pagination page={page} totalPages={totalPages} onChange={setPage} /> : null}
@@ -204,25 +202,27 @@ export const Demo = () => {
           <TextField label="제목" placeholder="무엇을 해야 하나요" />
           <Inline gap="md" align="start">
             <Box style={{ flex: 1 }}>
-              <FormField label="상태">
-                <Select
+              <FormField>
+                <FormField.Label>상태</FormField.Label>
+                <FormField.Control><Select
                   options={[
                     { value: "todo", label: "할 일" },
                     { value: "progress", label: "진행" },
                     { value: "done", label: "완료" },
                   ]}
-                />
+                /></FormField.Control>
               </FormField>
             </Box>
             <Box style={{ flex: 1 }}>
-              <FormField label="우선순위">
-                <Select
+              <FormField>
+                <FormField.Label>우선순위</FormField.Label>
+                <FormField.Control><Select
                   options={[
                     { value: "보통", label: "보통" },
                     { value: "높음", label: "높음" },
                     { value: "낮음", label: "낮음" },
                   ]}
-                />
+                /></FormField.Control>
               </FormField>
             </Box>
           </Inline>

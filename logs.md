@@ -1,3 +1,14 @@
+## 2026-09-14 — Expose remaining visible anatomy as compound parts
+
+- 변경 파일: Tooltip·FormField·Card·Alert·Banner·PageHeader·EmptyState, Playground·Demo·docs·tests
+- 요약: JSX prop 안에 숨었던 trigger/content와 title/description/action 구조를 이름 있는 compound parts로 옮겼습니다.
+
+compound 전환 기준은 “사용자가 화면의 내부 anatomy를 직접 조립하는가”입니다. Tooltip은 `Trigger/Content`, FormField는 `Label/Control/Hint/Error`, PageHeader와 EmptyState는 각 content slot이 markup에 그대로 드러납니다. Card는 `Header/Body/Footer`를 제공하되 단순 컨테이너 용례의 raw children과 root padding도 유지해, 구조를 강요하지 않고 필요할 때만 anatomy를 사용합니다. Alert의 상태 아이콘은 기본값을 유지하면서 `Alert.Icon`으로 교체할 수 있게 했습니다.
+
+Pagination의 page range와 SearchField의 검색 icon처럼 컴포넌트가 내부에서 계산하거나 목적상 고정한 구조는 compound로 바꾸지 않았습니다. 외부 데이터와 내부 구현까지 모두 parts로 노출하면 API가 길어질 뿐 의미가 늘지 않기 때문입니다.
+
+⚠ `Tooltip content`, `FormField label/hint/error`, `Alert title`, `Banner action`, `PageHeader`와 `EmptyState`의 slot props는 제거한 breaking change입니다. Playground 전수·상세 화면, Demo, recipe와 접근성 테스트를 새 API로 함께 이관했습니다. FormField Root는 control id와 설명 관계를 소유하며 Error가 있으면 Hint를 숨기고 `aria-invalid`를 자동으로 연결합니다.
+
 ## 2026-09-14 — Make visible component anatomy compound by default
 
 - 변경 파일: Table·Tabs·RadioGroup·Breadcrumb·Menu·Steps·TableOfContents·Navbar·DropdownMenu·CommandMenu·TreeNavigation, Playground·docs·tests

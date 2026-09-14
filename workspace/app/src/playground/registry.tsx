@@ -127,7 +127,6 @@ export const COMPONENTS: CompSpec[] = [
       { kind: "bool", prop: "inverse", label: "inverse", def: false },
       { kind: "enum", prop: "shadow", label: "shadow", options: ["none", "overlay", "overlayMinimal"], def: "none" },
       { kind: "enum", prop: "radius", label: "radius", options: ["none", "sm", "md", "lg", "full"], def: "md" },
-      { kind: "enum", prop: "padding", label: "padding", options: ["none", "sm", "md", "lg", "xl"], def: "lg" },
     ],
     render: (st) => (
       <Box
@@ -507,13 +506,16 @@ export const COMPONENTS: CompSpec[] = [
     ],
     render: (st) => (
       <Box style={{ width: "18rem" }}>
-        <FormField label={s(st.label)} hint={s(st.hint) || undefined} error={s(st.error) || undefined}>
-          <Select options={[{ value: "", label: "선택하세요" }, { value: "high", label: "높음" }, { value: "normal", label: "보통" }]} />
+        <FormField>
+          <FormField.Label>{s(st.label)}</FormField.Label>
+          <FormField.Control><Select options={[{ value: "", label: "선택하세요" }, { value: "high", label: "높음" }, { value: "normal", label: "보통" }]} /></FormField.Control>
+          {s(st.hint) ? <FormField.Hint>{s(st.hint)}</FormField.Hint> : null}
+          {s(st.error) ? <FormField.Error>{s(st.error)}</FormField.Error> : null}
         </FormField>
       </Box>
     ),
     code: (st) =>
-      `<FormField label="${s(st.label)}"${A("hint", s(st.hint))}${A("error", s(st.error))}>\n  <Select options={[\n    { value: "", label: "선택하세요" },\n    { value: "high", label: "높음" },\n  ]} />\n</FormField>`,
+      `<FormField>\n  <FormField.Label>${s(st.label)}</FormField.Label>\n  <FormField.Control>\n    <Select options={[\n      { value: "", label: "선택하세요" },\n      { value: "high", label: "높음" },\n    ]} />\n  </FormField.Control>${s(st.error) ? `\n  <FormField.Error>${s(st.error)}</FormField.Error>` : s(st.hint) ? `\n  <FormField.Hint>${s(st.hint)}</FormField.Hint>` : ""}\n</FormField>`,
   },
   {
     slug: "searchfield",
@@ -548,15 +550,14 @@ export const COMPONENTS: CompSpec[] = [
       { kind: "enum", prop: "padding", label: "padding", options: ["none", "sm", "md", "lg", "xl"], def: "lg" },
     ],
     render: (st) => (
-      <Card color={s(st.color) as Color} variant={s(st.variant) as Variant} radius={s(st.radius) as "sm" | "md" | "lg" | "full"} padding={s(st.padding) as "none" | "sm" | "md" | "lg" | "xl"} style={{ width: "18rem" }}>
-        <Stack gap="xs">
-          <Text variant="subheading">카드 제목</Text>
-          <Text variant="caption">shared 축을 따르는 정적 컨테이너.</Text>
-        </Stack>
+      <Card color={s(st.color) as Color} variant={s(st.variant) as Variant} radius={s(st.radius) as "sm" | "md" | "lg" | "full"} style={{ width: "18rem" }}>
+        <Card.Header><Text variant="subheading">카드 제목</Text></Card.Header>
+        <Card.Body><Text variant="caption">shared 축을 따르는 정적 컨테이너.</Text></Card.Body>
+        <Card.Footer><Inline justify="end"><Button size="sm" variant="quiet">자세히</Button></Inline></Card.Footer>
       </Card>
     ),
     code: (st) =>
-      `<Card${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "hairline")}${AE("radius", s(st.radius), "md")}${AE("padding", s(st.padding), "lg")}>\n  <Stack gap="xs">\n    <Text variant="subheading">카드 제목</Text>\n    <Text variant="caption">…</Text>\n  </Stack>\n</Card>`,
+      `<Card${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "hairline")}${AE("radius", s(st.radius), "md")}>\n  <Card.Header><Text variant="subheading">카드 제목</Text></Card.Header>\n  <Card.Body><Text variant="caption">…</Text></Card.Body>\n  <Card.Footer><Button size="sm">자세히</Button></Card.Footer>\n</Card>`,
   },
   {
     slug: "tabs",
@@ -578,14 +579,15 @@ export const COMPONENTS: CompSpec[] = [
     change: "mod",
     name: "Tooltip",
     group: "Molecules",
-    blurb: "잠깐 뜨는 비상호작용 설명. content는 ReactNode라 아이콘·여러 Text를 담을 수 있고, 위 공간이 없으면 아래로 뒤집는다. 버튼·폼은 Popover의 책임이다.",
+    blurb: "Trigger와 Content가 명시된 비상호작용 설명. 임의의 ReactNode를 담고 위 공간이 없으면 아래로 뒤집는다. 버튼·폼은 Popover의 책임이다.",
     controls: [{ kind: "text", prop: "content", label: "content", def: "단축키 C로도 열 수 있습니다." }],
     render: (st) => (
-      <Tooltip content={<Stack gap="xs"><Text variant="label" ink="inherit">새 이슈</Text><Text variant="caption" ink="inherit">{s(st.content)}</Text></Stack>}>
-        <Button variant="outline">hover 해보세요</Button>
+      <Tooltip>
+        <Tooltip.Trigger asChild><Button variant="outline">hover 해보세요</Button></Tooltip.Trigger>
+        <Tooltip.Content><Stack gap="xs"><Text variant="label" ink="inherit">새 이슈</Text><Text variant="caption" ink="inherit">{s(st.content)}</Text></Stack></Tooltip.Content>
       </Tooltip>
     ),
-    code: (st) => `<Tooltip content={<Stack><Text>새 이슈</Text><Text>${s(st.content)}</Text></Stack>}>\n  <Button variant="outline">hover</Button>\n</Tooltip>`,
+    code: (st) => `<Tooltip>\n  <Tooltip.Trigger asChild>\n    <Button variant="outline">hover</Button>\n  </Tooltip.Trigger>\n  <Tooltip.Content>\n    <Stack><Text>새 이슈</Text><Text>${s(st.content)}</Text></Stack>\n  </Tooltip.Content>\n</Tooltip>`,
   },
   {
     slug: "breadcrumb",
@@ -627,13 +629,14 @@ export const COMPONENTS: CompSpec[] = [
     ],
     render: (st) => (
       <Box style={{ width: "22rem" }}>
-        <Alert color={s(st.color) as Color} variant={s(st.variant) as Variant} title={s(st.title)}>
-          {s(st.children)}
+        <Alert color={s(st.color) as Color} variant={s(st.variant) as Variant}>
+          <Alert.Title>{s(st.title)}</Alert.Title>
+          <Alert.Description>{s(st.children)}</Alert.Description>
         </Alert>
       </Box>
     ),
     code: (st) =>
-      `<Alert color="${s(st.color)}"${AE("variant", s(st.variant), "soft")} title="${s(st.title)}">${s(st.children)}</Alert>`,
+      `<Alert color="${s(st.color)}"${AE("variant", s(st.variant), "soft")}>\n  <Alert.Title>${s(st.title)}</Alert.Title>\n  <Alert.Description>${s(st.children)}</Alert.Description>\n</Alert>`,
   },
 
   {
@@ -683,16 +686,15 @@ export const COMPONENTS: CompSpec[] = [
     ],
     render: (st) => (
       <Box style={{ width: "28rem", maxWidth: "100%" }}>
-        <PageHeader
-          location={<Breadcrumb><Breadcrumb.Item>Components</Breadcrumb.Item><Breadcrumb.Item current>{s(st.title)}</Breadcrumb.Item></Breadcrumb>}
-          title={s(st.title)}
-          description={s(st.description) || undefined}
-          actions={<Button>새 이슈</Button>}
-        />
+        <PageHeader>
+          <PageHeader.Location><Breadcrumb><Breadcrumb.Item>Components</Breadcrumb.Item><Breadcrumb.Item current>{s(st.title)}</Breadcrumb.Item></Breadcrumb></PageHeader.Location>
+          <PageHeader.Content><PageHeader.Title>{s(st.title)}</PageHeader.Title>{s(st.description) ? <PageHeader.Description>{s(st.description)}</PageHeader.Description> : null}</PageHeader.Content>
+          <PageHeader.Actions><Button>새 이슈</Button></PageHeader.Actions>
+        </PageHeader>
       </Box>
     ),
     code: (st) =>
-      `<PageHeader\n  location={<Breadcrumb><Breadcrumb.Item>Components</Breadcrumb.Item><Breadcrumb.Item current>${s(st.title)}</Breadcrumb.Item></Breadcrumb>}\n  title="${s(st.title)}"${A("description", s(st.description))}\n  actions={<Button>새 이슈</Button>}\n/>`,
+      `<PageHeader>\n  <PageHeader.Location><Breadcrumb>…</Breadcrumb></PageHeader.Location>\n  <PageHeader.Content>\n    <PageHeader.Title>${s(st.title)}</PageHeader.Title>${s(st.description) ? `\n    <PageHeader.Description>${s(st.description)}</PageHeader.Description>` : ""}\n  </PageHeader.Content>\n  <PageHeader.Actions><Button>새 이슈</Button></PageHeader.Actions>\n</PageHeader>`,
   },
   {
     slug: "sidebar",
@@ -726,11 +728,11 @@ export const COMPONENTS: CompSpec[] = [
     ],
     render: (st) => (
       <Box surface="raised" border radius="md" style={{ width: "28rem", maxWidth: "100%" }}>
-        <EmptyState title={s(st.title)} description={s(st.description) || undefined} action={<Button size="sm">필터 초기화</Button>} />
+        <EmptyState><EmptyState.Title>{s(st.title)}</EmptyState.Title>{s(st.description) ? <EmptyState.Description>{s(st.description)}</EmptyState.Description> : null}<EmptyState.Action><Button size="sm">필터 초기화</Button></EmptyState.Action></EmptyState>
       </Box>
     ),
     code: (st) =>
-      `<EmptyState title="${s(st.title)}"${A("description", s(st.description))}\n  action={<Button size="sm">필터 초기화</Button>}\n/>`,
+      `<EmptyState>\n  <EmptyState.Title>${s(st.title)}</EmptyState.Title>${s(st.description) ? `\n  <EmptyState.Description>${s(st.description)}</EmptyState.Description>` : ""}\n  <EmptyState.Action><Button size="sm">필터 초기화</Button></EmptyState.Action>\n</EmptyState>`,
   },
   {
     slug: "pagination",
@@ -797,6 +799,7 @@ export const COMPONENTS: CompSpec[] = [
   },
   {
     slug: "banner",
+    change: "mod",
     name: "Banner",
     group: "Components",
     blurb: "얇은 풀폭 상단 바. 화면을 채우는 색은 검정(solid)뿐 — status 색은 그 색의 의미를 짊어질 때(공지·경고)만. 좌 콘텐츠 + 우 액션.",
@@ -809,17 +812,14 @@ export const COMPONENTS: CompSpec[] = [
         {/* 글자색을 덮지 않는다. 채운 면 위 글자는 Banner 가 tone 마다 wash 로 정하고
             자식이 그걸 상속한다 — 여기서 색을 박으면 tone 토글이 그 계약을 못 보여준다.
             (Text 를 쓰면 variant 클래스가 자기 ink 를 들고 와 같은 문제가 난다.) */}
-        <Banner
-          tone={s(st.tone) as "solid" | StatusName}
-          action={<span style={{ fontWeight: tokens.text.weight.medium }}>← 사이트로</span>}
-        >
-          <span style={{ fontWeight: tokens.text.weight.semibold }}>Paper UI</span>
-          <span>{s(st.children)}</span>
+        <Banner tone={s(st.tone) as "solid" | StatusName}>
+          <Banner.Content><span style={{ fontWeight: tokens.text.weight.semibold }}>Paper UI</span><span>{s(st.children)}</span></Banner.Content>
+          <Banner.Action><span style={{ fontWeight: tokens.text.weight.medium }}>← 사이트로</span></Banner.Action>
         </Banner>
       </Box>
     ),
     code: (st) =>
-      `<Banner${AE("tone", s(st.tone), "solid")} action={<span>← 사이트로</span>}>\n  Paper UI · ${s(st.children)}\n</Banner>`,
+      `<Banner${AE("tone", s(st.tone), "solid")}>\n  <Banner.Content>Paper UI · ${s(st.children)}</Banner.Content>\n  <Banner.Action><span>← 사이트로</span></Banner.Action>\n</Banner>`,
   },
   {
     slug: "dropdownmenu",

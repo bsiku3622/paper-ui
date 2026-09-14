@@ -4,6 +4,12 @@ import { tokens } from "../tokens";
 
 export const tooltipWrap = style({ position: "relative", display: "inline-flex" });
 
+export const tooltipTrigger = style({
+  all: "unset",
+  display: "inline-flex",
+  cursor: "help",
+});
+
 export const tooltipBubble = style({
   position: "absolute",
   left: "50%",

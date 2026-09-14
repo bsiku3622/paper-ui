@@ -396,20 +396,20 @@ export const Playground = () => {
           <Spec label="Card — shared variant (solid · soft · plain · outline · hairline · quiet)" testid="spec-card-variant">
             {(["solid", "soft", "plain", "outline", "hairline", "quiet"] as const).map((variant) => (
               <Card key={variant} variant={variant} style={{ width: "14rem" }} data-testid={`card-${variant}`}>
-                <Stack gap="xs">
+                <Card.Body><Stack gap="xs">
                   <Text variant="subheading">{variant}</Text>
                   <Text variant="caption">같은 내용, 다른 구조.</Text>
-                </Stack>
+                </Stack></Card.Body>
               </Card>
             ))}
           </Spec>
           <Spec label="Card — semantic color도 같은 shared 축" testid="spec-card-color">
             {(["info", "success", "warning", "error"] as const).map((color) => (
               <Card key={color} color={color} variant="soft" style={{ width: "14rem" }} data-testid={`card-${color}-soft`}>
-                <Stack gap="xs">
+                <Card.Body><Stack gap="xs">
                   <Text variant="subheading">{color}</Text>
                   <Text variant="caption">상태를 담는 같은 Card.</Text>
-                </Stack>
+                </Stack></Card.Body>
               </Card>
             ))}
           </Spec>
@@ -436,8 +436,10 @@ export const Playground = () => {
           </Spec>
           <Spec label="FormField — Select·Textarea도 Label·설명 연결을 같은 리듬으로">
             <Box style={{ width: "16rem" }}>
-              <FormField label="우선순위" hint="저장 후에도 변경할 수 있습니다.">
-                <Select options={[{ value: "", label: "선택하세요" }, { value: "high", label: "높음" }, { value: "normal", label: "보통" }]} />
+              <FormField>
+                <FormField.Label>우선순위</FormField.Label>
+                <FormField.Control><Select options={[{ value: "", label: "선택하세요" }, { value: "high", label: "높음" }, { value: "normal", label: "보통" }]} /></FormField.Control>
+                <FormField.Hint>저장 후에도 변경할 수 있습니다.</FormField.Hint>
               </FormField>
             </Box>
           </Spec>
@@ -446,9 +448,10 @@ export const Playground = () => {
               <SearchField placeholder="이슈 검색" defaultValue="focus" />
             </Box>
           </Spec>
-          <Spec label="Tooltip — text 대신 임의의 조합을 content로">
-            <Tooltip content={<Stack gap="xs"><Text variant="label">단축키</Text><Text variant="caption" ink="soft">새 이슈 · C</Text></Stack>}>
-              <Button variant="outline" data-testid="tooltip-trigger">hover 해보세요</Button>
+          <Spec label="Tooltip — trigger와 content가 드러나는 구조">
+            <Tooltip>
+              <Tooltip.Trigger asChild><Button variant="outline" data-testid="tooltip-trigger">hover 해보세요</Button></Tooltip.Trigger>
+              <Tooltip.Content><Stack gap="xs"><Text variant="label" ink="inherit">단축키</Text><Text variant="caption" ink="inherit">새 이슈 · C</Text></Stack></Tooltip.Content>
             </Tooltip>
           </Spec>
           <Spec label="Breadcrumb · Sidebar — location과 local navigation">
@@ -504,8 +507,9 @@ export const Playground = () => {
             <Inline gap="md" wrap align="start">
               {(["soft", "solid", "plain", "outline", "hairline", "quiet"] as const).map((v) => (
                 <Box key={v} style={{ width: "15rem" }} data-testid={`alert-${v}`}>
-                  <Alert color="error" variant={v} title="확인이 필요합니다">
-                    이 작업은 되돌릴 수 없습니다.
+                  <Alert color="error" variant={v}>
+                    <Alert.Title>확인이 필요합니다</Alert.Title>
+                    <Alert.Description>이 작업은 되돌릴 수 없습니다.</Alert.Description>
                   </Alert>
                 </Box>
               ))}
@@ -515,7 +519,7 @@ export const Playground = () => {
             <Inline gap="md" wrap align="start">
               {(["primary", "info", "success", "warning", "error"] as const).map((c) => (
                 <Box key={c} style={{ width: "11rem" }}>
-                  <Alert color={c} title={c} />
+                  <Alert color={c}><Alert.Title>{c}</Alert.Title></Alert>
                 </Box>
               ))}
             </Inline>
@@ -557,21 +561,20 @@ export const Playground = () => {
         <Section id="sec-comp" title="PageHeader · EmptyState · Pagination · Table · Modal">
           <Spec label="PageHeader — 페이지 제목과 행동의 시작선">
             <Box style={{ width: "28rem" }}>
-              <PageHeader
-                location={<Breadcrumb><Breadcrumb.Item>Components</Breadcrumb.Item><Breadcrumb.Item current>Checkbox</Breadcrumb.Item></Breadcrumb>}
-                title="이슈"
-                description="12건이 현재 필터와 일치합니다."
-                actions={<Button size="sm">새 이슈</Button>}
-              />
+              <PageHeader>
+                <PageHeader.Location><Breadcrumb><Breadcrumb.Item>Components</Breadcrumb.Item><Breadcrumb.Item current>Checkbox</Breadcrumb.Item></Breadcrumb></PageHeader.Location>
+                <PageHeader.Content><PageHeader.Title>이슈</PageHeader.Title><PageHeader.Description>12건이 현재 필터와 일치합니다.</PageHeader.Description></PageHeader.Content>
+                <PageHeader.Actions><Button size="sm">새 이슈</Button></PageHeader.Actions>
+              </PageHeader>
             </Box>
           </Spec>
           <Spec label="EmptyState — 빈 결과에서 다음 행동 하나를 남긴다">
             <Box surface="raised" border radius="md" style={{ width: "28rem" }}>
-              <EmptyState
-                title="일치하는 이슈가 없습니다"
-                description="필터를 바꾸거나 새 이슈를 만들어 시작하세요."
-                action={<Button size="sm">필터 초기화</Button>}
-              />
+              <EmptyState>
+                <EmptyState.Title>일치하는 이슈가 없습니다</EmptyState.Title>
+                <EmptyState.Description>필터를 바꾸거나 새 이슈를 만들어 시작하세요.</EmptyState.Description>
+                <EmptyState.Action><Button size="sm">필터 초기화</Button></EmptyState.Action>
+              </EmptyState>
             </Box>
           </Spec>
           <Spec label="Pagination — outlined · soft · minimal">
