@@ -1,4 +1,4 @@
-import { style } from "@vanilla-extract/css";
+import { globalStyle, style } from "@vanilla-extract/css";
 
 import { tokens, stateTransition } from "../tokens";
 
@@ -23,3 +23,4 @@ export const breadcrumbLink = style({
 
 export const breadcrumbCurrent = style({ color: tokens.color.ink.soft });
 export const breadcrumbSeparator = style({ color: tokens.color.ink.faint, userSelect: "none" });
+globalStyle(`${breadcrumbItem}:last-child ${breadcrumbSeparator}`, { display: "none" });

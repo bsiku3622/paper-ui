@@ -67,10 +67,11 @@ export const SiteNav = () => {
   return (
     <Navbar
       width="content"
-      brand={<Brand />}
       active={active}
-      items={SITE_NAV.map((n) => ({ value: n.to, label: n.label, as: Link, to: n.to }))}
-      trailing={
+    >
+      <Navbar.Brand><Brand /></Navbar.Brand>
+      {SITE_NAV.map((n) => <Navbar.Item key={n.to} value={n.to} as={Link} to={n.to}>{n.label}</Navbar.Item>)}
+      <Navbar.Actions>
         <Inline gap="sm" align="center">
           <ThemeToggle />
           <Box
@@ -85,8 +86,8 @@ export const SiteNav = () => {
             </Text>
           </Box>
         </Inline>
-      }
-    />
+      </Navbar.Actions>
+    </Navbar>
   );
 };
 
@@ -111,5 +112,5 @@ export const DemoBar = () => (
   </Banner>
 );
 
-// Navbar 를 직접 쓰고 싶은 페이지용 (data API). 위 SiteNav 가 기본.
+// Navbar 를 직접 쓰고 싶은 페이지용. 위 SiteNav 가 기본.
 export { Navbar };

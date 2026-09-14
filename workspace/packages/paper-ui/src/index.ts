@@ -50,33 +50,34 @@ export type {
 } from "./atoms";
 
 // Molecules (12)
-export { Card, TextField, Tabs, Tooltip, RadioGroup, Alert, FormField, SearchField, Breadcrumb, Menu, Steps, TableOfContents } from "./molecules";
+export { Card, TextField, Tabs, TabItem, Tooltip, RadioGroup, RadioGroupItem, Alert, FormField, SearchField, Breadcrumb, BreadcrumbItem, Menu, MenuItem, Steps, StepItem, TableOfContents, TableOfContentsItem } from "./molecules";
 export type {
   CardProps,
   TextFieldProps,
   TabsProps,
-  TabItem,
+  TabItemProps,
   TabsVariant,
   TooltipProps,
   RadioGroupProps,
-  RadioOption,
+  RadioGroupItemProps,
   RadioGroupOrientation,
   AlertProps,
   FormFieldProps,
   SearchFieldProps,
   BreadcrumbProps,
-  BreadcrumbItem,
+  BreadcrumbItemProps,
   MenuProps,
-  MenuItem,
+  MenuItemProps,
   StepsProps,
-  StepItem,
+  StepItemProps,
   TableOfContentsProps,
-  TableOfContentsItem,
+  TableOfContentsItemProps,
 } from "./molecules";
 
 // Components (11)
 export {
   Table,
+  DataTable,
   TableRoot,
   TableCaption,
   TableHeader,
@@ -92,6 +93,9 @@ export {
   ModalFooter,
   ModalClose,
   Navbar,
+  NavbarBrand,
+  NavbarItem,
+  NavbarActions,
   Banner,
   PageHeader,
   EmptyState,
@@ -101,11 +105,18 @@ export {
   SidebarItem,
   SidebarBadge,
   DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
   CommandMenu,
+  CommandMenuGroup,
+  CommandMenuItem,
+  CommandMenuEmpty,
   TreeNavigation,
+  TreeNavigationItem,
 } from "./components";
 export type {
   TableProps,
+  DataTableProps,
   Column,
   TableVariant,
   TableDensity,
@@ -122,7 +133,9 @@ export type {
   ModalHeaderProps,
   ModalCloseProps,
   NavbarProps,
-  NavItem,
+  NavbarBrandProps,
+  NavbarItemProps,
+  NavbarActionsProps,
   BannerProps,
   PageHeaderProps,
   EmptyStateProps,
@@ -133,10 +146,14 @@ export type {
   SidebarItemProps,
   SidebarBadgeProps,
   DropdownMenuProps,
+  DropdownMenuTriggerProps,
+  DropdownMenuContentProps,
   CommandMenuProps,
-  CommandItem,
+  CommandMenuGroupProps,
+  CommandMenuItemProps,
+  CommandMenuEmptyProps,
   TreeNavigationProps,
-  TreeNavigationItem,
+  TreeNavigationItemProps,
 } from "./components";
 
 // Provider

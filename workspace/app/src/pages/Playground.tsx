@@ -48,7 +48,6 @@ import {
   TextField,
   Tooltip,
   TreeNavigation,
-  type Column,
 } from "@studio-baeks/paper-ui";
 
 import { PlaygroundLayout } from "../playground/shell";
@@ -94,16 +93,17 @@ export const Playground = () => {
   const [tocActive, setTocActive] = useState("props");
   const [treeActive, setTreeActive] = useState("button");
 
-  const columns: Column<{ id: string; k: string; s: "info" | "success" | "error"; n: number }>[] = [
-    { key: "k", header: "키", render: (r) => <Text variant="body" as="span">{r.k}</Text> },
-    { key: "s", header: "상태", render: (r) => <Badge color={r.s}>{r.s}</Badge> },
-    { key: "n", header: "값", numeric: true, render: (r) => <Text variant="body" as="span">{r.n.toLocaleString()}</Text> },
-  ];
   const rows = [
     { id: "1", k: "PG-1", s: "info" as const, n: 1240 },
     { id: "2", k: "PG-2", s: "success" as const, n: 88 },
     { id: "3", k: "PG-3", s: "error" as const, n: 5 },
   ];
+  const renderTable = (variant: "plain" | "ruled" | "striped", density: "compact" | "default" | "comfortable", limit = 3) => (
+    <Table variant={variant} density={density}>
+      <Table.Header><Table.Column>키</Table.Column><Table.Column>상태</Table.Column><Table.Column numeric>값</Table.Column></Table.Header>
+      <Table.Body>{rows.slice(0, limit).map((row) => <Table.Row key={row.id}><Table.Cell>{row.k}</Table.Cell><Table.Cell><Badge color={row.s}>{row.s}</Badge></Table.Cell><Table.Cell numeric>{row.n.toLocaleString()}</Table.Cell></Table.Row>)}</Table.Body>
+    </Table>
+  );
 
   return (
     <PlaygroundLayout active="all">
@@ -416,25 +416,13 @@ export const Playground = () => {
           <Spec label="Tabs — segmented shape + underline variant" testid="spec-tabs-shape">
             <Inline gap="lg" wrap align="center">
               <Box data-testid="tabs-shape-default">
-                <Tabs value={tab} onChange={setTab} items={[
-                  { value: "one", label: "하나" },
-                  { value: "two", label: "둘" },
-                  { value: "three", label: "셋" },
-                ]} />
+                <Tabs value={tab} onChange={setTab}><Tabs.Item value="one">하나</Tabs.Item><Tabs.Item value="two">둘</Tabs.Item><Tabs.Item value="three">셋</Tabs.Item></Tabs>
               </Box>
               <Box data-testid="tabs-shape-pill">
-                <Tabs value={tab} onChange={setTab} shape="pill" items={[
-                  { value: "one", label: "하나" },
-                  { value: "two", label: "둘" },
-                  { value: "three", label: "셋" },
-                ]} />
+                <Tabs value={tab} onChange={setTab} shape="pill"><Tabs.Item value="one">하나</Tabs.Item><Tabs.Item value="two">둘</Tabs.Item><Tabs.Item value="three">셋</Tabs.Item></Tabs>
               </Box>
               <Box data-testid="tabs-variant-underline">
-                <Tabs value={tab} onChange={setTab} variant="underline" items={[
-                  { value: "one", label: "하나" },
-                  { value: "two", label: "둘" },
-                  { value: "three", label: "셋" },
-                ]} />
+                <Tabs value={tab} onChange={setTab} variant="underline"><Tabs.Item value="one">하나</Tabs.Item><Tabs.Item value="two">둘</Tabs.Item><Tabs.Item value="three">셋</Tabs.Item></Tabs>
               </Box>
             </Inline>
           </Spec>
@@ -444,8 +432,7 @@ export const Playground = () => {
               onChange={setRadio}
               orientation="horizontal"
               aria-label="보기 방식"
-              options={[{ value: "one", label: "목록" }, { value: "two", label: "보드" }, { value: "three", label: "달력" }]}
-            />
+            ><RadioGroup.Item value="one">목록</RadioGroup.Item><RadioGroup.Item value="two">보드</RadioGroup.Item><RadioGroup.Item value="three">달력</RadioGroup.Item></RadioGroup>
           </Spec>
           <Spec label="FormField — Select·Textarea도 Label·설명 연결을 같은 리듬으로">
             <Box style={{ width: "16rem" }}>
@@ -465,7 +452,7 @@ export const Playground = () => {
             </Tooltip>
           </Spec>
           <Spec label="Breadcrumb · Sidebar — location과 local navigation">
-            <Breadcrumb items={[{ value: "atoms", label: "Atoms" }, { value: "component", label: "Component" }, { value: "checkbox", label: "Checkbox" }]} />
+            <Breadcrumb><Breadcrumb.Item>Atoms</Breadcrumb.Item><Breadcrumb.Item>Component</Breadcrumb.Item><Breadcrumb.Item current>Checkbox</Breadcrumb.Item></Breadcrumb>
             <Box style={{ width: "14rem" }}>
               <Sidebar active="components">
                 <Sidebar.Group label="문서">
@@ -481,56 +468,30 @@ export const Playground = () => {
         <Section id="sec-navigation" title="Menu · Steps · TableOfContents · DropdownMenu · CommandMenu · TreeNavigation">
           <Spec label="Menu — 한 열의 action과 현재 위치">
             <Box style={{ width: "18rem" }}>
-              <Menu active={menuActive} onSelect={setMenuActive} items={[
-                { value: "overview", label: "개요", description: "시스템의 기본 원칙" },
-                { value: "tokens", label: "토큰", shortcut: "⌘ T" },
-                { value: "archive", label: "보관하기", danger: true },
-              ]} />
+              <Menu active={menuActive} onSelect={setMenuActive}><Menu.Item value="overview" description="시스템의 기본 원칙">개요</Menu.Item><Menu.Item value="tokens" shortcut="⌘ T">토큰</Menu.Item><Menu.Item value="archive" danger>보관하기</Menu.Item></Menu>
             </Box>
           </Spec>
           <Spec label="Steps — 실제 순서를 번호와 연결선으로">
             <Box style={{ width: "32rem", maxWidth: "100%" }}>
-              <Steps current={step} onChange={setStep} items={[
-                { value: "draft", label: "초안", description: "내용 작성" },
-                { value: "review", label: "검토", description: "구조 확인" },
-                { value: "publish", label: "배포", description: "문서 공개" },
-              ]} />
+              <Steps current={step} onChange={setStep}><Steps.Item value="draft" description="내용 작성">초안</Steps.Item><Steps.Item value="review" description="구조 확인">검토</Steps.Item><Steps.Item value="publish" description="문서 공개">배포</Steps.Item></Steps>
             </Box>
           </Spec>
           <Spec label="TableOfContents — 문서 내부의 현재 위치">
             <Box style={{ width: "16rem" }}>
-              <TableOfContents active={tocActive} onSelect={setTocActive} items={[
-                { value: "overview", label: "개요" },
-                { value: "props", label: "Props", depth: 1 },
-                { value: "examples", label: "예제", depth: 1 },
-              ]} />
+              <TableOfContents active={tocActive} onSelect={setTocActive}><TableOfContents.Item value="overview">개요</TableOfContents.Item><TableOfContents.Item value="props" depth={1}>Props</TableOfContents.Item><TableOfContents.Item value="examples" depth={1}>예제</TableOfContents.Item></TableOfContents>
             </Box>
           </Spec>
           <Spec label="DropdownMenu — 떠 있는 action surface만 overlay shadow">
-            <DropdownMenu
-              trigger={<Button variant="outline">문서 작업</Button>}
-              items={[
-                { value: "duplicate", label: "복제", shortcut: "⌘ D" },
-                { value: "move", label: "이동" },
-                { value: "delete", label: "삭제", danger: true },
-              ]}
-            />
+            <DropdownMenu><DropdownMenu.Trigger><Button variant="outline">문서 작업</Button></DropdownMenu.Trigger><DropdownMenu.Content><DropdownMenu.Item value="duplicate" shortcut="⌘ D">복제</DropdownMenu.Item><DropdownMenu.Item value="move">이동</DropdownMenu.Item><DropdownMenu.Item value="delete" danger>삭제</DropdownMenu.Item></DropdownMenu.Content></DropdownMenu>
           </Spec>
           <Spec label="CommandMenu — 검색과 키보드 선택을 한 listbox로">
             <Box style={{ width: "28rem", maxWidth: "100%" }}>
-              <CommandMenu commands={[
-                { value: "button", label: "Button", description: "Atoms", group: "컴포넌트", shortcut: "B" },
-                { value: "sidebar", label: "Sidebar", description: "Components", group: "컴포넌트", shortcut: "S" },
-                { value: "colors", label: "Color tokens", description: "Foundations", group: "문서", keywords: ["palette"] },
-              ]} />
+              <CommandMenu><CommandMenu.Group label="컴포넌트"><CommandMenu.Item value="button" description="Atoms" shortcut="B">Button</CommandMenu.Item><CommandMenu.Item value="sidebar" description="Components" shortcut="S">Sidebar</CommandMenu.Item></CommandMenu.Group><CommandMenu.Group label="문서"><CommandMenu.Item value="colors" description="Foundations" keywords={["palette"]}>Color tokens</CommandMenu.Item></CommandMenu.Group></CommandMenu>
             </Box>
           </Spec>
           <Spec label="TreeNavigation — 접고 펴는 계층 탐색">
             <Box style={{ width: "18rem" }}>
-              <TreeNavigation active={treeActive} onSelect={setTreeActive} defaultExpanded={["components", "atoms"]} items={[
-                { value: "foundations", label: "Foundations", children: [{ value: "colors", label: "Color" }, { value: "shape", label: "Shape" }] },
-                { value: "components", label: "Components", children: [{ value: "atoms", label: "Atoms", children: [{ value: "button", label: "Button" }, { value: "badge", label: "Badge" }] }, { value: "molecules", label: "Molecules" }] },
-              ]} />
+              <TreeNavigation active={treeActive} onSelect={setTreeActive} defaultExpanded={["components", "atoms"]}><TreeNavigation.Item value="foundations" label="Foundations"><TreeNavigation.Item value="colors" label="Color" /><TreeNavigation.Item value="shape" label="Shape" /></TreeNavigation.Item><TreeNavigation.Item value="components" label="Components"><TreeNavigation.Item value="atoms" label="Atoms"><TreeNavigation.Item value="button" label="Button" /><TreeNavigation.Item value="badge" label="Badge" /></TreeNavigation.Item><TreeNavigation.Item value="molecules" label="Molecules" /></TreeNavigation.Item></TreeNavigation>
             </Box>
           </Spec>
         </Section>
@@ -597,7 +558,7 @@ export const Playground = () => {
           <Spec label="PageHeader — 페이지 제목과 행동의 시작선">
             <Box style={{ width: "28rem" }}>
               <PageHeader
-                location={<Breadcrumb items={[{ value: "components", label: "Components" }, { value: "checkbox", label: "Checkbox" }]} />}
+                location={<Breadcrumb><Breadcrumb.Item>Components</Breadcrumb.Item><Breadcrumb.Item current>Checkbox</Breadcrumb.Item></Breadcrumb>}
                 title="이슈"
                 description="12건이 현재 필터와 일치합니다."
                 actions={<Button size="sm">새 이슈</Button>}
@@ -621,20 +582,20 @@ export const Playground = () => {
           <Spec label="Table — 행을 구분하는 방식" testid="spec-table-variant">
             {(["plain", "ruled", "striped"] as const).map((variant) => (
               <Box key={variant} surface="raised" border radius="md" style={{ overflow: "hidden", width: "15rem" }} data-testid={`table-${variant}`}>
-                <Table variant={variant} columns={columns} rows={rows} rowKey={(r) => r.id} caption={variant} />
+                {renderTable(variant, "default")}
               </Box>
             ))}
           </Spec>
           <Spec label="Table — 같은 14px 글자, 다른 정보 밀도" testid="spec-table-density">
             {(["compact", "default", "comfortable"] as const).map((density) => (
               <Box key={density} surface="raised" border radius="md" style={{ overflow: "hidden", width: "15rem" }} data-testid={`table-density-${density}`}>
-                <Table density={density} columns={columns} rows={rows.slice(0, 2)} rowKey={(r) => r.id} caption={density} />
+                {renderTable("plain", density, 2)}
               </Box>
             ))}
           </Spec>
           <Spec label="Table anatomy — Column별 align과 조합 가능한 semantic parts">
             <Box style={{ width: "30rem", maxWidth: "100%" }}>
-              <Table.Root variant="plain">
+              <Table variant="plain">
                 <Table.Header>
                   <Table.Column>키</Table.Column>
                   <Table.Column>이슈</Table.Column>
@@ -655,7 +616,7 @@ export const Playground = () => {
                     <Table.Cell align="end"><Badge color="error">막힘</Badge></Table.Cell>
                   </Table.Row>
                 </Table.Body>
-              </Table.Root>
+              </Table>
             </Box>
           </Spec>
           {/* 긴 본문 모달이 따로 있는 이유 — backdrop 이 fixed 라 패널이 뷰포트보다 커지면

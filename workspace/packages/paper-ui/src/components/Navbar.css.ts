@@ -61,3 +61,6 @@ export const navItemActive = style({
   color: tokens.color.ink.base,
   fontWeight: tokens.text.weight.medium,
 });
+
+export const navbarBrand = style({ marginRight: tokens.shape.gap.lg, display: "inline-flex", alignItems: "center" });
+export const navbarActions = style({ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: tokens.shape.gap.sm });

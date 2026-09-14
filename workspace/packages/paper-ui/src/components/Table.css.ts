@@ -73,6 +73,7 @@ export const tableHeadDensity = styleVariants({
 
 export const tableTd = style({
   fontSize: tokens.text.size.body,
+  whiteSpace: "nowrap",
 });
 
 export const tableCellDensity = styleVariants({

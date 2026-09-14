@@ -19,7 +19,6 @@ import {
   Tabs,
   Text,
   tokens,
-  type Column,
   type StatusName,
 } from "@studio-baeks/paper-ui";
 
@@ -36,13 +35,6 @@ const ISSUES: Issue[] = [
   { id: "4", key: "STU-135", title: "Badge wash 대비 AA 재검증", who: "지현", status: "warning", label: "검토" },
   { id: "5", key: "STU-131", title: "Modal 진입 애니메이션 곡선 조정", who: "민주", status: "success", label: "완료" },
   { id: "6", key: "STU-128", title: "eslint 규칙 4 — Box as 예외 문서화", who: "지현", status: "info", label: "진행" },
-];
-
-const columns: Column<Issue>[] = [
-  { key: "key", header: "키", render: (r) => <Text variant="caption" family="mono" as="span" ink="soft">{r.key}</Text> },
-  { key: "title", header: "이슈", render: (r) => <Text variant="body" as="span">{r.title}</Text> },
-  { key: "who", header: "담당", render: (r) => <Text variant="caption" as="span" ink="soft">{r.who}</Text> },
-  { key: "status", header: "상태", render: (r) => <Badge color={r.status}>{r.label}</Badge> },
 ];
 
 const NAV = [
@@ -120,22 +112,13 @@ const AppMockup = () => {
             </Inline>
 
             <Inline align="center" justify="between" gap="sm">
-              <Tabs
-                shape="pill"
-                value={tab}
-                onChange={setTab}
-                items={[
-                  { value: "all", label: "전체" },
-                  { value: "open", label: "열림" },
-                  { value: "done", label: "완료" },
-                ]}
-              />
+              <Tabs shape="pill" value={tab} onChange={setTab}><Tabs.Item value="all">전체</Tabs.Item><Tabs.Item value="open">열림</Tabs.Item><Tabs.Item value="done">완료</Tabs.Item></Tabs>
               <Text variant="caption" as="span" ink="soft">6건 · 열림 4</Text>
             </Inline>
           </Stack>
 
           <Box style={{ padding: tokens.shape.padding.md.interaction }}>
-            <Table columns={columns} rows={ISSUES} rowKey={(r) => r.id} />
+            <Table><Table.Header><Table.Column>키</Table.Column><Table.Column>이슈</Table.Column><Table.Column>담당</Table.Column><Table.Column>상태</Table.Column></Table.Header><Table.Body>{ISSUES.map((issue) => <Table.Row key={issue.id}><Table.Cell><Text variant="caption" family="mono" as="span" ink="soft">{issue.key}</Text></Table.Cell><Table.Cell>{issue.title}</Table.Cell><Table.Cell><Text variant="caption" as="span" ink="soft">{issue.who}</Text></Table.Cell><Table.Cell><Badge color={issue.status}>{issue.label}</Badge></Table.Cell></Table.Row>)}</Table.Body></Table>
           </Box>
         </main>
       </div>
