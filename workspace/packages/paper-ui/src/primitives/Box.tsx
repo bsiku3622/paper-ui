@@ -1,23 +1,52 @@
 // Box — 면 하나. raw HTML 을 렌더하는 4 개 자리 중 하나.
 //
 // 이 시스템의 Box 는 "무엇이든 되는 div" 가 아니다. 종이 위의 *칸* 이다:
-// 면(surface 깊이) · 테두리(border) · 간격(space) · 모서리(radius) · 그림자(shadow) 만
-// 말할 수 있다. 색(잉크)은 여기 없다 — 큰 면을 색으로 채우지 않는 게 정체성이라, 색은
-// Button·Badge·Alert(color × variant)가, 잉크는 글자(Text)가 정한다. 검은 판은 inverse 로.
-// width/height/position 같은 건 없다 — 필요하면 className 으로 앱이 가져간다.
+// 면(surface 깊이) · 테두리(border) · 간격(space) · 모서리(radius) · 그림자(shadow)와
+// box model의 크기·잘림을 말할 수 있다. 색(잉크)은 여기 없다 — 큰 면을 색으로 채우지
+// 않는 게 정체성이라, 색은 Button·Badge·Alert(color × variant)가, 잉크는 Text가 정한다.
+// position·flex layout은 열지 않는다. 그건 Stack·Inline 또는 소비처 className의 책임이다.
 //
 // `as` 는 상위 레이어가 raw 태그에 닿는 유일한 통로다 — Molecule 이 <button> 을
 // 직접 못 쓰는 대신 <Box as="button"> 을 쓴다. 그래서 DOM prop 을 통과시킨다.
 
-import type { ComponentPropsWithoutRef, ElementType, ReactNode } from "react";
+import type { ComponentPropsWithoutRef, CSSProperties, ElementType, ReactNode } from "react";
 
 import { resolveBoxClass, type BoxLike } from "../resolvers";
 import { joinClass } from "../internal/joinClass";
 import { boxRadius, boxShadow, boxBorder } from "./Box.css";
 import { ResolvedThemeContext, useResolvedTheme } from "./theme-context";
+import { SHAPE_SIZES, tokens, type ShapeSize } from "../tokens";
+
+// named size는 layout token으로 해석한다. Primitive인 Box는 앱 고유 layout도 담아야 하므로
+// CSS 길이 escape hatch를 함께 둔다. `full`과 `fit`은 자주 쓰는 의도를 이름으로 남긴다.
+export type BoxDimension = ShapeSize | "full" | "fit" | "min-content" | "max-content" | number | (string & {});
+
+export type BoxLayoutProps = {
+  width?: BoxDimension;
+  minWidth?: BoxDimension;
+  maxWidth?: BoxDimension;
+  height?: BoxDimension;
+  minHeight?: BoxDimension;
+  maxHeight?: BoxDimension;
+  overflow?: CSSProperties["overflow"];
+  overflowX?: CSSProperties["overflowX"];
+  overflowY?: CSSProperties["overflowY"];
+};
+
+const resolveDimension = (value: BoxDimension | undefined, axis: "width" | "height") => {
+  if (value === undefined) return undefined;
+  if (value === "full") return "100%";
+  if (value === "fit") return "fit-content";
+  if ((SHAPE_SIZES as readonly string[]).includes(String(value))) {
+    return axis === "width"
+      ? tokens.shape.width[value as ShapeSize].layout
+      : tokens.shape.height[value as ShapeSize].layout;
+  }
+  return value;
+};
 
 // `as` 를 제네릭으로 묶어야 <Box as="button" type="submit"> 의 type 이 검사된다.
-type OwnProps<As extends ElementType> = BoxLike & {
+type OwnProps<As extends ElementType> = BoxLike & BoxLayoutProps & {
   as?: As;
   // 카드 헤어라인 — 켜면 border.base 로 얇은 선. 면 위에 얹는다.
   border?: boolean;
@@ -50,8 +79,18 @@ export const Box = <As extends ElementType = "div">({
   radius,
   shadow,
   inverse,
+  width,
+  minWidth,
+  maxWidth,
+  height,
+  minHeight,
+  maxHeight,
+  overflow,
+  overflowX,
+  overflowY,
   children,
   className,
+  style: styleOverride,
   ...rest
 }: BoxProps<As>) => {
   const Tag = (as ?? "div") as ElementType;
@@ -78,6 +117,18 @@ export const Box = <As extends ElementType = "div">({
         className,
       )}
       data-theme={scoped}
+      style={{
+        width: resolveDimension(width, "width"),
+        minWidth: resolveDimension(minWidth, "width"),
+        maxWidth: resolveDimension(maxWidth, "width"),
+        height: resolveDimension(height, "height"),
+        minHeight: resolveDimension(minHeight, "height"),
+        maxHeight: resolveDimension(maxHeight, "height"),
+        overflow,
+        overflowX,
+        overflowY,
+        ...styleOverride,
+      }}
       {...dom}
     >
       {children}

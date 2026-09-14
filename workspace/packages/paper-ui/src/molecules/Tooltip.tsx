@@ -12,7 +12,7 @@ import {
   type ReactNode,
 } from "react";
 
-import { Box } from "../primitives";
+import { Box, type BoxProps } from "../primitives";
 import { tooltipWrap, tooltipBubble, tooltipPlacement, tooltipTrigger } from "./Tooltip.css";
 
 type TooltipContextValue = {
@@ -77,12 +77,12 @@ export const TooltipTrigger = ({ children, asChild = false }: TooltipTriggerProp
   );
 };
 
-export type TooltipContentProps = { children: ReactNode };
-export const TooltipContent = ({ children }: TooltipContentProps) => {
+export type TooltipContentProps = Omit<BoxProps<"div">, "as" | "children" | "id" | "role"> & { children: ReactNode };
+export const TooltipContent = ({ children, width = "max-content", maxWidth = "xl", className, ...rest }: TooltipContentProps) => {
   const { open, id, placement } = useTooltip();
   if (!open) return null;
   return (
-    <Box id={id} role="tooltip" className={`${tooltipBubble} ${tooltipPlacement[placement]}`}>
+    <Box {...rest} id={id} role="tooltip" width={width} maxWidth={maxWidth} className={[tooltipBubble, tooltipPlacement[placement], className].filter(Boolean).join(" ")}>
       {children}
     </Box>
   );

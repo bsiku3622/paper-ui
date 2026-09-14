@@ -297,7 +297,12 @@ test("modal · size는 담는 일의 폭 사다리를 따른다", async ({ page 
 // ── Tooltip — hover 시 나타난다 ────────────────────────────────────────────
 test("tooltip · hover 시 나타난다", async ({ page }) => {
   await page.getByTestId("tooltip-trigger").hover();
-  await expect(page.getByRole("tooltip")).toBeVisible();
+  const tooltip = page.getByRole("tooltip");
+  await expect(tooltip).toBeVisible();
+  await expect(tooltip).toHaveCSS("max-width", "360px");
+  const box = await tooltip.boundingBox();
+  expect(box!.width).toBeGreaterThan(150);
+  expect(box!.width).toBeGreaterThan(box!.height * 2);
 });
 
 // ── 컴포넌트 상세 — prop 토글이 preview 와 코드를 함께 움직인다 ──────────────

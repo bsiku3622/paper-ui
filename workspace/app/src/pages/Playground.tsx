@@ -441,7 +441,7 @@ export const Playground = () => {
           <Spec label="Tooltip — trigger와 content가 드러나는 구조">
             <Tooltip>
               <Tooltip.Trigger asChild><Button variant="outline" data-testid="tooltip-trigger">hover 해보세요</Button></Tooltip.Trigger>
-              <Tooltip.Content><Stack gap="xs"><Text variant="label" ink="inherit">단축키</Text><Text variant="caption" ink="inherit">새 이슈 · C</Text></Stack></Tooltip.Content>
+              <Tooltip.Content><Stack gap="xs"><Text variant="label" ink="inherit">새 이슈</Text><Text variant="caption" ink="inherit">단축키 C로도 열 수 있습니다.</Text></Stack></Tooltip.Content>
             </Tooltip>
           </Spec>
           <Spec label="Breadcrumb · Sidebar — location과 local navigation">

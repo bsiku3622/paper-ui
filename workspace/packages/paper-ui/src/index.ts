@@ -10,7 +10,7 @@ import "./styles/color.css";
 
 // Primitives (4) — raw HTML 을 렌더하는 유일한 레이어
 export { Box, Stack, Inline, Text } from "./primitives";
-export type { BoxProps, StackProps, InlineProps, TextProps } from "./primitives";
+export type { BoxProps, BoxDimension, BoxLayoutProps, StackProps, InlineProps, TextProps } from "./primitives";
 
 // 테마 엔진 — 부분 화면 반전(ThemeScope)과 테마 제어(useTheme). Box inverse 도 이 엔진.
 export { ThemeScope, useTheme, useResolvedTheme } from "./primitives";

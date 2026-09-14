@@ -8,7 +8,7 @@
 
 raw HTML을 렌더하는 유일한 레이어입니다.
 
-- **Box** — 면 하나. `surface`(면 깊이) · `border`(헤어라인) · `inverse`(검은 판) · 간격 · `radius` · `shadow`를 말할 수 있습니다 — 색·잉크는 없습니다(면은 색을 채우지 않는다). `as`로 어떤 태그든 되지만, 상위 레이어가 raw 태그에 닿는 유일한 통로이기도 합니다.
+- **Box** — 면 하나. `surface`(면 깊이) · `border`(헤어라인) · `inverse`(검은 판) · 간격 · `radius` · `shadow`와 box model의 크기·잘림을 말합니다. `width/minWidth/maxWidth`, `height/minHeight/maxHeight`, `overflow` 계열에서 `sm~xl`은 layout token, `full/fit/min-content/max-content`는 자주 쓰는 intent이고 앱 고유 CSS 길이도 escape hatch로 받습니다. position·flex·색은 각각 소비처 layout, Stack·Inline, Text의 책임으로 남깁니다. `as`는 상위 레이어가 raw 태그에 닿는 유일한 통로입니다.
 - **Stack** — 세로로 쌓습니다. `gap`.
 - **Inline** — 가로로 늘어놓습니다. `gap` · `justify` · `align` · `wrap`.
 - **Text** — 일곱 variant로 위계를 정합니다. `variant`가 크기·굵기·잉크(농도·의미색)를 한 번에 정하고, 서체는 별도의 `family` 축(sans·mono)으로 어느 variant에도 교차합니다. 제목 위계가 셋(title·heading·subheading = h1·h2·h3)입니다.
@@ -34,7 +34,7 @@ Primitive + Atom 합성입니다. raw HTML 없이 하위 레이어 조합만.
 - **RadioGroup** — `RadioGroup.Item`으로 Radio + Label을 한 그룹 안에 조합합니다. 질문지는 세로가 기본이고, 짧고 서로 대등한 선택지는 `orientation="horizontal"`로 한 줄에 둡니다. 좁은 화면에서는 wrap합니다.
 - **SegmentedControl** — 닫힌 track 안에서 필터·보기 방식처럼 값 하나를 고릅니다. `sm`이 기본이며 `shape="default | pill"`은 같은 geometry에서 곡선만 바꿉니다. `SegmentedControl.Item`은 single-select radio 관계와 방향키 이동을 공유합니다.
 - **Tabs** — 넓은 페이지의 실제 content panel을 underline trigger로 전환합니다. `md`가 기본이며 `Tabs.List/Trigger/Content`가 tab과 panel의 id·ARIA 관계, 방향키·Home/End 이동을 함께 소유합니다. Content는 trigger 아래의 기본 간격과 짧은 전환만 제공하고 surface는 강제하지 않아, 페이지·표·폼 등 실제 본문 구성을 그대로 담습니다. segmented 외형과 shape prop은 없습니다.
-- **Tooltip** — `Tooltip.Trigger/Content`로 기준 요소와 떠오르는 설명을 분리합니다. Content에는 제목·설명·단축키 같은 조합을 담을 수 있고, 위 공간이 없으면 자동으로 아래로 뒤집습니다.
+- **Tooltip** — `Tooltip.Trigger/Content`로 기준 요소와 떠오르는 설명을 분리합니다. Content는 짧은 내용이 세로로 찌그러지지 않도록 `width="max-content"`, `maxWidth="xl"`이 기본이고 Box의 layout props로 폭과 잘림을 조절합니다. 제목·설명·단축키 같은 조합을 담을 수 있으며, 위 공간이 없으면 자동으로 아래로 뒤집습니다.
 - **Alert** — `Alert.Icon/Title/Description`으로 내용을 조립하며 Button·Badge와 **같은 `color × variant` 매트릭스**를 그대로 뭅니다. Icon을 생략하면 기본 상태 아이콘을 사용합니다. `error`·`warning`은 `role="alert"`, 나머지는 `role="status"`이고 스크린리더용 상태 접두어를 함께 심습니다.
 - **Breadcrumb** — `Breadcrumb.Item` 순서가 현재 위치의 계층을 그대로 드러냅니다. 현재 항목은 `current`, 앞 항목은 `as`를 통해 router Link나 anchor로 바꿉니다.
 - **Menu** — action과 navigation을 한 열에 놓는 기본 목록입니다. 현재 위치·설명·단축키·위험·비활성 상태를 한 item 문법으로 다루고 방향키·Home·End로 이동합니다.

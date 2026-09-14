@@ -47,6 +47,7 @@ import {
   Tooltip,
   TreeNavigation,
   tokens,
+  type BoxDimension,
   type Surface,
   type Color,
   type Variant,
@@ -118,13 +119,16 @@ export const COMPONENTS: CompSpec[] = [
     slug: "box",
     name: "Box",
     group: "Primitives",
-    blurb: "구조 패널. surface(면 깊이)에 border(붙은 면의 헤어라인)·radius·shadow·padding 을 얹는다. 넷 다 안 주는 게 기본이라(none) 아무것도 안 준 Box 는 투명한 각진 칸이다. 색(잉크)은 여기 없다 — 큰 면은 색으로 안 채운다. 검은 판은 inverse. 간격 축은 padding 말고 paddingX·paddingY·gap 도 같은 사다리로 받는다. as 로 어떤 태그든.",
+    blurb: "구조 패널. surface·border·radius·shadow와 padding을 얹고, width·height·min/max·overflow로 box model을 정한다. sm~xl 크기는 layout token, 실제 CSS 길이는 화면 고유 layout의 escape hatch다. 색과 flex/position 책임은 열지 않는다.",
     controls: [
       { kind: "enum", prop: "surface", label: "surface", options: ["none", "raised", "canvas", "sunken", "well"], def: "raised" },
       { kind: "bool", prop: "border", label: "border", def: false },
       { kind: "bool", prop: "inverse", label: "inverse", def: false },
       { kind: "enum", prop: "shadow", label: "shadow", options: ["none", "overlay", "overlayMinimal"], def: "none" },
       { kind: "enum", prop: "radius", label: "radius", options: ["none", "sm", "md", "lg", "full"], def: "md" },
+      { kind: "enum", prop: "width", label: "width", options: ["fit", "xs", "sm", "md", "lg", "xl", "full"], def: "md" },
+      { kind: "enum", prop: "maxWidth", label: "maxWidth", options: ["none", "xs", "sm", "md", "lg", "xl", "full"], def: "none" },
+      { kind: "enum", prop: "overflow", label: "overflow", options: ["visible", "hidden", "auto"], def: "visible" },
     ],
     render: (st) => (
       <Box
@@ -134,12 +138,14 @@ export const COMPONENTS: CompSpec[] = [
         shadow={s(st.shadow) === "none" ? undefined : (s(st.shadow) as "overlay" | "overlayMinimal")}
         radius={s(st.radius) === "none" ? undefined : (s(st.radius) as "sm" | "md" | "lg" | "full")}
         padding={s(st.padding) === "none" ? undefined : (s(st.padding) as "sm" | "md" | "lg" | "xl")}
-        style={{ minWidth: "8rem" }}
+        width={s(st.width) as BoxDimension}
+        maxWidth={s(st.maxWidth) === "none" ? undefined : s(st.maxWidth) as BoxDimension}
+        overflow={s(st.overflow) as "visible" | "hidden" | "auto"}
       >
         <Text variant="caption" as="span">surface={s(st.surface)}</Text>
       </Box>
     ),
-    code: (st) => `<Box${st.surface === "none" ? "" : A("surface", s(st.surface))}${A("border", b(st.border))}${A("inverse", b(st.inverse))}${AE("shadow", s(st.shadow), "none")}${AE("radius", s(st.radius), "none")}${AE("padding", s(st.padding), "none")}>…</Box>`,
+    code: (st) => `<Box${st.surface === "none" ? "" : A("surface", s(st.surface))}${A("border", b(st.border))}${A("inverse", b(st.inverse))}${AE("shadow", s(st.shadow), "none")}${AE("radius", s(st.radius), "none")}${AE("padding", s(st.padding), "none")}${A("width", s(st.width))}${AE("maxWidth", s(st.maxWidth), "none")}${AE("overflow", s(st.overflow), "visible")}>…</Box>`,
   },
   {
     slug: "stack",
@@ -530,15 +536,18 @@ export const COMPONENTS: CompSpec[] = [
     change: "mod",
     name: "Tooltip",
     group: "Molecules",
-    blurb: "Trigger와 Content가 명시된 비상호작용 설명. 임의의 ReactNode를 담고 위 공간이 없으면 아래로 뒤집는다. 버튼·폼은 Popover의 책임이다.",
-    controls: [{ kind: "text", prop: "content", label: "content", def: "단축키 C로도 열 수 있습니다." }],
+    blurb: "Trigger와 Content가 명시된 비상호작용 설명. Content는 내용 너비로 펼쳐지고 기본 xl 상한에서만 줄바꿈한다. Box layout props로 폭을 조절하며, 위 공간이 없으면 아래로 뒤집는다. 버튼·폼은 Popover의 책임이다.",
+    controls: [
+      { kind: "text", prop: "content", label: "content", def: "단축키 C로도 열 수 있습니다." },
+      { kind: "enum", prop: "maxWidth", label: "maxWidth", options: ["sm", "md", "lg", "xl"], def: "xl" },
+    ],
     render: (st) => (
       <Tooltip>
         <Tooltip.Trigger asChild><Button variant="outline">hover 해보세요</Button></Tooltip.Trigger>
-        <Tooltip.Content><Stack gap="xs"><Text variant="label" ink="inherit">새 이슈</Text><Text variant="caption" ink="inherit">{s(st.content)}</Text></Stack></Tooltip.Content>
+        <Tooltip.Content maxWidth={s(st.maxWidth) as BoxDimension}><Stack gap="xs"><Text variant="label" ink="inherit">새 이슈</Text><Text variant="caption" ink="inherit">{s(st.content)}</Text></Stack></Tooltip.Content>
       </Tooltip>
     ),
-    code: (st) => `<Tooltip>\n  <Tooltip.Trigger asChild>\n    <Button variant="outline">hover</Button>\n  </Tooltip.Trigger>\n  <Tooltip.Content>\n    <Stack><Text>새 이슈</Text><Text>${s(st.content)}</Text></Stack>\n  </Tooltip.Content>\n</Tooltip>`,
+    code: (st) => `<Tooltip>\n  <Tooltip.Trigger asChild>\n    <Button variant="outline">hover</Button>\n  </Tooltip.Trigger>\n  <Tooltip.Content${AE("maxWidth", s(st.maxWidth), "xl")}>\n    <Stack><Text>새 이슈</Text><Text>${s(st.content)}</Text></Stack>\n  </Tooltip.Content>\n</Tooltip>`,
   },
   {
     slug: "breadcrumb",
