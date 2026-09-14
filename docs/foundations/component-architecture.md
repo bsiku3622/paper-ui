@@ -106,7 +106,7 @@ row               row               row
 | PageHeader | slots | location·제목·설명·actions의 관계가 본체라 외형 variant 없음 |
 | EmptyState | content slots | 빈 상태는 장식 강도를 고르는 자리가 아님 |
 | Pagination | local `variant`, page state | `outlined · soft · minimal`; Table density와 독립 |
-| Sidebar | `groups · active · badge` | local navigation과 release 표식을 data API로 소유. badge는 기본 `soft → selected quiet` |
+| Sidebar | `groups · active · badge` | local navigation과 release 표식을 data API로 소유. selected badge의 soft 면에도 같은 neutral overlay를 합성 |
 
 ## 금지 조합
 

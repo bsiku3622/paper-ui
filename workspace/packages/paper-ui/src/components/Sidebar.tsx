@@ -6,7 +6,7 @@ import { Badge } from "../atoms";
 import { Box, Text, type BoxProps } from "../primitives";
 import type { Color, Variant } from "../resolvers";
 import { joinClass } from "../internal/joinClass";
-import { sidebarGroup, sidebarGroupAfter, sidebarGroupLabel, sidebarItem, sidebarItemActive, sidebarItemLabel, sidebarRoot } from "./Sidebar.css";
+import { sidebarBadgeSelectedOverlay, sidebarGroup, sidebarGroupAfter, sidebarGroupLabel, sidebarItem, sidebarItemActive, sidebarItemLabel, sidebarRoot } from "./Sidebar.css";
 
 export type SidebarBadge = {
   label: ReactNode;
@@ -33,6 +33,21 @@ export type SidebarProps = Omit<BoxProps<"nav">, "as" | "children"> & {
   onSelect?: (value: string) => void;
 };
 
+const SidebarItemBadge = ({ badge, active }: { badge: SidebarBadge; active: boolean }) => {
+  const variant = active ? (badge.activeVariant ?? badge.variant ?? "soft") : (badge.variant ?? "soft");
+  return (
+    <Badge
+      color={badge.color ?? "primary"}
+      variant={variant}
+      size="sm"
+      shape="pill"
+      className={active && variant === "soft" ? sidebarBadgeSelectedOverlay : undefined}
+    >
+      {badge.label}
+    </Badge>
+  );
+};
+
 export const Sidebar = ({ groups, active, onSelect, className, ...rest }: SidebarProps) => (
   <Box as="nav" className={joinClass(sidebarRoot, className)} {...rest}>
     {groups.map((group, groupIndex) => (
@@ -55,16 +70,7 @@ export const Sidebar = ({ groups, active, onSelect, className, ...rest }: Sideba
             }}
           >
             <Box as="span" className={sidebarItemLabel}>{label}</Box>
-            {badge ? (
-              <Badge
-                color={badge.color ?? "primary"}
-                variant={value === active ? (badge.activeVariant ?? "quiet") : (badge.variant ?? "soft")}
-                size="sm"
-                shape="pill"
-              >
-                {badge.label}
-              </Badge>
-            ) : null}
+            {badge ? <SidebarItemBadge badge={badge} active={value === active} /> : null}
           </Box>
         ))}
       </Box>

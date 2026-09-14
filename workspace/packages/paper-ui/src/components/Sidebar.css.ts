@@ -51,3 +51,9 @@ export const sidebarItemActive = style({
 });
 
 export const sidebarItemLabel = style({ flex: 1, minWidth: 0 });
+
+// selected는 행과 badge를 같은 neutral overlay 아래에 둔다. soft pigment를 없애지 않고
+// 그 위에 행과 같은 selected tint를 합성하므로, 색의 뜻은 남되 별도 층처럼 뜨지 않는다.
+export const sidebarBadgeSelectedOverlay = style({
+  backgroundImage: `linear-gradient(${tokens.color.interaction.selected}, ${tokens.color.interaction.selected})`,
+});
