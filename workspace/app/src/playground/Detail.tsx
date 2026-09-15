@@ -43,7 +43,7 @@ const ControlRow = ({ control, value, onChange }: { control: Control; value: str
           value={value === undefined ? "" : String(value)}
           onChange={(e) => onChange(e.currentTarget.value)}
         >
-          {control.options.map((option) => <Select.Option key={option} value={option}>{option}</Select.Option>)}
+          {control.options.map((option) => <Select.Option key={option} value={option}>{control.labels?.[option] ?? option}</Select.Option>)}
         </Select>
       ) : (
         <Field

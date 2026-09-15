@@ -184,3 +184,9 @@ Playground 시각 검토에서 Table 세 variant와 세 density가 한 줄에서
 - 요약: shape 축의 모호한 `default` 이름을 `rounded`로 바꾸고, 컴포넌트별 기본 shape를 분리했습니다.
 
 `default`는 상태 기본값처럼 읽혀 실제 모양을 설명하지 못했습니다. 기존 곡선은 `rounded`, 알약형은 `pill`로 명명하고, SegmentedControl만 생략 시 `pill`을 기본으로 두었습니다. 나머지 한 줄 컨트롤은 기존 곡선을 유지하며 명시적인 override는 `shape="rounded"`로 표현합니다.
+## 2026-09-15 — Clarify Select defaults in Playground
+
+- 변경 파일: Playground registry·detail control
+- 요약: Select의 실제 기본값(`md · rounded`)을 `default(md)`, `default(rounded)`로 표시하고 명시값과 구분했습니다.
+
+기본 선택지는 별도 sentinel로 유지해 미지정 prop을 preview와 생성 코드에서 재현합니다. Select 컴포넌트 자체의 기본 계약은 변경하지 않았습니다.

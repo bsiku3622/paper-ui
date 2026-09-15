@@ -59,7 +59,7 @@ import {
 // ── 컨트롤 ───────────────────────────────────────────────────────────────────
 export type Control =
   | { kind: "bool"; prop: string; label: string; def: boolean }
-  | { kind: "enum"; prop: string; label: string; options: string[]; def: string }
+  | { kind: "enum"; prop: string; label: string; options: string[]; def: string; labels?: Record<string, string> }
   | { kind: "text"; prop: string; label: string; def: string };
 
 export type State = Record<string, string | boolean>;
@@ -280,8 +280,8 @@ export const COMPONENTS: CompSpec[] = [
           defaultValue={b(st.clearable) ? "지울 값" : undefined}
           align={s(st.align) as "start" | "center" | "end"}
           status={s(st.status) as "default" | StatusName}
-          size={s(st.size) as "sm" | "md" | "lg"}
-          shape={s(st.shape) as "rounded" | "pill"}
+          size={s(st.size) === "default" ? undefined : s(st.size) as "sm" | "md" | "lg"}
+          shape={s(st.shape) === "default" ? undefined : s(st.shape) as "rounded" | "pill"}
           disabled={b(st.disabled)}
           numeric={b(st.numeric)}
         />
@@ -336,15 +336,15 @@ export const COMPONENTS: CompSpec[] = [
     group: "Atoms",
     blurb: "native select anatomy를 Select.Option과 Select.Group으로 드러낸다. Button·Field와 같은 사다리를 쓰고, option 안에는 native 계약에 맞게 텍스트만 둔다.",
     controls: [
-      { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
-      { kind: "enum", prop: "shape", label: "shape", options: ["rounded", "pill"], def: "rounded" },
+      { kind: "enum", prop: "size", label: "size", options: ["default", "sm", "md", "lg"], def: "default", labels: { default: "default(md)" } },
+      { kind: "enum", prop: "shape", label: "shape", options: ["default", "rounded", "pill"], def: "default", labels: { default: "default(rounded)" } },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
     ],
     render: (st) => (
       <Box style={{ width: "12rem" }}>
         <Select
-          size={s(st.size) as "sm" | "md" | "lg"}
-          shape={s(st.shape) as "rounded" | "pill"}
+          size={s(st.size) === "default" ? undefined : s(st.size) as "sm" | "md" | "lg"}
+          shape={s(st.shape) === "default" ? undefined : s(st.shape) as "rounded" | "pill"}
           disabled={b(st.disabled)}
         >
           <Select.Option value="a">옵션 A</Select.Option>
@@ -356,7 +356,7 @@ export const COMPONENTS: CompSpec[] = [
       </Box>
     ),
     code: (st) =>
-      `<Select${AE("size", s(st.size), "md")}${AE("shape", s(st.shape), "rounded")}${A("disabled", b(st.disabled))}>\n  <Select.Option value="a">옵션 A</Select.Option>\n  <Select.Group label="추가 옵션">\n    <Select.Option value="b">옵션 B</Select.Option>\n  </Select.Group>\n</Select>`,
+      `<Select${st.size === "default" ? "" : AE("size", s(st.size), "md")}${st.shape === "default" ? "" : AE("shape", s(st.shape), "rounded")}${A("disabled", b(st.disabled))}>\n  <Select.Option value="a">옵션 A</Select.Option>\n  <Select.Group label="추가 옵션">\n    <Select.Option value="b">옵션 B</Select.Option>\n  </Select.Group>\n</Select>`,
   },
   {
     slug: "icon",
