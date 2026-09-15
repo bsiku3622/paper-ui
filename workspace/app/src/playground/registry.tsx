@@ -145,7 +145,7 @@ export const COMPONENTS: CompSpec[] = [
         <Text variant="caption" as="span">surface={s(st.surface)}</Text>
       </Box>
     ),
-    code: (st) => `<Box${st.surface === "none" ? "" : A("surface", s(st.surface))}${A("border", b(st.border))}${A("inverse", b(st.inverse))}${AE("shadow", s(st.shadow), "none")}${AE("radius", s(st.radius), "none")}${AE("padding", s(st.padding), "none")}${A("width", s(st.width))}${AE("maxWidth", s(st.maxWidth), "none")}${AE("overflow", s(st.overflow), "visible")}>…</Box>`,
+    code: (st) => `<Box${AE("surface", s(st.surface), "raised")}${A("border", b(st.border))}${A("inverse", b(st.inverse))}${AE("shadow", s(st.shadow), "none")}${AE("radius", s(st.radius), "md")}${AE("width", s(st.width), "md")}${AE("maxWidth", s(st.maxWidth), "none")}${AE("overflow", s(st.overflow), "visible")}>…</Box>`,
   },
   {
     slug: "stack",
