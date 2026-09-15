@@ -336,8 +336,8 @@ export const COMPONENTS: CompSpec[] = [
     group: "Atoms",
     blurb: "native select anatomy를 Select.Option과 Select.Group으로 드러낸다. Button·Field와 같은 사다리를 쓰고, option 안에는 native 계약에 맞게 텍스트만 둔다.",
     controls: [
-      { kind: "enum", prop: "size", label: "size", options: ["default", "sm", "md", "lg"], def: "default", labels: { default: "default(md)" } },
-      { kind: "enum", prop: "shape", label: "shape", options: ["default", "rounded", "pill"], def: "default", labels: { default: "default(rounded)" } },
+      { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
+      { kind: "enum", prop: "shape", label: "shape", options: ["rounded", "pill"], def: "rounded" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
     ],
     render: (st) => (
