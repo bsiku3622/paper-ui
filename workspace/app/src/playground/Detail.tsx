@@ -43,7 +43,7 @@ const ControlRow = ({ control, value, onChange }: { control: Control; value: str
           value={value === undefined || String(value) === control.def ? "__pui_default__" : String(value)}
           onChange={(e) => onChange(e.currentTarget.value === "__pui_default__" ? control.def : e.currentTarget.value)}
         >
-          <Select.Option value="__pui_default__">default ({control.def})</Select.Option>
+          <Select.Option value="__pui_default__">{`default (${control.def})`}</Select.Option>
           {control.options.map((option) => <Select.Option key={option} value={option}>{control.labels?.[option] ?? option}</Select.Option>)}
         </Select>
       ) : (
@@ -57,7 +57,29 @@ const ControlRow = ({ control, value, onChange }: { control: Control; value: str
   );
 };
 
-const CodeBlock = ({ code }: { code: string }) => {
+// Read the generated JSX opening tag without executing arbitrary JavaScript.
+const parseCodeState = (code: string, spec: CompSpec, previous: State): State | null => {
+  const tag = new RegExp(`<${spec.name}\\b([\\s\\S]*?)(?:\\/>|>)`).exec(code)?.[1];
+  if (tag === undefined) return null;
+  const next = { ...previous };
+  for (const control of spec.controls) {
+    if (control.kind === "bool") {
+      next[control.prop] = new RegExp(`(?:^|\\s)${control.prop}(?:\\s|$)`).test(tag);
+      continue;
+    }
+    const match = new RegExp(`${control.prop}\\s*=\\s*"([^"]*)"`).exec(tag);
+    if (match) next[control.prop] = match[1] ?? "";
+    else if (control.kind === "enum") next[control.prop] = control.def;
+  }
+  const childrenProp = spec.controls.find((control) => control.prop === "children");
+  if (childrenProp) {
+    const children = new RegExp(`<${spec.name}\\b[\\s\\S]*?>([^<]*)<\\/${spec.name}>`).exec(code)?.[1];
+    if (children !== undefined && children.trim()) next.children = children.trim();
+  }
+  return next;
+};
+
+const CodeBlock = ({ code, onChange, error }: { code: string; onChange: (code: string) => void; error?: string }) => {
   const [copied, setCopied] = useState(false);
   const copy = () => {
     navigator.clipboard?.writeText(code).then(
@@ -69,13 +91,12 @@ const CodeBlock = ({ code }: { code: string }) => {
     );
   };
   return (
-    <div className="code-block">
+    <div className={`code-block${error ? " code-block--error" : ""}`}>
       <button type="button" className="code-copy" onClick={copy}>
         {copied ? "복사됨" : "복사"}
       </button>
-      <pre>
-        <code>{code}</code>
-      </pre>
+      <textarea className="code-editor" value={code} onChange={(event) => onChange(event.currentTarget.value)} spellCheck={false} aria-label="컴포넌트 코드 편집" />
+      {error ? <Text variant="caption" ink="error" className="code-error">{error}</Text> : null}
     </div>
   );
 };
@@ -83,9 +104,26 @@ const CodeBlock = ({ code }: { code: string }) => {
 // 상태를 든 몸통. slug 마다 remount(key) 돼 defaultState 로 새로 시작한다.
 const DetailView = ({ spec }: { spec: CompSpec }) => {
   const [state, setState] = useState<State>(() => defaultState(spec));
+  const [draft, setDraft] = useState<string>();
+  const [codeError, setCodeError] = useState<string>();
   const preview = useMemo(() => spec.render(state), [spec, state]);
-  const code = useMemo(() => spec.code(state), [spec, state]);
-  const set = (prop: string) => (v: string | boolean) => setState((s) => ({ ...s, [prop]: v }));
+  const generatedCode = useMemo(() => spec.code(state), [spec, state]);
+  const code = draft ?? generatedCode;
+  const set = (prop: string) => (v: string | boolean) => {
+    setState((s) => ({ ...s, [prop]: v }));
+    setDraft(undefined);
+    setCodeError(undefined);
+  };
+  const editCode = (nextCode: string) => {
+    setDraft(nextCode);
+    const parsed = parseCodeState(nextCode, spec, state);
+    if (!parsed) {
+      setCodeError(`${spec.name} JSX를 읽을 수 없습니다.`);
+      return;
+    }
+    setState(parsed);
+    setCodeError(undefined);
+  };
 
   return (
     <Stack gap="xl" style={{ maxWidth: "52rem" }}>
@@ -108,7 +146,7 @@ const DetailView = ({ spec }: { spec: CompSpec }) => {
           <div className={`preview-stage${spec.preview === "flush" ? " preview-stage--flush" : ""}`}>{preview}</div>
           <Stack gap="xs">
             <Text variant="label">코드</Text>
-            <CodeBlock code={code} />
+            <CodeBlock code={code} onChange={editCode} error={codeError} />
           </Stack>
         </Stack>
 
@@ -119,7 +157,7 @@ const DetailView = ({ spec }: { spec: CompSpec }) => {
               <Text variant="label">Props</Text>
               {/* 손으로 꾸민 raw <button> 이었다 — quiet 변형이 바로 그 자리다. */}
               {spec.controls.length > 0 && (
-                <Button variant="quiet" size="sm" onClick={() => setState(defaultState(spec))}>
+                <Button variant="quiet" size="sm" onClick={() => { setState(defaultState(spec)); setDraft(undefined); setCodeError(undefined); }}>
                   초기화
                 </Button>
               )}

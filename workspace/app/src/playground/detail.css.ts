@@ -50,6 +50,29 @@ globalStyle(".code-block", {
   overflow: "hidden",
 });
 
+globalStyle(".code-editor", {
+  display: "block",
+  width: "100%",
+  minHeight: tokens.shape.height.xl.layout,
+  boxSizing: "border-box",
+  resize: "vertical",
+  margin: 0,
+  paddingBlock: tokens.shape.padding.md.interaction,
+  paddingInline: tokens.shape.padding.md.layout,
+  border: 0,
+  outline: 0,
+  background: "transparent",
+  overflowX: "auto",
+  fontFamily: tokens.text.font.mono,
+  fontSize: tokens.text.size.caption,
+  lineHeight: tokens.text.leading.body,
+  color: tokens.color.ink.base,
+  tabSize: 2,
+});
+
+globalStyle(".code-block--error", { borderColor: tokens.color.accent.error.edge });
+globalStyle(".code-error", { display: "block", paddingInline: tokens.shape.padding.md.layout, paddingBottom: tokens.shape.padding.sm.interaction });
+
 globalStyle(".code-block pre", {
   margin: 0,
   paddingBlock: tokens.shape.padding.md.interaction,
