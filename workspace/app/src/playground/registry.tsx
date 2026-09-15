@@ -204,7 +204,7 @@ export const COMPONENTS: CompSpec[] = [
       { kind: "bool", prop: "loading", label: "loading", def: false },
       { kind: "bool", prop: "fullWidth", label: "fullWidth", def: false },
       { kind: "bool", prop: "iconOnly", label: "iconOnly(aria-label 필수)", def: false },
-      { kind: "enum", prop: "shape", label: "shape", options: ["default", "pill"], def: "default" },
+      { kind: "enum", prop: "shape", label: "shape", options: ["rounded", "pill"], def: "rounded" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
       { kind: "text", prop: "children", label: "children", def: "버튼" },
     ],
@@ -216,7 +216,7 @@ export const COMPONENTS: CompSpec[] = [
         size: s(st.size) as "sm" | "md" | "lg",
         loading: b(st.loading),
         fullWidth: b(st.fullWidth),
-        shape: s(st.shape) as "default" | "pill",
+        shape: s(st.shape) as "rounded" | "pill",
         disabled: b(st.disabled),
       };
       return b(st.iconOnly) ? (
@@ -228,7 +228,7 @@ export const COMPONENTS: CompSpec[] = [
       );
     },
     code: (st) =>
-      `<Button${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "solid")}${AE("size", s(st.size), "md")}${A("loading", b(st.loading))}${A("fullWidth", b(st.fullWidth))}${AE("shape", s(st.shape), "default")}${A("disabled", b(st.disabled))}${b(st.iconOnly) ? ` iconOnly aria-label="${s(st.children) || "추가"}"><Icon>…</Icon>` : `>${s(st.children)}`}</Button>`,
+      `<Button${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "solid")}${AE("size", s(st.size), "md")}${A("loading", b(st.loading))}${A("fullWidth", b(st.fullWidth))}${AE("shape", s(st.shape), "rounded")}${A("disabled", b(st.disabled))}${b(st.iconOnly) ? ` iconOnly aria-label="${s(st.children) || "추가"}"><Icon>…</Icon>` : `>${s(st.children)}`}</Button>`,
   },
   {
     slug: "badge",
@@ -241,13 +241,13 @@ export const COMPONENTS: CompSpec[] = [
       { kind: "enum", prop: "variant", label: "variant", options: ["soft", "solid", "plain", "outline", "hairline", "quiet"], def: "soft" },
       { kind: "bool", prop: "dot", label: "dot", def: false },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
-      { kind: "enum", prop: "shape", label: "shape", options: ["default", "pill"], def: "default" },
+      { kind: "enum", prop: "shape", label: "shape", options: ["rounded", "pill"], def: "rounded" },
       { kind: "text", prop: "children", label: "children", def: "진행" },
     ],
     render: (st) => (
-      <Badge color={s(st.color) as Color} variant={s(st.variant) as Variant} dot={b(st.dot)} size={s(st.size) as "sm" | "md" | "lg"} shape={s(st.shape) as "default" | "pill"}>{s(st.children)}</Badge>
+      <Badge color={s(st.color) as Color} variant={s(st.variant) as Variant} dot={b(st.dot)} size={s(st.size) as "sm" | "md" | "lg"} shape={s(st.shape) as "rounded" | "pill"}>{s(st.children)}</Badge>
     ),
-    code: (st) => `<Badge${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "soft")}${A("dot", b(st.dot))}${AE("size", s(st.size), "md")}${AE("shape", s(st.shape), "default")}>${s(st.children)}</Badge>`,
+    code: (st) => `<Badge${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "soft")}${A("dot", b(st.dot))}${AE("size", s(st.size), "md")}${AE("shape", s(st.shape), "rounded")}>${s(st.children)}</Badge>`,
   },
   {
     slug: "field",
@@ -264,7 +264,7 @@ export const COMPONENTS: CompSpec[] = [
       { kind: "enum", prop: "align", label: "align", options: ["start", "center", "end"], def: "start" },
       { kind: "enum", prop: "status", label: "status", options: ["default", "info", "success", "warning", "error"], def: "default" },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
-      { kind: "enum", prop: "shape", label: "shape", options: ["default", "pill"], def: "default" },
+      { kind: "enum", prop: "shape", label: "shape", options: ["rounded", "pill"], def: "rounded" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
       { kind: "bool", prop: "numeric", label: "numeric", def: false },
     ],
@@ -281,14 +281,14 @@ export const COMPONENTS: CompSpec[] = [
           align={s(st.align) as "start" | "center" | "end"}
           status={s(st.status) as "default" | StatusName}
           size={s(st.size) as "sm" | "md" | "lg"}
-          shape={s(st.shape) as "default" | "pill"}
+          shape={s(st.shape) as "rounded" | "pill"}
           disabled={b(st.disabled)}
           numeric={b(st.numeric)}
         />
       </Box>
     ),
     code: (st) =>
-      `<Field${A("placeholder", s(st.placeholder))}${AE("type", s(st.type), "text")}${b(st.leading) ? " leading={<Icon>…</Icon>}" : ""}${b(st.trailing) ? ' trailing={<Text ink="faint">kg</Text>}' : ""}${A("clearable", b(st.clearable))}${A("showPasswordToggle", b(st.showPasswordToggle))}${AE("align", s(st.align), "start")}${AE("status", s(st.status), "default")}${AE("size", s(st.size), "md")}${AE("shape", s(st.shape), "default")}${A("disabled", b(st.disabled))}${A("numeric", b(st.numeric))} />`,
+      `<Field${A("placeholder", s(st.placeholder))}${AE("type", s(st.type), "text")}${b(st.leading) ? " leading={<Icon>…</Icon>}" : ""}${b(st.trailing) ? ' trailing={<Text ink="faint">kg</Text>}' : ""}${A("clearable", b(st.clearable))}${A("showPasswordToggle", b(st.showPasswordToggle))}${AE("align", s(st.align), "start")}${AE("status", s(st.status), "default")}${AE("size", s(st.size), "md")}${AE("shape", s(st.shape), "rounded")}${A("disabled", b(st.disabled))}${A("numeric", b(st.numeric))} />`,
   },
   {
     slug: "checkbox",
@@ -337,14 +337,14 @@ export const COMPONENTS: CompSpec[] = [
     blurb: "native select anatomy를 Select.Option과 Select.Group으로 드러낸다. Button·Field와 같은 사다리를 쓰고, option 안에는 native 계약에 맞게 텍스트만 둔다.",
     controls: [
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
-      { kind: "enum", prop: "shape", label: "shape", options: ["default", "pill"], def: "default" },
+      { kind: "enum", prop: "shape", label: "shape", options: ["rounded", "pill"], def: "rounded" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
     ],
     render: (st) => (
       <Box style={{ width: "12rem" }}>
         <Select
           size={s(st.size) as "sm" | "md" | "lg"}
-          shape={s(st.shape) as "default" | "pill"}
+          shape={s(st.shape) as "rounded" | "pill"}
           disabled={b(st.disabled)}
         >
           <Select.Option value="a">옵션 A</Select.Option>
@@ -356,7 +356,7 @@ export const COMPONENTS: CompSpec[] = [
       </Box>
     ),
     code: (st) =>
-      `<Select${AE("size", s(st.size), "md")}${AE("shape", s(st.shape), "default")}${A("disabled", b(st.disabled))}>\n  <Select.Option value="a">옵션 A</Select.Option>\n  <Select.Group label="추가 옵션">\n    <Select.Option value="b">옵션 B</Select.Option>\n  </Select.Group>\n</Select>`,
+      `<Select${AE("size", s(st.size), "md")}${AE("shape", s(st.shape), "rounded")}${A("disabled", b(st.disabled))}>\n  <Select.Option value="a">옵션 A</Select.Option>\n  <Select.Group label="추가 옵션">\n    <Select.Option value="b">옵션 B</Select.Option>\n  </Select.Group>\n</Select>`,
   },
   {
     slug: "icon",
@@ -509,12 +509,12 @@ export const COMPONENTS: CompSpec[] = [
     change: "new",
     name: "SegmentedControl",
     group: "Molecules",
-    blurb: "닫힌 track 안에서 필터·보기 방식처럼 값 하나를 고른다. sm이 기본이며 default와 pill은 같은 geometry 사다리에서 shape만 바꾼다.",
+    blurb: "닫힌 track 안에서 필터·보기 방식처럼 값 하나를 고른다. sm·pill이 기본이며 rounded와 pill은 같은 geometry 사다리에서 shape만 바꾼다.",
     controls: [
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "sm" },
-      { kind: "enum", prop: "shape", label: "shape", options: ["default", "pill"], def: "default" },
+      { kind: "enum", prop: "shape", label: "shape", options: ["rounded", "pill"], def: "pill" },
     ],
-    render: (st) => <SegmentedControlDemo size={s(st.size) as "sm" | "md" | "lg"} shape={s(st.shape) as "default" | "pill"} />,
+    render: (st) => <SegmentedControlDemo size={s(st.size) as "sm" | "md" | "lg"} shape={s(st.shape) as "rounded" | "pill"} />,
     code: (st) =>
       `const [filter, setFilter] = useState("all");\n<SegmentedControl value={filter} onValueChange={setFilter}${AE("size", s(st.size), "sm")}${AE("shape", s(st.shape), "default")}>\n  <SegmentedControl.Item value="all">전체</SegmentedControl.Item>\n  <SegmentedControl.Item value="open">열림</SegmentedControl.Item>\n  <SegmentedControl.Item value="done">완료</SegmentedControl.Item>\n</SegmentedControl>`,
   },
@@ -839,7 +839,7 @@ const TreeNavigationDemo = ({ value: initialValue }: { value: string }) => {
   return <TreeNavigation value={value} onValueChange={setValue} defaultExpandedValues={["components", "atoms"]}><TreeNavigation.Item value="foundations" label="Foundations"><TreeNavigation.Item value="colors" label="Color" /><TreeNavigation.Item value="shape" label="Shape" /></TreeNavigation.Item><TreeNavigation.Item value="components" label="Components"><TreeNavigation.Item value="atoms" label="Atoms"><TreeNavigation.Item value="button" label="Button" /><TreeNavigation.Item value="badge" label="Badge" /></TreeNavigation.Item><TreeNavigation.Item value="molecules" label="Molecules" /></TreeNavigation.Item></TreeNavigation>;
 };
 
-const SegmentedControlDemo = ({ size, shape }: { size?: "sm" | "md" | "lg"; shape?: "default" | "pill" }) => {
+const SegmentedControlDemo = ({ size, shape }: { size?: "sm" | "md" | "lg"; shape?: "rounded" | "pill" }) => {
   const [value, setValue] = useState("all");
   return <SegmentedControl value={value} onValueChange={setValue} size={size} shape={shape}><SegmentedControl.Item value="all">전체</SegmentedControl.Item><SegmentedControl.Item value="open">열림</SegmentedControl.Item><SegmentedControl.Item value="done">완료</SegmentedControl.Item></SegmentedControl>;
 };

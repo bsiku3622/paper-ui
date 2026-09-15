@@ -1,7 +1,7 @@
 // Field — 한 줄 입력. input group 이다: 래퍼가 면·테두리·포커스링·상태를 지고, 안쪽
 // input 이 값을 담으며, 양옆에 어도먼트(아이콘·$·단위)와 액션(clear·비밀번호 보기)이 앉는다.
 //   status   default · info · success · warning · error (테두리 색). error 는 aria-invalid 도.
-//   shape    default · pill — Button·Badge 와 같은 어휘. 검색창이 이 어휘의 본진이다.
+//   shape    rounded · pill — Button·Badge 와 같은 어휘. 검색창이 이 어휘의 본진이다.
 //   numeric  포맷 축 — 숫자 글리프만 등폭(tabular-nums). 정렬은 안 건드린다.
 //   align    정렬 축 — start · center · end. numeric 과 직교 (우측정렬 숫자열은 numeric + align="end").
 //   leading  왼쪽 어도먼트 (검색 아이콘 · "$" 프리픽스 등)
@@ -31,7 +31,7 @@ export type FieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className"
   // 크기 3 단 (sm·md·lg). Button 과 같은 사다리 — 나란히 두면 높이가 맞는다.
   size?: ControlSize;
   // 실루엣 — Button·Badge 와 같은 어휘. pill 은 알약(검색창 결).
-  shape?: "default" | "pill";
+  shape?: "rounded" | "pill";
   numeric?: boolean;
   align?: "start" | "center" | "end";
   leading?: ReactNode;
@@ -68,7 +68,7 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
   {
     status = "default",
     size = "md",
-    shape = "default",
+    shape = "rounded",
     numeric,
     align,
     leading,
