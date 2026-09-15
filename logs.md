@@ -202,3 +202,9 @@ Playground 시각 검토에서 Table 세 variant와 세 density가 한 줄에서
 - 요약: 모든 enum control에 `default (값)`을 노출하고, 기본 선택 시 생성 코드에서 prop을 생략하도록 정리했습니다. Box generator의 잘못된 기본 비교와 존재하지 않는 padding 출력도 수정했습니다.
 
 표시용 sentinel은 내부 상태를 바꾸지 않고 실제 `def` 값으로 환원됩니다. 따라서 preview와 code가 동일한 기본 계약을 유지하며, Box는 `raised · md · md` 기본값을 코드에 중복 출력하지 않습니다.
+## 2026-09-15 — Make Playground code editable
+
+- 변경 파일: Playground Detail editor·styles
+- 요약: 코드 박스를 editable textarea로 바꾸고, 생성된 Paper UI JSX의 props·단순 text children을 다시 읽어 preview를 갱신하도록 연결했습니다.
+
+임의 JavaScript를 실행하지 않고 각 component spec의 선언된 prop만 opening tag에서 읽습니다. 따라서 문법이 깨진 편집 중에도 앱은 안전하게 유지되고, preview는 마지막 유효 상태를 보여주며 오류 문구를 편집 영역에 남깁니다. Props 패널을 조작하면 편집 초안을 버리고 canonical code를 재생성합니다.
