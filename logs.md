@@ -214,3 +214,9 @@ Playground 시각 검토에서 Table 세 variant와 세 density가 한 줄에서
 - 요약: `value={value}` 형태를 쓰는 Menu·Tabs·SegmentedControl도 코드 안의 `useState("...")` 초기값을 읽어 preview와 연결했습니다.
 
 기존 code generator가 동작 예제를 보여주기 위해 hook 표현식을 포함하고 있어 literal attribute만 읽으면 선택값이 기본값으로 되돌아갔습니다. hook의 단순 문자열 초기값만 해석하고, 임의 JavaScript 실행은 여전히 하지 않습니다.
+## 2026-09-15 — Remove visible code placeholders
+
+- 변경 파일: Playground Detail code expansion·registry
+- 요약: 코드 편집 영역에 보이던 `<Box>…</Box>` 같은 placeholder를 실제 Text·Icon·Breadcrumb JSX로 확장했습니다.
+
+코드박스가 이제 복사·수정 가능한 source surface인 만큼 생략 기호를 남기지 않도록 했습니다. Box 기본 예제는 preview와 같은 `surface=raised` 내용을 출력하고, 단순한 반복 예제와 아이콘·breadcrumb도 실제로 읽을 수 있는 JSX 조각을 보여줍니다.

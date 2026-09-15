@@ -80,6 +80,12 @@ const parseCodeState = (code: string, spec: CompSpec, previous: State): State | 
   return next;
 };
 
+const expandCodePlaceholders = (code: string) => code
+  .replaceAll("<Box>…</Box>", "<Box surface=\"well\" radius=\"sm\" padding=\"sm\"><Text variant=\"caption\">내용</Text></Box>")
+  .replaceAll("\n  …\n", "\n  <Text variant=\"caption\">A · B · C</Text>\n")
+  .replaceAll("<Icon>…</Icon>", "<Icon><path d=\"M12 5v14M5 12h14\" /></Icon>")
+  .replaceAll("<Breadcrumb>…</Breadcrumb>", "<Breadcrumb><Breadcrumb.Item>Components</Breadcrumb.Item><Breadcrumb.Item current>Component</Breadcrumb.Item></Breadcrumb>");
+
 const CodeBlock = ({ code, onChange, error }: { code: string; onChange: (code: string) => void; error?: string }) => {
   const [copied, setCopied] = useState(false);
   const copy = () => {
@@ -108,7 +114,7 @@ const DetailView = ({ spec }: { spec: CompSpec }) => {
   const [draft, setDraft] = useState<string>();
   const [codeError, setCodeError] = useState<string>();
   const preview = useMemo(() => spec.render(state), [spec, state]);
-  const generatedCode = useMemo(() => spec.code(state), [spec, state]);
+  const generatedCode = useMemo(() => expandCodePlaceholders(spec.code(state)), [spec, state]);
   const code = draft ?? generatedCode;
   const set = (prop: string) => (v: string | boolean) => {
     setState((s) => ({ ...s, [prop]: v }));
