@@ -40,9 +40,10 @@ const ControlRow = ({ control, value, onChange }: { control: Control; value: str
       <Text variant="label">{control.label}</Text>
       {control.kind === "enum" ? (
         <Select
-          value={value === undefined ? "" : String(value)}
-          onChange={(e) => onChange(e.currentTarget.value)}
+          value={value === undefined || String(value) === control.def ? "__pui_default__" : String(value)}
+          onChange={(e) => onChange(e.currentTarget.value === "__pui_default__" ? control.def : e.currentTarget.value)}
         >
+          <Select.Option value="__pui_default__">default ({control.def})</Select.Option>
           {control.options.map((option) => <Select.Option key={option} value={option}>{control.labels?.[option] ?? option}</Select.Option>)}
         </Select>
       ) : (

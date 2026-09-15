@@ -190,3 +190,9 @@ Playground 시각 검토에서 Table 세 variant와 세 density가 한 줄에서
 - 요약: Select의 실제 기본값(`md · rounded`)을 `default(md)`, `default(rounded)`로 표시하고 명시값과 구분했습니다.
 
 기본 선택지는 별도 sentinel로 유지해 미지정 prop을 preview와 생성 코드에서 재현합니다. Select 컴포넌트 자체의 기본 계약은 변경하지 않았습니다.
+## 2026-09-15 — Expose defaults in every Playground prop select
+
+- 변경 파일: Playground Detail control
+- 요약: 모든 enum prop select에 `default (실제값)` 옵션을 공통으로 노출했습니다.
+
+기본값을 선택하면 실제 상태는 기존 `def`를 유지해 preview와 생성 코드가 prop 생략 상태를 재현합니다. 명시값과 기본값을 같은 값으로 중복 저장하지 않고 select 표시만 sentinel로 분리했습니다.
