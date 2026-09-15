@@ -32,7 +32,7 @@ Primitive + Atom 합성입니다. raw HTML 없이 하위 레이어 조합만.
 
 - **FormField** — `FormField.Label/Control/Hint/Error`로 Field·Select·Textarea의 구조와 접근성 관계를 하나의 문법으로 드러냅니다. Root가 label·description id와 `aria-invalid`를 연결하고 `align="start | center | end | stretch"`로 묶음의 정렬을 정합니다. 입력값 정렬과 시각적인 `status`는 계속 각 Atom의 책임입니다.
 - **RadioGroup** — `RadioGroup.Item`으로 Radio + Label을 한 그룹 안에 조합합니다. 질문지는 세로가 기본이고, 짧고 서로 대등한 선택지는 `orientation="horizontal"`로 한 줄에 둡니다. 좁은 화면에서는 wrap합니다.
-- **SegmentedControl** — 닫힌 track 안에서 필터·보기 방식처럼 값 하나를 고릅니다. `sm`이 기본이며 `shape="default | pill"`은 같은 geometry에서 곡선만 바꿉니다. `SegmentedControl.Item`은 single-select radio 관계와 방향키 이동을 공유합니다.
+- **SegmentedControl** — 닫힌 track 안에서 필터·보기 방식처럼 값 하나를 고릅니다. `sm · pill`이 기본이며 `shape="rounded | pill"`은 같은 geometry에서 곡선만 바꿉니다. `SegmentedControl.Item`은 single-select radio 관계와 방향키 이동을 공유합니다.
 - **Tabs** — 넓은 페이지의 실제 content panel을 underline trigger로 전환합니다. `md`가 기본이며 `Tabs.List/Trigger/Content`가 tab과 panel의 id·ARIA 관계, 방향키·Home/End 이동을 함께 소유합니다. Content는 trigger 아래의 기본 간격과 짧은 전환만 제공하고 surface는 강제하지 않아, 페이지·표·폼 등 실제 본문 구성을 그대로 담습니다. segmented 외형과 shape prop은 없습니다.
 - **Tooltip** — `Tooltip.Trigger/Content`로 기준 요소와 떠오르는 설명을 분리합니다. Content는 짧은 내용이 세로로 찌그러지지 않도록 `width="max-content"`, `maxWidth="xl"`이 기본이고 Box의 layout props로 폭과 잘림을 조절합니다. 제목·설명·단축키 같은 조합을 담을 수 있으며, 위 공간이 없으면 자동으로 아래로 뒤집습니다.
 - **Alert** — `Alert.Icon/Title/Description`으로 내용을 조립하며 Button·Badge와 **같은 `color × variant` 매트릭스**를 그대로 뭅니다. Icon을 생략하면 기본 상태 아이콘을 사용합니다. `error`·`warning`은 `role="alert"`, 나머지는 `role="status"`이고 스크린리더용 상태 접두어를 함께 심습니다.

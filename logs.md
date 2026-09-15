@@ -178,3 +178,9 @@ Atom의 `color × variant`는 의미색과 시각 무게지만, Card·Table·Tab
 ⚠ shadow를 Card variant로 열지 않았고 ruled와 striped를 겹치는 조합도 만들지 않았습니다. 둘은 각각 붙어 있는 면의 경계와 행 구분을 한 번만 말해야 하기 때문입니다. underline Tabs에서는 닫힌 실루엣이 없으므로 `shape`를 무시합니다. 이런 금지 조합까지 `docs/foundations/component-architecture.md`에 정본으로 남겼습니다.
 
 Playground 시각 검토에서 Table 세 variant와 세 density가 한 줄에서 바로 비교되도록 표본 폭을 15rem으로 맞췄습니다. Card의 세 경계, underline의 선형 구조, Table의 구분법·행 높이, Modal 폭을 computed style로 고정했으며 전체 52개 E2E가 통과합니다.
+## 2026-09-15 — Rename shape default to rounded
+
+- 변경 파일: Button·Badge·Field·Select·SegmentedControl API, Playground registry, architecture docs
+- 요약: shape 축의 모호한 `default` 이름을 `rounded`로 바꾸고, 컴포넌트별 기본 shape를 분리했습니다.
+
+`default`는 상태 기본값처럼 읽혀 실제 모양을 설명하지 못했습니다. 기존 곡선은 `rounded`, 알약형은 `pill`로 명명하고, SegmentedControl만 생략 시 `pill`을 기본으로 두었습니다. 나머지 한 줄 컨트롤은 기존 곡선을 유지하며 명시적인 override는 `shape="rounded"`로 표현합니다.

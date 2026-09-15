@@ -13,7 +13,7 @@ Paper UI의 상위 레이어는 아래 일곱 축에서 필요한 것만 고릅�
 | local `variant` | 상위 구조를 어떻게 구분하는가 | 컴포넌트별 유한 집합 |
 | `density` | 같은 정보가 세로로 얼마나 촘촘한가 | `compact · default · comfortable` |
 | `size` | 컨트롤 자체가 얼마나 큰가 | `sm · md · lg` |
-| `shape` | 한 줄 컨트롤이 기본 곡선인가 알약인가 | `default · pill` |
+| `shape` | 한 줄 컨트롤이 둥근 곡선인가 알약인가 | `rounded · pill` |
 | state | 지금 어떤 상태인가 | `open · selected · disabled · error` 등 |
 
 `color × variant`는 레이어와 무관하게 의미색과 시각 무게를 표현하는 요소가 **하나의 `Variant` 타입으로 공유**합니다. Button·Badge·Alert가 같은 매트릭스를 씁니다. 여기서 `plain`은 `soft`의 옅은 면과 `outline`의 또렷한 선을 동시에 쓰는 공통 단계입니다. 지역 `variant`는 Table의 행 구분이나 Tabs의 navigation 구조처럼 shared 축으로 표현할 수 없는 경우에만 둡니다. 같은 prop 이름을 쓰더라도 shared `Variant`에 지역 선택지를 섞지 않습니다.
@@ -96,7 +96,7 @@ row               row               row
 | --- | --- | --- |
 | FormField | compound `Label · Control · Hint · Error` + `align` | 모든 입력의 유일한 form composition. 시각 status와 입력값 정렬은 control이 소유 |
 | RadioGroup | compound `Item` + `orientation · size` | 세로 기본, 좁은 선택지는 가로 배치 가능 |
-| SegmentedControl | compound `Item` + `size · shape` | 닫힌 단일 선택. 기본 `sm`, `default · pill`은 곡선만 다름 |
+| SegmentedControl | compound `Item` + `size · shape` | 닫힌 단일 선택. 기본 `sm · pill`, `rounded · pill`은 곡선만 다름 |
 | Tabs | compound `List · Trigger · Content` + `size` | underline panel navigation. 기본 `md`, variant·shape 없음 |
 | Tooltip | compound `Trigger · Content`, placement 자동 결정 | 복합 내용을 허용하되 외형 variant는 없음 |
 | Alert | compound `Icon · Title · Description`, `color × shared variant` | Button·Badge와 같은 6단 매트릭스를 유지 |

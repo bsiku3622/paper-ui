@@ -8,11 +8,11 @@ import { useControllableState } from "../internal/useControllableState";
 import type { ControlSize } from "../tokens";
 import { segmentedItem, segmentedItemActive, segmentedItemShape, segmentedItemSize, segmentedRoot, segmentedRootShape } from "./SegmentedControl.css";
 
-type SegmentedContextValue = { value: string; onValueChange: (value: string) => void; size: ControlSize; shape: "default" | "pill" };
+type SegmentedContextValue = { value: string; onValueChange: (value: string) => void; size: ControlSize; shape: "rounded" | "pill" };
 const SegmentedContext = createContext<SegmentedContextValue | null>(null);
-export type SegmentedControlProps = Omit<BoxProps<"div">, "as" | "children"> & { value?: string; defaultValue?: string; onValueChange?: (value: string) => void; size?: ControlSize; shape?: "default" | "pill"; children: ReactNode };
+export type SegmentedControlProps = Omit<BoxProps<"div">, "as" | "children"> & { value?: string; defaultValue?: string; onValueChange?: (value: string) => void; size?: ControlSize; shape?: "rounded" | "pill"; children: ReactNode };
 
-const SegmentedControlRoot = ({ value: controlledValue, defaultValue, onValueChange, size = "sm", shape = "default", className, children, onKeyDown, ...rest }: SegmentedControlProps) => {
+const SegmentedControlRoot = ({ value: controlledValue, defaultValue, onValueChange, size = "sm", shape = "pill", className, children, onKeyDown, ...rest }: SegmentedControlProps) => {
   const firstValue = Children.toArray(children).find((child): child is ReactElement<SegmentedControlItemProps> => isValidElement(child))?.props.value ?? "";
   const [value, setValue] = useControllableState({ value: controlledValue, defaultValue: defaultValue ?? firstValue, onValueChange });
   return <SegmentedContext.Provider value={{ value, onValueChange: setValue, size, shape }}><Inline {...rest} role="radiogroup" className={joinClass(segmentedRoot, segmentedRootShape[shape], className)} onKeyDown={(event: KeyboardEvent<HTMLDivElement>) => {

@@ -15,12 +15,12 @@ import { selectRoot, selectSize, selectPill } from "./Select.css";
 export type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "className" | "children" | "size"> & {
   children: ReactNode;
   size?: ControlSize;
-  shape?: "default" | "pill";
+  shape?: "rounded" | "pill";
   className?: string;
 };
 
 const SelectRoot = forwardRef<HTMLSelectElement, SelectProps>(function SelectRoot(
-  { children, size = "md", shape = "default", className, ...rest },
+  { children, size = "md", shape = "rounded", className, ...rest },
   ref,
 ) {
   return (

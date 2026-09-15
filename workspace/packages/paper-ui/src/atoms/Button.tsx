@@ -1,7 +1,7 @@
 // Button — 누르는 자리. 색은 resolver 가 정한다: color(의미) × variant(시각 무게).
 //   color    primary(검정 일꾼) · info · success · warning · error
 //   variant  solid · soft · outline · quiet
-//   shape    default(시스템 곡선) · pill(알약)
+//   shape    rounded(시스템 곡선) · pill(알약)
 //
 // 예) <Button>저장</Button>                        검정 solid (primary)
 //     <Button variant="soft">미리보기</Button>      회색 secondary
@@ -48,9 +48,9 @@ type ButtonOwn<As extends ElementType> = {
   // 크기 3 단 (sm·md·lg). md 가 anchor(기본), sm 은 밀집/보조, lg 는 CTA. Field·Select 와
   // 같은 사다리라 나란히 두면 높이가 맞는다.
   size?: ControlSize;
-  // 실루엣 — default 는 시스템 곡선(radius.interaction), pill 은 알약(높이의 절반).
+  // 실루엣 — rounded 는 시스템 곡선(radius.interaction), pill 은 알약(높이의 절반).
   // 값이 둘뿐인 건 의도다 — 고르는 건 *알약이냐 아니냐* 지 곡선의 크기가 아니다.
-  shape?: "default" | "pill";
+  shape?: "rounded" | "pill";
   // 진행 중 — 스피너를 얹고 aria-busy 를 세우며 클릭을 막는다(busy 는 다시 눌릴 수 없다).
   loading?: boolean;
   // 가로 꽉 — 폼·모바일.
@@ -80,7 +80,7 @@ const ButtonImpl = forwardRef<HTMLElement, ButtonImplProps>(function Button(
     color = "primary",
     variant = "solid",
     size = "md",
-    shape = "default",
+    shape = "rounded",
     loading,
     iconOnly,
     fullWidth,
