@@ -62,6 +62,7 @@ const parseCodeState = (code: string, spec: CompSpec, previous: State): State | 
   const tag = new RegExp(`<${spec.name}\\b([\\s\\S]*?)(?:\\/>|>)`).exec(code)?.[1];
   if (tag === undefined) return null;
   const next = { ...previous };
+  const hookValue = /useState\(\s*"([^"]*)"\s*\)/.exec(code)?.[1];
   for (const control of spec.controls) {
     if (control.kind === "bool") {
       next[control.prop] = new RegExp(`(?:^|\\s)${control.prop}(?:\\s|$)`).test(tag);
@@ -69,7 +70,7 @@ const parseCodeState = (code: string, spec: CompSpec, previous: State): State | 
     }
     const match = new RegExp(`${control.prop}\\s*=\\s*"([^"]*)"`).exec(tag);
     if (match) next[control.prop] = match[1] ?? "";
-    else if (control.kind === "enum") next[control.prop] = control.def;
+    else if (control.kind === "enum") next[control.prop] = hookValue ?? control.def;
   }
   const childrenProp = spec.controls.find((control) => control.prop === "children");
   if (childrenProp) {

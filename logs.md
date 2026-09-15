@@ -208,3 +208,9 @@ Playground 시각 검토에서 Table 세 variant와 세 density가 한 줄에서
 - 요약: 코드 박스를 editable textarea로 바꾸고, 생성된 Paper UI JSX의 props·단순 text children을 다시 읽어 preview를 갱신하도록 연결했습니다.
 
 임의 JavaScript를 실행하지 않고 각 component spec의 선언된 prop만 opening tag에서 읽습니다. 따라서 문법이 깨진 편집 중에도 앱은 안전하게 유지되고, preview는 마지막 유효 상태를 보여주며 오류 문구를 편집 영역에 남깁니다. Props 패널을 조작하면 편집 초안을 버리고 canonical code를 재생성합니다.
+## 2026-09-15 — Read stateful Playground snippets
+
+- 변경 파일: Playground Detail parser
+- 요약: `value={value}` 형태를 쓰는 Menu·Tabs·SegmentedControl도 코드 안의 `useState("...")` 초기값을 읽어 preview와 연결했습니다.
+
+기존 code generator가 동작 예제를 보여주기 위해 hook 표현식을 포함하고 있어 literal attribute만 읽으면 선택값이 기본값으로 되돌아갔습니다. hook의 단순 문자열 초기값만 해석하고, 임의 JavaScript 실행은 여전히 하지 않습니다.
