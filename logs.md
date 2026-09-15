@@ -196,3 +196,9 @@ Playground 시각 검토에서 Table 세 variant와 세 density가 한 줄에서
 - 요약: 모든 enum prop select에 `default (실제값)` 옵션을 공통으로 노출했습니다.
 
 기본값을 선택하면 실제 상태는 기존 `def`를 유지해 preview와 생성 코드가 prop 생략 상태를 재현합니다. 명시값과 기본값을 같은 값으로 중복 저장하지 않고 select 표시만 sentinel로 분리했습니다.
+## 2026-09-15 — Omit default props in Playground code output
+
+- 변경 파일: Playground Detail control·registry
+- 요약: 모든 enum control에 `default (값)`을 노출하고, 기본 선택 시 생성 코드에서 prop을 생략하도록 정리했습니다. Box generator의 잘못된 기본 비교와 존재하지 않는 padding 출력도 수정했습니다.
+
+표시용 sentinel은 내부 상태를 바꾸지 않고 실제 `def` 값으로 환원됩니다. 따라서 preview와 code가 동일한 기본 계약을 유지하며, Box는 `raised · md · md` 기본값을 코드에 중복 출력하지 않습니다.
