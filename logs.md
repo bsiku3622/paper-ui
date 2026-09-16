@@ -298,3 +298,9 @@ xs를 전체 컨트롤 사다리에 넣어 보니 복사 버튼 하나를 줄이
 - 요약: `plainMuted`의 border를 `plain`과 같은 강한 `edgeStrong`으로 복원했습니다. `outlineMuted`도 `outline`과 동일하게 이미 강한 border를 사용하고 있음을 확인했습니다.
 
 Muted는 foreground만 낮추고 원본 variant의 구조적 border 강도는 보존해야 합니다. 따라서 plain·outline의 muted 버전은 각각 원본과 같은 강한 선을 유지하고, soft·hairline 계열만 해당 계층의 약한 선을 사용합니다.
+## 2026-09-16 — Tune Playground code viewer surfaces
+
+- 변경 파일: `workspace/app/src/playground/Detail.tsx`, `workspace/app/src/playground/detail.css.ts`
+- 요약: 코드뷰어의 복사·편집 버튼을 `hairlineMuted`로 통일하고, 읽기 상태는 `raised`, 편집 상태는 `sunken`으로 조정했습니다.
+
+코드는 평소에는 떠 있는 reference surface로 읽히고, 편집 중에는 입력 surface로 가라앉아야 한다는 상태 대비를 적용했습니다. 버튼은 약한 잉크와 hairline을 함께 사용해 코드 영역 위에서 과하게 튀지 않게 했습니다.
