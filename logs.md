@@ -238,3 +238,9 @@ Playground 시각 검토에서 Table 세 variant와 세 density가 한 줄에서
 - 요약: read-only `pre`와 edit `textarea`에 동일한 mono font, weight, style, caption tracking을 명시했습니다.
 
 폼 컨트롤의 브라우저 기본 타이포그래피가 편집 상태에서만 남아 자간이 달라 보일 수 있었습니다. 두 상태가 같은 텍스트 surface처럼 보이도록 typography 축을 직접 공유하게 했습니다.
+## 2026-09-16 — Contrast code surface by edit state
+
+- 변경 파일: Playground code block state styles
+- 요약: read-only 코드는 `sunken`, 편집 중 코드는 `raised` surface를 사용하도록 전환했습니다.
+
+브라우저에서 Box Playground를 확인한 결과 평소에는 코드가 한 단계 물러나고, 편집 모드에서는 textarea가 흰 면으로 올라와 입력 대상이 분명해졌습니다. 편집 버튼을 누를 때만 class가 바뀌므로 preview나 Props surface에는 영향이 없습니다.

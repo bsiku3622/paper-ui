@@ -99,7 +99,7 @@ const CodeBlock = ({ code, onChange, error }: { code: string; onChange: (code: s
     );
   };
   return (
-    <div className={`code-block${error ? " code-block--error" : ""}`}>
+    <div className={`code-block${editing ? " code-block--editing" : ""}${error ? " code-block--error" : ""}`}>
       <div className="code-actions">
         <button type="button" className="code-copy" onClick={copy}>{copied ? "복사됨" : "복사"}</button>
         <Button
