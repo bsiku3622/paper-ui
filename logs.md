@@ -268,3 +268,9 @@ Playground 시각 검토에서 Table 세 variant와 세 density가 한 줄에서
 - 요약: 컨트롤 size는 기존 `sm/md/lg`로 유지하고 Button에 `fontSize` override를 추가했습니다. 복사 액션은 `sm + label` 조합을 사용합니다. `hairlineMuted`, `muted`, `ghost`, `ghostMuted`, `tonal`, `tonalMuted`를 4축 color profile로 확장했습니다.
 
 xs를 전체 컨트롤 사다리에 넣어 보니 복사 버튼 하나를 줄이기 위해 높이·아이콘·폼 밀도까지 함께 내려가는 부작용이 생겼습니다. 따라서 size는 geometry 축으로 고정하고, 작은 보조 라벨만 typography 축에서 조절하도록 분리했습니다. Variant는 기존 `quiet` 호환성을 남긴 채 각 profile이 foreground·background·border·interaction을 독립적으로 정의하며, muted 계열만 hover 시 잉크와 선을 함께 강화합니다.
+## 2026-09-16 — Expose typography overrides in Playground controls
+
+- 변경 파일: `workspace/app/src/playground/registry.tsx`, `workspace/packages/paper-ui/src/atoms/Badge.tsx`, `workspace/packages/paper-ui/src/atoms/Field.tsx`, `workspace/packages/paper-ui/src/atoms/Select.tsx`, `workspace/packages/paper-ui/src/atoms/Textarea.tsx`
+- 요약: Button·Badge·Field·Select·Textarea의 Props table에 `fontSize`를 노출하고, 기본값은 코드에서 생략되도록 했습니다. 각 컴포넌트의 `size` geometry는 유지한 채 typography만 조정합니다.
+
+`size`와 `fontSize`를 같은 축으로 묶으면 작은 라벨 하나 때문에 컨트롤 높이와 아이콘까지 축소됩니다. Playground에서는 `default / label / caption / body`만 노출해 의도적인 typography override만 허용하고, 기본값은 기존 컴포넌트의 size 사다리를 따르게 두었습니다.

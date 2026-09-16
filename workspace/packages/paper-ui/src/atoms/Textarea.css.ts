@@ -1,6 +1,6 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
-import { tokens, stateTransition } from "../tokens";
+import { tokens, stateTransition, TEXT_VARIANTS, type TextVariant } from "../tokens";
 import { ladderRules } from "../internal/sizeLadder";
 
 // Field 와 같은 결의 여러 줄 입력. 높이만 자라고, 세로로만 resize.
@@ -60,4 +60,8 @@ export const textareaSize = styleVariants(
     paddingInline: tokens.shape.inputPaddingX[s],
     paddingBlock: tokens.shape.textareaPaddingY[s],
   })),
+);
+
+export const textareaFontSize = styleVariants(
+  Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.text.size[variant] }])) as Record<TextVariant, { fontSize: string }>,
 );

@@ -1,7 +1,8 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
 import { tokens, STATUS, STATUS_ACCENT, semanticFormHoverShadow, stateTransition } from "../tokens";
-import type { StatusName } from "../tokens";
+import type { StatusName, TextVariant } from "../tokens";
+import { TEXT_VARIANTS } from "../tokens";
 import { ladderRules } from "../internal/sizeLadder";
 
 // Field 는 input group — 래퍼가 면·테두리·포커스링·상태·크기를 지고, 안쪽 input 은
@@ -73,6 +74,10 @@ export const fieldInput = style({
 // Field·Select·Textarea가 같은 form geometry를 공유한다. 자세한 계산은 tokens/shape.ts.
 export const fieldSize = styleVariants(
   ladderRules((s) => ({ paddingInline: tokens.shape.inputPaddingX[s] })),
+);
+
+export const fieldFontSize = styleVariants(
+  Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.text.size[variant] }])) as Record<TextVariant, { fontSize: string }>,
 );
 
 // status — semantic Form은 처음부터 solid 선으로 상태를 분명히 보이고, hover에서는 선을 더

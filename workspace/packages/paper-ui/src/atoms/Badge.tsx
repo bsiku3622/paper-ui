@@ -12,8 +12,8 @@ import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import { joinClass } from "../internal/joinClass";
 import { resolveColor, type Color, type Variant } from "../resolvers";
-import type { ControlSize } from "../tokens";
-import { badgeRoot, badgeSize, badgeDot, badgePill } from "./Badge.css";
+import type { ControlSize, TextVariant } from "../tokens";
+import { badgeRoot, badgeSize, badgeDot, badgePill, badgeFontSize } from "./Badge.css";
 
 export type BadgeProps = Omit<HTMLAttributes<HTMLSpanElement>, "className"> & {
   // 의미 색 (info·success·warning·error). 안 주면 뉴트럴 회색.
@@ -22,6 +22,7 @@ export type BadgeProps = Omit<HTMLAttributes<HTMLSpanElement>, "className"> & {
   variant?: Variant;
   // 크기 3 단 (sm·md·lg). 배지 높이 사다리(20·22·24).
   size?: ControlSize;
+  fontSize?: TextVariant;
   // 앞에 작은 색 점(상태 표시자). 글자색(currentColor)을 따른다.
   dot?: boolean;
   // 실루엣 — rounded 는 시스템 곡선(radius.interaction), pill 은 알약(높이의 절반).
@@ -32,7 +33,7 @@ export type BadgeProps = Omit<HTMLAttributes<HTMLSpanElement>, "className"> & {
 };
 
 export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
-  { color = "primary", variant = "soft", size = "md", shape = "rounded", dot, children, className, ...rest },
+  { color = "primary", variant = "soft", size = "md", fontSize, shape = "rounded", dot, children, className, ...rest },
   ref,
 ) {
   return (
@@ -41,6 +42,7 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
       className={joinClass(
         badgeRoot,
         badgeSize[size],
+        fontSize && badgeFontSize[fontSize],
         resolveColor(color, variant),
         shape === "pill" && badgePill,
         className,
