@@ -346,3 +346,9 @@ Playground가 이 레포의 유일한 시각 검증 surface이므로, 패키지 
 - 요약: Sidebar hover/selected overlay를 행 pseudo-element로 올려 Badge까지 같은 상태 틴트 아래에 두었습니다.
 
 기존에는 selected soft Badge 자체에 별도 gradient를 붙여 배지가 행의 overlay 위로 튀어나온 것처럼 보였습니다. 이제 행이 stacking context를 소유하고 텍스트와 Badge는 overlay보다 아래에 놓입니다. selected는 클릭 즉시, hover는 포인터 진입 즉시 같은 레이어에서 합성되며 Badge의 의미 색은 유지하면서 별도 칩처럼 떠 보이지 않습니다.
+## 2026-09-16 — Lift neutral Field hover border to primary hover
+
+- 변경 파일: `workspace/packages/paper-ui/src/atoms/Field.css.ts`
+- 요약: 일반 Field의 hover 테두리를 `primary.base`에서 한 단계 밝은 `primary.hover`로 조정했습니다.
+
+일반 Field는 배경을 바꾸지 않고 선으로만 hover를 알리므로, resting border와의 차이는 유지하면서 primary solid보다 덜 무거운 `#3f3f46`을 사용하도록 했습니다. Select·Textarea는 이번 비교 범위에서 기존 동작을 유지합니다.
