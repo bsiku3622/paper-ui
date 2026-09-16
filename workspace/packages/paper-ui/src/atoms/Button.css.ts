@@ -63,6 +63,7 @@ export const buttonFull = style({ width: "100%" });
 // Button 만의 fontWeight ladder — lg(CTA)에서 텍스트도 무거워져 강조를 회복한다.
 // sm·md=medium · lg=semibold. (Field 는 입력값 자리라 weight 변동 없음.)
 const BUTTON_WEIGHT: Record<ControlSize, string> = {
+  xs: tokens.text.weight.medium,
   sm: tokens.text.weight.medium,
   md: tokens.text.weight.medium,
   lg: tokens.text.weight.semibold,

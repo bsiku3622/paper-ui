@@ -2,7 +2,7 @@
 
 import { globalStyle } from "@vanilla-extract/css";
 
-import { tokens, stateTransition } from "@studio-baeks/paper-ui";
+import { tokens } from "@studio-baeks/paper-ui";
 
 const BP = tokens.layout.breakpoint;
 
@@ -91,21 +91,6 @@ globalStyle(".code-block pre", {
   color: tokens.color.ink.base,
   tabSize: 2,
 });
-
-globalStyle(".code-copy", {
-  appearance: "none",
-  border: 0,
-  background: "transparent",
-  color: tokens.color.ink.soft,
-  borderRadius: tokens.shape.radius.interaction,
-  height: tokens.shape.height.sm.interaction,
-  paddingInline: tokens.shape.padding.sm.interaction,
-  fontSize: tokens.text.size.label,
-  fontFamily: tokens.text.font.sans,
-  cursor: "pointer",
-  transition: stateTransition("background", "color"),
-});
-globalStyle(".code-copy:hover", { background: "transparent", color: tokens.color.ink.base });
 
 globalStyle(".code-actions", {
   position: "absolute",
