@@ -49,10 +49,9 @@ const primaryProfile: Record<Variant, ColorSpec> = {
   plainMuted: {
     background: tokens.color.paper.well,
     color: tokens.color.ink.soft,
-    borderColor: tokens.color.border.base,
+    borderColor: tokens.color.primary.edgeStrong,
     hoverOverlay: tokens.color.interaction.hover,
     hoverColor: tokens.color.ink.base,
-    hoverBorderColor: tokens.color.primary.edgeStrong,
   },
   // outline 은 **면을 칠하지 않는다** — 테두리만 두르고 밑면이 그대로 비친다.
   // raised 를 칠하고 있었는데, 이 팔레트에서는 raised(#ffffff)와 canvas(#fcfcfc)가
@@ -145,10 +144,9 @@ const accentProfile = (c: AccentTones): Record<Variant, ColorSpec> => ({
   plainMuted: {
     background: c.soft,
     color: c.softInk,
-    borderColor: c.edge,
+    borderColor: c.edgeStrong,
     hoverOverlay: tokens.color.interaction.hover,
     hoverColor: c.ink,
-    hoverBorderColor: c.edgeStrong,
   },
   // 테두리는 edge(wash 의 괘선)가 아니라 edgeStrong 이다. 두 자리가 요구하는 세기가
   // 다르다 — wash 의 괘선은 이미 색이 깔린 면의 가장자리지만, outline 은 그 선이 곧
