@@ -105,12 +105,13 @@ const CodeBlock = ({ code, onChange, error }: { code: string; onChange: (code: s
         <Button
           variant="hairlineMuted"
           size="sm"
+          iconSize="sm"
           iconOnly
           aria-label={editing ? "코드 편집 닫기" : "코드 편집"}
           className="code-edit"
           onClick={() => setEditing((current) => !current)}
         >
-          <Icon size="sm">{editing ? <path d="m6 6 12 12M18 6 6 18" /> : <path d="m14.7 6.3 3 3M4 20l4.2-.9L19.2 8a2.1 2.1 0 0 0-3-3L5.2 16.1 4 20Z" />}</Icon>
+          <Icon>{editing ? <path d="m6 6 12 12M18 6 6 18" /> : <path d="m14.7 6.3 3 3M4 20l4.2-.9L19.2 8a2.1 2.1 0 0 0-3-3L5.2 16.1 4 20Z" />}</Icon>
         </Button>
       </div>
       {editing ? <textarea className="code-editor" value={code} onChange={(event) => onChange(event.currentTarget.value)} spellCheck={false} aria-label="컴포넌트 코드 편집" /> : <pre><code>{code}</code></pre>}
