@@ -244,3 +244,9 @@ Playground 시각 검토에서 Table 세 variant와 세 density가 한 줄에서
 - 요약: read-only 코드는 `sunken`, 편집 중 코드는 `raised` surface를 사용하도록 전환했습니다.
 
 브라우저에서 Box Playground를 확인한 결과 평소에는 코드가 한 단계 물러나고, 편집 모드에서는 textarea가 흰 면으로 올라와 입력 대상이 분명해졌습니다. 편집 버튼을 누를 때만 class가 바뀌므로 preview나 Props surface에는 영향이 없습니다.
+## 2026-09-16 — Remove copy button fill
+
+- 변경 파일: Playground code action styles
+- 요약: 복사 버튼의 raised 배경과 border를 제거해 quiet 텍스트 액션으로 정리했습니다.
+
+편집 toggle만 hairline shape를 유지하고, 복사는 코드 surface 위에 조용히 놓이는 보조 액션으로 분리했습니다.

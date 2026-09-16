@@ -94,8 +94,8 @@ globalStyle(".code-block pre", {
 
 globalStyle(".code-copy", {
   appearance: "none",
-  border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
-  background: tokens.color.paper.raised,
+  border: 0,
+  background: "transparent",
   color: tokens.color.ink.soft,
   borderRadius: tokens.shape.radius.interaction,
   height: tokens.shape.height.sm.interaction,
@@ -105,7 +105,7 @@ globalStyle(".code-copy", {
   cursor: "pointer",
   transition: stateTransition("background", "color"),
 });
-globalStyle(".code-copy:hover", { background: tokens.color.paper.well, color: tokens.color.ink.base });
+globalStyle(".code-copy:hover", { background: "transparent", color: tokens.color.ink.base });
 
 globalStyle(".code-actions", {
   position: "absolute",
