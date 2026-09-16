@@ -46,8 +46,8 @@ export const selectRoot = style({
         "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%23a1a1aa' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E\")",
     },
     "&:hover:not(:focus)": { borderColor: tokens.color.ink.faint },
-    // 포커스 — 보더 *바깥* 에 파란 링(outline). 전역/Checkbox 와 같은 방식.
-    "&:focus": {
+    // keyboard focus만 바깥 ring으로 알린다. 클릭은 native open state와 edge로 충분하다.
+    "&:focus-visible": {
       outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.focus.ring}`,
       outlineOffset: tokens.shape.constants.focusRingOffset,
     },

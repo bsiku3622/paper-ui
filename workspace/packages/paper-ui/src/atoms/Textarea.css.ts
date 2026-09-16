@@ -35,8 +35,8 @@ export const textareaRoot = style({
     '&[data-pui-status="default"]:hover:not(:focus):not(:disabled)': {
       borderColor: tokens.color.ink.faint,
     },
-    // 포커스 — 보더 *바깥* 에 파란 링(outline). 전역/Checkbox 와 같은 방식.
-    "&:focus": {
+    // keyboard focus만 바깥 ring으로 알린다. 클릭은 caret과 edge만 남긴다.
+    "&:focus-visible": {
       outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.focus.ring}`,
       outlineOffset: tokens.shape.constants.focusRingOffset,
     },

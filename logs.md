@@ -364,3 +364,9 @@ Playground가 이 레포의 유일한 시각 검증 surface이므로, 패키지 
 - 요약: 일반 input류 hover edge를 `ink.soft`에서 `ink.faint`로 낮췄습니다.
 
 기본 edge보다 한 단계만 또렷해지는 가벼운 hover를 목표로 조정했습니다. 이 상태도 semantic Form의 명시적인 status edge와는 충분히 구분됩니다.
+## 2026-09-16 — Limit form focus rings to keyboard navigation
+
+- 변경 파일: Field·Select·Textarea focus styles
+- 요약: 클릭 포커스에서는 ring을 표시하지 않고 `:focus-visible`인 keyboard focus에만 표시하도록 바꿨습니다.
+
+입력 중인 위치는 caret과 hover edge로 충분히 드러나므로, blue focus ring은 Tab 탐색처럼 키보드 위치를 잃기 쉬운 상황에만 남겼습니다. Field는 wrapper가 outline을 맡아 내부 input의 `:focus-visible` 상태를 읽습니다.
