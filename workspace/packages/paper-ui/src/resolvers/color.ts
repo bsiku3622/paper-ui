@@ -30,9 +30,7 @@ export type Color = (typeof COLORS)[number];
 // 면의 무게 11 단. 각 variant는 fg·bg·border·interaction 네 슬롯의 조합이며,
 // plain 은 soft 면과 outline 선을 함께 써, 둘 중 하나만으로는 분리가
 // 부족한 조밀한 chrome 에 쓴다. Table의 구조 variant="plain"과는 다른 타입이다.
-// **테두리만 있는 자리가 둘**이고, 둘은 세기가 아니라 *어느 선이냐* 로
-// 갈린다 — 그래서 이름도 둘 다 선을 말한다(`-line` 으로 운이 맞는 건 의도다). 둘 중 어느
-// 쪽도 `quiet` 과 헷갈리지 않는다 — quiet 만 선이 없다.
+// **테두리만 있는 자리가 셋**이고, 둘은 세기가 아니라 *어느 선이냐* 로 갈린다.
 //
 //   solid    채운 면
 //   soft     옅은 면
@@ -40,7 +38,9 @@ export type Color = (typeof COLORS)[number];
 //   outline  컨트롤이 소유한 또렷한 테두리 (color family 의 edgeStrong · 지면 대비 3:1)
 //   hairline 지면이 소유한 헤어라인 (카드 · 빈 입력칸과 같은 선)
 //   hairlineMuted  흐린 잉크·헤어라인. hover 때 잉크와 선을 함께 세운다
-//   softMuted    soft 면·soft 선·흐린 잉크
+//   softMuted    soft 면·무테·흐린 잉크
+//   plainMuted   soft 면·soft 선·흐린 잉크
+//   outlineMuted 투명 면·강한 선·흐린 잉크
 //   ghost    면과 선 없이 잉크만
 //   ghostMuted     면과 선 없이 흐린 잉크
 //
@@ -50,14 +50,15 @@ export type Color = (typeof COLORS)[number];
 export const VARIANTS = [
   "solid",
   "soft",
+  "softMuted",
   "plain",
+  "plainMuted",
   "outline",
+  "outlineMuted",
   "hairline",
   "hairlineMuted",
-  "softMuted",
   "ghost",
   "ghostMuted",
-  "quiet",
 ] as const;
 export type Variant = (typeof VARIANTS)[number];
 

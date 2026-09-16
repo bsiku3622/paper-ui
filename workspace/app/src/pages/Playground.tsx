@@ -190,13 +190,13 @@ export const Playground = () => {
             <Button variant="plain" data-testid="btn-plain">plain</Button>
             <Button variant="outline" data-testid="btn-outline">outline</Button>
             <Button variant="hairline" data-testid="btn-hairline">hairline</Button>
-            <Button variant="quiet" data-testid="btn-quiet">quiet</Button>
+            <Button variant="ghostMuted" data-testid="btn-ghost-muted">ghostMuted</Button>
           </Spec>
           <Spec label="color — 의미 색 (variant 와 직교)">
             <Button color="error" data-testid="btn-danger">삭제</Button>
             <Button variant="soft" color="success" data-testid="btn-soft-success">완료</Button>
             <Button variant="soft" color="warning" data-testid="btn-soft-warning">주의</Button>
-            <Button variant="quiet" color="error">지우기</Button>
+            <Button variant="ghostMuted" color="error">지우기</Button>
           </Spec>
           <Spec label="solid — 텍스트도 그 색의 톤으로 (모노크로매틱, 버튼 전체가 한 색)">
             <Button color="primary">primary</Button>
@@ -365,7 +365,7 @@ export const Playground = () => {
             <Badge color="success" variant="solid">완료</Badge>
             <Badge color="info" variant="plain">plain</Badge>
             <Badge color="info" variant="outline">검토</Badge>
-            <Badge color="warning" variant="quiet">주의</Badge>
+            <Badge color="warning" variant="ghostMuted">주의</Badge>
             <Badge color="info" dot>진행</Badge>
             <Badge color="success" dot>정상</Badge>
           </Spec>
@@ -495,7 +495,7 @@ export const Playground = () => {
               별도 축을 세우지 않은 건 variant 가 이미 *면의 무게* 축이기 때문이다. */}
           <Spec label="Alert — variant (같은 색, 네 가지 면의 무게)" testid="spec-alert-variant">
             <Inline gap="md" wrap align="start">
-              {(["soft", "solid", "plain", "outline", "hairline", "quiet"] as const).map((v) => (
+              {(["soft", "softMuted", "plain", "plainMuted", "solid", "outline", "outlineMuted", "hairline", "hairlineMuted", "ghost", "ghostMuted"] as const).map((v) => (
                 <Box key={v} style={{ width: "15rem" }} data-testid={`alert-${v}`}>
                   <Alert color="error" variant={v}>
                     <Alert.Title>확인이 필요합니다</Alert.Title>
@@ -633,7 +633,7 @@ export const Playground = () => {
         </Modal.Header>
         <Modal.Body><Text variant="body">떠 있는 것만 그림자를 갖는다. Esc 로 닫힌다.</Text></Modal.Body>
         <Modal.Footer>
-          <Modal.Close variant="quiet">취소</Modal.Close>
+          <Modal.Close variant="ghostMuted">취소</Modal.Close>
           <Modal.Close>확인</Modal.Close>
         </Modal.Footer>
       </Modal>

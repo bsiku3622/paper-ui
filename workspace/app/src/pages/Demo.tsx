@@ -227,7 +227,7 @@ export const Demo = () => {
           </Inline>
         </Stack></Modal.Body>
         <Modal.Footer>
-          <Modal.Close variant="quiet">취소</Modal.Close>
+          <Modal.Close variant="ghostMuted">취소</Modal.Close>
           <Modal.Close>만들기</Modal.Close>
         </Modal.Footer>
       </Modal>

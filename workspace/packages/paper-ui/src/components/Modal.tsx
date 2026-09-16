@@ -121,7 +121,7 @@ export const ModalHeader = ({ children, closeButton = true }: ModalHeaderProps) 
       <Inline padding="lg" gap="md" justify="between" align="start">
         <Stack gap="xs" className={modalHeaderCopy}>{children}</Stack>
         {closeButton ? (
-          <Button variant="quiet" size="sm" iconOnly aria-label="닫기" onClick={close}>
+          <Button variant="ghostMuted" size="sm" iconOnly aria-label="닫기" onClick={close}>
             <Icon><path d="M6 6l12 12M18 6L6 18" /></Icon>
           </Button>
         ) : null}

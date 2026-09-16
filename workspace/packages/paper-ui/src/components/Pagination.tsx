@@ -22,7 +22,7 @@ export type PaginationVariant = "outline" | "soft" | "minimal";
 const PAGE_VARIANT = {
   outline: { current: "solid", rest: "hairline" },
   soft: { current: "solid", rest: "soft" },
-  minimal: { current: "soft", rest: "quiet" },
+  minimal: { current: "soft", rest: "ghostMuted" },
 } as const;
 
 type PageItem = number | "ellipsis";
@@ -42,7 +42,7 @@ export const Pagination = ({ page, totalPages, onPageChange, "aria-label": ariaL
 
   return (
     <Inline as="nav" aria-label={ariaLabel} className={joinClass(paginationRoot, className)}>
-      <Button size="sm" variant="quiet" disabled={current === 1} onClick={() => onPageChange(current - 1)}>
+      <Button size="sm" variant="ghostMuted" disabled={current === 1} onClick={() => onPageChange(current - 1)}>
         이전
       </Button>
       {items.map((item, index) =>
@@ -62,7 +62,7 @@ export const Pagination = ({ page, totalPages, onPageChange, "aria-label": ariaL
           </Button>
         ),
       )}
-      <Button size="sm" variant="quiet" disabled={current === total} onClick={() => onPageChange(current + 1)}>
+      <Button size="sm" variant="ghostMuted" disabled={current === total} onClick={() => onPageChange(current + 1)}>
         다음
       </Button>
     </Inline>

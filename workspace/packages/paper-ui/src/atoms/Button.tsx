@@ -1,12 +1,12 @@
 // Button — 누르는 자리. 색은 resolver 가 정한다: color(의미) × variant(시각 무게).
 //   color    primary(검정 일꾼) · info · success · warning · error
-//   variant  solid · soft · outline · quiet
+//   variant  solid · soft · outline · ghostMuted
 //   shape    rounded(시스템 곡선) · pill(알약)
 //
 // 예) <Button>저장</Button>                        검정 solid (primary)
 //     <Button variant="soft">미리보기</Button>      회색 secondary
 //     <Button color="error">삭제</Button>           빨강 solid
-//     <Button color="error" variant="quiet">…</Button>  빨강 텍스트
+//     <Button color="error" variant="ghostMuted">…</Button>  빨강 텍스트
 //     <Button loading>저장 중</Button>              스피너 + aria-busy
 //     <Button iconOnly aria-label="닫기"><Icon>…</Icon></Button>  정사각
 //     <Button shape="pill">시작하기</Button>        알약 (hero CTA 자리)

@@ -286,3 +286,9 @@ xs를 전체 컨트롤 사다리에 넣어 보니 복사 버튼 하나를 줄이
 - 요약: `tonal`과 `tonalMuted`를 shared variant 사다리에서 제거했습니다.
 
 현재는 solid·soft와 역할이 겹치고, 별도의 tonal surface를 요구하는 실제 사용처가 없습니다. 필요할 때 다시 추가할 수 있도록 색 profile 축을 유지하되 공개 variant로는 노출하지 않았습니다.
+## 2026-09-16 — Rebalance muted variants and remove quiet
+
+- 변경 파일: `workspace/packages/paper-ui/src/resolvers/color.ts`, `workspace/packages/paper-ui/src/styles/color-profile.ts`, `workspace/packages/paper-ui/src/components/Modal.tsx`, `workspace/packages/paper-ui/src/components/Pagination.tsx`, `workspace/app/src/playground/registry.tsx`
+- 요약: `quiet`을 제거하고 `plainMuted`, `outlineMuted`를 추가했습니다. `softMuted`는 무테 soft variant로 분리했으며, 기존 quiet 사용처는 `ghostMuted`로 치환했습니다. Playground variant 순서도 기본 variant 뒤 muted 대응 variant가 오도록 재정렬했습니다.
+
+이제 면과 선의 조합이 겹치지 않습니다. `softMuted`는 soft 면만, `plainMuted`는 soft 면과 hairline 선, `outlineMuted`는 투명 면과 강한 선, `hairlineMuted`는 투명 면과 page hairline을 담당합니다.

@@ -173,9 +173,9 @@ const DetailView = ({ spec }: { spec: CompSpec }) => {
           <Stack gap="lg">
             <Inline justify="between" align="center">
               <Text variant="label">Props</Text>
-              {/* 손으로 꾸민 raw <button> 이었다 — quiet 변형이 바로 그 자리다. */}
+              {/* 손으로 꾸민 raw <button> 이었다 — ghostMuted 변형이 바로 그 자리다. */}
               {spec.controls.length > 0 && (
-                <Button variant="quiet" size="sm" onClick={() => { setState(defaultState(spec)); setDraft(undefined); setCodeError(undefined); }}>
+                <Button variant="ghostMuted" size="sm" onClick={() => { setState(defaultState(spec)); setDraft(undefined); setCodeError(undefined); }}>
                   초기화
                 </Button>
               )}
