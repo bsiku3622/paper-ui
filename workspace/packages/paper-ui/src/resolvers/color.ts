@@ -40,7 +40,7 @@ export type Color = (typeof COLORS)[number];
 //   outline  컨트롤이 소유한 또렷한 테두리 (color family 의 edgeStrong · 지면 대비 3:1)
 //   hairline 지면이 소유한 헤어라인 (카드 · 빈 입력칸과 같은 선)
 //   hairlineMuted  흐린 잉크·헤어라인. hover 때 잉크와 선을 함께 세운다
-//   muted    soft 면·soft 선·흐린 잉크
+//   softMuted    soft 면·soft 선·흐린 잉크
 //   ghost    면과 선 없이 잉크만
 //   ghostMuted     면과 선 없이 흐린 잉크
 //   tonal    solid 면에 잉크색 선을 겹친다
@@ -56,7 +56,7 @@ export const VARIANTS = [
   "outline",
   "hairline",
   "hairlineMuted",
-  "muted",
+  "softMuted",
   "ghost",
   "ghostMuted",
   "tonal",

@@ -274,3 +274,9 @@ xs를 전체 컨트롤 사다리에 넣어 보니 복사 버튼 하나를 줄이
 - 요약: Button·Badge·Field·Select·Textarea의 Props table에 `fontSize`를 노출하고, 기본값은 코드에서 생략되도록 했습니다. 각 컴포넌트의 `size` geometry는 유지한 채 typography만 조정합니다.
 
 `size`와 `fontSize`를 같은 축으로 묶으면 작은 라벨 하나 때문에 컨트롤 높이와 아이콘까지 축소됩니다. Playground에서는 `default / label / caption / body`만 노출해 의도적인 typography override만 허용하고, 기본값은 기존 컴포넌트의 size 사다리를 따르게 두었습니다.
+## 2026-09-16 — Rename muted variant to softMuted
+
+- 변경 파일: `workspace/packages/paper-ui/src/resolvers/color.ts`, `workspace/packages/paper-ui/src/styles/color-profile.ts`, `workspace/app/src/playground/registry.tsx`
+- 요약: `muted` variant를 `softMuted`로 이름을 명확히 바꿨습니다.
+
+이 variant는 일반적인 약화 상태가 아니라 soft 배경·soft border·softInk를 한 묶음으로 쓰는 조합이므로, 이름에 기반면을 드러내는 편이 shared variant 사다리를 읽기 쉽습니다. 시각값과 hover 동작은 바꾸지 않았습니다.
