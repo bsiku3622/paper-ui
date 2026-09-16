@@ -1,4 +1,4 @@
-# CLAUDE.md
+# AGENTS.md
 
 ## 이 레포지토리
 
