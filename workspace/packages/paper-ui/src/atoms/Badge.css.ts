@@ -1,6 +1,6 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
-import { tokens, CONTROL_SIZES, type ControlSize } from "../tokens";
+import { tokens, CONTROL_SIZES, TEXT_VARIANTS, type ControlSize, type TextVariant } from "../tokens";
 
 // geometry 만. 색은 resolveColor(color, variant) 가 붙이는 pui-c-{color}-{variant}
 // 클래스가 정한다. Badge 는 gate(pui-interactive)를 안 붙여 hover 색이 뜨지 않는다 —
@@ -59,4 +59,8 @@ export const badgeSize = styleVariants(
       },
     ]),
   ) as Record<ControlSize, { height: string; paddingInline: string; fontSize: string }>,
+);
+
+export const badgeFontSize = styleVariants(
+  Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.text.size[variant] }])) as Record<TextVariant, { fontSize: string }>,
 );

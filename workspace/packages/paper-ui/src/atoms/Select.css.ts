@@ -1,6 +1,6 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
-import { tokens, stateTransition } from "../tokens";
+import { tokens, stateTransition, TEXT_VARIANTS, type TextVariant } from "../tokens";
 import { ladderRules } from "../internal/sizeLadder";
 
 // 크기(height·fontSize·좌우 padding)는 size 축(selectSize)이 정한다 — Button·Field 와
@@ -78,6 +78,10 @@ export const selectSize = styleVariants(
     paddingInline: tokens.shape.inputPaddingX[s],
     paddingInlineEnd: tokens.shape.padding.xl.interaction,
   })),
+);
+
+export const selectFontSize = styleVariants(
+  Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.text.size[variant] }])) as Record<TextVariant, { fontSize: string }>,
 );
 
 // 알약 — Field 와 같은 어휘. 화살표는 오른쪽 여백 24 안에 앉아 곡선과 안 부딪친다

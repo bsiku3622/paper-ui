@@ -196,11 +196,12 @@ export const COMPONENTS: CompSpec[] = [
     change: "mod",
     name: "Button",
     group: "Atoms",
-    blurb: "두 축이 직교한다 — color(primary·의미 4색) × variant(solid·soft·plain·outline·hairline·quiet). plain은 soft 면과 outline 선을 함께 든다. 큰 면을 채우는 건 검정(primary)뿐, 색은 뜻을 질 때만.",
+    blurb: "color × variant가 독립된 시각 무게 축이다. solid·outline·hairline·muted·ghost·tonal 계열을 고르고, fontSize는 버튼 실루엣과 별도로 조절한다.",
     controls: [
       { kind: "enum", prop: "color", label: "color", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
-      { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "plain", "outline", "hairline", "quiet"], def: "solid" },
+      { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "plain", "outline", "hairline", "hairlineMuted", "muted", "ghost", "ghostMuted", "tonal", "tonalMuted", "quiet"], def: "solid" },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
+      { kind: "enum", prop: "fontSize", label: "fontSize", options: ["default", "label", "caption", "body"], def: "default" },
       { kind: "bool", prop: "loading", label: "loading", def: false },
       { kind: "bool", prop: "fullWidth", label: "fullWidth", def: false },
       { kind: "bool", prop: "iconOnly", label: "iconOnly(aria-label 필수)", def: false },
@@ -214,6 +215,7 @@ export const COMPONENTS: CompSpec[] = [
         color: s(st.color) as Color,
         variant: s(st.variant) as Variant,
         size: s(st.size) as "sm" | "md" | "lg",
+        fontSize: st.fontSize === "default" ? undefined : (s(st.fontSize) as TextVariant),
         loading: b(st.loading),
         fullWidth: b(st.fullWidth),
         shape: s(st.shape) as "rounded" | "pill",
@@ -228,7 +230,7 @@ export const COMPONENTS: CompSpec[] = [
       );
     },
     code: (st) =>
-      `<Button${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "solid")}${AE("size", s(st.size), "md")}${A("loading", b(st.loading))}${A("fullWidth", b(st.fullWidth))}${AE("shape", s(st.shape), "rounded")}${A("disabled", b(st.disabled))}${b(st.iconOnly) ? ` iconOnly aria-label="${s(st.children) || "추가"}"><Icon>…</Icon>` : `>${s(st.children)}`}</Button>`,
+      `<Button${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "solid")}${AE("size", s(st.size), "md")}${AE("fontSize", s(st.fontSize), "default")}${A("loading", b(st.loading))}${A("fullWidth", b(st.fullWidth))}${AE("shape", s(st.shape), "rounded")}${A("disabled", b(st.disabled))}${b(st.iconOnly) ? ` iconOnly aria-label="${s(st.children) || "추가"}"><Icon>…</Icon>` : `>${s(st.children)}`}</Button>`,
   },
   {
     slug: "badge",
@@ -238,16 +240,17 @@ export const COMPONENTS: CompSpec[] = [
     blurb: "상태 한 낱말. color × variant(soft·solid·outline·quiet). dot 으로 앞에 상태 점. 표시용이라 hover 없음. shape=\"pill\" 이면 알약 — Button 과 같은 어휘라 나란히 서도 곡선이 갈리지 않는다.",
     controls: [
       { kind: "enum", prop: "color", label: "color", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
-      { kind: "enum", prop: "variant", label: "variant", options: ["soft", "solid", "plain", "outline", "hairline", "quiet"], def: "soft" },
+      { kind: "enum", prop: "variant", label: "variant", options: ["soft", "solid", "plain", "outline", "hairline", "hairlineMuted", "muted", "ghost", "ghostMuted", "tonal", "tonalMuted", "quiet"], def: "soft" },
       { kind: "bool", prop: "dot", label: "dot", def: false },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
+      { kind: "enum", prop: "fontSize", label: "fontSize", options: ["default", "label", "caption", "body"], def: "default" },
       { kind: "enum", prop: "shape", label: "shape", options: ["rounded", "pill"], def: "rounded" },
       { kind: "text", prop: "children", label: "children", def: "진행" },
     ],
     render: (st) => (
-      <Badge color={s(st.color) as Color} variant={s(st.variant) as Variant} dot={b(st.dot)} size={s(st.size) as "sm" | "md" | "lg"} shape={s(st.shape) as "rounded" | "pill"}>{s(st.children)}</Badge>
+      <Badge color={s(st.color) as Color} variant={s(st.variant) as Variant} dot={b(st.dot)} size={s(st.size) as "sm" | "md" | "lg"} fontSize={st.fontSize === "default" ? undefined : (s(st.fontSize) as TextVariant)} shape={s(st.shape) as "rounded" | "pill"}>{s(st.children)}</Badge>
     ),
-    code: (st) => `<Badge${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "soft")}${A("dot", b(st.dot))}${AE("size", s(st.size), "md")}${AE("shape", s(st.shape), "rounded")}>${s(st.children)}</Badge>`,
+    code: (st) => `<Badge${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "soft")}${A("dot", b(st.dot))}${AE("size", s(st.size), "md")}${AE("fontSize", s(st.fontSize), "default")}${AE("shape", s(st.shape), "rounded")}>${s(st.children)}</Badge>`,
   },
   {
     slug: "field",
@@ -264,6 +267,7 @@ export const COMPONENTS: CompSpec[] = [
       { kind: "enum", prop: "align", label: "align", options: ["start", "center", "end"], def: "start" },
       { kind: "enum", prop: "status", label: "status", options: ["default", "info", "success", "warning", "error"], def: "default" },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
+      { kind: "enum", prop: "fontSize", label: "fontSize", options: ["default", "label", "caption", "body"], def: "default" },
       { kind: "enum", prop: "shape", label: "shape", options: ["rounded", "pill"], def: "rounded" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
       { kind: "bool", prop: "numeric", label: "numeric", def: false },
@@ -281,6 +285,7 @@ export const COMPONENTS: CompSpec[] = [
           align={s(st.align) as "start" | "center" | "end"}
           status={s(st.status) as "default" | StatusName}
           size={s(st.size) === "default" ? undefined : s(st.size) as "sm" | "md" | "lg"}
+          fontSize={st.fontSize === "default" ? undefined : (s(st.fontSize) as TextVariant)}
           shape={s(st.shape) === "default" ? undefined : s(st.shape) as "rounded" | "pill"}
           disabled={b(st.disabled)}
           numeric={b(st.numeric)}
@@ -288,7 +293,7 @@ export const COMPONENTS: CompSpec[] = [
       </Box>
     ),
     code: (st) =>
-      `<Field${A("placeholder", s(st.placeholder))}${AE("type", s(st.type), "text")}${b(st.leading) ? " leading={<Icon>…</Icon>}" : ""}${b(st.trailing) ? ' trailing={<Text ink="faint">kg</Text>}' : ""}${A("clearable", b(st.clearable))}${A("showPasswordToggle", b(st.showPasswordToggle))}${AE("align", s(st.align), "start")}${AE("status", s(st.status), "default")}${AE("size", s(st.size), "md")}${AE("shape", s(st.shape), "rounded")}${A("disabled", b(st.disabled))}${A("numeric", b(st.numeric))} />`,
+      `<Field${A("placeholder", s(st.placeholder))}${AE("type", s(st.type), "text")}${b(st.leading) ? " leading={<Icon>…</Icon>}" : ""}${b(st.trailing) ? ' trailing={<Text ink="faint">kg</Text>}' : ""}${A("clearable", b(st.clearable))}${A("showPasswordToggle", b(st.showPasswordToggle))}${AE("align", s(st.align), "start")}${AE("status", s(st.status), "default")}${AE("size", s(st.size), "md")}${AE("fontSize", s(st.fontSize), "default")}${AE("shape", s(st.shape), "rounded")}${A("disabled", b(st.disabled))}${A("numeric", b(st.numeric))} />`,
   },
   {
     slug: "checkbox",
@@ -337,6 +342,7 @@ export const COMPONENTS: CompSpec[] = [
     blurb: "native select anatomy를 Select.Option과 Select.Group으로 드러낸다. Button·Field와 같은 사다리를 쓰고, option 안에는 native 계약에 맞게 텍스트만 둔다.",
     controls: [
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
+      { kind: "enum", prop: "fontSize", label: "fontSize", options: ["default", "label", "caption", "body"], def: "default" },
       { kind: "enum", prop: "shape", label: "shape", options: ["rounded", "pill"], def: "rounded" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
     ],
@@ -344,6 +350,7 @@ export const COMPONENTS: CompSpec[] = [
       <Box style={{ width: "12rem" }}>
         <Select
           size={s(st.size) === "default" ? undefined : s(st.size) as "sm" | "md" | "lg"}
+          fontSize={st.fontSize === "default" ? undefined : (s(st.fontSize) as TextVariant)}
           shape={s(st.shape) === "default" ? undefined : s(st.shape) as "rounded" | "pill"}
           disabled={b(st.disabled)}
         >
@@ -356,7 +363,7 @@ export const COMPONENTS: CompSpec[] = [
       </Box>
     ),
     code: (st) =>
-      `<Select${st.size === "default" ? "" : AE("size", s(st.size), "md")}${st.shape === "default" ? "" : AE("shape", s(st.shape), "rounded")}${A("disabled", b(st.disabled))}>\n  <Select.Option value="a">옵션 A</Select.Option>\n  <Select.Group label="추가 옵션">\n    <Select.Option value="b">옵션 B</Select.Option>\n  </Select.Group>\n</Select>`,
+      `<Select${st.size === "default" ? "" : AE("size", s(st.size), "md")}${AE("fontSize", s(st.fontSize), "default")}${st.shape === "default" ? "" : AE("shape", s(st.shape), "rounded")}${A("disabled", b(st.disabled))}>\n  <Select.Option value="a">옵션 A</Select.Option>\n  <Select.Group label="추가 옵션">\n    <Select.Option value="b">옵션 B</Select.Option>\n  </Select.Group>\n</Select>`,
   },
   {
     slug: "icon",
@@ -413,15 +420,16 @@ export const COMPONENTS: CompSpec[] = [
       { kind: "text", prop: "placeholder", label: "placeholder", def: "여러 줄 입력…" },
       { kind: "enum", prop: "status", label: "status", options: ["default", "info", "success", "warning", "error"], def: "default" },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
+      { kind: "enum", prop: "fontSize", label: "fontSize", options: ["default", "label", "caption", "body"], def: "default" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
     ],
     render: (st) => (
       <Box style={{ width: "18rem" }}>
-        <Textarea placeholder={s(st.placeholder)} status={s(st.status) as "default" | StatusName} size={s(st.size) as "sm" | "md" | "lg"} disabled={b(st.disabled)} rows={3} />
+        <Textarea placeholder={s(st.placeholder)} status={s(st.status) as "default" | StatusName} size={s(st.size) as "sm" | "md" | "lg"} fontSize={st.fontSize === "default" ? undefined : (s(st.fontSize) as TextVariant)} disabled={b(st.disabled)} rows={3} />
       </Box>
     ),
     code: (st) =>
-      `<Textarea${A("placeholder", s(st.placeholder))}${AE("status", s(st.status), "default")}${AE("size", s(st.size), "md")}${A("disabled", b(st.disabled))} />`,
+      `<Textarea${A("placeholder", s(st.placeholder))}${AE("status", s(st.status), "default")}${AE("size", s(st.size), "md")}${AE("fontSize", s(st.fontSize), "default")}${A("disabled", b(st.disabled))} />`,
   },
   {
     slug: "switch",
@@ -583,7 +591,7 @@ export const COMPONENTS: CompSpec[] = [
     blurb: "상태 한 줄을 색이 깔린 면으로 알린다. Button·Badge 와 같은 color × variant 매트릭스를 그대로 문다 — variant 가 이미 면의 무게 축이라 Alert 전용 surface 축을 따로 세우지 않았다.",
     controls: [
       { kind: "enum", prop: "color", label: "color", options: ["primary", "info", "success", "warning", "error"], def: "info" },
-      { kind: "enum", prop: "variant", label: "variant", options: ["soft", "solid", "plain", "outline", "hairline", "quiet"], def: "soft" },
+      { kind: "enum", prop: "variant", label: "variant", options: ["soft", "solid", "plain", "outline", "hairline", "hairlineMuted", "muted", "ghost", "ghostMuted", "tonal", "tonalMuted", "quiet"], def: "soft" },
       { kind: "text", prop: "title", label: "title", def: "확인이 필요합니다" },
       { kind: "text", prop: "children", label: "children", def: "이 작업은 되돌릴 수 없습니다." },
     ],

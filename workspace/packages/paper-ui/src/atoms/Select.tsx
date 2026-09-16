@@ -9,24 +9,25 @@ import {
 } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import type { ControlSize } from "../tokens";
-import { selectRoot, selectSize, selectPill } from "./Select.css";
+import type { ControlSize, TextVariant } from "../tokens";
+import { selectRoot, selectSize, selectFontSize, selectPill } from "./Select.css";
 
 export type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "className" | "children" | "size"> & {
   children: ReactNode;
   size?: ControlSize;
+  fontSize?: TextVariant;
   shape?: "rounded" | "pill";
   className?: string;
 };
 
 const SelectRoot = forwardRef<HTMLSelectElement, SelectProps>(function SelectRoot(
-  { children, size = "md", shape = "rounded", className, ...rest },
+  { children, size = "md", fontSize, shape = "rounded", className, ...rest },
   ref,
 ) {
   return (
     <select
       ref={ref}
-      className={joinClass(selectRoot, selectSize[size], shape === "pill" && selectPill, className)}
+      className={joinClass(selectRoot, selectSize[size], fontSize && selectFontSize[fontSize], shape === "pill" && selectPill, className)}
       {...rest}
     >
       {children}
