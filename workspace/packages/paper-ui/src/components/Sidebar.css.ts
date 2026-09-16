@@ -25,6 +25,8 @@ export const sidebarGroupLabel = style({
 export const sidebarItem = style({
   appearance: "none",
   width: "100%",
+  position: "relative",
+  isolation: "isolate",
   minHeight: tokens.shape.height.sm.interaction,
   display: "flex",
   alignItems: "center",
@@ -40,12 +42,29 @@ export const sidebarItem = style({
   fontFamily: tokens.text.font.sans,
   fontSize: tokens.text.size.body,
   fontWeight: tokens.text.weight.normal,
-  transition: stateTransition("background", "color"),
-  selectors: { "&:hover": { background: tokens.color.interaction.hover, color: tokens.color.ink.base } },
+  transition: stateTransition("color"),
+  selectors: {
+    "&::after": {
+      content: "\"\"",
+      position: "absolute",
+      inset: 0,
+      borderRadius: "inherit",
+      background: tokens.color.interaction.hover,
+      opacity: 0,
+      pointerEvents: "none",
+      zIndex: 1,
+      transition: stateTransition("opacity"),
+    },
+    "&:hover": { color: tokens.color.ink.base },
+    "&:hover::after": { opacity: 1 },
+  },
 });
 
+// 행의 텍스트와 Badge는 overlay 아래에 둔다. 그래야 선택/hover 면이 Badge를
+// 따로 떠 있는 칩처럼 남기지 않고 같은 틴트로 덮는다.
+globalStyle(`${sidebarItem} > *`, { position: "relative", zIndex: 0 });
+
 export const sidebarItemActive = style({
-  background: tokens.color.interaction.selected,
   color: tokens.color.ink.base,
   fontWeight: tokens.text.weight.medium,
   // route 전환 직후 badge overlay는 즉시 생긴다. 행 배경도 같은 프레임에 selected로
@@ -53,14 +72,10 @@ export const sidebarItemActive = style({
   transition: stateTransition("color"),
   // 포인터가 클릭 위치에 남아 있어도 일반 hover가 selected 면을 덮지 못하게 한다.
   selectors: {
-    "&:hover": { background: tokens.color.interaction.selected, color: tokens.color.ink.base },
+    "&::after": { background: tokens.color.interaction.selected, opacity: 1 },
+    "&:hover": { color: tokens.color.ink.base },
+    "&:hover::after": { background: tokens.color.interaction.selected },
   },
 });
 
 export const sidebarBadge = style({ marginLeft: "auto", flex: "0 0 auto" });
-
-// selected는 행과 badge를 같은 neutral overlay 아래에 둔다. soft pigment를 없애지 않고
-// 그 위에 행과 같은 selected tint를 합성하므로, 색의 뜻은 남되 별도 층처럼 뜨지 않는다.
-export const sidebarBadgeSelectedOverlay = style({
-  backgroundImage: `linear-gradient(${tokens.color.interaction.selected}, ${tokens.color.interaction.selected})`,
-});

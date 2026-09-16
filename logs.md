@@ -340,3 +340,9 @@ Playground가 이 레포의 유일한 시각 검증 surface이므로, 패키지 
 - 요약: Icon을 Atom에서 Primitive로 이동하고 `sm/md/lg` 대신 typography ladder의 `label/caption/body/subheading`을 사용하도록 정리했습니다.
 
 아이콘은 텍스트처럼 조합되는 가장 낮은 수준의 표시 primitive라 Button·Field 같은 Atom과 같은 서랍에 둘 이유가 없었습니다. 공개 크기 이름은 typography ladder와 공유하되, 24 viewBox path의 내부 여백 때문에 실제 아트보드는 14·16·18·20px로 광학 보정했습니다. IconButton의 기본은 기존 `md`와 같은 18px인 `body`로 유지해 화면 크기를 보존했습니다. Playground에서도 Icon을 Primitives 그룹으로 옮기고 size·iconSize 선택지를 새 어휘로 갱신했습니다.
+## 2026-09-16 — Keep Sidebar state overlay above badges
+
+- 변경 파일: Sidebar layer CSS·compound badge test
+- 요약: Sidebar hover/selected overlay를 행 pseudo-element로 올려 Badge까지 같은 상태 틴트 아래에 두었습니다.
+
+기존에는 selected soft Badge 자체에 별도 gradient를 붙여 배지가 행의 overlay 위로 튀어나온 것처럼 보였습니다. 이제 행이 stacking context를 소유하고 텍스트와 Badge는 overlay보다 아래에 놓입니다. selected는 클릭 즉시, hover는 포인터 진입 즉시 같은 레이어에서 합성되며 Badge의 의미 색은 유지하면서 별도 칩처럼 떠 보이지 않습니다.
