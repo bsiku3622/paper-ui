@@ -14,6 +14,7 @@ export type ColorSpec = {
   hoverBackground?: string;
   hoverOverlay?: string;
   hoverColor?: string;
+  hoverBorderColor?: string;
 };
 
 // ── primary — 검정 일꾼 색 family ────────────────────────────────────────────
@@ -57,6 +58,49 @@ const primaryProfile: Record<Variant, ColorSpec> = {
     background: "transparent",
     color: tokens.color.ink.base,
     borderColor: tokens.color.border.base,
+    hoverOverlay: tokens.color.interaction.hover,
+    hoverBorderColor: tokens.color.primary.edgeStrong,
+  },
+  hairlineMuted: {
+    background: "transparent",
+    color: tokens.color.ink.soft,
+    borderColor: tokens.color.border.base,
+    hoverOverlay: tokens.color.interaction.hover,
+    hoverColor: tokens.color.ink.base,
+    hoverBorderColor: tokens.color.primary.edgeStrong,
+  },
+  muted: {
+    background: tokens.color.paper.well,
+    color: tokens.color.ink.soft,
+    borderColor: tokens.color.border.base,
+    hoverOverlay: tokens.color.interaction.hover,
+    hoverColor: tokens.color.ink.base,
+    hoverBorderColor: tokens.color.primary.edgeStrong,
+  },
+  ghost: {
+    background: "transparent",
+    color: tokens.color.ink.base,
+    borderColor: "transparent",
+    hoverOverlay: tokens.color.interaction.hover,
+    hoverColor: tokens.color.ink.soft,
+  },
+  ghostMuted: {
+    background: "transparent",
+    color: tokens.color.ink.soft,
+    borderColor: "transparent",
+    hoverOverlay: tokens.color.interaction.hover,
+    hoverColor: tokens.color.ink.base,
+  },
+  tonal: {
+    background: tokens.color.primary.base,
+    color: tokens.color.primary.fg,
+    borderColor: tokens.color.primary.base,
+    hoverOverlay: tokens.color.interaction.hover,
+  },
+  tonalMuted: {
+    background: tokens.color.paper.well,
+    color: tokens.color.ink.base,
+    borderColor: tokens.color.ink.base,
     hoverOverlay: tokens.color.interaction.hover,
   },
   quiet: {
@@ -113,6 +157,48 @@ const accentProfile = (c: AccentTones): Record<Variant, ColorSpec> => ({
     color: c.ink,
     borderColor: c.edge,
     hoverBackground: c.wash,
+  },
+  hairlineMuted: {
+    background: "transparent",
+    color: c.softInk,
+    borderColor: c.edge,
+    hoverBackground: c.wash,
+    hoverColor: c.ink,
+    hoverBorderColor: c.edgeStrong,
+  },
+  muted: {
+    background: c.soft,
+    color: c.softInk,
+    borderColor: c.edge,
+    hoverOverlay: tokens.color.interaction.hover,
+    hoverColor: c.ink,
+    hoverBorderColor: c.edgeStrong,
+  },
+  ghost: {
+    background: "transparent",
+    color: c.ink,
+    borderColor: "transparent",
+    hoverBackground: c.wash,
+    hoverColor: c.softInk,
+  },
+  ghostMuted: {
+    background: "transparent",
+    color: c.softInk,
+    borderColor: "transparent",
+    hoverBackground: c.wash,
+    hoverColor: c.ink,
+  },
+  tonal: {
+    background: c.solid,
+    color: c.wash,
+    borderColor: c.ink,
+    hoverOverlay: tokens.color.interaction.hover,
+  },
+  tonalMuted: {
+    background: c.soft,
+    color: c.ink,
+    borderColor: c.ink,
+    hoverOverlay: tokens.color.interaction.hover,
   },
   quiet: {
     background: "transparent",

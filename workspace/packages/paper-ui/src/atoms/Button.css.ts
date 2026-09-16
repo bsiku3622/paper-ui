@@ -1,6 +1,6 @@
 import { style, styleVariants, keyframes } from "@vanilla-extract/css";
 
-import { tokens, stateTransition, type ControlSize } from "../tokens";
+import { tokens, stateTransition, TEXT_VARIANTS, type ControlSize, type TextVariant } from "../tokens";
 import { ladderRules } from "../internal/sizeLadder";
 
 // geometry·motion 만. 색(background·color·border-color)은 resolveColor 가 붙이는 pui-c-*
@@ -63,7 +63,6 @@ export const buttonFull = style({ width: "100%" });
 // Button 만의 fontWeight ladder — lg(CTA)에서 텍스트도 무거워져 강조를 회복한다.
 // sm·md=medium · lg=semibold. (Field 는 입력값 자리라 weight 변동 없음.)
 const BUTTON_WEIGHT: Record<ControlSize, string> = {
-  xs: tokens.text.weight.medium,
   sm: tokens.text.weight.medium,
   md: tokens.text.weight.medium,
   lg: tokens.text.weight.semibold,
@@ -75,6 +74,12 @@ const BUTTON_WEIGHT: Record<ControlSize, string> = {
 // height 와 fontSize 는 양쪽이 계속 공유한다 — 폼 한 줄에서 같은 높이에 서는 건 별개 문제.
 export const buttonSize = styleVariants(
   ladderRules((s) => ({ fontWeight: BUTTON_WEIGHT[s] })),
+);
+
+export const buttonFontSize = styleVariants(
+  Object.fromEntries(
+    TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.text.size[variant] }]),
+  ) as Record<TextVariant, { fontSize: string }>,
 );
 
 // 아이콘 전용 — 정사각(높이=너비), 좌우 패딩 제거. aria-label 은 필수(호출부 책임).

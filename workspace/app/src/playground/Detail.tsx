@@ -101,7 +101,7 @@ const CodeBlock = ({ code, onChange, error }: { code: string; onChange: (code: s
   return (
     <div className={`code-block${editing ? " code-block--editing" : ""}${error ? " code-block--error" : ""}`}>
       <div className="code-actions">
-        <Button variant="hairline" size="xs" onClick={copy}>{copied ? "복사됨" : "복사"}</Button>
+        <Button variant="hairline" size="sm" fontSize="label" onClick={copy}>{copied ? "복사됨" : "복사"}</Button>
         <Button
           variant="hairline"
           size="sm"
