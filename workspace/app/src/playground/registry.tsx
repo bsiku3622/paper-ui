@@ -206,6 +206,7 @@ export const COMPONENTS: CompSpec[] = [
       { kind: "bool", prop: "loading", label: "loading", def: false },
       { kind: "bool", prop: "fullWidth", label: "fullWidth", def: false },
       { kind: "bool", prop: "iconOnly", label: "iconOnly(aria-label 필수)", def: false },
+      { kind: "bool", prop: "leadingIcon", label: "leadingIcon", def: false },
       { kind: "enum", prop: "shape", label: "shape", options: ["rounded", "pill"], def: "rounded" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
       { kind: "text", prop: "children", label: "children", def: "버튼" },
@@ -223,16 +224,21 @@ export const COMPONENTS: CompSpec[] = [
         shape: s(st.shape) as "rounded" | "pill",
         disabled: b(st.disabled),
       };
+      const icon = b(st.leadingIcon) ? <Icon><path d="M12 5v14M5 12h14" /></Icon> : null;
       return b(st.iconOnly) ? (
         <Button {...common} iconOnly aria-label={s(st.children) || "추가"}>
           <Icon><path d="M12 5v14M5 12h14" /></Icon>
         </Button>
       ) : (
-        <Button {...common}>{s(st.children)}</Button>
+        <Button {...common}>{icon}{s(st.children)}</Button>
       );
     },
-    code: (st) =>
-      `<Button${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "solid")}${AE("size", s(st.size), "md")}${AE("fontSize", s(st.fontSize), "default")}${AE("iconSize", s(st.iconSize), "md")}${A("loading", b(st.loading))}${A("fullWidth", b(st.fullWidth))}${AE("shape", s(st.shape), "rounded")}${A("disabled", b(st.disabled))}${b(st.iconOnly) ? ` iconOnly aria-label="${s(st.children) || "추가"}"><Icon>…</Icon>` : `>${s(st.children)}`}</Button>`,
+    code: (st) => {
+      const opening = `<Button${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "solid")}${AE("size", s(st.size), "md")}${AE("fontSize", s(st.fontSize), "default")}${AE("iconSize", s(st.iconSize), "md")}${A("loading", b(st.loading))}${A("fullWidth", b(st.fullWidth))}${AE("shape", s(st.shape), "rounded")}${A("disabled", b(st.disabled))}`;
+      return b(st.iconOnly)
+        ? `${opening} iconOnly aria-label="${s(st.children) || "추가"}"><Icon>…</Icon></Button>`
+        : `${opening}>${b(st.leadingIcon) ? "<Icon>…</Icon>" : ""}${s(st.children)}</Button>`;
+    },
   },
   {
     slug: "badge",
