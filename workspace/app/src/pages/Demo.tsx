@@ -63,7 +63,7 @@ const STATE_STATUS: Record<State, StatusName | undefined> = {
   blocked: "error",
 };
 
-const searchIcon = <Icon size="sm" aria-hidden><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon>;
+const searchIcon = <Icon size="caption" aria-hidden><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon>;
 
 // avatar — 전용 컴포넌트 없이 Box 조합으로. 알약(radius=full) + well 면 + 이니셜.
 const Avatar = ({ name }: { name: string }) => (

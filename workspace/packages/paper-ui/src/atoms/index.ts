@@ -4,7 +4,6 @@ export { Field, type FieldProps } from "./Field";
 export { Label, type LabelProps } from "./Label";
 export { Badge, type BadgeProps } from "./Badge";
 export { Checkbox, type CheckboxProps } from "./Checkbox";
-export { Icon, type IconProps } from "./Icon";
 export { Divider, type DividerProps } from "./Divider";
 export { Link, type LinkProps } from "./Link";
 export { Select, SelectOption, SelectGroup, type SelectProps, type SelectOptionProps, type SelectGroupProps } from "./Select";

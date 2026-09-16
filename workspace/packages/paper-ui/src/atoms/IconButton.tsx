@@ -3,20 +3,20 @@
 
 import { cloneElement, forwardRef, type ReactElement } from "react";
 
-import type { ControlSize } from "../tokens";
+import type { IconSize } from "../primitives";
 import { joinClass } from "../internal/joinClass";
 import { Button, type ButtonProps } from "./Button";
-import { Icon, type IconProps } from "./Icon";
+import { Icon, type IconProps } from "../primitives";
 import { buttonIconOnly } from "./Button.css";
 
 export type IconButtonProps = Omit<ButtonProps<"button">, "children" | "fontSize"> & {
-  iconSize?: ControlSize;
+  iconSize?: IconSize;
   children: ReactElement<IconProps>;
   "aria-label": string;
 };
 
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(function IconButton(
-  { iconSize = "md", children, className, ...rest },
+  { iconSize = "body", children, className, ...rest },
   ref,
 ) {
   const icon = children.type === Icon ? cloneElement(children, { size: iconSize }) : children;

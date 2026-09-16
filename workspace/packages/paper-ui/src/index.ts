@@ -1,6 +1,6 @@
 // paper-ui — 순백 위에 부드럽게 그려지는 UI.
 //
-// 38 개 (Primitives 4 · Atoms 13 · Molecules 10 · Components 11). 이보다 늘리려면
+// 39 개 (Primitives 5 · Atoms 12 · Molecules 10 · Components 11). 이보다 늘리려면
 // 그 컴포넌트가 실제 화면에서 두 번 이상 필요했다는 증거가 있어야 한다.
 // "있으면 좋을 것 같아서" 는 증거가 아니다.
 
@@ -9,8 +9,8 @@ import "./styles/utility.css";
 import "./styles/color.css";
 
 // Primitives (4) — raw HTML 을 렌더하는 유일한 레이어
-export { Box, Stack, Inline, Text } from "./primitives";
-export type { BoxProps, BoxDimension, BoxLayoutProps, StackProps, InlineProps, TextProps } from "./primitives";
+export { Box, Stack, Inline, Text, Icon } from "./primitives";
+export type { BoxProps, BoxDimension, BoxLayoutProps, StackProps, InlineProps, TextProps, IconProps, IconSize } from "./primitives";
 
 // 테마 엔진 — 부분 화면 반전(ThemeScope)과 테마 제어(useTheme). Box inverse 도 이 엔진.
 export { ThemeScope, useTheme, useResolvedTheme } from "./primitives";
@@ -24,7 +24,6 @@ export {
   Label,
   Badge,
   Checkbox,
-  Icon,
   Divider,
   Link,
   Select,
@@ -42,7 +41,6 @@ export type {
   LabelProps,
   BadgeProps,
   CheckboxProps,
-  IconProps,
   DividerProps,
   LinkProps,
   SelectProps,

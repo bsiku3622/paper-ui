@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, type ComponentPropsWithoutRef, type ElementType, type KeyboardEvent, type MouseEvent, type ReactElement, type ReactNode } from "react";
 
-import { Icon } from "../atoms";
+import { Icon } from "../primitives";
 import { Box, type BoxProps } from "../primitives";
 import { joinClass } from "../internal/joinClass";
 import { useControllableState } from "../internal/useControllableState";
@@ -23,7 +23,7 @@ export type TreeNavigationItemProps<As extends ElementType = "button"> = TreeIte
 const TreeNavigationItemImpl = <As extends ElementType = "button">({ as, value, label, children, className, onClick, ...rest }: TreeNavigationItemProps<As>) => {
   const context = useContext(TreeContext); if (!context) throw new Error("TreeNavigation.Item must be used inside TreeNavigation"); const branch = children != null; const open = branch && context.expandedValues.has(value); const Tag = branch ? "button" : (as ?? "button"); const nextDepth = Math.min(4, context.depth + 1) as 1 | 2 | 3 | 4;
   return <Box><Box as={Tag as ElementType} {...(Tag === "button" ? { type: "button" as const } : null)} {...(rest as object)} role="treeitem" aria-level={context.depth} aria-expanded={branch ? open : undefined} aria-current={value === context.value ? "page" : undefined} data-tree-row className={joinClass(treeRow, treeDepth[context.depth], value === context.value && treeRowActive, className)} onClick={(event: MouseEvent<HTMLElement>) => { (onClick as ((event: MouseEvent<HTMLElement>) => void) | undefined)?.(event); if (event.defaultPrevented) return; if (branch) context.toggle(value); else context.onValueChange?.(value); }} onKeyDown={(event: KeyboardEvent<HTMLElement>) => { if (!branch) return; if (event.key === "ArrowRight") { event.preventDefault(); context.toggle(value, true); } if (event.key === "ArrowLeft") { event.preventDefault(); context.toggle(value, false); } }}>
-    {branch ? <Box as="span" className={joinClass(treeChevron, open && treeChevronOpen)}><Icon size="sm" aria-hidden><path d="m9 6 6 6-6 6" /></Icon></Box> : <Box as="span" className={treeSpacer} />}<Box as="span" className={treeLabel}>{label}</Box>
+    {branch ? <Box as="span" className={joinClass(treeChevron, open && treeChevronOpen)}><Icon size="caption" aria-hidden><path d="m9 6 6 6-6 6" /></Icon></Box> : <Box as="span" className={treeSpacer} />}<Box as="span" className={treeLabel}>{label}</Box>
   </Box>{open ? <TreeContext.Provider value={{ ...context, depth: nextDepth }}><Box role="group" className={treeGroup}>{children}</Box></TreeContext.Provider> : null}</Box>;
 };
 export const TreeNavigationItem = TreeNavigationItemImpl as <As extends ElementType = "button">(props: TreeNavigationItemProps<As>) => ReactElement;

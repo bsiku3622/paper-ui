@@ -3,7 +3,7 @@
 import { Children, isValidElement, type ReactNode } from "react";
 
 import { Box, Inline, Stack, Text } from "../primitives";
-import { Icon } from "../atoms";
+import { Icon } from "../primitives";
 import { joinClass } from "../internal/joinClass";
 import { resolveColor, type Color, type Variant } from "../resolvers";
 import { alertRoot, srOnly } from "./Alert.css";

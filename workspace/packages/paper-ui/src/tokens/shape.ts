@@ -248,6 +248,15 @@ export const SHAPE_ICON = {
   lg: REM(20),
 } as const;
 
+// Icon 의 공개 크기 이름은 typography ladder와 맞춘다. viewBox path의 내부 여백을
+// 감안해 label도 14px 아트보드에서 시작한다.
+export const SHAPE_ICON_TEXT_SIZE = {
+  label: REM(14),
+  caption: REM(16),
+  body: REM(18),
+  subheading: REM(20),
+} as const;
+
 // ───── badge — 인라인 라벨 높이 사다리 (3 단) ───────────────────────────────
 //
 // control 높이(28~40)보다 낮은 열. 낱말 하나를 담는 pill. md=22 anchor.
@@ -436,6 +445,7 @@ export const SHAPE_VALUES = {
   textareaPaddingY: TEXTAREA_PADDING_Y,
   controlFontSize: CONTROL_FONT_SIZE,
   icon: SHAPE_ICON,
+  iconTextSize: SHAPE_ICON_TEXT_SIZE,
   badge: SHAPE_BADGE,
   badgePaddingX: BADGE_PADDING_X,
   checkbox: SHAPE_CHECKBOX,

@@ -105,7 +105,7 @@ const CodeBlock = ({ code, onChange, error }: { code: string; onChange: (code: s
         <IconButton
           variant="hairlineMuted"
           size="sm"
-          iconSize="sm"
+          iconSize="caption"
           aria-label={editing ? "코드 편집 닫기" : "코드 편집"}
           className="code-edit"
           onClick={() => setEditing((current) => !current)}

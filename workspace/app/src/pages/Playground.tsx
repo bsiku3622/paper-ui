@@ -71,7 +71,7 @@ const Spec = ({ label, testid, children }: { label: string; testid?: string; chi
 );
 
 const TEXT_VARIANTS = ["display", "title", "heading", "subheading", "body", "caption", "label"] as const;
-const searchIcon = <Icon size="sm" aria-hidden><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon>;
+const searchIcon = <Icon size="caption" aria-hidden><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon>;
 // family=mono 표본 — 해당 variant 행 바로 밑에 같은 크기 mono 로 깔아 sans 와 비교시킨다.
 const MONO_DEMO: Partial<Record<(typeof TEXT_VARIANTS)[number], string>> = {
   title: "paper-ui",
@@ -258,7 +258,7 @@ export const Playground = () => {
           </Spec>
           <Spec label="Field 어도먼트 — 아이콘 · clear · 비밀번호 · prefix/suffix">
             <Box style={{ width: "12rem" }}>
-              <Field placeholder="검색" leading={<Icon size="sm"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon>} />
+              <Field placeholder="검색" leading={<Icon size="caption"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon>} />
             </Box>
             <Box style={{ width: "12rem" }}>
               <Field defaultValue="지울 값" clearable data-testid="field-clearable" />
@@ -305,7 +305,7 @@ export const Playground = () => {
           <Spec label="shape=pill — 검색 한 줄 (Field · Select · Button 같은 곡선)" testid="spec-pill-row">
             <Box style={{ width: "12rem" }}>
               <Field shape="pill" placeholder="검색" aria-label="검색" data-testid="field-pill"
-                leading={<Icon size="sm"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon>} />
+                leading={<Icon size="caption"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon>} />
             </Box>
             <Box style={{ width: "8rem" }}>
               <Select shape="pill" data-testid="select-pill"><Select.Option value="a">전체</Select.Option></Select>

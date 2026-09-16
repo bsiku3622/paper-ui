@@ -2,14 +2,15 @@
 
 import { Children, createContext, isValidElement, useContext, useId, useState, type ReactNode } from "react";
 
-import { Divider, Field, Icon } from "../atoms";
+import { Divider, Field } from "../atoms";
+import { Icon } from "../primitives";
 import { Box, Stack, Text, type BoxProps } from "../primitives";
 import { joinClass } from "../internal/joinClass";
 import { commandCopy, commandEmpty, commandGroup, commandGroupLabel, commandIcon, commandItem, commandList, commandRoot, commandSearch, commandShortcut } from "./CommandMenu.css";
 
 type CommandContextValue = { query: string; active?: string; setActive: (value: string) => void; choose: (value: string) => void };
 const CommandContext = createContext<CommandContextValue | null>(null);
-const searchIcon = <Icon size="sm" aria-hidden><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon>;
+const searchIcon = <Icon size="caption" aria-hidden><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon>;
 const matches = (label: ReactNode, keywords: readonly string[] | undefined, query: string) => !query.trim() || [typeof label === "string" ? label : "", ...(keywords ?? [])].join(" ").toLocaleLowerCase().includes(query.trim().toLocaleLowerCase());
 
 export type CommandMenuProps = Omit<BoxProps<"div">, "children" | "onSelect"> & { query?: string; defaultQuery?: string; onQueryChange?: (query: string) => void; onSelect?: (value: string) => void; placeholder?: string; empty?: ReactNode; children: ReactNode };

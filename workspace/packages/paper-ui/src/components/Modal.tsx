@@ -4,7 +4,8 @@ import { createContext, useContext, useEffect, useId, useState, type ReactNode }
 import { createPortal } from "react-dom";
 
 import { Box, Stack, Inline, Text } from "../primitives";
-import { Button, Divider, Icon, IconButton, type ButtonProps } from "../atoms";
+import { Button, Divider, IconButton, type ButtonProps } from "../atoms";
+import { Icon } from "../primitives";
 import { joinClass } from "../internal/joinClass";
 import { modalBackdrop, modalPanel, modalSize, modalStack, modalBody, modalHeaderCopy } from "./Modal.css";
 
