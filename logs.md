@@ -334,3 +334,9 @@ Button은 기존처럼 children으로 `<Icon>`을 받되, `iconSize`가 지정�
 - 요약: 컴포넌트·prop·variant·token 변경 시 app Playground의 preview·Props table·생성 코드까지 반드시 반영하고 실제 동작을 확인하도록 작업 완료 체크리스트에 추가했습니다.
 
 Playground가 이 레포의 유일한 시각 검증 surface이므로, 패키지 코드만 바뀐 상태를 완료로 보지 않도록 규칙을 명문화했습니다.
+## 2026-09-16 — Move Icon to primitives and align its size vocabulary
+
+- 변경 파일: Icon primitive·tokens, public exports, IconButton·form consumers, Playground registry
+- 요약: Icon을 Atom에서 Primitive로 이동하고 `sm/md/lg` 대신 typography ladder의 `label/caption/body/subheading`을 사용하도록 정리했습니다.
+
+아이콘은 텍스트처럼 조합되는 가장 낮은 수준의 표시 primitive라 Button·Field 같은 Atom과 같은 서랍에 둘 이유가 없었습니다. 공개 크기 이름은 typography ladder와 공유하되, 24 viewBox path의 내부 여백 때문에 실제 아트보드는 14·16·18·20px로 광학 보정했습니다. IconButton의 기본은 기존 `md`와 같은 18px인 `body`로 유지해 화면 크기를 보존했습니다. Playground에서도 Icon을 Primitives 그룹으로 옮기고 size·iconSize 선택지를 새 어휘로 갱신했습니다.

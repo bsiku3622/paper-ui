@@ -236,15 +236,15 @@ export const COMPONENTS: CompSpec[] = [
       { kind: "enum", prop: "color", label: "color", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
       { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "softMuted", "plain", "plainMuted", "outline", "outlineMuted", "hairline", "hairlineMuted", "ghost", "ghostMuted"], def: "solid" },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
-      { kind: "enum", prop: "iconSize", label: "iconSize", options: ["sm", "md", "lg"], def: "md" },
+      { kind: "enum", prop: "iconSize", label: "iconSize", options: ["label", "caption", "body", "subheading"], def: "body" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
     ],
     render: (st) => (
-      <IconButton color={s(st.color) as Color} variant={s(st.variant) as Variant} size={s(st.size) as "sm" | "md" | "lg"} iconSize={s(st.iconSize) as "sm" | "md" | "lg"} disabled={b(st.disabled)} aria-label="추가">
+      <IconButton color={s(st.color) as Color} variant={s(st.variant) as Variant} size={s(st.size) as "sm" | "md" | "lg"} iconSize={s(st.iconSize) as "label" | "caption" | "body" | "subheading"} disabled={b(st.disabled)} aria-label="추가">
         <Icon><path d="M12 5v14M5 12h14" /></Icon>
       </IconButton>
     ),
-    code: (st) => `<IconButton${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "solid")}${AE("size", s(st.size), "md")}${AE("iconSize", s(st.iconSize), "md")}${A("disabled", b(st.disabled))} aria-label="추가"><Icon>…</Icon></IconButton>`,
+    code: (st) => `<IconButton${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "solid")}${AE("size", s(st.size), "md")}${AE("iconSize", s(st.iconSize), "body")}${A("disabled", b(st.disabled))} aria-label="추가"><Icon>…</Icon></IconButton>`,
   },
   {
     slug: "badge",
@@ -291,7 +291,7 @@ export const COMPONENTS: CompSpec[] = [
         <Field
           placeholder={s(st.placeholder)}
           type={s(st.type)}
-          leading={b(st.leading) ? <Icon size="sm"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon> : undefined}
+          leading={b(st.leading) ? <Icon size="caption"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon> : undefined}
           trailing={b(st.trailing) ? <Text variant="caption" as="span" ink="faint">kg</Text> : undefined}
           clearable={b(st.clearable)}
           showPasswordToggle={b(st.showPasswordToggle)}
@@ -382,19 +382,19 @@ export const COMPONENTS: CompSpec[] = [
   {
     slug: "icon",
     name: "Icon",
-    group: "Atoms",
-    blurb: "24 그리드 stroke 아이콘. 자식 svg path 를 감싸 currentColor 로 그린다. ink 로 자기 색을 정한다(Text 로 감쌀 필요 없이).",
+    group: "Primitives",
+    blurb: "Primitive 아이콘. typography ladder 이름(label·caption·body·subheading)으로 아트보드 크기를 고르고 currentColor 또는 ink로 그린다.",
     controls: [
       { kind: "enum", prop: "ink", label: "ink", options: ["default", "base", "soft", "faint", "info", "success", "warning", "error"], def: "default" },
-      { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
+      { kind: "enum", prop: "size", label: "size", options: ["label", "caption", "body", "subheading"], def: "body" },
     ],
     render: (st) => (
-      <Icon aria-label="정보" ink={st.ink === "default" ? undefined : (s(st.ink) as Ink)} size={s(st.size) as "sm" | "md" | "lg"}>
+      <Icon aria-label="정보" ink={st.ink === "default" ? undefined : (s(st.ink) as Ink)} size={s(st.size) as "label" | "caption" | "body" | "subheading"}>
         <circle cx="12" cy="12" r="9" />
         <path d="M12 11v5M12 8h.01" />
       </Icon>
     ),
-    code: (st) => `<Icon aria-label="정보"${AE("ink", s(st.ink), "default")}${AE("size", s(st.size), "md")}>\n  <circle cx="12" cy="12" r="9" />\n  <path d="M12 11v5M12 8h.01" />\n</Icon>`,
+    code: (st) => `<Icon aria-label="정보"${AE("ink", s(st.ink), "default")}${AE("size", s(st.size), "body")}>\n  <circle cx="12" cy="12" r="9" />\n  <path d="M12 11v5M12 8h.01" />\n</Icon>`,
   },
   {
     slug: "divider",

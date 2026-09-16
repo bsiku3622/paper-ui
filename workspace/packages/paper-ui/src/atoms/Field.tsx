@@ -23,7 +23,7 @@ import {
 
 import { joinClass } from "../internal/joinClass";
 import type { StatusName, ControlSize, TextVariant } from "../tokens";
-import { Icon } from "./Icon";
+import { Icon } from "../primitives";
 import { fieldWrap, fieldInput, fieldSize, fieldFontSize, fieldStatus, fieldNumeric, fieldAlign, fieldAdornment, fieldAction, fieldPill } from "./Field.css";
 
 export type FieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "size" | "prefix"> & {
@@ -47,18 +47,18 @@ export type FieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className"
 };
 
 const XIcon = (
-  <Icon size="sm" aria-hidden>
+  <Icon size="caption" aria-hidden>
     <path d="M6 6 18 18M18 6 6 18" />
   </Icon>
 );
 const EyeIcon = (
-  <Icon size="sm" aria-hidden>
+  <Icon size="caption" aria-hidden>
     <path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z" />
     <circle cx="12" cy="12" r="2.75" />
   </Icon>
 );
 const EyeOffIcon = (
-  <Icon size="sm" aria-hidden>
+  <Icon size="caption" aria-hidden>
     <path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z" />
     <circle cx="12" cy="12" r="2.75" />
     <path d="M3 3 21 21" />
