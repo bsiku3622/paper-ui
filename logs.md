@@ -352,3 +352,9 @@ Playground가 이 레포의 유일한 시각 검증 surface이므로, 패키지 
 - 요약: 일반 Field의 hover 테두리를 `primary.base`에서 한 단계 밝은 `primary.hover`로 조정했습니다.
 
 일반 Field는 배경을 바꾸지 않고 선으로만 hover를 알리므로, resting border와의 차이는 유지하면서 primary solid보다 덜 무거운 `#3f3f46`을 사용하도록 했습니다. Select·Textarea는 이번 비교 범위에서 기존 동작을 유지합니다.
+## 2026-09-16 — Use soft ink for neutral form hover edges
+
+- 변경 파일: Field·Select·Textarea hover styles
+- 요약: 일반 input류의 hover 테두리를 primary 계열이 아닌 `ink.soft`로 통일했습니다.
+
+일반 Form의 resting edge는 구조선이고 hover는 그 선을 읽기용 잉크 농도까지 한 단계 올리는 피드백으로 정리했습니다. `primary`는 주요 행동 surface에만 남기며, semantic Form은 기존처럼 처음부터 status solid edge와 pigment halo를 사용합니다.
