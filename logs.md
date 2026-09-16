@@ -232,3 +232,9 @@ Playground 시각 검토에서 Table 세 variant와 세 density가 한 줄에서
 - 요약: 코드 편집 버튼을 `hairline` variant로 통일하고, 편집 중에는 pencil 대신 X 아이콘을 표시합니다.
 
 아이콘만 바꾸는 대신 현재 동작 상태를 닫기 affordance로 직접 표현해 편집 모드 진입·종료를 한 자리에서 이해할 수 있게 했습니다.
+## 2026-09-16 — Align read-only and edit code typography
+
+- 변경 파일: Playground detail styles
+- 요약: read-only `pre`와 edit `textarea`에 동일한 mono font, weight, style, caption tracking을 명시했습니다.
+
+폼 컨트롤의 브라우저 기본 타이포그래피가 편집 상태에서만 남아 자간이 달라 보일 수 있었습니다. 두 상태가 같은 텍스트 surface처럼 보이도록 typography 축을 직접 공유하게 했습니다.
