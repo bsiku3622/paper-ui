@@ -226,3 +226,9 @@ Playground 시각 검토에서 Table 세 variant와 세 density가 한 줄에서
 - 요약: 코드 박스를 기본 read-only pre로 바꾸고 우측 상단 연필 icon button으로만 편집 모드에 진입하게 했습니다.
 
 코드는 평소 preview를 설명하는 조용한 reference로 두고, 사용자가 의도적으로 연필을 누른 경우에만 textarea가 열립니다. 복사와 편집 액션을 같은 우측 상단 action cluster에 배치해 코드 영역의 시각적 위계를 유지했습니다.
+## 2026-09-16 — Use hairline edit toggle state
+
+- 변경 파일: Playground Detail code action
+- 요약: 코드 편집 버튼을 `hairline` variant로 통일하고, 편집 중에는 pencil 대신 X 아이콘을 표시합니다.
+
+아이콘만 바꾸는 대신 현재 동작 상태를 닫기 affordance로 직접 표현해 편집 모드 진입·종료를 한 자리에서 이해할 수 있게 했습니다.
