@@ -29,7 +29,7 @@ describe("resolveSurface / resolveColor / resolveTone", () => {
   it("color × variant(잉크색) → pui-c-{color}-{variant} (variant 기본 solid)", () => {
     expect(resolveColor("error", "soft")).toBe("pui-c-error-soft");
     expect(resolveColor("primary")).toBe("pui-c-primary-solid");
-    expect(resolveColor("primary", "quiet")).toBe("pui-c-primary-quiet");
+    expect(resolveColor("primary", "ghostMuted")).toBe("pui-c-primary-ghostMuted");
     expect(resolveColor(undefined)).toBe("");
   });
   it("accent tone 은 기본이 ink", () => {
