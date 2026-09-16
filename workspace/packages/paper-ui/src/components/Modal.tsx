@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useId, useState, type ReactNode }
 import { createPortal } from "react-dom";
 
 import { Box, Stack, Inline, Text } from "../primitives";
-import { Button, Divider, Icon, type ButtonProps } from "../atoms";
+import { Button, Divider, Icon, IconButton, type ButtonProps } from "../atoms";
 import { joinClass } from "../internal/joinClass";
 import { modalBackdrop, modalPanel, modalSize, modalStack, modalBody, modalHeaderCopy } from "./Modal.css";
 
@@ -121,9 +121,9 @@ export const ModalHeader = ({ children, closeButton = true }: ModalHeaderProps) 
       <Inline padding="lg" gap="md" justify="between" align="start">
         <Stack gap="xs" className={modalHeaderCopy}>{children}</Stack>
         {closeButton ? (
-          <Button variant="ghostMuted" size="sm" iconOnly aria-label="닫기" onClick={close}>
+          <IconButton variant="ghostMuted" size="sm" aria-label="닫기" onClick={close}>
             <Icon><path d="M6 6l12 12M18 6L6 18" /></Icon>
-          </Button>
+          </IconButton>
         ) : null}
       </Inline>
       <Divider />
@@ -154,10 +154,10 @@ export const ModalFooter = ({ children }: { children: ReactNode }) => (
   </Box>
 );
 
-export type ModalCloseProps = Omit<ButtonProps<"button">, "onClick"> & { iconOnly?: false };
+export type ModalCloseProps = Omit<ButtonProps<"button">, "onClick">;
 export const ModalClose = ({ children = "닫기", ...rest }: ModalCloseProps) => {
   const { close } = useModal();
-  return <Button {...rest} iconOnly={false} onClick={close}>{children}</Button>;
+  return <Button {...rest} onClick={close}>{children}</Button>;
 };
 
 export const Modal = Object.assign(ModalRoot, {

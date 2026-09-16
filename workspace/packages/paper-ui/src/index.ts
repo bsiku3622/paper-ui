@@ -19,6 +19,7 @@ export type { ThemeScopeProps, Theme, ResolvedTheme, ThemeControl } from "./prim
 // Atoms (13)
 export {
   Button,
+  IconButton,
   Field,
   Label,
   Badge,
@@ -36,6 +37,7 @@ export {
 } from "./atoms";
 export type {
   ButtonProps,
+  IconButtonProps,
   FieldProps,
   LabelProps,
   BadgeProps,

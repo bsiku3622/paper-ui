@@ -23,6 +23,7 @@ import {
   Field,
   FormField,
   Icon,
+  IconButton,
   Inline,
   Link,
   Modal,
@@ -213,18 +214,18 @@ export const Playground = () => {
           <Spec label="state">
             <Button disabled data-testid="btn-disabled">disabled</Button>
           </Spec>
-          <Spec label="loading · iconOnly (정사각, aria-label 필수)">
+          <Spec label="loading · IconButton (정사각, aria-label 필수)">
             <Button loading data-testid="btn-loading">저장 중</Button>
             <Button variant="soft" loading>불러오기</Button>
-            <Button iconOnly aria-label="추가" data-testid="btn-icononly">
+            <IconButton aria-label="추가" data-testid="btn-icononly">
               <Icon><path d="M12 5v14M5 12h14" /></Icon>
-            </Button>
-            <Button variant="outline" iconOnly aria-label="닫기">
+            </IconButton>
+            <IconButton variant="outline" aria-label="닫기">
               <Icon><path d="M6 6l12 12M18 6 6 18" /></Icon>
-            </Button>
-            <Button color="error" iconOnly aria-label="삭제">
+            </IconButton>
+            <IconButton color="error" aria-label="삭제">
               <Icon><path d="M4 7h16M9 7V5h6v2M6 7l1 12h10l1-12" /></Icon>
-            </Button>
+            </IconButton>
           </Spec>
           <Spec label="fullWidth">
             <Box style={{ width: "20rem" }}>
