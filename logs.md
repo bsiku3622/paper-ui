@@ -328,3 +328,9 @@ Button은 기존처럼 children으로 `<Icon>`을 받되, `iconSize`가 지정�
 - 요약: Button의 `iconOnly`, `iconSize`, leading icon 해석을 제거하고 `IconButton`을 별도 atom으로 추가했습니다. Modal·코드뷰어·전수 Playground 사용처를 새 API로 전환했습니다.
 
 텍스트 버튼이 children 내부의 아이콘을 해석하면 Button API가 compound layout까지 책임지게 됩니다. 이제 IconButton만 정사각 geometry와 `iconSize`를 소유하며, Button은 텍스트 액션에 집중합니다. Playground에도 IconButton 전용 Props table을 추가했습니다.
+## 2026-09-16 — Require Playground parity for system changes
+
+- 변경 파일: `CLAUDE.md`
+- 요약: 컴포넌트·prop·variant·token 변경 시 app Playground의 preview·Props table·생성 코드까지 반드시 반영하고 실제 동작을 확인하도록 작업 완료 체크리스트에 추가했습니다.
+
+Playground가 이 레포의 유일한 시각 검증 surface이므로, 패키지 코드만 바뀐 상태를 완료로 보지 않도록 규칙을 명문화했습니다.
