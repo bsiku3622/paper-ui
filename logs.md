@@ -304,3 +304,9 @@ Muted는 foreground만 낮추고 원본 variant의 구조적 border 강도는 �
 - 요약: 코드뷰어의 복사·편집 버튼을 `hairlineMuted`로 통일하고, 읽기 상태는 `raised`, 편집 상태는 `sunken`으로 조정했습니다.
 
 코드는 평소에는 떠 있는 reference surface로 읽히고, 편집 중에는 입력 surface로 가라앉아야 한다는 상태 대비를 적용했습니다. 버튼은 약한 잉크와 hairline을 함께 사용해 코드 영역 위에서 과하게 튀지 않게 했습니다.
+## 2026-09-16 — Add Button icon size axis
+
+- 변경 파일: `workspace/packages/paper-ui/src/atoms/Button.tsx`, `workspace/app/src/playground/registry.tsx`
+- 요약: Button에 `iconSize` prop을 추가해 외곽 `size`, 텍스트 `fontSize`, 아이콘 아트보드 크기를 독립적으로 조절하도록 했습니다. `iconOnly`와 아이콘+라벨 조합 모두 지원합니다.
+
+Button은 기존처럼 children으로 `<Icon>`을 받되, `iconSize`가 지정되면 직접 자식 Icon의 size를 덮어씁니다. 아이콘이 아닌 children은 건드리지 않으므로 라벨·복합 콘텐츠 API와 충돌하지 않습니다. Playground Props table에도 `iconSize`를 노출했습니다.

@@ -202,6 +202,7 @@ export const COMPONENTS: CompSpec[] = [
       { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "softMuted", "plain", "plainMuted", "outline", "outlineMuted", "hairline", "hairlineMuted", "ghost", "ghostMuted"], def: "solid" },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "enum", prop: "fontSize", label: "fontSize", options: ["default", "label", "caption", "body"], def: "default" },
+      { kind: "enum", prop: "iconSize", label: "iconSize", options: ["sm", "md", "lg"], def: "md" },
       { kind: "bool", prop: "loading", label: "loading", def: false },
       { kind: "bool", prop: "fullWidth", label: "fullWidth", def: false },
       { kind: "bool", prop: "iconOnly", label: "iconOnly(aria-label 필수)", def: false },
@@ -216,6 +217,7 @@ export const COMPONENTS: CompSpec[] = [
         variant: s(st.variant) as Variant,
         size: s(st.size) as "sm" | "md" | "lg",
         fontSize: st.fontSize === "default" ? undefined : (s(st.fontSize) as TextVariant),
+        iconSize: s(st.iconSize) as "sm" | "md" | "lg",
         loading: b(st.loading),
         fullWidth: b(st.fullWidth),
         shape: s(st.shape) as "rounded" | "pill",
@@ -230,7 +232,7 @@ export const COMPONENTS: CompSpec[] = [
       );
     },
     code: (st) =>
-      `<Button${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "solid")}${AE("size", s(st.size), "md")}${AE("fontSize", s(st.fontSize), "default")}${A("loading", b(st.loading))}${A("fullWidth", b(st.fullWidth))}${AE("shape", s(st.shape), "rounded")}${A("disabled", b(st.disabled))}${b(st.iconOnly) ? ` iconOnly aria-label="${s(st.children) || "추가"}"><Icon>…</Icon>` : `>${s(st.children)}`}</Button>`,
+      `<Button${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "solid")}${AE("size", s(st.size), "md")}${AE("fontSize", s(st.fontSize), "default")}${AE("iconSize", s(st.iconSize), "md")}${A("loading", b(st.loading))}${A("fullWidth", b(st.fullWidth))}${AE("shape", s(st.shape), "rounded")}${A("disabled", b(st.disabled))}${b(st.iconOnly) ? ` iconOnly aria-label="${s(st.children) || "추가"}"><Icon>…</Icon>` : `>${s(st.children)}`}</Button>`,
   },
   {
     slug: "badge",
