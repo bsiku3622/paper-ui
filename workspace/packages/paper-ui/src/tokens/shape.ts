@@ -30,7 +30,7 @@ const REM = (px: number) => `${px / 16}rem`;
 //
 // 두 어휘가 직교한다:
 //   SHAPE_SIZES (5 단 xs~xl)  = *간격* 축. Box 의 padding·gap (8pt 그리드).
-//   CONTROL_SIZES (3 단 sm~lg) = *컨트롤 크기* 축. 컴포넌트 size prop.
+//   CONTROL_SIZES (4 단 xs~lg) = *컨트롤 크기* 축. 컴포넌트 size prop.
 //
 // 이 둘을 섞으면 안 된다 — 간격은 세밀해야(5 단) 하고, 컨트롤 크기는 단순해야
 // (3 단) 한다(Ant·Primer·Geist 전부 3 단; Nathan Curtis: "2~3 개면 충분, 그 이상은
@@ -40,9 +40,9 @@ const REM = (px: number) => `${px / 16}rem`;
 export const SHAPE_SIZES = ["xs", "sm", "md", "lg", "xl"] as const;
 export type ShapeSize = (typeof SHAPE_SIZES)[number];
 
-// 컨트롤 크기 3 단 — Button·Field·Select·Tabs·Icon·Spinner·Badge·Checkbox·Switch·
+// 컨트롤 크기 4 단 — Button·Field·Select·Tabs·Icon·Spinner·Badge·Checkbox·Switch·
 // Radio 의 size prop. md 가 anchor(기본), sm 은 밀집/보조, lg 는 강조/CTA.
-export const CONTROL_SIZES = ["sm", "md", "lg"] as const;
+export const CONTROL_SIZES = ["xs", "sm", "md", "lg"] as const;
 export type ControlSize = (typeof CONTROL_SIZES)[number];
 
 export const SHAPE_INTENTS = ["interaction", "layout"] as const;
@@ -168,6 +168,7 @@ export const SHAPE_FONT_SIZE = {
 // 세로 여백에 대한 비로 정해지므로, 격자보다 비를 따른다.
 
 export const CONTROL_PADDING_X = {
+  xs: REM(8),
   sm: REM(10),
   md: REM(13), // ◀ anchor
   lg: REM(17),
@@ -188,6 +189,7 @@ export const CONTROL_PADDING_X = {
 // 34px 밀도 앵커가 깨지므로, 높이는 유지하고 공통 form 여백을 줄이는 쪽을 최종 선택했다.
 
 export const INPUT_PADDING_X = {
+  xs: REM(5),
   sm: REM(7), // 테두리 포함 잉크 8 (세로 8)
   md: REM(9), // 테두리 포함 잉크 10 (세로 10) ◀ anchor
   lg: REM(12), // 테두리 포함 잉크 13 (세로 13)
@@ -209,6 +211,7 @@ export const INPUT_PADDING_X = {
 // 닿으므로, 같은 값이라도 Field 보다 좁게 느껴진다.
 
 export const TEXTAREA_PADDING_Y = {
+  xs: REM(2.5),
   sm: REM(3.5), //  7 − 3.5
   md: REM(5.5), //  9 − 3.5 ◀ anchor
   lg: REM(8.5), // 12 − 3.5
@@ -223,6 +226,7 @@ export const TEXTAREA_PADDING_Y = {
 // height·padding 만 세 단으로 움직인다. Atlassian(14 고정) 모델.
 
 export const CONTROL_FONT_SIZE = {
+  xs: REM(11),
   sm: REM(14),
   md: REM(14),
   lg: REM(14),
@@ -243,6 +247,7 @@ export const CONTROL_FONT_SIZE = {
 // 값) — 소비처는 Icon 과 Spinner 둘뿐이라 이름이 축을 잘못 가리키고 있었다.
 
 export const SHAPE_ICON = {
+  xs: REM(14),
   sm: REM(16),
   md: REM(18), // ◀ anchor (Icon 기본)
   lg: REM(20),
@@ -253,6 +258,7 @@ export const SHAPE_ICON = {
 // control 높이(28~40)보다 낮은 열. 낱말 하나를 담는 pill. md=22 anchor.
 
 export const SHAPE_BADGE = {
+  xs: REM(18),
   sm: REM(20),
   md: REM(22), // ◀ anchor
   lg: REM(24),
@@ -274,6 +280,7 @@ export const SHAPE_BADGE = {
 // (CONTROL_PADDING_X 가 같은 이유로 떨어져 나왔다).
 
 export const BADGE_PADDING_X = {
+  xs: REM(5),
   sm: REM(6),
   md: REM(8), // ◀ anchor (값은 그대로 — 양 끝만 안으로 모았다)
   lg: REM(10),
@@ -288,6 +295,7 @@ export const BADGE_PADDING_X = {
 // 작은 것일수록 같은 radius 가 크게 읽히기 때문이다.
 
 export const SHAPE_CHECKBOX = {
+  xs: { box: REM(14), mark: REM(6), short: REM(3), radius: REM(2) },
   sm: { box: REM(15), mark: REM(7), short: REM(3.5), radius: REM(2.5) },
   md: { box: REM(16), mark: REM(8), short: REM(4), radius: REM(3) }, // ◀ anchor
   lg: { box: REM(18), mark: REM(9), short: REM(4.5), radius: REM(3.5) },
@@ -308,6 +316,7 @@ export const SHAPE_CHECKBOX = {
 // Switch.css.ts 는 이 항등식 하나로 켜짐 위치를 계산한다.
 
 export const SHAPE_SWITCH = {
+  xs: { w: REM(28), h: REM(16), thumb: REM(12) },
   sm: { w: REM(30), h: REM(17), thumb: REM(13) }, // checkbox 15
   md: { w: REM(32), h: REM(18), thumb: REM(14) }, // ◀ anchor — checkbox 16
   lg: { w: REM(36), h: REM(20), thumb: REM(16) }, // checkbox 18

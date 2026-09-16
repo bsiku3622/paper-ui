@@ -45,7 +45,7 @@ type ButtonOwn<As extends ElementType> = {
   // 큰 면을 채우는 기본은 검정(primary) — 색은 의미가 있을 때만.
   color?: Color;
   variant?: Variant;
-  // 크기 3 단 (sm·md·lg). md 가 anchor(기본), sm 은 밀집/보조, lg 는 CTA. Field·Select 와
+  // 크기 4 단 (xs·sm·md·lg). md 가 anchor(기본), xs·sm 은 밀집/보조, lg 는 CTA. Field·Select 와
   // 같은 사다리라 나란히 두면 높이가 맞는다.
   size?: ControlSize;
   // 실루엣 — rounded 는 시스템 곡선(radius.interaction), pill 은 알약(높이의 절반).
