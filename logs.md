@@ -322,3 +322,9 @@ Button은 기존처럼 children으로 `<Icon>`을 받되, `iconSize`가 지정�
 - 요약: Button Props table에 `leadingIcon` 토글을 추가해 일반 라벨 버튼에서도 아이콘+라벨 조합을 preview와 코드에 함께 노출합니다.
 
 `iconOnly`는 접근성 이름이 필요한 별도 상태로 유지하고, `leadingIcon`은 기존 compound children API(`<Icon />라벨`)를 보여주는 Playground 전용 조합 토글로 분리했습니다.
+## 2026-09-16 — Split IconButton from Button
+
+- 변경 파일: `workspace/packages/paper-ui/src/atoms/Button.tsx`, `workspace/packages/paper-ui/src/atoms/IconButton.tsx`, `workspace/app/src/playground/registry.tsx`, `workspace/app/src/playground/Detail.tsx`
+- 요약: Button의 `iconOnly`, `iconSize`, leading icon 해석을 제거하고 `IconButton`을 별도 atom으로 추가했습니다. Modal·코드뷰어·전수 Playground 사용처를 새 API로 전환했습니다.
+
+텍스트 버튼이 children 내부의 아이콘을 해석하면 Button API가 compound layout까지 책임지게 됩니다. 이제 IconButton만 정사각 geometry와 `iconSize`를 소유하며, Button은 텍스트 액션에 집중합니다. Playground에도 IconButton 전용 Props table을 추가했습니다.

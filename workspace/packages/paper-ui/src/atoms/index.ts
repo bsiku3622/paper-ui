@@ -1,4 +1,5 @@
 export { Button, type ButtonProps } from "./Button";
+export { IconButton, type IconButtonProps } from "./IconButton";
 export { Field, type FieldProps } from "./Field";
 export { Label, type LabelProps } from "./Label";
 export { Badge, type BadgeProps } from "./Badge";

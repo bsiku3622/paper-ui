@@ -18,6 +18,7 @@ import {
   Field,
   FormField,
   Icon,
+  IconButton,
   Inline,
   Label,
   Link,
@@ -202,43 +203,48 @@ export const COMPONENTS: CompSpec[] = [
       { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "softMuted", "plain", "plainMuted", "outline", "outlineMuted", "hairline", "hairlineMuted", "ghost", "ghostMuted"], def: "solid" },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "enum", prop: "fontSize", label: "fontSize", options: ["default", "label", "caption", "body"], def: "default" },
-      { kind: "enum", prop: "iconSize", label: "iconSize", options: ["sm", "md", "lg"], def: "md" },
       { kind: "bool", prop: "loading", label: "loading", def: false },
       { kind: "bool", prop: "fullWidth", label: "fullWidth", def: false },
-      { kind: "bool", prop: "iconOnly", label: "iconOnly(aria-label 필수)", def: false },
-      { kind: "bool", prop: "leadingIcon", label: "leadingIcon", def: false },
       { kind: "enum", prop: "shape", label: "shape", options: ["rounded", "pill"], def: "rounded" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
       { kind: "text", prop: "children", label: "children", def: "버튼" },
     ],
     render: (st) => {
-      // iconOnly 는 접근 이름이 타입으로 강제된다 — 라벨 대신 aria-label 을 진다.
       const common = {
         color: s(st.color) as Color,
         variant: s(st.variant) as Variant,
         size: s(st.size) as "sm" | "md" | "lg",
         fontSize: st.fontSize === "default" ? undefined : (s(st.fontSize) as TextVariant),
-        iconSize: s(st.iconSize) as "sm" | "md" | "lg",
         loading: b(st.loading),
         fullWidth: b(st.fullWidth),
         shape: s(st.shape) as "rounded" | "pill",
         disabled: b(st.disabled),
       };
-      const icon = b(st.leadingIcon) ? <Icon><path d="M12 5v14M5 12h14" /></Icon> : null;
-      return b(st.iconOnly) ? (
-        <Button {...common} iconOnly aria-label={s(st.children) || "추가"}>
-          <Icon><path d="M12 5v14M5 12h14" /></Icon>
-        </Button>
-      ) : (
-        <Button {...common}>{icon}{s(st.children)}</Button>
-      );
+      return <Button {...common}>{s(st.children)}</Button>;
     },
     code: (st) => {
-      const opening = `<Button${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "solid")}${AE("size", s(st.size), "md")}${AE("fontSize", s(st.fontSize), "default")}${AE("iconSize", s(st.iconSize), "md")}${A("loading", b(st.loading))}${A("fullWidth", b(st.fullWidth))}${AE("shape", s(st.shape), "rounded")}${A("disabled", b(st.disabled))}`;
-      return b(st.iconOnly)
-        ? `${opening} iconOnly aria-label="${s(st.children) || "추가"}"><Icon>…</Icon></Button>`
-        : `${opening}>${b(st.leadingIcon) ? "<Icon>…</Icon>" : ""}${s(st.children)}</Button>`;
+      return `<Button${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "solid")}${AE("size", s(st.size), "md")}${AE("fontSize", s(st.fontSize), "default")}${A("loading", b(st.loading))}${A("fullWidth", b(st.fullWidth))}${AE("shape", s(st.shape), "rounded")}${A("disabled", b(st.disabled))}>${s(st.children)}</Button>`;
     },
+  },
+  {
+    slug: "iconbutton",
+    change: "new",
+    name: "IconButton",
+    group: "Atoms",
+    blurb: "아이콘만 담는 정사각 버튼. Button과 분리해 iconSize와 접근성 이름을 명시한다.",
+    controls: [
+      { kind: "enum", prop: "color", label: "color", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
+      { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "softMuted", "plain", "plainMuted", "outline", "outlineMuted", "hairline", "hairlineMuted", "ghost", "ghostMuted"], def: "solid" },
+      { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
+      { kind: "enum", prop: "iconSize", label: "iconSize", options: ["sm", "md", "lg"], def: "md" },
+      { kind: "bool", prop: "disabled", label: "disabled", def: false },
+    ],
+    render: (st) => (
+      <IconButton color={s(st.color) as Color} variant={s(st.variant) as Variant} size={s(st.size) as "sm" | "md" | "lg"} iconSize={s(st.iconSize) as "sm" | "md" | "lg"} disabled={b(st.disabled)} aria-label="추가">
+        <Icon><path d="M12 5v14M5 12h14" /></Icon>
+      </IconButton>
+    ),
+    code: (st) => `<IconButton${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "solid")}${AE("size", s(st.size), "md")}${AE("iconSize", s(st.iconSize), "md")}${A("disabled", b(st.disabled))} aria-label="추가"><Icon>…</Icon></IconButton>`,
   },
   {
     slug: "badge",
