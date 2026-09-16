@@ -316,3 +316,9 @@ Button은 기존처럼 children으로 `<Icon>`을 받되, `iconSize`가 지정�
 - 요약: 코드뷰어 연필·닫기 버튼이 `Button iconSize="sm"`을 사용하도록 정리하고, Icon의 직접적인 size 우회를 제거했습니다.
 
 아이콘 크기 축을 추가한 뒤 실제 소비처도 새 API를 사용하게 맞췄습니다. 화면 크기는 기존과 동일하지만, 버튼 외곽·아이콘 아트보드의 책임이 코드에 명확히 드러납니다.
+## 2026-09-16 — Add icon plus label state to Button Playground
+
+- 변경 파일: `workspace/app/src/playground/registry.tsx`
+- 요약: Button Props table에 `leadingIcon` 토글을 추가해 일반 라벨 버튼에서도 아이콘+라벨 조합을 preview와 코드에 함께 노출합니다.
+
+`iconOnly`는 접근성 이름이 필요한 별도 상태로 유지하고, `leadingIcon`은 기존 compound children API(`<Icon />라벨`)를 보여주는 Playground 전용 조합 토글로 분리했습니다.
