@@ -60,8 +60,6 @@ type ButtonOwn<As extends ElementType> = {
   className?: string;
 };
 
-// iconOnly 면 접근 이름이 필수다 — 아이콘만 있는 버튼은 읽을 텍스트가 없어 스크린리더가
-// 침묵한다. 타입으로 강제해 aria-label(또는 aria-labelledby) 없이는 컴파일이 막는다.
 // 자기 prop 을 뺀 나머지는 그 태그의 속성 그대로 (as={Link} 면 to·replace 까지).
 export type ButtonProps<As extends ElementType = "button"> = ButtonOwn<As> &
   Omit<ComponentPropsWithRef<As>, keyof ButtonOwn<As>>;
