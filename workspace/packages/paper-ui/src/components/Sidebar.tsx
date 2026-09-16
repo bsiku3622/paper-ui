@@ -16,7 +16,6 @@ import { joinClass } from "../internal/joinClass";
 import { useControllableState } from "../internal/useControllableState";
 import {
   sidebarBadge,
-  sidebarBadgeSelectedOverlay,
   sidebarGroup,
   sidebarGroupLabel,
   sidebarItem,
@@ -99,7 +98,7 @@ export const SidebarBadge = ({ variant = "soft", selectedVariant, className, ...
       variant={resolved}
       size={rest.size ?? "sm"}
       shape={rest.shape ?? "pill"}
-      className={joinClass(sidebarBadge, selected && resolved === "soft" && sidebarBadgeSelectedOverlay, className)}
+      className={joinClass(sidebarBadge, className)}
     />
   );
 };
