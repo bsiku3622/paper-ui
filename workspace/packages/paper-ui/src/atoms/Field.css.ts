@@ -33,9 +33,9 @@ export const fieldWrap = style({
   cursor: "text",
   transition: stateTransition("border-color", "box-shadow", "background"),
   selectors: {
-    // neutral hover는 배경을 흔들지 않고 primary hover 선으로 형태를 확실히 세운다.
+    // neutral hover는 배경을 흔들지 않고 ink.soft 선으로 형태를 또렷하게 한다.
     '&[data-pui-status="default"]:hover:not(:focus-within):has(input:enabled)': {
-      borderColor: tokens.color.primary.hover,
+      borderColor: tokens.color.ink.soft,
     },
     // 포커스 — 안쪽 input 이 포커스되면 래퍼 *바깥* 에 파란 링(outline). 전역 :focus-visible·
     // Checkbox·Switch 와 같은 outside-the-border 방식 — 보더 위가 아니라 보더 밖에 뜬다.
