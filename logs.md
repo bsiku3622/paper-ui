@@ -358,3 +358,9 @@ Playground가 이 레포의 유일한 시각 검증 surface이므로, 패키지 
 - 요약: 일반 input류의 hover 테두리를 primary 계열이 아닌 `ink.soft`로 통일했습니다.
 
 일반 Form의 resting edge는 구조선이고 hover는 그 선을 읽기용 잉크 농도까지 한 단계 올리는 피드백으로 정리했습니다. `primary`는 주요 행동 surface에만 남기며, semantic Form은 기존처럼 처음부터 status solid edge와 pigment halo를 사용합니다.
+## 2026-09-16 — Lighten neutral form hover edges
+
+- 변경 파일: Field·Select·Textarea hover styles
+- 요약: 일반 input류 hover edge를 `ink.soft`에서 `ink.faint`로 낮췄습니다.
+
+기본 edge보다 한 단계만 또렷해지는 가벼운 hover를 목표로 조정했습니다. 이 상태도 semantic Form의 명시적인 status edge와는 충분히 구분됩니다.
