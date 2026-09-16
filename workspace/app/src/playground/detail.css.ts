@@ -46,7 +46,7 @@ globalStyle(".code-block", {
   position: "relative",
   border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
   borderRadius: tokens.shape.radius.layout.md,
-  background: tokens.color.paper.sunken,
+  background: tokens.color.paper.raised,
   overflow: "hidden",
 });
 
@@ -74,7 +74,7 @@ globalStyle(".code-editor", {
 });
 
 globalStyle(".code-block--error", { borderColor: tokens.color.accent.error.edge });
-globalStyle(".code-block--editing", { background: tokens.color.paper.raised });
+globalStyle(".code-block--editing", { background: tokens.color.paper.sunken });
 globalStyle(".code-error", { display: "block", paddingInline: tokens.shape.padding.md.layout, paddingBottom: tokens.shape.padding.sm.interaction });
 
 globalStyle(".code-block pre", {
