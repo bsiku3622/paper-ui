@@ -91,18 +91,6 @@ const primaryProfile: Record<Variant, ColorSpec> = {
     hoverOverlay: tokens.color.interaction.hover,
     hoverColor: tokens.color.ink.base,
   },
-  tonal: {
-    background: tokens.color.primary.base,
-    color: tokens.color.primary.fg,
-    borderColor: tokens.color.primary.base,
-    hoverOverlay: tokens.color.interaction.hover,
-  },
-  tonalMuted: {
-    background: tokens.color.paper.well,
-    color: tokens.color.ink.base,
-    borderColor: tokens.color.ink.base,
-    hoverOverlay: tokens.color.interaction.hover,
-  },
   quiet: {
     background: "transparent",
     color: tokens.color.ink.soft,
@@ -187,18 +175,6 @@ const accentProfile = (c: AccentTones): Record<Variant, ColorSpec> => ({
     borderColor: "transparent",
     hoverBackground: c.wash,
     hoverColor: c.ink,
-  },
-  tonal: {
-    background: c.solid,
-    color: c.wash,
-    borderColor: c.ink,
-    hoverOverlay: tokens.color.interaction.hover,
-  },
-  tonalMuted: {
-    background: c.soft,
-    color: c.ink,
-    borderColor: c.ink,
-    hoverOverlay: tokens.color.interaction.hover,
   },
   quiet: {
     background: "transparent",

@@ -280,3 +280,9 @@ xs를 전체 컨트롤 사다리에 넣어 보니 복사 버튼 하나를 줄이
 - 요약: `muted` variant를 `softMuted`로 이름을 명확히 바꿨습니다.
 
 이 variant는 일반적인 약화 상태가 아니라 soft 배경·soft border·softInk를 한 묶음으로 쓰는 조합이므로, 이름에 기반면을 드러내는 편이 shared variant 사다리를 읽기 쉽습니다. 시각값과 hover 동작은 바꾸지 않았습니다.
+## 2026-09-16 — Remove unused tonal variants
+
+- 변경 파일: `workspace/packages/paper-ui/src/resolvers/color.ts`, `workspace/packages/paper-ui/src/styles/color-profile.ts`, `workspace/app/src/playground/registry.tsx`
+- 요약: `tonal`과 `tonalMuted`를 shared variant 사다리에서 제거했습니다.
+
+현재는 solid·soft와 역할이 겹치고, 별도의 tonal surface를 요구하는 실제 사용처가 없습니다. 필요할 때 다시 추가할 수 있도록 색 profile 축을 유지하되 공개 variant로는 노출하지 않았습니다.
