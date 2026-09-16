@@ -37,9 +37,9 @@ export const fieldWrap = style({
     '&[data-pui-status="default"]:hover:not(:focus-within):has(input:enabled)': {
       borderColor: tokens.color.ink.faint,
     },
-    // 포커스 — 안쪽 input 이 포커스되면 래퍼 *바깥* 에 파란 링(outline). 전역 :focus-visible·
-    // Checkbox·Switch 와 같은 outside-the-border 방식 — 보더 위가 아니라 보더 밖에 뜬다.
-    "&:focus-within": {
+    // keyboard focus — 안쪽 input 이 :focus-visible일 때만 래퍼 *바깥* 에 파란 링.
+    // 클릭은 caret과 edge만 남기고, Tab 탐색 위치에만 ring을 쓴다.
+    "&:has(input:focus-visible)": {
       outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.focus.ring}`,
       outlineOffset: tokens.shape.constants.focusRingOffset,
     },
