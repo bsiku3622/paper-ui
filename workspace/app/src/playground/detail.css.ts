@@ -57,7 +57,7 @@ globalStyle(".code-editor", {
   boxSizing: "border-box",
   resize: "vertical",
   margin: 0,
-  paddingBlock: tokens.shape.padding.md.interaction,
+  paddingBlock: tokens.shape.padding.xl.interaction,
   paddingInline: tokens.shape.padding.md.layout,
   border: 0,
   outline: 0,
@@ -75,7 +75,7 @@ globalStyle(".code-error", { display: "block", paddingInline: tokens.shape.paddi
 
 globalStyle(".code-block pre", {
   margin: 0,
-  paddingBlock: tokens.shape.padding.md.interaction,
+  paddingBlock: tokens.shape.padding.xl.interaction,
   paddingInline: tokens.shape.padding.md.layout,
   overflowX: "auto",
   fontFamily: tokens.text.font.mono,
@@ -86,9 +86,6 @@ globalStyle(".code-block pre", {
 });
 
 globalStyle(".code-copy", {
-  position: "absolute",
-  top: tokens.shape.padding.xs.layout,
-  right: tokens.shape.padding.xs.layout,
   appearance: "none",
   border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
   background: tokens.color.paper.raised,
@@ -102,3 +99,14 @@ globalStyle(".code-copy", {
   transition: stateTransition("background", "color"),
 });
 globalStyle(".code-copy:hover", { background: tokens.color.paper.well, color: tokens.color.ink.base });
+
+globalStyle(".code-actions", {
+  position: "absolute",
+  top: tokens.shape.padding.xs.layout,
+  right: tokens.shape.padding.xs.layout,
+  zIndex: 1,
+  display: "flex",
+  alignItems: "center",
+  gap: tokens.shape.gap.xs,
+});
+globalStyle(".code-edit", { minWidth: tokens.shape.height.sm.interaction });

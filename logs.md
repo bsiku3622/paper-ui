@@ -220,3 +220,9 @@ Playground 시각 검토에서 Table 세 variant와 세 density가 한 줄에서
 - 요약: 코드 편집 영역에 보이던 `<Box>…</Box>` 같은 placeholder를 실제 Text·Icon·Breadcrumb JSX로 확장했습니다.
 
 코드박스가 이제 복사·수정 가능한 source surface인 만큼 생략 기호를 남기지 않도록 했습니다. Box 기본 예제는 preview와 같은 `surface=raised` 내용을 출력하고, 단순한 반복 예제와 아이콘·breadcrumb도 실제로 읽을 수 있는 JSX 조각을 보여줍니다.
+## 2026-09-16 — Keep Playground code read-only until edit mode
+
+- 변경 파일: Playground Detail code surface·styles
+- 요약: 코드 박스를 기본 read-only pre로 바꾸고 우측 상단 연필 icon button으로만 편집 모드에 진입하게 했습니다.
+
+코드는 평소 preview를 설명하는 조용한 reference로 두고, 사용자가 의도적으로 연필을 누른 경우에만 textarea가 열립니다. 복사와 편집 액션을 같은 우측 상단 action cluster에 배치해 코드 영역의 시각적 위계를 유지했습니다.

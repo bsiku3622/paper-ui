@@ -11,7 +11,7 @@
 import { useMemo, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 
-import { Box, Button, Field, Inline, Select, Stack, Switch, Text, tokens } from "@studio-baeks/paper-ui";
+import { Box, Button, Field, Icon, Inline, Select, Stack, Switch, Text, tokens } from "@studio-baeks/paper-ui";
 
 import { PlaygroundLayout } from "./shell";
 import { bySlug, defaultState, type CompSpec, type Control, type State } from "./registry";
@@ -88,6 +88,7 @@ const expandCodePlaceholders = (code: string) => code
 
 const CodeBlock = ({ code, onChange, error }: { code: string; onChange: (code: string) => void; error?: string }) => {
   const [copied, setCopied] = useState(false);
+  const [editing, setEditing] = useState(false);
   const copy = () => {
     navigator.clipboard?.writeText(code).then(
       () => {
@@ -99,10 +100,20 @@ const CodeBlock = ({ code, onChange, error }: { code: string; onChange: (code: s
   };
   return (
     <div className={`code-block${error ? " code-block--error" : ""}`}>
-      <button type="button" className="code-copy" onClick={copy}>
-        {copied ? "복사됨" : "복사"}
-      </button>
-      <textarea className="code-editor" value={code} onChange={(event) => onChange(event.currentTarget.value)} spellCheck={false} aria-label="컴포넌트 코드 편집" />
+      <div className="code-actions">
+        <button type="button" className="code-copy" onClick={copy}>{copied ? "복사됨" : "복사"}</button>
+        <Button
+          variant="quiet"
+          size="sm"
+          iconOnly
+          aria-label={editing ? "코드 편집 닫기" : "코드 편집"}
+          className="code-edit"
+          onClick={() => setEditing((current) => !current)}
+        >
+          <Icon size="sm"><path d="m14.7 6.3 3 3M4 20l4.2-.9L19.2 8a2.1 2.1 0 0 0-3-3L5.2 16.1 4 20Z" /></Icon>
+        </Button>
+      </div>
+      {editing ? <textarea className="code-editor" value={code} onChange={(event) => onChange(event.currentTarget.value)} spellCheck={false} aria-label="컴포넌트 코드 편집" /> : <pre><code>{code}</code></pre>}
       {error ? <Text variant="caption" ink="error" className="code-error">{error}</Text> : null}
     </div>
   );
