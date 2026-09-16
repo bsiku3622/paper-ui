@@ -292,3 +292,9 @@ xs를 전체 컨트롤 사다리에 넣어 보니 복사 버튼 하나를 줄이
 - 요약: `quiet`을 제거하고 `plainMuted`, `outlineMuted`를 추가했습니다. `softMuted`는 무테 soft variant로 분리했으며, 기존 quiet 사용처는 `ghostMuted`로 치환했습니다. Playground variant 순서도 기본 variant 뒤 muted 대응 variant가 오도록 재정렬했습니다.
 
 이제 면과 선의 조합이 겹치지 않습니다. `softMuted`는 soft 면만, `plainMuted`는 soft 면과 hairline 선, `outlineMuted`는 투명 면과 강한 선, `hairlineMuted`는 투명 면과 page hairline을 담당합니다.
+## 2026-09-16 — Preserve strong borders in muted variants
+
+- 변경 파일: `workspace/packages/paper-ui/src/styles/color-profile.ts`
+- 요약: `plainMuted`의 border를 `plain`과 같은 강한 `edgeStrong`으로 복원했습니다. `outlineMuted`도 `outline`과 동일하게 이미 강한 border를 사용하고 있음을 확인했습니다.
+
+Muted는 foreground만 낮추고 원본 variant의 구조적 border 강도는 보존해야 합니다. 따라서 plain·outline의 muted 버전은 각각 원본과 같은 강한 선을 유지하고, soft·hairline 계열만 해당 계층의 약한 선을 사용합니다.
