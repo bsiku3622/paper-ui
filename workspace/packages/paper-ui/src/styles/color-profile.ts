@@ -69,7 +69,7 @@ const primaryProfile: Record<Variant, ColorSpec> = {
     hoverColor: tokens.color.ink.base,
     hoverBorderColor: tokens.color.primary.edgeStrong,
   },
-  muted: {
+  softMuted: {
     background: tokens.color.paper.well,
     color: tokens.color.ink.soft,
     borderColor: tokens.color.border.base,
@@ -166,7 +166,7 @@ const accentProfile = (c: AccentTones): Record<Variant, ColorSpec> => ({
     hoverColor: c.ink,
     hoverBorderColor: c.edgeStrong,
   },
-  muted: {
+  softMuted: {
     background: c.soft,
     color: c.softInk,
     borderColor: c.edge,
