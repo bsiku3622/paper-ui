@@ -262,3 +262,9 @@ Playground 시각 검토에서 Table 세 variant와 세 density가 한 줄에서
 - 요약: Playground 코드 액션을 `Button size="xs"`로 전환하고, 컨트롤 사다리에 xs 높이·패딩·폰트·아이콘·폼·배지 값을 추가했습니다.
 
 복사 액션만 `sm`의 34px 실루엣을 유지한 채 폰트만 줄이면 같은 size 계약이 컴포넌트별로 갈라집니다. xs를 독립 단계로 두어 마이크로 액션의 높이와 글자 크기를 함께 줄이고, 기존 sm의 14px 가독성 계약은 보존했습니다. Variant 확장은 현재 매핑을 정리한 뒤 별도 작업으로 진행합니다.
+## 2026-09-16 — Separate button typography from control size and expand variants
+
+- 변경 파일: `workspace/packages/paper-ui/src/atoms/Button.tsx`, `workspace/packages/paper-ui/src/atoms/Button.css.ts`, `workspace/packages/paper-ui/src/resolvers/color.ts`, `workspace/packages/paper-ui/src/styles/color-profile.ts`, `workspace/packages/paper-ui/src/styles/color.css.ts`
+- 요약: 컨트롤 size는 기존 `sm/md/lg`로 유지하고 Button에 `fontSize` override를 추가했습니다. 복사 액션은 `sm + label` 조합을 사용합니다. `hairlineMuted`, `muted`, `ghost`, `ghostMuted`, `tonal`, `tonalMuted`를 4축 color profile로 확장했습니다.
+
+xs를 전체 컨트롤 사다리에 넣어 보니 복사 버튼 하나를 줄이기 위해 높이·아이콘·폼 밀도까지 함께 내려가는 부작용이 생겼습니다. 따라서 size는 geometry 축으로 고정하고, 작은 보조 라벨만 typography 축에서 조절하도록 분리했습니다. Variant는 기존 `quiet` 호환성을 남긴 채 각 profile이 foreground·background·border·interaction을 독립적으로 정의하며, muted 계열만 hover 시 잉크와 선을 함께 강화합니다.

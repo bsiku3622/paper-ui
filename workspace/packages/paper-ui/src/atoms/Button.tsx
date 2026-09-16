@@ -25,7 +25,7 @@ import {
 
 import { joinClass } from "../internal/joinClass";
 import { resolveColor, INTERACTIVE, type Color, type Variant } from "../resolvers";
-import type { ControlSize } from "../tokens";
+import type { ControlSize, TextVariant } from "../tokens";
 import {
   buttonRoot,
   buttonSize,
@@ -33,6 +33,7 @@ import {
   buttonIconOnly,
   buttonFull,
   buttonPill,
+  buttonFontSize,
 } from "./Button.css";
 
 type ButtonOwn<As extends ElementType> = {
@@ -45,9 +46,11 @@ type ButtonOwn<As extends ElementType> = {
   // 큰 면을 채우는 기본은 검정(primary) — 색은 의미가 있을 때만.
   color?: Color;
   variant?: Variant;
-  // 크기 4 단 (xs·sm·md·lg). md 가 anchor(기본), xs·sm 은 밀집/보조, lg 는 CTA. Field·Select 와
+  // 크기 3 단 (sm·md·lg). md 가 anchor(기본), sm 은 밀집/보조, lg 는 CTA. Field·Select 와
   // 같은 사다리라 나란히 두면 높이가 맞는다.
   size?: ControlSize;
+  // 컨트롤 실루엣은 유지하고 라벨만 조정하는 통로. 기본값은 size 사다리를 따른다.
+  fontSize?: TextVariant;
   // 실루엣 — rounded 는 시스템 곡선(radius.interaction), pill 은 알약(높이의 절반).
   // 값이 둘뿐인 건 의도다 — 고르는 건 *알약이냐 아니냐* 지 곡선의 크기가 아니다.
   shape?: "rounded" | "pill";
@@ -80,6 +83,7 @@ const ButtonImpl = forwardRef<HTMLElement, ButtonImplProps>(function Button(
     color = "primary",
     variant = "solid",
     size = "md",
+    fontSize,
     shape = "rounded",
     loading,
     iconOnly,
@@ -113,6 +117,7 @@ const ButtonImpl = forwardRef<HTMLElement, ButtonImplProps>(function Button(
         INTERACTIVE,
         buttonRoot,
         buttonSize[size],
+        fontSize && buttonFontSize[fontSize],
         resolveColor(color, variant),
         iconOnly && buttonIconOnly,
         fullWidth && buttonFull,
