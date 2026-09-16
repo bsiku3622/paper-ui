@@ -43,8 +43,6 @@ export type Color = (typeof COLORS)[number];
 //   softMuted    soft 면·soft 선·흐린 잉크
 //   ghost    면과 선 없이 잉크만
 //   ghostMuted     면과 선 없이 흐린 잉크
-//   tonal    solid 면에 잉크색 선을 겹친다
-//   tonalMuted     soft 면에 잉크색 선을 겹친다
 //
 // ⚠ `outline` 의 뜻이 바뀌었다. 예전 outline 은 지금의 `hairline` 이다 — 헤어라인을 두르던
 // 자리인데, 그것만으로는 "테두리가 곧 형태" 인 변형이 지면에서 안 떨어졌다(1.19:1).
@@ -59,8 +57,6 @@ export const VARIANTS = [
   "softMuted",
   "ghost",
   "ghostMuted",
-  "tonal",
-  "tonalMuted",
   "quiet",
 ] as const;
 export type Variant = (typeof VARIANTS)[number];
