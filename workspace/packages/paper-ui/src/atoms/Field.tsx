@@ -135,6 +135,12 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
       style={style}
       data-testid={testid}
       data-pui-status={status}
+      // text input은 브라우저가 pointer click 뒤에도 :focus-visible로 판단할 수 있다.
+      // React state 반영보다 먼저 DOM attribute를 세워 default focus보다 앞서 ring을 막는다.
+      onPointerDownCapture={(event) => { event.currentTarget.dataset.puiPointerFocus = "true"; }}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) delete event.currentTarget.dataset.puiPointerFocus;
+      }}
       // 래퍼 여백을 클릭해도 input 이 포커스되게 (액션 버튼은 제외)
       onMouseDown={(e) => {
         const t = e.target as HTMLElement;

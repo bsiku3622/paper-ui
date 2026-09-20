@@ -21,12 +21,20 @@ export type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "classNa
 };
 
 const SelectRoot = forwardRef<HTMLSelectElement, SelectProps>(function SelectRoot(
-  { children, size = "md", fontSize, shape = "rounded", className, ...rest },
+  { children, size = "md", fontSize, shape = "rounded", className, onPointerDown, onBlur, ...rest },
   ref,
 ) {
   return (
     <select
       ref={ref}
+      onPointerDown={(event) => {
+        event.currentTarget.dataset.puiPointerFocus = "true";
+        onPointerDown?.(event);
+      }}
+      onBlur={(event) => {
+        delete event.currentTarget.dataset.puiPointerFocus;
+        onBlur?.(event);
+      }}
       className={joinClass(selectRoot, selectSize[size], fontSize && selectFontSize[fontSize], shape === "pill" && selectPill, className)}
       {...rest}
     >

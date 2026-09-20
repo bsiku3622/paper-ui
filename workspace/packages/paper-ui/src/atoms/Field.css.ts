@@ -35,11 +35,15 @@ export const fieldWrap = style({
   selectors: {
     // neutral hover는 배경을 흔들지 않고 ink.faint 선으로 형태를 가볍게 세운다.
     '&[data-pui-status="default"]:hover:not(:focus-within):has(input:enabled)': {
-      borderColor: tokens.color.ink.faint,
+      borderColor: tokens.color.border.hover,
+    },
+    // pointer focus는 keyboard ring 대신 hover보다 한 단계 또렷한 soft edge를 남긴다.
+    '&[data-pui-status="default"][data-pui-pointer-focus]:has(input:focus)': {
+      borderColor: tokens.color.ink.soft,
     },
     // keyboard focus — 안쪽 input 이 :focus-visible일 때만 래퍼 *바깥* 에 파란 링.
     // 클릭은 caret과 edge만 남기고, Tab 탐색 위치에만 ring을 쓴다.
-    "&:has(input:focus-visible)": {
+    "&:not([data-pui-pointer-focus]):has(input:focus-visible)": {
       outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.focus.ring}`,
       outlineOffset: tokens.shape.constants.focusRingOffset,
     },
@@ -64,7 +68,12 @@ export const fieldInput = style({
   color: "inherit",
   padding: 0,
   margin: 0,
-  selectors: { "&::placeholder": { color: tokens.color.ink.faint } },
+  selectors: {
+    "&::placeholder": { color: tokens.color.ink.faint },
+    // 전역 :focus-visible rule보다 높은 특정도로 input 자체의 ring은 끈다. ring의 주인은
+    // keyboard focus를 읽는 wrapper다.
+    "&:focus-visible": { outline: "none" },
+  },
 });
 
 // size 3 단 — 베이스에서 **가로 여백만** inputPaddingX(7 · 9 · 12)로 갈아 끼운다.

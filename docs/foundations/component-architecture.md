@@ -9,14 +9,14 @@ Paper UI의 상위 레이어는 아래 일곱 축에서 필요한 것만 고릅�
 | 축 | 답하는 질문 | 어휘 |
 | --- | --- | --- |
 | `color` | 어떤 의미색인가 | `primary · info · success · warning · error` |
-| shared `variant` | 의미색을 얼마나 무겁게 보이는가 | `solid · soft · plain · outline · hairline · quiet` |
+| shared `variant` | 의미색을 얼마나 무겁게 보이는가 | `solid · soft · softMuted · outline · outlineMuted · hairline · hairlineMuted · ghost · ghostMuted` |
 | local `variant` | 상위 구조를 어떻게 구분하는가 | 컴포넌트별 유한 집합 |
 | `density` | 같은 정보가 세로로 얼마나 촘촘한가 | `compact · default · comfortable` |
 | `size` | 컨트롤 자체가 얼마나 큰가 | `sm · md · lg` |
 | `shape` | 한 줄 컨트롤이 둥근 곡선인가 알약인가 | `rounded · pill` |
 | state | 지금 어떤 상태인가 | `open · selected · disabled · error` 등 |
 
-`color × variant`는 레이어와 무관하게 의미색과 시각 무게를 표현하는 요소가 **하나의 `Variant` 타입으로 공유**합니다. Button·Badge·Alert가 같은 매트릭스를 씁니다. 여기서 `plain`은 `soft`의 옅은 면과 `outline`의 또렷한 선을 동시에 쓰는 공통 단계입니다. 지역 `variant`는 Table의 행 구분이나 Tabs의 navigation 구조처럼 shared 축으로 표현할 수 없는 경우에만 둡니다. 같은 prop 이름을 쓰더라도 shared `Variant`에 지역 선택지를 섞지 않습니다.
+`color × variant`는 레이어와 무관하게 의미색과 시각 무게를 표현하는 요소가 **하나의 `Variant` 타입으로 공유**합니다. Button·Badge·Alert가 같은 매트릭스를 씁니다. 지역 `variant`는 Table의 행 구분이나 Tabs의 navigation 구조처럼 shared 축으로 표현할 수 없는 경우에만 둡니다. 같은 prop 이름을 쓰더라도 shared `Variant`에 지역 선택지를 섞지 않습니다.
 
 `density`와 `size`는 다릅니다. Table의 행 간격은 정보량이고, Pagination 버튼의 크기는 누르는 표적입니다. 표를 촘촘하게 만들려고 페이지 버튼까지 줄이지 않으며, 큰 버튼을 쓴다고 표의 행이 커지지도 않습니다.
 

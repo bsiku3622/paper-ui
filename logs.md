@@ -370,3 +370,9 @@ Playground가 이 레포의 유일한 시각 검증 surface이므로, 패키지 
 - 요약: 클릭 포커스에서는 ring을 표시하지 않고 `:focus-visible`인 keyboard focus에만 표시하도록 바꿨습니다.
 
 입력 중인 위치는 caret과 hover edge로 충분히 드러나므로, blue focus ring은 Tab 탐색처럼 키보드 위치를 잃기 쉬운 상황에만 남겼습니다. Field는 wrapper가 outline을 맡아 내부 input의 `:focus-visible` 상태를 읽습니다.
+## 2026-09-16 — Replace pointer focus ring with soft form edge
+
+- 변경 파일: Field·Select·Textarea focus modality styles
+- 요약: pointer click으로 focus된 일반 input류는 blue ring 대신 `ink.soft` border를 사용합니다.
+
+브라우저가 text input의 pointer focus도 `:focus-visible`로 판정하는 경우가 있어 input modality를 DOM attribute로 즉시 기록합니다. keyboard focus는 기존 blue ring을 유지하고, pointer focus는 hover(`ink.faint`)보다 한 단계 또렷한 `ink.soft` edge로 현재 입력 위치만 알립니다.
