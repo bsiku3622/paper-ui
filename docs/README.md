@@ -7,7 +7,7 @@ paper-ui는 복잡한 웹앱을 위한 디자인 시스템입니다. 순백과 �
 ## 지도
 
 - **시작하기** — [설치](get-started/install.md) · [원칙](get-started/philosophy.md)
-- **기초** — [토큰](foundations/tokens.md) · [아키텍처](foundations/architecture.md) · [컴포넌트 축](foundations/component-architecture.md)
+- **기초** — [토큰](foundations/tokens.md) · [아키텍처](foundations/architecture.md) · [컴포넌트 축](foundations/component-architecture.md) · [Interaction](foundations/interaction.md)
 - **컴포넌트** — [개요](components/overview.md)
 - **실전 조합** — [레시피](recipes/README.md)
 

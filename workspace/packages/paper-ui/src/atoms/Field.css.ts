@@ -33,7 +33,7 @@ export const fieldWrap = style({
   cursor: "text",
   transition: stateTransition("border-color", "box-shadow", "background"),
   selectors: {
-    // neutral hover는 배경을 흔들지 않고 ink.faint 선으로 형태를 가볍게 세운다.
+    // neutral hover는 배경을 흔들지 않고 전용 border.hover 선으로 형태를 가볍게 세운다.
     '&[data-pui-status="default"]:hover:not(:focus-within):has(input:enabled)': {
       borderColor: tokens.color.border.hover,
     },

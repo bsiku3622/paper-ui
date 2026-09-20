@@ -376,3 +376,9 @@ Playground가 이 레포의 유일한 시각 검증 surface이므로, 패키지 
 - 요약: pointer click으로 focus된 일반 input류는 blue ring 대신 `ink.soft` border를 사용합니다.
 
 브라우저가 text input의 pointer focus도 `:focus-visible`로 판정하는 경우가 있어 input modality를 DOM attribute로 즉시 기록합니다. keyboard focus는 기존 blue ring을 유지하고, pointer focus는 hover(`ink.faint`)보다 한 단계 또렷한 `ink.soft` edge로 현재 입력 위치만 알립니다.
+## 2026-09-21 — Document hover and focus contracts
+
+- 변경 파일: `docs/foundations/interaction.md`, foundation 문서
+- 요약: shared color, neutral Form, semantic Form, navigation의 hover 우선순위와 keyboard/pointer focus 차이를 하나의 계약으로 정리했습니다.
+
+현재 구현은 shared color의 overlay와 Form의 border/halo가 서로 다른 책임을 갖는데, 기존 문서에서는 이 경계가 여러 파일의 주석에 흩어져 있었습니다. 새 문서는 `border.hover`를 neutral Form 전용 단계로 명시하고, selected가 hover보다 우선하는 이유와 정적 Badge에 hover를 붙이지 않는 기준을 함께 고정합니다. 코드나 색 값은 바꾸지 않았고, 작업 중이던 토큰 변경도 포함하지 않았습니다.
