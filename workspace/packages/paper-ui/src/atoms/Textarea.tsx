@@ -25,7 +25,7 @@ export type TextareaProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "c
 };
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function Textarea(
-  { status = "default", size = "md", fontSize, className, ...rest },
+  { status = "default", size = "md", fontSize, className, onPointerDown, onBlur, ...rest },
   ref,
 ) {
   return (
@@ -33,6 +33,14 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
       ref={ref}
       aria-invalid={status === "error" || undefined}
       data-pui-status={status}
+      onPointerDown={(event) => {
+        event.currentTarget.dataset.puiPointerFocus = "true";
+        onPointerDown?.(event);
+      }}
+      onBlur={(event) => {
+        delete event.currentTarget.dataset.puiPointerFocus;
+        onBlur?.(event);
+      }}
       className={joinClass(textareaRoot, textareaSize[size], fontSize && textareaFontSize[fontSize], status !== "default" && fieldStatus[status], className)}
       {...rest}
     />

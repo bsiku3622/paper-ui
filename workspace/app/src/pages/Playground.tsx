@@ -188,7 +188,6 @@ export const Playground = () => {
           <Spec label="variant — 시각 무게" testid="spec-button-variants">
             <Button variant="solid" data-testid="btn-solid">solid</Button>
             <Button variant="soft" data-testid="btn-soft">soft</Button>
-            <Button variant="plain" data-testid="btn-plain">plain</Button>
             <Button variant="outline" data-testid="btn-outline">outline</Button>
             <Button variant="hairline" data-testid="btn-hairline">hairline</Button>
             <Button variant="ghostMuted" data-testid="btn-ghost-muted">ghostMuted</Button>
@@ -364,7 +363,6 @@ export const Playground = () => {
           <Spec label="Badge — shared variant · dot">
             <Badge color="error" variant="solid">3</Badge>
             <Badge color="success" variant="solid">완료</Badge>
-            <Badge color="info" variant="plain">plain</Badge>
             <Badge color="info" variant="outline">검토</Badge>
             <Badge color="warning" variant="ghostMuted">주의</Badge>
             <Badge color="info" dot>진행</Badge>
@@ -496,7 +494,7 @@ export const Playground = () => {
               별도 축을 세우지 않은 건 variant 가 이미 *면의 무게* 축이기 때문이다. */}
           <Spec label="Alert — variant (같은 색, 네 가지 면의 무게)" testid="spec-alert-variant">
             <Inline gap="md" wrap align="start">
-              {(["soft", "softMuted", "plain", "plainMuted", "solid", "outline", "outlineMuted", "hairline", "hairlineMuted", "ghost", "ghostMuted"] as const).map((v) => (
+              {(["soft", "softMuted", "solid", "outline", "outlineMuted", "hairline", "hairlineMuted", "ghost", "ghostMuted"] as const).map((v) => (
                 <Box key={v} style={{ width: "15rem" }} data-testid={`alert-${v}`}>
                   <Alert color="error" variant={v}>
                     <Alert.Title>확인이 필요합니다</Alert.Title>

@@ -45,12 +45,16 @@ export const selectRoot = style({
       backgroundImage:
         "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%23a1a1aa' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E\")",
     },
-    "&:hover:not(:focus)": { borderColor: tokens.color.ink.faint },
+    "&:hover:not(:focus)": { borderColor: tokens.color.border.hover },
+    "&[data-pui-pointer-focus]:focus": { borderColor: tokens.color.ink.soft },
     // keyboard focus만 바깥 ring으로 알린다. 클릭은 native open state와 edge로 충분하다.
-    "&:focus-visible": {
+    "&:focus-visible:not([data-pui-pointer-focus])": {
       outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.focus.ring}`,
       outlineOffset: tokens.shape.constants.focusRingOffset,
     },
+    // text-like native controls can still match :focus-visible after a click. Override the
+    // global focus rule while pointer focus is active.
+    "&[data-pui-pointer-focus]:focus-visible": { outline: "none" },
     "&:disabled": { opacity: 0.5, cursor: "not-allowed" },
     // 다크 — 화살표 stroke 를 다크 ink.soft(#a1a1aa)로. 어두운 필드 위 대비 회복.
     ':where([data-theme="dark"]) &': {

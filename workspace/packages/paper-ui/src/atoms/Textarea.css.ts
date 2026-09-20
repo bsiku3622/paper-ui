@@ -33,13 +33,17 @@ export const textareaRoot = style({
   selectors: {
     "&::placeholder": { color: tokens.color.ink.faint },
     '&[data-pui-status="default"]:hover:not(:focus):not(:disabled)': {
-      borderColor: tokens.color.ink.faint,
+      borderColor: tokens.color.border.hover,
+    },
+    '&[data-pui-status="default"][data-pui-pointer-focus]:focus': {
+      borderColor: tokens.color.ink.soft,
     },
     // keyboard focus만 바깥 ring으로 알린다. 클릭은 caret과 edge만 남긴다.
-    "&:focus-visible": {
+    "&:focus-visible:not([data-pui-pointer-focus])": {
       outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.focus.ring}`,
       outlineOffset: tokens.shape.constants.focusRingOffset,
     },
+    "&[data-pui-pointer-focus]:focus-visible": { outline: "none" },
     "&:disabled": { opacity: 0.5, cursor: "not-allowed" },
   },
 });

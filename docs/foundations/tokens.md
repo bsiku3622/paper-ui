@@ -55,7 +55,7 @@ chroma 는 저명도에서 지각이 약해지므로 다크 쪽을 조금 올려
 
 ⚠ 한동안 다크가 **완전 무채**(`C .0000`, 전 항목)였습니다. 라이트만 캐스트를 갖고 있어서 다크가 밋밋하게 읽혔습니다 — 사다리 순서·`accent.solid` 방향에 이어 **뒤집히지 않은 채 남아 있던 셋째 축**이었습니다.
 
-**accent — 4색 × 7자리.** 이름이 곧 의미(`info`·`success`·`warning`·`error`) — API 에 hue 이름(blue 등)은 없습니다. 각 색은 일곱 자리: `solid`(채운 면/점) · `ink`(일반 지면 위 글자) · `wash`(가장 옅은 색이자 solid 위 글자) · `soft`(shared soft/plain의 면) · `softInk`(soft 위 AA 글자) · `edge`(hover 면) · `edgeStrong`(홀로 서는 outline 선).
+**accent — 4색 × 7자리.** 이름이 곧 의미(`info`·`success`·`warning`·`error`) — API 에 hue 이름(blue 등)은 없습니다. 각 색은 일곱 자리: `solid`(채운 면/점) · `ink`(일반 지면 위 글자) · `wash`(가장 옅은 색이자 solid 위 글자) · `soft`(shared soft 면) · `softInk`(soft 위 AA 글자) · `edge`(hover 면) · `edgeStrong`(홀로 서는 outline 선).
 
 라이트
 
@@ -101,7 +101,7 @@ chroma 는 저명도에서 지각이 약해지므로 다크 쪽을 조금 올려
 
 ⚠ **채운 면 위 글자는 `wash`입니다.** `paper.raised`는 다크에서 최암이라 쓸 수 없고, 별도 `solidFg`는 wash와 거의 같은 끝점을 중복하면서 라이트 대비가 `3.91~4.21`로 약했습니다. Veil wash를 재사용하면 라이트 `4.56~4.89`, 다크 `5.16~5.80`으로 양쪽 모두 AA를 넘습니다.
 
-**accent 7자리** — `solid`(채운 면) · `ink`(지면 위 글자) · `wash`(가장 옅은 색이자 solid 위 글자) · `soft`(shared soft/plain 면) · `softInk`(soft 위 AA 글자) · `edge`(soft의 hover 면) · `edgeStrong`(**홀로 서는 테두리** — `outline` 변형).
+**accent 7자리** — `solid`(채운 면) · `ink`(지면 위 글자) · `wash`(가장 옅은 색이자 solid 위 글자) · `soft`(shared soft 면) · `softInk`(soft 위 AA 글자) · `edge`(soft의 hover 면) · `edgeStrong`(**홀로 서는 테두리** — `outline` 변형).
 
 **중립 outline의 테두리는 `primary.edgeStrong`입니다.** 카드 헤어라인·빈 Field와 같은 `border.base`는 `hairline`이 맡습니다. primary와 accent 모두 outline에서는 각 color family의 강한 선을, hairline에서는 지면이나 옅은 색의 선을 사용합니다.
 
@@ -109,7 +109,7 @@ chroma 는 저명도에서 지각이 약해지므로 다크 쪽을 조금 올려
 
 **톤은 램프 인덱스가 아니라 대비로 고릅니다.** 넷을 다 400톤으로 맞춰 보면 초록·amber가 파랑·빨강보다 눈에 띄게 옅습니다 — hue마다 고유 명도가 달라서입니다. 그래서 각자 지면 대비 3.0이 되는 자리를 따로 찾았습니다(`solid`를 "진한 톤으로 낮춤" 한 것과 같은 이유). primary는 자기 `edgeStrong`을 들지 않습니다 — 위의 `border.control`이 그 자리입니다.
 
-**color × shared variant — 잉크색을 입는 컴포넌트(Button·Badge·Alert).** `color`(primary + 4 accent) × `variant`(`solid`·`soft`·`plain`·`outline`·`hairline`·`quiet`)로 색을 받습니다. `plain`은 soft 면과 outline 선을 함께 쓰는 공통 단계이며 Table의 지역 `plain`과 타입이 다릅니다. Accent의 `soft`·`plain` 배경은 OKLCH에서 hue를 각 accent에 고정합니다. `L`은 wash에서 primary soft로 75%, `C`는 같은 hue의 wash에서 edge로 75% 이동합니다. 그래서 primary 사다리에 가까운 진하기를 얻되 zinc hue가 섞인 탁한 중간색은 만들지 않습니다. solid 위 전경으로도 쓰이는 raw wash의 대비 계약은 그대로입니다.
+**color × shared variant — 잉크색을 입는 컴포넌트(Button·Badge·Alert).** `color`(primary + 4 accent) × `variant`(`solid`·`soft`·`softMuted`·`outline`·`outlineMuted`·`hairline`·`hairlineMuted`·`ghost`·`ghostMuted`)로 색을 받습니다. Accent의 `soft` 배경은 OKLCH에서 hue를 각 accent에 고정합니다. `L`은 wash에서 primary soft로 75%, `C`는 같은 hue의 wash에서 edge로 75% 이동합니다. 그래서 primary 사다리에 가까운 진하기를 얻되 zinc hue가 섞인 탁한 중간색은 만들지 않습니다. solid 위 전경으로도 쓰이는 raw wash의 대비 계약은 그대로입니다.
 
 **테두리만 있는 변형이 둘인데, 세기가 아니라 *어느 선이냐*로 갈립니다.** `outline`은 color family가 소유한 선입니다 — primary는 `primary.edgeStrong`, accent는 각자의 `edgeStrong`이고 둘 다 지면 대비 3:1입니다. 면을 안 칠하니 테두리가 곧 형태여서, 강조가 필요한 자리에 고르는 변형입니다. `hairline`은 지면이 소유한 선입니다 — 뉴트럴은 카드 헤어라인·빈 입력칸과 같은 `border.base`를 그대로 두르고, accent는 그 색의 가장 옅은 괘선(`edge`)으로 갑니다(색 있는 자리에 뉴트럴 회색을 두르면 그 컴포넌트만 색 정체성을 잃습니다).
 
