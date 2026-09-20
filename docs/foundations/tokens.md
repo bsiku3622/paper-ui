@@ -33,10 +33,11 @@
 |---|---|---|---|
 | `border.base` | `#e8e8ea` | `#2b2b31` | 쉬는 경계 — 카드·구획·빈 입력칸·체크박스·hairline |
 | `border.strong` | `#ccccd1` | `#3d3d44` | 중간 회색 선 — table head 밑·Checkbox·Radio 외곽 |
+| `border.hover` | `#b3b3bb` | `#4f4f58` | neutral Form 포인터 hover 전용 선 |
 
 한동안 컨트롤 전용 회색을 따로 뒀습니다. 근거는 그럴듯했습니다 — 빈 Field는 상자 말고 아무 단서가 없으니 카드 헤어라인보다 진해야 한다는 것. 그런데 **실물에서는 그게 바로 어긋남으로 읽혔습니다.** 표를 감싼 카드 테두리는 거의 안 보이는데 그 위 검색창만 진하면, 한 화면에 회색이 두 벌이 됩니다. 선의 *역할*이 다르다고 *색*까지 갈리면 화면은 그걸 두 팔레트로 읽습니다.
 
-쉬는 neutral Form은 `base`로 화면의 다른 괘선과 한 벌을 유지합니다. 포인터가 올라오면 회색 사다리를 한 칸 오르는 대신 `primary.base` solid 선으로 형태를 분명히 세웁니다. semantic Form은 처음부터 해당 accent의 `solid` 선을 쓰고, hover에서는 선을 더 바꾸지 않고 같은 pigment를 중앙 shadow로 번지게 합니다. shadow는 semantic Form에만 적용하며 neutral Form·Button·navigation·data row에는 확장하지 않습니다.
+쉬는 neutral Form은 `base`로 화면의 다른 괘선과 한 벌을 유지합니다. 포인터가 올라오면 전용 `border.hover` 선으로 형태를 분명히 세우되, 배경은 바꾸지 않습니다. semantic Form은 처음부터 해당 accent의 `solid` 선을 쓰고, hover에서는 선을 더 바꾸지 않고 같은 pigment를 중앙 shadow로 번지게 합니다. shadow는 semantic Form에만 적용하며 neutral Form·Button·navigation·data row에는 확장하지 않습니다.
 
 accent는 사정이 다릅니다 — 그쪽은 `edge`(wash 괘선)와 `edgeStrong`(outline 테두리)이 갈려 있는데, 색이 있는 선은 *라벨 색과 맞아야* 하므로 애초에 뉴트럴 괘선과 다른 물건입니다.
 
@@ -46,6 +47,10 @@ accent는 사정이 다릅니다 — 그쪽은 `edge`(wash 괘선)와 `edgeStron
 |---|---|---|---|---|
 | 다크 | `1.38` | `1.35` | `1.27` | `1.10` |
 | 라이트 | `1.22` | `1.19` | `1.11` | `1.06` |
+
+`border.hover`는 resting 구조선과 semantic 색선 사이의 interaction 전용 단계입니다.
+neutral Form이 포인터 hover에서만 이 토큰으로 올라가며, Button·navigation의 overlay와
+혼용하지 않습니다. 현재 light/dark 값은 각각 `#b3b3bb` / `#4f4f58`입니다.
 
 ### 중립의 캐스트 — hue 286°
 

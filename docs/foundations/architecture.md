@@ -29,7 +29,7 @@ resolveColor(color, variant)  →  "pui-c-error-solid"   (이름 규칙)
 styles/color.css.ts  ── COLORS × VARIANTS 를 loop ──┘  (그 클래스의 실체)
 ```
 
-`resolveColor("error", "solid")`가 `"pui-c-error-solid"`를 돌려주고, 그 클래스가 무엇인지(background·color·border)는 `styles/color.css.ts`가 같은 `COLORS × VARIANTS` 배열을 걸어 굳힙니다. 면은 색과 다른 종류라 resolver 도 따로입니다 — `resolveSurface(surface)` → `"pui-surface-raised"`. 두 자리가 한 배열을 돌기 때문에 resolver가 만들 수 있는 모든 이름에 대응하는 규칙이 반드시 있습니다 — 조합이 빠지거나 어긋날 수 없습니다. hover는 `.pui-interactive` gate가 함께 있을 때만 뭅니다(Button은 붙이고, 표시용 Badge는 안 붙입니다).
+`resolveColor("error", "solid")`가 `"pui-c-error-solid"`를 돌려주고, 그 클래스가 무엇인지(background·color·border)는 `styles/color.css.ts`가 같은 `COLORS × VARIANTS` 배열을 걸어 굳힙니다. 면은 색과 다른 종류라 resolver 도 따로입니다 — `resolveSurface(surface)` → `"pui-surface-raised"`. 두 자리가 한 배열을 돌기 때문에 resolver가 만들 수 있는 모든 이름에 대응하는 규칙이 반드시 있습니다 — 조합이 빠지거나 어긋날 수 없습니다. shared color hover는 `.pui-interactive` gate가 함께 있을 때만 물고, Form의 border/focus와 navigation의 selected 우선순위는 각 컴포넌트가 소유합니다. 전체 계약은 [Interaction](interaction.md)에 고정합니다.
 
 ## 레이어
 
