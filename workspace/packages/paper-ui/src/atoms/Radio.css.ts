@@ -18,11 +18,11 @@ export const radioRoot = style({
   placeContent: "center",
   transition: stateTransition("border-color"),
   selectors: {
-    "&:checked": { borderColor: tokens.color.action.primary.base },
+    "&:checked": { borderColor: tokens.color.accent.primary.solid },
     "&:checked::after": {
       content: "''",
       borderRadius: tokens.shape.radius.full,
-      background: tokens.color.action.primary.base,
+      background: tokens.color.accent.primary.solid,
     },
     "&:focus-visible": {
       outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.focus.ring}`,

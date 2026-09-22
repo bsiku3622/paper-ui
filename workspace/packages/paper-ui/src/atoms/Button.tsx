@@ -1,12 +1,12 @@
-// Button — 누르는 자리. 색은 resolver 가 정한다: color(의미) × variant(시각 무게).
-//   color    primary(검정 일꾼) · info · success · warning · error
+// Button — 누르는 자리. accent는 resolver가 정한다: accent(의미) × variant(시각 무게).
+//   accent   primary(검정 일꾼) · info · success · warning · error
 //   variant  solid · soft · outline · ghostMuted
 //   shape    rounded(시스템 곡선) · pill(알약)
 //
 // 예) <Button>저장</Button>                        검정 solid (primary)
 //     <Button variant="soft">미리보기</Button>      회색 secondary
-//     <Button color="error">삭제</Button>           빨강 solid
-//     <Button color="error" variant="ghostMuted">…</Button>  빨강 텍스트
+//     <Button accent="error">삭제</Button>           빨강 solid
+//     <Button accent="error" variant="ghostMuted">…</Button>  빨강 텍스트
 //     <Button loading>저장 중</Button>              스피너 + aria-busy
 //     <Button shape="pill">시작하기</Button>        알약 (hero CTA 자리)
 //     <Button as={Link} to="/docs">문서 읽기</Button>  누르면 이동하는 자리
@@ -23,7 +23,7 @@ import {
 } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import { resolveColor, INTERACTIVE, type Color, type Variant } from "../resolvers";
+import { resolveAccent, INTERACTIVE, type Accent, type Variant } from "../resolvers";
 import type { ControlSize, TextVariant } from "../tokens";
 import {
   buttonRoot,
@@ -42,7 +42,7 @@ type ButtonOwn<As extends ElementType> = {
   // 유효하지 않은 마크업이다. 누르면 이동하는 자리는 버튼 모양의 *링크* 여야 한다.
   as?: As;
   // 큰 면을 채우는 기본은 검정(primary) — 색은 의미가 있을 때만.
-  color?: Color;
+  accent?: Accent;
   variant?: Variant;
   // 크기 3 단 (sm·md·lg). md 가 anchor(기본), sm 은 밀집/보조, lg 는 CTA. Field·Select 와
   // 같은 사다리라 나란히 두면 높이가 맞는다.
@@ -69,7 +69,7 @@ type ButtonImplProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className"
 const ButtonImpl = forwardRef<HTMLElement, ButtonImplProps>(function Button(
   {
     as,
-    color = "primary",
+    accent = "primary",
     variant = "solid",
     size = "md",
     fontSize,
@@ -106,7 +106,7 @@ const ButtonImpl = forwardRef<HTMLElement, ButtonImplProps>(function Button(
         buttonRoot,
         buttonSize[size],
         fontSize && buttonFontSize[fontSize],
-        resolveColor(color, variant),
+        resolveAccent(accent, variant),
         fullWidth && buttonFull,
         shape === "pill" && buttonPill,
         className,

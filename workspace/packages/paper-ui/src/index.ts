@@ -188,4 +188,4 @@ export { tokens, stateTransition, semanticFormHoverShadow } from "./tokens";
 export type { AccentName, StatusName, TextVariant, Space, ControlSize } from "./tokens";
 
 // Resolver 타입 — 앱이 자기 컴포넌트를 이 어휘로 만들 때
-export type { Color, Surface, Accent, Variant, Ink, Tone } from "./resolvers";
+export type { Surface, Accent, Variant, Ink, Tone } from "./resolvers";

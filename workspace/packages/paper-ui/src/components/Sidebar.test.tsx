@@ -9,14 +9,14 @@ describe("Sidebar", () => {
     render(
       <Sidebar value="components">
         <Sidebar.Group label="문서">
-          <Sidebar.Item value="components">컴포넌트<Sidebar.Badge color="info">NEW</Sidebar.Badge></Sidebar.Item>
-          <Sidebar.Item value="tokens">토큰<Sidebar.Badge color="warning">MOD</Sidebar.Badge></Sidebar.Item>
+          <Sidebar.Item value="components">컴포넌트<Sidebar.Badge accent="info">NEW</Sidebar.Badge></Sidebar.Item>
+          <Sidebar.Item value="tokens">토큰<Sidebar.Badge accent="warning">MOD</Sidebar.Badge></Sidebar.Item>
         </Sidebar.Group>
       </Sidebar>,
     );
 
     expect(screen.getByText("컴포넌트").closest("button")?.getAttribute("aria-current")).toBe("page");
-    expect(screen.getByText("NEW").className).toContain("pui-c-info-soft");
+    expect(screen.getByText("NEW").className).toContain("pui-a-info-soft");
     expect(screen.getByText("NEW").closest("button")?.className).toContain(sidebarItemActive);
     expect(screen.getByText("NEW").className).not.toContain("sidebarBadgeSelectedOverlay");
     expect(screen.getByText("MOD").className).not.toContain("sidebarBadgeSelectedOverlay");
@@ -28,7 +28,7 @@ describe("Sidebar", () => {
       <Sidebar value="components" onValueChange={onValueChange}>
         <Sidebar.Group>
           <Sidebar.Item value="components">
-            컴포넌트<Sidebar.Badge color="info" selectedVariant="outline">NEW</Sidebar.Badge>
+            컴포넌트<Sidebar.Badge accent="info" selectedVariant="outline">NEW</Sidebar.Badge>
           </Sidebar.Item>
         </Sidebar.Group>
       </Sidebar>,
@@ -36,6 +36,6 @@ describe("Sidebar", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "컴포넌트NEW" }));
     expect(onValueChange).toHaveBeenCalledWith("components");
-    expect(screen.getByText("NEW").className).toContain("pui-c-info-outline");
+    expect(screen.getByText("NEW").className).toContain("pui-a-info-outline");
   });
 });

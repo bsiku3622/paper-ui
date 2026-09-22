@@ -27,7 +27,7 @@ export const switchRoot = style({
       boxShadow: tokens.shape.shadow.overlayMinimal,
       transition: `transform ${tokens.motion.duration.base} ${tokens.motion.easing.standard}`,
     },
-    "&:checked": { background: tokens.color.action.primary.base },
+    "&:checked": { background: tokens.color.accent.primary.solid },
     "&:focus-visible": {
       outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.focus.ring}`,
       outlineOffset: tokens.shape.constants.focusRingOffset,

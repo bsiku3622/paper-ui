@@ -101,7 +101,7 @@ export const Playground = () => {
   const renderTable = (variant: "plain" | "ruled" | "striped", density: "compact" | "default" | "comfortable", limit = 3) => (
     <Table variant={variant} density={density}>
       <Table.Header><Table.Column>키</Table.Column><Table.Column>상태</Table.Column><Table.Column numeric>값</Table.Column></Table.Header>
-      <Table.Body>{rows.slice(0, limit).map((row) => <Table.Row key={row.id}><Table.Cell>{row.k}</Table.Cell><Table.Cell><Badge color={row.s}>{row.s}</Badge></Table.Cell><Table.Cell numeric>{row.n.toLocaleString()}</Table.Cell></Table.Row>)}</Table.Body>
+      <Table.Body>{rows.slice(0, limit).map((row) => <Table.Row key={row.id}><Table.Cell>{row.k}</Table.Cell><Table.Cell><Badge accent={row.s}>{row.s}</Badge></Table.Cell><Table.Cell numeric>{row.n.toLocaleString()}</Table.Cell></Table.Row>)}</Table.Body>
     </Table>
   );
 
@@ -159,7 +159,7 @@ export const Playground = () => {
                 <Box className={`pui-${a}-dot`} radius="full" data-testid={`dot-${a}`}
                   style={{ width: "1rem", height: "1rem" }} />
                 <Text variant="body" as="span" ink={a} data-testid={`ink-${a}`}>{a}</Text>
-                <Badge color={STATUSES[ACCENTS.indexOf(a)]}>{STATUSES[ACCENTS.indexOf(a)]}</Badge>
+                <Badge accent={STATUSES[ACCENTS.indexOf(a)]}>{STATUSES[ACCENTS.indexOf(a)]}</Badge>
               </Inline>
             ))}
           </Spec>
@@ -193,17 +193,17 @@ export const Playground = () => {
             <Button variant="ghostMuted" data-testid="btn-ghost-muted">ghostMuted</Button>
           </Spec>
           <Spec label="color — 의미 색 (variant 와 직교)">
-            <Button color="error" data-testid="btn-danger">삭제</Button>
-            <Button variant="soft" color="success" data-testid="btn-soft-success">완료</Button>
-            <Button variant="soft" color="warning" data-testid="btn-soft-warning">주의</Button>
-            <Button variant="ghostMuted" color="error">지우기</Button>
+            <Button accent="error" data-testid="btn-danger">삭제</Button>
+            <Button variant="soft" accent="success" data-testid="btn-soft-success">완료</Button>
+            <Button variant="soft" accent="warning" data-testid="btn-soft-warning">주의</Button>
+            <Button variant="ghostMuted" accent="error">지우기</Button>
           </Spec>
           <Spec label="solid — 텍스트도 그 색의 톤으로 (모노크로매틱, 버튼 전체가 한 색)">
-            <Button color="primary">primary</Button>
-            <Button color="info">info</Button>
-            <Button color="success">success</Button>
-            <Button color="warning">warning</Button>
-            <Button color="error">error</Button>
+            <Button accent="primary">primary</Button>
+            <Button accent="info">info</Button>
+            <Button accent="success">success</Button>
+            <Button accent="warning">warning</Button>
+            <Button accent="error">error</Button>
           </Spec>
           <Spec label="size — 크기 3 단 sm·md·lg (fontSize 는 14 고정, lg 만 semibold)" testid="spec-button-sizes">
             <Button size="sm" data-testid="btn-sm">sm</Button>
@@ -222,7 +222,7 @@ export const Playground = () => {
             <IconButton variant="outline" aria-label="닫기">
               <Icon><path d="M6 6l12 12M18 6 6 18" /></Icon>
             </IconButton>
-            <IconButton color="error" aria-label="삭제">
+            <IconButton accent="error" aria-label="삭제">
               <Icon><path d="M4 7h16M9 7V5h6v2M6 7l1 12h10l1-12" /></Icon>
             </IconButton>
           </Spec>
@@ -357,29 +357,29 @@ export const Playground = () => {
 
         <Section id="sec-badge" title="Badge · Divider · Link · Icon">
           <Spec label="Badge — status 색 + 중립 (soft)">
-            {STATUSES.map((s) => <Badge key={s} color={s} data-testid={`badge-${s}`}>{s}</Badge>)}
+            {STATUSES.map((s) => <Badge key={s} accent={s} data-testid={`badge-${s}`}>{s}</Badge>)}
             <Badge data-testid="badge-neutral">중립</Badge>
           </Spec>
           <Spec label="Badge — shared variant · dot">
-            <Badge color="error" variant="solid">3</Badge>
-            <Badge color="success" variant="solid">완료</Badge>
-            <Badge color="info" variant="outline">검토</Badge>
-            <Badge color="warning" variant="ghostMuted">주의</Badge>
-            <Badge color="info" dot>진행</Badge>
-            <Badge color="success" dot>정상</Badge>
+            <Badge accent="error" variant="solid">3</Badge>
+            <Badge accent="success" variant="solid">완료</Badge>
+            <Badge accent="info" variant="outline">검토</Badge>
+            <Badge accent="warning" variant="ghostMuted">주의</Badge>
+            <Badge accent="info" dot>진행</Badge>
+            <Badge accent="success" dot>정상</Badge>
           </Spec>
           {/* 배지도 컨트롤과 같은 규칙 — 높이만 움직이고 글자는 12 로 고정이다. 예전엔
               11·12·14 로 높이를 따라가서, 작은 배지의 글자가 가독성 하한 아래로 떨어졌다. */}
           <Spec label="Badge — size (높이 20·22·24, 글자는 12 고정)" testid="spec-badge-size">
-            <Badge size="sm" color="info" data-testid="badge-sm">sm</Badge>
-            <Badge size="md" color="info" data-testid="badge-md">md</Badge>
-            <Badge size="lg" color="info" data-testid="badge-lg">lg</Badge>
+            <Badge size="sm" accent="info" data-testid="badge-sm">sm</Badge>
+            <Badge size="md" accent="info" data-testid="badge-md">md</Badge>
+            <Badge size="lg" accent="info" data-testid="badge-lg">lg</Badge>
           </Spec>
           <Spec label="Badge — shape (Button 과 같은 어휘라 나란히 서면 곡선이 맞는다)" testid="spec-badge-shape">
-            <Badge color="success" data-testid="badge-shape-default">완료</Badge>
-            <Badge color="success" shape="pill" data-testid="badge-shape-pill">완료</Badge>
-            <Badge color="error" variant="solid" shape="pill">3</Badge>
-            <Badge color="info" dot shape="pill">진행</Badge>
+            <Badge accent="success" data-testid="badge-shape-default">완료</Badge>
+            <Badge accent="success" shape="pill" data-testid="badge-shape-pill">완료</Badge>
+            <Badge accent="error" variant="solid" shape="pill">3</Badge>
+            <Badge accent="info" dot shape="pill">진행</Badge>
           </Spec>
           {/* Divider 는 세로로 세워 표본으로 보인다. 가로 한 줄을 그으면 섹션을 가르는
               선처럼 읽혀, 예제 화면이 줄무늬가 된다 — 두 축은 상세 페이지에서 전환한다. */}
@@ -449,8 +449,8 @@ export const Playground = () => {
               <Sidebar value="components">
                 <Sidebar.Group label="문서">
                   <Sidebar.Item value="overview">개요</Sidebar.Item>
-                  <Sidebar.Item value="tokens">토큰<Sidebar.Badge color="warning">MOD</Sidebar.Badge></Sidebar.Item>
-                  <Sidebar.Item value="components">컴포넌트<Sidebar.Badge color="info">NEW</Sidebar.Badge></Sidebar.Item>
+                  <Sidebar.Item value="tokens">토큰<Sidebar.Badge accent="warning">MOD</Sidebar.Badge></Sidebar.Item>
+                  <Sidebar.Item value="components">컴포넌트<Sidebar.Badge accent="info">NEW</Sidebar.Badge></Sidebar.Item>
                 </Sidebar.Group>
               </Sidebar>
             </Box>
@@ -496,7 +496,7 @@ export const Playground = () => {
             <Inline gap="md" wrap align="start">
               {(["soft", "softMuted", "solid", "outline", "outlineMuted", "hairline", "hairlineMuted", "ghost", "ghostMuted"] as const).map((v) => (
                 <Box key={v} style={{ width: "15rem" }} data-testid={`alert-${v}`}>
-                  <Alert color="error" variant={v}>
+                  <Alert accent="error" variant={v}>
                     <Alert.Title>확인이 필요합니다</Alert.Title>
                     <Alert.Description>이 작업은 되돌릴 수 없습니다.</Alert.Description>
                   </Alert>
@@ -508,7 +508,7 @@ export const Playground = () => {
             <Inline gap="md" wrap align="start">
               {(["primary", "info", "success", "warning", "error"] as const).map((c) => (
                 <Box key={c} style={{ width: "11rem" }}>
-                  <Alert color={c}><Alert.Title>{c}</Alert.Title></Alert>
+                  <Alert accent={c}><Alert.Title>{c}</Alert.Title></Alert>
                 </Box>
               ))}
             </Inline>
@@ -523,10 +523,10 @@ export const Playground = () => {
             <Inline gap="sm" wrap align="center">
               <Button variant="outline" data-testid="outline-primary">기본</Button>
               {STATUSES.map((c) => (
-                <Button key={c} color={c} variant="outline" data-testid={`outline-${c}`}>{c}</Button>
+                <Button key={c} accent={c} variant="outline" data-testid={`outline-${c}`}>{c}</Button>
               ))}
               {STATUSES.map((c) => (
-                <Badge key={c} color={c} variant="outline">{c}</Badge>
+                <Badge key={c} accent={c} variant="outline">{c}</Badge>
               ))}
             </Inline>
           </Spec>
@@ -534,10 +534,10 @@ export const Playground = () => {
             <Inline gap="sm" wrap align="center">
               <Button variant="hairline" data-testid="hairline-primary">기본</Button>
               {STATUSES.map((c) => (
-                <Button key={c} color={c} variant="hairline" data-testid={`hairline-${c}`}>{c}</Button>
+                <Button key={c} accent={c} variant="hairline" data-testid={`hairline-${c}`}>{c}</Button>
               ))}
               {STATUSES.map((c) => (
-                <Badge key={c} color={c} variant="hairline">{c}</Badge>
+                <Badge key={c} accent={c} variant="hairline">{c}</Badge>
               ))}
               <Box style={{ width: "9rem" }}>
                 <Field placeholder="같은 선" aria-label="같은 선" data-testid="hairline-field" />
@@ -599,13 +599,13 @@ export const Playground = () => {
                     <Table.Cell><Text as="span" variant="caption" ink="soft">STU-142</Text></Table.Cell>
                     <Table.Cell>토큰 트리를 두 번 걷는 emit 파이프라인</Table.Cell>
                     <Table.Cell align="center">재원</Table.Cell>
-                    <Table.Cell align="end"><Badge color="info">진행</Badge></Table.Cell>
+                    <Table.Cell align="end"><Badge accent="info">진행</Badge></Table.Cell>
                   </Table.Row>
                   <Table.Row>
                     <Table.Cell><Text as="span" variant="caption" ink="soft">STU-139</Text></Table.Cell>
                     <Table.Cell>Select 포커스 링이 사파리에서 잘림</Table.Cell>
                     <Table.Cell align="center">민주</Table.Cell>
-                    <Table.Cell align="end"><Badge color="error">막힘</Badge></Table.Cell>
+                    <Table.Cell align="end"><Badge accent="error">막힘</Badge></Table.Cell>
                   </Table.Row>
                 </Table.Body>
               </Table>

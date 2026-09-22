@@ -95,7 +95,7 @@ export const fieldFontSize = styleVariants(
 export const fieldStatus = styleVariants(
   Object.fromEntries(
     STATUS.map((s) => {
-      const accent = tokens.color.status[s];
+      const accent = tokens.color.accent[s];
       return [
         s,
         {

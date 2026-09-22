@@ -26,7 +26,7 @@ export const tocItem = style({
   selectors: { "&:hover": { background: tokens.color.interaction.hover, color: tokens.color.content.primary } },
 });
 export const tocItemActive = style({
-  borderLeftColor: tokens.color.action.primary.base,
+  borderLeftColor: tokens.color.accent.primary.solid,
   color: tokens.color.content.primary,
   fontWeight: tokens.text.weight.medium,
   background: tokens.color.interaction.hover,

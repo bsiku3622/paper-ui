@@ -4,19 +4,19 @@ import type { ReactNode } from "react";
 
 import { Inline, Box } from "../primitives";
 import { joinClass } from "../internal/joinClass";
-import type { Color } from "../resolvers";
+import type { Accent } from "../resolvers";
 import { bannerColor, bannerRoot } from "./Banner.css";
 
 export type BannerProps = {
-  color?: Color;
+  accent?: Accent;
   children: ReactNode;
   className?: string;
 };
 
-const BannerRoot = ({ color = "primary", children, className }: BannerProps) => {
-  const live = color === "error" || color === "warning" ? "alert" : color === "info" || color === "success" ? "status" : undefined;
+const BannerRoot = ({ accent = "primary", children, className }: BannerProps) => {
+  const live = accent === "error" || accent === "warning" ? "alert" : accent === "info" || accent === "success" ? "status" : undefined;
   return (
-    <Inline as="header" role={live} justify="between" align="center" gap="md" className={joinClass(bannerRoot, bannerColor[color], className)}>
+    <Inline as="header" role={live} justify="between" align="center" gap="md" className={joinClass(bannerRoot, bannerColor[accent], className)}>
       {children}
     </Inline>
   );

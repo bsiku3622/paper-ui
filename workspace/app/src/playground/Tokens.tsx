@@ -50,9 +50,8 @@ const SURFACES = ["canvas", "raised", "sunken", "well"] as const;
 const INTERACTIONS = ["hover", "selected", "active"] as const;
 const CONTENTS = ["primary", "secondary", "tertiary"] as const;
 const BORDERS = ["base", "strong", "hover"] as const;
-const PRIMARY_ACTIONS = ["base", "hover", "fg", "wash", "soft", "mutedInk", "ink", "softInk", "edge", "edgeStrong"] as const;
-const STATUSES = ["info", "success", "warning", "error"] as const;
-const TONES = ["solid", "mutedInk", "ink", "wash", "soft", "softInk", "edge", "edgeStrong"] as const;
+const ACCENTS = ["primary", "info", "success", "warning", "error"] as const;
+const ACCENT_TONES = ["solid", "wash", "soft", "edge", "edgeStrong"] as const;
 const SIZES = ["xs", "sm", "md", "lg", "xl"] as const;
 const CONTROLS = ["sm", "md", "lg"] as const;
 const VARIANTS = ["display", "title", "heading", "subheading", "body", "caption", "label"] as const;
@@ -99,12 +98,12 @@ export const Tokens = () => {
 
       <Stack gap="xl">
         {/* ── Color · semantic tokens ───────────────────────── */}
-        <Section id="tok-neutral" title="Color · semantic tokens" desc="사용처는 palette hue나 tone step을 직접 보지 않고 surface·content·border·action·status 역할만 고릅니다. raw palette → calibrated ladder → semantic token → component의 단방향 구조입니다. surface는 Box의 깊이 축이고, content는 글자 위계, border는 화면 전체의 괘선, action.primary는 색이 없는 neutral color family입니다. 따라서 primary도 status처럼 wash·soft·mutedInk·edge ladder를 갖고, Muted variant는 모든 family에서 같은 규칙을 씁니다. neutral Form은 border.base에서 시작해 hover에만 border.hover로 올라가고, semantic Form은 status solid edge와 pigment halo를 사용합니다.">
+        <Section id="tok-neutral" title="Color · semantic tokens" desc="사용처는 palette hue나 tone step을 직접 보지 않고 surface·content·border·accent 역할만 고릅니다. raw palette → calibrated ladder → semantic token → component의 단방향 구조입니다. surface는 Box의 깊이 축이고, content는 글자 위계, border는 화면 전체의 괘선입니다. primary는 zinc 기반 accent family라 info·success·warning·error와 같은 다섯 tone contract를 공유합니다. neutral Form은 border.base에서 시작해 hover에만 border.hover로 올라가고, semantic Form은 accent solid edge와 pigment halo를 사용합니다.">
           <Inline gap="lg" wrap>
             {SURFACES.map((s) => <Swatch key={`p-${s}`} name={`surface.${s}`} token={tokens.color.surface[s]} />)}
             {CONTENTS.map((s) => <Swatch key={`i-${s}`} name={`content.${s}`} token={tokens.color.content[s]} />)}
             {BORDERS.map((s) => <Swatch key={`b-${s}`} name={`border.${s}`} token={tokens.color.border[s]} />)}
-            {PRIMARY_ACTIONS.map((s) => <Swatch key={`pr-${s}`} name={`action.primary.${s}`} token={tokens.color.action.primary[s]} />)}
+            {ACCENT_TONES.map((s) => <Swatch key={`pr-${s}`} name={`accent.primary.${s}`} token={tokens.color.accent.primary[s]} />)}
             <Swatch name="focus.ring" token={tokens.color.focus.ring} />
             <Swatch name="scrim" token={tokens.color.scrim} />
           </Inline>
@@ -128,14 +127,14 @@ export const Tokens = () => {
 
 
         {/* ── Color · status ─────────────────────────────────── */}
-        <Section id="tok-accent" title="Color · status (4색 × 8자리)" desc="info·success·warning·error는 semantic status이고 blue·green·amber·red palette에 각각 연결됩니다. 50 wash와 100 soft가 다른 단계라 softMuted는 wash를 사용해 soft보다 실제로 가벼워집니다. normal은 AA ink(700), muted는 한 단계 가벼운 mutedInk(600)를 써 색 있는 UI에서도 차이가 실제로 보입니다.">
+        <Section id="tok-accent" title="Color · accent (5색 × 5자리)" desc="accent는 primary·info·success·warning·error의 public pigment 축입니다. primary는 zinc, 나머지는 blue·green·amber·red palette에 연결됩니다. `solid` 하나가 채운 면과 지면 위 pigment text를 함께 맡고, `wash`는 solid 위 전경이자 softMuted의 가벼운 면입니다. 별도 ink·mutedInk·softInk 슬롯은 두지 않습니다.">
           <Stack gap="lg">
-            {STATUSES.map((a) => (
+            {ACCENTS.map((a) => (
               <Inline key={a} gap="lg" align="center" wrap>
                 <Box style={{ width: "3.5rem" }}>
-                  <Text variant="subheading" as="span" className={`pui-${a}-ink`}>{a}</Text>
+                  <Text variant="subheading" as="span" className={a === "primary" ? undefined : `pui-${a}-solid`}>{a}</Text>
                 </Box>
-                {TONES.map((t) => <Swatch key={`${a}-${t}`} name={t} token={tokens.color.status[a][t]} w="6.5rem" />)}
+                {ACCENT_TONES.map((t) => <Swatch key={`${a}-${t}`} name={t} token={tokens.color.accent[a][t]} w="6.5rem" />)}
               </Inline>
             ))}
           </Stack>
@@ -232,7 +231,7 @@ export const Tokens = () => {
               <Stack key={c} gap="sm" align="start">
                 <Inline gap="md" align="center" style={{ height: "1.5rem" }}>
                   <Box style={{ width: tokens.shape.icon[c], height: tokens.shape.icon[c], borderRadius: tokens.shape.radius.full, border: `2px solid ${tokens.color.content.secondary}` }} />
-                  <Box style={{ width: tokens.shape.checkbox[c].box, height: tokens.shape.checkbox[c].box, borderRadius: tokens.shape.checkbox[c].radius, background: tokens.color.action.primary.base }} />
+                  <Box style={{ width: tokens.shape.checkbox[c].box, height: tokens.shape.checkbox[c].box, borderRadius: tokens.shape.checkbox[c].radius, background: tokens.color.accent.primary.solid }} />
                   <Box style={{ width: tokens.shape.switch[c].w, height: tokens.shape.switch[c].h, borderRadius: tokens.shape.radius.full, background: tokens.color.surface.well }} />
                 </Inline>
                 <Text variant="caption" family="mono" ink="faint" as="span">{c}</Text>

@@ -5,18 +5,16 @@
 
 import { joinClass } from "../internal/joinClass";
 import type { StatusName, Space } from "../tokens";
-import { resolveSurface, ACCENTS, type Surface } from "./color";
+import { resolveSurface, type Surface } from "./color";
 
-// 면(surface) · 잉크색(color × variant)은 별도 파일에.
+// 면(surface) · accent × variant는 별도 파일에.
 export {
   resolveSurface,
-  resolveColor,
-  COLORS,
+  resolveAccent,
   SURFACES,
   ACCENTS,
   VARIANTS,
   INTERACTIVE,
-  type Color,
   type Surface,
   type Accent,
   type Variant,
@@ -26,8 +24,8 @@ export {
 //
 // 면(Box)은 ink 를 정하지 않는다 — 글자·아이콘이 자기 색을 정한다. 한 축에 뉴트럴
 // 농도(base·soft·faint)와 의미색(info·success·warning·error)을 함께 둔다. 글자는 색이
-// 하나다. accent 는 단일 톤(ink 슬롯, AA 대비) — "soft 한 빨강 글자"는 거의 안 쓰여
-// 농도×색 직교(죽은 셀)를 만들지 않는다. 뉴트럴은 `pui-ink-*`, accent 는 `pui-{color}-ink`
+// 하나다. accent 는 단일 solid pigment — "soft 한 빨강 글자"는 거의 안 쓰여
+// 농도×색 직교(죽은 셀)를 만들지 않는다. 뉴트럴은 `pui-ink-*`, accent 는 `pui-{accent}-solid`
 // (둘 다 utility.css.ts 가 굽는다).
 
 const NEUTRAL_INKS = ["base", "soft", "faint"] as const;
@@ -43,7 +41,8 @@ export { NEUTRAL_INKS };
 // ⚠ 어휘가 닫혀 있다는 원칙과 어긋나지 않는다 — 임의 색을 여는 게 아니라 "내 색을 내가
 // 정하지 않는다" 는 한 낱말을 더하는 것이다.
 const INHERIT_INK = "inherit" as const;
-export const INKS = [...NEUTRAL_INKS, ...ACCENTS, INHERIT_INK] as const;
+const STATUS_INKS = ["info", "success", "warning", "error"] as const;
+export const INKS = [...NEUTRAL_INKS, ...STATUS_INKS, INHERIT_INK] as const;
 export type Ink = (typeof INKS)[number];
 
 export const resolveInk = (i: Ink | undefined): string =>
@@ -53,21 +52,21 @@ export const resolveInk = (i: Ink | undefined): string =>
       ? "pui-ink-inherit"
       : (NEUTRAL_INKS as readonly string[]).includes(i)
         ? `pui-ink-${i}`
-        : `pui-${i}-ink`;
+        : `pui-${i}-solid`;
 
 // ───── tone — accent 를 글자/면/점으로 ─────────────────────────────────────────
 //
 // 색 매트릭스 밖에서 accent 색을 직접 쓰는 얇은 자리(링크·Field 오류 글자·상태 점).
-//   ink — 글자/아이콘만 그 색 · wash — 옅은 면 + 괘선 · dot — 작은 채운 점
+//   solid — 글자/아이콘만 그 색 · wash — 옅은 면 + 괘선 · dot — 작은 채운 점
 
-export const TONES = ["ink", "wash", "dot"] as const;
+export const TONES = ["solid", "wash", "dot"] as const;
 export type Tone = (typeof TONES)[number];
 
-export const resolveTone = (accent: string | undefined, tone: Tone = "ink"): string =>
+export const resolveTone = (accent: string | undefined, tone: Tone = "solid"): string =>
   accent ? `pui-${accent}-${tone}` : "";
 
 // status → accent tone. (info·success·warning·error 전부 색을 가짐.)
-export const resolveStatus = (status: StatusName | undefined, tone: Tone = "ink"): string =>
+export const resolveStatus = (status: StatusName | undefined, tone: Tone = "solid"): string =>
   status ? resolveTone(status, tone) : "";
 
 // ───── space — 간격 ────────────────────────────────────────────────────────────

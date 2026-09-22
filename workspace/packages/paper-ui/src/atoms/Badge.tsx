@@ -1,23 +1,23 @@
-// Badge — 상태 한 낱말. Button 과 같은 색 시스템(color × variant)을 쓴다. 표시용이라
+// Badge — 상태 한 낱말. Button 과 같은 accent 시스템(accent × variant)을 쓴다. 표시용이라
 // hover gate(pui-interactive)는 안 붙인다.
 //   variant  soft(옅은 면, 기본) · solid(진한 채움 — 카운트·강조) · outline(테두리) · ghostMuted(글자만)
 //   dot      앞에 작은 색 점 — 상태 표시자
 //
-// 예) <Badge color="success">완료</Badge>            옅은 초록 pill
-//     <Badge color="error" variant="solid">3</Badge>  진한 빨강 카운트
-//     <Badge color="info" dot>진행</Badge>            점 + 라벨
-//     <Badge color="success" shape="pill">완료</Badge>   알약
+// 예) <Badge accent="success">완료</Badge>            옅은 초록 pill
+//     <Badge accent="error" variant="solid">3</Badge>  진한 빨강 카운트
+//     <Badge accent="info" dot>진행</Badge>            점 + 라벨
+//     <Badge accent="success" shape="pill">완료</Badge>   알약
 
 import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import { resolveColor, type Color, type Variant } from "../resolvers";
+import { resolveAccent, type Accent, type Variant } from "../resolvers";
 import type { ControlSize, TextVariant } from "../tokens";
 import { badgeRoot, badgeSize, badgeDot, badgePill, badgeFontSize } from "./Badge.css";
 
 export type BadgeProps = Omit<HTMLAttributes<HTMLSpanElement>, "className"> & {
   // 의미 색 (info·success·warning·error). 안 주면 뉴트럴 회색.
-  color?: Color;
+  accent?: Accent;
   // 시각 무게 — 기본 soft(옅은 면). solid·outline·ghostMuted 도 된다.
   variant?: Variant;
   // 크기 3 단 (sm·md·lg). 배지 높이 사다리(20·22·24).
@@ -33,7 +33,7 @@ export type BadgeProps = Omit<HTMLAttributes<HTMLSpanElement>, "className"> & {
 };
 
 export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
-  { color = "primary", variant = "soft", size = "md", fontSize, shape = "rounded", dot, children, className, ...rest },
+  { accent = "primary", variant = "soft", size = "md", fontSize, shape = "rounded", dot, children, className, ...rest },
   ref,
 ) {
   return (
@@ -43,7 +43,7 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
         badgeRoot,
         badgeSize[size],
         fontSize && badgeFontSize[fontSize],
-        resolveColor(color, variant),
+        resolveAccent(accent, variant),
         shape === "pill" && badgePill,
         className,
       )}

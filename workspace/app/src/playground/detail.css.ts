@@ -73,7 +73,7 @@ globalStyle(".code-editor", {
   tabSize: 2,
 });
 
-globalStyle(".code-block--error", { borderColor: tokens.color.status.error.edge });
+globalStyle(".code-block--error", { borderColor: tokens.color.accent.error.edge });
 globalStyle(".code-block--editing", { background: tokens.color.surface.sunken });
 globalStyle(".code-error", { display: "block", paddingInline: tokens.shape.padding.md.layout, paddingBottom: tokens.shape.padding.sm.interaction });
 

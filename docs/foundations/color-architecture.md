@@ -1,84 +1,94 @@
 # Color architecture
 
-색은 하나의 큰 객체가 아니라, 역할이 다른 네 층을 순서대로 통과합니다. 이 구조는 Studio UI의 palette → slot curve → semantic token 방식을 Paper UI의 surface·content·status 어휘에 맞춘 것입니다.
+Paper UI의 색은 raw 색상을 component에 직접 연결하지 않습니다. 모든 색은 아래 네 층을 순서대로 통과합니다.
 
 ```
-L0 palette source         palette.ts
-        ↓ accent hue·기준 chroma / zinc surface ramp
-L1 calibrated ladder      color-ladder.ts
-        ↓ accent tone step / neutral ladder contract
-L2 semantic token         colors.ts
-        ↓ 화면 역할
-L3 CSS variable reference tokens/index.ts + theme.css.ts
+L0 palette source       palette.ts
+        ↓
+L1 calibrated ladder    color-ladder.ts
+        ↓
+L2 semantic token       colors.ts
+        ↓
+L3 CSS variable          tokens/index.ts + theme.css.ts
         ↓
 component / resolver / app
 ```
 
-각 레이어는 바로 아래 레이어만 압니다. 컴포넌트가 `blue[600]`처럼 색상이나 tone step을 직접 고르면, 색을 보정할 때 사용처마다 다른 파랑이 남습니다. 화면은 `tokens.color.status.info.ink`처럼 **의미와 역할**만 고릅니다.
+컴포넌트는 `blue[600]`이나 `amber[400]`을 알지 않습니다. public API와 소비 코드는 역할만 고릅니다. 그래서 palette의 색감 보정은 한 번의 ladder 조정으로 모든 사용처에 전파됩니다.
 
 ## L0 — Palette source
 
-`tokens/palette.ts`는 accent의 identity와 neutral의 raw source를 함께 가집니다. zinc는 실제 `SURFACE_PALETTE` ramp이고, blue·green·amber·red는 기준 chroma와 light/dark별 calibrated hue를 가진 registry입니다. 다크에서 같은 hue가 눈에 같은 색감으로 읽히지 않으므로, 이를 하나의 각도로 평탄화하지 않습니다. 이것은 public color API도, CSS 변수도 아닙니다. 새 색 family를 추가할 때 먼저 이곳에 색의 정체성을 선언하고, 다음 ladder에서 양 테마의 실제 곡선을 잡습니다.
+`tokens/palette.ts`는 neutral surface ramp와 accent의 hue identity를 둡니다. hue 이름은 implementation 내부에만 남고, public semantic 이름은 아래 map으로 고정합니다.
 
-`info`, `success`, `warning`, `error`는 hue 이름이 아니라 semantic 이름입니다. 현재는 아래처럼 palette에 연결됩니다.
-
-| status | palette | 쓰임 |
+| accent | palette | 쓰임 |
 |---|---|---|
-| `info` | `blue` | 정보·focus·link |
-| `success` | `green` | 성공 |
-| `warning` | `amber` | 주의 |
-| `error` | `red` | 위험 |
-
-이 map 덕분에 warning의 pigment를 조정하거나 새 palette를 열어도 Field·Badge·Banner의 API와 resolver는 바뀌지 않습니다.
+| `primary` | neutral zinc | 기본 행동 |
+| `info` | blue | 정보·focus·link |
+| `success` | green | 성공 |
+| `warning` | amber | 주의 |
+| `error` | red | 오류·위험 |
 
 ## L1 — Calibrated ladder
 
-`tokens/color-ladder.ts`는 L0 surface palette를 `NEUTRAL_LADDER`라는 계약으로 연결하고, accent의 실제 light/dark tone curve를 정의합니다. neutral ladder는 surface·content·border·primary action을, accent ladder는 각 palette의 `50 / 100 / 200 / 400 / 600 / 700` 역할을 제공합니다.
+`color-ladder.ts`는 모든 accent palette에 `50 / 100 / 200 / 300 / 400 / 500 / 600 / 700 / 800 / 900 / 950`의 11-step curve를 제공합니다. 숫자는 raw hue의 농도 순서이고, component가 직접 소비하지 않습니다.
 
-| accent step | 역할 |
+| step | semantic 연결 |
 |---|---|
-| `50` | `wash` — 가장 가벼운 pigment, solid 위 글자 |
-| `100` | `soft` — 가벼운 색면 |
-| `200` | `edge` — hairline·보조 경계 |
-| `400` | `edgeStrong` — 단독 outline 경계 |
-| `600` | `solid`·`mutedInk` — 의미 면·절제된 글자 |
-| `700` | `ink`·`softInk` — 지면 위 일반 글자 |
+| `50` | `wash` |
+| `100` | `soft` |
+| `200` | `edge` |
+| `400` | `edgeStrong` |
+| `600` | `solid` |
 
-Ladder는 palette의 hue를 기준으로 하되, 모든 색에 같은 숫자 ramp를 기계적으로 적용하지 않습니다. green·amber처럼 본래 밝기가 높은 색은 같은 step이라도 가독성과 화면 무게가 맞도록 별도 L/C 곡선을 가집니다. light와 dark도 값의 순서가 아니라 **같은 UI 역할**을 공유합니다.
+나머지 step은 palette 검토, 향후 대비 조정, 테마별 곡선 보정의 여유를 남깁니다. 특히 amber는 밝은 pigment라도 약한 색으로 취급하지 않습니다. Palette inspector의 light `400` 이상 label과 `600` solid 전경은 다른 accent처럼 밝은 전경으로 읽습니다.
 
 ## L2 — Semantic token
 
-`tokens/colors.ts`는 ladder의 번호를 화면 역할로 번역합니다. 이 파일부터 hue와 step 번호가 사라집니다.
+`colors.ts`부터는 hue와 step 번호가 사라집니다.
 
-| token family | 대표 경로 | 책임 |
-|---|---|---|
-| surface | `color.surface.raised` | Box의 깊이 — raised/canvas/sunken/well |
-| content | `color.content.primary` | 본문·보조·placeholder 글자 위계 |
-| border | `color.border.base` | 구조선·강한 선·form hover 선 |
-| action | `color.action.primary.base` | neutral primary color family |
-| status | `color.status.error.ink` | 의미색 면·글자·경계 |
-| interaction | `color.interaction.hover` | neutral hover/selected/active overlay |
-| focus | `color.focus.ring` | 키보드 focus ring |
+| token family | 책임 |
+|---|---|
+| `surface` | Box의 깊이 — raised/canvas/sunken/well |
+| `content` | 본문·보조·placeholder 글자 위계 |
+| `border` | 구조선과 neutral control border |
+| `accent` | primary·info·success·warning·error pigment 역할 |
+| `interaction` | hover/selected/active overlay |
+| `focus` | keyboard focus ring |
 
-`soft`와 `softMuted`의 차이는 이름만 바뀌는 채도 효과가 아닙니다. 모든 color family에서 normal은 `soft` 면과 `ink`를, muted는 더 옅은 `wash` 면과 `mutedInk`를 사용합니다. primary도 neutral `wash`·`mutedInk`를 갖는 color family라 이 규칙에 예외가 없습니다. `outlineMuted`는 strong border를 유지하고 글자만 muted로 낮춥니다 — 형태가 사라지지 않는 것이 우선이기 때문입니다. `hairlineMuted`를 포함한 Muted hover는 모두 neutral interaction overlay 위에서 ink·edge를 강화합니다.
+모든 `accent`는 정확히 같은 다섯 slot을 공유합니다.
 
-## L3 — CSS variable와 소비
+| slot | 책임 |
+|---|---|
+| `solid` | 채운 면과 일반 지면의 pigment text |
+| `wash` | solid 위 전경, 아주 가벼운 tint |
+| `soft` | soft variant의 면 |
+| `edge` | hairline 경계 |
+| `edgeStrong` | outline 경계 |
 
-`theme.css.ts`는 L2의 light/dark semantic tree를 같은 CSS variable 이름으로 emit합니다. `tokens` 객체는 그 변수의 `var(...)` 참조 tree입니다.
+`ink`, `softInk`, `mutedInk`는 별도 semantic slot으로 두지 않습니다. 쨍한 accent palette에서는 이들이 같은 역할을 중복했기 때문에 `solid` 하나로 통일했습니다. `softMuted` 등 muted variant는 독립 pigment가 아니라 wash/soft 및 interaction의 조합으로 무게를 낮춥니다.
+
+## L3 — CSS variable와 component API
+
+`theme.css.ts`는 L2 semantic tree를 light/dark에서 동일한 CSS variable 이름으로 emit하고, `tokens`는 그 `var(...)` 참조만 제공합니다.
 
 ```ts
-tokens.color.content.primary
-tokens.color.action.primary.base
-tokens.color.status.error.edgeStrong
+tokens.color.accent.warning.solid
+tokens.color.accent.error.edgeStrong
 ```
 
-컴포넌트는 위 참조 또는 resolver의 `color`·`variant` API만 사용합니다. palette와 ladder의 raw 값은 component·resolver·app에서 import할 수 없게 lint가 막습니다. 유일한 예외인 `/playground/palette`는 source layer 자체를 검토하는 Foundations inspector입니다.
+색을 받는 component의 public prop은 `color`가 아니라 `accent`입니다.
+
+```tsx
+<Button accent="error">삭제</Button>
+<Badge accent="success">완료</Badge>
+<Alert accent="warning">…</Alert>
+```
+
+`status`는 Field·Select·Textarea처럼 validation 의미를 나타내는 prop으로만 유지됩니다. Form은 내부에서 같은 semantic accent token을 사용하지만, 호출자는 색이 아니라 validation 상태를 표현합니다.
 
 ## 색을 바꿀 때의 경로
 
-1. 색 family 자체가 달라졌다면 `palette.ts`에서 identity를 조정합니다.
-2. 실제 light/dark tone 또는 대비가 문제면 `color-ladder.ts`의 해당 step을 보정합니다.
-3. 역할 배치가 잘못됐다면 `colors.ts`에서 semantic mapping을 바꿉니다.
-4. component마다 값을 덮어쓰지 않고, Playground Palette에서 source·ladder를, Playground Tokens에서 semantic 결과와 shared variant를 함께 확인합니다.
-
-이 순서를 지키면 “warning만 너무 시트러스하다”와 “모든 form hover가 너무 진하다”가 서로 다른 레이어의 문제로 분리됩니다.
+1. hue identity가 문제면 `palette.ts`를 조정합니다.
+2. 특정 밝기·채도·대비가 문제면 `color-ladder.ts`의 step을 조정합니다.
+3. UI 역할의 배치가 문제면 `colors.ts` mapping을 조정합니다.
+4. component에서 raw 색을 덮어쓰지 않습니다. Palette와 Tokens Playground에서 light/dark 결과를 함께 확인합니다.
