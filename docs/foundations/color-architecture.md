@@ -18,7 +18,7 @@ component / resolver / app
 
 ## L0 — Palette identity
 
-`tokens/palette.ts`는 zinc·blue·green·amber·red의 hue와 기준 chroma를 가진 registry입니다. 이것은 public color API도, CSS 변수도 아닙니다. 새 색 family를 추가할 때 먼저 이곳에 색의 정체성을 선언하고, 다음 ladder에서 양 테마의 실제 곡선을 잡습니다.
+`tokens/palette.ts`는 zinc·blue·green·amber·red의 기준 chroma와 light/dark별 calibrated hue를 가진 registry입니다. 다크에서 같은 hue가 눈에 같은 색감으로 읽히지 않으므로, 이를 하나의 각도로 평탄화하지 않습니다. 이것은 public color API도, CSS 변수도 아닙니다. 새 색 family를 추가할 때 먼저 이곳에 색의 정체성을 선언하고, 다음 ladder에서 양 테마의 실제 곡선을 잡습니다.
 
 `info`, `success`, `warning`, `error`는 hue 이름이 아니라 semantic 이름입니다. 현재는 아래처럼 palette에 연결됩니다.
 
