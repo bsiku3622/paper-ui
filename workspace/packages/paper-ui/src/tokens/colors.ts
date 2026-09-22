@@ -78,9 +78,18 @@ const colorTokens = (mode: ColorMode) => {
     },
     action: {
       primary: {
+        // primary도 색이 없는 예외가 아니라 neutral color family다. status와 같은 tone
+        // contract를 가지되, zinc surface/content/border에서 값을 가져온다. 따라서 모든
+        // muted variant는 family와 관계없이 wash + mutedInk로 한 단계 물러난다.
         base: neutral[isDark ? "925" : "0"],
         hover: neutral[isDark ? "900" : "50"],
         fg: neutral[isDark ? "0" : "950"],
+        wash: neutral[isDark ? "50" : "900"],
+        soft: neutral[isDark ? "200" : "600"],
+        mutedInk: neutral[isDark ? "800" : "100"],
+        ink: neutral[isDark ? "950" : "0"],
+        softInk: neutral[isDark ? "950" : "0"],
+        edge: neutral[isDark ? "300" : "700"],
         edgeStrong: neutral[isDark ? "600" : "200"],
       },
     },

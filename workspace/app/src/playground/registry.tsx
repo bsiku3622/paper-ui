@@ -197,7 +197,7 @@ export const COMPONENTS: CompSpec[] = [
     change: "mod",
     name: "Button",
     group: "Atoms",
-    blurb: "color × variant가 독립된 시각 무게 축이다. solid·outline·hairline·softMuted·ghost 계열을 고르고, fontSize는 버튼 실루엣과 별도로 조절한다.",
+    blurb: "color × variant가 독립된 시각 무게 축이다. primary도 neutral color family라 모든 color가 같은 Muted 규칙(softMuted=wash + mutedInk)을 공유한다. fontSize는 버튼 실루엣과 별도로 조절한다.",
     controls: [
       { kind: "enum", prop: "color", label: "color", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
       { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "softMuted", "outline", "outlineMuted", "hairline", "hairlineMuted", "ghost", "ghostMuted"], def: "solid" },

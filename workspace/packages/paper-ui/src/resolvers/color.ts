@@ -35,11 +35,14 @@ export type Color = (typeof COLORS)[number];
 //   soft     옅은 면
 //   outline  컨트롤이 소유한 또렷한 테두리 (color family 의 edgeStrong · 지면 대비 3:1)
 //   hairline 지면이 소유한 헤어라인 (카드 · 빈 입력칸과 같은 선)
-//   hairlineMuted  흐린 잉크·헤어라인. hover 때 잉크와 선을 함께 세운다
-//   softMuted    soft 면·무테·흐린 잉크
+//   hairlineMuted  흐린 잉크·헤어라인. hover 때 ink와 선을 함께 세운다
+//   softMuted    wash 면·무테·흐린 잉크
 //   outlineMuted 투명 면·강한 선·흐린 잉크
 //   ghost    면과 선 없이 잉크만
 //   ghostMuted     면과 선 없이 흐린 잉크
+//
+// Muted 네 변형은 primary와 status 모두 같은 규칙이다: wash + mutedInk, 또는 투명
+// 바탕에서 hover overlay로 ink·edge를 강화한다. 각 family는 어떤 pigment를 쓰는지만 다르다.
 //
 // ⚠ `outline` 의 뜻이 바뀌었다. 예전 outline 은 지금의 `hairline` 이다 — 헤어라인을 두르던
 // 자리인데, 그것만으로는 "테두리가 곧 형태" 인 변형이 지면에서 안 떨어졌다(1.19:1).

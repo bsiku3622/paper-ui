@@ -1,3 +1,15 @@
+## 2026-09-23 — Unify muted color-family mechanics
+
+- 변경 파일: `tokens/colors.ts`, `styles/color-profile.ts`, Tokens Playground·Foundations 문서
+- 요약: primary를 neutral color family로 확장해 status와 같은 `wash / soft / mutedInk / ink / edge` contract를 부여하고, 모든 Muted variant를 하나의 profile helper로 통합했습니다.
+
+기존 primary `softMuted`는 `soft`와 같은 well 위에서 글자만 약했고, status `softMuted`는
+더 옅은 wash 위에서 한 단계 낮은 pigment ink를 썼습니다. primary도 neutral wash와
+mutedInk를 갖게 해 이 관계를 통일했습니다. `hairlineMuted`·`outlineMuted`·`ghostMuted`는
+status만 tinted wash로 hover하던 갈림을 없애, primary와 같이 neutral overlay에서 ink와
+필요한 edge만 강화합니다. 색 family는 pigment 값만 바꾸고 shared variant의 구조는 바꾸지
+않아야 이후 palette를 조정할 때 예외가 생기지 않습니다.
+
 ## 2026-09-22 — Expose source palettes in Playground
 
 - 변경 파일: `tokens/palette.ts`, `tokens/color-ladder.ts`, `app/src/playground/Palette.tsx`, Foundations 문서

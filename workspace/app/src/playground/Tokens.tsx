@@ -50,7 +50,7 @@ const SURFACES = ["canvas", "raised", "sunken", "well"] as const;
 const INTERACTIONS = ["hover", "selected", "active"] as const;
 const CONTENTS = ["primary", "secondary", "tertiary"] as const;
 const BORDERS = ["base", "strong", "hover"] as const;
-const PRIMARY_ACTIONS = ["base", "hover", "fg", "edgeStrong"] as const;
+const PRIMARY_ACTIONS = ["base", "hover", "fg", "wash", "soft", "mutedInk", "ink", "softInk", "edge", "edgeStrong"] as const;
 const STATUSES = ["info", "success", "warning", "error"] as const;
 const TONES = ["solid", "mutedInk", "ink", "wash", "soft", "softInk", "edge", "edgeStrong"] as const;
 const SIZES = ["xs", "sm", "md", "lg", "xl"] as const;
@@ -99,7 +99,7 @@ export const Tokens = () => {
 
       <Stack gap="xl">
         {/* ── Color · semantic tokens ───────────────────────── */}
-        <Section id="tok-neutral" title="Color · semantic tokens" desc="사용처는 palette hue나 tone step을 직접 보지 않고 surface·content·border·action·status 역할만 고릅니다. raw palette → calibrated ladder → semantic token → component의 단방향 구조입니다. surface는 Box의 깊이 축이고, content는 글자 위계, border는 화면 전체의 괘선, action.primary는 검정 일꾼입니다. neutral Form은 border.base에서 시작해 hover에만 border.hover로 올라가고, semantic Form은 status solid edge와 pigment halo를 사용합니다.">
+        <Section id="tok-neutral" title="Color · semantic tokens" desc="사용처는 palette hue나 tone step을 직접 보지 않고 surface·content·border·action·status 역할만 고릅니다. raw palette → calibrated ladder → semantic token → component의 단방향 구조입니다. surface는 Box의 깊이 축이고, content는 글자 위계, border는 화면 전체의 괘선, action.primary는 색이 없는 neutral color family입니다. 따라서 primary도 status처럼 wash·soft·mutedInk·edge ladder를 갖고, Muted variant는 모든 family에서 같은 규칙을 씁니다. neutral Form은 border.base에서 시작해 hover에만 border.hover로 올라가고, semantic Form은 status solid edge와 pigment halo를 사용합니다.">
           <Inline gap="lg" wrap>
             {SURFACES.map((s) => <Swatch key={`p-${s}`} name={`surface.${s}`} token={tokens.color.surface[s]} />)}
             {CONTENTS.map((s) => <Swatch key={`i-${s}`} name={`content.${s}`} token={tokens.color.content[s]} />)}

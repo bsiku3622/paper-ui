@@ -61,9 +61,11 @@ palette.ts (L0: accent hue·기준 chroma identity + zinc surface palette)
   `status.info|success|warning|error.*` (옛 `accent`)만 사용합니다.
 - status는 palette hue와 분리합니다: `info→blue`, `success→green`, `warning→amber`,
   `error→red`. status 이름·component API는 hue 조정과 함께 바뀌지 않습니다.
-- `status.*.mutedInk`는 normal `ink`보다 한 ladder step 가벼운 600 text role입니다.
-  `softMuted`는 `wash + mutedInk`, normal `soft`는 `soft + ink`라 colored muted도 실제로
-  한 단계 물러납니다. outlineMuted는 형태를 보존하려 strong border를 유지합니다.
+- `primary`와 `status.*`는 모두 color family입니다. status의 `mutedInk`는 normal `ink`보다
+  한 ladder step 가벼운 600 text role이고, primary는 neutral ladder의 동등한 역할을 씁니다.
+  `softMuted`는 모든 family에서 `wash + mutedInk`, normal `soft`는 `soft + ink`라 실제로
+  한 단계 물러납니다. `hairlineMuted`를 포함한 Muted hover는 neutral overlay 위에서
+  ink·edge를 강화하고, outlineMuted는 형태를 보존하려 strong border를 유지합니다.
 
 색을 수정하면 [색 아키텍처](docs/foundations/color-architecture.md)와 Tokens Playground의
 light/dark swatch를 함께 갱신·확인합니다.
