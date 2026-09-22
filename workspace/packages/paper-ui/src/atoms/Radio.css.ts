@@ -8,7 +8,7 @@ export const radioRoot = style({
   appearance: "none",
   margin: 0,
   flexShrink: 0,
-  background: tokens.color.paper.raised,
+  background: tokens.color.surface.raised,
   borderWidth: tokens.shape.constants.borderWidth,
   borderStyle: "solid",
   borderColor: tokens.color.border.strong,
@@ -18,11 +18,11 @@ export const radioRoot = style({
   placeContent: "center",
   transition: stateTransition("border-color"),
   selectors: {
-    "&:checked": { borderColor: tokens.color.primary.base },
+    "&:checked": { borderColor: tokens.color.action.primary.base },
     "&:checked::after": {
       content: "''",
       borderRadius: tokens.shape.radius.full,
-      background: tokens.color.primary.base,
+      background: tokens.color.action.primary.base,
     },
     "&:focus-visible": {
       outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.focus.ring}`,

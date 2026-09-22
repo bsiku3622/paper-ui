@@ -70,8 +70,8 @@ const AppMockup = () => {
       <div className="home-mockup-body">
         <aside className="home-mockup-side">
           <Inline gap="sm" align="center" style={{ paddingInline: tokens.shape.padding.sm.interaction }}>
-            <Box style={{ width: "1.5rem", height: "1.5rem", borderRadius: tokens.shape.radius.interaction, background: tokens.color.ink.base, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Text variant="caption" as="span" style={{ color: tokens.color.paper.canvas, fontWeight: tokens.text.weight.bold }}>S</Text>
+            <Box style={{ width: "1.5rem", height: "1.5rem", borderRadius: tokens.shape.radius.interaction, background: tokens.color.content.primary, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Text variant="caption" as="span" style={{ color: tokens.color.surface.canvas, fontWeight: tokens.text.weight.bold }}>S</Text>
             </Box>
             <Text variant="subheading" as="span">Studio</Text>
           </Inline>
@@ -79,7 +79,7 @@ const AppMockup = () => {
           <div className="home-nav">
             {NAV.map((n) => (
               <div key={n.label} className="home-navitem" data-active={n.active}>
-                <Box radius="full" style={{ width: "0.4rem", height: "0.4rem", background: n.active ? tokens.color.ink.base : tokens.color.ink.faint }} />
+                <Box radius="full" style={{ width: "0.4rem", height: "0.4rem", background: n.active ? tokens.color.content.primary : tokens.color.content.tertiary }} />
                 {n.label}
               </div>
             ))}

@@ -1,5 +1,5 @@
-// Color profile — color × variant 가 어떤 색 자리를 쓰는지의 정의 (studio-ui
-// accentColorProfile 대응). styles/color.css.ts 만 이걸 소비해 클래스를 emit 한다.
+// Color profile — color × variant 가 semantic token의 어느 자리를 쓰는지 정의한다.
+// styles/color.css.ts 만 이 profile을 소비해 클래스를 emit 한다.
 // 값은 tokens 의 var 참조라 실제 hex 는 theme.css.ts 한 곳에서만 산다(테마 자동 추종).
 
 import { tokens } from "../tokens";
@@ -22,23 +22,23 @@ export type ColorSpec = {
 // "큰 면을 채우는 건 검정뿐" 이라는 정체성의 자리. hover 는 오버레이(중립)·교체(solid).
 const primaryProfile: Record<Variant, ColorSpec> = {
   solid: {
-    background: tokens.color.primary.base,
-    color: tokens.color.primary.fg,
+    background: tokens.color.action.primary.base,
+    color: tokens.color.action.primary.fg,
     borderColor: "transparent",
-    hoverBackground: tokens.color.primary.hover, // 검정은 hover 때 밝아진다(solid 교체)
+    hoverBackground: tokens.color.action.primary.hover, // 검정은 hover 때 밝아진다(solid 교체)
   },
   soft: {
-    background: tokens.color.paper.well,
-    color: tokens.color.ink.base,
+    background: tokens.color.surface.well,
+    color: tokens.color.content.primary,
     borderColor: "transparent",
     hoverOverlay: tokens.color.interaction.hover,
   },
   softMuted: {
-    background: tokens.color.paper.well,
-    color: tokens.color.ink.soft,
+    background: tokens.color.surface.well,
+    color: tokens.color.content.secondary,
     borderColor: "transparent",
     hoverOverlay: tokens.color.interaction.hover,
-    hoverColor: tokens.color.ink.base,
+    hoverColor: tokens.color.content.primary,
   },
   // outline 은 **면을 칠하지 않는다** — 테두리만 두르고 밑면이 그대로 비친다.
   // raised 를 칠하고 있었는데, 이 팔레트에서는 raised(#ffffff)와 canvas(#fcfcfc)가
@@ -48,59 +48,59 @@ const primaryProfile: Record<Variant, ColorSpec> = {
   // edgeStrong(지면 대비 3:1)을 쓴다. 강조가 필요한 자리에 고르는 변형이다.
   outline: {
     background: "transparent",
-    color: tokens.color.ink.base,
-    borderColor: tokens.color.primary.edgeStrong,
+    color: tokens.color.content.primary,
+    borderColor: tokens.color.action.primary.edgeStrong,
     hoverOverlay: tokens.color.interaction.hover,
   },
   outlineMuted: {
     background: "transparent",
-    color: tokens.color.ink.soft,
-    borderColor: tokens.color.primary.edgeStrong,
+    color: tokens.color.content.secondary,
+    borderColor: tokens.color.action.primary.edgeStrong,
     hoverOverlay: tokens.color.interaction.hover,
-    hoverColor: tokens.color.ink.base,
+    hoverColor: tokens.color.content.primary,
   },
   // hairline — **지면이 소유한 선.** 카드 헤어라인·빈 입력칸과 같은 border.base 를 두른다.
   // 화면에 여러 개 깔려도 조용한 쪽이라, 폼의 보조 버튼처럼 수가 많은 자리가 여기다.
   // (예전 `outline` 이 이 자리였다 — 이름만 옮겼고 값은 그대로다.)
   hairline: {
     background: "transparent",
-    color: tokens.color.ink.base,
+    color: tokens.color.content.primary,
     borderColor: tokens.color.border.base,
     hoverOverlay: tokens.color.interaction.hover,
-    hoverBorderColor: tokens.color.primary.edgeStrong,
+    hoverBorderColor: tokens.color.action.primary.edgeStrong,
   },
   hairlineMuted: {
     background: "transparent",
-    color: tokens.color.ink.soft,
+    color: tokens.color.content.secondary,
     borderColor: tokens.color.border.base,
     hoverOverlay: tokens.color.interaction.hover,
-    hoverColor: tokens.color.ink.base,
-    hoverBorderColor: tokens.color.primary.edgeStrong,
+    hoverColor: tokens.color.content.primary,
+    hoverBorderColor: tokens.color.action.primary.edgeStrong,
   },
   ghost: {
     background: "transparent",
-    color: tokens.color.ink.base,
+    color: tokens.color.content.primary,
     borderColor: "transparent",
     hoverOverlay: tokens.color.interaction.hover,
-    hoverColor: tokens.color.ink.soft,
+    hoverColor: tokens.color.content.secondary,
   },
   ghostMuted: {
     background: "transparent",
-    color: tokens.color.ink.soft,
+    color: tokens.color.content.secondary,
     borderColor: "transparent",
     hoverOverlay: tokens.color.interaction.hover,
-    hoverColor: tokens.color.ink.base,
+    hoverColor: tokens.color.content.primary,
   },
 };
 
-// ── accent — 의미 4색 ────────────────────────────────────────────────────────
+// ── status — 의미 4색 ────────────────────────────────────────────────────────
 // solid=채운 색면 · soft=옅은 면(wash) · outline=흰 면+색 테두리 · ghostMuted=색 글자만.
 // 색 면은 그 색의 의미를 짊어질 때만 (error 버튼처럼). hover 는 색 스텝(오버레이 아님).
 // solid 위 글자는 같은 hue의 반대 끝인 wash를 재사용한다. 별도 on-solid 슬롯을 두지 않아도
 // 라이트의 진한 solid에는 옅은 wash, 다크의 밝은 solid에는 어두운 wash가 올라간다.
-type AccentTones = { solid: string; ink: string; wash: string; soft: string; softInk: string; edge: string; edgeStrong: string };
+type StatusTones = { solid: string; mutedInk: string; ink: string; wash: string; soft: string; softInk: string; edge: string; edgeStrong: string };
 
-const accentProfile = (c: AccentTones): Record<Variant, ColorSpec> => ({
+const statusProfile = (c: StatusTones): Record<Variant, ColorSpec> => ({
   solid: {
     background: c.solid,
     color: c.wash,
@@ -116,8 +116,8 @@ const accentProfile = (c: AccentTones): Record<Variant, ColorSpec> => ({
     hoverOverlay: tokens.color.interaction.hover,
   },
   softMuted: {
-    background: c.soft,
-    color: c.softInk,
+    background: c.wash,
+    color: c.mutedInk,
     borderColor: "transparent",
     hoverOverlay: tokens.color.interaction.hover,
     hoverColor: c.ink,
@@ -133,7 +133,7 @@ const accentProfile = (c: AccentTones): Record<Variant, ColorSpec> => ({
   },
   outlineMuted: {
     background: "transparent",
-    color: c.softInk,
+    color: c.mutedInk,
     borderColor: c.edgeStrong,
     hoverBackground: c.wash,
     hoverColor: c.ink,
@@ -149,7 +149,7 @@ const accentProfile = (c: AccentTones): Record<Variant, ColorSpec> => ({
   },
   hairlineMuted: {
     background: "transparent",
-    color: c.softInk,
+    color: c.mutedInk,
     borderColor: c.edge,
     hoverBackground: c.wash,
     hoverColor: c.ink,
@@ -164,13 +164,13 @@ const accentProfile = (c: AccentTones): Record<Variant, ColorSpec> => ({
   },
   ghostMuted: {
     background: "transparent",
-    color: c.softInk,
+    color: c.mutedInk,
     borderColor: "transparent",
     hoverBackground: c.wash,
     hoverColor: c.ink,
   },
 });
 
-// color 하나를 받아 variant→spec 표를 고른다. (primary·accent 두 family — 면은 여기 없다.)
+// color 하나를 받아 variant→spec 표를 고른다. (primary·status 두 family — 면은 여기 없다.)
 export const colorProfile = (color: Color, variant: Variant): ColorSpec =>
-  color === "primary" ? primaryProfile[variant] : accentProfile(tokens.color.accent[color])[variant];
+  color === "primary" ? primaryProfile[variant] : statusProfile(tokens.color.status[color])[variant];

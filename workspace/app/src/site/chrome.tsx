@@ -50,7 +50,7 @@ export const NAV_HEIGHT = tokens.shape.atom.navbar;
 
 // 브랜드 — 손글씨 로고. 홈으로 가는 통로.
 const Brand = ({ height = 26 }: { height?: number }) => (
-  <Link to="/" style={{ textDecoration: "none", color: tokens.color.ink.base, display: "inline-flex" }} aria-label="Paper UI 홈">
+  <Link to="/" style={{ textDecoration: "none", color: tokens.color.content.primary, display: "inline-flex" }} aria-label="Paper UI 홈">
     <Logo height={height} />
   </Link>
 );
@@ -96,16 +96,16 @@ export const SiteNav = () => {
 export const DemoBar = () => (
   <Banner>
     <Banner.Content>
-      <Link to="/" style={{ textDecoration: "none", color: tokens.color.paper.canvas, display: "inline-flex" }} aria-label="Paper UI 홈">
+      <Link to="/" style={{ textDecoration: "none", color: tokens.color.surface.canvas, display: "inline-flex" }} aria-label="Paper UI 홈">
         <Logo height={17} />
       </Link>
-      <Text variant="caption" as="span" style={{ color: tokens.color.paper.well }}>
+      <Text variant="caption" as="span" style={{ color: tokens.color.surface.well }}>
         데모 · 이슈 트래커
       </Text>
     </Banner.Content>
     <Banner.Action>
       <Link to="/" style={{ textDecoration: "none" }}>
-        <Text variant="caption" as="span" style={{ color: tokens.color.paper.canvas, fontWeight: tokens.text.weight.medium }}>
+        <Text variant="caption" as="span" style={{ color: tokens.color.surface.canvas, fontWeight: tokens.text.weight.medium }}>
           ← 사이트로
         </Text>
       </Link>

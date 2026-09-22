@@ -49,16 +49,16 @@ export const navItem = style({
   flexShrink: 0,
   borderRadius: tokens.shape.radius.interaction,
   fontFamily: tokens.text.font.sans,
-  color: tokens.color.ink.soft,
+  color: tokens.color.content.secondary,
   transition: stateTransition("background", "color"),
-  selectors: { "&:hover": { color: tokens.color.ink.base, background: tokens.color.interaction.hover } },
+  selectors: { "&:hover": { color: tokens.color.content.primary, background: tokens.color.interaction.hover } },
 });
 
 // 활성은 면이 아니라 **글자**로 표시한다. 면으로 표시하면 nav 하나가 화면에서 가장 눈에
 // 띄는 덩어리가 되는데, nav 는 지금 어디인지 알려줄 뿐 주인공이 아니다. 배경은 hover
 // 에만 — 그건 포인터에 답하는 것이라 사라질 표시다.
 export const navItemActive = style({
-  color: tokens.color.ink.base,
+  color: tokens.color.content.primary,
   fontWeight: tokens.text.weight.medium,
 });
 

@@ -4,7 +4,7 @@ import { tokens, stateTransition } from "../tokens";
 
 export const sidebarRoot = style({
   alignSelf: "start",
-  background: tokens.color.paper.canvas,
+  background: tokens.color.surface.canvas,
   borderRightWidth: tokens.shape.constants.borderWidth,
   borderRightStyle: "solid",
   borderRightColor: tokens.color.border.base,
@@ -18,7 +18,7 @@ globalStyle(`${sidebarGroup} + ${sidebarGroup}`, { marginTop: tokens.shape.gap.l
 export const sidebarGroupLabel = style({
   paddingInline: tokens.shape.padding.md.interaction,
   marginBottom: tokens.shape.gap.xs,
-  color: tokens.color.ink.base,
+  color: tokens.color.content.primary,
   fontWeight: tokens.text.weight.semibold,
 });
 
@@ -35,7 +35,7 @@ export const sidebarItem = style({
   border: "none",
   borderRadius: tokens.shape.radius.interaction,
   background: "transparent",
-  color: tokens.color.ink.soft,
+  color: tokens.color.content.secondary,
   textDecoration: "none",
   textAlign: "start",
   cursor: "pointer",
@@ -55,7 +55,7 @@ export const sidebarItem = style({
       zIndex: 1,
       transition: stateTransition("opacity"),
     },
-    "&:hover": { color: tokens.color.ink.base },
+    "&:hover": { color: tokens.color.content.primary },
     "&:hover::after": { opacity: 1 },
   },
 });
@@ -65,7 +65,7 @@ export const sidebarItem = style({
 globalStyle(`${sidebarItem} > *`, { position: "relative", zIndex: 0 });
 
 export const sidebarItemActive = style({
-  color: tokens.color.ink.base,
+  color: tokens.color.content.primary,
   fontWeight: tokens.text.weight.medium,
   // route 전환 직후 badge overlay는 즉시 생긴다. 행 배경도 같은 프레임에 selected로
   // 바뀌어야 둘이 갈라지지 않으므로, active에서는 background transition을 끈다.
@@ -73,7 +73,7 @@ export const sidebarItemActive = style({
   // 포인터가 클릭 위치에 남아 있어도 일반 hover가 selected 면을 덮지 못하게 한다.
   selectors: {
     "&::after": { background: tokens.color.interaction.selected, opacity: 1 },
-    "&:hover": { color: tokens.color.ink.base },
+    "&:hover": { color: tokens.color.content.primary },
     "&:hover::after": { background: tokens.color.interaction.selected },
   },
 });

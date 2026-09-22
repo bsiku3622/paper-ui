@@ -119,8 +119,8 @@ export const Demo = () => {
               style={{
                 width: "1.5rem",
                 height: "1.5rem",
-                background: tokens.color.primary.base,
-                color: tokens.color.primary.fg,
+                background: tokens.color.action.primary.base,
+                color: tokens.color.action.primary.fg,
                 display: "grid",
                 placeItems: "center",
                 fontSize: "var(--pui-text-size-caption)",

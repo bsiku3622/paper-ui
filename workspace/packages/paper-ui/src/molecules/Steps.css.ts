@@ -61,4 +61,4 @@ export const stepButton = style({
 export const stepClickable = style({ cursor: "pointer" });
 export const stepMarker = style({ flex: "0 0 auto", minWidth: tokens.shape.height.sm.interaction, justifyContent: "center" });
 export const stepCopy = style({ paddingTop: tokens.shape.gap.xs, minWidth: 0 });
-export const stepFuture = style({ color: tokens.color.ink.faint });
+export const stepFuture = style({ color: tokens.color.content.tertiary });

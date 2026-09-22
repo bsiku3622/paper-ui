@@ -5,7 +5,7 @@
 
 import { globalStyle } from "@vanilla-extract/css";
 
-import { tokens, ACCENT_NAMES, SPACE_KEYS } from "../tokens";
+import { tokens, STATUS, SPACE_KEYS } from "../tokens";
 import { NEUTRAL_INKS, SURFACES } from "../resolvers";
 
 // ───── surface — 면 (Box 전용 구조 축) ──────────────────────────────────────
@@ -14,10 +14,10 @@ import { NEUTRAL_INKS, SURFACES } from "../resolvers";
 // 카드 테두리는 별도(Box 의 border prop). hover 는 면이 아니라 앱의 interaction 이 맡는다.
 
 const SURFACE_TOKEN = {
-  canvas: tokens.color.paper.canvas,
-  raised: tokens.color.paper.raised,
-  sunken: tokens.color.paper.sunken,
-  well: tokens.color.paper.well,
+  canvas: tokens.color.surface.canvas,
+  raised: tokens.color.surface.raised,
+  sunken: tokens.color.surface.sunken,
+  well: tokens.color.surface.well,
 } as const;
 
 for (const s of SURFACES) {
@@ -27,9 +27,9 @@ for (const s of SURFACES) {
 // ───── ink — 잉크 농도 ─────────────────────────────────────────────────────
 
 const INK_TOKEN = {
-  base: tokens.color.ink.base,
-  soft: tokens.color.ink.soft,
-  faint: tokens.color.ink.faint,
+  base: tokens.color.content.primary,
+  soft: tokens.color.content.secondary,
+  faint: tokens.color.content.tertiary,
 } as const;
 
 for (const i of NEUTRAL_INKS) {
@@ -46,15 +46,15 @@ globalStyle(".pui-ink-inherit", { color: "inherit" });
 // wash = 옅은 면 + 같은 색 괘선 + 그 색 글자.
 // dot  = 작은 채운 점 (배경/글자에 solid).
 
-for (const a of ACCENT_NAMES) {
-  const t = tokens.color.accent[a];
-  globalStyle(`.pui-${a}-ink`, { color: t.ink });
-  globalStyle(`.pui-${a}-wash`, {
+for (const status of STATUS) {
+  const t = tokens.color.status[status];
+  globalStyle(`.pui-${status}-ink`, { color: t.ink });
+  globalStyle(`.pui-${status}-wash`, {
     background: t.wash,
     color: t.ink,
     borderColor: t.edge,
   });
-  globalStyle(`.pui-${a}-dot`, { background: t.solid, color: t.solid });
+  globalStyle(`.pui-${status}-dot`, { background: t.solid, color: t.solid });
 }
 
 // ───── space — 간격 ────────────────────────────────────────────────────────

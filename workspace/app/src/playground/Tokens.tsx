@@ -46,13 +46,13 @@ const val = (ref: string): string => {
 };
 
 // ── 어휘 (public API 는 tokens 만 노출 — 키 배열은 여기서 편다) ──────────────
-const PAPERS = ["canvas", "raised", "sunken", "well"] as const;
+const SURFACES = ["canvas", "raised", "sunken", "well"] as const;
 const INTERACTIONS = ["hover", "selected", "active"] as const;
-const INKS = ["base", "soft", "faint"] as const;
-const BORDERS = ["base", "strong"] as const;
-const PRIMARIES = ["base", "hover", "fg"] as const;
-const ACCENTS = ["info", "success", "warning", "error"] as const;
-const TONES = ["solid", "ink", "wash", "soft", "softInk", "edge", "edgeStrong"] as const;
+const CONTENTS = ["primary", "secondary", "tertiary"] as const;
+const BORDERS = ["base", "strong", "hover"] as const;
+const PRIMARY_ACTIONS = ["base", "hover", "fg", "edgeStrong"] as const;
+const STATUSES = ["info", "success", "warning", "error"] as const;
+const TONES = ["solid", "mutedInk", "ink", "wash", "soft", "softInk", "edge", "edgeStrong"] as const;
 const SIZES = ["xs", "sm", "md", "lg", "xl"] as const;
 const CONTROLS = ["sm", "md", "lg"] as const;
 const VARIANTS = ["display", "title", "heading", "subheading", "body", "caption", "label"] as const;
@@ -98,13 +98,13 @@ export const Tokens = () => {
       </Stack>
 
       <Stack gap="xl">
-        {/* ── Color · 흰과 검정 ─────────────────────────────── */}
-        <Section id="tok-neutral" title="Color · surface (면 깊이) · ink · border · primary" desc="surface 는 Box 의 깊이 축(색 아님) — raised(최명)·canvas(기준면)·sunken·well. 토큰은 color.paper.*. 다크는 YouTube·ChatGPT 결의 깊은 중립 base. ⚠ **다크 사다리는 라이트의 거울이다 — 순서가 반대다.** 각 테마에는 목표가 있고 raised 가 거기 가장 가깝다: 라이트는 WHITE|raised|canvas|sunken|well|GRAY, 다크는 BLACK|raised|canvas|sunken|well|GRAY. 그래서 **다크에서는 raised 가 최암, well 이 최명**이다. 간격은 canvas 를 축으로 라이트를 접은 값이라 쌍의 거리가 양 테마에서 거의 같다(canvas↔raised 1.019 vs 1.026). primary(검정 일꾼, 면 채우는 유일한 색)·ink(마크)·border·focus·scrim 은 잉크·경계·오버레이. ⚠ **화면의 회색 선은 한 벌이다** — 카드 헤어라인·구획·빈 입력칸·꺼진 체크박스·hairline 버튼이 모두 border.base 를 쓴다. 컨트롤 전용 회색을 따로 뒀다가 물렸는데, 카드는 거의 안 보이는데 그 위 검색창만 진하니 한 화면에 회색이 두 벌로 읽혔다. 쉬는 neutral Form은 base를 유지하고 hover에서 primary solid 선으로 올라간다. semantic Form은 처음부터 accent solid 선을 쓰고, hover에서 같은 pigment가 중앙 shadow로 번진다. 값은 현재 테마로 표시된다.">
+        {/* ── Color · semantic tokens ───────────────────────── */}
+        <Section id="tok-neutral" title="Color · semantic tokens" desc="사용처는 palette hue나 tone step을 직접 보지 않고 surface·content·border·action·status 역할만 고릅니다. raw palette → calibrated ladder → semantic token → component의 단방향 구조입니다. surface는 Box의 깊이 축이고, content는 글자 위계, border는 화면 전체의 괘선, action.primary는 검정 일꾼입니다. neutral Form은 border.base에서 시작해 hover에만 border.hover로 올라가고, semantic Form은 status solid edge와 pigment halo를 사용합니다.">
           <Inline gap="lg" wrap>
-            {PAPERS.map((s) => <Swatch key={`p-${s}`} name={`surface.${s}`} token={tokens.color.paper[s]} />)}
-            {INKS.map((s) => <Swatch key={`i-${s}`} name={`ink.${s}`} token={tokens.color.ink[s]} />)}
+            {SURFACES.map((s) => <Swatch key={`p-${s}`} name={`surface.${s}`} token={tokens.color.surface[s]} />)}
+            {CONTENTS.map((s) => <Swatch key={`i-${s}`} name={`content.${s}`} token={tokens.color.content[s]} />)}
             {BORDERS.map((s) => <Swatch key={`b-${s}`} name={`border.${s}`} token={tokens.color.border[s]} />)}
-            {PRIMARIES.map((s) => <Swatch key={`pr-${s}`} name={`primary.${s}`} token={tokens.color.primary[s]} />)}
+            {PRIMARY_ACTIONS.map((s) => <Swatch key={`pr-${s}`} name={`action.primary.${s}`} token={tokens.color.action.primary[s]} />)}
             <Swatch name="focus.ring" token={tokens.color.focus.ring} />
             <Swatch name="scrim" token={tokens.color.scrim} />
           </Inline>
@@ -116,7 +116,7 @@ export const Tokens = () => {
           <Inline gap="lg" wrap>
             {INTERACTIONS.map((s) => (
               <Stack key={`ix-${s}`} gap="xs" style={{ width: "7.5rem" }}>
-                <Box style={{ height: "2.75rem", borderRadius: tokens.shape.radius.interaction, background: tokens.color.paper.raised, border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.strong}`, overflow: "hidden" }}>
+                <Box style={{ height: "2.75rem", borderRadius: tokens.shape.radius.interaction, background: tokens.color.surface.raised, border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.strong}`, overflow: "hidden" }}>
                   <Box style={{ width: "100%", height: "100%", background: tokens.color.interaction[s] }} />
                 </Box>
                 <Text variant="caption" as="span">{s}</Text>
@@ -127,15 +127,15 @@ export const Tokens = () => {
         </Section>
 
 
-        {/* ── Color · accent ─────────────────────────────────── */}
-        <Section id="tok-accent" title="Color · accent (4색 × 7자리)" desc="이름이 곧 의미 — info · success · warning · error. solid는 채운 면, ink는 일반 지면 위 글자, wash는 solid 위 글자까지 겸하는 가장 옅은 색입니다. shared variant 전용 soft는 OKLCH에서 h를 고정하고, L은 wash→primary soft의 75%, C는 wash→edge의 75% 지점으로 옮겨 진하지만 탁하지 않습니다. softInk는 그 면 위 작은 글자의 AA를 보장합니다. edge는 hover, edgeStrong은 홀로 서는 outline 선입니다.">
+        {/* ── Color · status ─────────────────────────────────── */}
+        <Section id="tok-accent" title="Color · status (4색 × 8자리)" desc="info·success·warning·error는 semantic status이고 blue·green·amber·red palette에 각각 연결됩니다. 50 wash와 100 soft가 다른 단계라 softMuted는 wash를 사용해 soft보다 실제로 가벼워집니다. normal은 AA ink(700), muted는 한 단계 가벼운 mutedInk(600)를 써 색 있는 UI에서도 차이가 실제로 보입니다.">
           <Stack gap="lg">
-            {ACCENTS.map((a) => (
+            {STATUSES.map((a) => (
               <Inline key={a} gap="lg" align="center" wrap>
                 <Box style={{ width: "3.5rem" }}>
                   <Text variant="subheading" as="span" className={`pui-${a}-ink`}>{a}</Text>
                 </Box>
-                {TONES.map((t) => <Swatch key={`${a}-${t}`} name={t} token={tokens.color.accent[a][t]} w="6.5rem" />)}
+                {TONES.map((t) => <Swatch key={`${a}-${t}`} name={t} token={tokens.color.status[a][t]} w="6.5rem" />)}
               </Inline>
             ))}
           </Stack>
@@ -181,7 +181,7 @@ export const Tokens = () => {
             {SIZES.map((s) => (
               <Inline key={s} gap="lg" align="center">
                 <Box style={{ width: "4rem" }}><Text variant="caption" as="span">{s}</Text></Box>
-                <Box style={{ height: "0.75rem", width: tokens.shape.gap[s], background: tokens.color.ink.base, borderRadius: tokens.shape.constants.borderWidth }} />
+                <Box style={{ height: "0.75rem", width: tokens.shape.gap[s], background: tokens.color.content.primary, borderRadius: tokens.shape.constants.borderWidth }} />
                 <Text variant="caption" family="mono" ink="faint" as="span">{val(tokens.shape.gap[s])}</Text>
               </Inline>
             ))}
@@ -200,7 +200,7 @@ export const Tokens = () => {
               { name: "full", token: tokens.shape.radius.full },
             ].map((r) => (
               <Stack key={r.name} gap="xs" style={{ width: "7rem" }}>
-                <Box style={{ height: "3.5rem", borderRadius: r.token, background: tokens.color.paper.sunken, border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.strong}` }} />
+                <Box style={{ height: "3.5rem", borderRadius: r.token, background: tokens.color.surface.sunken, border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.strong}` }} />
                 <Text variant="caption" as="span">{r.name}</Text>
                 <Text variant="caption" family="mono" ink="faint" as="span">{val(r.token)}</Text>
               </Stack>
@@ -214,7 +214,7 @@ export const Tokens = () => {
           <Inline gap="lg" align="end" wrap>
             {CONTROLS.map((c) => (
               <Stack key={c} gap="xs" align="start">
-                <Box style={{ height: tokens.shape.height[c].interaction, paddingInline: tokens.shape.controlPaddingX[c], borderRadius: tokens.shape.radius.interaction, background: tokens.color.paper.sunken, border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.strong}`, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+                <Box style={{ height: tokens.shape.height[c].interaction, paddingInline: tokens.shape.controlPaddingX[c], borderRadius: tokens.shape.radius.interaction, background: tokens.color.surface.sunken, border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.strong}`, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
                   <Text variant="body" as="span" style={{ fontSize: tokens.shape.controlFontSize[c] }}>텍스트</Text>
                 </Box>
                 <Text variant="caption" family="mono" ink="faint" as="span">{c} · h {val(tokens.shape.height[c].interaction)}</Text>
@@ -231,9 +231,9 @@ export const Tokens = () => {
             {CONTROLS.map((c) => (
               <Stack key={c} gap="sm" align="start">
                 <Inline gap="md" align="center" style={{ height: "1.5rem" }}>
-                  <Box style={{ width: tokens.shape.icon[c], height: tokens.shape.icon[c], borderRadius: tokens.shape.radius.full, border: `2px solid ${tokens.color.ink.soft}` }} />
-                  <Box style={{ width: tokens.shape.checkbox[c].box, height: tokens.shape.checkbox[c].box, borderRadius: tokens.shape.checkbox[c].radius, background: tokens.color.primary.base }} />
-                  <Box style={{ width: tokens.shape.switch[c].w, height: tokens.shape.switch[c].h, borderRadius: tokens.shape.radius.full, background: tokens.color.paper.well }} />
+                  <Box style={{ width: tokens.shape.icon[c], height: tokens.shape.icon[c], borderRadius: tokens.shape.radius.full, border: `2px solid ${tokens.color.content.secondary}` }} />
+                  <Box style={{ width: tokens.shape.checkbox[c].box, height: tokens.shape.checkbox[c].box, borderRadius: tokens.shape.checkbox[c].radius, background: tokens.color.action.primary.base }} />
+                  <Box style={{ width: tokens.shape.switch[c].w, height: tokens.shape.switch[c].h, borderRadius: tokens.shape.radius.full, background: tokens.color.surface.well }} />
                 </Inline>
                 <Text variant="caption" family="mono" ink="faint" as="span">{c}</Text>
                 <Text variant="caption" family="mono" ink="faint" as="span">icon {val(tokens.shape.icon[c])}</Text>
@@ -253,7 +253,7 @@ export const Tokens = () => {
               { name: "overlayMinimal", desc: "Switch 손잡이 — 살짝", token: tokens.shape.shadow.overlayMinimal },
             ].map((e) => (
               <Stack key={e.name} gap="sm" style={{ width: "13rem" }}>
-                <Box style={{ height: "4rem", borderRadius: tokens.shape.radius.layout.md, background: tokens.color.paper.raised, boxShadow: e.token, border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }} />
+                <Box style={{ height: "4rem", borderRadius: tokens.shape.radius.layout.md, background: tokens.color.surface.raised, boxShadow: e.token, border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }} />
                 <Stack gap="xs">
                   <Text variant="caption" as="span">{e.name}</Text>
                   <Text variant="caption" ink="faint" as="span">{e.desc}</Text>
@@ -288,8 +288,8 @@ export const Tokens = () => {
             style={{
               width: "16rem", height: "3rem", borderRadius: tokens.shape.radius.interaction,
               display: "flex", alignItems: "center", justifyContent: "center",
-              background: hover ? tokens.color.ink.base : tokens.color.paper.well,
-              color: hover ? tokens.color.paper.canvas : tokens.color.ink.base,
+              background: hover ? tokens.color.content.primary : tokens.color.surface.well,
+              color: hover ? tokens.color.surface.canvas : tokens.color.content.primary,
               transition: `background ${tokens.motion.duration.base} ${tokens.motion.easing.standard}, color ${tokens.motion.duration.base} ${tokens.motion.easing.standard}`,
               cursor: "default",
             }}

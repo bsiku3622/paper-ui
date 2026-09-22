@@ -10,12 +10,12 @@ export const textareaRoot = style({
   width: "100%",
   // 줄 수가 높이를 정하므로(rows) 여기서 잡는 건 바닥뿐이다.
   minHeight: tokens.shape.height.sm.layout,
-  background: tokens.color.paper.raised,
+  background: tokens.color.surface.raised,
   borderRadius: tokens.shape.radius.interaction,
   borderWidth: tokens.shape.constants.borderWidth,
   borderStyle: "solid",
   borderColor: tokens.color.border.base,
-  color: tokens.color.ink.base,
+  color: tokens.color.content.primary,
   fontFamily: tokens.text.font.sans,
   // ⚠ **굵기·자간을 명시한다.** 예전엔 fontFamily 만 정하고 둘을 안 줘서, 브라우저 기본값
   // (400 · normal)으로 떨어져 있었다. 이 시스템의 `normal` 은 **450** 이다 — 작은 sans 가
@@ -31,12 +31,12 @@ export const textareaRoot = style({
   resize: "vertical",
   transition: stateTransition("border-color", "box-shadow", "background"),
   selectors: {
-    "&::placeholder": { color: tokens.color.ink.faint },
+    "&::placeholder": { color: tokens.color.content.tertiary },
     '&[data-pui-status="default"]:hover:not(:focus):not(:disabled)': {
       borderColor: tokens.color.border.hover,
     },
     '&[data-pui-status="default"][data-pui-pointer-focus]:focus': {
-      borderColor: tokens.color.ink.soft,
+      borderColor: tokens.color.content.secondary,
     },
     // keyboard focus만 바깥 ring으로 알린다. 클릭은 caret과 edge만 남긴다.
     "&:focus-visible:not([data-pui-pointer-focus])": {

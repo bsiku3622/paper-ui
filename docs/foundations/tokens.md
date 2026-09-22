@@ -1,6 +1,6 @@
 # Tokens
 
-모든 색·크기·시간의 정본입니다. 컴포넌트는 이 값을 직접 알지 못하고, `tokens` 객체의 `var()` 참조로만 닿습니다. 값을 바꾸려면 `tokens/`의 다섯 도메인(`colors` · `shape` · `text` · `motion` · `layout`) 한 곳만 고치면 전 화면이 따라옵니다.
+모든 색·크기·시간의 정본입니다. 컴포넌트는 이 값을 직접 알지 못하고, `tokens` 객체의 `var()` 참조로만 닿습니다. 색은 `palette → ladder → semantic token`으로 한 번 더 나뉘며, 각 층의 책임은 [색 아키텍처](color-architecture.md)에 고정합니다.
 
 ## Color
 
@@ -8,7 +8,7 @@
 
 면(surface)과 잉크색(color)을 **종류로 나눕니다** — 면은 색이 아니라 지면이라, "큰 면을 색으로 안 채운다"는 정체성상 Box 는 accent 를 입을 일이 없습니다. 값은 손으로 잡은 light/dark 쌍이고 `[data-theme]` 스코프가 통째로 교체합니다.
 
-**surface — 면 깊이 4단** (Box 의 `surface` 축 · 토큰 `color.paper.*`). 색이 아니라 깊이입니다.
+**surface — 면 깊이 4단** (Box 의 `surface` 축 · 토큰 `color.surface.*`). 색이 아니라 깊이입니다.
 
 ⚠ **사다리는 양 테마에서 거울이라 순서가 반대입니다.** 각 테마에는 목표(objective)가 있고, `raised`는 그 목표에 가장 가까운 면입니다 — 라이트의 목표는 WHITE, 다크의 목표는 BLACK입니다. 그래서 **다크에서는 `raised`가 최암이고 `well`이 최명입니다.**
 
@@ -19,13 +19,13 @@
 | `sunken` | `#f4f4f5` | `#161619` | 사이드바·table head |
 | `well` | `#e2e2e5` | `#252529` | 더 깊은 well — 라이트 최암 / 다크 최명 |
 
-**ink — 3단** (글자색. 순검정 `#000`도 순백 `#fff`도 넓은 면에서는 눈을 찌릅니다)
+**content — 3단** (글자색. 순검정 `#000`도 순백 `#fff`도 넓은 면에서는 눈을 찌릅니다)
 
 | | light | dark | 쓰임 |
 |---|---|---|---|
-| `ink.base` | `#18181b` | `#e9e9eb` | 본문 |
-| `ink.soft` | `#71717a` | `#a1a1a8` | 보조 · 라벨 |
-| `ink.faint` | `#a1a1aa` | `#8b8b92` | placeholder · disabled |
+| `content.primary` | `#18181b` | `#e9e9eb` | 본문 |
+| `content.secondary` | `#71717a` | `#a1a1a8` | 보조 · 라벨 |
+| `content.tertiary` | `#a1a1aa` | `#8b8b92` | placeholder · disabled |
 
 **border — 괘선.** 두 값 한 벌이고, **화면의 회색 선은 전부 여기서 나옵니다.**
 
@@ -195,4 +195,4 @@ Link는 여기 없습니다 — 상자가 아니라 글자라, 높이도 여백�
 
 ## 참조 방식
 
-컴포넌트는 값이 아니라 참조를 봅니다. `tokens.color.paper.raised`는 `#ffffff`가 아니라 `"var(--pui-color-paper-raised)"`입니다. 실제 hex는 `styles/theme.css.ts`가 `:root`에 굽고, 그 파일이 raw hex를 import하는 유일한 모듈입니다(절대 규칙). 이 간접층 덕분에 raw 값과 화면이 분리되고, 값 하나를 바꿔도 이름이 어긋나지 않습니다. 그 구조는 [아키텍처](architecture.md)에서 다룹니다.
+컴포넌트는 값이 아니라 참조를 봅니다. `tokens.color.surface.raised`는 `#ffffff`가 아니라 `"var(--pui-color-surface-raised)"`입니다. raw hex·OKLCH는 `color-ladder.ts`에만 있고, `colors.ts`가 이를 semantic tree로 번역합니다. `theme.css.ts`는 마지막 tree를 `:root`에 굽고, 컴포넌트는 var 참조만 봅니다. 이 간접층 덕분에 palette·값·화면 역할이 섞이지 않고, 값 하나를 바꿔도 이름이 어긋나지 않습니다. 전체 흐름은 [색 아키텍처](color-architecture.md)와 [아키텍처](architecture.md)에서 다룹니다.

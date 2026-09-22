@@ -39,6 +39,33 @@ pnpm 명령은 `workspace/` 에서 실행한다. `core`/`web` 분리는 일부�
 
 ## 색 — 면(surface)과 잉크색(color × variant)을 나눈다 (v2)
 
+### 색 정본 계층 (v3)
+
+색은 이제 한 `colors.ts` 객체가 아니라 아래 단방향 계층으로 관리합니다. 이 규칙은 이 문서의
+이전 `paper`·`ink`·`primary`·`accent` 경로 설명보다 우선합니다.
+
+```
+palette.ts (L0: hue·기준 chroma identity)
+    → color-ladder.ts (L1: light/dark의 실제 calibrated tone)
+    → colors.ts (L2: semantic role)
+    → tokens/index.ts + theme.css.ts (L3: CSS var reference)
+    → component / resolver / app
+```
+
+- **palette와 ladder는 private build-time layer입니다.** component·resolver·app에서 import하지
+  않습니다. raw hex·OKLCH는 `tokens/color-ladder.ts`에만 둡니다.
+- **소비 API는 semantic role입니다.** `tokens.color.surface.*` (옛 `paper`),
+  `content.primary|secondary|tertiary` (옛 neutral `ink`), `action.primary.*` (옛 `primary`),
+  `status.info|success|warning|error.*` (옛 `accent`)만 사용합니다.
+- status는 palette hue와 분리합니다: `info→blue`, `success→green`, `warning→amber`,
+  `error→red`. status 이름·component API는 hue 조정과 함께 바뀌지 않습니다.
+- `status.*.mutedInk`는 normal `ink`보다 한 ladder step 가벼운 600 text role입니다.
+  `softMuted`는 `wash + mutedInk`, normal `soft`는 `soft + ink`라 colored muted도 실제로
+  한 단계 물러납니다. outlineMuted는 형태를 보존하려 strong border를 유지합니다.
+
+색을 수정하면 [색 아키텍처](docs/foundations/color-architecture.md)와 Tokens Playground의
+light/dark swatch를 함께 갱신·확인합니다.
+
 **두 어휘를 종류로 나눈다** — 면은 색이 아니라 지면이라서. "큰 면을 색으로 안 채운다"는
 정체성상 Box 는 accent 색을 입을 일이 없어, 애초에 다른 종류다. 값은 light/dark 쌍이고 `[data-theme]` 스코프가
 통째로 교체한다. 중립은 순회색이 아니라 **hue 286°** zinc 캐스트를 양 테마가 공유하고,
@@ -219,8 +246,8 @@ Banner 는 데모·공지 chrome 의 얇은 풀폭 바(검정 solid + status).
 semantic 공백을 메우는가.** 그래도 장식적 중복(같은 걸 이름만 바꿔 두 개)은 여전히 금지 —
 가능하면 새 컴포넌트보다 기존 것의 확장(prop·폴리모피즘)을 먼저 본다.
 
-1. **raw 값 금지** — hex 는 `tokens/colors.ts` 에만. `tokens.color.X` 로만 참조.
-2. **VALUES import 격리** — raw 값 모듈은 `styles/theme.css.ts` 만 import.
+1. **raw 색값 금지** — hex·OKLCH는 `tokens/color-ladder.ts`에만. 소비처는 `tokens.color.X`로만 참조.
+2. **color layer import 격리** — palette·ladder·semantic VALUES는 component·resolver·app에서 import 금지.
 3. **inline style 로 토큰 주입 금지** — `.css.ts` className 으로만.
 4. **Primitive 위에서 raw HTML 금지** — Molecule 부터는 Primitive/Atom 합성. raw 태그가
    필요하면 `<Box as="button">` 이 유일한 통로.

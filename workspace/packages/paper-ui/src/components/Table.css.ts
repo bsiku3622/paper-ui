@@ -14,7 +14,7 @@ export const tableCaption = style({
 
 // 표 머리 — 옅은 면. 강한 밑줄 대신 조용히.
 export const tableHead = style({
-  background: tokens.color.paper.sunken,
+  background: tokens.color.surface.sunken,
 });
 
 export const tableHeadSticky = style({
@@ -54,7 +54,7 @@ export const tableRowVariant = styleVariants({
     selectors: { "&:last-child": { borderBottomColor: "transparent" } },
   },
   striped: {
-    selectors: { "&:nth-child(even)": { background: tokens.color.paper.sunken } },
+    selectors: { "&:nth-child(even)": { background: tokens.color.surface.sunken } },
   },
 });
 

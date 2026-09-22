@@ -5,7 +5,6 @@
 
 import { joinClass } from "../internal/joinClass";
 import type { StatusName, Space } from "../tokens";
-import { STATUS_ACCENT } from "../tokens";
 import { resolveSurface, ACCENTS, type Surface } from "./color";
 
 // 면(surface) · 잉크색(color × variant)은 별도 파일에.
@@ -69,7 +68,7 @@ export const resolveTone = (accent: string | undefined, tone: Tone = "ink"): str
 
 // status → accent tone. (info·success·warning·error 전부 색을 가짐.)
 export const resolveStatus = (status: StatusName | undefined, tone: Tone = "ink"): string =>
-  status ? resolveTone(STATUS_ACCENT[status], tone) : "";
+  status ? resolveTone(status, tone) : "";
 
 // ───── space — 간격 ────────────────────────────────────────────────────────────
 

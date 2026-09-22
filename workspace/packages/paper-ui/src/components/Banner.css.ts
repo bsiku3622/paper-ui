@@ -1,6 +1,6 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
-import { tokens, STATUS, STATUS_ACCENT } from "../tokens";
+import { tokens, STATUS } from "../tokens";
 import type { Color } from "../resolvers";
 
 // 얇은 풀폭 바. 색·크기만 — flex 레이아웃은 Inline 이, 좌우 슬롯은 Banner 가 짠다.
@@ -24,13 +24,13 @@ export const bannerRoot = style({
 // primary color만 `paper.raised` 를 그대로 쓴다. 거기 배경은 `ink.base` 인데 둘이 테마마다
 // 함께 뒤집혀(검정 면/흰 글자 ↔ 흰 면/검정 글자) 저절로 맞는다.
 export const bannerColor = styleVariants({
-  primary: { background: tokens.color.ink.base, color: tokens.color.paper.raised },
+  primary: { background: tokens.color.content.primary, color: tokens.color.surface.raised },
   ...(Object.fromEntries(
     STATUS.map((s) => [
       s,
       {
-        background: tokens.color.accent[STATUS_ACCENT[s]].solid,
-        color: tokens.color.accent[STATUS_ACCENT[s]].wash,
+        background: tokens.color.status[s].solid,
+        color: tokens.color.status[s].wash,
       },
     ]),
   ) as Record<Exclude<Color, "primary">, { background: string; color: string }>),

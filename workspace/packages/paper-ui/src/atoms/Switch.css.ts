@@ -10,7 +10,7 @@ export const switchRoot = style({
   flexShrink: 0,
   margin: 0,
   borderRadius: tokens.shape.radius.full,
-  background: tokens.color.paper.well,
+  background: tokens.color.surface.well,
   cursor: "pointer",
   transition: stateTransition("background"),
   selectors: {
@@ -23,11 +23,11 @@ export const switchRoot = style({
       top: "50%",
       transform: "translate(0, -50%)",
       borderRadius: tokens.shape.radius.full,
-      background: tokens.color.paper.raised,
+      background: tokens.color.surface.raised,
       boxShadow: tokens.shape.shadow.overlayMinimal,
       transition: `transform ${tokens.motion.duration.base} ${tokens.motion.easing.standard}`,
     },
-    "&:checked": { background: tokens.color.primary.base },
+    "&:checked": { background: tokens.color.action.primary.base },
     "&:focus-visible": {
       outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.focus.ring}`,
       outlineOffset: tokens.shape.constants.focusRingOffset,

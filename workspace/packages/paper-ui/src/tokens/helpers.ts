@@ -48,7 +48,7 @@ export const buildVarTree = <T extends ValueTree>(
   return out as VarTree<T>;
 };
 
-// 트리 모양은 보존하고 leaf 타입만 string 으로 — tokens.color.ink 같은 경로가 타입으로 산다.
+// 트리 모양은 보존하고 leaf 타입만 string 으로 — tokens.color.content 같은 경로가 타입으로 산다.
 export type VarTree<T> = {
   [K in keyof T]: T[K] extends string ? string : VarTree<T[K]>;
 };

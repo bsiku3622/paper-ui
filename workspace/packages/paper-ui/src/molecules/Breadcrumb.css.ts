@@ -15,12 +15,12 @@ export const breadcrumbList = style({
 export const breadcrumbItem = style({ display: "inline-flex", alignItems: "center", gap: tokens.shape.gap.sm });
 
 export const breadcrumbLink = style({
-  color: tokens.color.ink.faint,
+  color: tokens.color.content.tertiary,
   textDecoration: "none",
   transition: stateTransition("color"),
-  selectors: { "&:hover": { color: tokens.color.ink.base } },
+  selectors: { "&:hover": { color: tokens.color.content.primary } },
 });
 
-export const breadcrumbCurrent = style({ color: tokens.color.ink.soft });
-export const breadcrumbSeparator = style({ color: tokens.color.ink.faint, userSelect: "none" });
+export const breadcrumbCurrent = style({ color: tokens.color.content.secondary });
+export const breadcrumbSeparator = style({ color: tokens.color.content.tertiary, userSelect: "none" });
 globalStyle(`${breadcrumbItem}:last-child ${breadcrumbSeparator}`, { display: "none" });
