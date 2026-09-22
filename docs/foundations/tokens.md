@@ -106,7 +106,7 @@ chroma 는 저명도에서 지각이 약해지므로 다크 쪽을 조금 올려
 
 ⚠ **채운 면 위 글자는 `wash`입니다.** `paper.raised`는 다크에서 최암이라 쓸 수 없고, 별도 `solidFg`는 wash와 거의 같은 끝점을 중복하면서 라이트 대비가 `3.91~4.21`로 약했습니다. Veil wash를 재사용하면 라이트 `4.56~4.89`, 다크 `5.16~5.80`으로 양쪽 모두 AA를 넘습니다.
 
-**accent 7자리** — `solid`(채운 면) · `ink`(지면 위 글자) · `wash`(가장 옅은 색이자 solid 위 글자) · `soft`(shared soft 면) · `softInk`(soft 위 AA 글자) · `edge`(soft의 hover 면) · `edgeStrong`(**홀로 서는 테두리** — `outline` 변형).
+**color family tone contract** — status는 `solid`(채운 면) · `ink`(지면 위 글자) · `wash`(가장 옅은 색이자 solid 위 글자) · `soft`(shared soft 면) · `softInk`(soft 위 AA 글자) · `edge`(hairline 선) · `edgeStrong`(**홀로 서는 테두리** — `outline` 변형)를 갖습니다. primary도 같은 `wash`·`soft`·`mutedInk`·`ink`·`edge` contract를 neutral ladder에서 받아 shared variant가 색에 따라 다른 구조가 되지 않게 합니다.
 
 **중립 outline의 테두리는 `primary.edgeStrong`입니다.** 카드 헤어라인·빈 Field와 같은 `border.base`는 `hairline`이 맡습니다. primary와 accent 모두 outline에서는 각 color family의 강한 선을, hairline에서는 지면이나 옅은 색의 선을 사용합니다.
 
@@ -122,7 +122,7 @@ chroma 는 저명도에서 지각이 약해지므로 다크 쪽을 조금 올려
 
 한때 `outline` 하나뿐이었고 그게 지금의 `hairline`이었습니다. 헤어라인만으로는 "테두리가 곧 형태"인 변형이 지면에서 떨어지지 않아(1.19:1) 진한 쪽을 새로 열고 이름을 옮겼습니다. 그렇다고 지면의 선 자체를 올리지는 않았는데, 그러면 카드는 안 보이는데 그 위 컨트롤만 진해져 한 화면에 회색이 두 벌이 됩니다 — 어느 쪽을 쓸지는 **variant로 고릅니다.** 이건 면(surface)과 **다른 종류**라 Box 는 `color` 를 안 받습니다. `status`(validation)는 Field·Textarea가 받고, 이름은 accent와 같습니다(`danger` 폐기 → `error`).
 
-**primary / focus / interaction.** `primary`는 검정 일꾼(`base` `#18181b` · `hover` `#3f3f46` · `fg` `#ffffff`, 다크선 흰 채움으로 반전). 검정 면은 hover 때 *밝아진다* — 이미 검정에 가까워 더 어둡게는 눈에 안 보이기 때문(원칙 3의 예외). `focus.ring`은 파란 링 `#2563eb`(= `accent.info.solid`, 한 곳에서 굳힘). hover·selected·active 는 solid 회색이 아니라 **interaction 오버레이**(ink 계열 alpha — 어느 면 위든 밑을 그대로 어둡게, 다크는 흰빛 alpha)로 얹고, `scrim`(모달 뒤)도 테마 인식입니다.
+**primary / focus / interaction.** `primary`는 검정 일꾼(`base` `#18181b` · `hover` `#3f3f46` · `fg` `#ffffff`, 다크선 흰 채움으로 반전)이자 zinc 기반 color family입니다. 그래서 `softMuted`는 다른 status와 같이 `wash + mutedInk`를, `hairlineMuted`는 `edge + mutedInk`를 씁니다. 검정 solid는 hover 때 *밝아진다* — 이미 검정에 가까워 더 어둡게는 눈에 안 보이기 때문(원칙 3의 예외). `focus.ring`은 파란 링 `#2563eb`(= `accent.info.solid`, 한 곳에서 굳힘). hover·selected·active 는 solid 회색이 아니라 **interaction 오버레이**(ink 계열 alpha — 어느 면 위든 밑을 그대로 어둡게, 다크는 흰빛 alpha)로 얹고, `scrim`(모달 뒤)도 테마 인식입니다.
 
 ## Shape
 

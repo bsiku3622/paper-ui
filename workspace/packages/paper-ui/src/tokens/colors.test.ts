@@ -32,4 +32,14 @@ describe("color layers", () => {
     expect(COLOR_VALUES_DARK.action.primary.base).toBe(NEUTRAL_LADDER.dark["925"]);
     expect(COLOR_VALUES_DARK.action.primary.hover).toBe(NEUTRAL_LADDER.dark["900"]);
   });
+
+  it("gives primary the same wash-to-ink muted ladder as status colors", () => {
+    for (const values of [COLOR_VALUES, COLOR_VALUES_DARK]) {
+      expect(values.action.primary.wash).toBe(values.surface.canvas);
+      expect(values.action.primary.soft).toBe(values.surface.well);
+      expect(values.action.primary.mutedInk).toBe(values.content.secondary);
+      expect(values.action.primary.ink).toBe(values.content.primary);
+      expect(values.action.primary.edge).toBe(values.border.base);
+    }
+  });
 });

@@ -55,12 +55,12 @@ Ladder는 palette의 hue를 기준으로 하되, 모든 색에 같은 숫자 ram
 | surface | `color.surface.raised` | Box의 깊이 — raised/canvas/sunken/well |
 | content | `color.content.primary` | 본문·보조·placeholder 글자 위계 |
 | border | `color.border.base` | 구조선·강한 선·form hover 선 |
-| action | `color.action.primary.base` | 검정 primary action |
+| action | `color.action.primary.base` | neutral primary color family |
 | status | `color.status.error.ink` | 의미색 면·글자·경계 |
 | interaction | `color.interaction.hover` | neutral hover/selected/active overlay |
 | focus | `color.focus.ring` | 키보드 focus ring |
 
-`soft`와 `softMuted`의 차이는 이름만 바뀌는 채도 효과가 아닙니다. normal은 `soft` 면과 700 `ink`를, muted는 더 옅은 `wash` 면과 600 `mutedInk`를 사용합니다. 그래서 색이 들어간 UI에서도 muted가 실제로 한 단계 물러납니다. outlineMuted는 strong border를 유지하고 글자만 muted로 낮춥니다 — 형태가 사라지지 않는 것이 우선이기 때문입니다.
+`soft`와 `softMuted`의 차이는 이름만 바뀌는 채도 효과가 아닙니다. 모든 color family에서 normal은 `soft` 면과 `ink`를, muted는 더 옅은 `wash` 면과 `mutedInk`를 사용합니다. primary도 neutral `wash`·`mutedInk`를 갖는 color family라 이 규칙에 예외가 없습니다. `outlineMuted`는 strong border를 유지하고 글자만 muted로 낮춥니다 — 형태가 사라지지 않는 것이 우선이기 때문입니다. `hairlineMuted`를 포함한 Muted hover는 모두 neutral interaction overlay 위에서 ink·edge를 강화합니다.
 
 ## L3 — CSS variable와 소비
 

@@ -17,6 +17,49 @@ export type ColorSpec = {
   hoverBorderColor?: string;
 };
 
+type MutedTones = {
+  wash: string;
+  mutedInk: string;
+  ink: string;
+  edge: string;
+  edgeStrong: string;
+};
+
+// `Muted`는 primary와 status가 다르게 행동할 이유가 없는 *한 단계 뒤로 물러남*이다.
+// family가 바꾸는 것은 wash·ink·edge라는 pigment뿐이다. 특히 hairlineMuted는 이제
+// status도 primary와 같이 neutral interaction overlay 위에서 fg·border만 강화한다.
+const mutedVariants = (c: MutedTones): Pick<Record<Variant, ColorSpec>, "softMuted" | "outlineMuted" | "hairlineMuted" | "ghostMuted"> => ({
+  softMuted: {
+    background: c.wash,
+    color: c.mutedInk,
+    borderColor: "transparent",
+    hoverOverlay: tokens.color.interaction.hover,
+    hoverColor: c.ink,
+  },
+  outlineMuted: {
+    background: "transparent",
+    color: c.mutedInk,
+    borderColor: c.edgeStrong,
+    hoverOverlay: tokens.color.interaction.hover,
+    hoverColor: c.ink,
+  },
+  hairlineMuted: {
+    background: "transparent",
+    color: c.mutedInk,
+    borderColor: c.edge,
+    hoverOverlay: tokens.color.interaction.hover,
+    hoverColor: c.ink,
+    hoverBorderColor: c.edgeStrong,
+  },
+  ghostMuted: {
+    background: "transparent",
+    color: c.mutedInk,
+    borderColor: "transparent",
+    hoverOverlay: tokens.color.interaction.hover,
+    hoverColor: c.ink,
+  },
+});
+
 // ── primary — 검정 일꾼 색 family ────────────────────────────────────────────
 // solid=검정 채움 · soft=회색 secondary · outline=흰 면+테두리 · ghostMuted=글자만.
 // "큰 면을 채우는 건 검정뿐" 이라는 정체성의 자리. hover 는 오버레이(중립)·교체(solid).
@@ -28,17 +71,10 @@ const primaryProfile: Record<Variant, ColorSpec> = {
     hoverBackground: tokens.color.action.primary.hover, // 검정은 hover 때 밝아진다(solid 교체)
   },
   soft: {
-    background: tokens.color.surface.well,
-    color: tokens.color.content.primary,
+    background: tokens.color.action.primary.soft,
+    color: tokens.color.action.primary.softInk,
     borderColor: "transparent",
     hoverOverlay: tokens.color.interaction.hover,
-  },
-  softMuted: {
-    background: tokens.color.surface.well,
-    color: tokens.color.content.secondary,
-    borderColor: "transparent",
-    hoverOverlay: tokens.color.interaction.hover,
-    hoverColor: tokens.color.content.primary,
   },
   // outline 은 **면을 칠하지 않는다** — 테두리만 두르고 밑면이 그대로 비친다.
   // raised 를 칠하고 있었는데, 이 팔레트에서는 raised(#ffffff)와 canvas(#fcfcfc)가
@@ -48,57 +84,37 @@ const primaryProfile: Record<Variant, ColorSpec> = {
   // edgeStrong(지면 대비 3:1)을 쓴다. 강조가 필요한 자리에 고르는 변형이다.
   outline: {
     background: "transparent",
-    color: tokens.color.content.primary,
+    color: tokens.color.action.primary.ink,
     borderColor: tokens.color.action.primary.edgeStrong,
     hoverOverlay: tokens.color.interaction.hover,
-  },
-  outlineMuted: {
-    background: "transparent",
-    color: tokens.color.content.secondary,
-    borderColor: tokens.color.action.primary.edgeStrong,
-    hoverOverlay: tokens.color.interaction.hover,
-    hoverColor: tokens.color.content.primary,
   },
   // hairline — **지면이 소유한 선.** 카드 헤어라인·빈 입력칸과 같은 border.base 를 두른다.
   // 화면에 여러 개 깔려도 조용한 쪽이라, 폼의 보조 버튼처럼 수가 많은 자리가 여기다.
   // (예전 `outline` 이 이 자리였다 — 이름만 옮겼고 값은 그대로다.)
   hairline: {
     background: "transparent",
-    color: tokens.color.content.primary,
-    borderColor: tokens.color.border.base,
+    color: tokens.color.action.primary.ink,
+    borderColor: tokens.color.action.primary.edge,
     hoverOverlay: tokens.color.interaction.hover,
-    hoverBorderColor: tokens.color.action.primary.edgeStrong,
-  },
-  hairlineMuted: {
-    background: "transparent",
-    color: tokens.color.content.secondary,
-    borderColor: tokens.color.border.base,
-    hoverOverlay: tokens.color.interaction.hover,
-    hoverColor: tokens.color.content.primary,
     hoverBorderColor: tokens.color.action.primary.edgeStrong,
   },
   ghost: {
     background: "transparent",
-    color: tokens.color.content.primary,
+    color: tokens.color.action.primary.ink,
     borderColor: "transparent",
     hoverOverlay: tokens.color.interaction.hover,
-    hoverColor: tokens.color.content.secondary,
+    hoverColor: tokens.color.action.primary.mutedInk,
   },
-  ghostMuted: {
-    background: "transparent",
-    color: tokens.color.content.secondary,
-    borderColor: "transparent",
-    hoverOverlay: tokens.color.interaction.hover,
-    hoverColor: tokens.color.content.primary,
-  },
+  ...mutedVariants(tokens.color.action.primary),
 };
 
 // ── status — 의미 4색 ────────────────────────────────────────────────────────
 // solid=채운 색면 · soft=옅은 면(wash) · outline=흰 면+색 테두리 · ghostMuted=색 글자만.
-// 색 면은 그 색의 의미를 짊어질 때만 (error 버튼처럼). hover 는 색 스텝(오버레이 아님).
+// 색 면은 그 색의 의미를 짊어질 때만 (error 버튼처럼). normal outline·hairline·ghost는
+// pigment wash로 반응하고, Muted 네 변형은 primary와 같은 neutral overlay로 반응한다.
 // solid 위 글자는 같은 hue의 반대 끝인 wash를 재사용한다. 별도 on-solid 슬롯을 두지 않아도
 // 라이트의 진한 solid에는 옅은 wash, 다크의 밝은 solid에는 어두운 wash가 올라간다.
-type StatusTones = { solid: string; mutedInk: string; ink: string; wash: string; soft: string; softInk: string; edge: string; edgeStrong: string };
+type StatusTones = MutedTones & { solid: string; soft: string; softInk: string };
 
 const statusProfile = (c: StatusTones): Record<Variant, ColorSpec> => ({
   solid: {
@@ -115,13 +131,6 @@ const statusProfile = (c: StatusTones): Record<Variant, ColorSpec> => ({
     borderColor: "transparent",
     hoverOverlay: tokens.color.interaction.hover,
   },
-  softMuted: {
-    background: c.wash,
-    color: c.mutedInk,
-    borderColor: "transparent",
-    hoverOverlay: tokens.color.interaction.hover,
-    hoverColor: c.ink,
-  },
   // 테두리는 edge(wash 의 괘선)가 아니라 edgeStrong 이다. 두 자리가 요구하는 세기가
   // 다르다 — wash 의 괘선은 이미 색이 깔린 면의 가장자리지만, outline 은 그 선이 곧
   // 컴포넌트라 흰 면 위에서 혼자 형태를 만들어야 한다.
@@ -130,13 +139,6 @@ const statusProfile = (c: StatusTones): Record<Variant, ColorSpec> => ({
     color: c.ink,
     borderColor: c.edgeStrong,
     hoverBackground: c.wash,
-  },
-  outlineMuted: {
-    background: "transparent",
-    color: c.mutedInk,
-    borderColor: c.edgeStrong,
-    hoverBackground: c.wash,
-    hoverColor: c.ink,
   },
   // hairline — 색은 지되 선은 물러난다. 뉴트럴이 지면의 헤어라인을 쓰듯, 여기서는 그 색의
   // 가장 옅은 괘선(edge)을 쓴다. 색 있는 자리에 뉴트럴 회색을 두르면 그 컴포넌트만
@@ -147,14 +149,6 @@ const statusProfile = (c: StatusTones): Record<Variant, ColorSpec> => ({
     borderColor: c.edge,
     hoverBackground: c.wash,
   },
-  hairlineMuted: {
-    background: "transparent",
-    color: c.mutedInk,
-    borderColor: c.edge,
-    hoverBackground: c.wash,
-    hoverColor: c.ink,
-    hoverBorderColor: c.edgeStrong,
-  },
   ghost: {
     background: "transparent",
     color: c.ink,
@@ -162,13 +156,7 @@ const statusProfile = (c: StatusTones): Record<Variant, ColorSpec> => ({
     hoverBackground: c.wash,
     hoverColor: c.softInk,
   },
-  ghostMuted: {
-    background: "transparent",
-    color: c.mutedInk,
-    borderColor: "transparent",
-    hoverBackground: c.wash,
-    hoverColor: c.ink,
-  },
+  ...mutedVariants(c),
 });
 
 // color 하나를 받아 variant→spec 표를 고른다. (primary·status 두 family — 면은 여기 없다.)
