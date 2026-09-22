@@ -1,3 +1,15 @@
+## 2026-09-22 — Expose source palettes in Playground
+
+- 변경 파일: `tokens/palette.ts`, `tokens/color-ladder.ts`, `app/src/playground/Palette.tsx`, Foundations 문서
+- 요약: zinc surface ramp를 L0 `SURFACE_PALETTE`로 올리고, 새 Palette 화면에서 L0 source와 L1 calibrated ladder를 분리해 확인하게 했습니다.
+
+surface 값은 semantic 역할이 생기기 전에도 하나의 중립 pigment ramp로 존재해야 합니다. 기존
+neutral ladder의 실제 값을 L0 surface palette로 옮기고, L1은 같은 값을 `NEUTRAL_LADDER`라는
+순서·step 계약으로만 연결했습니다. 따라서 `surface.raised` 등 L2 결과와 현재 화면 색감은 바뀌지
+않습니다. Playground Palette만 raw layer를 import하는 lint 예외로 뒀습니다. 이것은 component
+소비가 아니라 source 자체를 검사하는 Foundations inspector라, 일반 app code에 raw import를 여는
+것과는 다른 책임입니다.
+
 ## 2026-09-22 — Add palette-to-semantic color layers
 
 - 변경 파일: `tokens/palette.ts`, `tokens/color-ladder.ts`, `tokens/colors.ts`, semantic token 소비처·Playground·문서

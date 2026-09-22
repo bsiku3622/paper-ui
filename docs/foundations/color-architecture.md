@@ -3,10 +3,10 @@
 색은 하나의 큰 객체가 아니라, 역할이 다른 네 층을 순서대로 통과합니다. 이 구조는 Studio UI의 palette → slot curve → semantic token 방식을 Paper UI의 surface·content·status 어휘에 맞춘 것입니다.
 
 ```
-L0 palette identity       palette.ts
-        ↓ hue · 기준 chroma
+L0 palette source         palette.ts
+        ↓ accent hue·기준 chroma / zinc surface ramp
 L1 calibrated ladder      color-ladder.ts
-        ↓ theme별 tone step
+        ↓ accent tone step / neutral ladder contract
 L2 semantic token         colors.ts
         ↓ 화면 역할
 L3 CSS variable reference tokens/index.ts + theme.css.ts
@@ -16,9 +16,9 @@ component / resolver / app
 
 각 레이어는 바로 아래 레이어만 압니다. 컴포넌트가 `blue[600]`처럼 색상이나 tone step을 직접 고르면, 색을 보정할 때 사용처마다 다른 파랑이 남습니다. 화면은 `tokens.color.status.info.ink`처럼 **의미와 역할**만 고릅니다.
 
-## L0 — Palette identity
+## L0 — Palette source
 
-`tokens/palette.ts`는 zinc·blue·green·amber·red의 기준 chroma와 light/dark별 calibrated hue를 가진 registry입니다. 다크에서 같은 hue가 눈에 같은 색감으로 읽히지 않으므로, 이를 하나의 각도로 평탄화하지 않습니다. 이것은 public color API도, CSS 변수도 아닙니다. 새 색 family를 추가할 때 먼저 이곳에 색의 정체성을 선언하고, 다음 ladder에서 양 테마의 실제 곡선을 잡습니다.
+`tokens/palette.ts`는 accent의 identity와 neutral의 raw source를 함께 가집니다. zinc는 실제 `SURFACE_PALETTE` ramp이고, blue·green·amber·red는 기준 chroma와 light/dark별 calibrated hue를 가진 registry입니다. 다크에서 같은 hue가 눈에 같은 색감으로 읽히지 않으므로, 이를 하나의 각도로 평탄화하지 않습니다. 이것은 public color API도, CSS 변수도 아닙니다. 새 색 family를 추가할 때 먼저 이곳에 색의 정체성을 선언하고, 다음 ladder에서 양 테마의 실제 곡선을 잡습니다.
 
 `info`, `success`, `warning`, `error`는 hue 이름이 아니라 semantic 이름입니다. 현재는 아래처럼 palette에 연결됩니다.
 
@@ -33,7 +33,7 @@ component / resolver / app
 
 ## L1 — Calibrated ladder
 
-`tokens/color-ladder.ts`는 실제 색값의 유일한 자리입니다. neutral ladder는 surface·content·border·primary action을, accent ladder는 각 palette의 `50 / 100 / 200 / 400 / 600 / 700` 역할을 제공합니다.
+`tokens/color-ladder.ts`는 L0 surface palette를 `NEUTRAL_LADDER`라는 계약으로 연결하고, accent의 실제 light/dark tone curve를 정의합니다. neutral ladder는 surface·content·border·primary action을, accent ladder는 각 palette의 `50 / 100 / 200 / 400 / 600 / 700` 역할을 제공합니다.
 
 | accent step | 역할 |
 |---|---|
@@ -72,13 +72,13 @@ tokens.color.action.primary.base
 tokens.color.status.error.edgeStrong
 ```
 
-컴포넌트는 위 참조 또는 resolver의 `color`·`variant` API만 사용합니다. palette와 ladder의 raw 값은 component·resolver·app에서 import할 수 없게 lint가 막습니다.
+컴포넌트는 위 참조 또는 resolver의 `color`·`variant` API만 사용합니다. palette와 ladder의 raw 값은 component·resolver·app에서 import할 수 없게 lint가 막습니다. 유일한 예외인 `/playground/palette`는 source layer 자체를 검토하는 Foundations inspector입니다.
 
 ## 색을 바꿀 때의 경로
 
 1. 색 family 자체가 달라졌다면 `palette.ts`에서 identity를 조정합니다.
 2. 실제 light/dark tone 또는 대비가 문제면 `color-ladder.ts`의 해당 step을 보정합니다.
 3. 역할 배치가 잘못됐다면 `colors.ts`에서 semantic mapping을 바꿉니다.
-4. component마다 값을 덮어쓰지 않고, Playground Tokens에서 light/dark와 shared variant를 함께 확인합니다.
+4. component마다 값을 덮어쓰지 않고, Playground Palette에서 source·ladder를, Playground Tokens에서 semantic 결과와 shared variant를 함께 확인합니다.
 
 이 순서를 지키면 “warning만 너무 시트러스하다”와 “모든 form hover가 너무 진하다”가 서로 다른 레이어의 문제로 분리됩니다.

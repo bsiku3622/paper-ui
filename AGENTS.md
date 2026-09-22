@@ -45,15 +45,17 @@ pnpm 명령은 `workspace/` 에서 실행한다. `core`/`web` 분리는 일부�
 이전 `paper`·`ink`·`primary`·`accent` 경로 설명보다 우선합니다.
 
 ```
-palette.ts (L0: hue·기준 chroma identity)
-    → color-ladder.ts (L1: light/dark의 실제 calibrated tone)
+palette.ts (L0: accent hue·기준 chroma identity + zinc surface palette)
+    → color-ladder.ts (L1: light/dark의 calibrated accent tone + neutral ladder 계약)
     → colors.ts (L2: semantic role)
     → tokens/index.ts + theme.css.ts (L3: CSS var reference)
     → component / resolver / app
 ```
 
 - **palette와 ladder는 private build-time layer입니다.** component·resolver·app에서 import하지
-  않습니다. raw hex·OKLCH는 `tokens/color-ladder.ts`에만 둡니다.
+  않습니다. 단, `/playground/palette` Foundations inspector만 source layer를 읽어 보여주는
+  의도된 예외입니다. raw hex는 surface의 경우 `tokens/palette.ts`, accent의 경우
+  `tokens/color-ladder.ts`에만 둡니다.
 - **소비 API는 semantic role입니다.** `tokens.color.surface.*` (옛 `paper`),
   `content.primary|secondary|tertiary` (옛 neutral `ink`), `action.primary.*` (옛 `primary`),
   `status.info|success|warning|error.*` (옛 `accent`)만 사용합니다.
@@ -246,8 +248,8 @@ Banner 는 데모·공지 chrome 의 얇은 풀폭 바(검정 solid + status).
 semantic 공백을 메우는가.** 그래도 장식적 중복(같은 걸 이름만 바꿔 두 개)은 여전히 금지 —
 가능하면 새 컴포넌트보다 기존 것의 확장(prop·폴리모피즘)을 먼저 본다.
 
-1. **raw 색값 금지** — hex·OKLCH는 `tokens/color-ladder.ts`에만. 소비처는 `tokens.color.X`로만 참조.
-2. **color layer import 격리** — palette·ladder·semantic VALUES는 component·resolver·app에서 import 금지.
+1. **raw 색값 금지** — surface hex는 `tokens/palette.ts`, accent hex·OKLCH는 `tokens/color-ladder.ts`에만. 소비처는 `tokens.color.X`로만 참조.
+2. **color layer import 격리** — palette·ladder·semantic VALUES는 component·resolver·app에서 import 금지. `/playground/palette` Foundations inspector만 예외.
 3. **inline style 로 토큰 주입 금지** — `.css.ts` className 으로만.
 4. **Primitive 위에서 raw HTML 금지** — Molecule 부터는 Primitive/Atom 합성. raw 태그가
    필요하면 `<Box as="button">` 이 유일한 통로.

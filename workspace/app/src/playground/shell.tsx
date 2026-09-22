@@ -23,6 +23,7 @@ export const PlaygroundLayout = ({ value, children }: { value: string; children:
         style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, top: NAV_HEIGHT, position: "sticky" }}
       >
         <Sidebar.Group label="레퍼런스">
+          <Sidebar.Item value="palette" as={Link} to="/playground/palette">팔레트 · Foundations</Sidebar.Item>
           <Sidebar.Item value="tokens" as={Link} to="/playground/tokens">토큰 · Foundations</Sidebar.Item>
           <Sidebar.Item value="all" as={Link} to="/playground">전수 · 한 화면</Sidebar.Item>
         </Sidebar.Group>
