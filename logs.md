@@ -1,3 +1,20 @@
+## 2026-09-22 — Add palette-to-semantic color layers
+
+- 변경 파일: `tokens/palette.ts`, `tokens/color-ladder.ts`, `tokens/colors.ts`, semantic token 소비처·Playground·문서
+- 요약: 색 정의를 palette identity → calibrated ladder → semantic token → CSS variable 소비 경로로 나누고, 기존 component API는 status 중심으로 보존했습니다.
+
+Studio UI의 색 slot 구조처럼 hue identity와 실제 light/dark tone을 분리하되, Paper UI에서는
+surface·content·border·action·status가 화면에서 읽히는 semantic 종착점이 됩니다. 따라서 component는
+palette hue나 600/700 같은 tone 번호를 모르고, `tokens.color.status.error.ink`처럼 역할만 봅니다.
+특히 기존 green·warning에서 normal과 Muted text가 같은 값이던 문제를 600 `mutedInk`와 700 `ink`로
+갈라, colored `softMuted`도 wash surface와 함께 실제 한 단계 물러나게 했습니다. outlineMuted는 muted여도
+강한 border를 유지합니다. 경계가 형태를 만드는 자리까지 약해지면 variant의 목적 자체가 사라지기 때문입니다.
+
+후속으로, palette 계층을 만들며 light/dark hue를 하나로 평탄화했던 변경은 되돌렸습니다. warning의
+light soft가 본래 amber-yellow에서 red-orange로 기울었기 때문입니다. palette는 “한 hue로 모두 생성”하는
+도구가 아니라 기존 Paper UI의 Veil 조정을 보존하는 identity registry이며, mode별 calibrated hue를 둬야
+구조와 화면의 색감을 함께 지킬 수 있습니다.
+
 ## 2026-09-15 — Widen Tooltip content through Box layout props
 
 - 변경 파일: Box·Tooltip API, Playground registry, component docs·tests
@@ -382,14 +399,3 @@ Playground가 이 레포의 유일한 시각 검증 surface이므로, 패키지 
 - 요약: shared color, neutral Form, semantic Form, navigation의 hover 우선순위와 keyboard/pointer focus 차이를 하나의 계약으로 정리했습니다.
 
 현재 구현은 shared color의 overlay와 Form의 border/halo가 서로 다른 책임을 갖는데, 기존 문서에서는 이 경계가 여러 파일의 주석에 흩어져 있었습니다. 새 문서는 `border.hover`를 neutral Form 전용 단계로 명시하고, selected가 hover보다 우선하는 이유와 정적 Badge에 hover를 붙이지 않는 기준을 함께 고정합니다. 코드나 색 값은 바꾸지 않았고, 작업 중이던 토큰 변경도 포함하지 않았습니다.
-## 2026-09-22 — Add palette-to-semantic color layers
-
-- 변경 파일: `tokens/palette.ts`, `tokens/color-ladder.ts`, `tokens/colors.ts`, semantic token 소비처·Playground·문서
-- 요약: 색 정의를 palette identity → calibrated ladder → semantic token → CSS variable 소비 경로로 나누고, 기존 component API는 status 중심으로 보존했습니다.
-
-Studio UI의 색 slot 구조처럼 hue identity와 실제 light/dark tone을 분리하되, Paper UI에서는
-surface·content·border·action·status가 화면에서 읽히는 semantic 종착점이 됩니다. 따라서 component는
-palette hue나 600/700 같은 tone 번호를 모르고, `tokens.color.status.error.ink`처럼 역할만 봅니다.
-특히 기존 green·warning에서 normal과 Muted text가 같은 값이던 문제를 600 `mutedInk`와 700 `ink`로
-갈라, colored `softMuted`도 wash surface와 함께 실제 한 단계 물러나게 했습니다. outlineMuted는 muted여도
-강한 border를 유지합니다. 경계가 형태를 만드는 자리까지 약해지면 variant의 목적 자체가 사라지기 때문입니다.

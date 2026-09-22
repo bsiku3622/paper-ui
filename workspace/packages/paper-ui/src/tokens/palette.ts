@@ -8,16 +8,18 @@
 // family를 완결했는지 type으로 검증하는 registry다.
 
 export type PaletteSeed = {
-  hue: number;
+  // 같은 pigment가 light/dark에서 완전히 같은 각도로 보이지는 않는다. 이 시스템의
+  // 기존 Veil 색감을 보존하기 위해 각 mode의 보정 hue를 palette identity에 둔다.
+  hue: Record<ColorMode, number>;
   chroma: number;
 };
 
 export const PALETTE = {
-  zinc: { hue: 286, chroma: 0.01 },
-  blue: { hue: 260, chroma: 0.16 },
-  green: { hue: 151, chroma: 0.14 },
-  amber: { hue: 55, chroma: 0.15 },
-  red: { hue: 25, chroma: 0.16 },
+  zinc: { hue: { light: 286, dark: 286 }, chroma: 0.01 },
+  blue: { hue: { light: 254, dark: 258.2 }, chroma: 0.16 },
+  green: { hue: { light: 158.8, dark: 153.2 }, chroma: 0.14 },
+  amber: { hue: { light: 95.2, dark: 70.9 }, chroma: 0.15 },
+  red: { hue: { light: 17.7, dark: 21.3 }, chroma: 0.16 },
 } as const satisfies Record<string, PaletteSeed>;
 
 export type PaletteName = keyof typeof PALETTE;

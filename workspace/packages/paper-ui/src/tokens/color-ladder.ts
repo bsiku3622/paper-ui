@@ -16,10 +16,10 @@ export type AccentStep = (typeof ACCENT_STEPS)[number];
 type NeutralLadder = Record<NeutralStep, string>;
 type AccentLadder = Record<AccentStep, string>;
 
-// palette가 hue의 정본이다. Ladder는 mode별 L/C 곡선만 정해, 같은 family 안에서 hue가
-// wash·soft·edge마다 흩어지지 않게 한다.
-const oklch = (palette: AccentPalette, lightness: number, chroma: number): string =>
-  `oklch(${lightness} ${chroma} ${PALETTE[palette].hue})`;
+// palette가 mode별 hue의 정본이다. Ladder는 그 위에 mode별 L/C 곡선을 얹는다. hue를
+// 억지로 하나로 평탄화하지 않아 기존 Veil의 차분한 warning·green 결을 보존한다.
+const oklch = (mode: ColorMode, palette: AccentPalette, lightness: number, chroma: number): string =>
+  `oklch(${lightness} ${chroma} ${PALETTE[palette].hue[mode]})`;
 
 // 낮은 번호는 시각적으로 더 어둡고, 높은 번호는 더 밝다. 다크에서도 같은 방향을
 // 유지하므로 token layer는 테마에 따라 "몇 번째 밝기"를 다시 해석할 필요가 없다.
@@ -64,7 +64,7 @@ export const ACCENT_LADDER: Record<ColorMode, Record<AccentPalette, AccentLadder
   light: {
     blue: {
       "50": "#f5f9fe",
-      "100": oklch("blue", 0.9304, 0.0263),
+      "100": oklch("light", "blue", 0.9304, 0.0263),
       "200": "#d1e1f5",
       "400": "#5694e9",
       "600": "#2563eb",
@@ -72,7 +72,7 @@ export const ACCENT_LADDER: Record<ColorMode, Record<AccentPalette, AccentLadder
     },
     green: {
       "50": "#f5fdf8",
-      "100": oklch("green", 0.9319, 0.0355),
+      "100": oklch("light", "green", 0.9319, 0.0355),
       "200": "#cff0dc",
       "400": "#35a75f",
       "600": "#15803d",
@@ -82,7 +82,7 @@ export const ACCENT_LADDER: Record<ColorMode, Record<AccentPalette, AccentLadder
     },
     amber: {
       "50": "#fefbf3",
-      "100": oklch("amber", 0.9323, 0.0524),
+      "100": oklch("light", "amber", 0.9323, 0.0524),
       "200": "#f4e7b5",
       "400": "#c5861b",
       "600": "#b45309",
@@ -90,7 +90,7 @@ export const ACCENT_LADDER: Record<ColorMode, Record<AccentPalette, AccentLadder
     },
     red: {
       "50": "#fdf7f7",
-      "100": oklch("red", 0.9304, 0.025),
+      "100": oklch("light", "red", 0.9304, 0.025),
       "200": "#f4d8d8",
       "400": "#ed6969",
       "600": "#dc2626",
@@ -100,7 +100,7 @@ export const ACCENT_LADDER: Record<ColorMode, Record<AccentPalette, AccentLadder
   dark: {
     blue: {
       "50": "#0d1c32",
-      "100": oklch("blue", 0.2561, 0.0708),
+      "100": oklch("dark", "blue", 0.2561, 0.0708),
       "200": "#1a355d",
       "400": "#4c6fa3",
       "600": "#5492ec",
@@ -108,7 +108,7 @@ export const ACCENT_LADDER: Record<ColorMode, Record<AccentPalette, AccentLadder
     },
     green: {
       "50": "#062211",
-      "100": oklch("green", 0.2558, 0.07),
+      "100": oklch("dark", "green", 0.2558, 0.07),
       "200": "#094021",
       "400": "#3a7b52",
       "600": "#32ac64",
@@ -116,7 +116,7 @@ export const ACCENT_LADDER: Record<ColorMode, Record<AccentPalette, AccentLadder
     },
     amber: {
       "50": "#291800",
-      "100": oklch("amber", 0.2561, 0.0654),
+      "100": oklch("dark", "amber", 0.2561, 0.0654),
       "200": "#4c2e00",
       "400": "#8e672c",
       "600": "#c58300",
@@ -124,7 +124,7 @@ export const ACCENT_LADDER: Record<ColorMode, Record<AccentPalette, AccentLadder
     },
     red: {
       "50": "#2f1211",
-      "100": oklch("red", 0.2562, 0.0711),
+      "100": oklch("dark", "red", 0.2562, 0.0711),
       "200": "#572223",
       "400": "#a15a59",
       "600": "#df6768",
