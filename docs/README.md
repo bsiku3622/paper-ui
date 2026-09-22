@@ -2,12 +2,12 @@
 
 paper-ui는 복잡한 웹앱을 위한 디자인 시스템입니다. 순백과 검정이 골격이고, 색은 의미가 있을 때만 작게 얹습니다. 이 시스템은 Atlassian의 밀도, shadcn의 절제된 뉴트럴, ChatGPT의 조용함, SwiftUI의 단정한 마감을 한 결로 묶었습니다.
 
-시작점은 두 갈래입니다. 시스템을 **쓰려는** 사람은 [설치](get-started/install.md)에서 시작해 [원칙](get-started/philosophy.md)에서 이 시스템이 왜 이렇게 생겼는지를 잡습니다. 시스템을 **이해하려는** 사람은 [토큰](foundations/tokens.md)에서 값의 정본을 보고 [아키텍처](foundations/architecture.md)와 [컴포넌트 축](foundations/component-architecture.md)에서 그 값이 화면까지 흐르고 조합되는 방식을 따라갑니다.
+시작점은 두 갈래입니다. 시스템을 **쓰려는** 사람은 [설치](get-started/install.md)에서 시작해 [원칙](get-started/philosophy.md)에서 이 시스템이 왜 이렇게 생겼는지를 잡습니다. 시스템을 **이해하려는** 사람은 [토큰](foundations/tokens.md)에서 값의 정본을 보고 [색 아키텍처](foundations/color-architecture.md)·[아키텍처](foundations/architecture.md)·[컴포넌트 축](foundations/component-architecture.md)에서 그 값이 화면까지 흐르고 조합되는 방식을 따라갑니다.
 
 ## 지도
 
 - **시작하기** — [설치](get-started/install.md) · [원칙](get-started/philosophy.md)
-- **기초** — [토큰](foundations/tokens.md) · [아키텍처](foundations/architecture.md) · [컴포넌트 축](foundations/component-architecture.md) · [Interaction](foundations/interaction.md)
+- **기초** — [토큰](foundations/tokens.md) · [색 아키텍처](foundations/color-architecture.md) · [아키텍처](foundations/architecture.md) · [컴포넌트 축](foundations/component-architecture.md) · [Interaction](foundations/interaction.md)
 - **컴포넌트** — [개요](components/overview.md)
 - **실전 조합** — [레시피](recipes/README.md)
 

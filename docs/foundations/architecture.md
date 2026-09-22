@@ -4,14 +4,17 @@
 
 ## 트리를 한 번 걷는다
 
-`tokens/`의 다섯 도메인(`colors` · `shape` · `text` · `motion` · `layout`)에 raw 값(hex·rem·ms)이 트리로 있습니다. `walkValues`와 `buildVarTree`가 그 트리를 걸어 두 곳에 값을 흘려보냅니다 — 하나는 CSS 변수를 굽고, 하나는 컴포넌트가 볼 참조 객체를 만듭니다.
+`shape` · `text` · `motion` · `layout`은 각자 한 values tree를 갖습니다. 색은 값의 수명과 역할이 달라 한 층 더 나눕니다: **palette identity → calibrated ladder → semantic color tree**. `walkValues`와 `buildVarTree`는 마지막 semantic tree를 걸어 CSS 변수와 컴포넌트 참조 객체를 함께 만듭니다. 색의 네 레이어는 [색 아키텍처](color-architecture.md)가 정본입니다.
 
 ```
-VALUES (raw hex/rem/ms — 유일한 정의 위치)
-        │  walkValues() / buildVarTree() — 같은 트리, 같은 규칙
-        ├──► theme.css.ts   :root { --pui-color-ink-base: #18181b … }
-        │                   (raw hex 를 import 하는 유일한 모듈)
-        └──► tokens 객체     tokens.color.ink.base = "var(--pui-color-ink-base)"
+palette.ts (L0 hue/chroma identity)
+        ↓
+color-ladder.ts (L1 calibrated raw tones)
+        ↓
+colors.ts (L2 semantic surface/content/border/action/status tree)
+        │  walkValues() / buildVarTree() — 같은 tree, 같은 규칙
+        ├──► theme.css.ts   :root { --pui-color-content-primary: … }
+        └──► tokens 객체     tokens.color.content.primary = "var(--pui-color-content-primary)"
                             (컴포넌트가 보는 것)
 ```
 
@@ -45,8 +48,8 @@ Atom에도 `as`가 있지만(`<Button as={Link} to="/docs">`) 그건 raw 태그�
 
 원칙은 기억이 아니라 빌드가 지킵니다. 넷 다 eslint가 강제합니다.
 
-1. **raw 값 금지** — hex는 `tokens/colors.ts`에만. `tokens.color.X`로만 참조합니다.
-2. **VALUES import 격리** — raw 값 모듈은 `styles/theme.css.ts`만 import 합니다.
+1. **raw 색값 금지** — hex·OKLCH는 `tokens/color-ladder.ts`에만. 소비처는 `tokens.color.X`만 참조합니다.
+2. **color layer import 격리** — palette·ladder·semantic VALUES는 component·resolver·app에서 import하지 않습니다.
 3. **inline style로 토큰 주입 금지** — `.css.ts`의 className으로만 적용합니다.
 4. **Primitive 위에서 raw HTML 금지** — Molecule부터는 Primitive/Atom으로 합성합니다.
 

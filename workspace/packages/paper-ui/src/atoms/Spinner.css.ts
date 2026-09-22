@@ -15,7 +15,7 @@ export const spinnerRoot = style({
   borderWidth: tokens.shape.constants.focusRingWidth,
   borderStyle: "solid",
   borderColor: tokens.color.border.base,
-  borderTopColor: tokens.color.ink.base,
+  borderTopColor: tokens.color.content.primary,
   animation: `${spin} ${tokens.motion.loop.spin} linear infinite`,
 });
 

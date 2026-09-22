@@ -19,15 +19,15 @@ export const tocItem = style({
   borderLeftWidth: tokens.shape.constants.borderWidth,
   borderLeftStyle: "solid",
   borderLeftColor: "transparent",
-  color: tokens.color.ink.soft,
+  color: tokens.color.content.secondary,
   fontSize: tokens.text.size.caption,
   textDecoration: "none",
   transition: stateTransition("background", "color", "border-color"),
-  selectors: { "&:hover": { background: tokens.color.interaction.hover, color: tokens.color.ink.base } },
+  selectors: { "&:hover": { background: tokens.color.interaction.hover, color: tokens.color.content.primary } },
 });
 export const tocItemActive = style({
-  borderLeftColor: tokens.color.primary.base,
-  color: tokens.color.ink.base,
+  borderLeftColor: tokens.color.action.primary.base,
+  color: tokens.color.content.primary,
   fontWeight: tokens.text.weight.medium,
   background: tokens.color.interaction.hover,
 });

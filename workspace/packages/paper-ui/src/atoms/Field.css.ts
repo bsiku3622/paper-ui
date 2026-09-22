@@ -1,6 +1,6 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
-import { tokens, STATUS, STATUS_ACCENT, semanticFormHoverShadow, stateTransition } from "../tokens";
+import { tokens, STATUS, semanticFormHoverShadow, stateTransition } from "../tokens";
 import type { StatusName, TextVariant } from "../tokens";
 import { TEXT_VARIANTS } from "../tokens";
 import { ladderRules } from "../internal/sizeLadder";
@@ -13,12 +13,12 @@ export const fieldWrap = style({
   alignItems: "center",
   gap: tokens.shape.gap.sm,
   width: "100%",
-  background: tokens.color.paper.raised,
+  background: tokens.color.surface.raised,
   borderRadius: tokens.shape.radius.interaction,
   borderWidth: tokens.shape.constants.borderWidth,
   borderStyle: "solid",
   borderColor: tokens.color.border.base,
-  color: tokens.color.ink.base,
+  color: tokens.color.content.primary,
   fontFamily: tokens.text.font.sans,
   // ⚠ **굵기·자간을 명시한다.** 예전엔 fontFamily 만 정하고 둘을 안 줘서, 브라우저 기본값
   // (400 · normal)으로 떨어져 있었다. 이 시스템의 `normal` 은 **450** 이다 — 작은 sans 가
@@ -39,7 +39,7 @@ export const fieldWrap = style({
     },
     // pointer focus는 keyboard ring 대신 hover보다 한 단계 또렷한 soft edge를 남긴다.
     '&[data-pui-status="default"][data-pui-pointer-focus]:has(input:focus)': {
-      borderColor: tokens.color.ink.soft,
+      borderColor: tokens.color.content.secondary,
     },
     // keyboard focus — 안쪽 input 이 :focus-visible일 때만 래퍼 *바깥* 에 파란 링.
     // 클릭은 caret과 edge만 남기고, Tab 탐색 위치에만 ring을 쓴다.
@@ -69,7 +69,7 @@ export const fieldInput = style({
   padding: 0,
   margin: 0,
   selectors: {
-    "&::placeholder": { color: tokens.color.ink.faint },
+    "&::placeholder": { color: tokens.color.content.tertiary },
     // 전역 :focus-visible rule보다 높은 특정도로 input 자체의 ring은 끈다. ring의 주인은
     // keyboard focus를 읽는 wrapper다.
     "&:focus-visible": { outline: "none" },
@@ -95,7 +95,7 @@ export const fieldFontSize = styleVariants(
 export const fieldStatus = styleVariants(
   Object.fromEntries(
     STATUS.map((s) => {
-      const accent = tokens.color.accent[STATUS_ACCENT[s]];
+      const accent = tokens.color.status[s];
       return [
         s,
         {
@@ -115,7 +115,7 @@ export const fieldStatus = styleVariants(
 export const fieldAdornment = style({
   display: "inline-flex",
   alignItems: "center",
-  color: tokens.color.ink.soft,
+  color: tokens.color.content.secondary,
   flexShrink: 0,
 });
 
@@ -131,10 +131,10 @@ export const fieldAction = style({
   padding: 0,
   margin: 0,
   cursor: "pointer",
-  color: tokens.color.ink.faint,
+  color: tokens.color.content.tertiary,
   transition: stateTransition("color"),
   selectors: {
-    "&:hover": { color: tokens.color.ink.base },
+    "&:hover": { color: tokens.color.content.primary },
     "&:focus-visible": {
       outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.focus.ring}`,
       outlineOffset: tokens.shape.constants.focusRingOffset,

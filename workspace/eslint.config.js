@@ -50,11 +50,12 @@ export default [
   },
 
   // ── 규칙 1 — raw 색·크기 값 금지 ─────────────────────────────────────────
-  // hex 는 tokens/colors.ts 에만. 다른 데서 #fff 를 쓰면 팔레트가 두 곳이 된다.
+  // raw color literal은 L1 ladder에만. 다른 데서 #fff 를 쓰면 palette가 두 곳이 된다.
   {
     files: ["packages/paper-ui/src/**/*.{ts,tsx}", "app/src/**/*.{ts,tsx}"],
     ignores: [
-      "packages/paper-ui/src/tokens/colors.ts",
+      "packages/paper-ui/src/tokens/palette.ts",
+      "packages/paper-ui/src/tokens/color-ladder.ts",
       "packages/paper-ui/src/tokens/shape.ts",
       "packages/paper-ui/src/tokens/text.ts",
       "packages/paper-ui/src/styles/theme.css.ts",
@@ -66,7 +67,7 @@ export default [
         {
           selector: "Literal[value=/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/]",
           message:
-            "규칙 1 — raw hex 금지. 색은 tokens/colors.ts 에만 정의하고 tokens.color.X 로 참조하라.",
+            "규칙 1 — raw hex 금지. 색은 tokens/color-ladder.ts 에만 정의하고 tokens.color.X 로 참조하라.",
         },
         {
           selector: "Literal[value=/^var\\(--paper-/]",
@@ -78,7 +79,7 @@ export default [
   },
 
   // ── 규칙 2 — VALUES(raw) import 격리 ────────────────────────────────────
-  // COLOR_VALUES · SHAPE_VALUES 의 *값* 은 theme.css.ts 만 본다.
+  // L0 palette·L1 ladder·L2 raw VALUES는 theme.css.ts/token assembly만 본다.
   {
     files: [
       "packages/paper-ui/src/{primitives,atoms,molecules,components,provider,resolvers}/**/*.{ts,tsx}",
@@ -90,9 +91,9 @@ export default [
         {
           patterns: [
             {
-              group: ["**/tokens/colors", "**/tokens/shape"],
+              group: ["**/tokens/palette", "**/tokens/color-ladder", "**/tokens/colors", "**/tokens/shape"],
               message:
-                "규칙 2 — raw 값 모듈은 styles/theme.css.ts 만 import 한다. tokens 배럴의 var 참조를 쓰라.",
+                "규칙 2 — palette·ladder·raw VALUES는 소비처에서 import하지 않는다. tokens 배럴의 semantic var 참조를 쓰라.",
             },
           ],
         },

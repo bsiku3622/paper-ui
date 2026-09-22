@@ -1,14 +1,14 @@
 // theme.css.ts — 토큰 값을 CSS 로 굽는 유일한 자리.
 //
-// 여기가 raw hex 를 import 하는 *유일한* 모듈이다 (절대 규칙 4). 다른 모든
-// 파일은 tokens 객체의 var() 참조만 본다.
+// 여기와 tokens/index.ts가 L2 semantic VALUES를 조립한다. raw 색값은 L1
+// color-ladder.ts에만 있으며, component·resolver·app은 tokens var() 참조만 본다.
 
 import { globalStyle } from "@vanilla-extract/css";
 
 import { COLOR_VALUES, COLOR_VALUES_DARK } from "../tokens/colors";
 import { SHAPE_VALUES, SHADOW_DARK } from "../tokens/shape";
 import { LAYOUT_VALUES } from "../tokens/layout";
-import { TEXT_VALUES, TEXT_SPEC, TEXT_INK, TEXT_VARIANTS } from "../tokens/text";
+import { TEXT_VALUES, TEXT_SPEC, TEXT_CONTENT, TEXT_VARIANTS } from "../tokens/text";
 import { walkValues, pathToCssVar } from "../tokens/helpers";
 import { tokens } from "../tokens";
 
@@ -63,8 +63,8 @@ globalStyle(':root[data-theme="dark"], [data-theme="dark"]', { vars: darkVars })
 
 globalStyle("body", {
   margin: 0,
-  background: tokens.color.paper.canvas,
-  color: tokens.color.ink.base,
+  background: tokens.color.surface.canvas,
+  color: tokens.color.content.primary,
   fontFamily: tokens.text.font.sans,
   fontSize: tokens.text.size.body,
   lineHeight: tokens.text.leading.body,
@@ -100,7 +100,7 @@ for (const v of TEXT_VARIANTS) {
     fontWeight: spec.weight, // weight 는 variant→굵기 매핑이라 spec 의 raw 어휘값
     lineHeight: tokens.text.leading[v],
     letterSpacing: tokens.text.tracking[v],
-    color: tokens.color.ink[TEXT_INK[v]],
+    color: tokens.color.content[TEXT_CONTENT[v]],
     margin: 0,
   });
   // mono 일 때만 — variant px 를 MONO_SCALE 로 줄인다. 두 클래스라 .pui-text-* 를 이긴다.

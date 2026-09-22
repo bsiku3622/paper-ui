@@ -7,12 +7,12 @@ import { ladderRules } from "../internal/sizeLadder";
 // 같은 사다리를 그대로 가져온다. 오른쪽만 화살표 자리라 size 무관하게 넉넉히 고정.
 export const selectRoot = style({
   width: "100%",
-  background: tokens.color.paper.raised,
+  background: tokens.color.surface.raised,
   borderRadius: tokens.shape.radius.interaction,
   borderWidth: tokens.shape.constants.borderWidth,
   borderStyle: "solid",
   borderColor: tokens.color.border.base,
-  color: tokens.color.ink.base,
+  color: tokens.color.content.primary,
   fontFamily: tokens.text.font.sans,
   // ⚠ **굵기·자간을 명시한다.** 예전엔 fontFamily 만 정하고 둘을 안 줘서, 브라우저 기본값
   // (400 · normal)으로 떨어져 있었다. 이 시스템의 `normal` 은 **450** 이다 — 작은 sans 가
@@ -41,12 +41,12 @@ export const selectRoot = style({
     // 곧 placeholder 상태다. :has()로 option의 실제 선택 상태를 읽어 controlled·uncontrolled
     // 양쪽에서 별도 상태 관리 없이 같은 색을 쓴다.
     "&:has(option[value=\"\"]:checked)": {
-      color: tokens.color.ink.faint,
+      color: tokens.color.content.tertiary,
       backgroundImage:
         "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%23a1a1aa' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E\")",
     },
     "&:hover:not(:focus)": { borderColor: tokens.color.border.hover },
-    "&[data-pui-pointer-focus]:focus": { borderColor: tokens.color.ink.soft },
+    "&[data-pui-pointer-focus]:focus": { borderColor: tokens.color.content.secondary },
     // keyboard focus만 바깥 ring으로 알린다. 클릭은 native open state와 edge로 충분하다.
     "&:focus-visible:not([data-pui-pointer-focus])": {
       outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.focus.ring}`,

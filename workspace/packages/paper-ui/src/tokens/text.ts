@@ -132,15 +132,15 @@ export const TEXT_SPEC = {
   label: { size: SIZE.label, weight: WEIGHT.semibold, lineHeight: LEADING.label, tracking: TRACKING.label },
 } as const satisfies Record<TextVariant, TextSpec>;
 
-// variant 별 기본 잉크 농도 — label · caption 은 흐리게(부연 자리).
-export const TEXT_INK: Record<TextVariant, "base" | "soft"> = {
-  display: "base",
-  title: "base",
-  heading: "base",
-  subheading: "base",
-  body: "base",
-  caption: "soft",
-  label: "soft",
+// variant 별 기본 content token — label · caption 은 secondary(부연 자리).
+export const TEXT_CONTENT: Record<TextVariant, "primary" | "secondary"> = {
+  display: "primary",
+  title: "primary",
+  heading: "primary",
+  subheading: "primary",
+  body: "primary",
+  caption: "secondary",
+  label: "secondary",
 };
 
 // ───── VALUES — emit 대상 트리 (tokens.text.*) ──────────────────────────────

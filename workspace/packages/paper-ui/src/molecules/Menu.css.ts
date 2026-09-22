@@ -20,7 +20,7 @@ export const menuItem = style({
   border: "none",
   borderRadius: tokens.shape.radius.interaction,
   background: "transparent",
-  color: tokens.color.ink.base,
+  color: tokens.color.content.primary,
   fontFamily: tokens.text.font.sans,
   fontSize: tokens.text.size.body,
   textAlign: "start",
@@ -31,7 +31,7 @@ export const menuItem = style({
     "&:hover:not([aria-disabled='true']), &:focus-visible:not([aria-disabled='true'])": {
       background: tokens.color.interaction.hover,
     },
-    "&[aria-disabled='true']": { color: tokens.color.ink.faint, cursor: "default" },
+    "&[aria-disabled='true']": { color: tokens.color.content.tertiary, cursor: "default" },
   },
 });
 
@@ -41,7 +41,7 @@ export const menuItemActive = style({
   selectors: { "&:hover": { background: tokens.color.interaction.selected } },
 });
 
-export const menuItemDanger = style({ color: tokens.color.accent.error.ink });
+export const menuItemDanger = style({ color: tokens.color.status.error.ink });
 export const menuItemCopy = style({ flex: 1, minWidth: 0 });
 export const menuItemIcon = style({ color: "currentColor", display: "inline-flex" });
-export const menuShortcut = style({ color: tokens.color.ink.faint, whiteSpace: "nowrap" });
+export const menuShortcut = style({ color: tokens.color.content.tertiary, whiteSpace: "nowrap" });

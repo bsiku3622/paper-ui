@@ -19,7 +19,7 @@ export type Surface = (typeof SURFACES)[number];
 
 export const resolveSurface = (s: Surface | undefined): string => (s ? `pui-surface-${s}` : "");
 
-// 의미 4색 — tokens.color.accent 의 키와 같다.
+// 의미 4색 — tokens.color.status 의 키와 같다. API의 color prop은 status를 짧게 부른다.
 export const ACCENTS = ["info", "success", "warning", "error"] as const;
 export type Accent = (typeof ACCENTS)[number];
 

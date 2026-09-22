@@ -25,7 +25,7 @@ globalStyle(".home-headline", {
   lineHeight: 1.04,
   letterSpacing: "-0.035em",
   fontWeight: tokens.text.weight.bold,
-  color: tokens.color.ink.base,
+  color: tokens.color.content.primary,
 });
 
 globalStyle(".home-sub", {
@@ -35,7 +35,7 @@ globalStyle(".home-sub", {
 
 // 헤드라인 끝 마침표만 파란 잉크 한 점 — "색은 의미 있는 자리에만" 을 시그니처로.
 globalStyle(".home-dot", {
-  color: tokens.color.accent.info.solid,
+  color: tokens.color.status.info.solid,
 });
 
 // ── 완전한 앱 목업 — 랜딩의 주인공 ────────────────────────────────────────────
@@ -43,7 +43,7 @@ globalStyle(".home-mockup", {
   borderRadius: tokens.shape.radius.layout.lg,
   border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
   overflow: "hidden",
-  background: tokens.color.paper.raised,
+  background: tokens.color.surface.raised,
   // 제품 목업은 지면 위로 살짝 떠 있다(원칙 4 의 overlay 자리). 카드가 아니라 화면.
   boxShadow: tokens.shape.shadow.overlay,
 });
@@ -57,7 +57,7 @@ globalStyle(".home-mockup-bar", {
   paddingInline: tokens.shape.padding.md.interaction,
   // 선 없음 — 면이 이미 나눈다. sunken 인 창 머리와 raised 인 본문 사이엔 톤 차이가 있고,
   // 같은 sunken 인 사이드바와는 애초에 이어져야 하는 자리다.
-  background: tokens.color.paper.sunken,
+  background: tokens.color.surface.sunken,
 });
 
 // 사이드바 + 메인
@@ -80,7 +80,7 @@ globalStyle(".home-mockup-side", {
   // ⚠ 선을 두르지 않는다. **면이 이미 나눈 자리에 선을 더하면 같은 말을 두 번 한다.**
   // 원칙 2("회색은 카드를 감싸지 않고 받친다")가 여기서도 그대로다 — 받치는 면은 자기
   // 톤으로 경계를 만들고, 괘선은 톤이 같은 것끼리 나눌 때만 나선다.
-  background: tokens.color.paper.sunken,
+  background: tokens.color.surface.sunken,
   "@media": {
     [`screen and (max-width: ${BP.md})`]: { display: "none" },
   },
@@ -107,7 +107,7 @@ globalStyle(".home-navitem", {
   paddingInline: tokens.shape.padding.sm.interaction,
   borderRadius: tokens.shape.radius.interaction,
   fontSize: tokens.text.size.body,
-  color: tokens.color.ink.soft,
+  color: tokens.color.content.secondary,
 });
 
 /* 필터 행·머리말의 크기. Home.tsx 인라인에 있던 것을 옮겼다 — 사이드바 치수를 한곳에
@@ -123,7 +123,7 @@ globalStyle(".home-filterhead", {
 
 globalStyle(".home-navitem[data-active='true']", {
   background: tokens.color.interaction.selected,
-  color: tokens.color.ink.base,
+  color: tokens.color.content.primary,
   fontWeight: tokens.text.weight.medium,
 });
 
