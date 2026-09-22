@@ -195,4 +195,4 @@ Link는 여기 없습니다 — 상자가 아니라 글자라, 높이도 여백�
 
 ## 참조 방식
 
-컴포넌트는 값이 아니라 참조를 봅니다. `tokens.color.surface.raised`는 `#ffffff`가 아니라 `"var(--pui-color-surface-raised)"`입니다. raw hex·OKLCH는 `color-ladder.ts`에만 있고, `colors.ts`가 이를 semantic tree로 번역합니다. `theme.css.ts`는 마지막 tree를 `:root`에 굽고, 컴포넌트는 var 참조만 봅니다. 이 간접층 덕분에 palette·값·화면 역할이 섞이지 않고, 값 하나를 바꿔도 이름이 어긋나지 않습니다. 전체 흐름은 [색 아키텍처](color-architecture.md)와 [아키텍처](architecture.md)에서 다룹니다.
+컴포넌트는 값이 아니라 참조를 봅니다. `tokens.color.surface.raised`는 `#ffffff`가 아니라 `"var(--pui-color-surface-raised)"`입니다. raw surface hex는 `palette.ts`, raw accent hex·OKLCH는 `color-ladder.ts`에 있고, `colors.ts`가 이를 semantic tree로 번역합니다. `theme.css.ts`는 마지막 tree를 `:root`에 굽고, 컴포넌트는 var 참조만 봅니다. 이 간접층 덕분에 palette·값·화면 역할이 섞이지 않고, 값 하나를 바꿔도 이름이 어긋나지 않습니다. source와 ladder는 Playground [Palette](/playground/palette), semantic 결과는 [Tokens](/playground/tokens)에서 확인합니다. 전체 흐름은 [색 아키텍처](color-architecture.md)와 [아키텍처](architecture.md)에서 다룹니다.

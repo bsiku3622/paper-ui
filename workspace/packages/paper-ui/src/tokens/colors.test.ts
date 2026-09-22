@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { ACCENT_LADDER, NEUTRAL_LADDER } from "./color-ladder";
 import { COLOR_VALUES, COLOR_VALUES_DARK, STATUS, STATUS_PALETTE } from "./colors";
+import { SURFACE_PALETTE } from "./palette";
 
 describe("color layers", () => {
   it("maps every semantic status to one calibrated palette ladder", () => {
@@ -25,6 +26,7 @@ describe("color layers", () => {
   });
 
   it("derives surface and action roles from the neutral ladder", () => {
+    expect(NEUTRAL_LADDER).toEqual(SURFACE_PALETTE);
     expect(COLOR_VALUES.surface.raised).toBe(NEUTRAL_LADDER.light["950"]);
     expect(COLOR_VALUES.border.hover).toBe(NEUTRAL_LADDER.light["400"]);
     expect(COLOR_VALUES_DARK.action.primary.base).toBe(NEUTRAL_LADDER.dark["925"]);

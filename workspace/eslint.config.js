@@ -50,7 +50,8 @@ export default [
   },
 
   // ── 규칙 1 — raw 색·크기 값 금지 ─────────────────────────────────────────
-  // raw color literal은 L1 ladder에만. 다른 데서 #fff 를 쓰면 palette가 두 곳이 된다.
+  // raw color literal은 L0 surface palette와 L1 accent ladder에만. 다른 데서 #fff 를
+  // 쓰면 palette가 두 곳이 된다.
   {
     files: ["packages/paper-ui/src/**/*.{ts,tsx}", "app/src/**/*.{ts,tsx}"],
     ignores: [
@@ -67,7 +68,7 @@ export default [
         {
           selector: "Literal[value=/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/]",
           message:
-            "규칙 1 — raw hex 금지. 색은 tokens/color-ladder.ts 에만 정의하고 tokens.color.X 로 참조하라.",
+            "규칙 1 — raw hex 금지. 색은 palette·color-ladder source에만 정의하고 tokens.color.X 로 참조하라.",
         },
         {
           selector: "Literal[value=/^var\\(--paper-/]",
@@ -79,12 +80,14 @@ export default [
   },
 
   // ── 규칙 2 — VALUES(raw) import 격리 ────────────────────────────────────
-  // L0 palette·L1 ladder·L2 raw VALUES는 theme.css.ts/token assembly만 본다.
+  // L0 palette·L1 ladder·L2 raw VALUES는 theme.css.ts/token assembly만 본다. Palette
+  // foundations viewer만 source layer를 그대로 보여주는 inspector라 예외다.
   {
     files: [
       "packages/paper-ui/src/{primitives,atoms,molecules,components,provider,resolvers}/**/*.{ts,tsx}",
       "app/src/**/*.{ts,tsx}",
     ],
+    ignores: ["app/src/playground/Palette.tsx"],
     rules: {
       "no-restricted-imports": [
         "error",

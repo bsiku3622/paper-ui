@@ -4,11 +4,11 @@
 // 그 family가 paper-ui의 두 테마에서 실제로 지나는 tone step을 정한다. 컴포넌트는 다음
 // 레이어(colors.ts)의 semantic token만 본다.
 
-import { PALETTE } from "./palette";
-import type { AccentPalette, ColorMode } from "./palette";
+import { PALETTE, SURFACE_PALETTE, SURFACE_STEPS } from "./palette";
+import type { AccentPalette, ColorMode, SurfaceStep } from "./palette";
 
-export const NEUTRAL_STEPS = ["0", "50", "100", "200", "300", "400", "500", "600", "700", "800", "900", "925", "950"] as const;
-export type NeutralStep = (typeof NEUTRAL_STEPS)[number];
+export const NEUTRAL_STEPS = SURFACE_STEPS;
+export type NeutralStep = SurfaceStep;
 
 export const ACCENT_STEPS = ["50", "100", "200", "400", "600", "700"] as const;
 export type AccentStep = (typeof ACCENT_STEPS)[number];
@@ -23,38 +23,10 @@ const oklch = (mode: ColorMode, palette: AccentPalette, lightness: number, chrom
 
 // 낮은 번호는 시각적으로 더 어둡고, 높은 번호는 더 밝다. 다크에서도 같은 방향을
 // 유지하므로 token layer는 테마에 따라 "몇 번째 밝기"를 다시 해석할 필요가 없다.
-export const NEUTRAL_LADDER: Record<ColorMode, NeutralLadder> = {
-  light: {
-    "0": "#18181b",
-    "50": "#3f3f46",
-    "100": "#71717a",
-    "200": "#92929b",
-    "300": "#a1a1aa",
-    "400": "#b3b3bb",
-    "500": "#ccccd1",
-    "600": "#e2e2e5",
-    "700": "#e8e8ea",
-    "800": "#f4f4f5",
-    "900": "#fcfcfc",
-    "925": "#fefefe",
-    "950": "#ffffff",
-  },
-  dark: {
-    "0": "#0d0d10",
-    "50": "#101013",
-    "100": "#161619",
-    "200": "#252529",
-    "300": "#2b2b31",
-    "400": "#3d3d44",
-    "500": "#4f4f58",
-    "600": "#6e6e75",
-    "700": "#8b8b92",
-    "800": "#a1a1a8",
-    "900": "#d6d6d9",
-    "925": "#e8e8ea",
-    "950": "#e9e9eb",
-  },
-};
+// L0의 zinc surface palette를 L1 neutral ladder로 연결한다. 여기서는 이름과 순서의
+// 계약만 부여하며, 실제 색값은 palette 한 곳에 남겨 palette viewer와 token code가
+// 같은 source를 본다.
+export const NEUTRAL_LADDER: Record<ColorMode, NeutralLadder> = SURFACE_PALETTE;
 
 // Accent의 step은 hue마다 동일한 UI 역할을 가진다.
 // 50=veil/wash · 100=soft surface · 200=soft edge · 400=standalone outline
