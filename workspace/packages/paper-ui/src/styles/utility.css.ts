@@ -42,16 +42,16 @@ globalStyle(".pui-ink-inherit", { color: "inherit" });
 
 // ───── accent — 작게 얹는 색 ───────────────────────────────────────────────
 //
-// ink  = 글자·아이콘만 그 색.
+// solid = 글자·아이콘만 그 색.
 // wash = 옅은 면 + 같은 색 괘선 + 그 색 글자.
 // dot  = 작은 채운 점 (배경/글자에 solid).
 
 for (const status of STATUS) {
-  const t = tokens.color.status[status];
-  globalStyle(`.pui-${status}-ink`, { color: t.ink });
+  const t = tokens.color.accent[status];
+  globalStyle(`.pui-${status}-solid`, { color: t.solid });
   globalStyle(`.pui-${status}-wash`, {
     background: t.wash,
-    color: t.ink,
+    color: t.solid,
     borderColor: t.edge,
   });
   globalStyle(`.pui-${status}-dot`, { background: t.solid, color: t.solid });

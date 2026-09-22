@@ -118,7 +118,7 @@ const AppMockup = () => {
           </Stack>
 
           <Box style={{ padding: tokens.shape.padding.md.interaction }}>
-            <Table><Table.Header><Table.Column>키</Table.Column><Table.Column>이슈</Table.Column><Table.Column>담당</Table.Column><Table.Column>상태</Table.Column></Table.Header><Table.Body>{ISSUES.map((issue) => <Table.Row key={issue.id}><Table.Cell><Text variant="caption" family="mono" as="span" ink="soft">{issue.key}</Text></Table.Cell><Table.Cell>{issue.title}</Table.Cell><Table.Cell><Text variant="caption" as="span" ink="soft">{issue.who}</Text></Table.Cell><Table.Cell><Badge color={issue.status}>{issue.label}</Badge></Table.Cell></Table.Row>)}</Table.Body></Table>
+            <Table><Table.Header><Table.Column>키</Table.Column><Table.Column>이슈</Table.Column><Table.Column>담당</Table.Column><Table.Column>상태</Table.Column></Table.Header><Table.Body>{ISSUES.map((issue) => <Table.Row key={issue.id}><Table.Cell><Text variant="caption" family="mono" as="span" ink="soft">{issue.key}</Text></Table.Cell><Table.Cell>{issue.title}</Table.Cell><Table.Cell><Text variant="caption" as="span" ink="soft">{issue.who}</Text></Table.Cell><Table.Cell><Badge accent={issue.status}>{issue.label}</Badge></Table.Cell></Table.Row>)}</Table.Body></Table>
           </Box>
         </main>
       </div>
@@ -135,7 +135,7 @@ export const Home = () => (
         {/* ── Hero ─────────────────────────────────────────────── */}
         <div className="home-hero">
           <Inline gap="sm" align="center" style={{ marginBottom: tokens.shape.gap.lg }}>
-            <Badge color="info">Studio Baeks</Badge>
+            <Badge accent="info">Studio Baeks</Badge>
             <Text variant="caption" ink="soft">Design System · v0.1.0</Text>
           </Inline>
 

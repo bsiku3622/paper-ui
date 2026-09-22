@@ -57,20 +57,20 @@ Modal 본문은 `Modal.Body` 안에 [폼 한 벌](/docs/recipes/form)의 조각�
 
 ## 되돌릴 수 없는 확인
 
-삭제처럼 되돌릴 수 없는 흐름은 1차 액션을 `color="error"`로 물들입니다 — 이 색은 "이건 위험하다"는 뜻을 질 때만 씁니다. 옆에 `Alert`를 얹어 결과를 미리 말해두면 더 분명합니다.
+삭제처럼 되돌릴 수 없는 흐름은 1차 액션을 `accent="error"`로 물들입니다 — 이 색은 "이건 위험하다"는 뜻을 질 때만 씁니다. 옆에 `Alert`를 얹어 결과를 미리 말해두면 더 분명합니다.
 
 ```tsx
 <Modal open={open} onOpenChange={setOpen} size="sm">
   <Modal.Header><Modal.Title>이슈 삭제</Modal.Title></Modal.Header>
   <Modal.Body>
-    <Alert color="error">
+    <Alert accent="error">
       <Alert.Title>되돌릴 수 없습니다</Alert.Title>
       <Alert.Description>이 이슈와 하위 댓글이 모두 지워집니다.</Alert.Description>
     </Alert>
   </Modal.Body>
   <Modal.Footer>
     <Modal.Close variant="quiet">취소</Modal.Close>
-    <Button color="error" onClick={remove}>삭제</Button>
+    <Button accent="error" onClick={remove}>삭제</Button>
   </Modal.Footer>
 </Modal>
 ```

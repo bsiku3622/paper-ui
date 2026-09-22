@@ -34,7 +34,7 @@ export const PlaygroundLayout = ({ value, children }: { value: string; children:
               return (
                 <Sidebar.Item key={component.slug} value={component.slug} as={Link} to={`/playground/${component.slug}`}>
                   {component.name}
-                  {badge ? <Sidebar.Badge color={badge.color}>{badge.label}</Sidebar.Badge> : null}
+                  {badge ? <Sidebar.Badge accent={badge.color}>{badge.label}</Sidebar.Badge> : null}
                 </Sidebar.Item>
               );
             })}

@@ -5,17 +5,17 @@ import { Children, isValidElement, type ReactNode } from "react";
 import { Box, Inline, Stack, Text } from "../primitives";
 import { Icon } from "../primitives";
 import { joinClass } from "../internal/joinClass";
-import { resolveColor, type Color, type Variant } from "../resolvers";
+import { resolveAccent, type Accent, type Variant } from "../resolvers";
 import { alertRoot, srOnly } from "./Alert.css";
 
 export type AlertProps = {
-  color?: Color;
+  accent?: Accent;
   variant?: Variant;
   children: ReactNode;
   className?: string;
 };
 
-const STATUS_WORD: Record<Color, string> = {
+const STATUS_WORD: Record<Accent, string> = {
   primary: "안내",
   info: "정보",
   success: "성공",
@@ -23,7 +23,7 @@ const STATUS_WORD: Record<Color, string> = {
   error: "오류",
 };
 
-const ROLE = (color: Color) => (color === "error" || color === "warning" ? "alert" : "status");
+const ROLE = (accent: Accent) => (accent === "error" || accent === "warning" ? "alert" : "status");
 
 export type AlertPartProps = { children: ReactNode };
 export const AlertIcon = ({ children }: AlertPartProps) => <Icon aria-hidden>{children}</Icon>;
@@ -37,14 +37,14 @@ const DefaultAlertIcon = () => (
   </Icon>
 );
 
-const AlertRoot = ({ color = "info", variant = "soft", children, className }: AlertProps) => {
+const AlertRoot = ({ accent = "info", variant = "soft", children, className }: AlertProps) => {
   const parts = Children.toArray(children);
   const customIcon = parts.find((child) => isValidElement(child) && child.type === AlertIcon);
   const copy = parts.filter((child) => !(isValidElement(child) && child.type === AlertIcon));
 
   return (
-    <Box radius="md" padding="md" role={ROLE(color)} className={joinClass(resolveColor(color, variant), alertRoot, className)}>
-      <Text as="span" variant="caption" className={srOnly}>{STATUS_WORD[color]}: </Text>
+    <Box radius="md" padding="md" role={ROLE(accent)} className={joinClass(resolveAccent(accent, variant), alertRoot, className)}>
+      <Text as="span" variant="caption" className={srOnly}>{STATUS_WORD[accent]}: </Text>
       <Inline gap="sm" align="start">
         {customIcon ?? <DefaultAlertIcon />}
         <Stack gap="xs" style={{ minWidth: 0 }}>{copy}</Stack>

@@ -11,7 +11,7 @@ palette.ts (L0 hue/chroma identity)
         ↓
 color-ladder.ts (L1 calibrated raw tones)
         ↓
-colors.ts (L2 semantic surface/content/border/action/status tree)
+colors.ts (L2 semantic surface/content/border/accent tree)
         │  walkValues() / buildVarTree() — 같은 tree, 같은 규칙
         ├──► theme.css.ts   :root { --pui-color-content-primary: … }
         └──► tokens 객체     tokens.color.content.primary = "var(--pui-color-content-primary)"
@@ -24,15 +24,15 @@ colors.ts (L2 semantic surface/content/border/action/status tree)
 
 ## resolver — 규칙의 주인
 
-색은 `.css.ts`마다 흩어지지 않고 **resolver + 중앙 emission** 한 자리에 모입니다. 컴포넌트는 "내가 어떤 color·variant인지"(또는 어떤 surface인지)만 말하고, 그게 무슨 클래스가 되는지는 모릅니다.
+색은 `.css.ts`마다 흩어지지 않고 **resolver + 중앙 emission** 한 자리에 모입니다. 컴포넌트는 "내가 어떤 accent·variant인지"(또는 어떤 surface인지)만 말하고, 그게 무슨 클래스가 되는지는 모릅니다.
 
 ```
-resolveColor(color, variant)  →  "pui-c-error-solid"   (이름 규칙)
+resolveAccent(accent, variant)  →  "pui-a-error-solid"   (이름 규칙)
         │                              │
-styles/color.css.ts  ── COLORS × VARIANTS 를 loop ──┘  (그 클래스의 실체)
+styles/color.css.ts  ── ACCENTS × VARIANTS 를 loop ──┘  (그 클래스의 실체)
 ```
 
-`resolveColor("error", "solid")`가 `"pui-c-error-solid"`를 돌려주고, 그 클래스가 무엇인지(background·color·border)는 `styles/color.css.ts`가 같은 `COLORS × VARIANTS` 배열을 걸어 굳힙니다. 면은 색과 다른 종류라 resolver 도 따로입니다 — `resolveSurface(surface)` → `"pui-surface-raised"`. 두 자리가 한 배열을 돌기 때문에 resolver가 만들 수 있는 모든 이름에 대응하는 규칙이 반드시 있습니다 — 조합이 빠지거나 어긋날 수 없습니다. shared color hover는 `.pui-interactive` gate가 함께 있을 때만 물고, Form의 border/focus와 navigation의 selected 우선순위는 각 컴포넌트가 소유합니다. 전체 계약은 [Interaction](interaction.md)에 고정합니다.
+`resolveAccent("error", "solid")`가 `"pui-a-error-solid"`를 돌려주고, 그 클래스가 무엇인지(background·color·border)는 `styles/color.css.ts`가 같은 `ACCENTS × VARIANTS` 배열을 걸어 굳힙니다. 면은 색과 다른 종류라 resolver도 따로입니다 — `resolveSurface(surface)` → `"pui-surface-raised"`. 두 자리가 한 배열을 돌기 때문에 resolver가 만들 수 있는 모든 이름에 대응하는 규칙이 반드시 있습니다 — 조합이 빠지거나 어긋날 수 없습니다. shared accent hover는 `.pui-interactive` gate가 함께 있을 때만 물고, Form의 border/focus와 navigation의 selected 우선순위는 각 컴포넌트가 소유합니다. 전체 계약은 [Interaction](interaction.md)에 고정합니다.
 
 ## 레이어
 

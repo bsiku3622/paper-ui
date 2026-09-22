@@ -3,7 +3,7 @@ import { style, styleVariants, keyframes } from "@vanilla-extract/css";
 import { tokens, stateTransition, TEXT_VARIANTS, type ControlSize, type TextVariant } from "../tokens";
 import { ladderRules } from "../internal/sizeLadder";
 
-// geometry·motion 만. 색(background·color·border-color)은 resolveColor 가 붙이는 pui-c-*
+// geometry·motion 만. 색(background·color·border-color)은 resolveAccent 가 붙이는 pui-a-*
 // 클래스가 정한다 — Button 은 어떤 색인지 모른다.
 // 크기(height·padding·fontSize·weight)는 size 축(buttonSize) 이 정한다.
 export const buttonRoot = style({

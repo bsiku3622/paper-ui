@@ -423,3 +423,13 @@ Playground가 이 레포의 유일한 시각 검증 surface이므로, 패키지 
 - 요약: shared color, neutral Form, semantic Form, navigation의 hover 우선순위와 keyboard/pointer focus 차이를 하나의 계약으로 정리했습니다.
 
 현재 구현은 shared color의 overlay와 Form의 border/halo가 서로 다른 책임을 갖는데, 기존 문서에서는 이 경계가 여러 파일의 주석에 흩어져 있었습니다. 새 문서는 `border.hover`를 neutral Form 전용 단계로 명시하고, selected가 hover보다 우선하는 이유와 정적 Badge에 hover를 붙이지 않는 기준을 함께 고정합니다. 코드나 색 값은 바꾸지 않았고, 작업 중이던 토큰 변경도 포함하지 않았습니다.
+## 2026-09-23 — Consolidate accent palette and semantic contract
+
+- 변경 파일: `tokens/color-ladder.ts`, `tokens/colors.ts`, shared accent components, Playground·Foundations 문서
+- 요약: accent palette를 11-step으로 완성하고, component의 의미색 prop을 `color`에서 `accent`로 통일했으며 semantic accent token을 `solid / wash / soft / edge / edgeStrong` 다섯 자리로 축소했습니다.
+
+⚠ `status`는 색 prop으로 바꾸지 않았습니다. Field·Select·Textarea에서 validation 상태를 말하는
+도메인 API라 그대로 유지하고, 내부에서만 같은 `accent[status]` contract로 연결했습니다. 이번
+정리는 public API와 token tree를 함께 움직이는 변경이므로, raw palette는 Playground Palette에서만
+검토하고 component·app은 semantic token 또는 `accent`만 소비해야 합니다. amber는 다른 accent보다
+연한 색으로 취급하지 않아 light palette의 400 이상 label에 밝은 전경을 사용했습니다.

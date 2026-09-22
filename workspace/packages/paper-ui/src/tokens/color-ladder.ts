@@ -10,7 +10,9 @@ import type { AccentPalette, ColorMode, SurfaceStep } from "./palette";
 export const NEUTRAL_STEPS = SURFACE_STEPS;
 export type NeutralStep = SurfaceStep;
 
-export const ACCENT_STEPS = ["50", "100", "200", "400", "600", "700"] as const;
+// Accent도 surface와 같은 11-step ramp를 완결한다. semantic layer는 필요한 role만
+// 고르지만, Palette에서는 중간 결까지 끊기지 않고 검토할 수 있다.
+export const ACCENT_STEPS = ["50", "100", "200", "300", "400", "500", "600", "700", "800", "900", "950"] as const;
 export type AccentStep = (typeof ACCENT_STEPS)[number];
 
 type NeutralLadder = Record<NeutralStep, string>;
@@ -28,45 +30,64 @@ const oklch = (mode: ColorMode, palette: AccentPalette, lightness: number, chrom
 // 같은 source를 본다.
 export const NEUTRAL_LADDER: Record<ColorMode, NeutralLadder> = SURFACE_PALETTE;
 
-// Accent의 step은 hue마다 동일한 UI 역할을 가진다.
-// 50=veil/wash · 100=soft surface · 200=soft edge · 400=standalone outline
-// 600=solid surface · 700=AA ink. soft와 wash를 분리해 Muted가 실제 면의 무게를
-// 낮출 수 있게 한다.
+// Accent의 semantic anchor는 hue마다 동일하다.
+// 50=wash · 100=soft surface · 200=hairline edge · 400=standalone outline
+// 600=solid pigment. 나머지는 palette의 연속성을 위한 중간/확장 step이다.
 export const ACCENT_LADDER: Record<ColorMode, Record<AccentPalette, AccentLadder>> = {
   light: {
     blue: {
       "50": "#f5f9fe",
       "100": oklch("light", "blue", 0.9304, 0.0263),
       "200": "#d1e1f5",
+      "300": "#9fbeef",
       "400": "#5694e9",
+      "500": "#3a7ded",
       "600": "#2563eb",
       "700": "#1d4ed8",
+      "800": "#1741ba",
+      "900": "#11368d",
+      "950": "#0d255d",
     },
     green: {
       "50": "#f5fdf8",
       "100": oklch("light", "green", 0.9319, 0.0355),
       "200": "#cff0dc",
+      "300": "#8dd9a9",
       "400": "#35a75f",
+      "500": "#20954c",
       "600": "#15803d",
       // 600은 의미 면, 700은 지면 위 일반 글자다. 둘을 같은 값으로 두면
       // green Muted가 outline·ghost에서 normal과 구별되지 않는다.
       "700": "#166534",
+      "800": "#13522d",
+      "900": "#0d3e22",
+      "950": "#062b16",
     },
     amber: {
       "50": "#fefbf3",
       "100": oklch("light", "amber", 0.9323, 0.0524),
       "200": "#f4e7b5",
+      "300": "#e7c864",
       "400": "#c5861b",
+      "500": "#bd6a12",
       "600": "#b45309",
       "700": "#92400e",
+      "800": "#78350f",
+      "900": "#5c2d0b",
+      "950": "#421f07",
     },
     red: {
       "50": "#fdf7f7",
       "100": oklch("light", "red", 0.9304, 0.025),
       "200": "#f4d8d8",
+      "300": "#f5aaaa",
       "400": "#ed6969",
+      "500": "#e84444",
       "600": "#dc2626",
       "700": "#b91c1c",
+      "800": "#991b1b",
+      "900": "#7f1d1d",
+      "950": "#531313",
     },
   },
   dark: {
@@ -74,33 +95,53 @@ export const ACCENT_LADDER: Record<ColorMode, Record<AccentPalette, AccentLadder
       "50": "#0d1c32",
       "100": oklch("dark", "blue", 0.2561, 0.0708),
       "200": "#1a355d",
+      "300": "#294d7a",
       "400": "#4c6fa3",
+      "500": "#4e80c5",
       "600": "#5492ec",
       "700": "#8ebcff",
+      "800": "#b3d2ff",
+      "900": "#d5e5ff",
+      "950": "#edf4ff",
     },
     green: {
       "50": "#062211",
       "100": oklch("dark", "green", 0.2558, 0.07),
       "200": "#094021",
+      "300": "#236438",
       "400": "#3a7b52",
+      "500": "#3a925b",
       "600": "#32ac64",
       "700": "#81cf99",
+      "800": "#a9e2b7",
+      "900": "#cef1d6",
+      "950": "#e8faec",
     },
     amber: {
       "50": "#291800",
       "100": oklch("dark", "amber", 0.2561, 0.0654),
       "200": "#4c2e00",
+      "300": "#6f480e",
       "400": "#8e672c",
+      "500": "#aa791a",
       "600": "#c58300",
       "700": "#e4b066",
+      "800": "#f0c780",
+      "900": "#fae0ae",
+      "950": "#fff2d5",
     },
     red: {
       "50": "#2f1211",
       "100": oklch("dark", "red", 0.2562, 0.0711),
       "200": "#572223",
+      "300": "#78383a",
       "400": "#a15a59",
+      "500": "#bd6262",
       "600": "#df6768",
       "700": "#f99e9b",
+      "800": "#f9b7b3",
+      "900": "#ffd2ce",
+      "950": "#ffeae7",
     },
   },
 };

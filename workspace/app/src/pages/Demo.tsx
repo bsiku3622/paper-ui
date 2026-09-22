@@ -119,8 +119,8 @@ export const Demo = () => {
               style={{
                 width: "1.5rem",
                 height: "1.5rem",
-                background: tokens.color.action.primary.base,
-                color: tokens.color.action.primary.fg,
+                background: tokens.color.accent.primary.solid,
+                color: tokens.color.accent.primary.wash,
                 display: "grid",
                 placeItems: "center",
                 fontSize: "var(--pui-text-size-caption)",
@@ -177,7 +177,7 @@ export const Demo = () => {
           <Table variant="plain" density="comfortable">
             <Table.Header><Table.Column>키</Table.Column><Table.Column>제목</Table.Column><Table.Column>상태</Table.Column><Table.Column>우선순위</Table.Column><Table.Column>담당</Table.Column><Table.Column align="end">수정</Table.Column></Table.Header>
             <Table.Body>{visibleRows.length ? visibleRows.map((issue) => <Table.Row key={issue.id}>
-              <Table.Cell><Link href="#" onClick={(event) => event.preventDefault()}>{issue.key}</Link></Table.Cell><Table.Cell>{issue.title}</Table.Cell><Table.Cell><Badge color={STATE_STATUS[issue.state]}>{STATE_LABEL[issue.state]}</Badge></Table.Cell><Table.Cell><Text variant="caption" as="span">{issue.priority}</Text></Table.Cell><Table.Cell><Inline gap="sm"><Avatar name={issue.assignee} /><Text variant="body" as="span">{issue.assignee}</Text></Inline></Table.Cell><Table.Cell align="end"><Text variant="caption" as="span">{issue.updated}</Text></Table.Cell>
+              <Table.Cell><Link href="#" onClick={(event) => event.preventDefault()}>{issue.key}</Link></Table.Cell><Table.Cell>{issue.title}</Table.Cell><Table.Cell><Badge accent={STATE_STATUS[issue.state]}>{STATE_LABEL[issue.state]}</Badge></Table.Cell><Table.Cell><Text variant="caption" as="span">{issue.priority}</Text></Table.Cell><Table.Cell><Inline gap="sm"><Avatar name={issue.assignee} /><Text variant="body" as="span">{issue.assignee}</Text></Inline></Table.Cell><Table.Cell align="end"><Text variant="caption" as="span">{issue.updated}</Text></Table.Cell>
             </Table.Row>) : <Table.Row><Table.Cell colSpan={6}><EmptyState><EmptyState.Title>일치하는 이슈가 없습니다</EmptyState.Title><EmptyState.Description>필터를 바꾸거나 새 이슈를 만들어 시작하세요.</EmptyState.Description><EmptyState.Action><Button size="sm" onClick={() => { setTab("all"); setPriority("all"); setMineOnly(false); }}>필터 초기화</Button></EmptyState.Action></EmptyState></Table.Cell></Table.Row>}</Table.Body>
           </Table>
 

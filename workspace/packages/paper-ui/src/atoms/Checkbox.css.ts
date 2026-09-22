@@ -16,21 +16,21 @@ export const checkboxRoot = style({
   placeContent: "center",
   transition: stateTransition("background", "border-color"),
   selectors: {
-    "&:checked": { background: tokens.color.action.primary.base, borderColor: tokens.color.action.primary.base },
+    "&:checked": { background: tokens.color.accent.primary.solid, borderColor: tokens.color.accent.primary.solid },
     "&:checked::after": {
       content: "''",
-      borderLeft: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.action.primary.fg}`,
-      borderBottom: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.action.primary.fg}`,
+      borderLeft: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.accent.primary.wash}`,
+      borderBottom: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.accent.primary.wash}`,
       transform: "rotate(-45deg) translate(0.5px, -1px)",
     },
     // indeterminate — 부분 선택. 체크 대신 가로 대시. width % 라 size 를 자동으로 따른다.
-    "&:indeterminate": { background: tokens.color.action.primary.base, borderColor: tokens.color.action.primary.base },
+    "&:indeterminate": { background: tokens.color.accent.primary.solid, borderColor: tokens.color.accent.primary.solid },
     "&:indeterminate::after": {
       content: "''",
       width: "58%",
       height: tokens.shape.constants.focusRingWidth,
       borderRadius: "1px",
-      background: tokens.color.action.primary.fg,
+      background: tokens.color.accent.primary.wash,
     },
     "&:focus-visible": {
       outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.focus.ring}`,

@@ -50,7 +50,7 @@ import {
   tokens,
   type BoxDimension,
   type Surface,
-  type Color,
+  type Accent,
   type Variant,
   type Ink,
   type StatusName,
@@ -197,9 +197,9 @@ export const COMPONENTS: CompSpec[] = [
     change: "mod",
     name: "Button",
     group: "Atoms",
-    blurb: "color × variant가 독립된 시각 무게 축이다. primary도 neutral color family라 모든 color가 같은 Muted 규칙(softMuted=wash + mutedInk)을 공유한다. fontSize는 버튼 실루엣과 별도로 조절한다.",
+    blurb: "accent × variant가 독립된 시각 무게 축이다. primary도 neutral accent family라 모든 accent가 같은 five-slot contract를 공유한다. fontSize는 버튼 실루엣과 별도로 조절한다.",
     controls: [
-      { kind: "enum", prop: "color", label: "color", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
+      { kind: "enum", prop: "accent", label: "accent", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
       { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "softMuted", "outline", "outlineMuted", "hairline", "hairlineMuted", "ghost", "ghostMuted"], def: "solid" },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "enum", prop: "fontSize", label: "fontSize", options: ["default", "label", "caption", "body"], def: "default" },
@@ -211,7 +211,7 @@ export const COMPONENTS: CompSpec[] = [
     ],
     render: (st) => {
       const common = {
-        color: s(st.color) as Color,
+        accent: s(st.accent) as Accent,
         variant: s(st.variant) as Variant,
         size: s(st.size) as "sm" | "md" | "lg",
         fontSize: st.fontSize === "default" ? undefined : (s(st.fontSize) as TextVariant),
@@ -223,7 +223,7 @@ export const COMPONENTS: CompSpec[] = [
       return <Button {...common}>{s(st.children)}</Button>;
     },
     code: (st) => {
-      return `<Button${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "solid")}${AE("size", s(st.size), "md")}${AE("fontSize", s(st.fontSize), "default")}${A("loading", b(st.loading))}${A("fullWidth", b(st.fullWidth))}${AE("shape", s(st.shape), "rounded")}${A("disabled", b(st.disabled))}>${s(st.children)}</Button>`;
+      return `<Button${AE("accent", s(st.accent), "primary")}${AE("variant", s(st.variant), "solid")}${AE("size", s(st.size), "md")}${AE("fontSize", s(st.fontSize), "default")}${A("loading", b(st.loading))}${A("fullWidth", b(st.fullWidth))}${AE("shape", s(st.shape), "rounded")}${A("disabled", b(st.disabled))}>${s(st.children)}</Button>`;
     },
   },
   {
@@ -233,27 +233,27 @@ export const COMPONENTS: CompSpec[] = [
     group: "Atoms",
     blurb: "아이콘만 담는 정사각 버튼. Button과 분리해 iconSize와 접근성 이름을 명시한다.",
     controls: [
-      { kind: "enum", prop: "color", label: "color", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
+      { kind: "enum", prop: "accent", label: "accent", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
       { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "softMuted", "outline", "outlineMuted", "hairline", "hairlineMuted", "ghost", "ghostMuted"], def: "solid" },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "enum", prop: "iconSize", label: "iconSize", options: ["label", "caption", "body", "subheading"], def: "body" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
     ],
     render: (st) => (
-      <IconButton color={s(st.color) as Color} variant={s(st.variant) as Variant} size={s(st.size) as "sm" | "md" | "lg"} iconSize={s(st.iconSize) as "label" | "caption" | "body" | "subheading"} disabled={b(st.disabled)} aria-label="추가">
+      <IconButton accent={s(st.accent) as Accent} variant={s(st.variant) as Variant} size={s(st.size) as "sm" | "md" | "lg"} iconSize={s(st.iconSize) as "label" | "caption" | "body" | "subheading"} disabled={b(st.disabled)} aria-label="추가">
         <Icon><path d="M12 5v14M5 12h14" /></Icon>
       </IconButton>
     ),
-    code: (st) => `<IconButton${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "solid")}${AE("size", s(st.size), "md")}${AE("iconSize", s(st.iconSize), "body")}${A("disabled", b(st.disabled))} aria-label="추가"><Icon>…</Icon></IconButton>`,
+    code: (st) => `<IconButton${AE("accent", s(st.accent), "primary")}${AE("variant", s(st.variant), "solid")}${AE("size", s(st.size), "md")}${AE("iconSize", s(st.iconSize), "body")}${A("disabled", b(st.disabled))} aria-label="추가"><Icon>…</Icon></IconButton>`,
   },
   {
     slug: "badge",
     change: "mod",
     name: "Badge",
     group: "Atoms",
-    blurb: "상태 한 낱말. color × variant(soft·softMuted·solid·outline·outlineMuted·ghostMuted). dot 으로 앞에 상태 점. 표시용이라 hover 없음.",
+    blurb: "상태 한 낱말. accent × variant(soft·softMuted·solid·outline·outlineMuted·ghostMuted). dot 으로 앞에 상태 점. 표시용이라 hover 없음.",
     controls: [
-      { kind: "enum", prop: "color", label: "color", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
+      { kind: "enum", prop: "accent", label: "accent", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
       { kind: "enum", prop: "variant", label: "variant", options: ["soft", "softMuted", "solid", "outline", "outlineMuted", "hairline", "hairlineMuted", "ghost", "ghostMuted"], def: "soft" },
       { kind: "bool", prop: "dot", label: "dot", def: false },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
@@ -262,9 +262,9 @@ export const COMPONENTS: CompSpec[] = [
       { kind: "text", prop: "children", label: "children", def: "진행" },
     ],
     render: (st) => (
-      <Badge color={s(st.color) as Color} variant={s(st.variant) as Variant} dot={b(st.dot)} size={s(st.size) as "sm" | "md" | "lg"} fontSize={st.fontSize === "default" ? undefined : (s(st.fontSize) as TextVariant)} shape={s(st.shape) as "rounded" | "pill"}>{s(st.children)}</Badge>
+      <Badge accent={s(st.accent) as Accent} variant={s(st.variant) as Variant} dot={b(st.dot)} size={s(st.size) as "sm" | "md" | "lg"} fontSize={st.fontSize === "default" ? undefined : (s(st.fontSize) as TextVariant)} shape={s(st.shape) as "rounded" | "pill"}>{s(st.children)}</Badge>
     ),
-    code: (st) => `<Badge${AE("color", s(st.color), "primary")}${AE("variant", s(st.variant), "soft")}${A("dot", b(st.dot))}${AE("size", s(st.size), "md")}${AE("fontSize", s(st.fontSize), "default")}${AE("shape", s(st.shape), "rounded")}>${s(st.children)}</Badge>`,
+    code: (st) => `<Badge${AE("accent", s(st.accent), "primary")}${AE("variant", s(st.variant), "soft")}${A("dot", b(st.dot))}${AE("size", s(st.size), "md")}${AE("fontSize", s(st.fontSize), "default")}${AE("shape", s(st.shape), "rounded")}>${s(st.children)}</Badge>`,
   },
   {
     slug: "field",
@@ -602,23 +602,23 @@ export const COMPONENTS: CompSpec[] = [
     change: "mod",
     name: "Alert",
     group: "Molecules",
-    blurb: "상태 한 줄을 색이 깔린 면으로 알린다. Button·Badge 와 같은 color × variant 매트릭스를 그대로 문다 — variant 가 이미 면의 무게 축이라 Alert 전용 surface 축을 따로 세우지 않았다.",
+    blurb: "상태 한 줄을 색이 깔린 면으로 알린다. Button·Badge 와 같은 accent × variant 매트릭스를 그대로 문다 — variant 가 이미 면의 무게 축이라 Alert 전용 surface 축을 따로 세우지 않았다.",
     controls: [
-      { kind: "enum", prop: "color", label: "color", options: ["primary", "info", "success", "warning", "error"], def: "info" },
+      { kind: "enum", prop: "accent", label: "accent", options: ["primary", "info", "success", "warning", "error"], def: "info" },
       { kind: "enum", prop: "variant", label: "variant", options: ["soft", "softMuted", "solid", "outline", "outlineMuted", "hairline", "hairlineMuted", "ghost", "ghostMuted"], def: "soft" },
       { kind: "text", prop: "title", label: "title", def: "확인이 필요합니다" },
       { kind: "text", prop: "children", label: "children", def: "이 작업은 되돌릴 수 없습니다." },
     ],
     render: (st) => (
       <Box style={{ width: "22rem" }}>
-        <Alert color={s(st.color) as Color} variant={s(st.variant) as Variant}>
+        <Alert accent={s(st.accent) as Accent} variant={s(st.variant) as Variant}>
           <Alert.Title>{s(st.title)}</Alert.Title>
           <Alert.Description>{s(st.children)}</Alert.Description>
         </Alert>
       </Box>
     ),
     code: (st) =>
-      `<Alert color="${s(st.color)}"${AE("variant", s(st.variant), "soft")}>\n  <Alert.Title>${s(st.title)}</Alert.Title>\n  <Alert.Description>${s(st.children)}</Alert.Description>\n</Alert>`,
+      `<Alert accent="${s(st.accent)}"${AE("variant", s(st.variant), "soft")}>\n  <Alert.Title>${s(st.title)}</Alert.Title>\n  <Alert.Description>${s(st.children)}</Alert.Description>\n</Alert>`,
   },
 
   {
@@ -690,13 +690,13 @@ export const COMPONENTS: CompSpec[] = [
         <Sidebar value={s(st.value)}>
           <Sidebar.Group label="문서">
             <Sidebar.Item value="overview">개요</Sidebar.Item>
-            <Sidebar.Item value="tokens">토큰<Sidebar.Badge color="warning">MOD</Sidebar.Badge></Sidebar.Item>
-            <Sidebar.Item value="components">컴포넌트<Sidebar.Badge color="info">NEW</Sidebar.Badge></Sidebar.Item>
+            <Sidebar.Item value="tokens">토큰<Sidebar.Badge accent="warning">MOD</Sidebar.Badge></Sidebar.Item>
+            <Sidebar.Item value="components">컴포넌트<Sidebar.Badge accent="info">NEW</Sidebar.Badge></Sidebar.Item>
           </Sidebar.Group>
         </Sidebar>
       </Box>
     ),
-    code: (st) => `<Sidebar value="${s(st.value)}">\n  <Sidebar.Group label="문서">\n    <Sidebar.Item value="overview">개요</Sidebar.Item>\n    <Sidebar.Item value="tokens">토큰<Sidebar.Badge color="warning">MOD</Sidebar.Badge></Sidebar.Item>\n    <Sidebar.Item value="components">컴포넌트<Sidebar.Badge color="info">NEW</Sidebar.Badge></Sidebar.Item>\n  </Sidebar.Group>\n</Sidebar>`,
+    code: (st) => `<Sidebar value="${s(st.value)}">\n  <Sidebar.Group label="문서">\n    <Sidebar.Item value="overview">개요</Sidebar.Item>\n    <Sidebar.Item value="tokens">토큰<Sidebar.Badge accent="warning">MOD</Sidebar.Badge></Sidebar.Item>\n    <Sidebar.Item value="components">컴포넌트<Sidebar.Badge accent="info">NEW</Sidebar.Badge></Sidebar.Item>\n  </Sidebar.Group>\n</Sidebar>`,
   },
   {
     slug: "emptystate",
@@ -743,7 +743,7 @@ export const COMPONENTS: CompSpec[] = [
     ],
     render: (st) => <TableDemo variant={s(st.variant) as "plain" | "ruled" | "striped"} density={s(st.density) as "compact" | "default" | "comfortable"} />,
     code: (st) =>
-      `<Table${AE("variant", s(st.variant), "plain")}${AE("density", s(st.density), "default")}>\n  <Table.Header>\n    <Table.Column>키</Table.Column>\n    <Table.Column>제목</Table.Column>\n    <Table.Column>상태</Table.Column>\n    <Table.Column align="end">수정</Table.Column>\n  </Table.Header>\n  <Table.Body>\n    {rows.map((row) => (\n      <Table.Row key={row.id}>\n        <Table.Cell>{row.key}</Table.Cell>\n        <Table.Cell>{row.title}</Table.Cell>\n        <Table.Cell><Badge color={row.status}>{row.status}</Badge></Table.Cell>\n        <Table.Cell align="end">{row.updated}</Table.Cell>\n      </Table.Row>\n    ))}\n  </Table.Body>\n</Table>`,
+      `<Table${AE("variant", s(st.variant), "plain")}${AE("density", s(st.density), "default")}>\n  <Table.Header>\n    <Table.Column>키</Table.Column>\n    <Table.Column>제목</Table.Column>\n    <Table.Column>상태</Table.Column>\n    <Table.Column align="end">수정</Table.Column>\n  </Table.Header>\n  <Table.Body>\n    {rows.map((row) => (\n      <Table.Row key={row.id}>\n        <Table.Cell>{row.key}</Table.Cell>\n        <Table.Cell>{row.title}</Table.Cell>\n        <Table.Cell><Badge accent={row.status}>{row.status}</Badge></Table.Cell>\n        <Table.Cell align="end">{row.updated}</Table.Cell>\n      </Table.Row>\n    ))}\n  </Table.Body>\n</Table>`,
   },
   {
     slug: "modal",
@@ -785,9 +785,9 @@ export const COMPONENTS: CompSpec[] = [
     change: "mod",
     name: "Banner",
     group: "Components",
-    blurb: "얇은 풀폭 상단 바. 고정된 solid surface의 의미색도 shared color 이름을 쓴다. primary가 기본이고 status 색은 공지·경고의 의미를 짊어질 때만 고른다.",
+    blurb: "얇은 풀폭 상단 바. 고정된 solid surface의 의미색도 shared accent 이름을 쓴다. primary가 기본이고 status 색은 공지·경고의 의미를 짊어질 때만 고른다.",
     controls: [
-      { kind: "enum", prop: "color", label: "color", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
+      { kind: "enum", prop: "accent", label: "accent", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
       { kind: "text", prop: "children", label: "children", def: "데모 · 이슈 트래커" },
     ],
     render: (st) => (
@@ -795,14 +795,14 @@ export const COMPONENTS: CompSpec[] = [
         {/* 글자색을 덮지 않는다. 채운 면 위 글자는 Banner 가 tone 마다 wash 로 정하고
             자식이 그걸 상속한다 — 여기서 색을 박으면 tone 토글이 그 계약을 못 보여준다.
             (Text 를 쓰면 variant 클래스가 자기 ink 를 들고 와 같은 문제가 난다.) */}
-        <Banner color={s(st.color) as Color}>
+        <Banner accent={s(st.accent) as Accent}>
           <Banner.Content><span style={{ fontWeight: tokens.text.weight.semibold }}>Paper UI</span><span>{s(st.children)}</span></Banner.Content>
           <Banner.Action><span style={{ fontWeight: tokens.text.weight.medium }}>← 사이트로</span></Banner.Action>
         </Banner>
       </Box>
     ),
     code: (st) =>
-      `<Banner${AE("color", s(st.color), "primary")}>\n  <Banner.Content>Paper UI · ${s(st.children)}</Banner.Content>\n  <Banner.Action><span>← 사이트로</span></Banner.Action>\n</Banner>`,
+      `<Banner${AE("accent", s(st.accent), "primary")}>\n  <Banner.Content>Paper UI · ${s(st.children)}</Banner.Content>\n  <Banner.Action><span>← 사이트로</span></Banner.Action>\n</Banner>`,
   },
   {
     slug: "dropdownmenu",
@@ -894,7 +894,7 @@ const TableDemo = ({ variant, density }: { variant?: "plain" | "ruled" | "stripe
     <Box style={{ width: "40rem", maxWidth: "100%", overflowX: "auto" }}>
       <Table variant={variant} density={density}>
         <Table.Header><Table.Column>키</Table.Column><Table.Column>제목</Table.Column><Table.Column>상태</Table.Column><Table.Column align="center">우선순위</Table.Column><Table.Column>담당</Table.Column><Table.Column align="end">수정</Table.Column></Table.Header>
-        <Table.Body>{rows.map((row, index) => <Table.Row key={row.id}><Table.Cell>{row.k}</Table.Cell><Table.Cell>{["토큰 트리를 두 번 걷는 emit 파이프라인", "Select 포커스 링이 사파리에서 잘림", "Table hover 배경을 subtle로 통일"][index]}</Table.Cell><Table.Cell><Badge color={row.st}>{row.st}</Badge></Table.Cell><Table.Cell align="center">{index < 2 ? "높음" : "보통"}</Table.Cell><Table.Cell>{index === 1 ? "민주" : "재원"}</Table.Cell><Table.Cell align="end"><Text variant="caption" as="span" ink="soft">{["10분 전", "1시간 전", "3시간 전"][index]}</Text></Table.Cell></Table.Row>)}</Table.Body>
+        <Table.Body>{rows.map((row, index) => <Table.Row key={row.id}><Table.Cell>{row.k}</Table.Cell><Table.Cell>{["토큰 트리를 두 번 걷는 emit 파이프라인", "Select 포커스 링이 사파리에서 잘림", "Table hover 배경을 subtle로 통일"][index]}</Table.Cell><Table.Cell><Badge accent={row.st}>{row.st}</Badge></Table.Cell><Table.Cell align="center">{index < 2 ? "높음" : "보통"}</Table.Cell><Table.Cell>{index === 1 ? "민주" : "재원"}</Table.Cell><Table.Cell align="end"><Text variant="caption" as="span" ink="soft">{["10분 전", "1시간 전", "3시간 전"][index]}</Text></Table.Cell></Table.Row>)}</Table.Body>
       </Table>
     </Box>
   );

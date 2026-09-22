@@ -41,7 +41,7 @@ const surfaceInk = (mode: ColorMode, step: SurfaceStep) => {
 // 600/700에서 정보가 묻히므로, 이 inspector만 swatch 위의 잉크 방향을 결정한다.
 const accentInk = (mode: ColorMode, palette: (typeof ACCENT_PALETTES)[number], step: (typeof ACCENT_STEPS)[number]) => {
   if (mode === "dark") return ["50", "100", "200", "400"].includes(step) ? tokens.color.content.primary : tokens.color.surface.raised;
-  if (palette === "amber") return step === "700" ? tokens.color.surface.raised : tokens.color.content.primary;
+  if (palette === "amber") return ["400", "500", "600", "700", "800", "900", "950"].includes(step) ? tokens.color.surface.raised : tokens.color.content.primary;
   return ["600", "700"].includes(step) ? tokens.color.surface.raised : tokens.color.content.primary;
 };
 
@@ -95,7 +95,7 @@ const AccentStrip = ({ mode, palette }: { mode: ColorMode; palette: (typeof ACCE
       border
       radius="md"
       overflow="hidden"
-      style={{ display: "grid", gridTemplateColumns: "repeat(6, minmax(6.5rem, 1fr))", minWidth: "39rem" }}
+      style={{ display: "grid", gridTemplateColumns: "repeat(11, minmax(5.5rem, 1fr))", minWidth: "60.5rem" }}
     >
       {ACCENT_STEPS.map((step) => {
         const color = ACCENT_LADDER[mode][palette][step];

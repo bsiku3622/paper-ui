@@ -3,14 +3,14 @@
 
 import { describe, it, expect } from "vitest";
 
-import { resolveStatus, resolveTone, resolveSurface, resolveColor, resolveBoxClass } from "./index";
+import { resolveStatus, resolveTone, resolveSurface, resolveAccent, resolveBoxClass } from "./index";
 
 describe("resolveStatus", () => {
   it("status 를 accent tone 클래스로 — 이름이 곧 의미(info·success·warning·error)", () => {
-    expect(resolveStatus("info")).toBe("pui-info-ink");
-    expect(resolveStatus("success")).toBe("pui-success-ink");
-    expect(resolveStatus("warning")).toBe("pui-warning-ink");
-    expect(resolveStatus("error")).toBe("pui-error-ink");
+    expect(resolveStatus("info")).toBe("pui-info-solid");
+    expect(resolveStatus("success")).toBe("pui-success-solid");
+    expect(resolveStatus("warning")).toBe("pui-warning-solid");
+    expect(resolveStatus("error")).toBe("pui-error-solid");
   });
   it("tone 을 반영한다 (wash · dot)", () => {
     expect(resolveStatus("error", "wash")).toBe("pui-error-wash");
@@ -21,19 +21,19 @@ describe("resolveStatus", () => {
   });
 });
 
-describe("resolveSurface / resolveColor / resolveTone", () => {
+describe("resolveSurface / resolveAccent / resolveTone", () => {
   it("surface(면) → pui-surface-{s}", () => {
     expect(resolveSurface("sunken")).toBe("pui-surface-sunken");
     expect(resolveSurface(undefined)).toBe("");
   });
-  it("color × variant(잉크색) → pui-c-{color}-{variant} (variant 기본 solid)", () => {
-    expect(resolveColor("error", "soft")).toBe("pui-c-error-soft");
-    expect(resolveColor("primary")).toBe("pui-c-primary-solid");
-    expect(resolveColor("primary", "ghostMuted")).toBe("pui-c-primary-ghostMuted");
-    expect(resolveColor(undefined)).toBe("");
+  it("accent × variant → pui-a-{accent}-{variant} (variant 기본 solid)", () => {
+    expect(resolveAccent("error", "soft")).toBe("pui-a-error-soft");
+    expect(resolveAccent("primary")).toBe("pui-a-primary-solid");
+    expect(resolveAccent("primary", "ghostMuted")).toBe("pui-a-primary-ghostMuted");
+    expect(resolveAccent(undefined)).toBe("");
   });
-  it("accent tone 은 기본이 ink", () => {
-    expect(resolveTone("success")).toBe("pui-success-ink");
+  it("accent tone 은 기본이 solid", () => {
+    expect(resolveTone("success")).toBe("pui-success-solid");
   });
 });
 

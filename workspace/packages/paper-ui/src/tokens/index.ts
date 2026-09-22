@@ -30,8 +30,8 @@ export const tokens = {
 // L2 semantic VALUES는 여기와 theme.css.ts만 조립한다. raw 색값은 L1 color-ladder.ts에
 // 격리되어 있고, component·resolver·app은 이 barrel의 var 참조만 사용한다.
 
-export { COLOR_VALUES, STATUS, STATUS_PALETTE } from "./colors";
-export type { AccentName, StatusName } from "./colors";
+export { COLOR_VALUES, ACCENTS, STATUS, STATUS_PALETTE } from "./colors";
+export type { AccentName, AccentToken, StatusName } from "./colors";
 
 export { SHAPE_VALUES, SHAPE_SIZES, SPACE_KEYS, CONTROL_SIZES, CONTROL_FONT_SIZE, SHAPE_ICON_TEXT_SIZE, semanticFormHoverShadow } from "./shape";
 export type { ShapeSize, Space, ControlSize } from "./shape";

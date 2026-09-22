@@ -37,7 +37,7 @@ pnpm 명령은 `workspace/` 에서 실행한다. `core`/`web` 분리는 일부�
 
 ---
 
-## 색 — 면(surface)과 잉크색(color × variant)을 나눈다 (v2)
+## 색 — 면(surface)과 accent × variant를 나눈다 (v2)
 
 ### 색 정본 계층 (v3)
 
@@ -56,16 +56,14 @@ palette.ts (L0: accent hue·기준 chroma identity + zinc surface palette)
   않습니다. 단, `/playground/palette` Foundations inspector만 source layer를 읽어 보여주는
   의도된 예외입니다. raw hex는 surface의 경우 `tokens/palette.ts`, accent의 경우
   `tokens/color-ladder.ts`에만 둡니다.
-- **소비 API는 semantic role입니다.** `tokens.color.surface.*` (옛 `paper`),
-  `content.primary|secondary|tertiary` (옛 neutral `ink`), `action.primary.*` (옛 `primary`),
-  `status.info|success|warning|error.*` (옛 `accent`)만 사용합니다.
+- **소비 API는 semantic role입니다.** `tokens.color.surface.*`,
+  `content.primary|secondary|tertiary`, `accent.primary|info|success|warning|error.*`만 사용합니다.
 - status는 palette hue와 분리합니다: `info→blue`, `success→green`, `warning→amber`,
   `error→red`. status 이름·component API는 hue 조정과 함께 바뀌지 않습니다.
-- `primary`와 `status.*`는 모두 color family입니다. status의 `mutedInk`는 normal `ink`보다
-  한 ladder step 가벼운 600 text role이고, primary는 neutral ladder의 동등한 역할을 씁니다.
-  `softMuted`는 모든 family에서 `wash + mutedInk`, normal `soft`는 `soft + ink`라 실제로
-  한 단계 물러납니다. `hairlineMuted`를 포함한 Muted hover는 neutral overlay 위에서
-  ink·edge를 강화하고, outlineMuted는 형태를 보존하려 strong border를 유지합니다.
+- **Accent ladder는 11-step (`50`~`950`)이고, semantic accent는 5-slot입니다.** 모든
+  `primary|info|success|warning|error`가 `solid·wash·soft·edge·edgeStrong`만 공유합니다.
+  `ink`·`softInk`·`mutedInk`는 별도 slot으로 만들지 않습니다. Muted variant는 wash/soft와
+  interaction의 조합이며, outlineMuted는 형태를 보존하려 strong border를 유지합니다.
 
 색을 수정하면 [색 아키텍처](docs/foundations/color-architecture.md)와 Tokens Playground의
 light/dark swatch를 함께 갱신·확인합니다.
@@ -98,7 +96,7 @@ chroma 만 저명도 보정으로 다크에서 올린다(라이트 면 `C .001~.
 **Box** = `surface` + `border`(카드 헤어라인) + `inverse`(검은 판) + radius·shadow·padding.
 **색·잉크는 Box 에 없다.**
 
-**잉크색(color × variant) — Button·Badge·Alert.** `color` 가 무슨 색, `variant` 가 얼마나 무겁게.
+**accent × variant — Button·Badge·Alert·Banner.** `accent`가 무슨 의미색, `variant`가 얼마나 무겁게.
 
 | color | light | dark | 쓰임 |
 |---|---|---|---|
@@ -108,8 +106,8 @@ chroma 만 저명도 보정으로 다크에서 올린다(라이트 면 `C .001~.
 | `warning` | `#b45309` | `#c58300` | 주의 |
 | `error` | `#dc2626` | `#df6768` | 위험 |
 
-accent 는 hue 이름(blue 등)이 **API 에 없다** — 전부 의미색. 각 accent 는 solid·ink·wash·soft·softInk·edge·
-edgeStrong 7 자리. `soft`는 OKLCH에서 accent hue를 고정하고 L은 wash→primary soft, C는 wash→edge의 1:3 지점이다. **solid 버튼은 모노크로매틱** — 채움(solid)과 그 위 글자(wash)가 같은 hue라 버튼 전체가
+accent 는 hue 이름(blue 등)이 **API 에 없다** — 전부 의미색. 각 accent 는 solid·wash·soft·edge·
+edgeStrong 5 자리. **solid 버튼은 모노크로매틱** — 채움(solid)과 그 위 글자(wash)가 같은 hue라 버튼 전체가
 한 색으로 통일된다(흰색 아님). 별도 solidFg는 wash와 끝점이 겹쳐 제거했다.
 ⚠ **채움은 테마마다 방향이 반대다** — 라이트는 진한 면 + 옅은 글자(L .53~.58 / .92~.94), 다크는 **옅은
 면 + 진한 글자**(L .660 / .215). 라이트를 canvas 축으로 접은 값이고, primary 가 이미 그렇게 한다. 다크
@@ -126,9 +124,9 @@ edgeStrong 7 자리. `soft`는 OKLCH에서 accent hue를 고정하고 L은 wash�
 ⚠ 이름을 둘 다 `-line` 으로 맞춘 건 의도다 — 둘 다 선을 말하니 `quiet`(선 없음)과 섞이지 않는다.
 ⚠ **`outline` 의 뜻이 바뀌었다** — 예전 outline 이 지금의 `hairline` 이다.
 - Button 예) 기본=`primary solid`(검정) · `variant="soft"`=회색 secondary · **`variant="outline"`=흰 기본
-  버튼** · `color="error"`=빨강. 흰/회색 버튼은 색이 아니라 primary 의 무게로 나온다.
-- **Badge** 도 color × variant (기본 soft) + `dot`(상태 점) — solid=카운트·강조, outline=테두리 태그, quiet=글자만.
-  Alert 는 언제나 soft, `color` 는 accent 4 색.
+  버튼** · `accent="error"`=빨강. 흰/회색 버튼은 색이 아니라 primary 의 무게로 나온다.
+- **Badge** 도 accent × variant (기본 soft) + `dot`(상태 점) — solid=카운트·강조, outline=테두리 태그, ghostMuted=글자만.
+  Alert는 기본 soft이며, `accent`는 primary 포함 5색입니다.
 
 ⚠ **화면의 회색 선은 한 벌이다.** 카드 헤어라인 · 구획 · 빈 입력칸 · 꺼진 체크박스 ·
 hairline 버튼이 전부 `border.base`를 쓴다. 컨트롤 전용 회색을 따로 뒀다가

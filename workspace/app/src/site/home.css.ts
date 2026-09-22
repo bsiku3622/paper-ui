@@ -35,7 +35,7 @@ globalStyle(".home-sub", {
 
 // 헤드라인 끝 마침표만 파란 잉크 한 점 — "색은 의미 있는 자리에만" 을 시그니처로.
 globalStyle(".home-dot", {
-  color: tokens.color.status.info.solid,
+  color: tokens.color.accent.info.solid,
 });
 
 // ── 완전한 앱 목업 — 랜딩의 주인공 ────────────────────────────────────────────
