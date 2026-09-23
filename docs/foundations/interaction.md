@@ -21,7 +21,7 @@ open state와 `ink.soft` edge만 남기고 focus ring을 그리지 않습니다.
 
 | 대상 | resting | hover | focus | 비고 |
 |---|---|---|---|---|
-| `Button`·interactive `Badge` 등 shared color 컴포넌트 | `color × variant` | variant profile의 overlay 또는 hover color/background | keyboard ring | `.pui-interactive`가 있을 때만 적용 |
+| `Button`·interactive `Badge` 등 shared accent 컴포넌트 | `accent × variant` | variant profile의 overlay 또는 hover color/background | keyboard ring | `.pui-interactive`가 있을 때만 적용 |
 | primary `solid` | `primary.base` | `primary.hover`로 배경 교체 | keyboard ring | 검정 면은 어두워지지 않아 한 단계 밝힘 |
 | neutral `Field`·`Select`·`Textarea` | `border.base` | `border.hover` | keyboard ring | 배경은 바꾸지 않음 |
 | pointer-focused neutral Form | `border.hover` | — | `ink.soft` edge | 클릭에는 ring 없음 |

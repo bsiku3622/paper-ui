@@ -8,7 +8,7 @@ Paper UI의 상위 레이어는 아래 일곱 축에서 필요한 것만 고릅�
 
 | 축 | 답하는 질문 | 어휘 |
 | --- | --- | --- |
-| `color` | 어떤 의미색인가 | `primary · info · success · warning · error` |
+| `accent` | 어떤 의미색인가 | `primary · info · success · warning · error` |
 | shared `variant` | 의미색을 얼마나 무겁게 보이는가 | `solid · soft · softMuted · outline · outlineMuted · hairline · hairlineMuted · ghost · ghostMuted` |
 | local `variant` | 상위 구조를 어떻게 구분하는가 | 컴포넌트별 유한 집합 |
 | `density` | 같은 정보가 세로로 얼마나 촘촘한가 | `compact · default · comfortable` |
@@ -16,7 +16,7 @@ Paper UI의 상위 레이어는 아래 일곱 축에서 필요한 것만 고릅�
 | `shape` | 한 줄 컨트롤이 둥근 곡선인가 알약인가 | `rounded · pill` |
 | state | 지금 어떤 상태인가 | `open · selected · disabled · error` 등 |
 
-`color × variant`는 레이어와 무관하게 의미색과 시각 무게를 표현하는 요소가 **하나의 `Variant` 타입으로 공유**합니다. Button·Badge·Alert가 같은 매트릭스를 씁니다. 지역 `variant`는 Table의 행 구분이나 Tabs의 navigation 구조처럼 shared 축으로 표현할 수 없는 경우에만 둡니다. 같은 prop 이름을 쓰더라도 shared `Variant`에 지역 선택지를 섞지 않습니다.
+`accent × variant`는 레이어와 무관하게 의미색과 시각 무게를 표현하는 요소가 **하나의 `Variant` 타입으로 공유**합니다. Button·Badge·Alert가 같은 매트릭스를 씁니다. 지역 `variant`는 Table의 행 구분이나 Tabs의 navigation 구조처럼 shared 축으로 표현할 수 없는 경우에만 둡니다. 같은 prop 이름을 쓰더라도 shared `Variant`에 지역 선택지를 섞지 않습니다.
 
 `density`와 `size`는 다릅니다. Table의 행 간격은 정보량이고, Pagination 버튼의 크기는 누르는 표적입니다. 표를 촘촘하게 만들려고 페이지 버튼까지 줄이지 않으며, 큰 버튼을 쓴다고 표의 행이 커지지도 않습니다.
 
@@ -88,7 +88,7 @@ row               row               row
 - native input event는 React DOM 계약을 따라 `onChange`를 유지합니다. Field·Select·Checkbox의 event object와 compound Root의 값 callback을 같은 이름으로 섞지 않습니다.
 - 값 하나로 환원되지 않는 도메인 상태는 대상을 이름에 남깁니다. Pagination은 `page / onPageChange`, CommandMenu 검색은 `query / defaultQuery / onQueryChange`, TreeNavigation branch는 `expandedValues / defaultExpandedValues / onExpandedValuesChange`입니다.
 - `onSelect`는 상태 setter가 아니라 항목을 실행하는 사건에만 씁니다. 현재는 CommandMenu command activation이 이 경우입니다.
-- 의미색은 shared `color`를 씁니다. 고정된 solid surface인 Banner도 별도 `tone` 대신 `color="primary | info | success | warning | error"`를 받습니다.
+- 의미색은 shared `accent`를 씁니다. 고정된 solid surface인 Banner도 별도 `tone` 대신 `accent="primary | info | success | warning | error"`를 받습니다.
 
 ### Molecules
 
@@ -99,7 +99,7 @@ row               row               row
 | SegmentedControl | compound `Item` + `size · shape` | 닫힌 단일 선택. 기본 `sm · pill`, `rounded · pill`은 곡선만 다름 |
 | Tabs | compound `List · Trigger · Content` + `size` | underline panel navigation. 기본 `md`, variant·shape 없음 |
 | Tooltip | compound `Trigger · Content`, placement 자동 결정 | 복합 내용을 허용하되 외형 variant는 없음 |
-| Alert | compound `Icon · Title · Description`, `color × shared variant` | Button·Badge와 같은 6단 매트릭스를 유지 |
+| Alert | compound `Icon · Title · Description`, `accent × shared variant` | Button·Badge와 같은 shared matrix를 유지 |
 | Breadcrumb | compound `Item` + `separator` | location 계층을 JSX 순서로 소유. current를 명시 |
 | Menu | compound `Item` + `value` | 한 열의 action/navigation과 키보드 이동을 소유 |
 | Steps | compound `Item` + `value · orientation` | 실제 순서의 완료·현재·예정을 번호와 연결선으로 구분 |
@@ -112,7 +112,7 @@ row               row               row
 | Table | compound `Header · Column · Body · Row · Cell` + local `variant · density` | 직각 plain이 기본. 데이터 편의는 별도 DataTable로 격리 |
 | Modal | `size` | `sm · md · lg`. 종류가 아니라 담는 일의 폭 |
 | Navbar | compound `Brand · Item · Actions` + `width` | 구조를 JSX에 노출. 외형 variant는 사이트 정체성을 불필요하게 분기 |
-| Banner | compound `Content · Action`, `color` | primary 검정 기본 + 의미색. 양쪽 slot을 JSX로 노출 |
+| Banner | compound `Content · Action`, `accent` | primary 검정 기본 + 의미색. 양쪽 slot을 JSX로 노출 |
 | PageHeader | compound `Location · Content · Title · Description · Actions` | 관계가 본체라 외형 variant 없음 |
 | EmptyState | compound `Title · Description · Action` | 빈 상태는 장식 강도를 고르는 자리가 아님 |
 | Pagination | local `variant`, `page` | `outline · soft · minimal`; Table density와 독립 |

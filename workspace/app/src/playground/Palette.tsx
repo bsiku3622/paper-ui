@@ -37,12 +37,22 @@ const surfaceInk = (mode: ColorMode, step: SurfaceStep) => {
   return index < 7 ? tokens.color.content.primary : tokens.color.surface.raised;
 };
 
-// Palette swatch 자체도 대비를 지켜야 한다. semantic text 색을 그대로 얹으면 saturated
-// 600/700에서 정보가 묻히므로, 이 inspector만 swatch 위의 잉크 방향을 결정한다.
-const accentInk = (mode: ColorMode, palette: (typeof ACCENT_PALETTES)[number], step: (typeof ACCENT_STEPS)[number]) => {
-  if (mode === "dark") return ["50", "100", "200", "400"].includes(step) ? tokens.color.content.primary : tokens.color.surface.raised;
-  if (palette === "amber") return ["400", "500", "600", "700", "800", "900", "950"].includes(step) ? tokens.color.surface.raised : tokens.color.content.primary;
-  return ["600", "700"].includes(step) ? tokens.color.surface.raised : tokens.color.content.primary;
+// Palette swatch 자체도 대비를 지켜야 한다. 두 theme의 ladder 방향을 고려해 충분히
+// 어두운 칸에는 밝은 잉크를, 충분히 밝은 칸에는 어두운 잉크를 올린다.
+const oklchParts = (value: string) => {
+  const [, lightness, chroma, hue] = value.match(/^oklch\(([\d.]+) ([\d.]+) ([\d.]+)\)$/) ?? [];
+  return lightness ? { lightness, chroma, hue } : undefined;
+};
+
+const accentInk = (mode: ColorMode, palette: (typeof ACCENT_PALETTES)[number], color: string) => {
+  const lightness = Number(oklchParts(color)?.lightness);
+  // Use the actual generated tone rather than step numbers: dark-mode ladders run in
+  // the opposite direction. Amber 400 is intentionally kept light per the palette review.
+  const lightInk = palette === "amber" && mode === "light" && lightness >= 0.66 && lightness < 0.7
+    ? true
+    : lightness < (mode === "dark" ? 0.58 : 0.62);
+  if (mode === "dark") return lightInk ? tokens.color.content.primary : tokens.color.surface.raised;
+  return lightInk ? tokens.color.surface.raised : tokens.color.content.primary;
 };
 
 const Section = ({ title, desc, children }: { title: string; desc: string; children: React.ReactNode }) => (
@@ -95,19 +105,23 @@ const AccentStrip = ({ mode, palette }: { mode: ColorMode; palette: (typeof ACCE
       border
       radius="md"
       overflow="hidden"
-      style={{ display: "grid", gridTemplateColumns: "repeat(11, minmax(5.5rem, 1fr))", minWidth: "60.5rem" }}
+    style={{ display: "grid", gridTemplateColumns: "repeat(11, minmax(5.5rem, 1fr))", minWidth: "60.5rem" }}
     >
       {ACCENT_STEPS.map((step) => {
         const color = ACCENT_LADDER[mode][palette][step];
-        const ink = accentInk(mode, palette, step);
+        const ink = accentInk(mode, palette, color);
+        const parts = oklchParts(color);
         return (
           <Stack
             key={step}
             gap="xs"
-            style={{ minHeight: "5.5rem", padding: tokens.shape.padding.sm.interaction, background: color, borderInlineStart: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`, color: ink, justifyContent: "space-between" }}
+            style={{ minHeight: "6.5rem", padding: tokens.shape.padding.sm.interaction, background: color, borderInlineStart: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`, color: ink, justifyContent: "space-between" }}
           >
             <Text variant="caption" as="span" style={{ color: "inherit" }}>{step}</Text>
-            <Text variant="caption" family="mono" as="span" style={{ color: "inherit", opacity: 0.72 }}>{color}</Text>
+            <Stack gap="xs" style={{ color: "inherit", opacity: 0.78 }}>
+              <Text variant="caption" family="mono" as="span" style={{ color: "inherit" }}>L {parts?.lightness?.slice(1) ?? "—"} · C {parts?.chroma?.slice(1) ?? "—"}</Text>
+              <Text variant="caption" family="mono" as="span" style={{ color: "inherit" }}>H {parts?.hue ?? "—"}°</Text>
+            </Stack>
           </Stack>
         );
       })}
@@ -143,7 +157,7 @@ export const Palette = () => {
 
         <Section
           title="Accent palette · calibrated ladders"
-          desc="blue·green·amber·red은 각각 info·success·warning·error로 이어집니다. hue와 chroma는 palette identity에, theme별 lightness curve는 ladder에 둡니다. 따라서 구조를 바꿔도 기존 Veil 색감은 유지합니다."
+          desc="blue·green·amber·red은 각각 info·success·warning·error로 이어집니다. 대표색을 OKLCH anchor로 두고, 사이 step의 L·C·H를 perceptual space에서 보간해 생성합니다. 기존 Veil anchor 색감은 유지하면서 중간 단계의 밝기와 채도 변화가 매끄러운지 확인합니다."
         >
           <Stack gap="lg">
             {ACCENT_PALETTES.map((palette) => (

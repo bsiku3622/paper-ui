@@ -18,10 +18,96 @@ export type AccentStep = (typeof ACCENT_STEPS)[number];
 type NeutralLadder = Record<NeutralStep, string>;
 type AccentLadder = Record<AccentStep, string>;
 
-// palette가 mode별 hue의 정본이다. Ladder는 그 위에 mode별 L/C 곡선을 얹는다. hue를
-// 억지로 하나로 평탄화하지 않아 기존 Veil의 차분한 warning·green 결을 보존한다.
-const oklch = (mode: ColorMode, palette: AccentPalette, lightness: number, chroma: number): string =>
-  `oklch(${lightness} ${chroma} ${PALETTE[palette].hue[mode]})`;
+type Oklch = readonly [lightness: number, chroma: number, hue: number];
+type AccentAnchors = Partial<Record<AccentStep, Oklch>>;
+
+// 기존 Veil의 인상을 대표하는 기준색만 OKLCH 좌표로 둔다. 그 사이의 step은 각 anchor
+// 사이를 perceptual space에서 보간하므로 중간색을 hex로 일일이 찍어 맞추지 않는다.
+// 기준점은 기존 화면의 50·100·200·400·600·700·950 색을 OKLCH로 옮긴 값이다.
+const ACCENT_ANCHORS: Record<ColorMode, Record<AccentPalette, AccentAnchors>> = {
+  light: {
+    blue: {
+      "50": [0.9805, 0.0079, 253.852], "100": [0.9304, 0.0263, 254],
+      "200": [0.9039, 0.0324, 254.0011], "400": [0.6636, 0.1426, 256.7203],
+      "600": [0.5461, 0.2152, 262.8809], "700": [0.4882, 0.2172, 264.3763],
+      "950": [0.2853, 0.1048, 263.5904],
+    },
+    green: {
+      "50": [0.9867, 0.0107, 158.8533], "100": [0.9319, 0.0355, 158.8],
+      "200": [0.9259, 0.0437, 158.8359], "400": [0.6472, 0.1473, 151.7973],
+      "600": [0.5273, 0.1371, 150.0693], "700": [0.4479, 0.1083, 151.3277],
+      "950": [0.2567, 0.0572, 154.1303],
+    },
+    amber: {
+      "50": [0.9882, 0.011, 89.7201], "100": [0.9323, 0.0524, 95.2],
+      "200": [0.9262, 0.0662, 95.2168], "400": [0.6678, 0.1343, 73.8263],
+      "600": [0.5553, 0.1455, 48.9975], "700": [0.4732, 0.1247, 46.2007],
+      "950": [0.2838, 0.0641, 51.3381],
+    },
+    red: {
+      "50": [0.9808, 0.0064, 17.2665], "100": [0.9304, 0.025, 17.7],
+      "200": [0.9053, 0.0312, 17.742], "400": [0.6825, 0.1639, 22.4015],
+      "600": [0.5771, 0.2152, 27.325], "700": [0.5054, 0.1905, 27.5181],
+      "950": [0.2979, 0.0947, 24.998],
+    },
+  },
+  dark: {
+    blue: {
+      "50": [0.2261, 0.0478, 257.9054], "100": [0.2561, 0.0708, 258.2],
+      "200": [0.3301, 0.0784, 258.1557], "400": [0.5384, 0.0915, 258.093],
+      "600": [0.6601, 0.1493, 257.7728], "700": [0.7882, 0.108, 257.6984],
+      "950": [0.9651, 0.0165, 259.4182],
+    },
+    green: {
+      "50": [0.225, 0.0475, 153.7054], "100": [0.2558, 0.07, 153.2],
+      "200": [0.3285, 0.0774, 153.1526], "400": [0.5284, 0.0934, 153.9897],
+      "600": [0.6606, 0.1505, 152.9257], "700": [0.7894, 0.1094, 153.091],
+      "950": [0.968, 0.0264, 152.3826],
+    },
+    amber: {
+      "50": [0.2261, 0.0479, 74.2484], "100": [0.2561, 0.0654, 70.9],
+      "200": [0.3304, 0.0712, 70.8511], "400": [0.5422, 0.0905, 74.8975],
+      "600": [0.6613, 0.1404, 73.7148], "700": [0.7896, 0.11, 74.7696],
+      "950": [0.9639, 0.0404, 86.7306],
+    },
+    red: {
+      "50": [0.2265, 0.0478, 23.6114], "100": [0.2562, 0.0711, 21.3],
+      "200": [0.33, 0.0788, 21.267], "400": [0.5495, 0.0936, 21.4075],
+      "600": [0.6595, 0.1505, 21.5679], "700": [0.7901, 0.1093, 21.8758],
+      "950": [0.953, 0.0233, 27.3417],
+    },
+  },
+};
+
+const formatOklch = ([lightness, chroma, hue]: Oklch): string =>
+  `oklch(${lightness.toFixed(4)} ${chroma.toFixed(4)} ${hue.toFixed(2)})`;
+
+const interpolateHue = (from: number, to: number, ratio: number): number => {
+  const delta = ((to - from + 540) % 360) - 180;
+  return (from + delta * ratio + 360) % 360;
+};
+
+const interpolateOklch = (from: Oklch, to: Oklch, ratio: number): Oklch => [
+  from[0] + (to[0] - from[0]) * ratio,
+  from[1] + (to[1] - from[1]) * ratio,
+  interpolateHue(from[2], to[2], ratio),
+];
+
+const buildAccentLadder = (mode: ColorMode, palette: AccentPalette): AccentLadder => {
+  const anchors = ACCENT_ANCHORS[mode][palette];
+  const anchorSteps = ACCENT_STEPS.filter((step) => anchors[step]);
+  return Object.fromEntries(ACCENT_STEPS.map((step) => {
+    const exact = anchors[step];
+    if (exact) return [step, formatOklch(exact)];
+
+    const index = ACCENT_STEPS.indexOf(step);
+    const lower = [...anchorSteps].reverse().find((anchor) => ACCENT_STEPS.indexOf(anchor) < index)!;
+    const upper = anchorSteps.find((anchor) => ACCENT_STEPS.indexOf(anchor) > index)!;
+    const start = ACCENT_STEPS.indexOf(lower);
+    const end = ACCENT_STEPS.indexOf(upper);
+    return [step, formatOklch(interpolateOklch(anchors[lower]!, anchors[upper]!, (index - start) / (end - start)))];
+  })) as AccentLadder;
+};
 
 // 낮은 번호는 시각적으로 더 어둡고, 높은 번호는 더 밝다. 다크에서도 같은 방향을
 // 유지하므로 token layer는 테마에 따라 "몇 번째 밝기"를 다시 해석할 필요가 없다.
@@ -34,116 +120,8 @@ export const NEUTRAL_LADDER: Record<ColorMode, NeutralLadder> = SURFACE_PALETTE;
 // 50=wash · 100=soft surface · 200=hairline edge · 400=standalone outline
 // 600=solid pigment. 나머지는 palette의 연속성을 위한 중간/확장 step이다.
 export const ACCENT_LADDER: Record<ColorMode, Record<AccentPalette, AccentLadder>> = {
-  light: {
-    blue: {
-      "50": "#f5f9fe",
-      "100": oklch("light", "blue", 0.9304, 0.0263),
-      "200": "#d1e1f5",
-      "300": "#9fbeef",
-      "400": "#5694e9",
-      "500": "#3a7ded",
-      "600": "#2563eb",
-      "700": "#1d4ed8",
-      "800": "#1741ba",
-      "900": "#11368d",
-      "950": "#0d255d",
-    },
-    green: {
-      "50": "#f5fdf8",
-      "100": oklch("light", "green", 0.9319, 0.0355),
-      "200": "#cff0dc",
-      "300": "#8dd9a9",
-      "400": "#35a75f",
-      "500": "#20954c",
-      "600": "#15803d",
-      // 600은 의미 면, 700은 지면 위 일반 글자다. 둘을 같은 값으로 두면
-      // green Muted가 outline·ghost에서 normal과 구별되지 않는다.
-      "700": "#166534",
-      "800": "#13522d",
-      "900": "#0d3e22",
-      "950": "#062b16",
-    },
-    amber: {
-      "50": "#fefbf3",
-      "100": oklch("light", "amber", 0.9323, 0.0524),
-      "200": "#f4e7b5",
-      "300": "#e7c864",
-      "400": "#c5861b",
-      "500": "#bd6a12",
-      "600": "#b45309",
-      "700": "#92400e",
-      "800": "#78350f",
-      "900": "#5c2d0b",
-      "950": "#421f07",
-    },
-    red: {
-      "50": "#fdf7f7",
-      "100": oklch("light", "red", 0.9304, 0.025),
-      "200": "#f4d8d8",
-      "300": "#f5aaaa",
-      "400": "#ed6969",
-      "500": "#e84444",
-      "600": "#dc2626",
-      "700": "#b91c1c",
-      "800": "#991b1b",
-      "900": "#7f1d1d",
-      "950": "#531313",
-    },
-  },
-  dark: {
-    blue: {
-      "50": "#0d1c32",
-      "100": oklch("dark", "blue", 0.2561, 0.0708),
-      "200": "#1a355d",
-      "300": "#294d7a",
-      "400": "#4c6fa3",
-      "500": "#4e80c5",
-      "600": "#5492ec",
-      "700": "#8ebcff",
-      "800": "#b3d2ff",
-      "900": "#d5e5ff",
-      "950": "#edf4ff",
-    },
-    green: {
-      "50": "#062211",
-      "100": oklch("dark", "green", 0.2558, 0.07),
-      "200": "#094021",
-      "300": "#236438",
-      "400": "#3a7b52",
-      "500": "#3a925b",
-      "600": "#32ac64",
-      "700": "#81cf99",
-      "800": "#a9e2b7",
-      "900": "#cef1d6",
-      "950": "#e8faec",
-    },
-    amber: {
-      "50": "#291800",
-      "100": oklch("dark", "amber", 0.2561, 0.0654),
-      "200": "#4c2e00",
-      "300": "#6f480e",
-      "400": "#8e672c",
-      "500": "#aa791a",
-      "600": "#c58300",
-      "700": "#e4b066",
-      "800": "#f0c780",
-      "900": "#fae0ae",
-      "950": "#fff2d5",
-    },
-    red: {
-      "50": "#2f1211",
-      "100": oklch("dark", "red", 0.2562, 0.0711),
-      "200": "#572223",
-      "300": "#78383a",
-      "400": "#a15a59",
-      "500": "#bd6262",
-      "600": "#df6768",
-      "700": "#f99e9b",
-      "800": "#f9b7b3",
-      "900": "#ffd2ce",
-      "950": "#ffeae7",
-    },
-  },
+  light: Object.fromEntries(Object.keys(PALETTE).filter((name) => name !== "zinc").map((name) => [name, buildAccentLadder("light", name as AccentPalette)])) as Record<AccentPalette, AccentLadder>,
+  dark: Object.fromEntries(Object.keys(PALETTE).filter((name) => name !== "zinc").map((name) => [name, buildAccentLadder("dark", name as AccentPalette)])) as Record<AccentPalette, AccentLadder>,
 };
 
 export const INTERACTION_LADDER: Record<ColorMode, { hover: string; selected: string; active: string; scrim: string }> = {
