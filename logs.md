@@ -1,3 +1,10 @@
+## 2026-09-23 — Generate accent palette steps in OKLCH
+
+- 변경 파일: `tokens/color-ladder.ts`, Palette Playground, Foundations 문서
+- 요약: 각 accent의 대표 색을 OKLCH anchor로 두고 중간 step을 지각 공간에서 보간했습니다. Palette preview는 L/C/H를 표시하고 swatch 명도에 따라 전경색을 고릅니다.
+
+기존 palette에는 일부 step의 색만 있었고 나머지는 별도 로직/값으로 채워져 연속적인 밝기·색상 흐름을 검토하기 어려웠습니다. 기존 Veil의 핵심 색을 anchor로 유지하면서 hue는 최단 각도로 보간해, 색 정체성은 살리고 사이 색만 OKLCH에서 생성합니다. 글자색은 step 번호가 아니라 실제 OKLCH 명도를 기준으로 골라 다크 테마의 역방향 ladder도 처리합니다. amber 400의 밝은 전경은 앞서 확정된 palette 판단을 예외로 보존합니다.
+
 ## 2026-09-23 — Unify muted color-family mechanics
 
 - 변경 파일: `tokens/colors.ts`, `styles/color-profile.ts`, Tokens Playground·Foundations 문서

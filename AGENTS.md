@@ -166,7 +166,7 @@ accent 는 다르다 — `edge`(wash 괘선)와 `edgeStrong`(outline 테두리)�
   싸우기 때문 — 모서리가 물러날수록 면과 헤어라인이 앞으로 나온다. `full` 은 intent 로
   갈리지 않아 두 가지와 나란한 셋째 가지다.
 - **회색은 받친다** — Card의 기본은 shared `primary × hairline`이고, 강조가 필요할 때도
-  별도 Card variant를 만들지 않고 shared `color × variant` 안에서 고릅니다. `well`은 table head·marker·segmented track처럼
+  별도 Card variant를 만들지 않고 shared `accent × variant` 안에서 고릅니다. `well`은 table head·marker·segmented track처럼
   구조를 받치는 더 깊은 면입니다. 같은 깊이의 회색 위에 같은 회색을 겹치지 않습니다.
 - **shadow 는 2 단 토큰(elevation 축 아님)** — 떠 있는 것만 지속 그림자를 갖는다. `overlay`
   (Modal·Tooltip·Popover) · `overlayMinimal`(Switch 손잡이 등). 붙어있는 면(Button·Field·
@@ -194,7 +194,7 @@ accent 는 다르다 — `edge`(wash 괘선)와 `edgeStrong`(outline 테두리)�
   `checkbox` 15/16/18, `switch` 손잡이 = checkbox − 2 → 트랙 = checkbox + 2, 이동 = w − h.
   Badge 는 자기 높이 사다리(20/22/24)를 쓰되 **글자는 12 고정** — 컨트롤 14 와 같은 규칙, 다른 tier.
 
-- **상위 레이어의 축** — 공유 `color × variant`는 레이어와 무관하게 의미색과 시각 무게가 필요한
+- **상위 레이어의 축** — 공유 `accent × variant`는 레이어와 무관하게 의미색과 시각 무게가 필요한
   컴포넌트가 우선 사용합니다(Button·Badge·Alert·Card). 지역 `variant`는 shared 축으로 표현할 수 없는
   구조만 고릅니다(Table `plain·ruled·striped`, Tabs `segmented·underline`). Table의 `density`는 같은 14px 정보의 행 높이(36·44·52)이고, Modal의
   `size`는 담는 일의 폭(360·432·640)입니다. 상태(`selected·open·error`)는 이 축들과 섞지 않습니다.

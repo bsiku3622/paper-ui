@@ -60,69 +60,23 @@ chroma 는 저명도에서 지각이 약해지므로 다크 쪽을 조금 올려
 
 ⚠ 한동안 다크가 **완전 무채**(`C .0000`, 전 항목)였습니다. 라이트만 캐스트를 갖고 있어서 다크가 밋밋하게 읽혔습니다 — 사다리 순서·`accent.solid` 방향에 이어 **뒤집히지 않은 채 남아 있던 셋째 축**이었습니다.
 
-**accent — 4색 × 7자리.** 이름이 곧 의미(`info`·`success`·`warning`·`error`) — API 에 hue 이름(blue 등)은 없습니다. 각 색은 일곱 자리: `solid`(채운 면/점) · `ink`(일반 지면 위 글자) · `wash`(가장 옅은 색이자 solid 위 글자) · `soft`(shared soft 면) · `softInk`(soft 위 AA 글자) · `edge`(hover 면) · `edgeStrong`(홀로 서는 outline 선).
+**Accent palette — 5색 × 5 semantic slot.** public 이름은 `primary · info · success · warning · error`이고, 각 component는 `color`가 아닌 `accent` prop을 받습니다. 각 family는 `solid`(채운 면 및 일반 지면 위 pigment text) · `wash`(solid 위 전경 및 가벼운 tint) · `soft`(soft variant 면) · `edge`(hairline 경계) · `edgeStrong`(outline 경계)를 공유합니다. `ink`·`softInk`·`mutedInk`는 중복 슬롯이라 통합했습니다.
 
-라이트
+| token | 책임 |
+|---|---|
+| `solid` | solid variant의 면, 지면 위 색 글자 |
+| `wash` | solid 면 위 전경, 가장 옅은 tint |
+| `soft` | soft variant의 면 |
+| `edge` | hairline 경계 |
+| `edgeStrong` | outline 경계 |
 
-| | solid | ink | wash | soft | softInk | edge | edgeStrong |
-|---|---|---|---|---|---|---|---|
-| **info** | `#2563eb` | `#1d4ed8` | `#f5f9fe` | `oklch(.9304 .0263 254)` | `#1d4ed8` | `#d1e1f5` | `#5694e9` |
-| **success** | `#15803d` | `#15803d` | `#f5fdf8` | `oklch(.9319 .0355 158.8)` | `oklch(.5024 .1371 150.1)` | `#cff0dc` | `#35a75f` |
-| **warning** | `#b45309` | `#b45309` | `#fefbf3` | `oklch(.9323 .0524 95.2)` | `oklch(.5298 .1455 49)` | `#f4e7b5` | `#c5861b` |
-| **error** | `#dc2626` | `#b91c1c` | `#fdf7f7` | `oklch(.9304 .025 17.7)` | `#b91c1c` | `#f4d8d8` | `#ed6969` |
+Accent palette는 11 step(`50`부터 `950`)으로 구성됩니다. `color-ladder.ts`는 기존 Veil 색의 representative anchor를 OKLCH로 저장하고, 사이의 step을 L·C·H를 기준으로 perceptual space에서 보간합니다. hue도 가장 가까운 각도 방향으로 보간하므로 0° 경계에서 큰 색 점프를 만들지 않습니다. Palette Playground는 각 칸에 L/C/H를 함께 보여줍니다.
 
-다크 — **accent 하나당 hue 하나** (`info` 258 · `success` 153 · `warning` 75 · `error` 22). 라이트는 Tailwind 램프를 섞어 쓴 흔적이 남아 `warning` 이 `solid` H49(주황) / `wash` H95(노랑)로 46° 벌어져 있습니다. 다크는 여섯 톤이 한 각을 공유합니다.
+**Shared variant**는 accent family와 독립적으로 작동합니다. `solid`는 accent `solid` 면에 `wash` 전경을, `soft`는 `soft` 면에 `solid` 전경을 씁니다. muted variant는 별도 pigment가 아니라 wash/soft와 interaction overlay로 밀도를 낮춥니다. `outline`은 `edgeStrong`, `hairline`은 `edge`를 사용합니다. `status`는 Form의 validation 의미를 나타내는 API로만 남고, 내부에서는 같은 semantic accent를 참조합니다.
 
-| | solid | ink | wash | soft | softInk | edge | edgeStrong |
-|---|---|---|---|---|---|---|---|
-| **info** | `#5492ec` | `#8ebcff` | `#0d1c32` | `oklch(.2561 .0708 258.2)` | `#8ebcff` | `#1a355d` | `#4c6fa3` |
-| **success** | `#32ac64` | `#81cf99` | `#062211` | `oklch(.2558 .07 153.2)` | `#81cf99` | `#094021` | `#3a7b52` |
-| **warning** | `#c58300` | `#e4b066` | `#291800` | `oklch(.2561 .0654 70.9)` | `#e4b066` | `#4c2e00` | `#8e672c` |
-| **error** | `#df6768` | `#f99e9b` | `#2f1211` | `oklch(.2562 .0711 21.3)` | `#f99e9b` | `#572223` | `#a15a59` |
+Amber는 밝은 계열로 간주해 전경을 어둡게 바꾸지 않습니다. 특히 amber 400·600은 palette preview에서 밝은 글자를 사용합니다. 모든 색 변화는 [Color architecture](color-architecture.md)의 순서대로 palette identity → OKLCH ladder → semantic token → component에 전달합니다.
 
-톤별 자리(다크, OKLCH `L / C`) — `wash` `.225/.048` · `edge` `.330/.078` · `solid` `.660/.150` · `ink` `.790/.110`.
-
-**solid 은 모노크로매틱** — 채움 위에 같은 hue 의 반대 톤 글자가 얹혀 버튼 전체가 한 색으로 통일됩니다.
-
-⚠ **다크에서 채움(`solid`)은 뒤집힙니다 — 밝은 면 + 어두운 글자입니다.** 라이트를 `canvas` 축으로 접은 값입니다.
-
-다크 `solid`는 오래 L `.440`에 **눌려** 있었습니다. 이유는 그럴싸했습니다 — 옅은 글자를 얹어야 하니 면이 어두워야 한다는 것. 그런데 그러면 **채움이 면에서 안 떨어집니다**: `solid`→면 대비가 `1.79~2.45`였습니다(라이트는 `3.74~5.17`). 비텍스트 3:1을 못 넘기니 배지·버튼의 *윤곽 자체*가 계약을 깬 것이고, 글자 없는 상태 점(`pui-{accent}-dot`)은 아예 보이지 않았습니다.
-
-**눌러서는 못 고칩니다. 갈 수 있는 방향이 하나뿐이기 때문입니다.** 채움이 3:1을 넘기려면 가장 밝은 면에서 그만큼 떨어져야 하는데, *아래로* 가려면 채움의 상대휘도가 음수여야 합니다 — 존재하지 않는 값입니다. 다크 면이 좁은 저명도 구간에 몰려 있어 아래에 쓸 자리가 없기 때문입니다. 답은 라이트가 하는 일을 그대로 뒤집는 것입니다. `primary`는 이미 그렇게 하고 있었습니다(다크: 흰 채움 / 검정 글자) — **`accent.solid`만 안 뒤집힌 축으로 남아 있었습니다.**
-
-⚠ **`wash`를 가르는 것은 밝기가 아니라 색입니다.** 한동안 "`wash`는 사다리 밖(`well` 너머)이어야 한다"는 규칙을 뒀는데, 그것이 다크 `wash`를 L `.37`까지 밀어 올려 **파랑·초록·주황이 모두 같은 탁한 회갈색으로 읽히게** 만들었습니다.
-
-| | ΔL (canvas→wash) | chroma |
-|---|---|---|
-| 라이트 | `−0.004 ~ −0.021` | `.013 ~ .021` |
-| 예전 다크 | **`+0.194`** | `.033` |
-| 지금 다크 | `+0.052` | `.048` |
-
-근거는 "면 위에 놓인 배지가 그 면과 같은 밝기면 사라진다"였는데, **라이트가 반례입니다**: 라이트 `wash`(L `.970~.987`)는 사다리 *안*이고 `well`(`.914`)보다도 밝습니다. 그런데 사라지지 않습니다 — 화면에서 유일하게 유채색이기 때문입니다.
-
-⚠ `edge`만 접기에서 벗어납니다(엄밀한 거울은 L `.305`). 거기서는 canvas 위 `1.42`로 `border.base`(`1.35`)와 거의 같아 **outline 버튼의 테두리가 보이지 않습니다.** `.330`으로 올려 `1.50~1.60`을 줍니다 — 대신 `soft`의 hover 폭이 ΔL `.104`로 라이트(`.073`)보다 넓습니다. **`edge`가 두 일(테두리 · hover 면)을 겸하는 구조 문제**였고, `edgeStrong`을 신설해 갈랐습니다.
-
-다크 계약 (전 항목 통과) — `solid`↔`well` `4.56~5.25` (비텍스트 3:1) · `wash`↔`solid` `5.16~5.80` (AA 4.5) · `ink`↔`wash` `8.55~9.09` · `ink`↔`raised` `9.60~10.46`.
-
-⚠ **채운 면 위 글자는 `wash`입니다.** `paper.raised`는 다크에서 최암이라 쓸 수 없고, 별도 `solidFg`는 wash와 거의 같은 끝점을 중복하면서 라이트 대비가 `3.91~4.21`로 약했습니다. Veil wash를 재사용하면 라이트 `4.56~4.89`, 다크 `5.16~5.80`으로 양쪽 모두 AA를 넘습니다.
-
-**color family tone contract** — status는 `solid`(채운 면) · `ink`(지면 위 글자) · `wash`(가장 옅은 색이자 solid 위 글자) · `soft`(shared soft 면) · `softInk`(soft 위 AA 글자) · `edge`(hairline 선) · `edgeStrong`(**홀로 서는 테두리** — `outline` 변형)를 갖습니다. primary도 같은 `wash`·`soft`·`mutedInk`·`ink`·`edge` contract를 neutral ladder에서 받아 shared variant가 색에 따라 다른 구조가 되지 않게 합니다.
-
-**중립 outline의 테두리는 `primary.edgeStrong`입니다.** 카드 헤어라인·빈 Field와 같은 `border.base`는 `hairline`이 맡습니다. primary와 accent 모두 outline에서는 각 color family의 강한 선을, hairline에서는 지면이나 옅은 색의 선을 사용합니다.
-
-`edge`와 `edgeStrong`을 가르는 이유는, 두 자리가 요구하는 세기가 다르기 때문입니다. wash의 괘선은 이미 색이 깔린 면의 가장자리라 살짝만 진하면 되지만, **`outline`은 그 선이 곧 컴포넌트입니다** — 흰 면 위에서 혼자 형태를 만들어야 합니다. 한동안 outline이 `edge`(200톤)를 빌려 써서 지면 대비 1.18~1.41이었는데, 비텍스트 기준 3:1의 절반도 안 되는 값입니다. 다크 팔레트 주석이 "edge가 두 일을 겸하는 구조 문제"라고 이미 적어 둔 그 문제였습니다.
-
-**톤은 램프 인덱스가 아니라 대비로 고릅니다.** 넷을 다 400톤으로 맞춰 보면 초록·amber가 파랑·빨강보다 눈에 띄게 옅습니다 — hue마다 고유 명도가 달라서입니다. 그래서 각자 지면 대비 3.0이 되는 자리를 따로 찾았습니다(`solid`를 "진한 톤으로 낮춤" 한 것과 같은 이유). primary는 자기 `edgeStrong`을 들지 않습니다 — 위의 `border.control`이 그 자리입니다.
-
-**color × shared variant — 잉크색을 입는 컴포넌트(Button·Badge·Alert).** `color`(primary + 4 accent) × `variant`(`solid`·`soft`·`softMuted`·`outline`·`outlineMuted`·`hairline`·`hairlineMuted`·`ghost`·`ghostMuted`)로 색을 받습니다. Accent의 `soft` 배경은 OKLCH에서 hue를 각 accent에 고정합니다. `L`은 wash에서 primary soft로 75%, `C`는 같은 hue의 wash에서 edge로 75% 이동합니다. 그래서 primary 사다리에 가까운 진하기를 얻되 zinc hue가 섞인 탁한 중간색은 만들지 않습니다. solid 위 전경으로도 쓰이는 raw wash의 대비 계약은 그대로입니다.
-
-**테두리만 있는 변형이 둘인데, 세기가 아니라 *어느 선이냐*로 갈립니다.** `outline`은 color family가 소유한 선입니다 — primary는 `primary.edgeStrong`, accent는 각자의 `edgeStrong`이고 둘 다 지면 대비 3:1입니다. 면을 안 칠하니 테두리가 곧 형태여서, 강조가 필요한 자리에 고르는 변형입니다. `hairline`은 지면이 소유한 선입니다 — 뉴트럴은 카드 헤어라인·빈 입력칸과 같은 `border.base`를 그대로 두르고, accent는 그 색의 가장 옅은 괘선(`edge`)으로 갑니다(색 있는 자리에 뉴트럴 회색을 두르면 그 컴포넌트만 색 정체성을 잃습니다).
-
-그래서 `hairline`은 여러 개 깔려도 조용하고 — 폼의 보조 버튼처럼 수가 많은 자리가 여기입니다 — `outline`은 하나만 놓아야 말이 됩니다.
-
-한때 `outline` 하나뿐이었고 그게 지금의 `hairline`이었습니다. 헤어라인만으로는 "테두리가 곧 형태"인 변형이 지면에서 떨어지지 않아(1.19:1) 진한 쪽을 새로 열고 이름을 옮겼습니다. 그렇다고 지면의 선 자체를 올리지는 않았는데, 그러면 카드는 안 보이는데 그 위 컨트롤만 진해져 한 화면에 회색이 두 벌이 됩니다 — 어느 쪽을 쓸지는 **variant로 고릅니다.** 이건 면(surface)과 **다른 종류**라 Box 는 `color` 를 안 받습니다. `status`(validation)는 Field·Textarea가 받고, 이름은 accent와 같습니다(`danger` 폐기 → `error`).
-
-**primary / focus / interaction.** `primary`는 검정 일꾼(`base` `#18181b` · `hover` `#3f3f46` · `fg` `#ffffff`, 다크선 흰 채움으로 반전)이자 zinc 기반 color family입니다. 그래서 `softMuted`는 다른 status와 같이 `wash + mutedInk`를, `hairlineMuted`는 `edge + mutedInk`를 씁니다. 검정 solid는 hover 때 *밝아진다* — 이미 검정에 가까워 더 어둡게는 눈에 안 보이기 때문(원칙 3의 예외). `focus.ring`은 파란 링 `#2563eb`(= `accent.info.solid`, 한 곳에서 굳힘). hover·selected·active 는 solid 회색이 아니라 **interaction 오버레이**(ink 계열 alpha — 어느 면 위든 밑을 그대로 어둡게, 다크는 흰빛 alpha)로 얹고, `scrim`(모달 뒤)도 테마 인식입니다.
+`focus.ring`은 `accent.info.solid`를 사용하고, hover·selected·active는 interaction overlay로 얹습니다. 모달 뒤의 `scrim`도 light/dark 테마별 semantic token입니다.
 
 ## Shape
 

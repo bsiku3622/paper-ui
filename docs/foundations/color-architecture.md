@@ -30,7 +30,7 @@ component / resolver / app
 
 ## L1 — Calibrated ladder
 
-`color-ladder.ts`는 모든 accent palette에 `50 / 100 / 200 / 300 / 400 / 500 / 600 / 700 / 800 / 900 / 950`의 11-step curve를 제공합니다. 숫자는 raw hue의 농도 순서이고, component가 직접 소비하지 않습니다.
+`color-ladder.ts`는 모든 accent palette에 `50 / 100 / 200 / 300 / 400 / 500 / 600 / 700 / 800 / 900 / 950`의 11-step curve를 제공합니다. 기존 Veil의 대표색을 OKLCH anchor로 두고, 그 사이의 step은 lightness·chroma·hue를 perceptual space에서 보간해 생성합니다. hue는 각 palette의 실제 색 인상을 유지하도록 anchor마다 보정하고, 보간은 가장 짧은 hue 방향을 따릅니다. 숫자는 raw tone step이며 component가 직접 소비하지 않습니다.
 
 | step | semantic 연결 |
 |---|---|
