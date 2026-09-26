@@ -46,11 +46,11 @@ globalStyle(".gnb-theme", {
   padding: 0,
   border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
   borderRadius: tokens.shape.radius.interaction,
-  background: tokens.color.surface.raised,
-  color: tokens.color.content.secondary,
+  background: tokens.color.bg.raised,
+  color: tokens.color.ink.secondary,
   cursor: "pointer",
   fontSize: tokens.text.size.subheading,
   lineHeight: 1,
   transition: stateTransition("background", "color"),
 });
-globalStyle(".gnb-theme:hover", { background: tokens.color.interaction.hover, color: tokens.color.content.primary });
+globalStyle(".gnb-theme:hover", { background: tokens.color.interaction.bgHover.onSurface, color: tokens.color.ink.primary });

@@ -29,7 +29,7 @@ describe("resolveSurface / resolveAccent / resolveTone", () => {
   it("accent × variant → pui-a-{accent}-{variant} (variant 기본 solid)", () => {
     expect(resolveAccent("error", "soft")).toBe("pui-a-error-soft");
     expect(resolveAccent("primary")).toBe("pui-a-primary-solid");
-    expect(resolveAccent("primary", "ghostMuted")).toBe("pui-a-primary-ghostMuted");
+    expect(resolveAccent("primary", "muted")).toBe("pui-a-primary-muted");
     expect(resolveAccent(undefined)).toBe("");
   });
   it("accent tone 은 기본이 solid", () => {

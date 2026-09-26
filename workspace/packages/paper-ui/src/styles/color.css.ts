@@ -26,7 +26,6 @@ const emit = (cls: string, spec: ColorSpec): void => {
         ? { background: spec.hoverBackground }
         : {}),
     ...(spec.hoverColor ? { color: spec.hoverColor } : {}),
-    ...(spec.hoverBorderColor ? { borderColor: spec.hoverBorderColor } : {}),
   });
 };
 

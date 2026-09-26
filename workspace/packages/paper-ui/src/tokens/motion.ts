@@ -14,6 +14,7 @@
 
 export const DURATION = {
   instant: "0ms",
+  reduced: "0.01ms", // prefers-reduced-motion 안전한 최소 양수 duration
   fast: "100ms", // hover · table 행 배경
   base: "130ms", // 상태 전이 (background · color · border) ◀ 기본
   moderate: "200ms", // overlay 등장
@@ -24,6 +25,7 @@ export type MotionDuration = keyof typeof DURATION;
 // ───── easing — 가속 곡선 ───────────────────────────────────────────────────
 
 export const EASING = {
+  linear: "linear", // 반복 회전·등속 진행
   standard: "cubic-bezier(0.4, 0, 0.2, 1)", // 대부분의 상태 전이
   decelerate: "cubic-bezier(0, 0, 0.2, 1)", // 등장 (끝에서 부드럽게 멈춤)
   accelerate: "cubic-bezier(0.4, 0, 1, 1)", // 퇴장

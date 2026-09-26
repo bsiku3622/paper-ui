@@ -80,6 +80,8 @@ const MONO_DEMO: Partial<Record<(typeof TEXT_VARIANTS)[number], string>> = {
 const PAPERS = ["canvas", "raised", "sunken", "well"] as const;
 const ACCENTS = ["info", "success", "warning", "error"] as const;
 const STATUSES = ["info", "success", "warning", "error"] as const;
+const COLOR_ACCENTS = ["primary", ...ACCENTS] as const;
+const BUTTON_VARIANTS = ["solid", "soft", "hairline", "ghost", "muted"] as const;
 
 export const Playground = () => {
   const [tab, setTab] = useState("one");
@@ -163,6 +165,32 @@ export const Playground = () => {
               </Inline>
             ))}
           </Spec>
+          <Stack gap="sm">
+            <Text variant="caption" ink="soft">
+              Accent × variant · 각 칸은 실제 accent와 variant 조합입니다.
+            </Text>
+            <Box surface="raised" border radius="md" style={{ maxWidth: "100%", overflowX: "auto" }}>
+              <Table variant="ruled" density="compact" data-testid="color-variant-matrix" aria-label="Accent and button variant combinations" style={{ minWidth: "max-content" }}>
+              <Table.Caption>Accent × variant combinations</Table.Caption>
+              <Table.Header>
+                <Table.Column>Variant</Table.Column>
+                {COLOR_ACCENTS.map((accent) => <Table.Column key={accent}>{accent}</Table.Column>)}
+              </Table.Header>
+              <Table.Body>
+                {BUTTON_VARIANTS.map((variant) => (
+                  <Table.Row key={variant}>
+                    <Table.Cell><Text variant="caption" family="mono" as="span">{variant}</Text></Table.Cell>
+                    {COLOR_ACCENTS.map((accent) => (
+                      <Table.Cell key={`${accent}-${variant}`}>
+                        <Button size="sm" accent={accent} variant={variant}>{accent}</Button>
+                      </Table.Cell>
+                    ))}
+                  </Table.Row>
+                ))}
+              </Table.Body>
+              </Table>
+            </Box>
+          </Stack>
         </Section>
 
         {/* ── Primitives · Box ──────────────────────────────── */}
@@ -188,15 +216,15 @@ export const Playground = () => {
           <Spec label="variant — 시각 무게" testid="spec-button-variants">
             <Button variant="solid" data-testid="btn-solid">solid</Button>
             <Button variant="soft" data-testid="btn-soft">soft</Button>
-            <Button variant="outline" data-testid="btn-outline">outline</Button>
             <Button variant="hairline" data-testid="btn-hairline">hairline</Button>
-            <Button variant="ghostMuted" data-testid="btn-ghost-muted">ghostMuted</Button>
+            <Button variant="ghost" data-testid="btn-ghost">ghost</Button>
+            <Button variant="muted" data-testid="btn-muted">muted</Button>
           </Spec>
           <Spec label="color — 의미 색 (variant 와 직교)">
             <Button accent="error" data-testid="btn-danger">삭제</Button>
             <Button variant="soft" accent="success" data-testid="btn-soft-success">완료</Button>
             <Button variant="soft" accent="warning" data-testid="btn-soft-warning">주의</Button>
-            <Button variant="ghostMuted" accent="error">지우기</Button>
+            <Button variant="ghost" accent="error">지우기</Button>
           </Spec>
           <Spec label="solid — 텍스트도 그 색의 톤으로 (모노크로매틱, 버튼 전체가 한 색)">
             <Button accent="primary">primary</Button>
@@ -219,7 +247,7 @@ export const Playground = () => {
             <IconButton aria-label="추가" data-testid="btn-icononly">
               <Icon><path d="M12 5v14M5 12h14" /></Icon>
             </IconButton>
-            <IconButton variant="outline" aria-label="닫기">
+            <IconButton variant="hairline" aria-label="닫기">
               <Icon><path d="M6 6l12 12M18 6 6 18" /></Icon>
             </IconButton>
             <IconButton accent="error" aria-label="삭제">
@@ -236,7 +264,7 @@ export const Playground = () => {
           <Spec label="shape — 시스템 곡선 ⇄ 알약(pill)" testid="spec-button-shape">
             <Button data-testid="btn-shape-default">기본</Button>
             <Button shape="pill" data-testid="btn-shape-pill">알약</Button>
-            <Button variant="outline" shape="pill">알약 outline</Button>
+            <Button variant="hairline" shape="pill">알약 hairline</Button>
             <Button size="lg" shape="pill">알약 lg</Button>
           </Spec>
         </Section>
@@ -270,6 +298,18 @@ export const Playground = () => {
             </Box>
             <Box style={{ width: "9rem" }}>
               <Field numeric align="end" placeholder="0" trailing="kg" />
+            </Box>
+          </Spec>
+          <Spec label="Field recessed — sunken surface · leading icon · trailing shortcut">
+            <Box style={{ width: "22rem" }}>
+              <Field
+                type="search"
+                surface="sunken"
+                placeholder="작업 검색..."
+                aria-label="작업 검색"
+                leading={<Icon size="body" aria-hidden><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon>}
+                trailing={<Box as="kbd" surface="raised" border radius="sm" paddingX="xs"><Text variant="caption">⌘ K</Text></Box>}
+              />
             </Box>
           </Spec>
           <Spec label="Select">
@@ -363,8 +403,8 @@ export const Playground = () => {
           <Spec label="Badge — shared variant · dot">
             <Badge accent="error" variant="solid">3</Badge>
             <Badge accent="success" variant="solid">완료</Badge>
-            <Badge accent="info" variant="outline">검토</Badge>
-            <Badge accent="warning" variant="ghostMuted">주의</Badge>
+            <Badge accent="info" variant="hairline">검토</Badge>
+            <Badge variant="muted">보조 정보</Badge>
             <Badge accent="info" dot>진행</Badge>
             <Badge accent="success" dot>정상</Badge>
           </Spec>
@@ -439,7 +479,7 @@ export const Playground = () => {
           </Spec>
           <Spec label="Tooltip — trigger와 content가 드러나는 구조">
             <Tooltip>
-              <Tooltip.Trigger asChild><Button variant="outline" data-testid="tooltip-trigger">hover 해보세요</Button></Tooltip.Trigger>
+              <Tooltip.Trigger asChild><Button variant="hairline" data-testid="tooltip-trigger">hover 해보세요</Button></Tooltip.Trigger>
               <Tooltip.Content><Stack gap="xs"><Text variant="label" ink="inherit">새 이슈</Text><Text variant="caption" ink="inherit">단축키 C로도 열 수 있습니다.</Text></Stack></Tooltip.Content>
             </Tooltip>
           </Spec>
@@ -474,7 +514,7 @@ export const Playground = () => {
             </Box>
           </Spec>
           <Spec label="DropdownMenu — 떠 있는 action surface만 overlay shadow">
-            <DropdownMenu><DropdownMenu.Trigger><Button variant="outline">문서 작업</Button></DropdownMenu.Trigger><DropdownMenu.Content><DropdownMenu.Item value="duplicate" shortcut="⌘ D">복제</DropdownMenu.Item><DropdownMenu.Item value="move">이동</DropdownMenu.Item><DropdownMenu.Item value="delete" danger>삭제</DropdownMenu.Item></DropdownMenu.Content></DropdownMenu>
+            <DropdownMenu><DropdownMenu.Trigger><Button variant="hairline">문서 작업</Button></DropdownMenu.Trigger><DropdownMenu.Content><DropdownMenu.Item value="duplicate" shortcut="⌘ D">복제</DropdownMenu.Item><DropdownMenu.Item value="move">이동</DropdownMenu.Item><DropdownMenu.Item value="delete" danger>삭제</DropdownMenu.Item></DropdownMenu.Content></DropdownMenu>
           </Spec>
           <Spec label="CommandMenu — 검색과 키보드 선택을 한 listbox로">
             <Box style={{ width: "28rem", maxWidth: "100%" }}>
@@ -489,12 +529,12 @@ export const Playground = () => {
         </Section>
 
         {/* ── Components ─────────────────────────────────────── */}
-        <Section id="sec-feedback" title="Alert · outline">
+        <Section id="sec-feedback" title="Alert · variants">
           {/* Alert 은 Button·Badge 와 같은 color × variant 매트릭스를 문다. 면을 위한
               별도 축을 세우지 않은 건 variant 가 이미 *면의 무게* 축이기 때문이다. */}
-          <Spec label="Alert — variant (같은 색, 네 가지 면의 무게)" testid="spec-alert-variant">
+          <Spec label="Alert — variant (같은 색, 다섯 가지 면의 무게)" testid="spec-alert-variant">
             <Inline gap="md" wrap align="start">
-              {(["soft", "softMuted", "solid", "outline", "outlineMuted", "hairline", "hairlineMuted", "ghost", "ghostMuted"] as const).map((v) => (
+              {(["solid", "soft", "hairline", "ghost", "muted"] as const).map((v) => (
                 <Box key={v} style={{ width: "15rem" }} data-testid={`alert-${v}`}>
                   <Alert accent="error" variant={v}>
                     <Alert.Title>확인이 필요합니다</Alert.Title>
@@ -510,23 +550,6 @@ export const Playground = () => {
                 <Box key={c} style={{ width: "11rem" }}>
                   <Alert accent={c}><Alert.Title>{c}</Alert.Title></Alert>
                 </Box>
-              ))}
-            </Inline>
-          </Spec>
-          {/* outline 의 테두리는 wash 괘선(edge)이 아니라 edgeStrong 이다 — 면을 안 칠하는
-              변형에서 테두리는 장식이 아니라 형태 그 자체라, 지면 대비 3:1 로 맞춰 뒀다. */}
-          {/* 테두리만 있는 변형이 둘이다. 세기가 아니라 **어느 선이냐**로 갈린다 —
-              outline 은 컨트롤이 소유한 선(color family 의 edgeStrong), hairline 은 지면이
-              소유한 선(붙은 면의 헤어라인·빈 입력칸과 같은 border.base). 그래서 hairline 은 여러
-              개 깔려도 조용하고, outline 은 하나만 놓아야 말이 된다. */}
-          <Spec label="outline — 컨트롤이 소유한 선 (지면 대비 3:1)" testid="spec-outline">
-            <Inline gap="sm" wrap align="center">
-              <Button variant="outline" data-testid="outline-primary">기본</Button>
-              {STATUSES.map((c) => (
-                <Button key={c} accent={c} variant="outline" data-testid={`outline-${c}`}>{c}</Button>
-              ))}
-              {STATUSES.map((c) => (
-                <Badge key={c} accent={c} variant="outline">{c}</Badge>
               ))}
             </Inline>
           </Spec>
@@ -617,7 +640,7 @@ export const Playground = () => {
           <Spec label="Modal (열기 · 긴 본문은 본문만 구른다)">
             <Inline gap="sm">
               <Button onClick={() => setModal(true)} data-testid="modal-open">모달 열기</Button>
-              <Button variant="outline" onClick={() => setLongModal(true)} data-testid="modal-open-long">
+              <Button variant="hairline" onClick={() => setLongModal(true)} data-testid="modal-open-long">
                 긴 본문 열기
               </Button>
             </Inline>
@@ -632,7 +655,7 @@ export const Playground = () => {
         </Modal.Header>
         <Modal.Body><Text variant="body">떠 있는 것만 그림자를 갖는다. Esc 로 닫힌다.</Text></Modal.Body>
         <Modal.Footer>
-          <Modal.Close variant="ghostMuted">취소</Modal.Close>
+          <Modal.Close variant="muted">취소</Modal.Close>
           <Modal.Close>확인</Modal.Close>
         </Modal.Footer>
       </Modal>

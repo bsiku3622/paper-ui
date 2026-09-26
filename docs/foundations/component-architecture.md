@@ -9,7 +9,7 @@ Paper UI의 상위 레이어는 아래 일곱 축에서 필요한 것만 고릅�
 | 축 | 답하는 질문 | 어휘 |
 | --- | --- | --- |
 | `accent` | 어떤 의미색인가 | `primary · info · success · warning · error` |
-| shared `variant` | 의미색을 얼마나 무겁게 보이는가 | `solid · soft · softMuted · outline · outlineMuted · hairline · hairlineMuted · ghost · ghostMuted` |
+| shared `variant` | 의미색을 얼마나 무겁게 보이는가 | `solid · soft · hairline · ghost · muted` |
 | local `variant` | 상위 구조를 어떻게 구분하는가 | 컴포넌트별 유한 집합 |
 | `density` | 같은 정보가 세로로 얼마나 촘촘한가 | `compact · default · comfortable` |
 | `size` | 컨트롤 자체가 얼마나 큰가 | `sm · md · lg` |
@@ -17,6 +17,8 @@ Paper UI의 상위 레이어는 아래 일곱 축에서 필요한 것만 고릅�
 | state | 지금 어떤 상태인가 | `open · selected · disabled · error` 등 |
 
 `accent × variant`는 레이어와 무관하게 의미색과 시각 무게를 표현하는 요소가 **하나의 `Variant` 타입으로 공유**합니다. Button·Badge·Alert가 같은 매트릭스를 씁니다. 지역 `variant`는 Table의 행 구분이나 Tabs의 navigation 구조처럼 shared 축으로 표현할 수 없는 경우에만 둡니다. 같은 prop 이름을 쓰더라도 shared `Variant`에 지역 선택지를 섞지 않습니다.
+
+`muted`는 shared `accent × variant` 조합에서 분리된 예외입니다. Ghost처럼 배경과 경계가 투명하고, 선택된 accent의 `subtle` slot을 전경으로 사용해 보조 액션을 표현합니다.
 
 `density`와 `size`는 다릅니다. Table의 행 간격은 정보량이고, Pagination 버튼의 크기는 누르는 표적입니다. 표를 촘촘하게 만들려고 페이지 버튼까지 줄이지 않으며, 큰 버튼을 쓴다고 표의 행이 커지지도 않습니다.
 
@@ -27,11 +29,11 @@ Paper UI의 상위 레이어는 아래 일곱 축에서 필요한 것만 고릅�
 | 이름 | Light | 역할 |
 | --- | --- | --- |
 | `paper.raised` | `#ffffff` | 입력·모달의 순백 면 |
-| `paper.canvas` | `#fcfcfc` | 페이지 기준면 |
+| `paper.canvas` | `#f9f9fa` | 페이지 기준면 |
 | `paper.sunken` | `#f4f4f5` | 얕게 가라앉은 구조면 |
 | `paper.well` | `#e2e2e5` | 세그먼트 트랙 |
-| `ink.base` | `#18181b` | 본문·현재 상태 |
-| `border.base` | `#e8e8ea` | 쉬는 괘선 |
+| `ink.base` | `#26262b` | 본문·현재 상태 |
+| `border.base` | `#e6e6ea` | 쉬는 괘선 |
 
 서체와 위계도 바꾸지 않습니다. Pretendard를 기본으로 쓰고, body 14px을 밀도의 기준점으로 둡니다. 새 Component는 `title/heading/subheading/body/caption` 조합만 사용합니다. 새 색, 새 서체, 장식용 gradient, 지속 shadow는 추가하지 않습니다.
 
@@ -112,7 +114,7 @@ row               row               row
 | Table | compound `Header · Column · Body · Row · Cell` + local `variant · density` | 직각 plain이 기본. 데이터 편의는 별도 DataTable로 격리 |
 | Modal | `size` | `sm · md · lg`. 종류가 아니라 담는 일의 폭 |
 | Navbar | compound `Brand · Item · Actions` + `width` | 구조를 JSX에 노출. 외형 variant는 사이트 정체성을 불필요하게 분기 |
-| Banner | compound `Content · Action`, `accent` | primary 검정 기본 + 의미색. 양쪽 slot을 JSX로 노출 |
+| Banner | compound `Content · Action`, `accent` | 중립 primary 기본 + 의미색. 양쪽 slot을 JSX로 노출 |
 | PageHeader | compound `Location · Content · Title · Description · Actions` | 관계가 본체라 외형 variant 없음 |
 | EmptyState | compound `Title · Description · Action` | 빈 상태는 장식 강도를 고르는 자리가 아님 |
 | Pagination | local `variant`, `page` | `outline · soft · minimal`; Table density와 독립 |

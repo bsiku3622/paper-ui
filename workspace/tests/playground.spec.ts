@@ -45,22 +45,24 @@ test("type · family=mono 는 크기 유지 + 등폭 서체", async ({ page }) =
 
 // ── 색 토큰 — :root 의 CSS var 가 기대 hex 와 일치 ─────────────────────────
 const VARS: Record<string, string> = {
-  "--pui-color-paper-canvas": "#fcfcfc",
-  "--pui-color-paper-raised": "#ffffff",
-  "--pui-color-paper-sunken": "#f4f4f5",
-  "--pui-color-paper-well": "#e2e2e5",
-  "--pui-color-ink-base": "#18181b",
-  "--pui-color-ink-soft": "#71717a",
-  "--pui-color-ink-faint": "#a1a1aa",
-  "--pui-color-border-base": "#e8e8ea",
+  "--pui-color-bg-canvas": "#f9f9fa",
+  "--pui-color-bg-raised": "#ffffff",
+  "--pui-color-bg-sunken": "#f4f4f5",
+  "--pui-color-bg-well": "#e2e2e5",
+  "--pui-color-ink-primary": "#26262b",
+  "--pui-color-ink-secondary": "#64646d",
+  "--pui-color-ink-tertiary": "#a1a1aa",
+  "--pui-color-border-base": "#e6e6ea",
   "--pui-color-border-strong": "#ccccd1",
   "--pui-color-accent-info-solid": "#2563eb",
   "--pui-color-accent-info-wash": "#f5f9fe",
   "--pui-color-accent-success-solid": "#15803d",
   "--pui-color-accent-warning-solid": "#b45309",
   "--pui-color-accent-error-solid": "#dc2626",
-  "--pui-color-primary-base": "#18181b",
-  "--pui-color-focus-ring": "#2563eb",
+  "--pui-color-accent-primary-solid": "#26262b",
+  "--pui-color-interaction-focus": "#2563eb",
+  "--pui-color-interaction-hover-neutral": "#26262b0d",
+  "--pui-color-interaction-scrim": "#26262b52",
 };
 
 test("color · 토큰이 기대 hex 로 emit 된다", async ({ page }) => {
@@ -77,17 +79,18 @@ test("color · 토큰이 기대 hex 로 emit 된다", async ({ page }) => {
 // 다크는 canvas 가 최암이고 나머지가 그 위로 쌓인다(라이트와 방향이 반대다).
 // 이 순서가 뒤집히면 table head 가 몸통보다 어두운 구멍이 된다.
 const DARK_VARS: Record<string, string> = {
-  "--pui-color-paper-canvas": "#101013", // 지면 — 앵커(사다리를 접는 축)
-  "--pui-color-paper-well": "#252529",
-  "--pui-color-paper-sunken": "#161619",
-  "--pui-color-paper-raised": "#0d0d10", // ⚠ 최암 — 다크는 사다리가 라이트의 거울이다(BLACK 에 raised 가 가장 가깝다)
-  "--pui-color-ink-base": "#e9e9eb",
-  "--pui-color-primary-base": "#e8e8ea",
+  "--pui-color-bg-canvas": "#171717",
+  "--pui-color-bg-well": "#2b2b2b",
+  "--pui-color-bg-sunken": "#212121",
+  "--pui-color-bg-raised": "#101010",
+  "--pui-color-ink-primary": "#f5f5f5",
+  "--pui-color-accent-primary-solid": "#e8e8e8",
   // ⚠ 다크 채움(accent solid)은 밝다. 채움 위 글자는 같은 hue의 반대 끝인 wash다.
   // 다크 wash는 어두워 밝은 solid와 AA를 만들고, 라이트 wash는 반대로 옅게 올라간다.
   "--pui-color-accent-info-solid": "#5492ec",
   "--pui-color-accent-error-solid": "#df6768",
   "--pui-color-accent-info-wash": "#0d1c32",
+  "--pui-color-interaction-focus": "#5492ec",
 };
 test("dark · [data-theme=dark] 로 색 var 가 다크 세트로 바뀐다", async ({ page }) => {
   await page.evaluate(() => document.documentElement.setAttribute("data-theme", "dark"));
@@ -123,15 +126,15 @@ test("focus · Field 포커스 시 보더 바깥 파란 링(outline)", async ({ 
 // semantic Form은 처음부터 accent solid 선이며 hover에서는 선 대신 같은 pigment가 번진다.
 test("form · neutral은 solid hover, semantic은 pigment shadow", async ({ page }) => {
   const neutral = page.getByTestId("field-default");
-  await expect(neutral).toHaveCSS("border-color", hexToRgb("#e8e8ea"));
+  await expect(neutral).toHaveCSS("border-color", hexToRgb("#e6e6ea"));
   await neutral.hover();
-  await expect(neutral).toHaveCSS("border-color", hexToRgb("#18181b"));
+  await expect(neutral).toHaveCSS("border-color", hexToRgb("#b3b3bb"));
   await expect(neutral).toHaveCSS("box-shadow", "none");
 
   for (const testId of ["base-select", "base-textarea"]) {
     const control = page.getByTestId(testId);
     await control.hover();
-    await expect(control).toHaveCSS("border-color", hexToRgb("#18181b"));
+    await expect(control).toHaveCSS("border-color", hexToRgb("#b3b3bb"));
     await expect(control).toHaveCSS("box-shadow", "none");
   }
 
@@ -146,8 +149,8 @@ test("form · neutral은 solid hover, semantic은 pigment shadow", async ({ page
 // ── Badge status → 색 (info·success·warning·danger) ─────────────────────────
 const BADGE = {
   info: hexToRgb("#1d4ed8"),
-  success: "oklch(0.5024 0.1371 150.1)",
-  warning: "oklch(0.5298 0.1455 49)",
+  success: hexToRgb("#15803d"),
+  warning: hexToRgb("#b45309"),
   error: hexToRgb("#b91c1c"),
 } as const;
 for (const [status, ink] of Object.entries(BADGE)) {
@@ -156,15 +159,15 @@ for (const [status, ink] of Object.entries(BADGE)) {
   });
 }
 
-test("accent soft · OKLCH에서 hue를 지키며 primary soft 쪽으로 진해진다", async ({ page }) => {
-  await expect(page.getByTestId("btn-soft-success")).toHaveCSS("background-color", "oklch(0.9319 0.0355 158.8)");
-  await expect(page.getByTestId("btn-soft-warning")).toHaveCSS("background-color", "oklch(0.9323 0.0524 95.2)");
+test("accent soft · palette token으로 의미색 면을 만든다", async ({ page }) => {
+  await expect(page.getByTestId("btn-soft-success")).toHaveCSS("background-color", hexToRgb("#d6f0e0"));
+  await expect(page.getByTestId("btn-soft-warning")).toHaveCSS("background-color", hexToRgb("#f3e9c2"));
 });
 
 // ── Button — variant × status. solid=검정 채움, soft=회색 면, status=danger=빨강 ─
 test("button · solid 는 검정 채움 + weight 550", async ({ page }) => {
   const b = page.getByTestId("btn-solid");
-  await expect(b).toHaveCSS("background-color", hexToRgb("#18181b"));
+  await expect(b).toHaveCSS("background-color", hexToRgb("#26262b"));
   await expect(b).toHaveCSS("font-weight", "550");
 });
 test("button · soft 는 회색 면(muted)", async ({ page }) => {
@@ -223,7 +226,7 @@ test("tabs · underline trigger가 md panel을 전환한다", async ({ page }) =
   await expect(list).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
   await expect(props).toHaveCSS("height", "34px");
   await expect(props).toHaveCSS("border-bottom-width", "2px");
-  await expect(props).toHaveCSS("border-bottom-color", hexToRgb("#18181b"));
+  await expect(props).toHaveCSS("border-bottom-color", hexToRgb("#26262b"));
   await expect(props).toHaveCSS("border-radius", "0px");
   await expect(root.getByRole("tabpanel")).toContainText("Props 문서");
 });
@@ -237,7 +240,7 @@ test("table · variant는 행 구분법을 중복하지 않는다", async ({ pag
   const stripedEven = page.getByTestId("table-striped").locator("tbody tr").nth(1);
   const plainRow = page.getByTestId("table-plain").locator("tbody tr").first();
 
-  await expect(ruledRow).toHaveCSS("border-bottom-color", hexToRgb("#e8e8ea"));
+  await expect(ruledRow).toHaveCSS("border-bottom-color", hexToRgb("#e6e6ea"));
   await expect(ruledRow).toHaveCSS("border-bottom-style", "solid");
   await expect(stripedEven).toHaveCSS("background-color", hexToRgb("#f4f4f5"));
   await expect(plainRow).toHaveCSS("border-bottom-style", "none");
@@ -314,7 +317,7 @@ test("detail · Button variant 토글이 preview 와 코드에 반영된다", as
 
   // 기본 variant=solid → 코드에 variant 가 안 적힌다(기본값 생략), 배경은 검정
   await expect(code).not.toContainText('variant=');
-  await expect(stageBtn).toHaveCSS("background-color", hexToRgb("#18181b"));
+  await expect(stageBtn).toHaveCSS("background-color", hexToRgb("#26262b"));
 
   // variant=soft 로 바꾸면 코드와 preview 가 함께 바뀐다 (컨트롤 순서: color · variant …)
   await page.locator(".detail-body select").nth(1).selectOption("soft");
@@ -540,35 +543,6 @@ test("switch · 손잡이 여백이 사방 같고, 켜짐 이동이 w − h 다"
   expect(g.tx).toBeCloseTo(g.travel, 1); // 이동 = w − h
 });
 
-// ── outline — 테두리가 곧 형태라, 지면 대비 3:1 을 진다 ─────────────────────
-//
-// 값이 아니라 **계약**을 못 박는다. 어느 hue 를 골랐느냐가 아니라 "지면에서 떨어져
-// 보이는가" 가 규칙이고, hue 마다 고유 명도가 달라 같은 램프 인덱스로는 그 규칙을 못
-// 지킨다. 예전엔 wash 의 괘선(edge, 200 톤)을 빌려 써서 넷 다 1.18~1.41 이었다.
-test("outline · 테두리가 지면 대비 3:1 을 넘는다 (다섯 색 전부)", async ({ page }) => {
-  const ratios = await page.evaluate(() => {
-    const lum = (rgb: string) => {
-      const [r, g, b] = rgb.match(/[\d.]+/g)!.slice(0, 3).map((v) => Number(v) / 255)
-        .map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
-      return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
-    };
-    const ratio = (a: string, b: string) => {
-      const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m);
-      return (x! + 0.05) / (y! + 0.05);
-    };
-    const bg = getComputedStyle(document.body).backgroundColor;
-    const out: Record<string, number> = {};
-    for (const c of ["primary", "info", "success", "warning", "error"]) {
-      const el = document.querySelector(`[data-testid="outline-${c}"]`)!;
-      out[c] = ratio(bg, getComputedStyle(el).borderTopColor);
-    }
-    return out;
-  });
-  for (const [name, r] of Object.entries(ratios)) {
-    expect(r, `${name} outline 테두리 대비`).toBeGreaterThanOrEqual(2.9);
-  }
-});
-
 // ── 화면의 회색 선은 한 벌이다 ──────────────────────────────────────────────
 //
 // 빈 Field는 상자 말고 아무 단서가 없으니 붙은 면의 헤어라인보다 진해야 한다 — 그럴듯해서
@@ -576,8 +550,7 @@ test("outline · 테두리가 지면 대비 3:1 을 넘는다 (다섯 색 전부
 // 붙은 면은 거의 안 보이는데 그 위 검색창만 진하면 한 화면에 회색이 두 벌이 된다.
 // 선의 *역할* 이 다르다고 *색* 까지 갈리면 화면은 그걸 두 팔레트로 읽는다.
 //
-// 그래서 잠그는 건 강도가 아니라 **한 벌이라는 것** 이다. 컨트롤 하나를 또렷하게 하고 싶으면
-// 표를 올리는 게 아니라 variant 로 고른다 — 그게 `outline` 이고, 이 테스트에 없는 이유다.
+// 그래서 잠그는 건 강도가 아니라 **한 벌이라는 것** 이다.
 test("edge · 입력·Box·hairline 이 같은 회색 선을 쓴다", async ({ page }) => {
   const colors = await page.evaluate(() => {
     const q = (sel: string) => document.querySelector(sel) as HTMLElement;
@@ -593,21 +566,13 @@ test("edge · 입력·Box·hairline 이 같은 회색 선을 쓴다", async ({ p
   expect(distinct.size, `한 벌이어야 한다: ${JSON.stringify(colors)}`).toBe(1);
 });
 
-// ── 테두리만 있는 변형이 둘 — 세기가 아니라 어느 선이냐로 갈린다 ─────────────
-//
-// outline 은 color family 가 소유한 선(edgeStrong)이고 hairline 은 지면이 소유한 선이다.
-// 뉴트럴에서 hairline 은 카드 헤어라인과 **같은 값**이지만, accent 에서는 그 색의 가장 옅은
-// 괘선(edge)으로 간다 — 색 있는 자리에 뉴트럴 회색을 두르면 그 컴포넌트만 색 정체성을 잃는다.
-test("variant · outline 과 hairline 이 서로 다른 선을 든다", async ({ page }) => {
-  for (const c of ["primary", "info", "success", "warning", "error"]) {
-    const strong = await page.getByTestId(`outline-${c}`).evaluate((e: HTMLElement) => getComputedStyle(e).borderTopColor);
-    const weak = await page.getByTestId(`hairline-${c}`).evaluate((e: HTMLElement) => getComputedStyle(e).borderTopColor);
-    expect(strong, `${c}: 두 변형이 같은 선을 들면 어휘가 하나 죽는다`).not.toBe(weak);
-  }
-  // 뉴트럴 hairline 은 지면의 선 그대로 — 옆의 Field 와 한 값이다.
+// 뉴트럴 hairline 은 지면의 선 그대로 — 옆의 Field 와 한 값이다.
+test("hairline · neutral border가 Box와 Form의 기본 선을 공유한다", async ({ page }) => {
   const btn = await page.getByTestId("hairline-primary").evaluate((e: HTMLElement) => getComputedStyle(e).borderTopColor);
   const field = await page.getByTestId("hairline-field").evaluate((e: HTMLElement) => getComputedStyle(e).borderTopColor);
+  const box = await page.getByTestId("box-border").evaluate((e: HTMLElement) => getComputedStyle(e).borderTopColor);
   expect(btn).toBe(field);
+  expect(btn).toBe(box);
 });
 
 // ── Alert — Button·Badge 와 같은 매트릭스를 물고, 글자는 면의 색을 받는다 ────
@@ -621,7 +586,7 @@ test("alert · variant 가 면의 무게를 정하고, 글자는 면 색을 받�
 
   // 면의 무게가 실제로 갈린다 — soft 는 옅은 면, solid 는 채운 면.
   const bgs = await page.evaluate(() =>
-    ["alert-soft", "alert-solid", "alert-quiet"].map(
+    ["alert-soft", "alert-solid", "alert-muted"].map(
       (id) =>
         getComputedStyle(document.querySelector(`[data-testid="${id}"] > *`)!).backgroundColor,
     ),

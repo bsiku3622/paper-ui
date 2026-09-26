@@ -22,18 +22,18 @@ export const commandItem = style({
   border: 0,
   borderRadius: tokens.shape.radius.interaction,
   background: "transparent",
-  color: tokens.color.content.primary,
+  color: tokens.color.ink.primary,
   fontFamily: tokens.text.font.sans,
   textAlign: "start",
   cursor: "pointer",
   transition: stateTransition("background"),
   selectors: {
     "&[aria-selected='true']": { background: tokens.color.interaction.selected },
-    "&[aria-disabled='true']": { color: tokens.color.content.tertiary, cursor: "default" },
+    "&[aria-disabled='true']": { color: tokens.color.ink.tertiary, cursor: "default" },
   },
 });
-export const commandIcon = style({ display: "inline-flex", color: tokens.color.content.secondary });
+export const commandIcon = style({ display: "inline-flex", color: tokens.color.ink.secondary });
 export const commandCopy = style({ flex: 1, minWidth: 0 });
-export const commandShortcut = style({ color: tokens.color.content.tertiary, whiteSpace: "nowrap" });
+export const commandShortcut = style({ color: tokens.color.ink.tertiary, whiteSpace: "nowrap" });
 export const commandEmpty = style({ padding: tokens.shape.padding.lg.interaction, textAlign: "center" });
 globalStyle(`${commandList}:has([role="option"]) > ${commandEmpty}`, { display: "none" });

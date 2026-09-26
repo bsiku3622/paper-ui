@@ -24,12 +24,14 @@ import {
 import { joinClass } from "../internal/joinClass";
 import type { StatusName, ControlSize, TextVariant } from "../tokens";
 import { Icon } from "../primitives";
-import { fieldWrap, fieldInput, fieldSize, fieldFontSize, fieldStatus, fieldNumeric, fieldAlign, fieldAdornment, fieldAction, fieldPill } from "./Field.css";
+import { fieldWrap, fieldInput, fieldSize, fieldFontSize, fieldStatus, fieldSurface, fieldNumeric, fieldAlign, fieldAdornment, fieldAction, fieldPill } from "./Field.css";
 
 export type FieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "size" | "prefix"> & {
   status?: "default" | StatusName;
   // 크기 3 단 (sm·md·lg). Button 과 같은 사다리 — 나란히 두면 높이가 맞는다.
   size?: ControlSize;
+  // 면의 깊이 — raised 가 기본, sunken 은 canvas 안에서 살짝 눌린 검색·필터 입력에 적합.
+  surface?: "raised" | "sunken";
   fontSize?: TextVariant;
   // 실루엣 — Button·Badge 와 같은 어휘. pill 은 알약(검색창 결).
   shape?: "rounded" | "pill";
@@ -69,6 +71,7 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
   {
     status = "default",
     size = "md",
+    surface = "raised",
     fontSize,
     shape = "rounded",
     numeric,
@@ -131,7 +134,7 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
     // 진짜 컨트롤은 input 이라 role·키보드를 붙이는 게 오히려 틀리다.
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
-      className={joinClass(fieldWrap, fieldSize[size], fontSize && fieldFontSize[fontSize], shape === "pill" && fieldPill, status !== "default" && fieldStatus[status], className)}
+      className={joinClass(fieldWrap, fieldSurface[surface], fieldSize[size], fontSize && fieldFontSize[fontSize], shape === "pill" && fieldPill, status !== "default" && fieldStatus[status], className)}
       style={style}
       data-testid={testid}
       data-pui-status={status}

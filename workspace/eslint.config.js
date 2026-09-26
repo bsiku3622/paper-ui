@@ -50,25 +50,32 @@ export default [
   },
 
   // ── 규칙 1 — raw 색·크기 값 금지 ─────────────────────────────────────────
-  // raw color literal은 L0 surface palette와 L1 accent ladder에만. 다른 데서 #fff 를
-  // 쓰면 palette가 두 곳이 된다.
+  // OKLCH source는 L0 palette, generated HEX token은 L1 generator에만. 소비처에 raw HEX를
+  // 쓰면 같은 색의 정본이 두 곳이 된다.
   {
     files: ["packages/paper-ui/src/**/*.{ts,tsx}", "app/src/**/*.{ts,tsx}"],
     ignores: [
       "packages/paper-ui/src/tokens/palette.ts",
       "packages/paper-ui/src/tokens/color-ladder.ts",
-      "packages/paper-ui/src/tokens/shape.ts",
-      "packages/paper-ui/src/tokens/text.ts",
-      "packages/paper-ui/src/styles/theme.css.ts",
       "**/*.test.{ts,tsx}",
     ],
     rules: {
       "no-restricted-syntax": [
         "error",
         {
-          selector: "Literal[value=/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/]",
+          selector: "Literal[value=/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/]",
           message:
-            "규칙 1 — raw hex 금지. 색은 palette·color-ladder source에만 정의하고 tokens.color.X 로 참조하라.",
+            "규칙 1 — raw hex 금지. OKLCH source는 palette, HEX generation은 color-ladder에 두고 tokens.color.X 로 참조하라.",
+        },
+        {
+          selector: "Literal[value=/^(?:rgba?|hsla?|oklch|color-mix)\\(/i]",
+          message:
+            "규칙 1 — raw color function 금지. 색은 Palette에서 생성하고 tokens.color semantic 참조를 사용하라.",
+        },
+        {
+          selector: "TemplateLiteral[quasis.0.value.raw=/\\b(?:rgba?|hsla?|oklch|color-mix)\\(/i]",
+          message:
+            "규칙 1 — runtime color math 금지. alpha/glow 값도 Palette Token으로 생성하라.",
         },
         {
           selector: "Literal[value=/^var\\(--paper-/]",

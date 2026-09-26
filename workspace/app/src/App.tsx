@@ -33,7 +33,9 @@ export const App = () => (
       <Route path="/demo" element={<Demo />} />
       <Route path="/playground" element={<Playground />} />
       <Route path="/playground/palette" element={<PalettePage />} />
-      <Route path="/playground/tokens" element={<TokensPage />} />
+      <Route path="/playground/foundations" element={<Navigate to="/playground/foundations/color-typography" replace />} />
+      <Route path="/playground/foundations/:section" element={<TokensPage />} />
+      <Route path="/playground/tokens" element={<Navigate to="/playground/foundations/color-typography" replace />} />
       <Route path="/playground/:slug" element={<ComponentDetail />} />
       <Route path="/docs/*" element={<Docs />} />
       <Route path="*" element={<Navigate to="/" replace />} />

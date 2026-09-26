@@ -1,6 +1,6 @@
 // Badge — 상태 한 낱말. Button 과 같은 accent 시스템(accent × variant)을 쓴다. 표시용이라
 // hover gate(pui-interactive)는 안 붙인다.
-//   variant  soft(옅은 면, 기본) · solid(진한 채움 — 카운트·강조) · outline(테두리) · ghostMuted(글자만)
+//   variant  soft(옅은 면, 기본) · solid(강조) · hairline · ghost · muted(accent subtle 보조 글자)
 //   dot      앞에 작은 색 점 — 상태 표시자
 //
 // 예) <Badge accent="success">완료</Badge>            옅은 초록 pill
@@ -18,7 +18,7 @@ import { badgeRoot, badgeSize, badgeDot, badgePill, badgeFontSize } from "./Badg
 export type BadgeProps = Omit<HTMLAttributes<HTMLSpanElement>, "className"> & {
   // 의미 색 (info·success·warning·error). 안 주면 뉴트럴 회색.
   accent?: Accent;
-  // 시각 무게 — 기본 soft(옅은 면). solid·outline·ghostMuted 도 된다.
+  // 시각 무게 — 기본 soft(옅은 면). solid·hairline·ghost·muted 도 된다.
   variant?: Variant;
   // 크기 3 단 (sm·md·lg). 배지 높이 사다리(20·22·24).
   size?: ControlSize;

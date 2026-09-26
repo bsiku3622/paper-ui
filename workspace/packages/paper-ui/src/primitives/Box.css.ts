@@ -20,7 +20,7 @@ export const boxShadow = styleVariants({
   overlayMinimal: { boxShadow: tokens.shape.shadow.overlayMinimal },
 });
 
-// Box `border` prop → 카드 헤어라인. 면(surface) 위에 얇은 뉴트럴 선(옛 variant="outline").
+// Box `border` prop → 카드 헤어라인. 면(surface) 위에 얇은 뉴트럴 선.
 // 불리언이라 CSS 값 주입과 헷갈리지 않는다 — 선이 필요하면 켜고, 색은 border.base 로 고정.
 export const boxBorder = style({
   borderWidth: tokens.shape.constants.borderWidth,

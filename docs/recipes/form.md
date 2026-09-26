@@ -62,6 +62,26 @@ hint나 error part를 추가하면 Root가 `aria-describedby`와 `aria-invalid`�
 <Field status="error" placeholder="필수 항목" />
 ```
 
+## 검색 Field
+
+`Field`는 `leading`·`trailing` 슬롯에 아이콘과 보조 표시를 놓고, `surface`로 입력면의 깊이를 고릅니다. 기본 `raised`는 카드처럼 분리된 입력, `sunken`은 페이지 캔버스 안에 들어간 검색·필터에 적합합니다. 단축키 표시는 별도 동작 버튼이 아니라 `kbd` 표면으로 끝에 붙입니다.
+
+```tsx
+<Field
+  type="search"
+  surface="sunken"
+  placeholder="작업 검색..."
+  leading={<Icon aria-hidden><SearchIcon /></Icon>}
+  trailing={
+    <Box as="kbd" surface="raised" border radius="sm" paddingX="xs">
+      <Text variant="caption">⌘ K</Text>
+    </Box>
+  }
+/>
+```
+
+각 슬롯은 `ReactNode`라 아이콘·단위·단축키 등 필요한 adornment를 조합할 수 있고, 필드 전체의 배경과 상태는 여전히 Field가 소유합니다.
+
 ## 왜 이렇게
 
-컨트롤 높이는 여러분이 맞추는 게 아닙니다. `Field`·`Button`·`Select`가 같은 `height.md.interaction`(34px)을 토큰에서 읽어 한 줄에 나란히 두면 baseline이 저절로 맞습니다. FormField의 `align`은 특별한 중앙·끝 정렬이 필요할 때만 바꾸며 기본 `stretch`에서는 control이 가용 폭을 채웁니다. 폼에서 여러분이 정하는 것은 *무엇을 묻는가*(라벨)와 *어떻게 배치하는가*(Stack/Inline)뿐입니다.
+컨트롤 높이는 여러분이 맞추는 게 아닙니다. `Field`·`Button`·`Select`가 같은 `height.md.interaction`(32px)을 토큰에서 읽어 한 줄에 나란히 두면 baseline이 저절로 맞습니다. FormField의 `align`은 특별한 중앙·끝 정렬이 필요할 때만 바꾸며 기본 `stretch`에서는 control이 가용 폭을 채웁니다. 폼에서 여러분이 정하는 것은 *무엇을 묻는가*(라벨)와 *어떻게 배치하는가*(Stack/Inline)뿐입니다.

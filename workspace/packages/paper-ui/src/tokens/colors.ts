@@ -1,10 +1,9 @@
-// L2 — Calibrated ladders → semantic color tokens
+// L2 — Generated HEX palette tokens → semantic color systems
 //
-// 소비처는 palette hue나 step을 모른다. surface·content·border·accent처럼 화면에서 맡은
-// 역할만 고른다. primary도 zinc 기반 accent family라 status와 정확히 같은 tone contract를
-// 공유한다. `status`는 Form validation API의 이름일 뿐 별도 색 tree가 아니다.
+// Every semantic leaf selects a generated palette token. No semantic value contains a raw color,
+// performs color math, or reads another semantic branch.
 
-import { ACCENT_LADDER, INTERACTION_LADDER, NEUTRAL_LADDER } from "./color-ladder";
+import { PALETTE_TOKENS, type PaletteToken } from "./color-ladder";
 import type { AccentPalette, ColorMode } from "./palette";
 
 export const STATUS = ["info", "success", "warning", "error"] as const;
@@ -20,68 +19,74 @@ export const STATUS_PALETTE: Record<StatusName, AccentPalette> = {
   error: "red",
 };
 
-// Shared variant가 보는 것은 다섯 자리뿐이다. solid는 지면 위 텍스트와 채운 면의
-// pigment를 함께 맡고, solid 위의 전경은 반대 끝 `wash`다. ink/softInk/mutedInk처럼
-// 같은 pigment를 다른 이름으로 복제하지 않는다.
 export type AccentToken = {
-  solid: string;
-  wash: string;
-  soft: string;
-  edge: string;
-  edgeStrong: string;
-};
-
-const statusAccent = (mode: ColorMode): Record<StatusName, AccentToken> => {
-  const ladder = ACCENT_LADDER[mode];
-  return Object.fromEntries(
-    STATUS.map((status) => {
-      const tone = ladder[STATUS_PALETTE[status]];
-      return [status, {
-        solid: tone["600"],
-        wash: tone["50"],
-        soft: tone["100"],
-        edge: tone["200"],
-        edgeStrong: tone["400"],
-      }];
-    }),
-  ) as Record<StatusName, AccentToken>;
+  solid: PaletteToken;
+  wash: PaletteToken;
+  soft: PaletteToken;
+  subtle: PaletteToken;
 };
 
 const colorTokens = (mode: ColorMode) => {
-  const neutral = NEUTRAL_LADDER[mode];
+  const { neutral, accent } = PALETTE_TOKENS;
   const isDark = mode === "dark";
-  const status = statusAccent(mode);
   const primary: AccentToken = {
-    solid: neutral[isDark ? "925" : "0"],
-    wash: neutral[isDark ? "0" : "950"],
-    soft: neutral[isDark ? "200" : "600"],
-    edge: neutral[isDark ? "300" : "700"],
-    edgeStrong: neutral[isDark ? "600" : "200"],
+    solid: neutral[isDark ? "100" : "950"],
+    wash: neutral[isDark ? "950" : "0"],
+    soft: neutral[isDark ? "800" : "300"],
+    subtle: neutral[isDark ? "700" : "400"],
   };
-  const accent: Record<AccentName, AccentToken> = { primary, ...status };
+  const accentToken = (palette: AccentPalette): AccentToken => ({
+    solid: accent[palette][isDark ? "400" : "600"],
+    wash: accent[palette][isDark ? "950" : "50"],
+    soft: accent[palette][isDark ? "925" : "150"],
+    subtle: accent[palette][isDark ? "800" : "300"],
+  });
+
+  const accents: Record<AccentName, AccentToken> = {
+    primary,
+    info: accentToken(STATUS_PALETTE.info),
+    success: accentToken(STATUS_PALETTE.success),
+    warning: accentToken(STATUS_PALETTE.warning),
+    error: accentToken(STATUS_PALETTE.error),
+  };
+  const blackAlpha = (step: "05" | "10" | "15" | "30" | "45" | "60") => PALETTE_TOKENS[`alpha${step}`].neutral["950"];
+  const whiteAlpha = (step: "05" | "10" | "15" | "30" | "45" | "60") => PALETTE_TOKENS[`alpha${step}`].neutral["0"];
 
   return {
-    surface: {
-      // 다크도 step의 밝기 방향은 같되, raised는 바닥에 가장 가까운 낮은 step이다.
-      raised: neutral[isDark ? "0" : "950"],
-      canvas: neutral[isDark ? "50" : "900"],
-      sunken: neutral[isDark ? "100" : "800"],
-      well: neutral[isDark ? "200" : "600"],
-    },
-    content: {
-      primary: neutral[isDark ? "950" : "0"],
-      secondary: neutral[isDark ? "800" : "100"],
-      tertiary: neutral[isDark ? "700" : "300"],
+    bg: {
+      raised: neutral[isDark ? "950" : "0"],
+      canvas: neutral[isDark ? "925" : "50"],
+      sunken: neutral[isDark ? "800" : "200"],
+      well: neutral[isDark ? "700" : "300"],
     },
     border: {
-      base: neutral[isDark ? "300" : "700"],
-      strong: neutral[isDark ? "400" : "500"],
-      hover: neutral[isDark ? "500" : "400"],
+      base: neutral[isDark ? "800" : "200"],
+      strong: neutral[isDark ? "700" : "300"],
+      hover: neutral[isDark ? "600" : "400"],
     },
-    accent,
-    focus: { ring: accent.info.solid },
-    interaction: INTERACTION_LADDER[mode],
-    scrim: INTERACTION_LADDER[mode].scrim,
+    ink: {
+      primary: neutral[isDark ? "0" : "950"],
+      secondary: neutral[isDark ? "400" : "700"],
+      tertiary: neutral[isDark ? "500" : "500"],
+    },
+    accent: accents,
+    interaction: {
+      bgHover: {
+        onSurface: isDark ? whiteAlpha("05") : blackAlpha("05"),
+        onPrimarySolid: isDark ? blackAlpha("10") : whiteAlpha("10"),
+        onAccentSolid: blackAlpha("15"),
+      },
+      selected: isDark ? whiteAlpha("10") : blackAlpha("15"),
+      active: isDark ? whiteAlpha("15") : blackAlpha("15"),
+      focus: accent.blue[isDark ? "400" : "600"],
+    },
+    overlay: {
+      scrim: blackAlpha(isDark ? "60" : "30"),
+    },
+    shadow: {
+      overlay: blackAlpha(isDark ? "60" : "10"),
+      overlayMinimal: blackAlpha(isDark ? "45" : "10"),
+    },
   };
 };
 

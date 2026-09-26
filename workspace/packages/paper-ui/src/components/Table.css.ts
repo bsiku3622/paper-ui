@@ -14,7 +14,7 @@ export const tableCaption = style({
 
 // 표 머리 — 옅은 면. 강한 밑줄 대신 조용히.
 export const tableHead = style({
-  background: tokens.color.surface.sunken,
+  background: tokens.color.bg.sunken,
 });
 
 export const tableHeadSticky = style({
@@ -38,7 +38,7 @@ export const tableTr = style({
     // hover 는 interaction 오버레이 — 어느 면(순백·smoke·well) 위든 그 면을 조금
     // 어둡게 만든다. solid 회색을 자리마다 고르지 않는다 (중립 상호작용 = 오버레이).
     "&:hover": {
-      backgroundImage: `linear-gradient(${tokens.color.interaction.hover}, ${tokens.color.interaction.hover})`,
+      backgroundImage: `linear-gradient(${tokens.color.interaction.bgHover.onSurface}, ${tokens.color.interaction.bgHover.onSurface})`,
     },
   },
 });
@@ -54,7 +54,7 @@ export const tableRowVariant = styleVariants({
     selectors: { "&:last-child": { borderBottomColor: "transparent" } },
   },
   striped: {
-    selectors: { "&:nth-child(even)": { background: tokens.color.surface.sunken } },
+    selectors: { "&:nth-child(even)": { background: tokens.color.bg.sunken } },
   },
 });
 

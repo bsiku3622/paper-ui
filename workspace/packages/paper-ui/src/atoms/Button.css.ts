@@ -1,6 +1,6 @@
 import { style, styleVariants, keyframes } from "@vanilla-extract/css";
 
-import { tokens, stateTransition, TEXT_VARIANTS, type ControlSize, type TextVariant } from "../tokens";
+import { tokens, stateTransition, TEXT_VARIANTS, type TextVariant } from "../tokens";
 import { ladderRules } from "../internal/sizeLadder";
 
 // geometry·motion 만. 색(background·color·border-color)은 resolveAccent 가 붙이는 pui-a-*
@@ -15,17 +15,16 @@ export const buttonRoot = style({
   borderWidth: tokens.shape.constants.borderWidth,
   borderStyle: "solid",
   fontFamily: tokens.text.font.sans,
-  // 버튼 라벨은 UI 라벨이다 — 읽는 본문(tracking.body 음수)이 아니라 label 결(양수)로
-  // 벌려 짧은 라벨을 또렷하게. body 음수 자간은 짧은 중앙 라벨을 답답하게 만든다.
-  letterSpacing: tokens.text.tracking.label,
-  lineHeight: "1",
+  // 버튼 라벨은 짧고 굵은 UI 문구라 기본 자간을 사용한다.
+  letterSpacing: tokens.text.tracking.caption,
+  lineHeight: tokens.text.leading.control,
   cursor: "pointer",
   whiteSpace: "nowrap",
   userSelect: "none",
   transition: stateTransition("background", "border-color", "color", "transform"),
   selectors: {
-    // 눌림 — 살짝 들어가는 촉각 피드백. 색 오버레이 대신 scale 이라 테마·variant 무관.
-    "&:active:not(:disabled)": { transform: "scale(0.97)" },
+    // 눌림 — Demo 버튼처럼 1px 내려앉는 촉각 피드백. 색·variant와 무관하다.
+    "&:active:not(:disabled)": { transform: "translateY(1px)" },
     "&:disabled": { cursor: "not-allowed", opacity: 0.5 },
     // `as` 로 <a> 가 된 버튼은 `:disabled` 가 안 걸린다 — 링크엔 disabled 속성이
     // 없어서다. 같은 자리를 aria-disabled 로 받고, 포인터까지 끊어 실제로 못 누르게
@@ -50,30 +49,28 @@ export const buttonSpinner = style({
   width: "0.95em",
   height: "0.95em",
   borderRadius: tokens.shape.radius.full,
-  borderWidth: "2px",
+  borderWidth: tokens.shape.constants.spinnerStrokeWidth,
   borderStyle: "solid",
   borderColor: "currentColor",
   borderTopColor: "transparent",
-  animation: `${spin} ${tokens.motion.loop.spin} linear infinite`,
+  animation: `${spin} ${tokens.motion.loop.spin} ${tokens.motion.easing.linear} infinite`,
 });
 
 // 가로 꽉 — 폼·모바일. 나란한 형제와 같은 폭.
 export const buttonFull = style({ width: "100%" });
 
-// Button 만의 fontWeight ladder — lg(CTA)에서 텍스트도 무거워져 강조를 회복한다.
-// sm·md=medium · lg=semibold. (Field 는 입력값 자리라 weight 변동 없음.)
-const BUTTON_WEIGHT: Record<ControlSize, string> = {
-  sm: tokens.text.weight.medium,
-  md: tokens.text.weight.medium,
-  lg: tokens.text.weight.semibold,
-};
+// Solid는 Demo 기본 버튼처럼 강한 CTA 잉크, 나머지 variant는 한 단계 가볍게.
+export const buttonWeight = styleVariants({
+  strong: { fontWeight: tokens.text.weight.strong },
+  regular: { fontWeight: tokens.text.weight.medium },
+});
 
-// size 3 단 — 공통 사다리 + 버튼 weight. 가로 여백은 베이스 그대로(10 · 13 · 17)다.
+// size 3 단 — 공통 사다리 + 버튼 weight. 가로 여백은 베이스 그대로(10 · 12 · 16)다.
 // 버튼은 라벨이 상자를 정의하는 자리라 좌우가 넉넉해야 형태가 산다 — 입력류는 반대로
 // 상자가 먼저 있고 글자가 그 안에 놓여서, 가로를 더 좁게 가져간다(inputPaddingX).
 // height 와 fontSize 는 양쪽이 계속 공유한다 — 폼 한 줄에서 같은 높이에 서는 건 별개 문제.
 export const buttonSize = styleVariants(
-  ladderRules((s) => ({ fontWeight: BUTTON_WEIGHT[s] })),
+  ladderRules(),
 );
 
 export const buttonFontSize = styleVariants(

@@ -1,236 +1,111 @@
-// 데모 — 복잡한 웹앱 화면 하나(이슈 트래커)를 paper-ui 컴포넌트로 짓는다.
-//
-// 컴포넌트 갤러리가 아니라 *실제 화면* 이다. Atlassian/Linear 감각의 이슈 목록:
-// 상단 nav · 세그먼트 탭 · 필터 · 데이터 표 · status 배지 · 생성 모달.
-// 이걸로 화면이 서면 시스템이 충분한 것이고, 안 서면 뭐가 빠졌는지 여기서 드러난다.
+import { useMemo, useState } from "react";
+import { Button, tokens } from "@studio-baeks/paper-ui";
+import * as s from "./Demo.css";
 
-import { useEffect, useMemo, useState } from "react";
+type Task = { id: number; code: string; title: string; project: string; status: "진행 중" | "검토" | "할 일" | "완료"; priority: "긴급" | "높음" | "보통" | "낮음"; owner: string; initials: string; due: string };
 
-import {
-  Badge,
-  Box,
-  Breadcrumb,
-  Button,
-  Checkbox,
-  EmptyState,
-  Field,
-  FormField,
-  Icon,
-  Inline,
-  Link,
-  Modal,
-  Navbar,
-  PageHeader,
-  Pagination,
-  Select,
-  Stack,
-  Table,
-  SegmentedControl,
-  Text,
-  Tooltip,
-  tokens,
-  type StatusName,
-} from "@studio-baeks/paper-ui";
-
-import { DemoBar } from "../site/chrome";
-
-type State = "todo" | "progress" | "done" | "blocked";
-
-type Issue = {
-  id: string;
-  key: string;
-  title: string;
-  state: State;
-  priority: "높음" | "보통" | "낮음";
-  assignee: string;
-  updated: string;
-};
-
-const ISSUES: Issue[] = [
-  { id: "1", key: "STU-142", title: "토큰 트리를 두 번 걷는 emit 파이프라인", state: "progress", priority: "높음", assignee: "재원", updated: "10분 전" },
-  { id: "2", key: "STU-139", title: "Select 포커스 링이 사파리에서 잘림", state: "blocked", priority: "높음", assignee: "민주", updated: "1시간 전" },
-  { id: "3", key: "STU-137", title: "Table hover 배경을 subtle 로 통일", state: "done", priority: "보통", assignee: "재원", updated: "3시간 전" },
-  { id: "4", key: "STU-135", title: "Badge wash 대비 AA 검증", state: "todo", priority: "보통", assignee: "지현", updated: "어제" },
-  { id: "5", key: "STU-131", title: "Modal 진입 애니메이션 곡선 조정", state: "done", priority: "낮음", assignee: "민주", updated: "어제" },
-  { id: "6", key: "STU-128", title: "eslint 규칙 4 — Box as 예외 문서화", state: "todo", priority: "낮음", assignee: "지현", updated: "2일 전" },
+const initialTasks: Task[] = [
+  { id: 1, code: "WEB-24", title: "랜딩 페이지 정보 구조 확정", project: "기획", status: "진행 중", priority: "긴급", owner: "재원", initials: "재", due: "오늘" },
+  { id: 2, code: "WEB-23", title: "메인 비주얼 시안 검토", project: "디자인", status: "검토", priority: "높음", owner: "민주", initials: "민", due: "오늘" },
+  { id: 3, code: "WEB-22", title: "모바일 내비게이션 프로토타입", project: "디자인", status: "할 일", priority: "높음", owner: "지현", initials: "지", due: "9월 28일" },
+  { id: 4, code: "WEB-21", title: "제품 소개 카피 초안 작성", project: "콘텐츠", status: "진행 중", priority: "보통", owner: "재원", initials: "재", due: "9월 29일" },
+  { id: 5, code: "WEB-20", title: "분석 이벤트 목록 정리", project: "개발", status: "할 일", priority: "보통", owner: "도윤", initials: "도", due: "9월 30일" },
+  { id: 6, code: "WEB-19", title: "컴포넌트 간격 검토", project: "디자인", status: "완료", priority: "낮음", owner: "민주", initials: "민", due: "9월 24일" },
 ];
 
-const STATE_LABEL: Record<State, string> = { todo: "할 일", progress: "진행", done: "완료", blocked: "막힘" };
-const STATE_STATUS: Record<State, StatusName | undefined> = {
-  todo: undefined,
-  progress: "info",
-  done: "success",
-  blocked: "error",
+const Icon = ({ name, size = 18 }: { name: string; size?: number }) => {
+  const common = { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const, "aria-hidden": true as const };
+  const paths: Record<string, React.ReactNode> = {
+    grid: <><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></>,
+    check: <><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16.5 9"/></>,
+    inbox: <><path d="M4 4.5h16v15H4z"/><path d="M4 13h4l1.5 2h5L16 13h4"/></>,
+    layers: <><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5M3 16l9 5 9-5"/></>,
+    search: <><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></>,
+    calendar: <><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M7.5 3v4M16.5 3v4M3.5 9h17"/></>,
+    plus: <><path d="M12 5v14M5 12h14"/></>,
+    more: <><circle cx="5" cy="12" r=".8"/><circle cx="12" cy="12" r=".8"/><circle cx="19" cy="12" r=".8"/></>,
+    chevron: <path d="m9 18 6-6-6-6"/>,
+    "chevron-down": <path d="m7 10 5 5 5-5"/>,
+    clock: <><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></>,
+    filter: <><path d="M4 5h16l-6.5 7.5v5l-3 1v-6L4 5Z"/></>,
+    board: <><rect x="3.5" y="4" width="17" height="16" rx="2"/><path d="M9 4v16M15 4v16"/></>,
+    spark: <path d="m12 2.5 2.1 7.4 7.4 2.1-7.4 2.1-2.1 7.4-2.1-7.4-7.4-2.1 7.4-2.1L12 2.5Z" fill="currentColor" stroke="none"/>,
+    arrow: <><path d="M5 12h14M13 6l6 6-6 6"/></>,
+  };
+  return <svg {...common}>{paths[name] ?? paths.grid}</svg>;
 };
 
-const searchIcon = <Icon size="caption" aria-hidden><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon>;
-
-// avatar — 전용 컴포넌트 없이 Box 조합으로. 알약(radius=full) + well 면 + 이니셜.
-const Avatar = ({ name }: { name: string }) => (
-  <Box
-    surface="well"
-    radius="full"
-    className="avatar"
-    aria-hidden
-    style={{
-      width: "1.5rem",
-      height: "1.5rem",
-      display: "inline-grid",
-      placeItems: "center",
-      fontSize: "var(--pui-text-size-label)",
-      fontWeight: "var(--pui-text-weight-semibold)",
-    }}
-  >
-    {name.slice(0, 1)}
-  </Box>
-);
+const navGroups: { label: string; items: [string, string][] }[] = [
+  { label: "WORKSPACE", items: [["grid", "프로젝트 개요"], ["check", "내 작업"], ["inbox", "받은 알림"]] },
+  { label: "PROJECTS", items: [["layers", "웹사이트 리뉴얼"], ["layers", "모바일 앱"], ["layers", "브랜드 정리"]] },
+];
 
 export const Demo = () => {
-  const [tab, setTab] = useState("all");
-  const [priority, setPriority] = useState("all");
-  const [mineOnly, setMineOnly] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [page, setPage] = useState(1);
+  const [tasks, setTasks] = useState(initialTasks);
+  const [filter, setFilter] = useState("전체");
+  const [query, setQuery] = useState("");
+  const [view, setView] = useState("작업 목록");
+  const [showDone, setShowDone] = useState(false);
+  const [notice, setNotice] = useState("");
+  const doneCount = tasks.filter((t) => t.status === "완료").length;
+  const visibleTasks = useMemo(() => tasks.filter((task) => {
+    const matchesFilter = filter === "전체" || task.status === filter;
+    const matchesQuery = `${task.title} ${task.code} ${task.owner}`.toLowerCase().includes(query.toLowerCase());
+    return matchesFilter && matchesQuery && (showDone || task.status !== "완료");
+  }), [tasks, filter, query, showDone]);
 
-  const rows = useMemo(
-    () =>
-      ISSUES.filter((i) => (tab === "all" ? true : tab === "open" ? i.state !== "done" : i.state === "done"))
-        .filter((i) => (priority === "all" ? true : i.priority === priority))
-        .filter((i) => (mineOnly ? i.assignee === "재원" : true)),
-    [tab, priority, mineOnly],
-  );
-  const totalPages = Math.max(1, Math.ceil(rows.length / 3));
-  const visibleRows = rows.slice((page - 1) * 3, page * 3);
+  const completeTask = (task: Task) => {
+    setTasks((current) => current.map((item) => item.id === task.id ? { ...item, status: item.status === "완료" ? "할 일" : "완료" } : item));
+    setNotice(task.status === "완료" ? "작업을 다시 열었습니다" : "작업을 완료했습니다");
+    window.setTimeout(() => setNotice(""), 2200);
+  };
+  const addTask = () => {
+    const title = window.prompt("새 작업 이름을 입력하세요");
+    if (!title?.trim()) return;
+    setTasks((current) => [{ id: Date.now(), code: `WEB-${24 + current.length}`, title: title.trim(), project: "기획", status: "할 일", priority: "보통", owner: "재원", initials: "재", due: "날짜 없음" }, ...current]);
+    setNotice("새 작업을 추가했습니다");
+    window.setTimeout(() => setNotice(""), 2200);
+  };
 
-  // 필터가 바뀌면 이전 목록의 페이지는 더 이상 의미가 없다. 첫 페이지로 돌아가야 빈 표가
-  // "결과 없음"처럼 보이는 오해를 막는다.
-  useEffect(() => setPage(1), [tab, priority, mineOnly]);
+  return <div className={s.app} style={({ "--demo-canvas": tokens.color.bg.canvas, "--demo-raised": tokens.color.bg.raised, "--demo-sunken": tokens.color.bg.sunken, "--demo-well": tokens.color.bg.well, "--demo-ink": tokens.color.ink.primary, "--demo-secondary": tokens.color.ink.secondary, "--demo-tertiary": tokens.color.ink.tertiary, "--demo-border": tokens.color.border.base, "--demo-strong-border": tokens.color.border.strong, "--demo-info": tokens.color.accent.info.solid, "--demo-info-wash": tokens.color.accent.info.wash, "--demo-info-soft": tokens.color.accent.info.soft, "--demo-success": tokens.color.accent.success.solid, "--demo-success-wash": tokens.color.accent.success.wash, "--demo-success-soft": tokens.color.accent.success.soft, "--demo-warning": tokens.color.accent.warning.solid, "--demo-warning-wash": tokens.color.accent.warning.wash, "--demo-warning-soft": tokens.color.accent.warning.soft, "--demo-error": tokens.color.accent.error.solid, "--demo-error-wash": tokens.color.accent.error.wash, "--demo-error-soft": tokens.color.accent.error.soft, "--demo-focus": tokens.color.interaction.focus, "--demo-hover": tokens.color.interaction.bgHover.onSurface, "--demo-shadow": tokens.color.shadow.overlay } as React.CSSProperties)}>
+    <header className={s.topbar}>
+      <a className={s.brand} href="#home" aria-label="Fieldnote 홈"><span className={s.brandMark}><Icon name="layers" size={17}/></span><span>fieldnote</span><span className={s.brandDivider}/><span className={s.workspaceName}>내 작업 공간</span></a>
+      <div className={s.topActions}><label className={s.search}><Icon name="search" size={17}/><input className={s.searchInput} aria-label="전체 검색" placeholder="작업 검색..." value={query} onChange={(e) => setQuery(e.target.value)}/><kbd className={s.searchShortcut}>⌘ K</kbd></label><button className={s.avatar} aria-label="계정 메뉴">재</button></div>
+    </header>
+    <div className={s.layout}>
+      <aside className={s.sidebar}>
+        <div className={s.workspacePicker}><span className={s.workspaceGlyph}>S</span><span className={s.workspaceTitle}>Studio Baeks</span><span className={s.downCaret} aria-hidden="true"><Icon name="chevron-down" size={16}/></span></div>
+        {navGroups.map((group, index) => <div className={s.navGroup} key={group.label}><p className={s.navLabel}>{group.label}</p>{group.items.map(([icon, label], itemIndex) => <button className={`${s.navItem} ${index === 1 && itemIndex === 0 ? s.navActive : ""}`} key={label}><Icon name={icon}/><span>{label}</span>{label === "내 작업" && <span className={s.navCount}>4</span>}{label === "받은 알림" && <span className={s.navCount}>2</span>}</button>)}</div>)}
+        <button className={s.projectAdd}><Icon name="plus" size={16}/> 프로젝트 추가</button>
+        <div className={s.sidebarBottom}><div className={s.userFace}>재</div><div><strong>백재원</strong><small>Studio Baeks</small></div><button aria-label="계정 옵션"><Icon name="more" size={17}/></button></div>
+      </aside>
+      <main className={s.main}>
+        <div className={s.breadcrumb}><span>프로젝트</span><Icon name="chevron" size={13}/><span>웹사이트 리뉴얼</span></div>
+        <section className={s.projectHeading}><div><div className={s.titleLine}><h1>웹사이트 리뉴얼</h1><span className={s.statusPill}><i/> 진행 중</span></div><p>새로운 브랜드 경험을 위한 웹사이트 개편 프로젝트</p></div><div className={s.projectActions}><div className={s.avatarStack}><span>재</span><span>민</span><span>지</span><button aria-label="멤버 추가"><Icon name="plus" size={15}/></button></div><button className={s.shareButton}>공유 <Icon name="arrow" size={15}/></button></div></section>
 
-  return (
-    <Stack>
-      {/* 데모는 실제 제품처럼 자체 Navbar 를 갖고, 통합 DemoBar 로 사이트에 이어진다 */}
-      <DemoBar />
-      <Navbar value="issues">
-        <Navbar.Brand>
-          <Inline gap="sm">
-            <Box
-              radius="sm"
-              aria-hidden
-              style={{
-                width: "1.5rem",
-                height: "1.5rem",
-                background: tokens.color.accent.primary.solid,
-                color: tokens.color.accent.primary.wash,
-                display: "grid",
-                placeItems: "center",
-                fontSize: "var(--pui-text-size-caption)",
-                fontWeight: "var(--pui-text-weight-bold)",
-              }}
-            >
-              S
-            </Box>
-            <Text variant="subheading">Studio</Text>
-          </Inline>
-        </Navbar.Brand>
-        <Navbar.Item value="issues">이슈</Navbar.Item><Navbar.Item value="boards">보드</Navbar.Item><Navbar.Item value="reports">리포트</Navbar.Item>
-        <Navbar.Actions>
-          <Inline gap="sm">
-            <Box style={{ width: "16rem" }}>
-              <Field type="search" leading={searchIcon} clearable aria-label="검색" placeholder="검색…" />
-            </Box>
-            <Tooltip>
-              <Tooltip.Trigger asChild><Button onClick={() => setOpen(true)}>새 이슈</Button></Tooltip.Trigger>
-              <Tooltip.Content><Stack gap="xs"><Text variant="label" ink="inherit">새 이슈</Text><Text variant="caption" ink="inherit">단축키 C</Text></Stack></Tooltip.Content>
-            </Tooltip>
-          </Inline>
-        </Navbar.Actions>
-      </Navbar>
+        <section className={s.sprint} aria-label="스프린트 현황">
+          <div className={s.sprintTop}><div><div className={s.eyebrow}><span className={s.spark}><Icon name="spark" size={16}/></span> SPRINT 04 <span className={s.dotSep}>/</span> 9월 21일 — 10월 4일</div><h2>이번 주, 출시 경험을 다듬어요.</h2><p>핵심 화면을 마무리하고 첫 사용자 테스트를 준비합니다.</p></div><div className={s.progressPercent}><strong>{Math.round(doneCount / tasks.length * 100)}<small>%</small></strong><span>완료</span></div></div>
+          <div className={s.progressTrack}><span style={{ width: `${Math.max(18, doneCount / tasks.length * 100)}%` }}/></div>
+          <div className={s.sprintFoot}><span><b>{doneCount}</b> / {tasks.length}개 작업 완료</span><span className={s.milestone}><i/> 다음 마일스톤 <b>디자인 확정</b><span className={s.milestoneDate}>10월 1일</span></span><span className={s.daysLeft}>스프린트 종료까지 <b>9일</b></span></div>
+        </section>
 
-      <Box paddingX="xl" paddingY="xl">
-        <Stack gap="xl" style={{ maxWidth: tokens.layout.container.content, marginInline: "auto" }}>
-          <PageHeader>
-            <PageHeader.Location><Breadcrumb><Breadcrumb.Item>Projects</Breadcrumb.Item><Breadcrumb.Item>Studio UI</Breadcrumb.Item><Breadcrumb.Item current>Issues</Breadcrumb.Item></Breadcrumb></PageHeader.Location>
-            <PageHeader.Content><PageHeader.Title>이슈</PageHeader.Title><PageHeader.Description>{rows.length}건 표시 중 · 전체 {ISSUES.length}건</PageHeader.Description></PageHeader.Content>
-          </PageHeader>
-
-          <Inline gap="md" justify="between" wrap>
-            <SegmentedControl value={tab} onValueChange={setTab}><SegmentedControl.Item value="all">전체</SegmentedControl.Item><SegmentedControl.Item value="open">열림</SegmentedControl.Item><SegmentedControl.Item value="done">완료</SegmentedControl.Item></SegmentedControl>
-            <Inline gap="md">
-              <Inline as="label" gap="sm">
-                <Checkbox checked={mineOnly} onChange={(e) => setMineOnly(e.currentTarget.checked)} />
-                <Text variant="caption" as="span">내 담당만</Text>
-              </Inline>
-              <Box style={{ width: "9rem" }}>
-                <Select
-                  value={priority}
-                  onChange={(e) => setPriority(e.currentTarget.value)}
-                >
-                  <Select.Option value="all">우선순위 전체</Select.Option>
-                  <Select.Option value="높음">높음</Select.Option>
-                  <Select.Option value="보통">보통</Select.Option>
-                  <Select.Option value="낮음">낮음</Select.Option>
-                </Select>
-              </Box>
-            </Inline>
-          </Inline>
-
-          <Table variant="plain" density="comfortable">
-            <Table.Header><Table.Column>키</Table.Column><Table.Column>제목</Table.Column><Table.Column>상태</Table.Column><Table.Column>우선순위</Table.Column><Table.Column>담당</Table.Column><Table.Column align="end">수정</Table.Column></Table.Header>
-            <Table.Body>{visibleRows.length ? visibleRows.map((issue) => <Table.Row key={issue.id}>
-              <Table.Cell><Link href="#" onClick={(event) => event.preventDefault()}>{issue.key}</Link></Table.Cell><Table.Cell>{issue.title}</Table.Cell><Table.Cell><Badge accent={STATE_STATUS[issue.state]}>{STATE_LABEL[issue.state]}</Badge></Table.Cell><Table.Cell><Text variant="caption" as="span">{issue.priority}</Text></Table.Cell><Table.Cell><Inline gap="sm"><Avatar name={issue.assignee} /><Text variant="body" as="span">{issue.assignee}</Text></Inline></Table.Cell><Table.Cell align="end"><Text variant="caption" as="span">{issue.updated}</Text></Table.Cell>
-            </Table.Row>) : <Table.Row><Table.Cell colSpan={6}><EmptyState><EmptyState.Title>일치하는 이슈가 없습니다</EmptyState.Title><EmptyState.Description>필터를 바꾸거나 새 이슈를 만들어 시작하세요.</EmptyState.Description><EmptyState.Action><Button size="sm" onClick={() => { setTab("all"); setPriority("all"); setMineOnly(false); }}>필터 초기화</Button></EmptyState.Action></EmptyState></Table.Cell></Table.Row>}</Table.Body>
-          </Table>
-
-          {rows.length ? <Pagination page={page} totalPages={totalPages} onPageChange={setPage} /> : null}
-
-          <Inline gap="sm">
-            <Icon aria-label="정보">
-              <circle cx="12" cy="12" r="9" />
-              <path d="M12 11v5M12 8h.01" />
-            </Icon>
-            <Text variant="caption">막힌 이슈는 담당자에게 자동으로 알림이 갑니다.</Text>
-          </Inline>
-        </Stack>
-      </Box>
-
-      <Modal open={open} onOpenChange={setOpen}>
-        <Modal.Header>
-          <Modal.Title>새 이슈</Modal.Title>
-          <Modal.Description>새 작업의 제목과 분류를 정합니다.</Modal.Description>
-        </Modal.Header>
-        <Modal.Body><Stack gap="lg">
-          <FormField>
-            <FormField.Label>제목</FormField.Label>
-            <FormField.Control><Field placeholder="무엇을 해야 하나요" /></FormField.Control>
-          </FormField>
-          <Inline gap="md" align="start">
-            <Box style={{ flex: 1 }}>
-              <FormField>
-                <FormField.Label>상태</FormField.Label>
-                <FormField.Control><Select>
-                  <Select.Option value="todo">할 일</Select.Option>
-                  <Select.Option value="progress">진행</Select.Option>
-                  <Select.Option value="done">완료</Select.Option>
-                </Select></FormField.Control>
-              </FormField>
-            </Box>
-            <Box style={{ flex: 1 }}>
-              <FormField>
-                <FormField.Label>우선순위</FormField.Label>
-                <FormField.Control><Select>
-                  <Select.Option value="보통">보통</Select.Option>
-                  <Select.Option value="높음">높음</Select.Option>
-                  <Select.Option value="낮음">낮음</Select.Option>
-                </Select></FormField.Control>
-              </FormField>
-            </Box>
-          </Inline>
-        </Stack></Modal.Body>
-        <Modal.Footer>
-          <Modal.Close variant="ghostMuted">취소</Modal.Close>
-          <Modal.Close>만들기</Modal.Close>
-        </Modal.Footer>
-      </Modal>
-    </Stack>
-  );
+        <section className={s.workSection}>
+          <div className={s.sectionHeader}><div><h2>작업</h2><span className={s.sectionCount}>{tasks.length}</span></div><Button onClick={addTask}><Icon name="plus" size={16}/> 새 작업</Button></div>
+          <div className={s.toolbar}><div className={s.tabs} role="tablist" aria-label="작업 보기">{["작업 목록", "보드", "타임라인"].map((item) => <button key={item} type="button" role="tab" aria-selected={view === item} className={view === item ? s.tabActive : ""} onClick={() => setView(item)}>{item === "보드" && <Icon name="board" size={15}/>} {item}</button>)}</div><div className={s.controls}><label className={s.compactSearch}><Icon name="search" size={16}/><input aria-label="작업 필터" placeholder="작업 찾기" value={query} onChange={(e) => setQuery(e.target.value)}/></label><button className={`${s.filterButton} ${showDone ? s.filterOn : ""}`} aria-pressed={showDone} onClick={() => setShowDone((value) => !value)}><Icon name="filter" size={16}/> 완료 포함</button></div></div>
+          <div className={s.filters} aria-label="작업 상태 필터">{["전체", "할 일", "진행 중", "검토", "완료"].map((item) => <button key={item} type="button" aria-pressed={filter === item} className={filter === item ? s.filterActive : ""} onClick={() => setFilter(item)}>{item}<span>{item === "전체" ? tasks.length : tasks.filter((t) => t.status === item).length}</span></button>)}</div>
+          {view === "작업 목록" ? <div className={s.taskTableWrap}><table className={s.taskTable}><thead><tr><th className={s.doneCol}>완료</th><th>작업</th><th>상태</th><th className={s.priorityCol}>우선순위</th><th className={s.ownerCol}>담당자</th><th className={s.dueCol}>기한</th><th/></tr></thead><tbody>{visibleTasks.map((task) => <tr key={task.id}><td><button aria-label={`${task.title} ${task.status === "완료" ? "다시 열기" : "완료 처리"}`} className={`${s.checkButton} ${task.status === "완료" ? s.checked : ""}`} onClick={() => completeTask(task)}>{task.status === "완료" && <span>✓</span>}</button></td><td><div className={s.taskName}><span className={s.taskCode}>{task.code}</span><strong className={task.status === "완료" ? s.struck : ""}>{task.title}</strong><small>{task.project}</small></div></td><td><span className={`${s.taskStatus} ${task.status === "할 일" ? s.statusTodo : task.status === "진행 중" ? s.statusInProgress : task.status === "검토" ? s.statusReview : s.statusDone}`}>{task.status}</span></td><td className={s.priorityCol}><span className={`${s.priority} ${task.priority === "긴급" ? s.urgent : task.priority === "높음" ? s.high : ""}`}>{task.priority}</span></td><td className={s.ownerCol}><span className={s.assignee}><i>{task.initials}</i>{task.owner}</span></td><td className={`${s.due} ${s.dueCol}`}>{task.due}</td><td><button className={s.rowMore} aria-label={`${task.title} 옵션`}><Icon name="more" size={17}/></button></td></tr>)}</tbody></table>{visibleTasks.length === 0 && <div className={s.empty}>조건에 맞는 작업이 없습니다.</div>}</div> : <div className={s.altView}><div className={s.altTitle}><Icon name={view === "보드" ? "board" : "calendar"}/>{view === "보드" ? "상태별 작업 보드" : "스프린트 타임라인"}</div><div className={s.altColumns}>{["할 일", "진행 중", "검토"].map((col) => <div className={s.altColumn} key={col}><h3>{col}<span>{tasks.filter(t => t.status === col).length}</span></h3>{tasks.filter(t => t.status === col).map(t => <article key={t.id}><small>{t.code}</small><strong>{t.title}</strong><span>{t.owner} · {t.due}</span></article>)}</div>)}</div></div>}
+          <div className={s.tableFooter}><span>{visibleTasks.length}개 작업 표시</span><button>모든 작업 보기 <Icon name="chevron" size={14}/></button></div>
+        </section>
+      </main>
+      <aside className={s.rightRail}>
+        <section className={s.railSection}><div className={s.railHeading}><div><h2>이번 주</h2><p>9월 24일 — 30일</p></div><button aria-label="캘린더 열기"><Icon name="calendar" size={17}/></button></div><div className={s.weekDays}>{([["월","23"],["화","24"],["수","25"],["목","26"],["금","27"],["토","28"],["일","29"]] as const).map(([day,date]) => <button key={date} className={date === "25" ? s.today : ""}><small>{day}</small><span>{date}</span>{["24","26","29"].includes(date) && <i/>}</button>)}</div></section>
+        <section className={s.railSection}><div className={s.railTitle}><h2>다가오는 일정</h2><button>전체 보기 <Icon name="chevron" size={13}/></button></div><div className={s.agenda}><article><time><b>오늘</b><span>14:00</span></time><div className={s.agendaContent}><strong>홈 화면 시안 리뷰</strong><small><i className={s.blueDot}/> 디자인 팀 · 회의</small></div></article><article><time><b>내일</b><span>10:30</span></time><div className={s.agendaContent}><strong>콘텐츠 킥오프</strong><small><i className={s.greenDot}/> 콘텐츠 팀 · 회의</small></div></article><article><time><b>월요일</b><span>16:00</span></time><div className={s.agendaContent}><strong>개발 체크인</strong><small><i className={s.orangeDot}/> 제품 팀 · 체크인</small></div></article></div></section>
+        <section className={s.activitySection}><div className={s.railTitle}><h2>최근 활동</h2><button aria-label="활동 더보기"><Icon name="more" size={17}/></button></div><div className={s.activity}><div className={s.activityAvatar}>민</div><p><strong>민주</strong>님이 <b>메인 비주얼 시안</b>을 검토로 옮겼습니다.<small>12분 전</small></p></div><div className={s.activity}><div className={`${s.activityAvatar} ${s.greenAvatar}`}>지</div><p><strong>지현</strong>님이 모바일 내비게이션 작업을 추가했습니다.<small>1시간 전</small></p></div><div className={s.activity}><div className={`${s.activityAvatar} ${s.darkAvatar}`}>재</div><p><strong>재원</strong>님이 프로젝트 설명을 수정했습니다.<small>어제</small></p></div></section>
+        <section className={s.milestoneCard}><div className={s.milestoneIcon}><Icon name="spark" size={16}/></div><div className={s.eyebrow}>다음 마일스톤</div><h3>디자인 확정</h3><p><Icon name="clock" size={14}/> 10월 1일까지 · 6일 남음</p><div className={s.milestoneProgress}><span/></div><small>검토할 작업 <b>2개</b></small></section>
+      </aside>
+    </div>
+    {notice && <div className={s.toast} role="status"><span>✓</span>{notice}</div>}
+  </div>;
 };
+
+export default Demo;

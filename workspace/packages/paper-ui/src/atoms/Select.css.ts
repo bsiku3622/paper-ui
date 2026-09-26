@@ -7,21 +7,15 @@ import { ladderRules } from "../internal/sizeLadder";
 // 같은 사다리를 그대로 가져온다. 오른쪽만 화살표 자리라 size 무관하게 넉넉히 고정.
 export const selectRoot = style({
   width: "100%",
-  background: tokens.color.surface.raised,
+  background: tokens.color.bg.raised,
   borderRadius: tokens.shape.radius.interaction,
   borderWidth: tokens.shape.constants.borderWidth,
   borderStyle: "solid",
   borderColor: tokens.color.border.base,
-  color: tokens.color.content.primary,
+  color: tokens.color.ink.primary,
   fontFamily: tokens.text.font.sans,
-  // ⚠ **굵기·자간을 명시한다.** 예전엔 fontFamily 만 정하고 둘을 안 줘서, 브라우저 기본값
-  // (400 · normal)으로 떨어져 있었다. 이 시스템의 `normal` 은 **450** 이다 — 작은 sans 가
-  // Retina 에서 힘이 빠지는 걸 잡으려고 half-step 을 얹은 값인데(tokens/text.ts), 정작
-  // 사람이 글자를 *써 넣는* 자리만 그 보정을 못 받고 있었다. 옆의 Button(550)과 나란히
-  // 두면 입력 글자가 눈에 띄게 얇고, 그게 "크기가 다른가?" 로 읽힌다(크기는 둘 다 14다).
-  //
-  // 자간은 body 다 — 입력칸에 든 건 UI 라벨이 아니라 사람이 쓴 *내용* 이라, Button 의
-  // label 자간(+0.01em)이 아니라 본문 자간(−0.006em)을 따른다.
+  lineHeight: tokens.text.leading.control,
+  // 사용자가 입력하는 값은 Button label보다 가볍게, 본문 자간으로 표시한다.
   fontWeight: tokens.text.weight.normal,
   letterSpacing: tokens.text.tracking.body,
   cursor: "pointer",
@@ -41,15 +35,15 @@ export const selectRoot = style({
     // 곧 placeholder 상태다. :has()로 option의 실제 선택 상태를 읽어 controlled·uncontrolled
     // 양쪽에서 별도 상태 관리 없이 같은 색을 쓴다.
     "&:has(option[value=\"\"]:checked)": {
-      color: tokens.color.content.tertiary,
+      color: tokens.color.ink.tertiary,
       backgroundImage:
         "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%23a1a1aa' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E\")",
     },
     "&:hover:not(:focus)": { borderColor: tokens.color.border.hover },
-    "&[data-pui-pointer-focus]:focus": { borderColor: tokens.color.content.secondary },
+    "&[data-pui-pointer-focus]:focus": { borderColor: tokens.color.ink.secondary },
     // keyboard focus만 바깥 ring으로 알린다. 클릭은 native open state와 edge로 충분하다.
     "&:focus-visible:not([data-pui-pointer-focus])": {
-      outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.focus.ring}`,
+      outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.interaction.focus}`,
       outlineOffset: tokens.shape.constants.focusRingOffset,
     },
     // text-like native controls can still match :focus-visible after a click. Override the

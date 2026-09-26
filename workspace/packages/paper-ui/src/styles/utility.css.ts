@@ -14,10 +14,10 @@ import { NEUTRAL_INKS, SURFACES } from "../resolvers";
 // 카드 테두리는 별도(Box 의 border prop). hover 는 면이 아니라 앱의 interaction 이 맡는다.
 
 const SURFACE_TOKEN = {
-  canvas: tokens.color.surface.canvas,
-  raised: tokens.color.surface.raised,
-  sunken: tokens.color.surface.sunken,
-  well: tokens.color.surface.well,
+  canvas: tokens.color.bg.canvas,
+  raised: tokens.color.bg.raised,
+  sunken: tokens.color.bg.sunken,
+  well: tokens.color.bg.well,
 } as const;
 
 for (const s of SURFACES) {
@@ -27,9 +27,9 @@ for (const s of SURFACES) {
 // ───── ink — 잉크 농도 ─────────────────────────────────────────────────────
 
 const INK_TOKEN = {
-  base: tokens.color.content.primary,
-  soft: tokens.color.content.secondary,
-  faint: tokens.color.content.tertiary,
+  base: tokens.color.ink.primary,
+  soft: tokens.color.ink.secondary,
+  faint: tokens.color.ink.tertiary,
 } as const;
 
 for (const i of NEUTRAL_INKS) {
@@ -52,7 +52,7 @@ for (const status of STATUS) {
   globalStyle(`.pui-${status}-wash`, {
     background: t.wash,
     color: t.solid,
-    borderColor: t.edge,
+    borderColor: t.soft,
   });
   globalStyle(`.pui-${status}-dot`, { background: t.solid, color: t.solid });
 }

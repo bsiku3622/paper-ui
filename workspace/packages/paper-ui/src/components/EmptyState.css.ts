@@ -12,4 +12,4 @@ export const emptyStateRoot = style({
   textAlign: "center",
 });
 
-export const emptyStateContent = style({ maxWidth: "28rem" });
+export const emptyStateContent = style({ maxWidth: tokens.shape.measure.xs });

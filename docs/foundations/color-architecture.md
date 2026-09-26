@@ -1,94 +1,71 @@
 # Color architecture
 
-Paper UI의 색은 raw 색상을 component에 직접 연결하지 않습니다. 모든 색은 아래 네 층을 순서대로 통과합니다.
+Paper UI colors follow one direction:
 
 ```
-L0 palette source       palette.ts
-        ↓
-L1 calibrated ladder    color-ladder.ts
-        ↓
-L2 semantic token       colors.ts
-        ↓
-L3 CSS variable          tokens/index.ts + theme.css.ts
-        ↓
-component / resolver / app
+OKLCH Palette source → generated HEX Palette Tokens → semantic systems → real use
+      palette.ts              color-ladder.ts       colors.ts       CSS vars / UI
 ```
 
-컴포넌트는 `blue[600]`이나 `amber[400]`을 알지 않습니다. public API와 소비 코드는 역할만 고릅니다. 그래서 palette의 색감 보정은 한 번의 ladder 조정으로 모든 사용처에 전파됩니다.
+The Palette is one theme-independent source of truth. It owns hue, chroma, lightness anchors, and percentage alpha steps. The generator interpolates missing tones, maps out-of-gamut colors into sRGB, and emits six-digit HEX colors plus eight-digit HEX alpha tokens. Light and dark semantics independently select steps from this same generated Palette; switching theme never changes the Palette itself.
 
-## L0 — Palette source
+## Palette source and generated tokens
 
-`tokens/palette.ts`는 neutral surface ramp와 accent의 hue identity를 둡니다. hue 이름은 implementation 내부에만 남고, public semantic 이름은 아래 map으로 고정합니다.
+`tokens/palette.ts` is the only authored color source. Neutral and accent families are described by one OKLCH ramp each. Neutral step numbering runs from light to dark: `0` is the lightest endpoint and `950` the darkest; both ramps include `925` between `900` and `950`. Dark `bg.canvas` selects neutral `925`, leaving `950` for the deeper raised surface. Accent families keep one set of reviewed anchors; intermediate tones, including `925`, are interpolated in OKLCH. `alpha05` through `alpha95` are fixed percentage ramps applied to the neutral endpoints and are shared by every theme.
 
-| accent | palette | 쓰임 |
+`tokens/color-ladder.ts` converts every source color to HEX. Chroma is reduced only when a color falls outside sRGB. Alpha variants are emitted as eight-digit HEX from a palette endpoint and a named percentage step. Generated values are Palette Tokens; they are not semantic roles.
+
+Palette Token keys are internal. Components and application code do not import them. The generator brands its output as `PaletteToken`, so semantic values cannot be assigned arbitrary CSS strings at type level. The Palette inspector is the only view that displays source coordinates and generated values side by side.
+
+## Semantic systems
+
+All semantic values select Palette Tokens according to the current theme. They share the public root `tokens.color`. For example, dark mode can select a lighter accent solid and a deeper accent soft surface from the same blue ramp; no second dark palette is generated.
+
+| System | Public shape | Responsibility |
 |---|---|---|
-| `primary` | neutral zinc | 기본 행동 |
-| `info` | blue | 정보·focus·link |
-| `success` | green | 성공 |
-| `warning` | amber | 주의 |
-| `error` | red | 오류·위험 |
+| Surface | `bg.<level>` | Page, raised, sunken, and well surfaces |
+| Border | `border.<level>` | Base, strong, and hover boundaries |
+| Ink | `ink.<level>` | Primary, secondary, and tertiary text |
+| Accent | `accent.<name>.<ladder>` | Primary or status pigment roles: `solid`, `wash`, `soft`, `subtle` |
+| Interaction | `interaction.<state>` | Background hover overlays, selected, active, and focus feedback |
+| Overlay | `overlay.<role>` | Modal backdrop scrim |
+| Shadow | `shadow.<role>` | Palette-derived shadow tints |
 
-## L1 — Calibrated ladder
-
-`color-ladder.ts`는 모든 accent palette에 `50 / 100 / 200 / 300 / 400 / 500 / 600 / 700 / 800 / 900 / 950`의 11-step curve를 제공합니다. 기존 Veil의 대표색을 OKLCH anchor로 두고, 그 사이의 step은 lightness·chroma·hue를 perceptual space에서 보간해 생성합니다. hue는 각 palette의 실제 색 인상을 유지하도록 anchor마다 보정하고, 보간은 가장 짧은 hue 방향을 따릅니다. 숫자는 raw tone step이며 component가 직접 소비하지 않습니다.
-
-| step | semantic 연결 |
-|---|---|
-| `50` | `wash` |
-| `100` | `soft` |
-| `200` | `edge` |
-| `400` | `edgeStrong` |
-| `600` | `solid` |
-
-나머지 step은 palette 검토, 향후 대비 조정, 테마별 곡선 보정의 여유를 남깁니다. 특히 amber는 밝은 pigment라도 약한 색으로 취급하지 않습니다. Palette inspector의 light `400` 이상 label과 `600` solid 전경은 다른 accent처럼 밝은 전경으로 읽습니다.
-
-## L2 — Semantic token
-
-`colors.ts`부터는 hue와 step 번호가 사라집니다.
-
-| token family | 책임 |
-|---|---|
-| `surface` | Box의 깊이 — raised/canvas/sunken/well |
-| `content` | 본문·보조·placeholder 글자 위계 |
-| `border` | 구조선과 neutral control border |
-| `accent` | primary·info·success·warning·error pigment 역할 |
-| `interaction` | hover/selected/active overlay |
-| `focus` | keyboard focus ring |
-
-모든 `accent`는 정확히 같은 다섯 slot을 공유합니다.
-
-| slot | 책임 |
-|---|---|
-| `solid` | 채운 면과 일반 지면의 pigment text |
-| `wash` | solid 위 전경, 아주 가벼운 tint |
-| `soft` | soft variant의 면 |
-| `edge` | hairline 경계 |
-| `edgeStrong` | outline 경계 |
-
-`ink`, `softInk`, `mutedInk`는 별도 semantic slot으로 두지 않습니다. 쨍한 accent palette에서는 이들이 같은 역할을 중복했기 때문에 `solid` 하나로 통일했습니다. `softMuted` 등 muted variant는 독립 pigment가 아니라 wash/soft 및 interaction의 조합으로 무게를 낮춥니다.
-
-## L3 — CSS variable와 component API
-
-`theme.css.ts`는 L2 semantic tree를 light/dark에서 동일한 CSS variable 이름으로 emit하고, `tokens`는 그 `var(...)` 참조만 제공합니다.
+Examples:
 
 ```ts
-tokens.color.accent.warning.solid
-tokens.color.accent.error.edgeStrong
+tokens.color.bg.canvas
+tokens.color.border.strong
+tokens.color.ink.secondary
+tokens.color.accent.warning.soft
+tokens.color.interaction.bgHover.onSurface
+tokens.color.interaction.focus
+tokens.color.overlay.scrim
+tokens.color.shadow.overlay
 ```
 
-색을 받는 component의 public prop은 `color`가 아니라 `accent`입니다.
+The surface levels retain their established meaning: `raised`, `canvas`, `sunken`, and `well`. Borders use `base`, `strong`, and `hover`; ink uses `primary`, `secondary`, and `tertiary`.
 
-```tsx
-<Button accent="error">삭제</Button>
-<Badge accent="success">완료</Badge>
-<Alert accent="warning">…</Alert>
-```
+Accent names are `primary`, `info`, `success`, `warning`, and `error`. They map to neutral, blue, green, amber, and red Palette Tokens. Every name has the same ladder:
 
-`status`는 Field·Select·Textarea처럼 validation 의미를 나타내는 prop으로만 유지됩니다. Form은 내부에서 같은 semantic accent token을 사용하지만, 호출자는 색이 아니라 validation 상태를 표현합니다.
+| Ladder token | Use |
+|---|---|
+| `solid` | Filled surface or pigment text on a neutral surface |
+| `wash` | Foreground on a solid accent surface; light tint |
+| `soft` | Soft variant surface and hairline border |
+| `subtle` | Muted variant foreground |
 
-## 색을 바꿀 때의 경로
+Interaction values select from the shared alpha Palette too. `interaction.bgHover` provides `onSurface`, `onPrimarySolid`, and `onAccentSolid` overlays. Selected, active, scrim, and shadow tints select a neutral endpoint and alpha percentage appropriate to the theme. Focus uses a step from the shared blue ramp. Focus ring width and offset remain geometry constants in the shape system. Shadow colors are exposed as `shadow.overlay` and `shadow.overlayMinimal`; their geometry remains in shape.
 
-1. hue identity가 문제면 `palette.ts`를 조정합니다.
-2. 특정 밝기·채도·대비가 문제면 `color-ladder.ts`의 step을 조정합니다.
-3. UI 역할의 배치가 문제면 `colors.ts` mapping을 조정합니다.
-4. component에서 raw 색을 덮어쓰지 않습니다. Palette와 Tokens Playground에서 light/dark 결과를 함께 확인합니다.
+## Real use
+
+`theme.css.ts` emits the semantic tree as theme-scoped CSS variables. `tokens.color` contains only `var(...)` references. Components and apps consume those references; they do not read palette source or generated palette token modules.
+
+When changing color:
+
+1. Adjust OKLCH source coordinates, anchors, or alpha steps in `palette.ts`.
+2. Check the shared generated HEX values and gamut mapping in the Palette inspector; the ramp must stay identical when the app theme changes.
+3. Adjust theme-specific semantic mappings in `colors.ts` when a role needs a different palette step.
+4. Use the semantic role in components and inspect the light and dark themes.
+
+The key invariant is structural: every semantic leaf equals a generated Palette Token, and every rendered color enters through the semantic tree.

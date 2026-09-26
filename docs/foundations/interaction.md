@@ -22,23 +22,23 @@ open state와 `ink.soft` edge만 남기고 focus ring을 그리지 않습니다.
 | 대상 | resting | hover | focus | 비고 |
 |---|---|---|---|---|
 | `Button`·interactive `Badge` 등 shared accent 컴포넌트 | `accent × variant` | variant profile의 overlay 또는 hover color/background | keyboard ring | `.pui-interactive`가 있을 때만 적용 |
-| primary `solid` | `primary.base` | `primary.hover`로 배경 교체 | keyboard ring | 검정 면은 어두워지지 않아 한 단계 밝힘 |
+| primary `solid` | `primary.base` | `interaction.bgHover.onPrimarySolid`로 배경 교체 | keyboard ring | 검정 면은 어두워지지 않아 한 단계 밝힘 |
 | neutral `Field`·`Select`·`Textarea` | `border.base` | `border.hover` | keyboard ring | 배경은 바꾸지 않음 |
 | pointer-focused neutral Form | `border.hover` | — | `ink.soft` edge | 클릭에는 ring 없음 |
-| semantic Form (`info`·`success`·`warning`·`error`) | 해당 accent `solid` edge | 같은 pigment의 중앙 halo | keyboard ring | 선을 더 진하게 하지 않고 `semanticFormHoverShadow` 사용 |
-| Sidebar·Menu·Tree·CommandMenu·Table row | base 면 | `interaction.hover` overlay | keyboard ring 또는 selected state | selected 면이 hover보다 우선 |
+| semantic Form (`info`·`success`·`warning`·`error`) | 해당 accent `solid` edge | 같은 경계 유지 | keyboard ring | 상태색 경계로 의미를 계속 표시 |
+| Sidebar·Menu·Tree·CommandMenu·Table row | base 면 | `interaction.bgHover.onSurface` overlay | keyboard ring 또는 selected state | selected 면이 hover보다 우선 |
 | Link | 본문 잉크 | underline/색 변화 | keyboard ring | 면을 만들지 않음 |
 | Badge·상태 점·정적 표시 | 그대로 | 없음 | 해당 없음 | 정보 표식에 hover를 추가하지 않음 |
 
 neutral Form의 `border.hover`는 `border.base`와 `primary` 사이의 전용 경계 토큰입니다.
 shared variant의 `hairline`과 같은 선을 쓰는 것이 아니라, 입력 중인 상자의 존재만 잠깐
 강조합니다. semantic Form은 resting 상태부터 의미 색을 사용하므로 같은 선을 한 번 더
-올리는 대신 중앙 그림자로 상태 변화를 전달합니다.
+올리지 않고 hover에서도 같은 경계를 유지합니다.
 
 ## Overlay와 색 profile
 
-중립 면(`soft`, `outline`, `hairline`, `ghost`)의 hover는 배경을 직접 교체하지 않고
-`tokens.color.interaction.hover`를 `backgroundImage` overlay로 합성합니다. 이 방식은
+중립 면(`soft`, `hairline`, `ghost`)의 hover는 배경을 직접 교체하지 않고
+`tokens.color.interaction.bgHover`를 `backgroundImage` overlay로 합성합니다. 이 방식은
 raised·canvas·sunken·well 중 어느 면 위에서도 같은 방향으로 읽힙니다. accent profile이
 `hoverBackground`를 명시한 경우에는 그 색 family의 wash/hover 색으로 교체합니다.
 
@@ -48,7 +48,7 @@ raised·canvas·sunken·well 중 어느 면 위에서도 같은 방향으로 읽
 
 ## Focus와 transition
 
-focus ring은 전역 `:focus-visible`의 `focus.ring` 하나로 통일하며, 기본 폭은 2px,
+focus ring은 전역 `:focus-visible`의 `interaction.focus` 하나로 통일하며, 기본 폭은 2px,
 offset은 2px입니다. Form wrapper가 focus의 주인이므로 내부 native control은 자체
 outline을 끕니다. 모든 상태 전이는 `tokens.motion.role.hover`의 짧은 duration을
 따르고, `prefers-reduced-motion: reduce`에서는 전역으로 즉시 전환됩니다.
@@ -60,5 +60,5 @@ outline을 끕니다. 모든 상태 전이는 `tokens.motion.role.hover`의 짧�
 - selected/semantic 상태가 hover보다 우선해야 하는가?
 - 정적 표식에 hover를 넣어 정보 위계를 흐리게 만들고 있지는 않은가?
 
-답이 없으면 hover를 추가하지 않습니다. paper-ui에서 떠 있는 그림자는 overlay surface와
-semantic Form hover halo처럼 명확한 예외에만 남겨 둡니다.
+답이 없으면 hover를 추가하지 않습니다. 지속 그림자는 실제로 떠 있는 overlay surface에만
+둡니다.

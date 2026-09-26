@@ -7,6 +7,7 @@ import { Box, Breadcrumb, Sidebar, Stack, tokens } from "@studio-baeks/paper-ui"
 
 import { SiteNav, NAV_HEIGHT } from "../site/chrome";
 import { COMPONENTS, GROUPS } from "./registry";
+import { FOUNDATION_SECTIONS } from "./foundation-sections";
 
 const CHANGE_BADGE = {
   new: { label: "NEW", color: "info" },
@@ -24,8 +25,10 @@ export const PlaygroundLayout = ({ value, children }: { value: string; children:
       >
         <Sidebar.Group label="레퍼런스">
           <Sidebar.Item value="palette" as={Link} to="/playground/palette">팔레트 · Foundations</Sidebar.Item>
-          <Sidebar.Item value="tokens" as={Link} to="/playground/tokens">토큰 · Foundations</Sidebar.Item>
           <Sidebar.Item value="all" as={Link} to="/playground">전수 · 한 화면</Sidebar.Item>
+        </Sidebar.Group>
+        <Sidebar.Group label="Foundations">
+          {FOUNDATION_SECTIONS.map(([slug, label]) => <Sidebar.Item key={slug} value={`foundation-${slug}`} as={Link} to={`/playground/foundations/${slug}`}>{label}</Sidebar.Item>)}
         </Sidebar.Group>
         {GROUPS.map((group) => (
           <Sidebar.Group key={group} label={group}>

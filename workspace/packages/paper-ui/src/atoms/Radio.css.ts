@@ -8,7 +8,7 @@ export const radioRoot = style({
   appearance: "none",
   margin: 0,
   flexShrink: 0,
-  background: tokens.color.surface.raised,
+  background: tokens.color.bg.raised,
   borderWidth: tokens.shape.constants.borderWidth,
   borderStyle: "solid",
   borderColor: tokens.color.border.strong,
@@ -25,7 +25,7 @@ export const radioRoot = style({
       background: tokens.color.accent.primary.solid,
     },
     "&:focus-visible": {
-      outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.focus.ring}`,
+      outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.interaction.focus}`,
       outlineOffset: tokens.shape.constants.focusRingOffset,
     },
     "&:disabled": { opacity: 0.45, cursor: "not-allowed" },

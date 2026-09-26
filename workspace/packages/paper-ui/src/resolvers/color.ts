@@ -12,18 +12,14 @@ export const resolveSurface = (surface: Surface | undefined): string =>
 export const ACCENTS = ["primary", "info", "success", "warning", "error"] as const;
 export type Accent = (typeof ACCENTS)[number];
 
-// `solid`은 pigment 자체, wash·soft는 각각 가벼운 면이다. muted variant도 남기되,
-// token을 별도로 늘리지 않고 동일한 solid pigment를 재사용한다.
+// `solid`은 pigment 자체, wash·soft는 각각 가벼운 면이다. `muted`는 Ghost형 투명 면에
+// 선택된 accent의 soft tone을 전경으로 쓰는 보조 variant다.
 export const VARIANTS = [
   "solid",
   "soft",
-  "softMuted",
-  "outline",
-  "outlineMuted",
   "hairline",
-  "hairlineMuted",
   "ghost",
-  "ghostMuted",
+  "muted",
 ] as const;
 export type Variant = (typeof VARIANTS)[number];
 

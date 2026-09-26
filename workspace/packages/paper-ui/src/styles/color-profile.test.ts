@@ -4,22 +4,21 @@ import { tokens } from "../tokens";
 import { accentProfile } from "./color-profile";
 
 describe("muted color profile", () => {
-  it("uses the same slot mechanism for primary and status families", () => {
-    for (const variant of ["softMuted", "outlineMuted", "hairlineMuted", "ghostMuted"] as const) {
-      const primary = accentProfile("primary", variant);
-      const warning = accentProfile("warning", variant);
+  it("keeps the ghost surface and uses the selected accent's subtle tone", () => {
+    for (const accent of ["primary", "info", "success", "warning", "error"] as const) {
+      const profile = accentProfile(accent, "muted");
 
-      expect(Object.keys(warning).sort()).toEqual(Object.keys(primary).sort());
-      expect(warning.hoverOverlay).toBe(tokens.color.interaction.hover);
-      expect(warning.hoverBackground).toBeUndefined();
+      expect(profile.background).toBe("transparent");
+      expect(profile.color).toBe(tokens.color.accent[accent].subtle);
+      expect(profile.borderColor).toBe("transparent");
+      expect(profile.hoverOverlay).toBe(tokens.color.interaction.bgHover.onSurface);
+      expect(profile.hoverBackground).toBeUndefined();
     }
   });
 
-  it("uses the shared wash and solid slots for softMuted", () => {
-    const profile = accentProfile("primary", "softMuted");
-
-    expect(profile.background).toBe(tokens.color.accent.primary.wash);
-    expect(profile.color).toBe(tokens.color.accent.primary.solid);
-    expect(profile.hoverColor).toBeUndefined();
+  it("uses the shared soft tone for every hairline accent border", () => {
+    for (const accent of ["primary", "info", "success", "warning", "error"] as const) {
+      expect(accentProfile(accent, "hairline").borderColor).toBe(tokens.color.accent[accent].soft);
+    }
   });
 });
