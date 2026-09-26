@@ -7,8 +7,8 @@ import { tokens } from "@studio-baeks/paper-ui";
 
 globalStyle(".md", {
   maxWidth: tokens.shape.measure.lg,
-  color: tokens.color.content.primary,
-  fontSize: tokens.shape.fontSize.lg, // 15px — 본문보다 한 단 큰 읽기 크기
+  color: tokens.color.ink.primary,
+  fontSize: tokens.text.size.subheading, // 15px — 본문보다 한 단 큰 읽기 크기
   lineHeight: tokens.text.leading.body,
 });
 globalStyle(".md > *:first-child", { marginTop: 0 });
@@ -48,12 +48,12 @@ globalStyle(".md strong", { fontWeight: tokens.text.weight.semibold });
 globalStyle(".md code", {
   fontFamily: tokens.text.font.mono,
   fontSize: "0.85em", // em 상대 — 본문 글자에 비례
-  background: tokens.color.surface.well,
+  background: tokens.color.bg.well,
   padding: "0.1em 0.4em",
   borderRadius: tokens.shape.radius.interaction,
 });
 globalStyle(".md pre", {
-  background: tokens.color.surface.sunken,
+  background: tokens.color.bg.sunken,
   border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
   borderRadius: tokens.shape.radius.layout.md,
   padding: tokens.shape.padding.md.layout,
@@ -66,7 +66,7 @@ globalStyle(".md blockquote", {
   margin: `0 0 ${tokens.shape.gap.lg}`,
   padding: `${tokens.shape.padding.sm.layout} ${tokens.shape.padding.md.layout}`,
   borderLeft: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.border.strong}`,
-  color: tokens.color.content.secondary,
+  color: tokens.color.ink.secondary,
 });
 
 globalStyle(".md table", { width: "100%", borderCollapse: "collapse", margin: `0 0 ${tokens.shape.gap.lg}`, fontSize: tokens.text.size.body });
@@ -74,7 +74,7 @@ globalStyle(".md th", {
   textAlign: "left",
   fontWeight: tokens.text.weight.semibold,
   padding: `${tokens.shape.padding.sm.interaction} ${tokens.shape.padding.md.interaction}`,
-  background: tokens.color.surface.sunken,
+  background: tokens.color.bg.sunken,
   borderBottom: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.strong}`,
 });
 globalStyle(".md td", {

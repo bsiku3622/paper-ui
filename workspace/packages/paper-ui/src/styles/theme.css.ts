@@ -1,12 +1,12 @@
 // theme.css.ts — 토큰 값을 CSS 로 굽는 유일한 자리.
 //
-// 여기와 tokens/index.ts가 L2 semantic VALUES를 조립한다. raw 색값은 L1
-// color-ladder.ts에만 있으며, component·resolver·app은 tokens var() 참조만 본다.
+// 여기와 tokens/index.ts가 L2 semantic VALUES를 CSS variable로 emit한다. OKLCH source와
+// generated HEX는 각 private layer에 격리하고, component·resolver·app은 tokens var()만 본다.
 
 import { globalStyle } from "@vanilla-extract/css";
 
 import { COLOR_VALUES, COLOR_VALUES_DARK } from "../tokens/colors";
-import { SHAPE_VALUES, SHADOW_DARK } from "../tokens/shape";
+import { SHAPE_VALUES, SHADOW_GEOMETRY } from "../tokens/shape";
 import { LAYOUT_VALUES } from "../tokens/layout";
 import { TEXT_VALUES, TEXT_SPEC, TEXT_CONTENT, TEXT_VARIANTS } from "../tokens/text";
 import { walkValues, pathToCssVar } from "../tokens/helpers";
@@ -43,11 +43,29 @@ walkValues(COLOR_VALUES, ["color"], (path, value) => {
 walkValues(COLOR_VALUES_DARK, ["color"], (path, value) => {
   darkVars[pathToCssVar(path)] = value;
 });
-// 그림자는 shape 축이지만 다크에선 값이 달라져야 한다(near-black 은 어두운 면 위에서
-// 사라짐). 색과 함께 dark 스코프에 shadow var 만 덮어쓴다 — 나머지 shape 는 불변.
-walkValues(SHADOW_DARK, ["shape", "shadow"], (path, value) => {
-  darkVars[pathToCssVar(path)] = value;
-});
+// Shadow geometry belongs to shape; tint comes from the semantic shadow color tokens. Theme
+// scopes replace the assembled value so both geometry and palette-derived tint can adapt.
+const shadowColors = tokens.color.shadow;
+type ShadowName = keyof typeof SHADOW_GEOMETRY.light;
+type ShadowTintName = keyof typeof shadowColors;
+const SHADOW_TINTS: Record<ShadowName, readonly ShadowTintName[]> = {
+  overlay: ["overlay", "overlay"],
+  overlayMinimal: ["overlayMinimal"],
+};
+const emitShadowVars = (mode: "light" | "dark", target: Record<string, string>) => {
+  const geometry = SHADOW_GEOMETRY[mode];
+  for (const name of Object.keys(geometry) as ShadowName[]) {
+    target[pathToCssVar(["shape", "shadow", name])] = geometry[name]
+      .map((layer, index) => {
+        const tint = SHADOW_TINTS[name][index];
+        if (!tint) throw new Error(`Missing palette tint for shadow layer ${name}[${index}]`);
+        return `${layer} ${shadowColors[tint]}`;
+      })
+      .join(", ");
+  }
+};
+emitShadowVars("light", lightVars);
+emitShadowVars("dark", darkVars);
 
 // :root — 테마 불변 축 + light 색(기본값). Provider 없이도 라이트로 바로 선다.
 globalStyle(":root", { vars: { ...baseVars, ...lightVars } });
@@ -63,8 +81,8 @@ globalStyle(':root[data-theme="dark"], [data-theme="dark"]', { vars: darkVars })
 
 globalStyle("body", {
   margin: 0,
-  background: tokens.color.surface.canvas,
-  color: tokens.color.content.primary,
+  background: tokens.color.bg.canvas,
+  color: tokens.color.ink.primary,
   fontFamily: tokens.text.font.sans,
   fontSize: tokens.text.size.body,
   lineHeight: tokens.text.leading.body,
@@ -75,21 +93,17 @@ globalStyle("body", {
 
 globalStyle("*", { boxSizing: "border-box" });
 
-// 포커스는 파란 링 하나로 통일 (Apple · Atlassian 시그니처). 색이 가장 작게,
+// 포커스는 interaction.focus로 통일 (Apple · Atlassian 시그니처). 색이 가장 작게,
 // 가장 자주 등장하는 포인트 자리.
 globalStyle(":focus-visible", {
-  outline: `2px solid ${tokens.color.focus.ring}`,
-  outlineOffset: "2px",
+  outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.interaction.focus}`,
+  outlineOffset: tokens.shape.constants.focusRingOffset,
   borderRadius: tokens.shape.radius.interaction,
 });
 
 // ╭──────────────────────────────────────────────────────────────────────────╮
 // │ Pass 3 — text variant classes                                            │
 // ╰──────────────────────────────────────────────────────────────────────────╯
-
-// mono 는 같은 px 에서 sans(Pretendard)보다 크게 읽힌다 — D2Coding·SF Mono 의
-// x-height·advance 가 커서. variant 크기에 비례해 살짝 줄여 sans 와 시각 크기를 맞춘다.
-const MONO_SCALE = 0.95;
 
 for (const v of TEXT_VARIANTS) {
   const spec = TEXT_SPEC[v];
@@ -100,12 +114,12 @@ for (const v of TEXT_VARIANTS) {
     fontWeight: spec.weight, // weight 는 variant→굵기 매핑이라 spec 의 raw 어휘값
     lineHeight: tokens.text.leading[v],
     letterSpacing: tokens.text.tracking[v],
-    color: tokens.color.content[TEXT_CONTENT[v]],
+    color: tokens.color.ink[TEXT_CONTENT[v]],
     margin: 0,
   });
   // mono 일 때만 — variant px 를 MONO_SCALE 로 줄인다. 두 클래스라 .pui-text-* 를 이긴다.
   globalStyle(`.pui-text-${v}.pui-mono`, {
-    fontSize: `calc(${tokens.text.size[v]} * ${MONO_SCALE})`,
+    fontSize: `calc(${tokens.text.size[v]} * ${tokens.text.monoSizeScale})`,
   });
 }
 
@@ -117,7 +131,7 @@ for (const v of TEXT_VARIANTS) {
 // loop 뒤에 와서 같은 특정도의 .pui-text-* 를 순서로 이긴다.
 globalStyle(".pui-mono", {
   fontFamily: tokens.text.font.mono,
-  letterSpacing: "-0.04em",
+  letterSpacing: tokens.text.tracking.mono,
 });
 
 // mono 는 half-step 이 필요 없다. half-step(450·550)은 작은 *sans* 가 Retina 에서
@@ -127,7 +141,7 @@ globalStyle(".pui-mono", {
 // 내린다 (title·heading 등은 이미 whole-step 600·700 이라 그대로). 두 클래스 셀렉터라
 // 특정도가 높아 .pui-text-* 를 이긴다.
 globalStyle(".pui-text-body.pui-mono, .pui-text-caption.pui-mono", {
-  fontWeight: "400",
+  fontWeight: tokens.text.weight.regular,
 });
 
 // ╭──────────────────────────────────────────────────────────────────────────╮
@@ -137,8 +151,8 @@ globalStyle(".pui-text-body.pui-mono, .pui-text-caption.pui-mono", {
 globalStyle("*", {
   "@media": {
     "(prefers-reduced-motion: reduce)": {
-      transitionDuration: "0.01ms !important",
-      animationDuration: "0.01ms !important",
+      transitionDuration: `${tokens.motion.duration.reduced} !important`,
+      animationDuration: `${tokens.motion.duration.reduced} !important`,
     },
   },
 });

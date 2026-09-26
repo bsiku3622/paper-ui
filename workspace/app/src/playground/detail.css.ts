@@ -26,7 +26,7 @@ globalStyle(".preview-stage", {
   minHeight: tokens.shape.height.lg.layout,
   padding: tokens.shape.padding.xl.layout,
   borderRadius: tokens.shape.radius.layout.lg,
-  backgroundColor: tokens.color.surface.raised,
+  backgroundColor: tokens.color.bg.raised,
   border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
   overflow: "auto",
 });
@@ -46,7 +46,7 @@ globalStyle(".code-block", {
   position: "relative",
   border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
   borderRadius: tokens.shape.radius.layout.md,
-  background: tokens.color.surface.raised,
+  background: tokens.color.bg.raised,
   overflow: "hidden",
 });
 
@@ -69,12 +69,12 @@ globalStyle(".code-editor", {
   fontStyle: "normal",
   letterSpacing: tokens.text.tracking.caption,
   lineHeight: tokens.text.leading.body,
-  color: tokens.color.content.primary,
+  color: tokens.color.ink.primary,
   tabSize: 2,
 });
 
-globalStyle(".code-block--error", { borderColor: tokens.color.accent.error.edge });
-globalStyle(".code-block--editing", { background: tokens.color.surface.sunken });
+globalStyle(".code-block--error", { borderColor: tokens.color.accent.error.soft });
+globalStyle(".code-block--editing", { background: tokens.color.bg.sunken });
 globalStyle(".code-error", { display: "block", paddingInline: tokens.shape.padding.md.layout, paddingBottom: tokens.shape.padding.sm.interaction });
 
 globalStyle(".code-block pre", {
@@ -88,7 +88,7 @@ globalStyle(".code-block pre", {
   fontStyle: "normal",
   letterSpacing: tokens.text.tracking.caption,
   lineHeight: tokens.text.leading.body,
-  color: tokens.color.content.primary,
+  color: tokens.color.ink.primary,
   tabSize: 2,
 });
 

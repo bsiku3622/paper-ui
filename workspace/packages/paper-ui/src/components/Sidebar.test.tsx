@@ -28,7 +28,7 @@ describe("Sidebar", () => {
       <Sidebar value="components" onValueChange={onValueChange}>
         <Sidebar.Group>
           <Sidebar.Item value="components">
-            컴포넌트<Sidebar.Badge accent="info" selectedVariant="outline">NEW</Sidebar.Badge>
+            컴포넌트<Sidebar.Badge accent="info" selectedVariant="hairline">NEW</Sidebar.Badge>
           </Sidebar.Item>
         </Sidebar.Group>
       </Sidebar>,
@@ -36,6 +36,6 @@ describe("Sidebar", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "컴포넌트NEW" }));
     expect(onValueChange).toHaveBeenCalledWith("components");
-    expect(screen.getByText("NEW").className).toContain("pui-a-info-outline");
+    expect(screen.getByText("NEW").className).toContain("pui-a-info-hairline");
   });
 });

@@ -17,7 +17,7 @@ export const modalBackdrop = style({
   display: "grid",
   placeItems: "center",
   padding: tokens.shape.padding.xl.interaction,
-  background: tokens.color.scrim, // 테마 인식 — 다크에선 더 짙어져 앞면을 띄운다
+  background: tokens.color.overlay.scrim, // 테마 인식 — 다크에선 더 짙어져 앞면을 띄운다
   animation: `${fade} ${tokens.motion.duration.base} ${tokens.motion.easing.standard}`,
 });
 

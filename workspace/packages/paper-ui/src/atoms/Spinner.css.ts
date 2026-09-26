@@ -12,11 +12,11 @@ export const spinnerRoot = style({
   display: "inline-block",
   flexShrink: 0,
   borderRadius: tokens.shape.radius.full,
-  borderWidth: tokens.shape.constants.focusRingWidth,
+  borderWidth: tokens.shape.constants.spinnerStrokeWidth,
   borderStyle: "solid",
   borderColor: tokens.color.border.base,
-  borderTopColor: tokens.color.content.primary,
-  animation: `${spin} ${tokens.motion.loop.spin} linear infinite`,
+  borderTopColor: tokens.color.ink.primary,
+  animation: `${spin} ${tokens.motion.loop.spin} ${tokens.motion.easing.linear} infinite`,
 });
 
 export const spinnerSize = styleVariants(

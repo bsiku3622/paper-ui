@@ -1,12 +1,13 @@
 // Button — 누르는 자리. accent는 resolver가 정한다: accent(의미) × variant(시각 무게).
 //   accent   primary(검정 일꾼) · info · success · warning · error
-//   variant  solid · soft · outline · ghostMuted
+//   variant  solid · soft · hairline · ghost · muted
 //   shape    rounded(시스템 곡선) · pill(알약)
 //
 // 예) <Button>저장</Button>                        검정 solid (primary)
 //     <Button variant="soft">미리보기</Button>      회색 secondary
 //     <Button accent="error">삭제</Button>           빨강 solid
-//     <Button accent="error" variant="ghostMuted">…</Button>  빨강 텍스트
+//     <Button accent="error" variant="ghost">…</Button>  빨강 텍스트
+//     <Button variant="muted">취소</Button>  accent subtle 보조 텍스트
 //     <Button loading>저장 중</Button>              스피너 + aria-busy
 //     <Button shape="pill">시작하기</Button>        알약 (hero CTA 자리)
 //     <Button as={Link} to="/docs">문서 읽기</Button>  누르면 이동하는 자리
@@ -32,6 +33,7 @@ import {
   buttonFull,
   buttonPill,
   buttonFontSize,
+  buttonWeight,
 } from "./Button.css";
 
 type ButtonOwn<As extends ElementType> = {
@@ -44,8 +46,7 @@ type ButtonOwn<As extends ElementType> = {
   // 큰 면을 채우는 기본은 검정(primary) — 색은 의미가 있을 때만.
   accent?: Accent;
   variant?: Variant;
-  // 크기 3 단 (sm·md·lg). md 가 anchor(기본), sm 은 밀집/보조, lg 는 CTA. Field·Select 와
-  // 같은 사다리라 나란히 두면 높이가 맞는다.
+  // 크기 3 단 (sm·md·lg). md가 Demo 기준 anchor며 Field·Select와 같은 높이 사다리를 쓴다.
   size?: ControlSize;
   // 컨트롤 실루엣은 유지하고 라벨만 조정하는 통로. 기본값은 size 사다리를 따른다.
   fontSize?: TextVariant;
@@ -105,6 +106,7 @@ const ButtonImpl = forwardRef<HTMLElement, ButtonImplProps>(function Button(
         INTERACTIVE,
         buttonRoot,
         buttonSize[size],
+        buttonWeight[variant === "solid" ? "strong" : "regular"],
         fontSize && buttonFontSize[fontSize],
         resolveAccent(accent, variant),
         fullWidth && buttonFull,

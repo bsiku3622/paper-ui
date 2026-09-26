@@ -1,6 +1,6 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
-import { tokens, STATUS, semanticFormHoverShadow, stateTransition } from "../tokens";
+import { tokens, STATUS, stateTransition } from "../tokens";
 import type { StatusName, TextVariant } from "../tokens";
 import { TEXT_VARIANTS } from "../tokens";
 import { ladderRules } from "../internal/sizeLadder";
@@ -13,25 +13,18 @@ export const fieldWrap = style({
   alignItems: "center",
   gap: tokens.shape.gap.sm,
   width: "100%",
-  background: tokens.color.surface.raised,
   borderRadius: tokens.shape.radius.interaction,
   borderWidth: tokens.shape.constants.borderWidth,
   borderStyle: "solid",
   borderColor: tokens.color.border.base,
-  color: tokens.color.content.primary,
+  color: tokens.color.ink.primary,
   fontFamily: tokens.text.font.sans,
-  // ⚠ **굵기·자간을 명시한다.** 예전엔 fontFamily 만 정하고 둘을 안 줘서, 브라우저 기본값
-  // (400 · normal)으로 떨어져 있었다. 이 시스템의 `normal` 은 **450** 이다 — 작은 sans 가
-  // Retina 에서 힘이 빠지는 걸 잡으려고 half-step 을 얹은 값인데(tokens/text.ts), 정작
-  // 사람이 글자를 *써 넣는* 자리만 그 보정을 못 받고 있었다. 옆의 Button(550)과 나란히
-  // 두면 입력 글자가 눈에 띄게 얇고, 그게 "크기가 다른가?" 로 읽힌다(크기는 둘 다 14다).
-  //
-  // 자간은 body 다 — 입력칸에 든 건 UI 라벨이 아니라 사람이 쓴 *내용* 이라, Button 의
-  // label 자간(+0.01em)이 아니라 본문 자간(−0.006em)을 따른다.
+  lineHeight: tokens.text.leading.control,
+  // 사용자가 입력하는 값은 CTA 라벨보다 가볍게, 본문 자간으로 표시한다.
   fontWeight: tokens.text.weight.normal,
   letterSpacing: tokens.text.tracking.body,
   cursor: "text",
-  transition: stateTransition("border-color", "box-shadow", "background"),
+  transition: stateTransition("border-color", "background"),
   selectors: {
     // neutral hover는 배경을 흔들지 않고 전용 border.hover 선으로 형태를 가볍게 세운다.
     '&[data-pui-status="default"]:hover:not(:focus-within):has(input:enabled)': {
@@ -39,47 +32,62 @@ export const fieldWrap = style({
     },
     // pointer focus는 keyboard ring 대신 hover보다 한 단계 또렷한 soft edge를 남긴다.
     '&[data-pui-status="default"][data-pui-pointer-focus]:has(input:focus)': {
-      borderColor: tokens.color.content.secondary,
+      borderColor: tokens.color.ink.secondary,
     },
     // keyboard focus — 안쪽 input 이 :focus-visible일 때만 래퍼 *바깥* 에 파란 링.
     // 클릭은 caret과 edge만 남기고, Tab 탐색 위치에만 ring을 쓴다.
     "&:not([data-pui-pointer-focus]):has(input:focus-visible)": {
-      outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.focus.ring}`,
+      outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.interaction.focus}`,
       outlineOffset: tokens.shape.constants.focusRingOffset,
     },
     "&:has(input:disabled)": { opacity: 0.5, cursor: "not-allowed" },
   },
 });
 
+// Raised 는 기본 입력 표면, sunken 은 검색·필터처럼 주변 canvas 안에 잠기는 입력 표면.
+// 양쪽 모두 semantic surface token만 사용하고 경계선은 같은 border.base를 유지한다.
+export const fieldSurface = styleVariants({
+  raised: { background: tokens.color.bg.raised },
+  sunken: { background: tokens.color.bg.sunken },
+});
+
 // 안쪽 input — 면·테두리·아웃라인 없음. 폰트·색은 래퍼에서 상속.
 //
-// ⚠ 자간은 `font: inherit` 로 안 따라온다. `font` 단축 속성은 font-* 만 다시 세우고
-// letter-spacing 은 안 건드리는데, 브라우저 기본 스타일시트가 폼 컨트롤에 letter-spacing:
-// normal 을 **명시** 해 두어 상속이 거기서 끊긴다. 그래서 따로 이어 붙인다 — 안 그러면
-// 래퍼(−0.006em)와 안쪽 글자(0)의 자간이 갈려 placeholder 와 입력값이 미세하게 다르게 앉는다.
+// 브라우저 기본 폼 스타일이 letter-spacing: normal 을 명시해 래퍼의 자간 상속을 끊을 수
+// 있으므로 안쪽 input 에서 이어 붙인다. placeholder 와 입력값이 같은 기준선으로 읽힌다.
 export const fieldInput = style({
   flex: 1,
   minWidth: 0,
+  // Chromium의 input은 자체 overflow: clip을 쓰므로, line-height만 높여도 caret가 작은
+  // input box 경계에서 잘릴 수 있다. 입력면 높이 전체를 확보하고 줄상자는 내부에서 중앙에 둔다.
+  height: "100%",
   border: "none",
+  // 전역 :focus-visible의 radius는 wrapper가 아니라 input 자신에게도 적용된다. Native
+  // input은 overflow: clip이라 선택 highlight와 caret을 그 둥근 경계에서 잘라낸다.
+  // Field의 ring은 wrapper가 소유하므로 안쪽 입력 면은 직각 clipping box로 둔다.
+  borderRadius: 0,
   background: "transparent",
   outline: "none",
   font: "inherit",
+  // control line-height(1)까지 물려받으면 브라우저 caret와 한글 fallback glyph가
+  // 한 줄 상자에 눌려 위아래가 잘릴 수 있다. 입력 잉크에는 본문 행간을 주고 래퍼 안에서
+  // 중앙 정렬해 caret 높이만 확보한다.
+  lineHeight: tokens.text.leading.body,
   letterSpacing: "inherit",
   color: "inherit",
   padding: 0,
   margin: 0,
   selectors: {
-    "&::placeholder": { color: tokens.color.content.tertiary },
+    "&::placeholder": { color: tokens.color.ink.tertiary },
     // 전역 :focus-visible rule보다 높은 특정도로 input 자체의 ring은 끈다. ring의 주인은
     // keyboard focus를 읽는 wrapper다.
-    "&:focus-visible": { outline: "none" },
+    "&:focus-visible": { outline: "none", borderRadius: 0 },
   },
 });
 
 // size 3 단 — 베이스에서 **가로 여백만** inputPaddingX(7 · 9 · 12)로 갈아 끼운다.
 // height 와 글자는 베이스 그대로라 폼 한 줄에서 버튼과 같은 높이에 선다.
 //
-// md의 세로 잉크는 (34 − 14) / 2 = 10이고, 가로는 border 1 + padding 9 = 10이다.
 // Field·Select·Textarea가 같은 form geometry를 공유한다. 자세한 계산은 tokens/shape.ts.
 export const fieldSize = styleVariants(
   ladderRules((s) => ({ paddingInline: tokens.shape.inputPaddingX[s] })),
@@ -89,33 +97,21 @@ export const fieldFontSize = styleVariants(
   Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.text.size[variant] }])) as Record<TextVariant, { fontSize: string }>,
 );
 
-// status — semantic Form은 처음부터 solid 선으로 상태를 분명히 보이고, hover에서는 선을 더
-// 바꾸는 대신 같은 pigment를 중앙 halo로 번지게 한다. 포커스 때는 shadow를 끄고 바깥의
-// 파란 outline만 남겨 keyboard focus와 pointer hover가 겹치지 않게 한다.
+// status — semantic Form은 accent solid 선으로 상태를 분명히 표시한다.
 export const fieldStatus = styleVariants(
   Object.fromEntries(
     STATUS.map((s) => {
       const accent = tokens.color.accent[s];
-      return [
-        s,
-        {
-          borderColor: accent.solid,
-          selectors: {
-            "&:hover:not(:focus):not(:focus-within):not(:disabled):not(:has(input:disabled))": {
-              boxShadow: semanticFormHoverShadow(accent.solid),
-            },
-          },
-        },
-      ];
+      return [s, { borderColor: accent.solid }];
     }),
-  ) as unknown as Record<StatusName, { borderColor: string; selectors: Record<string, { boxShadow: string }> }>,
+  ) as Record<StatusName, { borderColor: string }>,
 );
 
 // 어도먼트 — leading/trailing 슬롯(아이콘·$·단위). 흐린 잉크, 축소 안 됨.
 export const fieldAdornment = style({
   display: "inline-flex",
   alignItems: "center",
-  color: tokens.color.content.secondary,
+  color: tokens.color.ink.secondary,
   flexShrink: 0,
 });
 
@@ -131,12 +127,12 @@ export const fieldAction = style({
   padding: 0,
   margin: 0,
   cursor: "pointer",
-  color: tokens.color.content.tertiary,
+  color: tokens.color.ink.tertiary,
   transition: stateTransition("color"),
   selectors: {
-    "&:hover": { color: tokens.color.content.primary },
+    "&:hover": { color: tokens.color.ink.primary },
     "&:focus-visible": {
-      outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.focus.ring}`,
+      outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.interaction.focus}`,
       outlineOffset: tokens.shape.constants.focusRingOffset,
       borderRadius: tokens.shape.radius.interaction,
     },

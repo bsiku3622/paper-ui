@@ -200,7 +200,7 @@ export const COMPONENTS: CompSpec[] = [
     blurb: "accent × variant가 독립된 시각 무게 축이다. primary도 neutral accent family라 모든 accent가 같은 five-slot contract를 공유한다. fontSize는 버튼 실루엣과 별도로 조절한다.",
     controls: [
       { kind: "enum", prop: "accent", label: "accent", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
-      { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "softMuted", "outline", "outlineMuted", "hairline", "hairlineMuted", "ghost", "ghostMuted"], def: "solid" },
+      { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "hairline", "ghost", "muted"], def: "solid" },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "enum", prop: "fontSize", label: "fontSize", options: ["default", "label", "caption", "body"], def: "default" },
       { kind: "bool", prop: "loading", label: "loading", def: false },
@@ -234,7 +234,7 @@ export const COMPONENTS: CompSpec[] = [
     blurb: "아이콘만 담는 정사각 버튼. Button과 분리해 iconSize와 접근성 이름을 명시한다.",
     controls: [
       { kind: "enum", prop: "accent", label: "accent", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
-      { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "softMuted", "outline", "outlineMuted", "hairline", "hairlineMuted", "ghost", "ghostMuted"], def: "solid" },
+      { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "hairline", "ghost", "muted"], def: "solid" },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "enum", prop: "iconSize", label: "iconSize", options: ["label", "caption", "body", "subheading"], def: "body" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
@@ -251,10 +251,10 @@ export const COMPONENTS: CompSpec[] = [
     change: "mod",
     name: "Badge",
     group: "Atoms",
-    blurb: "상태 한 낱말. accent × variant(soft·softMuted·solid·outline·outlineMuted·ghostMuted). dot 으로 앞에 상태 점. 표시용이라 hover 없음.",
+    blurb: "상태 한 낱말. accent × variant(solid·soft·hairline·ghost) + 중립 보조 텍스트 muted. dot 으로 앞에 상태 점. 표시용이라 hover 없음.",
     controls: [
       { kind: "enum", prop: "accent", label: "accent", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
-      { kind: "enum", prop: "variant", label: "variant", options: ["soft", "softMuted", "solid", "outline", "outlineMuted", "hairline", "hairlineMuted", "ghost", "ghostMuted"], def: "soft" },
+      { kind: "enum", prop: "variant", label: "variant", options: ["soft", "solid", "hairline", "ghost", "muted"], def: "soft" },
       { kind: "bool", prop: "dot", label: "dot", def: false },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "enum", prop: "fontSize", label: "fontSize", options: ["default", "label", "caption", "body"], def: "default" },
@@ -270,7 +270,7 @@ export const COMPONENTS: CompSpec[] = [
     slug: "field",
     name: "Field",
     group: "Atoms",
-    blurb: "input group — leading/trailing 어도먼트(아이콘·$·단위) + clear(×) + 비밀번호 보기. 래퍼가 테두리·포커스링·상태를 진다. shape=\"pill\" 은 검색창 결 — Button·Badge 와 같은 어휘다.",
+    blurb: "input group — raised/sunken surface와 leading/trailing 어도먼트(아이콘·$·단위), clear(×), 비밀번호 보기를 조합한다. 래퍼가 테두리·키보드 focus ring·상태를 맡고 내부 input은 입력과 caret 렌더링을 맡는다.",
     controls: [
       { kind: "text", prop: "placeholder", label: "placeholder", def: "검색…" },
       { kind: "enum", prop: "type", label: "type", options: ["text", "password"], def: "text" },
@@ -283,6 +283,7 @@ export const COMPONENTS: CompSpec[] = [
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "enum", prop: "fontSize", label: "fontSize", options: ["default", "label", "caption", "body"], def: "default" },
       { kind: "enum", prop: "shape", label: "shape", options: ["rounded", "pill"], def: "rounded" },
+      { kind: "enum", prop: "surface", label: "surface", options: ["raised", "sunken"], def: "raised" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
       { kind: "bool", prop: "numeric", label: "numeric", def: false },
     ],
@@ -301,13 +302,14 @@ export const COMPONENTS: CompSpec[] = [
           size={s(st.size) === "default" ? undefined : s(st.size) as "sm" | "md" | "lg"}
           fontSize={st.fontSize === "default" ? undefined : (s(st.fontSize) as TextVariant)}
           shape={s(st.shape) === "default" ? undefined : s(st.shape) as "rounded" | "pill"}
+          surface={s(st.surface) as "raised" | "sunken"}
           disabled={b(st.disabled)}
           numeric={b(st.numeric)}
         />
       </Box>
     ),
     code: (st) =>
-      `<Field${A("placeholder", s(st.placeholder))}${AE("type", s(st.type), "text")}${b(st.leading) ? " leading={<Icon>…</Icon>}" : ""}${b(st.trailing) ? ' trailing={<Text ink="faint">kg</Text>}' : ""}${A("clearable", b(st.clearable))}${A("showPasswordToggle", b(st.showPasswordToggle))}${AE("align", s(st.align), "start")}${AE("status", s(st.status), "default")}${AE("size", s(st.size), "md")}${AE("fontSize", s(st.fontSize), "default")}${AE("shape", s(st.shape), "rounded")}${A("disabled", b(st.disabled))}${A("numeric", b(st.numeric))} />`,
+      `<Field${A("placeholder", s(st.placeholder))}${AE("type", s(st.type), "text")}${b(st.leading) ? " leading={<Icon>…</Icon>}" : ""}${b(st.trailing) ? ' trailing={<Text ink="faint">kg</Text>}' : ""}${A("clearable", b(st.clearable))}${A("showPasswordToggle", b(st.showPasswordToggle))}${AE("align", s(st.align), "start")}${AE("status", s(st.status), "default")}${AE("size", s(st.size), "md")}${AE("fontSize", s(st.fontSize), "default")}${AE("shape", s(st.shape), "rounded")}${AE("surface", s(st.surface), "raised")}${A("disabled", b(st.disabled))}${A("numeric", b(st.numeric))} />`,
   },
   {
     slug: "checkbox",
@@ -565,11 +567,11 @@ export const COMPONENTS: CompSpec[] = [
     ],
     render: (st) => (
       <Tooltip>
-        <Tooltip.Trigger asChild><Button variant="outline">hover 해보세요</Button></Tooltip.Trigger>
+        <Tooltip.Trigger asChild><Button variant="hairline">hover 해보세요</Button></Tooltip.Trigger>
         <Tooltip.Content maxWidth={s(st.maxWidth) as BoxDimension}><Stack gap="xs"><Text variant="label" ink="inherit">새 이슈</Text><Text variant="caption" ink="inherit">{s(st.content)}</Text></Stack></Tooltip.Content>
       </Tooltip>
     ),
-    code: (st) => `<Tooltip>\n  <Tooltip.Trigger asChild>\n    <Button variant="outline">hover</Button>\n  </Tooltip.Trigger>\n  <Tooltip.Content${AE("maxWidth", s(st.maxWidth), "xl")}>\n    <Stack><Text>새 이슈</Text><Text>${s(st.content)}</Text></Stack>\n  </Tooltip.Content>\n</Tooltip>`,
+    code: (st) => `<Tooltip>\n  <Tooltip.Trigger asChild>\n    <Button variant="hairline">hover</Button>\n  </Tooltip.Trigger>\n  <Tooltip.Content${AE("maxWidth", s(st.maxWidth), "xl")}>\n    <Stack><Text>새 이슈</Text><Text>${s(st.content)}</Text></Stack>\n  </Tooltip.Content>\n</Tooltip>`,
   },
   {
     slug: "breadcrumb",
@@ -605,7 +607,7 @@ export const COMPONENTS: CompSpec[] = [
     blurb: "상태 한 줄을 색이 깔린 면으로 알린다. Button·Badge 와 같은 accent × variant 매트릭스를 그대로 문다 — variant 가 이미 면의 무게 축이라 Alert 전용 surface 축을 따로 세우지 않았다.",
     controls: [
       { kind: "enum", prop: "accent", label: "accent", options: ["primary", "info", "success", "warning", "error"], def: "info" },
-      { kind: "enum", prop: "variant", label: "variant", options: ["soft", "softMuted", "solid", "outline", "outlineMuted", "hairline", "hairlineMuted", "ghost", "ghostMuted"], def: "soft" },
+      { kind: "enum", prop: "variant", label: "variant", options: ["soft", "solid", "hairline", "ghost", "muted"], def: "soft" },
       { kind: "text", prop: "title", label: "title", def: "확인이 필요합니다" },
       { kind: "text", prop: "children", label: "children", def: "이 작업은 되돌릴 수 없습니다." },
     ],
@@ -757,7 +759,7 @@ export const COMPONENTS: CompSpec[] = [
     ],
     render: (st) => <ModalDemo title={s(st.title)} size={s(st.size) as "sm" | "md" | "lg"} />,
     code: (st) =>
-      `const [open, setOpen] = useState(false);\n<Modal open={open} onOpenChange={setOpen}${AE("size", s(st.size), "md")}>\n  <Modal.Header><Modal.Title>${s(st.title)}</Modal.Title><Modal.Description>설명</Modal.Description></Modal.Header>\n  <Modal.Body><Text variant="body">본문</Text></Modal.Body>\n  <Modal.Footer><Modal.Close variant="ghostMuted">취소</Modal.Close><Modal.Close>확인</Modal.Close></Modal.Footer>\n</Modal>`,
+      `const [open, setOpen] = useState(false);\n<Modal open={open} onOpenChange={setOpen}${AE("size", s(st.size), "md")}>\n  <Modal.Header><Modal.Title>${s(st.title)}</Modal.Title><Modal.Description>설명</Modal.Description></Modal.Header>\n  <Modal.Body><Text variant="body">본문</Text></Modal.Body>\n  <Modal.Footer><Modal.Close variant="muted">취소</Modal.Close><Modal.Close>확인</Modal.Close></Modal.Footer>\n</Modal>`,
   },
   {
     slug: "navbar",
@@ -811,8 +813,8 @@ export const COMPONENTS: CompSpec[] = [
     group: "Components",
     blurb: "Menu를 trigger에 붙이는 떠 있는 action surface. 바깥 클릭·Escape·초기 포커스·선택 후 닫힘을 Root가 맡고 이 surface만 overlay shadow를 갖는다.",
     controls: [{ kind: "enum", prop: "align", label: "align", options: ["start", "end"], def: "start" }],
-    render: (st) => <Box style={{ paddingBottom: tokens.shape.height.xs.layout }}><DropdownMenu align={s(st.align) as "start" | "end"}><DropdownMenu.Trigger><Button variant="outline">문서 작업</Button></DropdownMenu.Trigger><DropdownMenu.Content><DropdownMenu.Item value="duplicate" shortcut="⌘ D">복제</DropdownMenu.Item><DropdownMenu.Item value="move">이동</DropdownMenu.Item><DropdownMenu.Item value="delete" danger>삭제</DropdownMenu.Item></DropdownMenu.Content></DropdownMenu></Box>,
-    code: (st) => `<DropdownMenu${AE("align", s(st.align), "start")}>\n  <DropdownMenu.Trigger><Button variant="outline">문서 작업</Button></DropdownMenu.Trigger>\n  <DropdownMenu.Content>\n    <DropdownMenu.Item value="duplicate" shortcut="⌘ D">복제</DropdownMenu.Item>\n    <DropdownMenu.Item value="move">이동</DropdownMenu.Item>\n    <DropdownMenu.Item value="delete" danger>삭제</DropdownMenu.Item>\n  </DropdownMenu.Content>\n</DropdownMenu>`,
+    render: (st) => <Box style={{ paddingBottom: tokens.shape.height.xs.layout }}><DropdownMenu align={s(st.align) as "start" | "end"}><DropdownMenu.Trigger><Button variant="hairline">문서 작업</Button></DropdownMenu.Trigger><DropdownMenu.Content><DropdownMenu.Item value="duplicate" shortcut="⌘ D">복제</DropdownMenu.Item><DropdownMenu.Item value="move">이동</DropdownMenu.Item><DropdownMenu.Item value="delete" danger>삭제</DropdownMenu.Item></DropdownMenu.Content></DropdownMenu></Box>,
+    code: (st) => `<DropdownMenu${AE("align", s(st.align), "start")}>\n  <DropdownMenu.Trigger><Button variant="hairline">문서 작업</Button></DropdownMenu.Trigger>\n  <DropdownMenu.Content>\n    <DropdownMenu.Item value="duplicate" shortcut="⌘ D">복제</DropdownMenu.Item>\n    <DropdownMenu.Item value="move">이동</DropdownMenu.Item>\n    <DropdownMenu.Item value="delete" danger>삭제</DropdownMenu.Item>\n  </DropdownMenu.Content>\n</DropdownMenu>`,
   },
   {
     slug: "commandmenu",
@@ -916,7 +918,7 @@ const ModalDemo = ({ title, size }: { title: string; size?: "sm" | "md" | "lg" }
         </Modal.Header>
         <Modal.Body><Text variant="body">떠 있는 것만 그림자를 갖는다. Esc로 닫힌다.</Text></Modal.Body>
         <Modal.Footer>
-          <Modal.Close variant="ghostMuted">취소</Modal.Close>
+          <Modal.Close variant="muted">취소</Modal.Close>
           <Modal.Close>확인</Modal.Close>
         </Modal.Footer>
       </Modal>

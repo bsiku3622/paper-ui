@@ -13,7 +13,7 @@ export const treeRow = style({
   border: 0,
   borderRadius: tokens.shape.radius.interaction,
   background: "transparent",
-  color: tokens.color.content.secondary,
+  color: tokens.color.ink.secondary,
   fontFamily: tokens.text.font.sans,
   fontSize: tokens.text.size.body,
   textAlign: "start",
@@ -21,12 +21,12 @@ export const treeRow = style({
   cursor: "pointer",
   transition: stateTransition("background", "color"),
   selectors: {
-    "&:hover, &:focus-visible": { background: tokens.color.interaction.hover, color: tokens.color.content.primary },
+    "&:hover, &:focus-visible": { background: tokens.color.interaction.bgHover.onSurface, color: tokens.color.ink.primary },
   },
 });
 export const treeRowActive = style({
   background: tokens.color.interaction.selected,
-  color: tokens.color.content.primary,
+  color: tokens.color.ink.primary,
   fontWeight: tokens.text.weight.medium,
   selectors: { "&:hover": { background: tokens.color.interaction.selected } },
 });
@@ -36,7 +36,7 @@ export const treeDepth = styleVariants({
   3: { paddingLeft: tokens.shape.padding.xl.interaction, paddingRight: tokens.shape.padding.sm.interaction },
   4: { paddingLeft: `calc(${tokens.shape.padding.xl.interaction} + ${tokens.shape.padding.md.interaction})`, paddingRight: tokens.shape.padding.sm.interaction },
 });
-export const treeChevron = style({ display: "inline-flex", color: tokens.color.content.tertiary, transition: stateTransition("transform") });
+export const treeChevron = style({ display: "inline-flex", color: tokens.color.ink.tertiary, transition: stateTransition("transform") });
 export const treeChevronOpen = style({ transform: "rotate(90deg)" });
 export const treeSpacer = style({ width: tokens.shape.icon.sm, flex: "0 0 auto" });
 export const treeLabel = style({ flex: 1, minWidth: 0 });

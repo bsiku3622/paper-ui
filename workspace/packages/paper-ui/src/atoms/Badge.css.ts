@@ -46,7 +46,7 @@ export const badgeDot = style({
 // 가로 여백은 badgePaddingX (6 · 8 · 10) — 높이 사다리(20 · 22 · 24)와 같은 Δ2 로 움직여
 // 세 크기가 한 실루엣의 축소·확대로 읽힌다. 예전엔 Box 여백 사다리(4 · 8 · 12)를 빌려
 // Δ4 로 두 배 빨리 벌어졌고, 글자가 12 로 고정되고 나서 sm 이 답답하고 lg 가 헐거워졌다.
-const BADGE_FONT = tokens.shape.fontSize.sm; // 12 — size 무관
+const BADGE_FONT = tokens.text.size.label; // 12 — Text owns type size
 
 export const badgeSize = styleVariants(
   Object.fromEntries(

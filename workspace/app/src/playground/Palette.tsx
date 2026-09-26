@@ -1,127 +1,51 @@
 // Palette (Foundations) — semantic role 이전, 시스템이 실제로 색을 시작하는 자리.
 //
-// Tokens 화면은 소비자가 쓰는 L2 semantic token을 보여준다. 여기는 그 앞의 L0/L1을
-// 한 방향으로 읽게 한다: neutral은 raw zinc surface palette → neutral ladder, accent는
-// pigment identity → calibrated ladder. 이 화면만 의도적으로 source layer를 읽는다.
+// Tokens 화면은 소비자가 쓰는 semantic token을 보여준다. 여기는 OKLCH palette source와
+// 생성된 HEX Palette Token을 나란히 보여주는 Foundations inspector다.
 
-import { useEffect, useState } from "react";
+import { Box, Inline, PageHeader, Stack, Text } from "@studio-baeks/paper-ui";
 
-import { Box, Inline, Stack, Text, tokens } from "@studio-baeks/paper-ui";
-
-import { ACCENT_LADDER, ACCENT_STEPS } from "../../../packages/paper-ui/src/tokens/color-ladder";
-import { ACCENT_PALETTES, PALETTE, SURFACE_PALETTE, SURFACE_STEPS } from "../../../packages/paper-ui/src/tokens/palette";
-import type { ColorMode, SurfaceStep } from "../../../packages/paper-ui/src/tokens/palette";
+import { PALETTE_COORDINATES, PALETTE_TOKENS } from "../../../packages/paper-ui/src/tokens/color-ladder";
+import { ACCENT_PALETTES, ACCENT_STEPS, ALPHA_STEPS, OKLCH_PALETTE, PALETTE_STEPS } from "../../../packages/paper-ui/src/tokens/palette";
 
 import { Crumb, PlaygroundLayout } from "./shell";
+import "./palette.css";
 
-const useColorMode = (): ColorMode => {
-  const [mode, setMode] = useState<ColorMode>(() =>
-    typeof document === "undefined" || document.documentElement.dataset.theme === "dark" ? "dark" : "light",
-  );
-
-  useEffect(() => {
-    const root = document.documentElement;
-    const sync = () => setMode(root.dataset.theme === "dark" ? "dark" : "light");
-    sync();
-    const observer = new MutationObserver(sync);
-    observer.observe(root, { attributes: true, attributeFilter: ["data-theme"] });
-    return () => observer.disconnect();
-  }, []);
-
-  return mode;
-};
-
-const surfaceInk = (mode: ColorMode, step: SurfaceStep) => {
-  const index = SURFACE_STEPS.indexOf(step);
-  if (mode === "light") return index < 6 ? tokens.color.surface.raised : tokens.color.content.primary;
-  return index < 7 ? tokens.color.content.primary : tokens.color.surface.raised;
-};
-
-// Palette swatch 자체도 대비를 지켜야 한다. 두 theme의 ladder 방향을 고려해 충분히
-// 어두운 칸에는 밝은 잉크를, 충분히 밝은 칸에는 어두운 잉크를 올린다.
-const oklchParts = (value: string) => {
-  const [, lightness, chroma, hue] = value.match(/^oklch\(([\d.]+) ([\d.]+) ([\d.]+)\)$/) ?? [];
-  return lightness ? { lightness, chroma, hue } : undefined;
-};
-
-const accentInk = (mode: ColorMode, palette: (typeof ACCENT_PALETTES)[number], color: string) => {
-  const lightness = Number(oklchParts(color)?.lightness);
-  // Use the actual generated tone rather than step numbers: dark-mode ladders run in
-  // the opposite direction. Amber 400 is intentionally kept light per the palette review.
-  const lightInk = palette === "amber" && mode === "light" && lightness >= 0.66 && lightness < 0.7
-    ? true
-    : lightness < (mode === "dark" ? 0.58 : 0.62);
-  if (mode === "dark") return lightInk ? tokens.color.content.primary : tokens.color.surface.raised;
-  return lightInk ? tokens.color.surface.raised : tokens.color.content.primary;
+const paletteIdentity = (palette: (typeof ACCENT_PALETTES)[number]) => {
+  const [lightness, chroma, hue] = OKLCH_PALETTE[palette]["600"]!;
+  return `H ${hue} · C ${chroma} · L ${lightness}`;
 };
 
 const Section = ({ title, desc, children }: { title: string; desc: string; children: React.ReactNode }) => (
   <Stack as="section" gap="lg">
     <Stack gap="xs">
-      <Text variant="label">{title}</Text>
-      <Text variant="caption" ink="soft">{desc}</Text>
+      <Text variant="heading">{title}</Text>
+      <Text variant="body" ink="soft">{desc}</Text>
     </Stack>
     {children}
   </Stack>
 );
 
-const SurfaceStrip = ({ mode }: { mode: ColorMode }) => (
-  <Box
-    border
-    radius="md"
-    overflow="hidden"
-    style={{
-      display: "grid",
-      gridTemplateColumns: "repeat(13, minmax(4.75rem, 1fr))",
-      minWidth: "61.75rem",
-    }}
-  >
-    {SURFACE_STEPS.map((step) => {
-      const color = SURFACE_PALETTE[mode][step];
-      const ink = surfaceInk(mode, step);
-      return (
-        <Stack
-          key={step}
-          gap="xs"
-          style={{ minHeight: "7.25rem", padding: tokens.shape.padding.sm.interaction, background: color, color: ink, justifyContent: "space-between" }}
-        >
-          <Text variant="caption" as="span" style={{ color: "inherit" }}>{step}</Text>
-          <Text variant="caption" family="mono" as="span" style={{ color: "inherit", opacity: 0.72 }}>{color}</Text>
-        </Stack>
-      );
-    })}
-  </Box>
-);
-
-const AccentStrip = ({ mode, palette }: { mode: ColorMode; palette: (typeof ACCENT_PALETTES)[number] }) => (
-  <Stack gap="sm">
-    <Inline gap="sm" align="baseline" wrap>
-      <Text variant="subheading" as="span">{palette}</Text>
-      <Text variant="caption" family="mono" ink="faint" as="span">
-        H {PALETTE[palette].hue[mode]} · C {PALETTE[palette].chroma}
-      </Text>
-    </Inline>
-    <Box
-      border
-      radius="md"
-      overflow="hidden"
-    style={{ display: "grid", gridTemplateColumns: "repeat(11, minmax(5.5rem, 1fr))", minWidth: "60.5rem" }}
-    >
-      {ACCENT_STEPS.map((step) => {
-        const color = ACCENT_LADDER[mode][palette][step];
-        const ink = accentInk(mode, palette, color);
-        const parts = oklchParts(color);
+const PaletteStrip = <Step extends string>({ name, steps, getColor, getCoordinates }: {
+  name: string;
+  steps: readonly Step[];
+  getColor: (step: Step) => string;
+  getCoordinates: (step: Step) => readonly [number, number, number];
+}) => (
+  <Stack className="palette-scale" gap="sm">
+    {name !== "Neutral" && <Inline className="palette-scale-heading" gap="sm" align="baseline" wrap>
+      <Text variant="subheading" as="span">{name}</Text>
+      <Text variant="caption" family="mono" ink="faint" as="span">{paletteIdentity(name as (typeof ACCENT_PALETTES)[number])}</Text>
+    </Inline>}
+    <Box className={`palette-grid ${name === "Neutral" ? "palette-grid--neutral" : "palette-grid--accent"}`} role="list" aria-label={`${name} palette`}>
+      {steps.map((step) => {
+        const color = getColor(step);
+        const [lightness, chroma, hue] = getCoordinates(step);
         return (
-          <Stack
-            key={step}
-            gap="xs"
-            style={{ minHeight: "6.5rem", padding: tokens.shape.padding.sm.interaction, background: color, borderInlineStart: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`, color: ink, justifyContent: "space-between" }}
-          >
-            <Text variant="caption" as="span" style={{ color: "inherit" }}>{step}</Text>
-            <Stack gap="xs" style={{ color: "inherit", opacity: 0.78 }}>
-              <Text variant="caption" family="mono" as="span" style={{ color: "inherit" }}>L {parts?.lightness?.slice(1) ?? "—"} · C {parts?.chroma?.slice(1) ?? "—"}</Text>
-              <Text variant="caption" family="mono" as="span" style={{ color: "inherit" }}>H {parts?.hue ?? "—"}°</Text>
-            </Stack>
+          <Stack key={step} className="palette-cell" role="listitem" gap="xs">
+            <Text variant="caption" family="mono" as="span" ink="faint">{step}</Text>
+            <Box className="palette-swatch" radius="sm" border style={{ background: color }} title={`${name} ${step} · ${color} · L ${lightness.toFixed(3)} · C ${chroma.toFixed(3)} · H ${hue.toFixed(1)}°`} />
+            <Text variant="caption" family="mono" as="span">{color}</Text>
           </Stack>
         );
       })}
@@ -129,48 +53,78 @@ const AccentStrip = ({ mode, palette }: { mode: ColorMode; palette: (typeof ACCE
   </Stack>
 );
 
-export const Palette = () => {
-  const mode = useColorMode();
+const SurfaceStrip = () => (
+  <PaletteStrip name="Neutral" steps={PALETTE_STEPS}
+    getColor={(step) => PALETTE_TOKENS.neutral[step]}
+    getCoordinates={(step) => OKLCH_PALETTE.neutral[step]!} />
+);
 
+const AccentStrip = ({ palette }: { palette: (typeof ACCENT_PALETTES)[number] }) => (
+  <PaletteStrip name={palette} steps={ACCENT_STEPS}
+    getColor={(step) => PALETTE_TOKENS.accent[palette][step]}
+    getCoordinates={(step) => PALETTE_COORDINATES.accent[palette][step]!} />
+);
+
+const AlphaPalette = () => (
+  <Box className="palette-interaction-grid">
+    {(["0", "950"] as const).flatMap((neutral) => ALPHA_STEPS.map((step) => {
+      const token = PALETTE_TOKENS[`alpha${step}`].neutral[neutral];
+      return (
+        <Stack key={`${neutral}-${step}`} gap="xs" style={{ minWidth: 0 }}>
+          <Box
+            border
+            radius="sm"
+            overflow="hidden"
+            style={{ height: "2.75rem", background: PALETTE_TOKENS.neutral[neutral === "0" ? "950" : "0"] }}
+          >
+            <Box style={{ width: "100%", height: "100%", background: token }} />
+          </Box>
+          <Text variant="caption" as="span">alpha{step}.neutral.{neutral}</Text>
+          <Text variant="caption" family="mono" ink="faint" as="span">{token}</Text>
+        </Stack>
+      );
+    }))}
+  </Box>
+);
+
+export const Palette = () => {
   return (
     <PlaygroundLayout value="palette">
-      <Stack gap="xs" style={{ marginBottom: tokens.shape.gap.lg }}>
-        <Crumb group="Reference" name="Palette" />
-        <Text variant="title">Palette</Text>
-        <Text variant="caption" ink="soft">
-          색의 출발점입니다. 현재 {mode} theme의 L0 palette와 L1 calibrated ladder를 보며, 실제 컴포넌트는 다음 단계의 semantic token만 사용합니다.
-        </Text>
-      </Stack>
+      <Stack className="palette-page" gap="xl">
+        <PageHeader>
+          <PageHeader.Location><Crumb group="Reference" name="Palette" /></PageHeader.Location>
+          <PageHeader.Content>
+            <PageHeader.Title>Palette</PageHeader.Title>
+            <PageHeader.Description>테마와 무관한 단일 OKLCH palette와 생성된 HEX token입니다. Light/Dark 테마 차이는 semantic token이 필요한 palette step을 선택해 만듭니다.</PageHeader.Description>
+          </PageHeader.Content>
+        </PageHeader>
 
-      <Stack gap="xl">
         <Section
-          title="Surface palette · zinc"
-          desc="L0의 실제 neutral ramp입니다. 낮은 step은 어둡고 높은 step은 밝습니다. 다음 L1에서 이 순서를 neutral ladder로 연결하고, L2에서 surface.raised·canvas·sunken처럼 역할을 부여합니다."
+          title="Neutral"
+          desc="0부터 950까지 이어지는 단일 중립 scale입니다. Dark canvas를 위해 900과 950 사이에 925를 둡니다."
         >
-          <Box overflow="auto" style={{ paddingBottom: tokens.shape.gap.xs }}>
-            <SurfaceStrip mode={mode} />
-          </Box>
-          <Inline gap="md" wrap>
-            <Text variant="caption" ink="faint" as="span">surface palette → neutral ladder → semantic surface / content / border</Text>
-          </Inline>
+          <SurfaceStrip />
         </Section>
 
         <Section
-          title="Accent palette · calibrated ladders"
-          desc="blue·green·amber·red은 각각 info·success·warning·error로 이어집니다. 대표색을 OKLCH anchor로 두고, 사이 step의 L·C·H를 perceptual space에서 보간해 생성합니다. 기존 Veil anchor 색감은 유지하면서 중간 단계의 밝기와 채도 변화가 매끄러운지 확인합니다."
+          title="Alpha"
+          desc="Neutral 양 끝 색에 고정 opacity scale을 적용한 단일 alpha palette입니다. Interaction, scrim, shadow semantic이 필요한 항목을 선택합니다."
+        >
+          <AlphaPalette />
+        </Section>
+
+        <Section
+          title="Accent"
+          desc="OKLCH 기준 색을 보간해 만든 단일 accent scale입니다. 100과 200 사이에는 soft surface용 150 단계를 둡니다. 색상 값과 source 좌표는 칩에 포인터를 올려 확인할 수 있습니다."
         >
           <Stack gap="lg">
-            {ACCENT_PALETTES.map((palette) => (
-              <Box key={palette} overflow="auto" style={{ paddingBottom: tokens.shape.gap.xs }}>
-                <AccentStrip mode={mode} palette={palette} />
-              </Box>
-            ))}
+            {ACCENT_PALETTES.map((palette) => <AccentStrip key={palette} palette={palette} />)}
           </Stack>
         </Section>
 
         <Section
           title="Semantic handoff"
-          desc="palette나 ladder를 직접 가져오는 것은 Foundations inspector뿐입니다. application과 component는 색 이름이 아니라 역할을 선택합니다."
+          desc="Palette inspector만 원본 좌표와 생성된 HEX token을 살펴봅니다. application과 component는 semantic role만 선택합니다."
         >
           <Inline gap="md" wrap>
             {[

@@ -92,6 +92,7 @@ export type ContainerSize = keyof typeof CONTAINER;
 export const LAYOUT_CONST = {
   breakpoint: BREAKPOINT,
   sizeIntent: SIZE_INTENT,
+  position: POSITIONS,
   inset: INSET,
   container: CONTAINER,
 } as const;

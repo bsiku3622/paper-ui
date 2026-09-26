@@ -36,6 +36,9 @@ export const FONT = {
   mono: "ui-monospace, SFMono-Regular, Menlo, Consolas, 'D2Coding', monospace",
 } as const;
 
+// mono는 sans 대비 시각 크기가 커 보여 동일한 잉크 크기를 위해 살짝 줄인다.
+export const MONO_SIZE_SCALE = "0.95";
+
 // ───── weight — 굵기 어휘 (variant 와 직교) ─────────────────────────────────
 //
 // 컴포넌트가 "550" 같은 임의 숫자를 하드코딩하지 않게, 굵기도 토큰이다. Button ·
@@ -43,10 +46,12 @@ export const FONT = {
 //
 // 값이 반 단계 무겁다 (450·550, not 400·500). dense 시스템이라 글씨가 작은데
 // 400 은 Retina 에서 힘이 빠진다 — 작은 자리일수록 half-step 을 얹어 밀도에
-// 눌리지 않게. 무거운 쪽(semibold·bold)은 이미 존재감이 있어 round 유지.
+// 눌리지 않게. Button primary는 Demo 기준의 strong weight를 별도 사용한다.
 export const WEIGHT = {
+  regular: "400", // mono 본문·caption의 whole-step weight
   normal: "450", // 본문 · 부연 (읽기)
   medium: "550", // UI 컨트롤 — Button · Tab · Nav
+  strong: "650", // 기본 primary action — Demo button anchor
   semibold: "600", // 라벨 · 소제목 · 활성/강조
   bold: "700", // 제목 · 특대
 } as const;
@@ -71,16 +76,17 @@ export type TextVariant = (typeof TEXT_VARIANTS)[number];
 
 // ───── SIZE — variant 별 글자 크기 (base 16px) ──────────────────────────────
 //
-// body 14px 이 anchor — 복잡한 웹앱의 표준 밀도(shadcn text-sm · Atlassian).
-// heading 셋은 22·18·15 로 한 단씩. label 은 12 로 가장 작지만 굵어서 또렷하다.
+// body 14px 이 본문 anchor — 복잡한 웹앱의 기본 밀도. Control 13px은 버튼과 입력의 기준.
+// heading 셋은 22·17·15 로 한 단씩. caption과 label은 크기를 공유하고 굵기로 갈린다.
 
 export const SIZE = {
   display: REM(32), // 2rem
   title: REM(22), // 1.375rem
-  heading: REM(18), // 1.125rem
+  heading: REM(17), // 1.0625rem
   subheading: REM(15), // 0.9375rem
   body: REM(14), // 0.875rem ◀ anchor
-  caption: REM(13), // 0.8125rem
+  control: REM(13), // 0.8125rem — Button·Field·Select의 기본 글자 크기
+  caption: REM(12), // 0.75rem
   label: REM(12), // 0.75rem
 } as const;
 
@@ -89,6 +95,7 @@ export const SIZE = {
 // 큰 글자는 촘촘하게(1.12~1.4), 읽는 본문은 넉넉하게(1.45~1.5).
 
 export const LEADING = {
+  control: "1", // Button chrome — 높이 사다리 안에서 세로 중심을 맞춤
   display: "1.12",
   title: "1.25",
   heading: "1.35",
@@ -104,6 +111,7 @@ export const LEADING = {
 // 아주 미세하게만 — Retina 에서 sans 가 살짝 벌어져 보이는 걸 잡는 정도.
 
 export const TRACKING = {
+  mono: "-0.04em", // 등폭 글꼴의 넓은 advance를 조임
   display: "-0.03em",
   title: "-0.02em",
   heading: "-0.015em",
@@ -155,5 +163,6 @@ export const TEXT_VALUES = {
     size: SIZE,
     leading: LEADING,
     tracking: TRACKING,
+    monoSizeScale: MONO_SIZE_SCALE,
   },
 } as const;

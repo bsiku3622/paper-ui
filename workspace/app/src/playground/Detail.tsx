@@ -101,9 +101,9 @@ const CodeBlock = ({ code, onChange, error }: { code: string; onChange: (code: s
   return (
     <div className={`code-block${editing ? " code-block--editing" : ""}${error ? " code-block--error" : ""}`}>
       <div className="code-actions">
-        <Button variant="hairlineMuted" size="sm" fontSize="label" onClick={copy}>{copied ? "복사됨" : "복사"}</Button>
+        <Button variant="hairline" size="sm" fontSize="label" onClick={copy}>{copied ? "복사됨" : "복사"}</Button>
         <IconButton
-          variant="hairlineMuted"
+          variant="hairline"
           size="sm"
           iconSize="caption"
           aria-label={editing ? "코드 편집 닫기" : "코드 편집"}
@@ -169,13 +169,13 @@ const DetailView = ({ spec }: { spec: CompSpec }) => {
         </Stack>
 
         {/* controls */}
-        <Box surface="canvas" radius="md" padding="lg" style={{ position: "sticky", top: `calc(${tokens.shape.atom.navbar} + ${tokens.shape.gap.xl})`, border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }}>
+        <Box surface="canvas" radius="md" padding="lg" style={{ position: "sticky", top: `calc(${tokens.shape.component.navbarHeight} + ${tokens.shape.gap.xl})`, border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }}>
           <Stack gap="lg">
             <Inline justify="between" align="center">
               <Text variant="label">Props</Text>
-              {/* 손으로 꾸민 raw <button> 이었다 — ghostMuted 변형이 바로 그 자리다. */}
+              {/* 손으로 꾸민 raw <button> 이었다 — muted 변형이 바로 그 자리다. */}
               {spec.controls.length > 0 && (
-                <Button variant="ghostMuted" size="sm" onClick={() => { setState(defaultState(spec)); setDraft(undefined); setCodeError(undefined); }}>
+                <Button variant="muted" size="sm" onClick={() => { setState(defaultState(spec)); setDraft(undefined); setCodeError(undefined); }}>
                   초기화
                 </Button>
               )}

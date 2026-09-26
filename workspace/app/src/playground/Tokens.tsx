@@ -1,301 +1,218 @@
-// Tokens(Foundations) — 시스템의 값을 눈으로 보는 자리 (/playground/tokens).
-//
-// 손으로 쓴 값 표가 아니라 tokens.* 를 *실시간으로* 읽어 그린다 — 토큰을 바꾸면
-// 뷰어가 그대로 따라오므로 정의상 드리프트가 없다. 표시값(hex·rem)은 :root 의
-// CSS var 를 런타임에 resolve 한다 (raw 값 모듈을 import 하지 않는다).
+// Foundations — 역할별 디자인 토큰을 계층대로 살펴보는 reference page.
 
-import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
-import { Box, Inline, Stack, Text, tokens } from "@studio-baeks/paper-ui";
+import { Box, Button, Inline, PageHeader, Stack, Text, tokens, useResolvedTheme } from "@studio-baeks/paper-ui";
 
+import { COLOR_VALUES, COLOR_VALUES_DARK } from "../../../packages/paper-ui/src/tokens/colors";
+import { PALETTE_TOKENS } from "../../../packages/paper-ui/src/tokens/color-ladder";
+import { ACCENT_STEPS } from "../../../packages/paper-ui/src/tokens/palette";
 import { PlaygroundLayout, Crumb } from "./shell";
+import { FOUNDATION_SECTIONS } from "./foundation-sections";
+import "./foundations.css";
 
-// ── 값 resolve ────────────────────────────────────────────────────────────────
-// 토큰은 "var(--pui-…)" 참조다. 그 var 의 실제 값을 :root 에서 읽어온다. rem 은
-// px 를 곁들여 읽기 쉽게. (motion 은 var 가 아니라 값이라 그대로 통과.)
-const withPx = (v: string) => {
-  const m = /^(-?[\d.]+)rem$/.exec(v);
-  return m ? `${v} · ${Math.round(parseFloat(m[1] ?? "0") * 16 * 100) / 100}px` : v;
-};
-// 테마 구독 — **context 가 아니라 DOM 속성을 본다.**
-// PaperProvider 는 data-theme 를 effect 에서 심는다. 그래서 토글 직후의 렌더는 context
-// 만 새 값이고 DOM 은 아직 옛 테마다 — 렌더 중에 var 를 읽는 이 뷰어는 그 한 프레임을
-// 그대로 표에 박아, **값이 늘 한 테마 뒤처진다**(스와치는 CSS 라 맞고 숫자만 틀렸다).
-// useResolvedTheme 로 구독했을 때 실제로 그랬다. 속성 자체를 관찰하면 값이 바뀐 *뒤에*
-// 다시 렌더하므로 어긋날 프레임이 없고, 밖에서 data-theme 를 직접 바꿔도 따라온다.
-const useThemeAttr = (): string => {
-  const [attr, setAttr] = useState(() =>
-    typeof document === "undefined" ? "light" : (document.documentElement.dataset.theme ?? "light"),
-  );
-  useEffect(() => {
-    const el = document.documentElement;
-    const sync = () => setAttr(el.dataset.theme ?? "light");
-    sync();
-    const mo = new MutationObserver(sync);
-    mo.observe(el, { attributes: true, attributeFilter: ["data-theme"] });
-    return () => mo.disconnect();
-  }, []);
-  return attr;
+const withPx = (value: string) => {
+  const match = /^(-?[\d.]+)rem$/.exec(value);
+  return match ? `${value} · ${Math.round(Number(match[1]) * 16 * 100) / 100}px` : value;
 };
 
-const val = (ref: string): string => {
-  if (typeof ref !== "string" || !ref.startsWith("var(")) return withPx(ref);
+const val = (ref: string) => {
+  if (!ref.startsWith("var(")) return withPx(ref);
   const name = (ref.slice(4, -1).split(",")[0] ?? "").trim();
-  const resolved = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  return withPx(resolved || ref);
+  return withPx(getComputedStyle(document.documentElement).getPropertyValue(name).trim() || ref);
 };
 
-// ── 어휘 (public API 는 tokens 만 노출 — 키 배열은 여기서 편다) ──────────────
-const SURFACES = ["canvas", "raised", "sunken", "well"] as const;
-const INTERACTIONS = ["hover", "selected", "active"] as const;
-const CONTENTS = ["primary", "secondary", "tertiary"] as const;
-const BORDERS = ["base", "strong", "hover"] as const;
-const ACCENTS = ["primary", "info", "success", "warning", "error"] as const;
-const ACCENT_TONES = ["solid", "wash", "soft", "edge", "edgeStrong"] as const;
-const SIZES = ["xs", "sm", "md", "lg", "xl"] as const;
-const CONTROLS = ["sm", "md", "lg"] as const;
-const VARIANTS = ["display", "title", "heading", "subheading", "body", "caption", "label"] as const;
-const WEIGHTS = ["normal", "medium", "semibold", "bold"] as const;
-const DURATIONS = ["instant", "fast", "base", "moderate", "slow"] as const;
-const EASINGS = ["standard", "decelerate", "accelerate", "overshoot"] as const;
+const Section = ({ id, children }: { id: string; children: React.ReactNode }) => (
+  <Stack as="section" id={id} className="foundation-section" gap="lg">{children}</Stack>
+);
 
-// ── 배치 헬퍼 ─────────────────────────────────────────────────────────────────
-const Section = ({ id, title, desc, children }: { id: string; title: string; desc?: string; children: React.ReactNode }) => (
-  <Stack as="section" gap="lg" id={id}>
-    <Stack gap="xs">
-      <Text variant="label">{title}</Text>
-      {desc && <Text variant="caption" ink="soft">{desc}</Text>}
+const ValueRow = ({ name, value, sample }: { name: string; value: string; sample?: React.ReactNode }) => (
+  <Inline className="foundation-value-row" align="center" gap="sm">
+    <Text as="code" variant="caption" family="mono">{name}</Text>{sample}
+    <Text variant="caption" family="mono" ink="faint">{val(value)}</Text>
+  </Inline>
+);
+
+type ColorRow = { token: string; description: string; light: string; dark: string };
+const semanticRows = (branch: "bg" | "ink" | "border", names: readonly string[], descriptions: Record<string, string>): ColorRow[] =>
+  names.map((name) => ({
+    token: `${branch}.${name}`,
+    description: descriptions[name] ?? name,
+    light: COLOR_VALUES[branch][name as keyof (typeof COLOR_VALUES)[typeof branch]] as string,
+    dark: COLOR_VALUES_DARK[branch][name as keyof (typeof COLOR_VALUES_DARK)[typeof branch]] as string,
+  }));
+
+const COLOR_GROUPS: { title: string; description: string; rows: ColorRow[] }[] = [
+  { title: "Background", description: "Surface depth and neutral interaction context.", rows: semanticRows("bg", ["canvas", "raised", "sunken", "well"], { canvas: "Default page surface", raised: "Cards and floating surfaces", sunken: "Recessed controls and grouped areas", well: "Deep inset surface" }) },
+  { title: "Text", description: "Content hierarchy across surfaces.", rows: semanticRows("ink", ["primary", "secondary", "tertiary"], { primary: "Main content and headings", secondary: "Supporting content", tertiary: "Metadata and low emphasis" }) },
+  { title: "Border", description: "Structural boundaries and emphasis.", rows: semanticRows("border", ["base", "strong", "hover"], { base: "Default component boundary", strong: "Higher contrast boundary", hover: "Boundary emphasis on pointer hover" }) },
+  { title: "Interaction", description: "State overlays and keyboard focus.", rows: [
+    { token: "interaction.bgHover.onSurface", description: "Hover overlay on a neutral surface", light: COLOR_VALUES.interaction.bgHover.onSurface, dark: COLOR_VALUES_DARK.interaction.bgHover.onSurface },
+    { token: "interaction.bgHover.onPrimarySolid", description: "Hover overlay on the primary solid accent", light: COLOR_VALUES.interaction.bgHover.onPrimarySolid, dark: COLOR_VALUES_DARK.interaction.bgHover.onPrimarySolid },
+    { token: "interaction.bgHover.onAccentSolid", description: "Hover overlay on a semantic accent", light: COLOR_VALUES.interaction.bgHover.onAccentSolid, dark: COLOR_VALUES_DARK.interaction.bgHover.onAccentSolid },
+    { token: "interaction.selected", description: "Selected item surface", light: COLOR_VALUES.interaction.selected, dark: COLOR_VALUES_DARK.interaction.selected },
+    { token: "interaction.active", description: "Pressed or active surface", light: COLOR_VALUES.interaction.active, dark: COLOR_VALUES_DARK.interaction.active },
+    { token: "interaction.focus", description: "Keyboard focus indicator", light: COLOR_VALUES.interaction.focus, dark: COLOR_VALUES_DARK.interaction.focus },
+  ] },
+  { title: "Elevation", description: "Color layers that communicate modal depth and shadow tint.", rows: [
+    { token: "overlay.scrim", description: "Dims content behind a modal surface", light: COLOR_VALUES.overlay.scrim, dark: COLOR_VALUES_DARK.overlay.scrim },
+    { token: "shadow.overlay", description: "Tint for floating surface shadows", light: COLOR_VALUES.shadow.overlay, dark: COLOR_VALUES_DARK.shadow.overlay },
+    { token: "shadow.overlayMinimal", description: "Subtle tint for small control shadows", light: COLOR_VALUES.shadow.overlayMinimal, dark: COLOR_VALUES_DARK.shadow.overlayMinimal },
+  ] },
+];
+
+const AccentColorGroup = () => ({
+  title: "Accent",
+  description: "Semantic accent names share the same four-step ladder.",
+  rows: ACCENTS.flatMap((accent) => LADDER.map((ladder) => ({
+    token: `accent.${accent}.${ladder}`,
+    description: `${accent} · ${ladder}`,
+    light: COLOR_VALUES.accent[accent][ladder],
+    dark: COLOR_VALUES_DARK.accent[accent][ladder],
+  }))),
+});
+
+const ColorValue = ({ color, mode }: { color: string; mode: "light" | "dark" }) => {
+  const surface = mode === "light" ? COLOR_VALUES.bg.canvas : COLOR_VALUES_DARK.bg.canvas;
+  const ink = mode === "light" ? COLOR_VALUES.ink.primary : COLOR_VALUES_DARK.ink.primary;
+  const border = mode === "light" ? COLOR_VALUES.border.base : COLOR_VALUES_DARK.border.base;
+  const paletteToken = findPaletteToken(color);
+  return (
+    <Stack className={`foundation-color-value foundation-color-value--${mode}`} gap="sm" border radius="md" padding="sm" tabIndex={0} role="group" aria-label={`${paletteToken}, ${color.toUpperCase()}`} title={`${paletteToken} · ${color.toUpperCase()}`} style={{ background: surface, color: ink, borderColor: border }}>
+      <Box className="foundation-color-chip" border radius="sm" style={{ background: color, borderColor: mode === "light" ? COLOR_VALUES.border.base : COLOR_VALUES_DARK.border.base }} />
+      <Box className="foundation-color-meta">
+        <Text className="foundation-color-palette-token" variant="caption" family="mono" style={{ color: "inherit" }}>{paletteToken}</Text>
+        <Text className="foundation-color-hex" variant="caption" family="mono" style={{ color: "inherit" }}>{color.toUpperCase()}</Text>
+      </Box>
     </Stack>
-    {children}
+  );
+};
+
+const ColorGroup = ({ title, description, rows }: { title: string; description: string; rows: ColorRow[] }) => (
+  <Stack as="section" className="foundation-color-section" gap="md">
+    <Stack gap="xs"><Text variant="heading">{title}</Text><Text variant="body" ink="soft">{description}</Text></Stack>
+    <Inline className="foundation-color-columns" align="center" gap="md"><Text variant="label">Token and description</Text><Text variant="label">Light value</Text><Text variant="label">Dark value</Text></Inline>
+    <Stack className="foundation-color-rows" gap="sm">
+      {rows.map((row) => <div className="foundation-color-row" key={row.token}>
+        <Stack className="foundation-color-copy" gap="sm">
+          <Box as="code" className="foundation-color-token" surface="sunken" radius="sm" paddingX="sm" paddingY="xs"><Text as="span" variant="caption" family="mono">{row.token}</Text></Box>
+          <Text variant="body" ink="soft">{row.description}</Text>
+        </Stack>
+        <ColorValue color={row.light} mode="light" />
+        <ColorValue color={row.dark} mode="dark" />
+      </div>)}
+    </Stack>
   </Stack>
 );
 
-// 색 한 칸 — 면 + 이름 + resolve 된 값. border.strong 외곽선으로 옅은 면도 경계가 보인다.
-const Swatch = ({ name, token, w = "7.5rem" }: { name: string; token: string; w?: string }) => (
-  <Stack gap="xs" style={{ width: w }}>
-    <Box style={{ height: "2.75rem", borderRadius: tokens.shape.radius.interaction, background: token, border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.strong}` }} />
-    <Text variant="caption" as="span">{name}</Text>
-    <Text variant="caption" family="mono" ink="faint" as="span">{val(token)}</Text>
-  </Stack>
-);
+const PaletteMatrix = () => {
+  const isDark = useResolvedTheme() === "dark";
+  const steps = isDark ? [...ACCENT_STEPS].reverse() : ACCENT_STEPS;
+  const rows = [
+    { name: "Neutral", values: steps.map((step) => PALETTE_TOKENS.neutral[step]) },
+    ...(["red", "amber", "green", "blue"] as const).map((palette) => ({ name: palette[0]!.toUpperCase() + palette.slice(1), values: steps.map((step) => PALETTE_TOKENS.accent[palette][step]) })),
+  ];
+  return (
+    <Stack className="foundation-palette-section" gap="md">
+      <Inline align="baseline" justify="between" wrap><Stack gap="xs"><Text variant="heading">Palette</Text><Text variant="body" ink="soft">One source ramp · shared by light and dark semantic tokens</Text></Stack><Text variant="caption" family="mono" ink="faint">{isDark ? "950 → 50" : "50 → 950"}</Text></Inline>
+      <Box className="foundation-palette-scroll" surface="raised" border radius="lg" padding="md">
+        <div className="foundation-palette-matrix">
+          <span />{steps.map((step) => <Text key={step} variant="caption" family="mono" ink="faint">{step}</Text>)}
+          {rows.flatMap((row) => [
+            <Text key={`${row.name}-label`} variant="caption">{row.name}</Text>,
+            ...row.values.map((color, index) => <Box key={`${row.name}-${steps[index]}`} className="foundation-palette-swatch" border radius="sm" title={`${row.name} ${steps[index]} · ${color}`} aria-label={`${row.name} ${steps[index]} ${color}`} style={{ background: color }} />),
+          ])}
+        </div>
+      </Box>
+    </Stack>
+  );
+};
+
+const ACCENTS = ["primary", "info", "success", "warning", "error"] as const;
+const LADDER = ["solid", "wash", "soft", "subtle"] as const;
+const TEXT_VARIANTS = ["display", "title", "heading", "subheading", "body", "caption", "label"] as const;
+const WEIGHTS = ["regular", "normal", "medium", "semibold", "bold"] as const;
+
+const findPaletteToken = (color: string): string => {
+  const visit = (value: unknown, path: string[]): string | undefined => {
+    if (typeof value === "string") return value.toLowerCase() === color.toLowerCase() ? path.join(".") : undefined;
+    if (!value || typeof value !== "object") return undefined;
+    for (const [key, child] of Object.entries(value)) {
+      const match = visit(child, [...path, key]);
+      if (match) return match;
+    }
+    return undefined;
+  };
+  return visit(PALETTE_TOKENS, []) ?? "palette";
+};
 
 export const Tokens = () => {
-  const [hover, setHover] = useState(false);
-  // 표시값은 렌더 중 :root 의 var 를 읽어 만든다(val). 그래서 테마가 *DOM 에 반영된 뒤*
-  // 다시 렌더돼야 값이 따라온다 — 구독을 놓치거나 한 프레임 일찍 읽으면 숫자가 옛 테마에
-  // 머물러, 다크 화면에 라이트 값이 적힌 표가 남는다(→ useThemeAttr).
-  useThemeAttr();
-
+  const { section: routeSection } = useParams<{ section: string }>();
+  const section = FOUNDATION_SECTIONS.find(([id]) => id === routeSection) ?? FOUNDATION_SECTIONS[0];
   return (
-    <PlaygroundLayout value="tokens">
-      <Stack gap="xs" style={{ marginBottom: tokens.shape.gap.lg }}>
-        <Crumb group="Reference" name="Foundations" />
-        <Text variant="title">Tokens</Text>
-        <Text variant="caption" ink="soft">
-          모든 색·크기·시간의 정본. tokens.* 를 실시간으로 읽어 그린다 — 값이 바뀌면 이 화면이 따라온다.
-        </Text>
-      </Stack>
+    <PlaygroundLayout value={`foundation-${section[0]}`}>
+      <Stack className="foundation-page" gap="xl">
+        <PageHeader>
+          <PageHeader.Location><Crumb group="Foundations" name={section[1]} /></PageHeader.Location>
+          <PageHeader.Content><PageHeader.Title>{section[1]}</PageHeader.Title><PageHeader.Description>{section[2]} 실제 <code>tokens.*</code>에서 값을 읽으며 현재 테마에 따라 갱신됩니다.</PageHeader.Description></PageHeader.Content>
+        </PageHeader>
 
-      <Stack gap="xl">
-        {/* ── Color · semantic tokens ───────────────────────── */}
-        <Section id="tok-neutral" title="Color · semantic tokens" desc="사용처는 palette hue나 tone step을 직접 보지 않고 surface·content·border·accent 역할만 고릅니다. raw palette → calibrated ladder → semantic token → component의 단방향 구조입니다. surface는 Box의 깊이 축이고, content는 글자 위계, border는 화면 전체의 괘선입니다. primary는 zinc 기반 accent family라 info·success·warning·error와 같은 다섯 tone contract를 공유합니다. neutral Form은 border.base에서 시작해 hover에만 border.hover로 올라가고, semantic Form은 accent solid edge와 pigment halo를 사용합니다.">
-          <Inline gap="lg" wrap>
-            {SURFACES.map((s) => <Swatch key={`p-${s}`} name={`surface.${s}`} token={tokens.color.surface[s]} />)}
-            {CONTENTS.map((s) => <Swatch key={`i-${s}`} name={`content.${s}`} token={tokens.color.content[s]} />)}
-            {BORDERS.map((s) => <Swatch key={`b-${s}`} name={`border.${s}`} token={tokens.color.border[s]} />)}
-            {ACCENT_TONES.map((s) => <Swatch key={`pr-${s}`} name={`accent.primary.${s}`} token={tokens.color.accent.primary[s]} />)}
-            <Swatch name="focus.ring" token={tokens.color.focus.ring} />
-            <Swatch name="scrim" token={tokens.color.scrim} />
-          </Inline>
-        </Section>
+        <Stack className="foundation-content" gap="xl">
+          {section[0] === "color" && <Stack gap="xl">
+            <PaletteMatrix />
+            {COLOR_GROUPS.map((group) => <ColorGroup key={group.title} {...group} />)}
+            <ColorGroup {...AccentColorGroup()} />
+          </Stack>}
 
-
-        {/* ── Color · interaction (오버레이) ──────────────────── */}
-        <Section id="tok-interaction" title="Color · interaction (오버레이)" desc="hover·selected·active 는 solid 회색이 아니라 ink 계열 alpha 틴트. 아래 순백 위에 얹혀 면을 조금 어둡게 만든다 — 어느 면(순백·smoke·well) 위든 같은 규칙이라 자리마다 회색을 새로 고르지 않는다. 다크는 흰빛으로 뒤집혀 밝히는데, **hover 의 alpha 만 라이트보다 작다**(.036 vs .05) — 같은 alpha 가 방향에 따라 다른 크기이기 때문이다. 블렌드는 sRGB 8bit 에서 일어나고 밝기 곡선은 검정 근처에서 가파르다: 예전 다크 값 .055 는 지각적으로 라이트의 1.9 배였고, hover 하나가 면 사다리 세 칸을 건너뛰어 Tabs 트랙 위에서 hover 된 비활성 탭이 활성 pill 을 따라잡았다. alpha 가 아니라 ΔL 로 맞춘다. selected·active 는 라이트가 이미 세서(.13·.16) 그대로 둔다.">
-          <Inline gap="lg" wrap>
-            {INTERACTIONS.map((s) => (
-              <Stack key={`ix-${s}`} gap="xs" style={{ width: "7.5rem" }}>
-                <Box style={{ height: "2.75rem", borderRadius: tokens.shape.radius.interaction, background: tokens.color.surface.raised, border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.strong}`, overflow: "hidden" }}>
-                  <Box style={{ width: "100%", height: "100%", background: tokens.color.interaction[s] }} />
-                </Box>
-                <Text variant="caption" as="span">{s}</Text>
-                <Text variant="caption" family="mono" ink="faint" as="span">{val(tokens.color.interaction[s])}</Text>
-              </Stack>
-            ))}
-          </Inline>
-        </Section>
-
-
-        {/* ── Color · status ─────────────────────────────────── */}
-        <Section id="tok-accent" title="Color · accent (5색 × 5자리)" desc="accent는 primary·info·success·warning·error의 public pigment 축입니다. primary는 zinc, 나머지는 blue·green·amber·red palette에 연결됩니다. `solid` 하나가 채운 면과 지면 위 pigment text를 함께 맡고, `wash`는 solid 위 전경이자 softMuted의 가벼운 면입니다. 별도 ink·mutedInk·softInk 슬롯은 두지 않습니다.">
-          <Stack gap="lg">
-            {ACCENTS.map((a) => (
-              <Inline key={a} gap="lg" align="center" wrap>
-                <Box style={{ width: "3.5rem" }}>
-                  <Text variant="subheading" as="span" className={a === "primary" ? undefined : `pui-${a}-solid`}>{a}</Text>
-                </Box>
-                {ACCENT_TONES.map((t) => <Swatch key={`${a}-${t}`} name={t} token={tokens.color.accent[a][t]} w="6.5rem" />)}
-              </Inline>
-            ))}
-          </Stack>
-        </Section>
-
-
-        {/* ── Type ───────────────────────────────────────────── */}
-        <Section id="tok-type" title="Type · variant (7단) × family" desc="variant 가 size·weight·leading·tracking 을, family(sans·mono)가 서체를 정한다.">
-          <Stack gap="sm">
-            {VARIANTS.map((v) => (
-              <Inline key={v} gap="lg" align="baseline">
-                <Box style={{ width: "6rem" }}><Text variant="caption" as="span">{v}</Text></Box>
-                <Text variant={v} as="span">Ag 다람쥐 0123</Text>
-                <Text variant="caption" family="mono" ink="faint" as="span">{val(tokens.text.size[v])}</Text>
-              </Inline>
-            ))}
-          </Stack>
-          <Inline gap="xl" wrap>
-            {WEIGHTS.map((w) => (
-              <Stack key={w} gap="xs" style={{ width: "8rem" }}>
-                <Text variant="heading" as="span" style={{ fontWeight: tokens.text.weight[w] }}>Ag 무게</Text>
-                <Text variant="caption" as="span">{w}</Text>
-                <Text variant="caption" family="mono" ink="faint" as="span">{val(tokens.text.weight[w])}</Text>
-              </Stack>
-            ))}
-          </Inline>
-          <Inline gap="xl" wrap>
-            <Stack gap="xs">
-              <Text variant="heading" as="span">Ag 다람쥐 0123</Text>
-              <Text variant="caption" as="span">family — sans (기본)</Text>
+          {section[0] === "typography" && <Section id="typography">
+            <Stack className="foundation-subsection" gap="md">
+              <Text variant="heading">Type scale</Text>
+              <Stack className="foundation-type-list" gap="sm">{TEXT_VARIANTS.map((variant) => <Inline key={variant} className="foundation-type-row" align="baseline" gap="md"><Text as="code" variant="caption" family="mono" ink="faint">text.{variant}</Text><Text variant={variant}>{variant === "display" || variant === "title" ? "Aa 가나다 0123" : "Aa · 가나다 · 0123"}</Text><Text variant="caption" family="mono" ink="faint">{val(tokens.text.size[variant])}</Text></Inline>)}</Stack>
             </Stack>
-            <Stack gap="xs">
-              <Text variant="heading" family="mono" as="span">Ag 다람쥐 0123</Text>
-              <Text variant="caption" as="span">family — mono (한글도 등폭)</Text>
-            </Stack>
-          </Inline>
-        </Section>
+            <Inline className="foundation-weight-list" gap="lg" wrap>{WEIGHTS.map((weight) => <Stack key={weight} gap="xs"><Text variant="body" style={{ fontWeight: tokens.text.weight[weight] }}>Paper UI · {weight}</Text><Text as="code" variant="caption" family="mono" ink="faint">{weight} · {val(tokens.text.weight[weight])}</Text></Stack>)}</Inline>
+            <Inline gap="xl" wrap><Stack gap="xs"><Text variant="heading" family="sans">Aa 가나다 0123</Text><Text variant="caption" ink="soft">sans · default</Text></Stack><Stack gap="xs"><Text variant="heading" family="mono">Aa 0123</Text><Text variant="caption" ink="soft">mono · code and numeric labels</Text></Stack></Inline>
+          </Section>}
 
+          {section[0] === "spacing" && <Section id="spacing">
+            <Stack className="foundation-scale" gap="sm">{(["xs", "sm", "md", "lg", "xl"] as const).map((size) => <ValueRow key={size} name={`shape.gap.${size}`} value={tokens.shape.gap[size]} sample={<Box className="foundation-measure" radius="full" style={{ width: tokens.shape.gap[size], height: tokens.shape.gap.xs, background: tokens.color.accent.primary.solid }} />} />)}</Stack>
+            <Inline className="foundation-inline-note" align="baseline" gap="md"><Text variant="subheading">Padding</Text><Text variant="caption" ink="soft">interaction과 layout 맥락에서 별도 scale을 사용합니다.</Text></Inline>
+            <div className="foundation-value-grid">{Object.entries(tokens.shape.padding).flatMap(([size, values]) => Object.entries(values).map(([context, value]) => <ValueRow key={`${size}-${context}`} name={`padding.${size}.${context}`} value={value} />))}</div>
+          </Section>}
 
-        {/* ── Space · gap ────────────────────────────────────── */}
-        <Section id="tok-space" title="Space · gap (5단, 4px 그리드)" desc="flex/grid 간격. 촘촘하게 — 복잡한 화면은 여백이 넓으면 스크롤만 는다.">
-          <Stack gap="sm">
-            {SIZES.map((s) => (
-              <Inline key={s} gap="lg" align="center">
-                <Box style={{ width: "4rem" }}><Text variant="caption" as="span">{s}</Text></Box>
-                <Box style={{ height: "0.75rem", width: tokens.shape.gap[s], background: tokens.color.content.primary, borderRadius: tokens.shape.constants.borderWidth }} />
-                <Text variant="caption" family="mono" ink="faint" as="span">{val(tokens.shape.gap[s])}</Text>
-              </Inline>
-            ))}
-          </Stack>
-        </Section>
+          {section[0] === "sizing" && <Section id="sizing">
+            <Stack className="foundation-subsection" gap="md"><Text variant="subheading">Control height</Text><Inline className="foundation-control-samples" gap="lg" align="end" wrap>{(["sm", "md", "lg"] as const).map((size) => <Stack key={size} gap="xs" align="start"><Box className="foundation-control" border radius="sm" surface="sunken" style={{ height: tokens.shape.height[size].interaction, paddingInline: tokens.shape.controlPaddingX[size] }}><Text variant="body">Aa</Text></Box><Text variant="caption" family="mono" ink="faint">{size} · {val(tokens.shape.height[size].interaction)}</Text></Stack>)}</Inline></Stack>
+            <div className="foundation-value-grid">
+              {Object.entries(tokens.shape.icon).map(([name, value]) => <ValueRow key={`icon-${name}`} name={`icon.${name}`} value={value} />)}
+              {Object.entries(tokens.shape.checkbox).map(([name, value]) => <ValueRow key={`checkbox-${name}`} name={`checkbox.${name}.box`} value={value.box} />)}
+              {Object.entries(tokens.shape.switch).map(([name, value]) => <ValueRow key={`switch-${name}`} name={`switch.${name}`} value={`${value.w} × ${value.h}`} />)}
+              {Object.entries(tokens.shape.width).map(([name, value]) => <ValueRow key={`width-${name}`} name={`width.${name}`} value={value.layout} />)}
+              {Object.entries(tokens.layout.breakpoint).map(([name, value]) => <ValueRow key={`bp-${name}`} name={`breakpoint.${name}`} value={value} />)}
+              {Object.entries(tokens.layout.container).map(([name, value]) => <ValueRow key={`container-${name}`} name={`container.${name}`} value={value} />)}
+              {Object.entries(tokens.layout.sizeIntent).map(([name, value]) => <ValueRow key={`intent-${name}`} name={`sizeIntent.${name}`} value={value} />)}
+            </div>
+          </Section>}
 
+          {section[0] === "radius" && <Section id="radius">
+            <div className="foundation-radius-list">{[
+              ["interaction", tokens.shape.radius.interaction], ["layout.sm", tokens.shape.radius.layout.sm], ["layout.md", tokens.shape.radius.layout.md], ["layout.lg", tokens.shape.radius.layout.lg], ["full", tokens.shape.radius.full],
+            ].map(([name, value]) => <Stack key={name as string} gap="sm"><Box className="foundation-radius-sample" border radius={name === "interaction" || name === "full" ? name as "full" : name === "layout.sm" ? "sm" : name === "layout.md" ? "md" : "lg"} surface="sunken" /><Text as="code" variant="caption" family="mono">radius.{name}</Text><Text variant="caption" family="mono" ink="faint">{val(value as string)}</Text></Stack>)}</div>
+          </Section>}
 
-        {/* ── Radius ─────────────────────────────────────────── */}
-        <Section id="tok-radius" title="Radius" desc="절제된 곡선 — 모서리의 날만 죽인다. interaction 은 단일 6, layout 은 큰 면일수록 한 호흡 더(6·8·12). full 은 사다리의 끝이 아니라 사다리 밖 — 크기가 아니라 ‘높이의 절반’ 이라는 규칙이라 intent 로 갈리지 않는다.">
-          <Inline gap="lg" wrap>
-            {[
-              { name: "interaction", token: tokens.shape.radius.interaction },
-              { name: "layout.sm", token: tokens.shape.radius.layout.sm },
-              { name: "layout.md", token: tokens.shape.radius.layout.md },
-              { name: "layout.lg", token: tokens.shape.radius.layout.lg },
-              { name: "full", token: tokens.shape.radius.full },
-            ].map((r) => (
-              <Stack key={r.name} gap="xs" style={{ width: "7rem" }}>
-                <Box style={{ height: "3.5rem", borderRadius: r.token, background: tokens.color.surface.sunken, border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.strong}` }} />
-                <Text variant="caption" as="span">{r.name}</Text>
-                <Text variant="caption" family="mono" ink="faint" as="span">{val(r.token)}</Text>
-              </Stack>
-            ))}
-          </Inline>
-        </Section>
+          {section[0] === "border" && <Section id="border">
+            <div className="foundation-border-demo">{(["base", "strong", "hover"] as const).map((key) => <Stack key={key} className="foundation-border-sample" gap="md" surface="raised" border radius="md" padding="md" style={{ borderColor: tokens.color.border[key] }}><Text as="code" variant="caption" family="mono">border.{key}</Text><Text variant="caption" family="mono" ink="faint">{val(tokens.color.border[key])}</Text></Stack>)}</div>
+            <div className="foundation-value-grid"><ValueRow name="shape.constants.borderWidth" value={tokens.shape.constants.borderWidth} /><ValueRow name="shape.constants.focusRingWidth" value={tokens.shape.constants.focusRingWidth} /></div>
+          </Section>}
 
+          {section[0] === "elevation" && <Section id="elevation">
+            <div className="foundation-elevation-demo"><Stack className="foundation-overlay-demo" gap="sm" surface="sunken" border radius="md" padding="md"><Box className="foundation-scrim-sample" radius="sm" style={{ background: tokens.color.overlay.scrim }} /><Text variant="caption">overlay.scrim · {val(tokens.color.overlay.scrim)}</Text></Stack><div className="foundation-shadow-demo">{(["overlay", "overlayMinimal"] as const).map((key) => <Stack key={key} className="foundation-shadow-sample" gap="md" surface="raised" border radius="md" padding="md" style={{ boxShadow: tokens.shape.shadow[key] }}><Text variant="caption">shadow.{key}</Text><Text as="code" variant="caption" family="mono" ink="faint">color.shadow.{key}</Text></Stack>)}</div></div>
+            <Text className="foundation-note" variant="caption" ink="soft">Scrim은 뒤쪽 화면을 눌러 overlay와의 깊이를 보여주는 면이고, shadow는 표면 아래의 빛과 깊이를 나타냅니다.</Text>
+          </Section>}
 
-        {/* ── Control size ───────────────────────────────────── */}
-        <Section id="tok-control" title="Control size (3단)" desc="Button·Field·Select·Textarea·Tabs가 height와 글자(14 고정)를 공유합니다. 버튼·탭은 controlPaddingX(10·13·17), Field·Select·Textarea는 정사각 form geometry인 inputPaddingX(7·9·12)를 씁니다. md는 세로 (34 − 14) / 2 = 10, 가로 border 1 + padding 9 = 10입니다. Textarea는 줄상자 반 여백 3.5를 빼 textareaPaddingY(3.5·5.5·8.5)를 계산합니다.">
-          <Inline gap="lg" align="end" wrap>
-            {CONTROLS.map((c) => (
-              <Stack key={c} gap="xs" align="start">
-                <Box style={{ height: tokens.shape.height[c].interaction, paddingInline: tokens.shape.controlPaddingX[c], borderRadius: tokens.shape.radius.interaction, background: tokens.color.surface.sunken, border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.strong}`, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
-                  <Text variant="body" as="span" style={{ fontSize: tokens.shape.controlFontSize[c] }}>텍스트</Text>
-                </Box>
-                <Text variant="caption" family="mono" ink="faint" as="span">{c} · h {val(tokens.shape.height[c].interaction)}</Text>
-                <Text variant="caption" family="mono" ink="faint" as="span">가로 {val(tokens.shape.controlPaddingX[c])}</Text>
-              </Stack>
-            ))}
-          </Inline>
-        </Section>
-
-
-        {/* ── Mark size ──────────────────────────────────────── */}
-        <Section id="tok-mark" title="Mark size (아이콘 · 체크박스 · 스위치)" desc="폼 한 줄에 나란히 서는 작은 표식들. 세 사다리가 따로지만 같은 열에 앉도록 묶여 있다. ⚠ icon 값은 아트보드지 잉크가 아니다 — viewBox 24 안에서 path 는 18~20 만 채우므로 화면의 잉크는 아트보드의 75~83% 다. 그래서 아트보드가 체크박스와 같은 16 이면 아이콘만 한 단 작아 보인다. 사다리를 한 단 올려(16·18·20) md 18 의 잉크가 체크박스 16 과 같은 무게로 앉는다. Switch 는 반대로 한 단 내렸다 — 옛 규칙은 손잡이를 체크박스에 맞춰(16) 트랙이 20 이 됐는데, 폭이 트랙 두 배라 같은 높이여도 면적이 세 배다. 이제 손잡이 = 체크박스 − 2 라 트랙이 체크박스 + 2 로 앉고, 켜짐 이동은 w − h 한 항등식으로 떨어진다.">
-          <Inline gap="xl" align="end" wrap>
-            {CONTROLS.map((c) => (
-              <Stack key={c} gap="sm" align="start">
-                <Inline gap="md" align="center" style={{ height: "1.5rem" }}>
-                  <Box style={{ width: tokens.shape.icon[c], height: tokens.shape.icon[c], borderRadius: tokens.shape.radius.full, border: `2px solid ${tokens.color.content.secondary}` }} />
-                  <Box style={{ width: tokens.shape.checkbox[c].box, height: tokens.shape.checkbox[c].box, borderRadius: tokens.shape.checkbox[c].radius, background: tokens.color.accent.primary.solid }} />
-                  <Box style={{ width: tokens.shape.switch[c].w, height: tokens.shape.switch[c].h, borderRadius: tokens.shape.radius.full, background: tokens.color.surface.well }} />
-                </Inline>
-                <Text variant="caption" family="mono" ink="faint" as="span">{c}</Text>
-                <Text variant="caption" family="mono" ink="faint" as="span">icon {val(tokens.shape.icon[c])}</Text>
-                <Text variant="caption" family="mono" ink="faint" as="span">box {val(tokens.shape.checkbox[c].box)}</Text>
-                <Text variant="caption" family="mono" ink="faint" as="span">switch {val(tokens.shape.switch[c].w)} × {val(tokens.shape.switch[c].h)}</Text>
-              </Stack>
-            ))}
-          </Inline>
-        </Section>
-
-
-        {/* ── Shadow ─────────────────────────────────────────── */}
-        <Section id="tok-shadow" title="Shadow (2단 — 떠 있는 것의 표식)" desc="원칙 4: 떠 있는 것만 지속 그림자를 갖는다. 붙은 면(Button·Field·Box·Table)은 resting shadow가 없다. 예외는 semantic Form hover의 중앙 pigment halo뿐이며 elevation이 아니라 interaction 피드백이다. overlay=자유롭게 뜬 것 · overlayMinimal=아주 살짝. radius 와 나란한 shape 토큰일 뿐 별도 'elevation' 축 아님. 다크에선 near-black 이 사라지므로 더 짙은 그림자로 교체(테마 인식) — 다크 토글로 확인.">
-          <Inline gap="xl" wrap>
-            {[
-              { name: "overlay", desc: "Modal · Tooltip · Popover · 목업", token: tokens.shape.shadow.overlay },
-              { name: "overlayMinimal", desc: "Switch 손잡이 — 살짝", token: tokens.shape.shadow.overlayMinimal },
-            ].map((e) => (
-              <Stack key={e.name} gap="sm" style={{ width: "13rem" }}>
-                <Box style={{ height: "4rem", borderRadius: tokens.shape.radius.layout.md, background: tokens.color.surface.raised, boxShadow: e.token, border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }} />
-                <Stack gap="xs">
-                  <Text variant="caption" as="span">{e.name}</Text>
-                  <Text variant="caption" ink="faint" as="span">{e.desc}</Text>
-                </Stack>
-              </Stack>
-            ))}
-          </Inline>
-        </Section>
-
-
-        {/* ── Motion ─────────────────────────────────────────── */}
-        <Section id="tok-motion" title="Motion · duration · easing" desc="조용한 밀도의 시스템 — 짧고 차분하게(80~200ms). var 로 굽지 않고 값을 직접 든다.">
-          <Inline gap="xl" wrap>
-            {DURATIONS.map((d) => (
-              <Stack key={d} gap="xs" style={{ width: "6.5rem" }}>
-                <Text variant="body" as="span">{d}</Text>
-                <Text variant="caption" family="mono" ink="faint" as="span">{val(tokens.motion.duration[d])}</Text>
-              </Stack>
-            ))}
-          </Inline>
-          <Inline gap="xl" wrap>
-            {EASINGS.map((e) => (
-              <Stack key={e} gap="xs" style={{ width: "13rem" }}>
-                <Text variant="body" as="span">{e}</Text>
-                <Text variant="caption" family="mono" ink="faint" as="span">{val(tokens.motion.easing[e])}</Text>
-              </Stack>
-            ))}
-          </Inline>
-          <Box
-            onMouseEnter={() => setHover(true)}
-            onMouseLeave={() => setHover(false)}
-            style={{
-              width: "16rem", height: "3rem", borderRadius: tokens.shape.radius.interaction,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              background: hover ? tokens.color.content.primary : tokens.color.surface.well,
-              color: hover ? tokens.color.surface.canvas : tokens.color.content.primary,
-              transition: `background ${tokens.motion.duration.base} ${tokens.motion.easing.standard}, color ${tokens.motion.duration.base} ${tokens.motion.easing.standard}`,
-              cursor: "default",
-            }}
-          >
-            <Text variant="caption" as="span" style={{ color: "inherit" }}>hover — state 전이 130ms</Text>
-          </Box>
-        </Section>
+          {section[0] === "motion" && <Section id="motion">
+            <div className="foundation-value-grid">{Object.entries(tokens.motion.duration).map(([name, value]) => <ValueRow key={`duration-${name}`} name={`duration.${name}`} value={value} />)}{Object.entries(tokens.motion.easing).map(([name, value]) => <ValueRow key={`easing-${name}`} name={`easing.${name}`} value={value} />)}</div>
+            <Inline className="foundation-motion-demo" gap="md" align="center" wrap><Button>Hover to preview</Button><Text variant="caption" family="mono" ink="faint">color · {val(tokens.motion.duration.base)} · {val(tokens.motion.easing.standard)}</Text></Inline>
+          </Section>}
+        </Stack>
       </Stack>
     </PlaygroundLayout>
   );

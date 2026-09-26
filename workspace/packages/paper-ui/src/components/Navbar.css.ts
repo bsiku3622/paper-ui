@@ -22,9 +22,9 @@ export const navbarRoot = style({
 // 바(면·괘선)와 내용(폭)을 나눈 건 이 둘이 다른 축이기 때문이다. 괘선은 언제나 화면
 // 끝까지 가야 하고, 내용은 격자를 따라야 한다.
 export const navbarInner = styleVariants({
-  full: { minHeight: tokens.shape.atom.navbar },
+  full: { minHeight: tokens.shape.component.navbarHeight },
   content: {
-    minHeight: tokens.shape.atom.navbar,
+    minHeight: tokens.shape.component.navbarHeight,
     maxWidth: tokens.layout.container.content,
     width: "100%",
     marginInline: "auto",
@@ -49,16 +49,16 @@ export const navItem = style({
   flexShrink: 0,
   borderRadius: tokens.shape.radius.interaction,
   fontFamily: tokens.text.font.sans,
-  color: tokens.color.content.secondary,
+  color: tokens.color.ink.secondary,
   transition: stateTransition("background", "color"),
-  selectors: { "&:hover": { color: tokens.color.content.primary, background: tokens.color.interaction.hover } },
+  selectors: { "&:hover": { color: tokens.color.ink.primary, background: tokens.color.interaction.bgHover.onSurface } },
 });
 
 // 활성은 면이 아니라 **글자**로 표시한다. 면으로 표시하면 nav 하나가 화면에서 가장 눈에
 // 띄는 덩어리가 되는데, nav 는 지금 어디인지 알려줄 뿐 주인공이 아니다. 배경은 hover
 // 에만 — 그건 포인터에 답하는 것이라 사라질 표시다.
 export const navItemActive = style({
-  color: tokens.color.content.primary,
+  color: tokens.color.ink.primary,
   fontWeight: tokens.text.weight.medium,
 });
 

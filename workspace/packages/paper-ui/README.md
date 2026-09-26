@@ -67,13 +67,11 @@ to layout tokens, while CSS lengths remain available for application-specific la
 
 ## How it decides
 
-Two axes run through the colour system: `color` says what something means
+Two axes run through the colour system: `accent` says what something means
 (`primary` plus `info` · `success` · `warning` · `error`) and `variant` says how
-much visual weight it carries (`solid` · `soft` · `plain` · `outline` · `hairline` · `quiet`).
-`plain` combines the soft surface with the strong outline edge; it is part of this
-shared variant contract rather than a component-local option. Primary
-actions are black rather than blue — a blue button on every screen stops being a
-point.
+much visual weight it carries (`solid` · `soft` · `hairline` · `ghost` · `muted`).
+Primary actions are black rather than blue — a blue button on every screen stops
+being a point.
 
 Shape is the system's call, not the caller's. What you choose is meaning:
 `size`, `status`, `color`. Where a shape prop does exist it takes a closed

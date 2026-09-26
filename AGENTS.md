@@ -37,123 +37,37 @@ pnpm 명령은 `workspace/` 에서 실행한다. `core`/`web` 분리는 일부�
 
 ---
 
-## 색 — 면(surface)과 accent × variant를 나눈다 (v2)
+## 색 — OKLCH Palette에서 의미 시스템까지
 
-### 색 정본 계층 (v3)
-
-색은 이제 한 `colors.ts` 객체가 아니라 아래 단방향 계층으로 관리합니다. 이 규칙은 이 문서의
-이전 `paper`·`ink`·`primary`·`accent` 경로 설명보다 우선합니다.
+색은 한 방향으로 흐릅니다.
 
 ```
-palette.ts (L0: accent hue·기준 chroma identity + zinc surface palette)
-    → color-ladder.ts (L1: light/dark의 calibrated accent tone + neutral ladder 계약)
-    → colors.ts (L2: semantic role)
-    → tokens/index.ts + theme.css.ts (L3: CSS var reference)
-    → component / resolver / app
+OKLCH Palette source → HEX Palette Token generation → semantic systems → real use
+     palette.ts              color-ladder.ts           colors.ts       CSS vars / UI
 ```
 
-- **palette와 ladder는 private build-time layer입니다.** component·resolver·app에서 import하지
-  않습니다. 단, `/playground/palette` Foundations inspector만 source layer를 읽어 보여주는
-  의도된 예외입니다. raw hex는 surface의 경우 `tokens/palette.ts`, accent의 경우
-  `tokens/color-ladder.ts`에만 둡니다.
-- **소비 API는 semantic role입니다.** `tokens.color.surface.*`,
-  `content.primary|secondary|tertiary`, `accent.primary|info|success|warning|error.*`만 사용합니다.
-- status는 palette hue와 분리합니다: `info→blue`, `success→green`, `warning→amber`,
-  `error→red`. status 이름·component API는 hue 조정과 함께 바뀌지 않습니다.
-- **Accent ladder는 11-step (`50`~`950`)이고, semantic accent는 5-slot입니다.** 모든
-  `primary|info|success|warning|error`가 `solid·wash·soft·edge·edgeStrong`만 공유합니다.
-  `ink`·`softInk`·`mutedInk`는 별도 slot으로 만들지 않습니다. Muted variant는 wash/soft와
-  interaction의 조합이며, outlineMuted는 형태를 보존하려 strong border를 유지합니다.
+- palette.ts만 단일 OKLCH neutral·accent ramp와 `alpha05`~`alpha95` opacity scale을 소유합니다. Palette 값은 테마와 무관하며, semantic layer가 light/dark 역할에 맞는 step을 선택합니다.
+- color-ladder.ts는 source를 보간·gamut-map해 6자리 HEX와 alpha scale의 8자리 HEX Palette Token을 생성합니다. 여기에는 semantic role 이름을 두지 않습니다.
+- colors.ts의 semantic leaf는 생성된 Palette Token만 선택합니다. 다른 semantic leaf, 직접 입력한 HEX, color math를 참조하지 않습니다.
+- theme.css.ts는 semantic tree를 CSS variable로 내보냅니다. Component·resolver·app은 tokens.color var 참조만 씁니다. /playground/palette만 source와 생성 결과를 확인하는 예외입니다.
 
-색을 수정하면 [색 아키텍처](docs/foundations/color-architecture.md)와 Tokens Playground의
-light/dark swatch를 함께 갱신·확인합니다.
+semantic color는 surface·ink·border·accent·interaction·overlay·shadow 역할로 나뉩니다.
 
-**두 어휘를 종류로 나눈다** — 면은 색이 아니라 지면이라서. "큰 면을 색으로 안 채운다"는
-정체성상 Box 는 accent 색을 입을 일이 없어, 애초에 다른 종류다. 값은 light/dark 쌍이고 `[data-theme]` 스코프가
-통째로 교체한다. 중립은 순회색이 아니라 **hue 286°** zinc 캐스트를 양 테마가 공유하고,
-chroma 만 저명도 보정으로 다크에서 올린다(라이트 면 `C .001~.004` ↔ 다크 면 `.006~.009`).
+| system | API | roles |
+|---|---|---|
+| Surface | `bg.<level>` | raised · canvas · sunken · well |
+| Border | `border.<level>` | base · strong · hover |
+| Ink | `ink.<level>` | primary · secondary · tertiary |
+| Accent | `accent.<name>.<ladder>` | primary · info · success · warning · error × solid · wash · soft · subtle |
+| Interaction | `interaction.<state>` | bgHover (onSurface·onPrimarySolid·onAccentSolid) · selected · active · focus |
+| Overlay | `overlay.<role>` | scrim |
+| Shadow | `shadow.<role>` | overlay · overlayMinimal |
 
-**면(surface) — Box 의 구조 축.** 깊이 사다리. 색을 입지 않는다.
+Accent status는 palette와 분리합니다: info→blue, success→green, warning→amber, error→red. Accent는 같은 네 role을 공유합니다. `soft`는 soft surface와 hairline 경계에, `subtle`은 muted foreground에 씁니다.
 
-| surface | light | dark | 쓰임 |
-|---|---|---|---|
-| `raised` | `#ffffff` | `#0d0d10` (최암) | 떠오른 면 (카드·입력·모달) |
-| `canvas` | `#fcfcfc` | `#101013` (앵커) | 기준면 (페이지 바닥) |
-| `sunken` | `#f4f4f5` | `#161619` | 사이드바 · table head |
-| `well` | `#e2e2e5` | `#252529` (최명) | 더 깊은 well |
+focus ring 색은 `interaction.focus`에 둡니다. focus는 상호작용 상태이고 색도 Palette Token에서 오기 때문입니다. 링 두께·offset은 색이 아닌 geometry이므로 `shape.constants.focusRingWidth`와 shape 상수에 둡니다. Scrim은 `overlay.scrim`, shadow tint는 `shadow.overlay`와 `shadow.overlayMinimal`에 두고, 거리·blur·spread는 shape geometry로 둡니다. Semantic Form hover glow는 사용하지 않습니다.
 
-⚠ **깊이 불변식 — 사다리는 양 테마에서 거울이다. 순서가 반대다.**
-
-    라이트   WHITE | raised | canvas | sunken | well | GRAY
-    다크     BLACK | raised | canvas | sunken | well | GRAY
-
-`raised` 는 **그 테마의 목표에 가장 가까운 면**이다 — 라이트에서 최명, 다크에서 **최암**.
-"raised = 언제나 최명" 은 폐기됐다(2026-09-04). 그게 남아 있는 동안 다크는 뒤집히지 않은 축을
-하나 갖고 있었고, 값을 맞춰도 어색함이 안 지워졌다. 간격은 `canvas`(앵커)를 축으로 라이트를
-접는다 — 쌍의 거리가 양 테마에서 거의 같아진다. 괘선도 같은 대칭이라 **다크 괘선은 사다리보다
-위**다(라이트에서 `well` 아래인 것의 거울).
-
-**Box** = `surface` + `border`(카드 헤어라인) + `inverse`(검은 판) + radius·shadow·padding.
-**색·잉크는 Box 에 없다.**
-
-**accent × variant — Button·Badge·Alert·Banner.** `accent`가 무슨 의미색, `variant`가 얼마나 무겁게.
-
-| color | light | dark | 쓰임 |
-|---|---|---|---|
-| `primary` | `#18181b` | `#e8e8ea` | 검정 일꾼 (다크선 흰 채움) — 면 채우는 유일한 색 |
-| `info` | `#2563eb` | `#5492ec` | 정보 · **focus 링** · 링크 |
-| `success` | `#15803d` | `#32ac64` | 성공 |
-| `warning` | `#b45309` | `#c58300` | 주의 |
-| `error` | `#dc2626` | `#df6768` | 위험 |
-
-accent 는 hue 이름(blue 등)이 **API 에 없다** — 전부 의미색. 각 accent 는 solid·wash·soft·edge·
-edgeStrong 5 자리. **solid 버튼은 모노크로매틱** — 채움(solid)과 그 위 글자(wash)가 같은 hue라 버튼 전체가
-한 색으로 통일된다(흰색 아님). 별도 solidFg는 wash와 끝점이 겹쳐 제거했다.
-⚠ **채움은 테마마다 방향이 반대다** — 라이트는 진한 면 + 옅은 글자(L .53~.58 / .92~.94), 다크는 **옅은
-면 + 진한 글자**(L .660 / .215). 라이트를 canvas 축으로 접은 값이고, primary 가 이미 그렇게 한다. 다크
-채움을 눌러 두면 solid→면 대비가 3:1 을 못 넘고(1.79~2.45) status Banner 글자가 2.2~2.5 로 무너진다.
-채운 면 위 글자는 `paper.raised`가 아니라 **언제나 wash**다 — 다크의 raised는 최암이다.
-⚠ 라이트 accent 는 **Veil**이다. solid·ink·edgeStrong의 명료함은 유지하고, 넓게 닿는 wash와
-쉬는 edge만 paper neutral에 45% 섞어 옅은 색의 시트러스한 채도를 줄인다.
-
-**공유 `variant` 축 = 면의 무게:** `solid`(채움) · `soft`(옅은 면) · `plain`(옅은 면 + 또렷한 테두리) · `outline`(또렷한 테두리) ·
-`hairline`(헤어라인) · `quiet`(글자만). ⚠ **테두리만 있는 자리가 둘이고, 세기가 아니라 *어느 선이냐*
-로 갈린다** — `outline` 은 color family 가 소유한 선(`primary.edgeStrong` · accent `edgeStrong`,
-지면 대비 3:1)이고 `hairline` 은 지면이 소유한 선(뉴트럴은 `border.base`, accent 는 그 색의 `edge`).
-그래서 `hairline` 은 여러 개 깔려도 조용하고 `outline` 은 하나만 놓아야 말이 된다.
-⚠ 이름을 둘 다 `-line` 으로 맞춘 건 의도다 — 둘 다 선을 말하니 `quiet`(선 없음)과 섞이지 않는다.
-⚠ **`outline` 의 뜻이 바뀌었다** — 예전 outline 이 지금의 `hairline` 이다.
-- Button 예) 기본=`primary solid`(검정) · `variant="soft"`=회색 secondary · **`variant="outline"`=흰 기본
-  버튼** · `accent="error"`=빨강. 흰/회색 버튼은 색이 아니라 primary 의 무게로 나온다.
-- **Badge** 도 accent × variant (기본 soft) + `dot`(상태 점) — solid=카운트·강조, outline=테두리 태그, ghostMuted=글자만.
-  Alert는 기본 soft이며, `accent`는 primary 포함 5색입니다.
-
-⚠ **화면의 회색 선은 한 벌이다.** 카드 헤어라인 · 구획 · 빈 입력칸 · 꺼진 체크박스 ·
-hairline 버튼이 전부 `border.base`를 쓴다. 컨트롤 전용 회색을 따로 뒀다가
-물렸다 — 카드는 안 보이는데 그 위 검색창만 진하면 한 화면에 회색이 두 벌이 된다. 컨트롤을
-가리킨 순간에는 neutral Form만 `primary.base` solid 선으로 올라가며, 정적인 화면의 한 벌 원칙은
-그대로 남는다. semantic Form은 쉬는 상태부터 accent `solid` 선을 쓰고, hover에서는 같은
-pigment가 중앙 shadow로 번진다. `solid / solid / semantic Form only`가 최종 규칙이다.
-accent 는 다르다 — `edge`(wash 괘선)와 `edgeStrong`(outline 테두리)이 갈리는데, 색 있는 선은
-라벨 색과 맞아야 해서다. 톤은 램프 인덱스가 아니라 **대비**로 고른다(hue 마다 고유 명도가
-달라 400 톤으로 맞추면 초록·amber 가 옅다).
-
-**마크 색(ink)은 면이 아니라 글자가 정한다** — `Text`·`Icon` 의 `ink`. `ink="inherit"` 는
-색면 위에서 자리를 비켜 면의 색을 그대로 받는 자리다(Alert 안 글자). 한 축에 뉴트럴
-농도(`base·soft·faint`)와 의미색(`info·success·warning·error`)이 함께 있다 — 글자는 색이
-하나. accent 는 단일 톤(AA ink)이라 농도×색 직교(죽은 셀)를 안 만든다. `<Text ink="error">`.
-**interaction**(hover/selected/active)은 중립=오버레이(라이트=ink alpha, 다크=흰빛 alpha),
-색=accent 스텝. **scrim**(모달 뒤)·**shadow**(다크는 더 짙게)도 테마 인식.
-
-**규칙:**
-- **면을 색으로 채우지 않는다.** 면은 surface(회색·흰), 채우는 건 primary(검정/다크선 흰색)뿐.
-  색은 의미의 자리. **Box 는 색을 안 받는다** — 색 영역은 Button·Badge·Alert, 검은 판은 `inverse`.
-- **status = validation 만.** Field·TextField·Textarea 는 `status`, 나머지는 `color`.
-  status 이름 == accent color 이름 (danger 폐기 → error).
-- **`primaryColor` 가 없다.** 정체성은 색이 아니라 순백·검정·여백. Provider 가 고르는 단 하나는
-  *테마*(light·dark·system).
-
----
+색을 바꾸면 docs/foundations/color-architecture.md와 Palette·Tokens Playground를 함께 확인합니다. API 경로와 source 규칙을 동시에 갱신합니다.
 
 ## 형태
 
@@ -176,7 +90,7 @@ accent 는 다르다 — `edge`(wash 괘선)와 `edgeStrong`(outline 테두리)�
   pigment shadow는 elevation이 아니라 상태를 잃지 않고 hover를 보이는 일시적 예외다.
 - **hover 는 조용히** — 면은 interaction 오버레이로 한 단 움직인다. neutral Form은 면을 흔들지
   않고 `primary.base` solid 선으로 올라가고, semantic Form만 같은 accent의 중앙 shadow를 더한다.
-- **밀도** — 간격(Space) 5단(4px 배수 xs4~xl24)과 컨트롤 크기(ControlSize) 3단(sm·md·lg)을 분리한다. 컨트롤 크기가 바뀌어도 글자는 14 고정(controlFontSize 14/14/14). control 높이 md 34 · table 행 44.
+- **밀도** — 간격(Space) 5단(4px 배수 xs4~xl24)과 컨트롤 크기(ControlSize) 3단(sm·md·lg)을 분리한다. 컨트롤 글자는 `text.size.body`를 공유하고, control size는 height·padding만 바꾼다. control 높이 md 34 · table 행 44.
   가로 여백은 **라벨과 값이 갈린다** — 버튼·탭은 `controlPaddingX` 10/13/17, 입력칸은
   `inputPaddingX` 7/9/12. Field·Select·Textarea의 보이는 잉크가 사방 같은 거리다. md는 세로
   `(34 − 14) / 2 = 10`, 가로 `border 1 + padding 9 = 10`이다. Textarea의 `textareaPaddingY`는
@@ -208,16 +122,17 @@ accent 는 다르다 — `edge`(wash 괘선)와 `edgeStrong`(outline 테두리)�
 토큰이라 컴포넌트가 `"0.875rem"` 같은 raw 값을 박지 못한다. variant 는 이 축들을
 조합한 7 단 위계다:
 
-`display 32 · title 22 · heading 18 · subheading 15 · body 14 · caption 13 · label 12`.
+`display 32 · title 22 · heading 17 · subheading 15 · body 14 · caption 12 · label 12`.
 
 서체는 위계가 아니라 **family 축**이다 — `Text` 의 `family`(sans 기본 · mono)가 어느
-variant 에도 교차한다. mono 는 `.pui-mono` 가 등폭으로 바꾸며 음수 tracking 을 지운다.
+variant 에도 교차한다. mono 는 `.pui-mono` 가 등폭·전용 tracking·크기 배율을 적용한다.
 
 - **body 14px** anchor — 복잡한 웹앱의 표준 밀도(shadcn text-sm · Atlassian).
 - **제목 위계 셋** — `title·heading·subheading` = h1·h2·h3. 페이지·문서의 계층이 또렷.
   `display` 는 랜딩 hero 한 자리만.
-- **weight 는 variant 와 직교한 별도 축** — `normal 450 · medium 550 · semibold 600 ·
-  bold 700`. Button·Tab 은 variant 기본 굵기 대신 여기서 골라 쓴다(`tokens.text.weight.*`).
+- **weight 는 variant 와 직교한 별도 축** — `regular 400 · normal 450 · medium 550 ·
+  semibold 600 · bold 700`. `regular`는 mono 본문·caption 전용이고 Button·Tab 은 variant 기본
+  굵기 대신 여기서 골라 쓴다(`tokens.text.weight.*`).
 - **서체** — Pretendard 를 맨 앞에(라틴·한글을 한 몸으로 그려 굵기가 균형), `-apple-system`
   은 fallback. `family="mono"` 는 코드·토큰·식별자 같은 기술적 자리에만 — 숫자를 무조건
   등폭으로 두지 않는다. 데이터 표의 숫자 열은 sans 그대로 `tabular-nums` 로 자리만 맞춘다.
@@ -268,7 +183,7 @@ semantic 공백을 메우는가.** 그래도 장식적 중복(같은 걸 이름�
 
 - [ ] `pnpm -r typecheck` · `pnpm lint` 통과했는가
 - [ ] 색을 추가했다면 — 정말 *의미* 가 있는가. 장식이면 넣지 않는다 (색은 의미가 없으면 쓰지 않는다)
-- [ ] 큰 면을 색으로 채우지 않았는가 (면은 검정 primary 만)
+- [ ] 큰 면을 색으로 채우지 않았는가 (면은 검정 primary만)
 - [ ] 컴포넌트를 추가했다면 — (v1 배포 후) 실제 화면에서 두 번 이상 필요했다는 증거가 있는가 / (배포 전, 지금) 표준 primitive·semantic 공백을 메우는가, 기존 것의 확장으로 안 되는가
 - [ ] 컴포넌트·prop·variant·token을 수정했다면 — 반드시 `app` Playground의 해당 preview·Props table·생성 코드를 함께 반영하고, 실제 Playground에서 동작을 확인했는가
 - [ ] 데모(`app/`)가 여전히 서는가. 데모가 이 시스템의 유일한 검증이다

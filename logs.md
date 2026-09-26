@@ -1,3 +1,288 @@
+## 2026-09-26 — Merge accent edge into soft
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/colors.ts`, accent styles, Tokens playground, color docs/report
+- 요약: 중복된 accent `edge` slot을 제거하고 hairline 및 status wash border가 `soft`를 공유하도록 했습니다.
+
+모든 accent에서 `edge`와 `soft`는 같은 palette step을 가리켰습니다. 같은 값을 두 이름으로 유지할 이유가 없어 API를 줄이고 각 사용처를 한 slot으로 모았습니다.
+
+## 2026-09-26 — Add subtle accent tone for muted text
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/colors.ts`, accent profile, Tokens playground, color docs/report
+- 요약: Accent ladder에 `subtle`을 추가하고 `muted` foreground가 이를 사용하도록 바꿨습니다.
+
+`soft`는 면에 쓰기 좋은 옅은 색이지만 투명 바탕의 글자로는 흐렸습니다. Status accent는 light에서 step 300, dark에서 step 500을 선택하고 primary는 neutral step 400/300을 선택해 soft보다 더 읽히도록 했습니다.
+
+## 2026-09-26 — Use accent soft tones for muted variant
+
+- 변경 파일: `workspace/packages/paper-ui/src/styles/color-profile.ts`, color profile test, token/component docs
+- 요약: `muted`의 foreground를 공통 `ink.secondary`에서 선택된 accent의 `soft`로 바꿨습니다.
+
+Muted는 투명 배경과 무테두리 구조를 유지하면서 primary·status accent마다 자기 색조를 보이도록 했습니다. 이에 따라 soft는 표면 역할뿐 아니라 muted 텍스트 역할도 맡습니다.
+
+## 2026-09-26 — Remove the edgeStrong accent slot
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/colors.ts`, accent CSS profile, Tokens playground, color docs/report
+- 요약: Accent ladder를 `solid · wash · soft · edge` 네 slot으로 줄이고 `edgeStrong`을 제거했습니다. Hairline은 hover 중에도 `edge`를 유지하며 neutral overlay만 적용합니다.
+
+강한 hover 전용 테두리는 edge와 역할이 겹치고 hairline의 기본 무게도 불필요하게 바꾸고 있었습니다. 별도 slot과 CSS override를 없애 색 계약을 단순화했습니다. LaTeX 보고서 표도 네 열로 다시 조판해 렌더링을 확인했습니다.
+
+## 2026-09-26 — Remove the shared outline variant
+
+- 변경 파일: `workspace/packages/paper-ui/src/resolvers/color.ts`, `styles/color-profile.ts`, component usages, Playground, docs, tests
+- 요약: 공용 accent `outline` variant를 제거하고 Button·IconButton·Badge·Alert의 사용을 `hairline`으로 옮겼습니다. Pagination의 독립적인 `outline` variant와 CSS focus outline은 유지했습니다.
+
+공용 color variant에서 `outline`은 기본 상태가 hairline hover border와 같은 edgeStrong을 써 독립된 역할이 약했습니다. 이에 hairline 하나로 합쳤습니다. 기존 outline 전용 3:1 border 계약과 outline/hairline 차이를 강제하던 테스트는 제거하고, neutral hairline이 Field·Box의 기본 경계와 같은지 확인하는 테스트로 정리했습니다.
+
+## 2026-09-26 — Add the full accent variant matrix
+
+- 변경 파일: `workspace/app/src/pages/Playground.tsx`
+- 요약: 전수 페이지 Color 섹션에 primary·info·success·warning·error와 여섯 Button variant의 30개 조합을 표로 추가했습니다.
+
+기존 단일 accent 선택형 recipe 표를 실제 Button 표본이 모두 보이는 matrix로 바꿨습니다. 각 버튼에는 variant명이 아니라 accent 이름만 표시합니다. 가로 폭은 좁은 화면에서 표 내부 스크롤로 처리해 전수 페이지의 나머지 specimen 폭을 바꾸지 않습니다.
+
+## 2026-09-26 — Consolidate accent ladder mapping
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/colors.ts`
+- 요약: Status accent 네 개가 공유하던 light/dark ladder 선택을 `accentToken()`으로 모았습니다.
+
+팔레트 연결은 `STATUS_PALETTE`에서 계속 명시하고, tone step은 한 곳에서 관리합니다. Primary는 neutral ramp를 쓰므로 별도 매핑으로 유지했습니다.
+
+## 2026-09-26 — Tune dark accent edge contrast
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/colors.ts`
+- 요약: Dark theme의 `edge`는 한 단계 어둡게, `edgeStrong`은 한 단계 밝게 조정했습니다. Neutral primary와 모든 status accent에 적용했습니다.
+
+이 두 ladder 값이 각각 Button의 hairline과 outline border 색을 결정합니다. 배경과 foreground는 유지하고 border 색 선택만 이동해 variant 간 시각적 무게 차이를 분명하게 했습니다.
+
+## 2026-09-26 — Reverse palette presentation in dark mode
+
+- 변경 파일: `workspace/app/src/playground/Tokens.tsx`
+- 요약: Color Foundations의 Palette matrix에서 dark theme일 때만 step 표시 순서를 뒤집었습니다.
+
+Palette token은 단일 SSOT이므로 값이나 semantic mapping은 건드리지 않고 화면 순서만 바꿨습니다. 밝은 theme은 기존처럼 50→950, dark theme은 950→50으로 보여줍니다.
+
+## 2026-09-26 — Add the 925 palette step for canvas separation
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/palette.ts`, `colors.ts`, Palette·Color Foundations, color docs
+- 요약: Neutral과 Accent ramp 모두에 `925`를 복구하고 dark `bg.canvas`가 `neutral.925`를 선택하도록 했습니다. Semantic Color 값 카드의 바탕은 `raised`에서 `canvas`로 맞췄습니다.
+
+`neutral.900`과 `neutral.950` 사이의 어두운 canvas 값을 주기 위해 925를 넣었습니다. Accent에도 같은 단계를 두어 양 ramp의 간격을 맞췄고, 925는 양쪽 anchor의 OKLCH 중간값으로 생성해 직접 관리하는 색을 늘리지 않았습니다.
+
+## 2026-09-26 — Use one shared color palette across themes
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/palette.ts`, `color-ladder.ts`, `colors.ts`, Palette·Color Foundations, color docs
+- 요약: Neutral·accent를 테마별 ramp에서 단일 ramp로 합치고 semantic mapping이 light/dark step을 선택하도록 바꿨습니다. Alpha도 `alpha05`~`alpha95`의 공통 percentage palette로 편입했습니다.
+
+기존 구조는 Palette 자체를 테마마다 뒤집어 Palette inspector가 바뀌는 문제가 있었습니다. 이제 palette는 단일 SSOT이고, surface·ink·border·accent·interaction·overlay·shadow의 테마별 값만 semantic layer에서 선택합니다. Alpha opacity를 기존 interaction별 임의값 대신 5% 단위의 공용 scale로 정리해 semantic token이 재사용합니다.
+
+## 2026-09-26 — Align neutral and accent palette steps
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/palette.ts`, `colors.ts`, `colors.test.ts`, Palette·Color Foundation previews
+- 요약: Neutral과 Accent를 `50, 100, 150, 200, 300 … 900, 950`으로 맞추고 `925` 단계를 제거했습니다.
+
+Neutral의 dark `bg.canvas`는 기존 `925` 대신 `900`을 사용하며, `sunken`과 `well`도 한 단계씩 이동해 네 surface의 구분을 유지합니다. 새 Neutral `150`은 기존 `100`·`200` 사이에서 생성해 다른 단계의 색은 보존했습니다.
+
+## 2026-09-26 — Lift dark soft accent surfaces
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/palette.ts`, `colors.ts`, `colors.test.ts`, Palette·Color Foundation preview
+- 요약: accent ramp에 `150`을 추가하고 dark theme의 status accent `soft`에 연결했습니다.
+
+다크 ramp는 낮은 번호가 거의 검정에 가까워 `100`을 면에 쓰면 raised surface와 구분이 약했습니다. 이후 palette에 `150`을 새 중간 단계로 추가해 dark `soft`에 연결했습니다. Light mapping과 나머지 semantic accent 단계는 유지합니다.
+
+## 2026-09-26 — Refine the Palette reference page
+
+- 변경 파일: `workspace/app/src/playground/Palette.tsx`, `palette.css.ts`
+- 요약: 팔레트 scale을 컴팩트한 swatch 행으로 재배치하고 공통 `PageHeader`와 Paper UI primitives를 사용했습니다.
+
+기존 큰 컬러 타일은 단계와 값, source 좌표가 한 면 안에서 경쟁해 전체 palette를 훑기 어려웠습니다. 칩을 단계·HEX 중심으로 단순화하고, OKLCH 좌표는 각 칩의 title에 남겨 필요할 때 확인하게 했습니다. 작은 화면에서는 scale을 가로로 스크롤해 모든 단계를 보존합니다.
+
+## 2026-09-26 — Split foundations into category pages
+
+- 변경 파일: `workspace/app/src/playground/Tokens.tsx`, `foundation-sections.ts`, `foundations.css.ts`, `shell.tsx`, `workspace/app/src/App.tsx`
+- 요약: Color & Typography, Spacing, Sizing, Radius, Border, Elevation, Motion을 각자 독립 경로와 사이드바 항목으로 분리했습니다. 페이지 UI는 Paper UI primitives와 `PageHeader`를 사용합니다.
+
+기존 한 화면의 긴 목차를 페이지별로 나눠 각 foundation을 바로 열고 탐색하게 했습니다. 기존 `/playground/tokens`와 `/playground/foundations` 주소는 Color & Typography 페이지로 연결해 링크를 유지합니다. 콘텐츠의 표면과 타이포그래피는 Paper UI 컴포넌트가 담당하고 별도 CSS는 반응형 배치만 정의합니다.
+
+## 2026-09-26 — Reshape semantic color token groups
+
+- 변경 파일: semantic color tokens, interaction consumers, Tokens·Palette Playground, foundations 문서
+- 요약: interaction 배경 hover를 `bgHover` 맥락별 토큰으로 정리하고 scrim·shadow 색을 별도 그룹으로 이동했습니다. Accent ladder 이름은 기존 다섯 항목을 유지하고 semantic Form hover glow를 제거했습니다.
+
+Shadow API는 overlay와 overlayMinimal 두 tint로 단순화했습니다. 기존 overlay 그림자는 두 geometry layer에 서로 다른 tint를 썼지만, 새 토큰 계약은 단일 `shadow.overlay`를 요구해 두 layer가 같은 tint를 공유합니다. 그림자 모양은 유지되며 tint 차이가 사라지므로, 이후 시각 검토 때 overlay가 지나치게 진하거나 평평해 보이는지 확인할 지점입니다.
+
+## 2026-09-26 — Expose Field surface in Playground props
+
+- 변경 파일: `workspace/app/src/playground/registry.tsx`
+- 요약: Field Playground에서 `surface="raised" | "sunken"`을 바꾸고 생성 코드에 반영하도록 추가했습니다.
+
+Field의 신규 surface 옵션이 실제 컴포넌트 API에는 있었지만 props 패널에는 노출되지 않아 Playground에서 비교할 수 없었습니다. 기본 raised는 코드에서 생략하고 sunken만 명시해, 생성 예제가 컴포넌트의 기본값 계약과 일치하게 했습니다. 설명도 surface 선택과 wrapper/input의 focus·caret 역할을 반영하도록 갱신했습니다.
+
+## 2026-09-26 — Prevent Field focus selection clipping
+
+- 변경 파일: `workspace/packages/paper-ui/src/atoms/Field.css.ts`
+- 요약: 전역 `:focus-visible` radius가 native input 자체에 적용되어 선택 highlight/caret이 잘리던 현상을 수정했습니다.
+
+전역 focus-visible 규칙의 둥근 모서리가 Field 내부 native input에도 적용되고 있었습니다. native input은 자체적으로 `overflow: clip`하므로 선택 영역과 caret이 input의 둥근 모서리에서 잘릴 수 있습니다. 내부 input의 radius를 0으로 고정하고 전체 내부 높이를 차지하게 했으며, 바깥 Field wrapper만 focus ring과 둥근 모서리를 담당합니다.
+
+## 2026-09-26 — Add recessed search surface to Field
+
+- 변경 파일: `Field.tsx`, `Field.css.ts`, Field playground specimen, Field tests, Form recipe
+- 요약: Field에 `surface="raised" | "sunken"`을 추가하고, sunken 검색 입력 예제에서 기존 leading/trailing 슬롯으로 아이콘과 `⌘ K` 힌트를 조합했습니다.
+
+깊이는 컴포넌트의 시각 variant보다 surface 역할로 표현해 `Box`와 용어를 맞췄습니다. 기본값은 기존 raised 그대로라 폼 입력의 렌더링은 유지되며, sunken은 semantic `bg.sunken`만 사용하고 공통 border·focus·status 동작은 건드리지 않습니다. 단축키 힌트는 동작이 없는 `kbd` 표면으로 구성해 별도 버튼처럼 오해하지 않게 했습니다.
+
+## 2026-09-26 — Align system controls with the project demo
+
+- 변경 파일: Button·Field·Select·Textarea atoms, control shape/text tokens, size ladder, 관련 foundations 문서
+- 요약: 기본 control을 32px 높이·13px 글자·8px 모서리로 맞추고, 버튼은 12px 좌우 여백과 solid 650 weight, 입력류는 역할별 좁은 여백과 normal 450 weight를 사용하도록 정리했습니다.
+
+데모에서 의도한 형태는 단순히 기존 시스템 버튼을 키운 모습이 아니라, 더 단단한 CTA 글자와 8px corner, 입력보다 넉넉한 버튼 좌우 폭의 조합이었습니다. 크기 사다리를 Button·Field·Select·Textarea에서 공유하되 버튼과 입력의 가로 여백은 계속 분리해 이 대비를 유지했습니다. `interaction.radius`는 Badge·Menu·Tooltip·navigation 등의 작은 표면도 공유해 함께 바뀝니다. 여러 줄 입력은 기존 잉크 정렬 계산을 보존하면서 패딩 주석과 값의 불일치를 바로잡았습니다.
+
+## 2026-09-26 — Use the system Button in the project demo
+
+- 변경 파일: `workspace/app/src/pages/Demo.tsx`, `workspace/app/src/pages/Demo.css.ts`
+- 요약: 프로젝트 데모의 `새 작업` 버튼을 전용 CSS에서 Paper UI `Button` Atom 기본값으로 교체했습니다.
+
+이 버튼은 제품 데모의 조형을 평가하는 기준점이므로 별도 모양을 유지하지 않고 시스템 기본값을 그대로 드러냅니다. 교체 결과 높이가 32→34px, 글자가 13px/650→14px/550, 모서리가 8→6px가 됐고, 시스템의 1px 경계와 scale press 반응이 적용됐습니다. 아이콘은 데모 호출부의 16px 설정을 유지해 버튼 Atom이 지정하지 않는 콘텐츠 크기 축은 그대로 비교할 수 있습니다.
+
+## 2026-09-26 — Unify project demo emphasis and status tones
+
+- 변경 파일: `workspace/app/src/pages/Demo.tsx`, `workspace/app/src/pages/Demo.css.ts`
+- 요약: 탭·상태 필터·완료 토글의 선택 표현을 동일한 중립 표면으로 맞추고, 작업 상태를 의미 기준으로 색상화했습니다. 우측 마일스톤 카드도 다른 패널과 같은 raised 표면으로 정리했습니다.
+
+보기 탭의 밑줄, 필터의 회색 칩, 완료 토글의 파란색은 모두 선택을 뜻하지만 서로 다른 강도로 보여 한 화면의 인터랙션 톤이 갈라졌습니다. 세 컨트롤은 같은 sunken 배경과 경계로 현재 선택을 표시하게 하고, 파랑·노랑·초록은 진행 중·검토·완료라는 실제 상태 데이터에만 남겼습니다. 상태별 색을 Task 데이터에 중복 저장하지 않고 상태값에서 결정해 '할 일'에 완료처럼 보이는 초록이 붙던 불일치도 막았습니다. 강조 패널은 레이아웃 초점인 스프린트 카드에 한정하고 나머지는 공통 raised 표면을 사용합니다.
+
+## 2026-09-26 — Make selected project views and filters explicit
+
+- 변경 파일: `workspace/app/src/pages/Demo.tsx`, `workspace/app/src/pages/Demo.css.ts`
+- 요약: 보기 탭과 상태 필터에 선택 상태를 명확한 색·배경·테두리로 표현하고 `aria-selected`·`aria-pressed` 상태를 추가했습니다.
+
+기본 버튼 규칙보다 선택 클래스의 우선순위가 낮아 기존 강조 스타일이 실제 DOM에서 덮이는 문제가 있었습니다. 상태 선택자를 구체화해 active tab은 진한 글자와 밑줄로, 상태 필터는 sunken 면과 경계선으로 드러나게 했습니다. hover에서도 현재 선택을 흐리지 않으며 키보드 포커스는 별도 ring으로 보입니다.
+
+## 2026-09-26 — Refine sprint and task toolbar icons
+
+- 변경 파일: `workspace/app/src/pages/Demo.tsx`, `workspace/app/src/pages/Demo.css.ts`
+- 요약: 스프린트 라벨의 얇은 스파클 아이콘을 경고색 면형 아이콘으로 바꾸고 기준선을 정렬했습니다. 검색·필터·새 작업 컨트롤 높이도 32px로 맞췄습니다.
+
+작은 크기의 선형 스파클은 어두운 요약 패널 안에서 장식인지 상태 표식인지 모호하고 존재감도 약했습니다. 같은 의미색을 유지하면서 내부가 채워진 네 방향 형태로 바꾸어 축소 상태에서도 인지되도록 했습니다. 툴바 액션은 서로 다른 기본 높이가 시각적 무게를 흐리지 않도록 공통 높이를 사용합니다.
+
+## 2026-09-26 — Tune workspace picker scale and alignment
+
+- 변경 파일: `workspace/app/src/pages/Demo.tsx`, `workspace/app/src/pages/Demo.css.ts`
+- 요약: 워크스페이스 아바타와 이름의 타이포를 사이드바에 맞추고, chevron wrapper를 제거해 양쪽 시각적 padding을 정돈했습니다.
+
+## 2026-09-26 — Use soft accent recipes for project task statuses
+
+- 변경 파일: `workspace/app/src/pages/Demo.tsx`, `workspace/app/src/pages/Demo.css.ts`
+- 요약: 작업 상태 배지를 각 상태 accent의 `soft` surface와 `solid` ink 조합으로 바꿨습니다.
+
+기존에는 `할 일` 상태가 중립 배경으로 처리돼 나머지 상태 배지와 색상 규칙이 끊겼습니다. 상태별 색을 임의로 섞지 않고 `info`, `warning`, `success`, `error` semantic token의 soft variant를 배경에, solid variant를 전경에 연결했습니다.
+
+## 2026-09-25 — Rebuild the project manager demo as a standalone HTML interface
+
+- 변경 파일: `workspace/app/src/pages/Demo.tsx`, `workspace/app/src/pages/Demo.css.ts`
+- 요약: Paper UI component 조합을 모두 걷어내고 시맨틱 HTML과 전용 레이아웃으로 대시보드 화면을 새로 구성했습니다.
+
+색만 Paper UI semantic token 참조로 제한하고, 반복 KPI 카드 대신 스프린트 요약을 단일 초점으로 두었습니다. 데스크톱은 프로젝트 탐색·작업 표·일정 레일의 3열 구조이며 모바일에서는 탐색을 접고 작업 표의 보조 열을 숨겨 핵심 작업/상태를 먼저 보여줍니다. 필터, 검색, 보기 전환, 작업 생성, 완료 토글을 유지했습니다. 첫 시각 검토에서 작은 글자와 가는 control weight를 발견해 보조 정보의 크기·굵기를 올리고 검색·필터·액션 버튼을 13px 기준으로 맞췄습니다. 작은 화면에서 CSS media-query를 전역 규칙처럼 쓸 경우 Vanilla Extract에 기대한 반응형 규칙이 생성되지 않는 점을 확인해 각 class recipe 안으로 breakpoint를 이동했습니다.
+
+## 2026-09-25 — Use canvas surface for project demo backdrop
+
+- 변경 파일: `workspace/app/src/pages/Demo.tsx`
+- 요약: 프로젝트 매니저 페이지 바탕을 `sunken`에서 `canvas`로 바꿨습니다.
+
+페이지 전체를 한 단계 눌린 회색 면으로 처리하면 국소적인 inset 요소와 구분되지 않고 대시보드가 회색 판처럼 읽혔습니다. 작업 페이지에는 canvas 역할을 쓰고, sunken은 작은 내부 그룹이나 트랙에만 남깁니다.
+
+## 2026-09-25 — Constrain wide project dashboard layout
+
+- 변경 파일: `workspace/app/src/pages/Demo.tsx`
+- 요약: 넓은 화면에서 프로젝트 대시보드가 가로로 과도하게 늘어나던 현상을 고치고 전체 작업 영역을 가운데 정렬했습니다.
+
+초기 레이아웃은 본문 중앙 열이 남는 너비를 모두 차지해 작업 표의 상태·우선순위·담당자·기한 열이 멀리 흩어졌습니다. 메인 작업 영역에 100rem 상한을 두어 큰 모니터에서도 정보 군집과 우측 일정 패널의 관계를 유지하고, 작은 화면에서는 원래처럼 자연스럽게 줄바꿈하도록 했습니다.
+
+## 2026-09-25 — Replace issue demo with Paper UI project manager
+
+- 변경 파일: `workspace/app/src/pages/Demo.tsx`
+- 요약: 이슈 목록 데모를 사이드바·프로젝트 요약·진행률·작업 목록/보드/타임라인·일정/활동으로 구성된 프로젝트 매니저로 바꿨습니다.
+
+Shape를 평가할 실제 화면을 만들되 컴포넌트별 임의 CSS나 새 색상값을 넣지 않고 Paper UI의 surface, controls, typography, semantic accents를 조합했습니다. 작업 검색·상태/우선순위 필터·완료 토글·새 작업 생성은 동작하며, 데모 전용 컴포넌트 규격을 추가하지 않아 기존 Shape의 실제 장단점을 관찰할 수 있습니다. 캡처 검토 중 Box의 `height="lg"`가 interaction 높이 40px이 아니라 layout 높이 216px로 해석되는 차이를 확인했고, 아이콘·상태 표식에는 interaction token 치수를 명시해 수정했습니다. 모바일에서 document 가로 overflow가 없는 것도 확인했습니다.
+
+## 2026-09-25 — Add accent variant recipe table to Playground
+
+- 변경 파일: `workspace/app/src/pages/Playground.tsx`
+- 요약: Color 섹션에 Table 8의 여섯 variant recipe를 추가하고, accent 선택에 따라 표본 버튼과 solid hover 설명을 바꾸도록 했습니다.
+
+Playground에서 표를 읽는 동시에 각 variant의 실제 버튼을 비교할 수 있도록 한 행 안에 버튼 표본과 bg·fg·border·hover recipe를 배치했습니다. `muted`는 accent 선택기와 무관하게 `ink.secondary`를 유지하도록 recipe 설명을 고정했습니다.
+
+## 2026-09-25 — Replace muted variants with one neutral ghost
+
+- 변경 파일: Button/Badge variant resolver와 color profile, Modal·Pagination, Playground, color-system 문서와 보고서
+- 요약: `softMuted`, `outlineMuted`, `hairlineMuted`, `ghostMuted`를 제거하고 Ghost형 투명 면에 `ink.secondary` 전경을 쓰는 단일 `muted`를 추가했습니다.
+
+기존 muted 이름 다수는 대응 variant와 색 recipe가 중복되어 선택지만 늘렸습니다. Accent의 `soft`는 밝거나 어두운 표면용 tint여서 전경 텍스트로 직접 쓰기엔 대비가 부족하므로, 새 `muted`는 status pigment를 버리고 의미가 분명한 중립 보조 잉크를 씁니다. 이로써 Muted는 Accent × Variant의 다른 조합이 아니라 공통 보조 액션이 됩니다.
+
+## 2026-09-25 — Expand the color-system report into a full specification
+
+- 변경 파일: `docs/reports/color-system-report.tex`, Downloads PDF
+- 요약: 라이트·다크의 전체 OKLCH 및 HEX ramp, semantic palette step, accent variant의 bg/fg/border/hover 조합, interaction alpha, CSS 생성·테마 적용 경로, 컴포넌트 상태, 자동 검사의 범위와 알려진 예외를 추가했습니다.
+
+팔레트 표는 생성기에서 실제 산출된 모든 값을 사용하고 source 좌표는 표시 정밀도만 제한했습니다. 특히 Select 화살표의 data URI에 남은 직접 HEX는 숨기지 않고 tokens-only 원칙의 예외로 명시했습니다. 구조적 테스트와 시각 대비 검증은 서로 다른 계약이므로 보고서에서 구분했습니다.
+
+## 2026-09-25 — Unify neutral palette step direction
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/palette.ts`, `colors.ts`, color contract tests, foundations, report
+- 요약: Light와 dark neutral ramp를 모두 `0 = 밝은 끝점`에서 `950 = 어두운 끝점`으로 재색인하고 semantic 및 alpha source 참조를 함께 옮겼습니다.
+
+숫자 방향은 팔레트 값을 읽는 규칙이므로 neutral 양 테마에서 공유해야 합니다. 이전 ramp의 HEX와 화면 역할은 그대로 보존하고 주소만 반전해, 표기 계약 개선이 제품 색상의 의도치 않은 변경으로 번지지 않게 했습니다. Accent step은 별도 계열 규칙이라 건드리지 않았습니다.
+
+## 2026-09-25 — Rebalance the full light neutral ramp
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/palette.ts`, 보고서, `daily-todo`·`booklog`·`doodle` vendored 패키지
+- 요약: neutral의 ink·canvas 양 끝 등 의미 기준점을 유지하고, 구간별로 중간 lightness를 생성하도록 바꿨습니다. 500–900 구간은 동일한 OKLCH lightness 간격으로 정렬했습니다.
+
+손으로 600만 옮기는 대신 ramp 전체에 하나의 보간 규칙을 적용했습니다. surface의 주요 기준 HEX는 유지하면서 well, border, sunken 사이의 간격을 정돈하고, 다크 neutral 및 accent family는 변경 범위에서 제외했습니다.
+
+## 2026-09-25 — Show OKLCH beside palette HEX values
+
+- 변경 파일: `workspace/app/src/playground/Palette.tsx`, `workspace/packages/paper-ui/src/tokens/color-ladder.ts`, `docs/reports/color-system-report.tex`, Downloads의 PDF
+- 요약: neutral과 accent 모든 swatch에서 HEX와 OKLCH를 함께 보여주고, accent 중간 단계도 실제 생성 좌표를 확인할 수 있게 했습니다. 보고서 semantic 표에도 light/dark의 step·HEX·OKLCH를 병기했습니다.
+
+중간 accent 좌표를 UI에서 별도 재계산하면 팔레트 generator와 미세하게 달라질 수 있어, HEX 생성에 쓰는 보간 결과를 같은 L1 source에서 inspector에 노출했습니다. 보고서는 step의 source 좌표와 gamut mapping 후 HEX가 다를 수 있음을 명시했습니다.
+
+## 2026-09-25 — Generate a consistent cool-neutral ramp
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/palette.ts`, `docs/reports/color-system-report.tex`, 다운로드 PDF, 세 앱의 vendored 패키지
+- 요약: 라이트 neutral 13단계 전체를 hue `286°`·chroma `0.003`으로 통일해 기존 무채색과 zinc tint의 중간 톤으로 낮췄습니다. 패키지 빌드와 세 앱의 production build를 확인했습니다.
+
+900에서만 쿨톤이 도드라지고 925·950이 무채색으로 갑자기 바뀌지 않도록 모든 source anchor에 같은 recipe를 사용합니다. 가장 밝은 끝의 거의 흰 표면은 gamut mapping이 색도를 자연스럽게 제한합니다. 다크 neutral과 accent는 이번 조정 범위가 아니므로 유지했습니다.
+
+## 2026-09-25 — Document the color-system contract
+
+- 변경 파일: `docs/reports/color-system-report.tex`, Downloads의 PDF
+- 요약: OKLCH source부터 HEX palette token, 다섯 semantic system, CSS 사용과 정합성 검사까지 현재 Color System을 기록했습니다.
+
+보고서는 구현과 문서를 기준으로 매핑과 현재 생성 HEX를 대조하고, palette-token 경계와 자동 검사의 범위를 분리해 설명합니다. 특히 구조적 토큰 정합성이 실제 텍스트·surface 조합의 대비를 자동 보장하지 않는 점을 남은 검증 과제로 구분했습니다.
+
+## 2026-09-25 — Restore a subtle zinc cast to light neutrals
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/palette.ts`, 패키지 배포 아카이브, `daily-todo`·`booklog`·`doodle` vendored 패키지
+- 요약: 라이트 neutral ramp에만 낮은 OKLCH chroma(`0.006`, hue `286°`)를 되돌려 흰 surface의 밝기를 유지하면서 은근한 cool-zinc 기운을 복원했습니다. 다크 charcoal과 semantic surface 매핑은 유지했습니다.
+
+순수 achromatic neutral은 정돈돼 보이지만 화면의 밝은 면이 조금 딱딱하게 느껴졌습니다. 이전에 문서화한 zinc hue를 기준으로 chroma를 크게 절제해, 컬러감보다는 면의 온도로만 구별되게 했습니다. 앱별 HEX override를 두지 않고 같은 package를 세 앱에 배포해 팔레트 출처를 하나로 유지합니다.
+
+## 2026-09-25 — Tune dark neutrals toward charcoal
+
+- 변경 파일: `tokens/palette.ts`, Tokens Playground, Foundations 문서
+- 요약: 다크 surface의 기존 역할 순서는 유지하고 zinc cast를 거의 무채색 charcoal로 낮췄습니다. 의미색은 차트·상태 같은 용도에 남겨둡니다.
+
+ChatGPT의 중립적인 charcoal 화면과 사용자가 공유한 대시보드 사례를 참고해, 다크 모드에서 채도보다 명도 차가 먼저 읽히게 했습니다. surface mapping과 semantic 순서는 바꾸지 않아 기존 깊이 모델은 그대로입니다. 강한 채도는 데이터 시각화·상태 등 의미를 가진 자리에만 남깁니다.
+
+## 2026-09-24 — Balance neutral tokens around the doodle prototype
+
+- 변경 파일: `tokens/palette.ts`, `tokens/shape.ts`, `tokens/text.ts`, Tokens Playground, Foundations 문서
+- 요약: doodle에서 잘 읽혔던 흰 문서·회색 바탕·약한 괘선·떠 있는 패널의 대비를 Paper UI의 중립 토큰에 반영했습니다. 양 테마의 surface와 글자·선 사다리를 함께 조정하고, heading/caption 크기와 큰 레이아웃 여백, overlay 그림자를 다듬었습니다.
+
+실제 화면의 균형을 토큰으로 되돌리되, 문서 폭이나 패널 배치·점무늬처럼 앱 맥락에 따른 형태는 공통 규칙으로 고정하지 않았습니다. 기존 Molecule/Component 구현은 교체 예정이므로 건드리지 않았고, Tokens Playground에 Atom만으로 만든 조합 예시를 넣어 라이트·다크에서 면과 깊이 관계를 확인할 수 있게 했습니다. 작은 글자와 선의 대비는 개별 수치보다 바탕 면 위에 놓인 상태로 검토해야 합니다.
+
 ## 2026-09-23 — Generate accent palette steps in OKLCH
 
 - 변경 파일: `tokens/color-ladder.ts`, Palette Playground, Foundations 문서
@@ -440,3 +725,33 @@ Playground가 이 레포의 유일한 시각 검증 surface이므로, 패키지 
 정리는 public API와 token tree를 함께 움직이는 변경이므로, raw palette는 Playground Palette에서만
 검토하고 component·app은 semantic token 또는 `accent`만 소비해야 합니다. amber는 다른 accent보다
 연한 색으로 취급하지 않아 light palette의 400 이상 label에 밝은 전경을 사용했습니다.
+## 2026-09-25 — Revert the dense timeline experiment
+
+- 변경 파일: `workspace/app/src/pages/Demo.tsx`, Paper UI의 실험적 surface·control 조정, 관련 문서
+- 요약: 타임라인 데모와 그에 맞춘 다크 surface 순서·SegmentedControl·Field 효과를 되돌리고, 실험 전의 이슈 트래커 데모와 `dev/palette-ladder` 브랜치로 복귀했습니다.
+
+데모의 크기와 밀도를 계속 조절하는 방식으로는 원하는 Shape 정체성이 명확해지지 않았습니다. doodle 기반 토큰 조정과 기존 charcoal 중립화 작업은 별개의 선행 작업이므로 유지했습니다. 실험 브랜치는 복구 가능하도록 남겼습니다.
+## 2026-09-25 — Rebuild semantic color systems from OKLCH
+
+- 변경 파일: Palette source/generator, semantic color tokens, component color consumers, Playground, foundations 문서
+- 요약: OKLCH source에서 6/8자리 HEX Palette Token을 생성하고, Surface·Ink·Accent·Interaction·Constants 다섯 semantic system을 Palette Token만으로 구성했습니다.
+
+Focus ring 색은 상태색이므로 `interaction.focus`에 두고, shadow tint는 `constants.shadow`로 분리했습니다. 두 경우 모두 생성된 Palette Token만 참조하며 링과 그림자의 geometry는 shape 계층에 남깁니다. semantic leaf가 다른 semantic leaf를 참조하지 않는 구조적 불변조건을 유지해야 합니다.
+## 2026-09-25 — Align token ownership and color derivation
+
+- 변경 파일: color·shape·text·layout token definitions, semantic consumers, lint rules, Foundations 문서
+- 요약: 상태 glow를 accent 기반 HEX Palette Token으로 생성하고, 중복·미사용 shape 값과 소유권 오류를 정리했습니다. focus ring, spinner, checkbox mark, tab indicator의 서로 다른 geometry도 전용 token으로 분리했습니다.
+
+Palette leaf에는 nominal `PaletteToken` 타입을 붙여 semantic 계층이 임의 string을 받을 수 없게 했습니다. 컨트롤 글자 크기·mono 보정·weight는 Text의 단일 출처를 공유하며, navbar와 segmented track 치수는 component intrinsic으로 옮겼습니다. 색상 합성은 Palette 생성 단계로 한정하고, 소비처의 runtime color math를 lint에서 막습니다.
+## 2026-09-25 — Clarify token layers in Playground
+
+- 변경 파일: `workspace/app/src/playground/Tokens.tsx`, `Palette.tsx`, 관련 Playground styles
+- 요약: Tokens 화면에 Palette source → generated Palette Token → semantic trees → consumers 계층도를 추가하고 Color family를 역할별로 분리했습니다. Palette의 고정 최소폭을 반응형 grid로 바꾸고 긴 label이 셀 밖으로 밀지 않도록 했습니다.
+
+기존 화면은 값 자체는 실시간으로 읽었지만 생성 단계와 semantic system의 소유 관계가 본문 설명에 묻혀 있었습니다. 이번에는 위계와 family를 먼저 보여준 뒤 각 토큰을 확인하도록 순서를 재배치했습니다. 팔레트는 가로 스크롤에 의존하지 않고 좁은 화면에서 열 수를 줄여 전체 스케일과 HEX를 함께 비교할 수 있게 했습니다.
+## 2026-09-25 — Neutralize light surface palette chroma
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/palette.ts`
+- 요약: Light neutral palette의 미세한 보라/청색 chroma를 0으로 낮췄습니다. 기존 lightness 단계는 유지해 표면 밝기와 hierarchy는 그대로 둡니다.
+
+Neutral source가 사실상 achromatic한 dark ramp와 달리 light 쪽은 hue 286°의 작은 chroma를 계속 갖고 있어, 넓은 surface 면적에서 zinc/stone 계열 기운으로 읽힐 수 있었습니다. 이 변경은 saturation cast만 걷어내고 step 밝기와 semantic mapping은 손대지 않습니다.

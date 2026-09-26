@@ -16,7 +16,7 @@ export const paginationPage = style({
 
 export const paginationEllipsis = style({
   width: tokens.shape.height.sm.interaction,
-  color: tokens.color.content.tertiary,
+  color: tokens.color.ink.tertiary,
   textAlign: "center",
   lineHeight: tokens.shape.height.sm.interaction,
 });
