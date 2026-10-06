@@ -22,3 +22,13 @@ describe("muted color profile", () => {
     }
   });
 });
+
+describe("hairlineMuted color profile", () => {
+  it("preserves hairline geometry colors and hover while borrowing muted foreground", () => {
+    for (const accent of ["primary", "info", "success", "warning", "error"] as const) {
+      const hairline = accentProfile(accent, "hairline");
+      const muted = accentProfile(accent, "muted");
+      expect(accentProfile(accent, "hairlineMuted")).toEqual({ ...hairline, color: muted.color });
+    }
+  });
+});

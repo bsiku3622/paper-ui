@@ -200,7 +200,7 @@ export const COMPONENTS: CompSpec[] = [
     blurb: "accent × variant가 독립된 시각 무게 축이다. primary도 neutral accent family라 모든 accent가 같은 five-slot contract를 공유한다. fontSize는 버튼 실루엣과 별도로 조절한다. 이 브랜치에서는 height 30/32/36 · radius 4 · padding 10/11/14를 시험한다.",
     controls: [
       { kind: "enum", prop: "accent", label: "accent", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
-      { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "hairline", "ghost", "muted"], def: "solid" },
+      { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "hairline", "hairlineMuted", "ghost", "muted"], def: "solid" },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "enum", prop: "fontSize", label: "fontSize", options: ["default", "label", "caption", "body"], def: "default" },
       { kind: "bool", prop: "loading", label: "loading", def: false },
@@ -234,7 +234,7 @@ export const COMPONENTS: CompSpec[] = [
     blurb: "아이콘만 담는 정사각 버튼. Button과 분리해 iconSize와 접근성 이름을 명시한다.",
     controls: [
       { kind: "enum", prop: "accent", label: "accent", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
-      { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "hairline", "ghost", "muted"], def: "solid" },
+      { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "hairline", "hairlineMuted", "ghost", "muted"], def: "solid" },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "enum", prop: "iconSize", label: "iconSize", options: ["label", "caption", "body", "heading3"], def: "body" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
@@ -254,7 +254,7 @@ export const COMPONENTS: CompSpec[] = [
     blurb: "상태 한 낱말. accent × variant(solid·soft·hairline·ghost) + 중립 보조 텍스트 muted. dot 으로 앞에 상태 점. 표시용이라 hover 없음.",
     controls: [
       { kind: "enum", prop: "accent", label: "accent", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
-      { kind: "enum", prop: "variant", label: "variant", options: ["soft", "solid", "hairline", "ghost", "muted"], def: "soft" },
+      { kind: "enum", prop: "variant", label: "variant", options: ["soft", "solid", "hairline", "hairlineMuted", "ghost", "muted"], def: "soft" },
       { kind: "bool", prop: "dot", label: "dot", def: false },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
       { kind: "enum", prop: "fontSize", label: "fontSize", options: ["default", "label", "caption", "body"], def: "default" },
@@ -607,7 +607,7 @@ export const COMPONENTS: CompSpec[] = [
     blurb: "상태 한 줄을 색이 깔린 면으로 알린다. Button·Badge 와 같은 accent × variant 매트릭스를 그대로 문다 — variant 가 이미 면의 무게 축이라 Alert 전용 surface 축을 따로 세우지 않았다.",
     controls: [
       { kind: "enum", prop: "accent", label: "accent", options: ["primary", "info", "success", "warning", "error"], def: "info" },
-      { kind: "enum", prop: "variant", label: "variant", options: ["soft", "solid", "hairline", "ghost", "muted"], def: "soft" },
+      { kind: "enum", prop: "variant", label: "variant", options: ["soft", "solid", "hairline", "hairlineMuted", "ghost", "muted"], def: "soft" },
       { kind: "text", prop: "title", label: "title", def: "확인이 필요합니다" },
       { kind: "text", prop: "children", label: "children", def: "이 작업은 되돌릴 수 없습니다." },
     ],

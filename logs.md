@@ -1,3 +1,10 @@
+## 2026-10-06 — Add an experimental hairlineMuted variant
+
+- Changed files: Shared variant resolver/profile, profile tests, Playground controls and specimens, and foundation documentation.
+- Summary: Add `hairlineMuted` across the shared accent axis. Preserve hairline background, border, and hover; use muted foreground for each accent.
+
+The profile combines existing semantic slots rather than introducing palette values or component-specific styling. Props options and generated code expose the new variant, and the full Playground includes side-by-side specimens. Browser computed styles confirmed matching hairline borders and muted foreground. Typecheck, library/app builds, and all 46 unit tests passed. Lint still reports the two existing restricted imports in Tokens.tsx.
+
 ## 2026-10-06 — Try a 36px large control
 
 - Changed files: Shape tokens, control specimens, geometry tests, and token documentation.

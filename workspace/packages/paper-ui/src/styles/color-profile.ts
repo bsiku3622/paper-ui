@@ -37,6 +37,12 @@ const variantProfile = (t: AccentTones, primary: boolean): Record<Variant, Color
     borderColor: t.soft,
     hoverOverlay: tokens.color.interaction.bgHover.onSurface,
   },
+  hairlineMuted: {
+    background: "transparent",
+    color: t.subtle,
+    borderColor: t.soft,
+    hoverOverlay: tokens.color.interaction.bgHover.onSurface,
+  },
   ghost: {
     background: "transparent",
     color: t.solid,
