@@ -1,3 +1,10 @@
+## 2026-10-06 — Fix token inspector lint exceptions
+
+- Changed files: workspace/eslint.config.js and AGENTS.md.
+- Summary: Allow only the exact colors and palette source import paths in Tokens.tsx, preserving the restricted-import rule for ladder/shape and other consumers.
+
+The Foundations inspector needs raw values to show light/dark comparisons and palette swatches. Exempting the whole file would also permit unrelated raw-token imports, so the override uses two exact path exclusions. Full lint passed with zero errors or warnings. In-memory ESLint probes confirmed shape remains blocked in Tokens.tsx and both colors and shape remain blocked in a normal app page.
+
 ## 2026-10-06 — Unify outlined controls and tighten panel corners
 
 - Changed files: Shared color profiles/emitter, Field/Select/Textarea styles, radius tokens, Playground specimens/options, integration tests, and foundation documentation.

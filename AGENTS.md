@@ -49,7 +49,7 @@ OKLCH Palette source → HEX Palette Token generation → semantic systems → r
 - palette.ts만 OKLCH neutral·accent anchor와 `alpha05`~`alpha95` opacity scale을 소유합니다. color-ladder.ts의 순수 함수를 호출해 완성된 coordinates와 HEX Palette Token을 조립해 export합니다. Palette 값은 테마와 무관하며, semantic layer가 light/dark 역할에 맞는 step을 선택합니다.
 - color-ladder.ts는 palette.ts를 import하지 않는 순수 계산 모듈입니다. 입력받은 좌표·단계에 대해 보간·gamut-map·HEX 인코딩을 수행하며 semantic role 이름을 두지 않습니다.
 - colors.ts의 semantic leaf는 생성된 Palette Token만 선택합니다. 다른 semantic leaf, 직접 입력한 HEX, color math를 참조하지 않습니다.
-- theme.css.ts는 semantic tree를 CSS variable로 내보냅니다. Component·resolver·app은 tokens.color var 참조만 씁니다. /playground/palette만 source와 생성 결과를 확인하는 예외입니다.
+- theme.css.ts는 semantic tree를 CSS variable로 내보냅니다. Component·resolver·app은 tokens.color var 참조만 씁니다. /playground/palette는 source와 생성 결과를 확인하는 예외입니다. Foundations의 Tokens.tsx inspector도 색상 비교표를 위해 colors·palette 두 source 모듈을 정확한 경로로 읽습니다. 다른 raw-token import 제한은 유지합니다.
 
 semantic color는 surface·ink·border·accent·interaction·overlay·shadow 역할로 나뉩니다.
 
