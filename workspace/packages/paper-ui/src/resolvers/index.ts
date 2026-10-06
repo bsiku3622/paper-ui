@@ -6,7 +6,7 @@
 import { joinClass } from "../internal/joinClass";
 import type { StatusName, Space } from "../tokens";
 import { resolveSurface, type Surface } from "./color";
-
+export { resolveControlTypography } from "./typography";
 // 면(surface) · accent × variant는 별도 파일에.
 export {
   resolveSurface,

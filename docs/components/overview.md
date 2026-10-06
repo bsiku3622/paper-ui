@@ -11,7 +11,7 @@ raw HTML을 렌더하는 유일한 레이어입니다.
 - **Box** — 면 하나. `surface`(면 깊이) · `border`(헤어라인) · `inverse`(검은 판) · 간격 · `radius` · `shadow`와 box model의 크기·잘림을 말합니다. `width/minWidth/maxWidth`, `height/minHeight/maxHeight`, `overflow` 계열에서 `sm~xl`은 layout token, `full/fit/min-content/max-content`는 자주 쓰는 intent이고 앱 고유 CSS 길이도 escape hatch로 받습니다. position·flex·색은 각각 소비처 layout, Stack·Inline, Text의 책임으로 남깁니다. `as`는 상위 레이어가 raw 태그에 닿는 유일한 통로입니다.
 - **Stack** — 세로로 쌓습니다. `gap`.
 - **Inline** — 가로로 늘어놓습니다. `gap` · `justify` · `align` · `wrap`.
-- **Text** — 일곱 variant로 위계를 정합니다. `variant`가 크기·굵기·잉크(농도·의미색)를 한 번에 정하고, 서체는 별도의 `family` 축(sans·mono)으로 어느 variant에도 교차합니다. 제목 위계가 셋(title·heading·subheading = h1·h2·h3)입니다.
+- **Text** — 여덟 variant로 제목 위계와 텍스트 역할을 정합니다. `display`·`title`·`heading`·`subheading`이 제목 계층을, `body`·`control`·`caption`·`label`이 사용 역할을 맡습니다. `variant`가 크기·굵기·잉크를 정하고, 서체는 별도의 `family` 축(sans·mono)으로 교차합니다.
 
 ## Atoms (13)
 

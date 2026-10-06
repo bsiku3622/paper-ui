@@ -4,6 +4,7 @@ import { createContext, useContext, type ReactNode } from "react";
 
 import { Box, type BoxProps } from "../primitives";
 import { joinClass } from "../internal/joinClass";
+import { textTypography } from "../styles/typography.css";
 import {
   tableRoot,
   tableCaption,
@@ -80,7 +81,7 @@ export type TableCellProps = Omit<BoxProps<"td">, "as" | "align"> & CellAxis;
 export const TableCell = ({ align, numeric, className, ...rest }: TableCellProps) => {
   const { density } = useTable();
   const resolved = align ?? (numeric ? "end" : "start");
-  return <Box as="td" className={joinClass(tableTd, tableCellDensity[density], tableAlign[resolved], numeric && tableNumeric, className)} {...rest} />;
+  return <Box as="td" className={joinClass(textTypography.body, tableTd, tableCellDensity[density], tableAlign[resolved], numeric && tableNumeric, className)} {...rest} />;
 };
 
 export type Column<T> = {

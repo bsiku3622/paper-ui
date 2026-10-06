@@ -6,6 +6,7 @@ import { Divider, Field } from "../atoms";
 import { Icon } from "../primitives";
 import { Box, Stack, Text, type BoxProps } from "../primitives";
 import { joinClass } from "../internal/joinClass";
+import { resolveControlTypography } from "../resolvers";
 import { commandCopy, commandEmpty, commandGroup, commandGroupLabel, commandIcon, commandItem, commandList, commandRoot, commandSearch, commandShortcut } from "./CommandMenu.css";
 
 type CommandContextValue = { query: string; active?: string; setActive: (value: string) => void; choose: (value: string) => void };
@@ -27,7 +28,7 @@ const CommandMenuRoot = ({ query, defaultQuery = "", onQueryChange, onSelect, pl
 export type CommandMenuGroupProps = { label?: ReactNode; children: ReactNode };
 export const CommandMenuGroup = ({ label, children }: CommandMenuGroupProps) => { const context = useContext(CommandContext); if (!context) throw new Error("CommandMenu.Group must be used inside CommandMenu"); const visible = Children.toArray(children).filter((child) => isValidElement<CommandMenuItemProps>(child) && matches(child.props.children, child.props.keywords, context.query)); if (!visible.length) return null; return <Box className={commandGroup}>{label ? <Text as="span" variant="label" ink="soft" className={commandGroupLabel}>{label}</Text> : null}{visible}</Box>; };
 export type CommandMenuItemProps = { value: string; description?: ReactNode; keywords?: readonly string[]; icon?: ReactNode; shortcut?: ReactNode; disabled?: boolean; children: ReactNode };
-export const CommandMenuItem = ({ value, description, keywords, icon, shortcut, disabled, children }: CommandMenuItemProps) => { const context = useContext(CommandContext); if (!context || !matches(children, keywords, context.query)) return null; return <Box as="button" type="button" role="option" data-command-value={value} aria-selected={context.active === value} aria-disabled={disabled || undefined} className={commandItem} onMouseEnter={() => { if (!disabled) context.setActive(value); }} onClick={() => { if (!disabled) context.choose(value); }}>
+export const CommandMenuItem = ({ value, description, keywords, icon, shortcut, disabled, children }: CommandMenuItemProps) => { const context = useContext(CommandContext); if (!context || !matches(children, keywords, context.query)) return null; return <Box as="button" type="button" role="option" data-command-value={value} aria-selected={context.active === value} aria-disabled={disabled || undefined} className={joinClass(commandItem, resolveControlTypography("navigation", "active"))} onMouseEnter={() => { if (!disabled) context.setActive(value); }} onClick={() => { if (!disabled) context.choose(value); }}>
   {icon ? <Box as="span" className={commandIcon}>{icon}</Box> : null}<Stack gap="xs" className={commandCopy}><Text as="span" variant="body">{children}</Text>{description ? <Text as="span" variant="caption" ink="soft">{description}</Text> : null}</Stack>{shortcut ? <Text as="span" variant="label" className={commandShortcut}>{shortcut}</Text> : null}
   </Box>; };
 export type CommandMenuEmptyProps = { children: ReactNode };

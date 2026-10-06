@@ -24,7 +24,7 @@ import {
 } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import { resolveAccent, INTERACTIVE, type Accent, type Variant } from "../resolvers";
+import { resolveAccent, resolveControlTypography, INTERACTIVE, type Accent, type Variant } from "../resolvers";
 import type { ControlSize, TextVariant } from "../tokens";
 import {
   buttonRoot,
@@ -33,7 +33,6 @@ import {
   buttonFull,
   buttonPill,
   buttonFontSize,
-  buttonWeight,
 } from "./Button.css";
 
 type ButtonOwn<As extends ElementType> = {
@@ -106,7 +105,7 @@ const ButtonImpl = forwardRef<HTMLElement, ButtonImplProps>(function Button(
         INTERACTIVE,
         buttonRoot,
         buttonSize[size],
-        buttonWeight[variant === "solid" ? "strong" : "regular"],
+        resolveControlTypography("button", size, variant === "solid" ? "strong" : "regular"),
         fontSize && buttonFontSize[fontSize],
         resolveAccent(accent, variant),
         fullWidth && buttonFull,

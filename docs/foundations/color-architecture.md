@@ -3,19 +3,22 @@
 Paper UI colors follow one direction:
 
 ```
-OKLCH Palette source → generated HEX Palette Tokens → semantic systems → real use
-      palette.ts              color-ladder.ts       colors.ts       CSS vars / UI
+palette.ts (source + assembly) ──calls──> color-ladder.ts (pure color functions)
+       │                                      │
+       └── completed OKLCH + HEX Palette Tokens
+                         ↓
+                  colors.ts (semantic) → CSS vars → UI
 ```
 
-The Palette is one theme-independent source of truth. It owns hue, chroma, lightness anchors, and percentage alpha steps. The generator interpolates missing tones, maps out-of-gamut colors into sRGB, and emits six-digit HEX colors plus eight-digit HEX alpha tokens. Light and dark semantics independently select steps from this same generated Palette; switching theme never changes the Palette itself.
+The Palette is one theme-independent source of truth. It owns hue, chroma, lightness anchors, and percentage alpha steps. `palette.ts` calls the pure interpolation and color-encoding functions in `color-ladder.ts`, then exports the completed OKLCH coordinates and HEX Palette Tokens. `color-ladder.ts` never imports palette data, so the dependency remains one-way. Light and dark semantics independently select steps from this same generated Palette; switching theme never changes the Palette itself.
 
 ## Palette source and generated tokens
 
-`tokens/palette.ts` is the only authored color source. Neutral and accent families are described by one OKLCH ramp each. Neutral step numbering runs from light to dark: `0` is the lightest endpoint and `950` the darkest; both ramps include `925` between `900` and `950`. Dark `bg.canvas` selects neutral `925`, leaving `950` for the deeper raised surface. Accent families keep one set of reviewed anchors; intermediate tones, including `925`, are interpolated in OKLCH. `alpha05` through `alpha95` are fixed percentage ramps applied to the neutral endpoints and are shared by every theme.
+`tokens/palette.ts` is the only authored color source and the assembly point for the completed Palette. Neutral and accent families are described by one OKLCH ramp each. Neutral step numbering runs from light to dark: `0` is the lightest endpoint and `950` the darkest; both ramps include `925` between `900` and `950`. Dark `bg.canvas` and `bg.sunken` select neutral `950`; `bg.raised` selects `925`, and `control.track` selects `900`. The close spacing keeps broad surfaces calm while letting panels lift slightly above the page. Accent families keep one set of reviewed anchors; intermediate tones, including `925`, are interpolated in OKLCH. `alpha05` through `alpha95` are fixed percentage ramps applied to the neutral endpoints and are shared by every theme.
 
-`tokens/color-ladder.ts` converts every source color to HEX. Chroma is reduced only when a color falls outside sRGB. Alpha variants are emitted as eight-digit HEX from a palette endpoint and a named percentage step. Generated values are Palette Tokens; they are not semantic roles.
+`tokens/color-ladder.ts` contains pure operations only: completing a ramp, interpolating OKLCH coordinates, mapping out-of-gamut colors into sRGB, encoding HEX, and appending alpha. It does not import or assemble palette data. `palette.ts` applies these functions and exports generated `PaletteToken`s; they are not semantic roles.
 
-Palette Token keys are internal. Components and application code do not import them. The generator brands its output as `PaletteToken`, so semantic values cannot be assigned arbitrary CSS strings at type level. The Palette inspector is the only view that displays source coordinates and generated values side by side.
+Palette Token keys are internal. Components and application code do not import them. The ladder functions brand encoded output as `PaletteToken`, so semantic values cannot be assigned arbitrary CSS strings at type level. The Palette inspector is the only view that displays source coordinates and generated values side by side.
 
 ## Semantic systems
 
@@ -23,7 +26,8 @@ All semantic values select Palette Tokens according to the current theme. They s
 
 | System | Public shape | Responsibility |
 |---|---|---|
-| Surface | `bg.<level>` | Page, raised, sunken, and well surfaces |
+| Surface | `bg.<level>` | Page, raised, and sunken surfaces |
+| Control | `control.<role>` | Tracks built into interactive controls |
 | Border | `border.<level>` | Base, strong, and hover boundaries |
 | Ink | `ink.<level>` | Primary, secondary, and tertiary text |
 | Accent | `accent.<name>.<ladder>` | Primary or status pigment roles: `solid`, `wash`, `soft`, `subtle` |
@@ -35,6 +39,7 @@ Examples:
 
 ```ts
 tokens.color.bg.canvas
+tokens.color.control.track
 tokens.color.border.strong
 tokens.color.ink.secondary
 tokens.color.accent.warning.soft
@@ -44,7 +49,7 @@ tokens.color.overlay.scrim
 tokens.color.shadow.overlay
 ```
 
-The surface levels retain their established meaning: `raised`, `canvas`, `sunken`, and `well`. Borders use `base`, `strong`, and `hover`; ink uses `primary`, `secondary`, and `tertiary`.
+The surface levels are `raised`, `canvas`, and `sunken`. In light mode, `canvas` and `sunken` select neutral `50` and `100`; `control.track` selects neutral `200` for the recessed track inside Switch and SegmentedControl. In dark mode it selects neutral `900`. Keeping this track outside `bg` prevents a component detail from becoming a general-purpose page surface. Borders use `base`, `strong`, and `hover`; ink uses `primary`, `secondary`, and `tertiary`.
 
 Accent names are `primary`, `info`, `success`, `warning`, and `error`. They map to neutral, blue, green, amber, and red Palette Tokens. Every name has the same ladder:
 

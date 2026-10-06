@@ -11,7 +11,7 @@
 import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import { resolveAccent, type Accent, type Variant } from "../resolvers";
+import { resolveAccent, resolveControlTypography, type Accent, type Variant } from "../resolvers";
 import type { ControlSize, TextVariant } from "../tokens";
 import { badgeRoot, badgeSize, badgeDot, badgePill, badgeFontSize } from "./Badge.css";
 
@@ -42,6 +42,7 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
       className={joinClass(
         badgeRoot,
         badgeSize[size],
+        resolveControlTypography("badge"),
         fontSize && badgeFontSize[fontSize],
         resolveAccent(accent, variant),
         shape === "pill" && badgePill,

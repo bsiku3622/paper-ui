@@ -12,6 +12,7 @@
 import { forwardRef, type TextareaHTMLAttributes } from "react";
 
 import { joinClass } from "../internal/joinClass";
+import { resolveControlTypography } from "../resolvers";
 import type { ControlSize, StatusName, TextVariant } from "../tokens";
 import { fieldStatus } from "./Field.css";
 import { textareaRoot, textareaSize, textareaFontSize } from "./Textarea.css";
@@ -41,7 +42,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
         delete event.currentTarget.dataset.puiPointerFocus;
         onBlur?.(event);
       }}
-      className={joinClass(textareaRoot, textareaSize[size], fontSize && textareaFontSize[fontSize], status !== "default" && fieldStatus[status], className)}
+      className={joinClass(textareaRoot, textareaSize[size], resolveControlTypography("textarea", size), fontSize && textareaFontSize[fontSize], status !== "default" && fieldStatus[status], className)}
       {...rest}
     />
   );

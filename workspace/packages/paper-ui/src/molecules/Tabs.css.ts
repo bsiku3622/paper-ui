@@ -10,7 +10,7 @@ const revealPanel = keyframes({
 
 export const tabsRoot = style({ display: "block", minWidth: 0 });
 export const tabsList = style({ display: "inline-flex", gap: 0, padding: 0, background: "transparent", borderBottomWidth: tokens.shape.constants.borderWidth, borderBottomStyle: "solid", borderBottomColor: tokens.color.border.base });
-export const tabItem = style({ appearance: "none", background: "transparent", border: "none", borderRadius: 0, borderBottomWidth: tokens.shape.constants.activeIndicatorWidth, borderBottomStyle: "solid", borderBottomColor: "transparent", marginBottom: `calc(${tokens.shape.constants.borderWidth} * -1)`, cursor: "pointer", fontFamily: tokens.text.font.sans, fontWeight: tokens.text.weight.medium, color: tokens.color.ink.secondary, transition: stateTransition("color", "border-color"), selectors: { "&:hover": { color: tokens.color.ink.primary } } });
+export const tabItem = style({ appearance: "none", background: "transparent", border: "none", borderRadius: 0, borderBottomWidth: tokens.shape.constants.activeIndicatorWidth, borderBottomStyle: "solid", borderBottomColor: "transparent", marginBottom: `calc(${tokens.shape.constants.borderWidth} * -1)`, cursor: "pointer", color: tokens.color.ink.secondary, transition: stateTransition("color", "border-color"), selectors: { "&:hover": { color: tokens.color.ink.primary } } });
 export const tabItemSize = styleVariants(ladderRules());
 export const tabItemActive = style({ color: tokens.color.ink.primary, borderBottomColor: tokens.color.accent.primary.solid });
 // Content는 surface를 강제하지 않는다. Tabs는 page 안의 구역을 전환하는 navigation이라

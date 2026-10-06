@@ -3,7 +3,7 @@
 // `accent`는 primary(중립 pigment)와 semantic status pigment를 함께 부르는 public API다.
 // 컴포넌트는 이름만 말하고, 실제 class와 tone 조합은 profile이 결정한다.
 
-export const SURFACES = ["raised", "canvas", "sunken", "well"] as const;
+export const SURFACES = ["raised", "canvas", "sunken"] as const;
 export type Surface = (typeof SURFACES)[number];
 
 export const resolveSurface = (surface: Surface | undefined): string =>

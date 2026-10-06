@@ -14,10 +14,6 @@ export const buttonRoot = style({
   borderRadius: tokens.shape.radius.interaction,
   borderWidth: tokens.shape.constants.borderWidth,
   borderStyle: "solid",
-  fontFamily: tokens.text.font.sans,
-  // 버튼 라벨은 짧고 굵은 UI 문구라 기본 자간을 사용한다.
-  letterSpacing: tokens.text.tracking.caption,
-  lineHeight: tokens.text.leading.control,
   cursor: "pointer",
   whiteSpace: "nowrap",
   userSelect: "none",
@@ -59,23 +55,17 @@ export const buttonSpinner = style({
 // 가로 꽉 — 폼·모바일. 나란한 형제와 같은 폭.
 export const buttonFull = style({ width: "100%" });
 
-// Solid는 Demo 기본 버튼처럼 강한 CTA 잉크, 나머지 variant는 한 단계 가볍게.
-export const buttonWeight = styleVariants({
-  strong: { fontWeight: tokens.text.weight.strong },
-  regular: { fontWeight: tokens.text.weight.medium },
-});
-
-// size 3 단 — 공통 사다리 + 버튼 weight. 가로 여백은 베이스 그대로(10 · 12 · 16)다.
+// size 3 단 — geometry만. Typography preset은 JSX에서 variant × size로 선택한다.
 // 버튼은 라벨이 상자를 정의하는 자리라 좌우가 넉넉해야 형태가 산다 — 입력류는 반대로
 // 상자가 먼저 있고 글자가 그 안에 놓여서, 가로를 더 좁게 가져간다(inputPaddingX).
-// height 와 fontSize 는 양쪽이 계속 공유한다 — 폼 한 줄에서 같은 높이에 서는 건 별개 문제.
+// 같은 높이에 서는 것과 각 역할의 글자 스타일은 별개 축이다.
 export const buttonSize = styleVariants(
   ladderRules(),
 );
 
 export const buttonFontSize = styleVariants(
   Object.fromEntries(
-    TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.text.size[variant] }]),
+    TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.text.style[variant].size }]),
   ) as Record<TextVariant, { fontSize: string }>,
 );
 

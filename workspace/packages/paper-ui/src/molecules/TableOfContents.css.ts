@@ -20,7 +20,6 @@ export const tocItem = style({
   borderLeftStyle: "solid",
   borderLeftColor: "transparent",
   color: tokens.color.ink.secondary,
-  fontSize: tokens.text.size.caption,
   textDecoration: "none",
   transition: stateTransition("background", "color", "border-color"),
   selectors: { "&:hover": { background: tokens.color.interaction.bgHover.onSurface, color: tokens.color.ink.primary } },
@@ -28,7 +27,6 @@ export const tocItem = style({
 export const tocItemActive = style({
   borderLeftColor: tokens.color.accent.primary.solid,
   color: tokens.color.ink.primary,
-  fontWeight: tokens.text.weight.medium,
   background: tokens.color.interaction.bgHover.onSurface,
 });
 export const tocDepth = styleVariants({

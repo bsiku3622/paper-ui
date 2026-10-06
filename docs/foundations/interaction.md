@@ -39,7 +39,7 @@ shared variant의 `hairline`과 같은 선을 쓰는 것이 아니라, 입력 �
 
 중립 면(`soft`, `hairline`, `ghost`)의 hover는 배경을 직접 교체하지 않고
 `tokens.color.interaction.bgHover`를 `backgroundImage` overlay로 합성합니다. 이 방식은
-raised·canvas·sunken·well 중 어느 면 위에서도 같은 방향으로 읽힙니다. accent profile이
+raised·canvas·sunken 중 어느 면 위에서도 같은 방향으로 읽힙니다. accent profile이
 `hoverBackground`를 명시한 경우에는 그 색 family의 wash/hover 색으로 교체합니다.
 
 이 규칙은 `styles/color-profile.ts`가 정의하고 `styles/color.css.ts`가

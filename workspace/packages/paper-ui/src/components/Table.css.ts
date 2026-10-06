@@ -35,7 +35,7 @@ export const tableTh = style({
 export const tableTr = style({
   transition: stateTransition("background", "background-image"),
   selectors: {
-    // hover 는 interaction 오버레이 — 어느 면(순백·smoke·well) 위든 그 면을 조금
+    // hover 는 interaction 오버레이 — 어느 면 위든 그 면을 조금
     // 어둡게 만든다. solid 회색을 자리마다 고르지 않는다 (중립 상호작용 = 오버레이).
     "&:hover": {
       backgroundImage: `linear-gradient(${tokens.color.interaction.bgHover.onSurface}, ${tokens.color.interaction.bgHover.onSurface})`,
@@ -72,7 +72,6 @@ export const tableHeadDensity = styleVariants({
 });
 
 export const tableTd = style({
-  fontSize: tokens.text.size.body,
   whiteSpace: "nowrap",
 });
 

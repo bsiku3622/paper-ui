@@ -19,7 +19,6 @@ export const sidebarGroupLabel = style({
   paddingInline: tokens.shape.padding.md.interaction,
   marginBottom: tokens.shape.gap.xs,
   color: tokens.color.ink.primary,
-  fontWeight: tokens.text.weight.semibold,
 });
 
 export const sidebarItem = style({
@@ -39,9 +38,6 @@ export const sidebarItem = style({
   textDecoration: "none",
   textAlign: "start",
   cursor: "pointer",
-  fontFamily: tokens.text.font.sans,
-  fontSize: tokens.text.size.body,
-  fontWeight: tokens.text.weight.normal,
   transition: stateTransition("color"),
   selectors: {
     "&::after": {
@@ -66,7 +62,6 @@ globalStyle(`${sidebarItem} > *`, { position: "relative", zIndex: 0 });
 
 export const sidebarItemActive = style({
   color: tokens.color.ink.primary,
-  fontWeight: tokens.text.weight.medium,
   // route 전환 직후 badge overlay는 즉시 생긴다. 행 배경도 같은 프레임에 selected로
   // 바뀌어야 둘이 갈라지지 않으므로, active에서는 background transition을 끈다.
   transition: stateTransition("color"),

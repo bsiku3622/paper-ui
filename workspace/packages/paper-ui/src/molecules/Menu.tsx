@@ -4,6 +4,7 @@ import { createContext, useContext, type ComponentPropsWithoutRef, type ElementT
 
 import { Box, Stack, Text, type BoxProps } from "../primitives";
 import { joinClass } from "../internal/joinClass";
+import { resolveControlTypography } from "../resolvers";
 import { useControllableState } from "../internal/useControllableState";
 import { menuItem, menuItemActive, menuItemCopy, menuItemDanger, menuItemIcon, menuRoot, menuShortcut } from "./Menu.css";
 
@@ -38,14 +39,14 @@ const MenuItemImpl = <As extends ElementType = "button">({ as, value, descriptio
   const { value: selectedValue, onValueChange } = useContext(MenuContext);
   const Tag = as ?? "button";
   return <Box as={Tag as ElementType} {...(Tag === "button" ? { type: "button" as const } : null)} {...(rest as object)} role="menuitem" tabIndex={disabled ? -1 : 0}
-    aria-disabled={disabled || undefined} aria-current={value === selectedValue ? "page" : undefined} className={joinClass(menuItem, value === selectedValue && menuItemActive, danger && menuItemDanger, className)}
+    aria-disabled={disabled || undefined} aria-current={value === selectedValue ? "page" : undefined} className={joinClass(menuItem, resolveControlTypography("navigation", value === selectedValue ? "active" : "regular"), value === selectedValue && menuItemActive, danger && menuItemDanger, className)}
     onClick={(event: MouseEvent<HTMLElement>) => {
       if (disabled) { event.preventDefault(); return; }
       (onClick as ((event: MouseEvent<HTMLElement>) => void) | undefined)?.(event);
       if (!event.defaultPrevented) onValueChange?.(value);
     }}>
     {icon ? <Box as="span" className={menuItemIcon}>{icon}</Box> : null}
-    <Stack gap="xs" className={menuItemCopy}><Text as="span" variant="body" ink="inherit">{children}</Text>{description ? <Text as="span" variant="caption" ink="soft">{description}</Text> : null}</Stack>
+    <Stack gap="xs" className={menuItemCopy}><Box as="span">{children}</Box>{description ? <Text as="span" variant="caption" ink="soft">{description}</Text> : null}</Stack>
     {shortcut ? <Text as="span" variant="label" className={menuShortcut}>{shortcut}</Text> : null}
   </Box>;
 };

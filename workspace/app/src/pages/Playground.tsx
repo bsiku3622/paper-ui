@@ -77,7 +77,7 @@ const MONO_DEMO: Partial<Record<(typeof TEXT_VARIANTS)[number], string>> = {
   title: "paper-ui",
   body: 'const paper = "ui"; // 0123',
 };
-const PAPERS = ["canvas", "raised", "sunken", "well"] as const;
+const PAPERS = ["canvas", "raised", "sunken"] as const;
 const ACCENTS = ["info", "success", "warning", "error"] as const;
 const STATUSES = ["info", "success", "warning", "error"] as const;
 const COLOR_ACCENTS = ["primary", ...ACCENTS] as const;
@@ -110,11 +110,13 @@ export const Playground = () => {
   return (
     <PlaygroundLayout value="all">
       <Stack gap="xl" style={{ maxWidth: "48rem" }}>
-        <Stack gap="xs">
-          <Text variant="label">Studio Baeks · Design System</Text>
-          <Text variant="title">Component Playground</Text>
-          <Text variant="caption">38 컴포넌트 · variant · state 전수. 이 페이지가 자동 테스트의 대상이다. 개별 컴포넌트는 사이드바에서 상세로.</Text>
-        </Stack>
+        <PageHeader>
+          <PageHeader.Location><Text variant="label">Studio Baeks · Design System</Text></PageHeader.Location>
+          <PageHeader.Content>
+            <PageHeader.Title>Component Playground</PageHeader.Title>
+            <PageHeader.Description>38 컴포넌트 · variant · state 전수. 이 페이지가 자동 테스트의 대상이다. 개별 컴포넌트는 사이드바에서 상세로.</PageHeader.Description>
+          </PageHeader.Content>
+        </PageHeader>
 
         {/* ── Tokens ─────────────────────────────────────────── */}
         <Section id="sec-type" title="Type scale">
@@ -147,7 +149,7 @@ export const Playground = () => {
         </Section>
 
         <Section id="sec-color" title="Color">
-          <Spec label="surface — 면 깊이 4 단 (Box 의 구조 축, 색 아님)">
+          <Spec label="surface — 면 깊이 3 단 (Box 의 구조 축, 색 아님)">
             {PAPERS.map((s) => (
               <Box key={s} surface={s} border radius="md" padding="lg" data-testid={`swatch-paper-${s}`}
                 style={{ minWidth: "5rem" }}>

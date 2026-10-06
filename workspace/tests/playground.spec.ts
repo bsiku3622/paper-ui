@@ -16,14 +16,14 @@ test.beforeEach(async ({ page }) => {
   await page.getByTestId("text-title").waitFor();
 });
 
-// ── 타입 스케일 — 7 variant 의 크기·굵기가 토큰과 일치 ──────────────────────
+// ── 타입 스케일 — Text 역할 variant 의 크기·굵기가 토큰과 일치 ─────────────
 const TYPE = {
   display: { size: "32px", weight: "700" },
-  title: { size: "22px", weight: "700" },
-  heading: { size: "18px", weight: "600" },
-  subheading: { size: "15px", weight: "600" },
-  body: { size: "14px", weight: "450" },
-  caption: { size: "13px", weight: "450" },
+  title: { size: "24px", weight: "700" },
+  heading: { size: "20px", weight: "600" },
+  subheading: { size: "16px", weight: "600" },
+  body: { size: "14px", weight: "500" },
+  caption: { size: "13px", weight: "400" },
   label: { size: "12px", weight: "600" },
 } as const;
 
@@ -48,7 +48,7 @@ const VARS: Record<string, string> = {
   "--pui-color-bg-canvas": "#f9f9fa",
   "--pui-color-bg-raised": "#ffffff",
   "--pui-color-bg-sunken": "#f4f4f5",
-  "--pui-color-bg-well": "#e2e2e5",
+  "--pui-color-control-track": "#e5e5e7",
   "--pui-color-ink-primary": "#26262b",
   "--pui-color-ink-secondary": "#64646d",
   "--pui-color-ink-tertiary": "#a1a1aa",
@@ -80,7 +80,7 @@ test("color · 토큰이 기대 hex 로 emit 된다", async ({ page }) => {
 // 이 순서가 뒤집히면 table head 가 몸통보다 어두운 구멍이 된다.
 const DARK_VARS: Record<string, string> = {
   "--pui-color-bg-canvas": "#171717",
-  "--pui-color-bg-well": "#2b2b2b",
+  "--pui-color-control-track": "#29292a",
   "--pui-color-bg-sunken": "#212121",
   "--pui-color-bg-raised": "#101010",
   "--pui-color-ink-primary": "#f5f5f5",
@@ -322,7 +322,7 @@ test("detail · Button variant 토글이 preview 와 코드에 반영된다", as
   // variant=soft 로 바꾸면 코드와 preview 가 함께 바뀐다 (컨트롤 순서: color · variant …)
   await page.locator(".detail-body select").nth(1).selectOption("soft");
   await expect(code).toContainText('variant="soft"');
-  // color=primary(기본) + variant=soft → 회색 secondary(paper.well)
+  // color=primary(기본) + variant=soft → 회색 secondary surface
   await expect(stageBtn).toHaveCSS("background-color", hexToRgb("#e2e2e5"));
 });
 

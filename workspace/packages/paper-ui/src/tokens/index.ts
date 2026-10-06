@@ -12,9 +12,30 @@
 import { buildVarTree, pathToVarRef } from "./helpers";
 import { COLOR_VALUES } from "./colors";
 import { SHAPE_VALUES, SHADOW_GEOMETRY } from "./shape";
-import { TEXT_VALUES } from "./text";
+import { CONTROL_SPEC, TEXT_SPEC, TEXT_VALUES } from "./text";
 import { MOTION_VALUES } from "./motion";
 import { LAYOUT_VALUES, LAYOUT_CONST } from "./layout";
+
+const textPaletteTokens = buildVarTree(TEXT_VALUES, []);
+type StyleKeys = { size: string; weight: string; leading: string; tracking: string };
+type StyleRefTree<T> = T extends StyleKeys
+  ? StyleKeys
+  : T extends Record<string, unknown>
+    ? { [K in keyof T]: StyleRefTree<T[K]> }
+    : never;
+const styleRefs = <T extends Record<string, unknown>>(specs: T): StyleRefTree<T> =>
+  Object.fromEntries(Object.entries(specs).map(([name, spec]) => {
+    if (typeof spec === "object" && spec !== null && "size" in spec && "weight" in spec && "leading" in spec && "tracking" in spec) {
+      const style = spec as StyleKeys;
+      return [name, {
+        size: pathToVarRef(["text", "palette", "fontSize", style.size]),
+        weight: pathToVarRef(["text", "palette", "weight", style.weight]),
+        leading: pathToVarRef(["text", "palette", "leading", style.leading]),
+        tracking: pathToVarRef(["text", "palette", "tracking", style.tracking]),
+      }];
+    }
+    return [name, styleRefs(spec as Record<string, unknown>)];
+  })) as StyleRefTree<T>;
 
 export const tokens = {
   color: buildVarTree(COLOR_VALUES, ["color"]),
@@ -28,12 +49,16 @@ export const tokens = {
   layout: { ...buildVarTree(LAYOUT_VALUES, ["layout"]), ...LAYOUT_CONST },
   // motion 은 var 로 굽지 않는다 — 값(duration·easing)을 직접 든다 (motion.ts 참고).
   motion: MOTION_VALUES,
-  ...buildVarTree(TEXT_VALUES, []),
+  text: {
+    ...textPaletteTokens.text,
+    style: styleRefs(TEXT_SPEC),
+    control: styleRefs(CONTROL_SPEC),
+  },
 } as const;
 
 // ───── 값 트리 · 타입 재수출 ────────────────────────────────────────────────
-// L2 semantic VALUES는 여기와 theme.css.ts만 조립한다. OKLCH source는 L0 palette.ts,
-// generated HEX는 L1 color-ladder.ts에 격리되어 있고 소비처는 이 barrel만 사용한다.
+// L2 semantic VALUES는 여기와 theme.css.ts만 조립한다. palette.ts가 OKLCH source를 보유하고
+// L1 color-ladder.ts의 순수 생성 함수로 coordinates/HEX를 완성한다. 소비처는 이 barrel만 사용한다.
 
 export { COLOR_VALUES, ACCENTS, STATUS, STATUS_PALETTE } from "./colors";
 export type { AccentName, AccentToken, StatusName } from "./colors";
@@ -41,7 +66,7 @@ export type { AccentName, AccentToken, StatusName } from "./colors";
 export { SHAPE_VALUES, SHADOW_GEOMETRY, SHAPE_SIZES, SPACE_KEYS, CONTROL_SIZES, SHAPE_ICON_TEXT_SIZE } from "./shape";
 export type { ShapeSize, Space, ControlSize } from "./shape";
 
-export { TEXT_VALUES, TEXT_VARIANTS, TEXT_SPEC, TEXT_CONTENT, WEIGHT } from "./text";
+export { TEXT_VALUES, TEXT_VARIANTS, TEXT_SPEC, CONTROL_SPEC, TEXT_CONTENT, TYPOGRAPHY_PALETTE, WEIGHT } from "./text";
 export type { TextVariant, WeightKey } from "./text";
 
 export { MOTION_VALUES, DURATION, EASING, MOTION, stateTransition } from "./motion";

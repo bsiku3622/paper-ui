@@ -5,14 +5,13 @@
 
 import { Box, Inline, PageHeader, Stack, Text } from "@studio-baeks/paper-ui";
 
-import { PALETTE_COORDINATES, PALETTE_TOKENS } from "../../../packages/paper-ui/src/tokens/color-ladder";
-import { ACCENT_PALETTES, ACCENT_STEPS, ALPHA_STEPS, OKLCH_PALETTE, PALETTE_STEPS } from "../../../packages/paper-ui/src/tokens/palette";
+import { ACCENT_PALETTES, ACCENT_STEPS, ALPHA_STEPS, OKLCH_PALETTE, PALETTE_STEPS, PALETTE_TOKENS } from "../../../packages/paper-ui/src/tokens/palette";
 
 import { Crumb, PlaygroundLayout } from "./shell";
 import "./palette.css";
 
 const paletteIdentity = (palette: (typeof ACCENT_PALETTES)[number]) => {
-  const [lightness, chroma, hue] = OKLCH_PALETTE[palette]["600"]!;
+  const [lightness, chroma, hue] = OKLCH_PALETTE.accent[palette]["600"];
   return `H ${hue} · C ${chroma} · L ${lightness}`;
 };
 
@@ -56,13 +55,13 @@ const PaletteStrip = <Step extends string>({ name, steps, getColor, getCoordinat
 const SurfaceStrip = () => (
   <PaletteStrip name="Neutral" steps={PALETTE_STEPS}
     getColor={(step) => PALETTE_TOKENS.neutral[step]}
-    getCoordinates={(step) => OKLCH_PALETTE.neutral[step]!} />
+    getCoordinates={(step) => OKLCH_PALETTE.neutral[step]} />
 );
 
 const AccentStrip = ({ palette }: { palette: (typeof ACCENT_PALETTES)[number] }) => (
   <PaletteStrip name={palette} steps={ACCENT_STEPS}
     getColor={(step) => PALETTE_TOKENS.accent[palette][step]}
-    getCoordinates={(step) => PALETTE_COORDINATES.accent[palette][step]!} />
+    getCoordinates={(step) => OKLCH_PALETTE.accent[palette][step]} />
 );
 
 const AlphaPalette = () => (

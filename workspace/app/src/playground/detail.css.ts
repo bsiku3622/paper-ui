@@ -16,9 +16,8 @@ globalStyle(".detail-body", {
   },
 });
 
-// preview 무대 — 순백(raised) 면 위에 컴포넌트를 세운다. 캔버스는 smoke 지만 컴포넌트는
-// 흰 면 위에서 봐야 색·밀도를 왜곡 없이 평가한다. smoke 캔버스 위로 뜬 흰 무대라 경계는
-// 회색 면 대신 헤어라인으로만.
+// preview 무대 — 세 surface와 control track 배경에서 가독성을 비교한다.
+globalStyle(".preview-frame", { position: "relative" });
 globalStyle(".preview-stage", {
   display: "flex",
   alignItems: "center",
@@ -26,9 +25,36 @@ globalStyle(".preview-stage", {
   minHeight: tokens.shape.height.lg.layout,
   padding: tokens.shape.padding.xl.layout,
   borderRadius: tokens.shape.radius.layout.lg,
-  backgroundColor: tokens.color.bg.raised,
   border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
   overflow: "auto",
+});
+globalStyle(".preview-stage--track", { background: tokens.color.control.track });
+
+globalStyle(".preview-surface-switcher", {
+  position: "absolute",
+  top: tokens.shape.gap.sm,
+  left: tokens.shape.gap.sm,
+  zIndex: 1,
+  display: "flex",
+  gap: tokens.shape.gap.xs,
+});
+globalStyle(".preview-surface-button", {
+  display: "grid",
+  placeItems: "center",
+  width: tokens.shape.height.sm.interaction,
+  height: tokens.shape.height.sm.interaction,
+  padding: 0,
+  border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
+  borderRadius: tokens.shape.radius.interaction,
+  color: tokens.color.ink.primary,
+  cursor: "pointer",
+});
+globalStyle(".preview-surface-button--track", { background: tokens.color.control.track });
+globalStyle('.preview-surface-button[aria-pressed="true"]', { borderColor: tokens.color.border.strong });
+globalStyle(".preview-surface-button:hover", { borderColor: tokens.color.border.hover });
+globalStyle(".preview-surface-button:focus-visible", {
+  outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.interaction.focus}`,
+  outlineOffset: tokens.shape.constants.focusRingOffset,
 });
 
 // Table처럼 자체 면과 외곽 형상이 사용성의 일부인 컴포넌트는 showcase용 Card에
@@ -36,10 +62,9 @@ globalStyle(".preview-stage", {
 globalStyle(".preview-stage--flush", {
   justifyContent: "stretch",
   minHeight: "auto",
-  padding: 0,
+  padding: `${tokens.shape.height.lg.interaction} 0 0`,
   border: 0,
   borderRadius: 0,
-  backgroundColor: "transparent",
 });
 
 globalStyle(".code-block", {
@@ -63,12 +88,12 @@ globalStyle(".code-editor", {
   outline: 0,
   background: "transparent",
   overflowX: "auto",
-  fontFamily: tokens.text.font.mono,
-  fontSize: tokens.text.size.caption,
-  fontWeight: tokens.text.weight.normal,
+  fontFamily: tokens.text.palette.family.mono,
+  fontSize: tokens.text.style.caption.size,
+  fontWeight: tokens.text.palette.weight.normal,
   fontStyle: "normal",
-  letterSpacing: tokens.text.tracking.caption,
-  lineHeight: tokens.text.leading.body,
+  letterSpacing: tokens.text.style.caption.tracking,
+  lineHeight: tokens.text.style.body.leading,
   color: tokens.color.ink.primary,
   tabSize: 2,
 });
@@ -82,12 +107,12 @@ globalStyle(".code-block pre", {
   paddingBlock: tokens.shape.padding.xl.interaction,
   paddingInline: tokens.shape.padding.md.layout,
   overflowX: "auto",
-  fontFamily: tokens.text.font.mono,
-  fontSize: tokens.text.size.caption,
-  fontWeight: tokens.text.weight.normal,
+  fontFamily: tokens.text.palette.family.mono,
+  fontSize: tokens.text.style.caption.size,
+  fontWeight: tokens.text.palette.weight.normal,
   fontStyle: "normal",
-  letterSpacing: tokens.text.tracking.caption,
-  lineHeight: tokens.text.leading.body,
+  letterSpacing: tokens.text.style.caption.tracking,
+  lineHeight: tokens.text.style.body.leading,
   color: tokens.color.ink.primary,
   tabSize: 2,
 });

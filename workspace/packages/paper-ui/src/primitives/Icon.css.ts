@@ -19,5 +19,5 @@ export const iconSize = styleVariants({
   label: { width: tokens.shape.iconTextSize.label, height: tokens.shape.iconTextSize.label },
   caption: { width: tokens.shape.iconTextSize.caption, height: tokens.shape.iconTextSize.caption },
   body: { width: tokens.shape.iconTextSize.body, height: tokens.shape.iconTextSize.body },
-  subheading: { width: tokens.shape.iconTextSize.subheading, height: tokens.shape.iconTextSize.subheading },
+  heading3: { width: tokens.shape.iconTextSize.heading3, height: tokens.shape.iconTextSize.heading3 },
 } satisfies Record<IconSize, { width: string; height: string }>);

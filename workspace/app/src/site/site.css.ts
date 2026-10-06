@@ -49,7 +49,7 @@ globalStyle(".gnb-theme", {
   background: tokens.color.bg.raised,
   color: tokens.color.ink.secondary,
   cursor: "pointer",
-  fontSize: tokens.text.size.subheading,
+  fontSize: tokens.text.style.body.size,
   lineHeight: 1,
   transition: stateTransition("background", "color"),
 });

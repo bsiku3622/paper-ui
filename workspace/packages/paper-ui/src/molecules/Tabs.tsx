@@ -4,6 +4,7 @@ import { Children, createContext, isValidElement, useContext, useId, type Keyboa
 
 import { Box, Inline, type BoxProps } from "../primitives";
 import { joinClass } from "../internal/joinClass";
+import { resolveControlTypography } from "../resolvers";
 import { useControllableState } from "../internal/useControllableState";
 import type { ControlSize } from "../tokens";
 import { tabContent, tabItem, tabItemActive, tabItemSize, tabsList, tabsRoot } from "./Tabs.css";
@@ -50,7 +51,7 @@ const valueId = (id: string, kind: "tab" | "panel", value: string) => `${id}-${k
 export type TabsTriggerProps = Omit<BoxProps<"button">, "as" | "value"> & { value: string };
 export const TabsTrigger = ({ value, className, onClick, ...rest }: TabsTriggerProps) => {
   const context = useContext(TabsContext); if (!context) throw new Error("Tabs.Trigger must be used inside Tabs"); const selected = value === context.value;
-  return <Box {...rest} as="button" type="button" role="tab" id={valueId(context.id, "tab", value)} aria-selected={selected} aria-controls={valueId(context.id, "panel", value)} tabIndex={selected ? 0 : -1} className={joinClass(tabItem, tabItemSize[context.size], selected && tabItemActive, className)} onClick={(event) => { onClick?.(event); if (!event.defaultPrevented) context.onValueChange(value); }} />;
+  return <Box {...rest} as="button" type="button" role="tab" id={valueId(context.id, "tab", value)} aria-selected={selected} aria-controls={valueId(context.id, "panel", value)} tabIndex={selected ? 0 : -1} className={joinClass(tabItem, tabItemSize[context.size], resolveControlTypography("button", "md", "regular"), selected && tabItemActive, className)} onClick={(event) => { onClick?.(event); if (!event.defaultPrevented) context.onValueChange(value); }} />;
 };
 
 export type TabsContentProps = Omit<BoxProps<"div">, "as" | "value"> & { value: string };

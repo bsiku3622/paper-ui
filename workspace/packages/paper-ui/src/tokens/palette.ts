@@ -1,7 +1,12 @@
 // L0 — OKLCH palette source
 //
-// Palette identity and all color anchors live here. Semantic roles, CSS names, and component
-// vocabulary do not. color-ladder.ts turns these coordinates into HEX palette tokens.
+// Palette identity and color anchors live here. Semantic roles, CSS names, and component
+// vocabulary do not. This file assembles the completed palette by calling pure color-ladder
+// operations, then exports both its OKLCH coordinates and generated HEX tokens.
+
+import { completeOklchRamp, interpolateOklch, toPaletteToken, withAlpha } from "./color-ladder";
+import type { PaletteToken } from "./color-ladder";
+export type { PaletteToken } from "./color-ladder";
 
 export type ColorMode = "light" | "dark";
 
@@ -18,62 +23,27 @@ export const ALPHA_OPACITY: Record<AlphaStep, number> = {
 };
 
 export type Oklch = readonly [lightness: number, chroma: number, hue: number];
-type AccentAnchors = Partial<Record<AccentStep, Oklch>>;
-const NEUTRAL_BASE_STEPS = ["0", "50", "100", "200", "300", "400", "500", "600", "700", "800", "900", "950"] as const;
-type NeutralBaseStep = (typeof NEUTRAL_BASE_STEPS)[number];
-type PaletteSource = {
-  neutral: Record<PaletteStep, Oklch>;
-  blue: AccentAnchors;
-  green: AccentAnchors;
-  amber: AccentAnchors;
-  red: AccentAnchors;
-};
+export const NEUTRAL_BASE_STEPS = ["0", "50", "100", "200", "300", "400", "500", "600", "700", "800", "900", "950"] as const;
+export type NeutralBaseStep = (typeof NEUTRAL_BASE_STEPS)[number];
 
 // Neutral step numbers always run from light to dark: 0 is white and 950 is near-black.
 // Preserve the existing reviewed colors while expressing them with that shared direction.
-const NEUTRAL_ANCHORS: Partial<Record<NeutralBaseStep, number>> = {
-  "0": 1,
-  "100": 0.965,
-  "300": 0.88,
-  "500": 0.68,
-  "700": 0.48,
-  "900": 0.28,
-  "950": 0.18,
+export const NEUTRAL_ANCHORS: Partial<Record<NeutralBaseStep, Oklch>> = {
+  "0": [1, 0.003, 286],
+  "100": [0.965, 0.003, 286],
+  "300": [0.88, 0.003, 286],
+  "500": [0.68, 0.003, 286],
+  "700": [0.48, 0.003, 286],
+  "900": [0.28, 0.003, 286],
+  "950": [0.18, 0.003, 286],
 };
 
-const createNeutralRamp = (
-  anchors: Partial<Record<NeutralBaseStep, number>>,
-  chroma: number,
-  hue: number,
-): Record<PaletteStep, Oklch> => {
-  const anchorIndexes = NEUTRAL_BASE_STEPS.flatMap((step, index) => anchors[step] === undefined ? [] : [index]);
-  const baseRamp = Object.fromEntries(NEUTRAL_BASE_STEPS.map((step, index) => {
-    const exact = anchors[step];
-    if (exact !== undefined) return [step, [exact, chroma, hue] as const];
+export const ACCENT_PALETTES = ["blue", "green", "amber", "red"] as const;
+export type AccentPalette = (typeof ACCENT_PALETTES)[number];
+type AccentAnchors = Partial<Record<AccentStep, Oklch>>;
 
-    const lowerIndex = [...anchorIndexes].reverse().find((anchorIndex) => anchorIndex < index)!;
-    const upperIndex = anchorIndexes.find((anchorIndex) => anchorIndex > index)!;
-    const lowerStep = NEUTRAL_BASE_STEPS[lowerIndex]!;
-    const upperStep = NEUTRAL_BASE_STEPS[upperIndex]!;
-    const progress = (index - lowerIndex) / (upperIndex - lowerIndex);
-    const lightness = anchors[lowerStep]! + (anchors[upperStep]! - anchors[lowerStep]!) * progress;
-    return [step, [lightness, chroma, hue] as const];
-  })) as Record<NeutralBaseStep, Oklch>;
-
-  return Object.fromEntries(PALETTE_STEPS.map((step) => [
-    step,
-    step === "150"
-      ? [(baseRamp["100"][0] + baseRamp["200"][0]) / 2, chroma, hue] as const
-      : step === "925"
-        ? [(baseRamp["900"][0] + baseRamp["950"][0]) / 2, chroma, hue] as const
-        : baseRamp[step as Exclude<PaletteStep, "150" | "925">],
-  ])) as Record<PaletteStep, Oklch>;
-};
-
-// One theme-independent palette spans light to dark. Semantic roles choose the appropriate step
-// for each theme; the palette itself never reverses or changes with the active theme.
-export const OKLCH_PALETTE: PaletteSource = {
-    neutral: createNeutralRamp(NEUTRAL_ANCHORS, 0.003, 286),
+// Theme-independent accent anchors. Semantic roles choose steps from the completed shared ramp.
+const ACCENT_ANCHORS: Record<AccentPalette, AccentAnchors> = {
     blue: {
       "50": [0.9805, 0.0079, 253.852], "100": [0.9304, 0.0263, 254],
       "200": [0.9039, 0.0324, 254.0011], "400": [0.6636, 0.1426, 256.7203],
@@ -87,10 +57,10 @@ export const OKLCH_PALETTE: PaletteSource = {
       "950": [0.2567, 0.0572, 154.1303],
     },
     amber: {
-      "50": [0.9882, 0.0110, 89.7201], "100": [0.9323, 0.0524, 95.2],
-      "200": [0.9262, 0.0662, 95.2168], "400": [0.6678, 0.1343, 73.8263],
-      "600": [0.5553, 0.1455, 48.9975], "700": [0.4732, 0.1247, 46.2007],
-      "950": [0.2838, 0.0641, 51.3381],
+      "50": [0.9882, 0.0260, 89.7201], "100": [0.9323, 0.0674, 88],
+      "200": [0.9262, 0.0812, 84], "400": [0.6678, 0.1600, 75],
+      "600": [0.5553, 0.1750, 68], "700": [0.4732, 0.1500, 64],
+      "950": [0.2838, 0.0870, 60],
     },
     red: {
       "50": [0.9808, 0.0064, 17.2665], "100": [0.9304, 0.0250, 17.7],
@@ -100,5 +70,39 @@ export const OKLCH_PALETTE: PaletteSource = {
     },
 };
 
-export const ACCENT_PALETTES = ["blue", "green", "amber", "red"] as const;
-export type AccentPalette = (typeof ACCENT_PALETTES)[number];
+const neutralBaseRamp = completeOklchRamp(NEUTRAL_BASE_STEPS, NEUTRAL_ANCHORS);
+const neutral: Record<PaletteStep, Oklch> = Object.fromEntries(PALETTE_STEPS.map((step) => [
+  step,
+  step === "150"
+    ? interpolateOklch(neutralBaseRamp["100"], neutralBaseRamp["200"], 0.5)
+    : step === "925"
+      ? interpolateOklch(neutralBaseRamp["900"], neutralBaseRamp["950"], 0.5)
+      : neutralBaseRamp[step as Exclude<PaletteStep, "150" | "925">],
+])) as Record<PaletteStep, Oklch>;
+
+const accent = Object.fromEntries(ACCENT_PALETTES.map((name) => [
+  name,
+  completeOklchRamp(ACCENT_STEPS, ACCENT_ANCHORS[name]),
+])) as Record<AccentPalette, Record<AccentStep, Oklch>>;
+
+// Complete theme-independent OKLCH palette. Semantic systems select from these coordinates' HEX
+// companions; changing the active theme never changes this source ramp.
+export const OKLCH_PALETTE = { neutral, accent };
+
+type NeutralPalette = Record<PaletteStep, PaletteToken>;
+type AccentRamp = Record<AccentStep, PaletteToken>;
+type AlphaPalette = Record<`alpha${AlphaStep}`, { neutral: { "0": PaletteToken; "950": PaletteToken } }>;
+
+const neutralTokens = Object.fromEntries(PALETTE_STEPS.map((step) => [step, toPaletteToken(neutral[step])])) as NeutralPalette;
+const accentTokens = Object.fromEntries(ACCENT_PALETTES.map((name) => [
+  name,
+  Object.fromEntries(ACCENT_STEPS.map((step) => [step, toPaletteToken(accent[name][step])])) as AccentRamp,
+])) as Record<AccentPalette, AccentRamp>;
+const alphaTokens = Object.fromEntries(ALPHA_STEPS.map((step) => [`alpha${step}`, {
+  neutral: {
+    "0": withAlpha(neutralTokens["0"], ALPHA_OPACITY[step]),
+    "950": withAlpha(neutralTokens["950"], ALPHA_OPACITY[step]),
+  },
+}])) as AlphaPalette;
+
+export const PALETTE_TOKENS = { neutral: neutralTokens, accent: accentTokens, ...alphaTokens };

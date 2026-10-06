@@ -11,8 +11,9 @@ import {
 } from "react";
 
 import { Badge, type BadgeProps } from "../atoms";
-import { Box, Text, type BoxProps } from "../primitives";
+import { Box, type BoxProps } from "../primitives";
 import { joinClass } from "../internal/joinClass";
+import { resolveControlTypography } from "../resolvers";
 import { useControllableState } from "../internal/useControllableState";
 import {
   sidebarBadge,
@@ -46,7 +47,7 @@ export type SidebarGroupProps = Omit<BoxProps<"div">, "children"> & {
 };
 export const SidebarGroup = ({ label, children, className, ...rest }: SidebarGroupProps) => (
   <Box className={joinClass(sidebarGroup, className)} {...rest}>
-    {label ? <Text variant="caption" className={sidebarGroupLabel}>{label}</Text> : null}
+    {label ? <Box as="span" className={joinClass(sidebarGroupLabel, resolveControlTypography("navigation", "groupLabel"))}>{label}</Box> : null}
     {children}
   </Box>
 );
@@ -72,7 +73,7 @@ const SidebarItemImpl = <As extends ElementType = "button">({ as, value, disable
       {...(rest as object)}
       aria-current={selected ? "page" : undefined}
       aria-disabled={disabled || undefined}
-      className={joinClass(sidebarItem, selected && sidebarItemActive, className)}
+      className={joinClass(sidebarItem, resolveControlTypography("navigation", selected ? "active" : "regular"), selected && sidebarItemActive, className)}
       onClick={(event: MouseEvent<HTMLElement>) => {
         if (disabled) { event.preventDefault(); return; }
         (onClick as ((event: MouseEvent<HTMLElement>) => void) | undefined)?.(event);
