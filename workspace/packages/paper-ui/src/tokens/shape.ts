@@ -47,15 +47,15 @@ export type ControlSize = (typeof CONTROL_SIZES)[number];
 
 // ───── height — interaction · layout ────────────────────────────────────────
 //
-// interaction: chrome (Button · Field · Select · NavItem). md=32 anchor
+// interaction: chrome (Button · Field · Select · NavItem). md=30 anchor
 //   (Project Manager demo의 기본 버튼·검색 필드 기준). 차분한 범위 24~44.
 // layout: container surface (Box · Sidebar · Modal). endpoint-driven.
 
 export const SHAPE_HEIGHT = {
   xs: { interaction: REM(24), layout: REM(64) },
-  sm: { interaction: REM(30), layout: REM(96) }, // 30 = 작은 컨트롤·배지 열
-  md: { interaction: REM(32), layout: REM(144) }, // 32 = Button·Field·Select ◀ anchor
-  lg: { interaction: REM(40), layout: REM(216) }, // 40 = 큰 CTA·검색
+  sm: { interaction: REM(26), layout: REM(96) }, // compact control
+  md: { interaction: REM(30), layout: REM(144) }, // Paperdown toolbar anchor
+  lg: { interaction: REM(36), layout: REM(216) }, // roomy control
   xl: { interaction: REM(44), layout: REM(320) }, // 44 = Table 한 줄·가장 큰 CTA
 } as const;
 
@@ -100,7 +100,7 @@ export const SHAPE_GAP = {
 // ───── radius — interaction(단일) · layout(3 단) · full(scope 없음) ─────────
 //
 // interaction 은 단일(chrome 은 size 별 radius 차이가 거의 안 보임), layout 은 3 단
-// (큰 면일수록 한 호흡 곡선). Demo의 32px 컨트롤에서 8px은 형태를 부드럽게 하되
+// (큰 면일수록 한 호흡 곡선). Paperdown의 30px 컨트롤에서 4px은 날을 부드럽게 하되
 // pill처럼 부풀지 않는 반경이다. 큰 면일수록 radius도 커지는 비율은 유지한다.
 //
 // `full` 은 사다리의 끝이 아니라 **사다리 밖**이다 — 999px 은 크기가 아니라 "높이의
@@ -114,7 +114,7 @@ export const SHAPE_GAP = {
 // **축이 자기 최대값을 못 들면 소비처가 축을 우회한다.**
 
 export const SHAPE_RADIUS = {
-  interaction: REM(8), // Button·Field·Badge·Select — compact control corner
+  interaction: REM(4), // Paperdown control corner; layout radii remain independent
   layout: {
     sm: REM(6), // Tooltip·Popover — 작은 면 전용 곡선
     md: REM(8), // Box ◀ anchor
@@ -129,18 +129,18 @@ export const SHAPE_RADIUS = {
 // 냈다 — 면의 여백과 컨트롤의 여백은 다른 요구인데 같은 값을 쓰고 있었다.
 //
 // 기본 라벨은 12 · 13 · 14px(caption · control · body)로 높이 단계와 함께 움직인다.
-// md는 32px 높이·13px 라벨·12px 좌우 여백을 기준으로 삼는다.
+// md는 30px 높이·13px 라벨·10px 좌우 여백을 기준으로 삼는다.
 
 export const CONTROL_PADDING_X = {
-  sm: REM(10),
-  md: REM(12), // ◀ anchor
-  lg: REM(16),
+  sm: REM(8),
+  md: REM(10), // ◀ anchor
+  lg: REM(12),
 } as const;
 
 // ───── input paddingInline — 입력칸 전용 가로 여백 (3 단) ───────────────────
 //
-// 입력 글자 크기는 12 · 13 · 14px, 가로 padding은 7 · 9 · 12px이다. md는 32px 높이에서
-// Project Manager demo 검색 필드의 좌우 여백 9px을 따른다.
+// 입력 글자 크기는 12 · 13 · 14px, 가로 padding은 6 · 8 · 10px이다. md는 30px 높이에서
+// Paperdown 선택 필드의 좌우 여백 8px을 따른다.
 //
 // 버튼은 이 표를 안 쓴다. 거기 라벨은 상자를 *정의하는* 글자라 좌우가 넉넉해야 형태가
 // 살고, 입력칸은 상자가 먼저 있고 값이 그 안에 놓이는 자리다(shadcn 버튼 16 · 입력 12,
@@ -149,9 +149,9 @@ export const CONTROL_PADDING_X = {
 // 아이콘·chevron 슬롯을 고려해 좌우 여백은 버튼보다 좁게 유지한다.
 
 export const INPUT_PADDING_X = {
-  sm: REM(7), // 테두리 포함 잉크 8 (세로 8)
-  md: REM(9), // 테두리 포함 잉크 10 (세로 10) ◀ anchor
-  lg: REM(12), // 테두리 포함 잉크 13 (세로 13)
+  sm: REM(6),
+  md: REM(8), // Paperdown select value inset
+  lg: REM(10),
 } as const;
 
 // ───── textarea paddingBlock — 글 상자의 세로 여백 (3 단) ───────────────────
@@ -159,20 +159,20 @@ export const INPUT_PADDING_X = {
 // **가로에서 세로를 계산한다** — 여기서는 정사각이 뜻을 갖는다. 글이 여러 줄로 흐르면
 // 위·아래·좌·우가 다 보이기 때문이다(한 줄짜리 Field 는 좌우만 보인다).
 //
-//   paddingBlock = inputPaddingX − 반 줄 여백 3.25
-//   (반 줄 여백 = (줄상자 19.5 − 글자 13) / 2. 줄상자가 글자 위아래에 이미 갖고 있는 몫이라,
+//   paddingBlock = inputPaddingX − (textarea leading − font size) / 2
+//   (md 반 줄 여백 = (줄상자 20 − 글자 13) / 2. 줄상자가 글자 위아래에 이미 갖고 있는 몫이라,
 //    그만큼 빼야 잉크가 가로와 같은 자리에 앉는다. 테두리는 양쪽에 똑같이 붙어 상쇄된다.)
 //
-// md 기준 1 + 5.75 + 3.25 = 10 = 1 + 9. 선언값을 정사각(9 / 9)으로 맞추면 되레 첫 줄이
-// 왼쪽 여백보다 3.25 내려간다 — 눈이 읽는 건 선언값이 아니라 잉크의 자리다.
+// md 기준 1 + 4.5 + 3.5 = 9 = 1 + 8. 선언값을 정사각(8 / 8)으로 맞추면 되레 첫 줄이
+// 왼쪽 여백보다 3.5 내려간다 — 눈이 읽는 건 선언값이 아니라 잉크의 자리다.
 //
 // ⚠ **여러 줄은 가로 여백이 매 줄 눈에 걸린다.** 글이 넘어가는 상자는 줄마다 오른쪽 벽에
 // 닿으므로, 같은 값이라도 Field 보다 좁게 느껴진다.
 
 export const TEXTAREA_PADDING_Y = {
-  sm: REM(3.75), //  7 − 3.25
-  md: REM(5.75), //  9 − 3.25 ◀ anchor
-  lg: REM(8.75), // 12 − 3.25
+  sm: REM(2.5), // 6 − (20 − 13) / 2
+  md: REM(4.5), // 8 − (20 − 13) / 2 ◀ anchor
+  lg: REM(7), // 10 − (20 − 14) / 2
 } as const;
 
 
