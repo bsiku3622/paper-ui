@@ -81,7 +81,7 @@ const PAPERS = ["canvas", "raised", "sunken"] as const;
 const ACCENTS = ["info", "success", "warning", "error"] as const;
 const STATUSES = ["info", "success", "warning", "error"] as const;
 const COLOR_ACCENTS = ["primary", ...ACCENTS] as const;
-const BUTTON_VARIANTS = ["solid", "soft", "hairline", "ghost", "muted"] as const;
+const BUTTON_VARIANTS = ["solid", "soft", "hairline", "hairlineMuted", "ghost", "muted"] as const;
 
 export const Playground = () => {
   const [tab, setTab] = useState("one");
@@ -219,6 +219,7 @@ export const Playground = () => {
             <Button variant="solid" data-testid="btn-solid">solid</Button>
             <Button variant="soft" data-testid="btn-soft">soft</Button>
             <Button variant="hairline" data-testid="btn-hairline">hairline</Button>
+            <Button variant="hairlineMuted" data-testid="btn-hairline-muted">hairlineMuted</Button>
             <Button variant="ghost" data-testid="btn-ghost">ghost</Button>
             <Button variant="muted" data-testid="btn-muted">muted</Button>
           </Spec>
@@ -539,9 +540,9 @@ export const Playground = () => {
         <Section id="sec-feedback" title="Alert · variants">
           {/* Alert 은 Button·Badge 와 같은 color × variant 매트릭스를 문다. 면을 위한
               별도 축을 세우지 않은 건 variant 가 이미 *면의 무게* 축이기 때문이다. */}
-          <Spec label="Alert — variant (같은 색, 다섯 가지 면의 무게)" testid="spec-alert-variant">
+          <Spec label="Alert — variant (같은 색, 여섯 가지 면의 무게)" testid="spec-alert-variant">
             <Inline gap="md" wrap align="start">
-              {(["solid", "soft", "hairline", "ghost", "muted"] as const).map((v) => (
+              {(["solid", "soft", "hairline", "hairlineMuted", "ghost", "muted"] as const).map((v) => (
                 <Box key={v} style={{ width: "15rem" }} data-testid={`alert-${v}`}>
                   <Alert accent="error" variant={v}>
                     <Alert.Title>확인이 필요합니다</Alert.Title>

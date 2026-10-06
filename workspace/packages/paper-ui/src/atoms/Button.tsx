@@ -1,6 +1,6 @@
 // Button — 누르는 자리. accent는 resolver가 정한다: accent(의미) × variant(시각 무게).
 //   accent   primary(검정 일꾼) · info · success · warning · error
-//   variant  solid · soft · hairline · ghost · muted
+//   variant  solid · soft · hairline · hairlineMuted · ghost · muted
 //   shape    rounded(시스템 곡선) · pill(알약)
 //
 // 예) <Button>저장</Button>                        검정 solid (primary)

@@ -13,11 +13,12 @@ export const ACCENTS = ["primary", "info", "success", "warning", "error"] as con
 export type Accent = (typeof ACCENTS)[number];
 
 // `solid`은 pigment 자체, wash·soft는 각각 가벼운 면이다. `muted`는 Ghost형 투명 면에
-// 선택된 accent의 soft tone을 전경으로 쓰는 보조 variant다.
+// 선택된 accent의 subtle tone을 전경으로 쓰는 보조 variant다.
 export const VARIANTS = [
   "solid",
   "soft",
   "hairline",
+  "hairlineMuted",
   "ghost",
   "muted",
 ] as const;
