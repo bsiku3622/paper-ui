@@ -330,7 +330,7 @@ export const Playground = () => {
             <Box style={{ width: "9rem" }}><Select size="md"><Select.Option value="a">Select</Select.Option></Select></Box>
             <Button size="md">Button</Button>
           </Spec>
-          <Spec label="size lg — roomy 40px" testid="spec-size-lg">
+          <Spec label="size lg — roomy 36px" testid="spec-size-lg">
             <Box style={{ width: "10rem" }}><Field size="lg" placeholder="Field" aria-label="field lg" /></Box>
             <Box style={{ width: "9rem" }}><Select size="lg"><Select.Option value="a">Select</Select.Option></Select></Box>
             <Button size="lg">Button</Button>

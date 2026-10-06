@@ -55,7 +55,7 @@ export const SHAPE_HEIGHT = {
   xs: { interaction: REM(24), layout: REM(64) },
   sm: { interaction: REM(30), layout: REM(96) }, // compact control
   md: { interaction: REM(32), layout: REM(144) }, // default control anchor
-  lg: { interaction: REM(40), layout: REM(216) }, // roomy control
+  lg: { interaction: REM(36), layout: REM(216) }, // roomy control
   xl: { interaction: REM(44), layout: REM(320) }, // 44 = Table 한 줄·가장 큰 CTA
 } as const;
 
@@ -134,12 +134,12 @@ export const SHAPE_RADIUS = {
 export const CONTROL_PADDING_X = {
   sm: REM(10),
   md: REM(11), // ◀ anchor
-  lg: REM(16),
+  lg: REM(14),
 } as const;
 
 // ───── input paddingInline — 입력칸 전용 가로 여백 (3 단) ───────────────────
 //
-// 입력 글자 크기는 12 · 13 · 14px, 가로 padding은 7 · 8 · 12px이다. md는 32px 높이에서
+// 입력 글자 크기는 12 · 13 · 14px, 가로 padding은 7 · 8 · 10px이다. md는 32px 높이에서
 // 균형 잡힌 입력 필드의 좌우 여백 8px을 따른다.
 //
 // 버튼은 이 표를 안 쓴다. 거기 라벨은 상자를 *정의하는* 글자라 좌우가 넉넉해야 형태가
@@ -151,7 +151,7 @@ export const CONTROL_PADDING_X = {
 export const INPUT_PADDING_X = {
   sm: REM(7),
   md: REM(8), // balanced default value inset
-  lg: REM(12),
+  lg: REM(10),
 } as const;
 
 // ───── textarea paddingBlock — 글 상자의 세로 여백 (3 단) ───────────────────
@@ -172,7 +172,7 @@ export const INPUT_PADDING_X = {
 export const TEXTAREA_PADDING_Y = {
   sm: REM(3.5), // 7 − (20 − 13) / 2
   md: REM(4.5), // 8 − (20 − 13) / 2 ◀ anchor
-  lg: REM(9), // 12 − (20 − 14) / 2
+  lg: REM(7), // 10 − (20 − 14) / 2
 } as const;
 
 
