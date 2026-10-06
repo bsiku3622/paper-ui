@@ -47,14 +47,14 @@ export type ControlSize = (typeof CONTROL_SIZES)[number];
 
 // ───── height — interaction · layout ────────────────────────────────────────
 //
-// interaction: chrome (Button · Field · Select · NavItem). md=34 anchor
+// interaction: chrome (Button · Field · Select · NavItem). md=32 anchor
 //   (Project Manager demo의 기본 버튼·검색 필드 기준). 차분한 범위 24~44.
 // layout: container surface (Box · Sidebar · Modal). endpoint-driven.
 
 export const SHAPE_HEIGHT = {
   xs: { interaction: REM(24), layout: REM(64) },
   sm: { interaction: REM(30), layout: REM(96) }, // compact control
-  md: { interaction: REM(34), layout: REM(144) }, // default control anchor
+  md: { interaction: REM(32), layout: REM(144) }, // default control anchor
   lg: { interaction: REM(40), layout: REM(216) }, // roomy control
   xl: { interaction: REM(44), layout: REM(320) }, // 44 = Table 한 줄·가장 큰 CTA
 } as const;
@@ -129,18 +129,18 @@ export const SHAPE_RADIUS = {
 // 냈다 — 면의 여백과 컨트롤의 여백은 다른 요구인데 같은 값을 쓰고 있었다.
 //
 // 기본 라벨은 12 · 13 · 14px(caption · control · body)로 높이 단계와 함께 움직인다.
-// md는 34px 높이·13px 라벨·12px 좌우 여백을 기준으로 삼는다.
+// md는 32px 높이·13px 라벨·11px 좌우 여백을 기준으로 삼는다.
 
 export const CONTROL_PADDING_X = {
   sm: REM(10),
-  md: REM(12), // ◀ anchor
+  md: REM(11), // ◀ anchor
   lg: REM(16),
 } as const;
 
 // ───── input paddingInline — 입력칸 전용 가로 여백 (3 단) ───────────────────
 //
-// 입력 글자 크기는 12 · 13 · 14px, 가로 padding은 7 · 9 · 12px이다. md는 34px 높이에서
-// 균형 잡힌 입력 필드의 좌우 여백 9px을 따른다.
+// 입력 글자 크기는 12 · 13 · 14px, 가로 padding은 7 · 8 · 12px이다. md는 32px 높이에서
+// 균형 잡힌 입력 필드의 좌우 여백 8px을 따른다.
 //
 // 버튼은 이 표를 안 쓴다. 거기 라벨은 상자를 *정의하는* 글자라 좌우가 넉넉해야 형태가
 // 살고, 입력칸은 상자가 먼저 있고 값이 그 안에 놓이는 자리다(shadcn 버튼 16 · 입력 12,
@@ -150,7 +150,7 @@ export const CONTROL_PADDING_X = {
 
 export const INPUT_PADDING_X = {
   sm: REM(7),
-  md: REM(9), // balanced default value inset
+  md: REM(8), // balanced default value inset
   lg: REM(12),
 } as const;
 
@@ -163,7 +163,7 @@ export const INPUT_PADDING_X = {
 //   (md 반 줄 여백 = (줄상자 20 − 글자 13) / 2. 줄상자가 글자 위아래에 이미 갖고 있는 몫이라,
 //    그만큼 빼야 잉크가 가로와 같은 자리에 앉는다. 테두리는 양쪽에 똑같이 붙어 상쇄된다.)
 //
-// md 기준 1 + 5.5 + 3.5 = 10 = 1 + 9. 선언값을 정사각(8 / 8)으로 맞추면 되레 첫 줄이
+// md 기준 1 + 4.5 + 3.5 = 9 = 1 + 8. 선언값을 정사각(8 / 8)으로 맞추면 되레 첫 줄이
 // 왼쪽 여백보다 3.5 내려간다 — 눈이 읽는 건 선언값이 아니라 잉크의 자리다.
 //
 // ⚠ **여러 줄은 가로 여백이 매 줄 눈에 걸린다.** 글이 넘어가는 상자는 줄마다 오른쪽 벽에
@@ -171,7 +171,7 @@ export const INPUT_PADDING_X = {
 
 export const TEXTAREA_PADDING_Y = {
   sm: REM(3.5), // 7 − (20 − 13) / 2
-  md: REM(5.5), // 9 − (20 − 13) / 2 ◀ anchor
+  md: REM(4.5), // 8 − (20 − 13) / 2 ◀ anchor
   lg: REM(9), // 12 − (20 − 14) / 2
 } as const;
 

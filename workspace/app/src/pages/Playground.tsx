@@ -325,7 +325,7 @@ export const Playground = () => {
             <Box style={{ width: "9rem" }}><Select size="sm" aria-label="select sm"><Select.Option value="a">본명조</Select.Option></Select></Box>
             <Button size="sm">Button</Button>
           </Spec>
-          <Spec label="size md — default 34px · radius 4px" testid="spec-size-md">
+          <Spec label="size md — default 32px · radius 4px" testid="spec-size-md">
             <Box style={{ width: "10rem" }}><Field size="md" placeholder="Field" aria-label="field md" /></Box>
             <Box style={{ width: "9rem" }}><Select size="md"><Select.Option value="a">Select</Select.Option></Select></Box>
             <Button size="md">Button</Button>
@@ -338,7 +338,7 @@ export const Playground = () => {
           {/* 공통 base — 넷이 같은 컨트롤 여백을 쓰는가. 높이가 아니라 *글자 시작점* 을 본다:
               Textarea 는 줄 수만큼 자라 높이로는 줄을 못 세우고, Select 는 화살표 때문에
               오른쪽만 넓다. 왼쪽 여백 하나가 넷을 한 세로선에 세운다. */}
-          <Spec label="base — radius 4 · 라벨 padding 12 · 값 padding 9" testid="spec-control-base">
+          <Spec label="base — radius 4 · 라벨 padding 11 · 값 padding 8" testid="spec-control-base">
             <Button size="md" data-testid="base-button">Button</Button>
             <Box style={{ width: "9rem" }}><Field size="md" placeholder="Field" aria-label="field base" data-testid="base-field" /></Box>
             <Box style={{ width: "9rem" }}><Select size="md" data-testid="base-select"><Select.Option value="a">Select</Select.Option></Select></Box>
