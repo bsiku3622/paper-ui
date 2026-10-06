@@ -18,7 +18,6 @@ export const VARIANTS = [
   "solid",
   "soft",
   "hairline",
-  "hairlineMuted",
   "ghost",
   "muted",
 ] as const;

@@ -9,7 +9,7 @@ Paper UI의 상위 레이어는 아래 일곱 축에서 필요한 것만 고릅�
 | 축 | 답하는 질문 | 어휘 |
 | --- | --- | --- |
 | `accent` | 어떤 의미색인가 | `primary · info · success · warning · error` |
-| shared `variant` | 의미색을 얼마나 무겁게 보이는가 | `solid · soft · hairline · hairlineMuted · ghost · muted` |
+| shared `variant` | 의미색을 얼마나 무겁게 보이는가 | `solid · soft · hairline · ghost · muted` |
 | local `variant` | 상위 구조를 어떻게 구분하는가 | 컴포넌트별 유한 집합 |
 | `density` | 같은 정보가 세로로 얼마나 촘촘한가 | `compact · default · comfortable` |
 | `size` | 컨트롤 자체가 얼마나 큰가 | `sm · md · lg` |

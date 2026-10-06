@@ -16,19 +16,14 @@ describe("muted color profile", () => {
     }
   });
 
-  it("uses the shared soft tone for every hairline accent border", () => {
+  it("uses the shared form surface and neutral border for every hairline accent", () => {
     for (const accent of ["primary", "info", "success", "warning", "error"] as const) {
-      expect(accentProfile(accent, "hairline").borderColor).toBe(tokens.color.accent[accent].soft);
-    }
-  });
-});
-
-describe("hairlineMuted color profile", () => {
-  it("preserves hairline geometry colors and hover while borrowing muted foreground", () => {
-    for (const accent of ["primary", "info", "success", "warning", "error"] as const) {
-      const hairline = accentProfile(accent, "hairline");
-      const muted = accentProfile(accent, "muted");
-      expect(accentProfile(accent, "hairlineMuted")).toEqual({ ...hairline, color: muted.color });
+      const profile = accentProfile(accent, "hairline");
+      expect(profile.background).toBe(tokens.color.bg.raised);
+      expect(profile.borderColor).toBe(tokens.color.border.base);
+      expect(profile.hoverBorderColor).toBe(tokens.color.border.hover);
+      expect(profile.hoverOverlay).toBeUndefined();
+      expect(profile.color).toBe(accent === "primary" ? tokens.color.ink.primary : tokens.color.accent[accent].solid);
     }
   });
 });

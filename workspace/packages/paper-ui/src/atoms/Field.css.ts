@@ -3,12 +3,14 @@ import { style, styleVariants } from "@vanilla-extract/css";
 import { tokens, STATUS, stateTransition } from "../tokens";
 import type { StatusName, TextVariant } from "../tokens";
 import { TEXT_VARIANTS } from "../tokens";
+import { outlinedControlProfile, outlinedControlHover } from "../styles/color-profile";
 import { ladderRules } from "../internal/sizeLadder";
 
 // Field 는 input group — 래퍼가 면·테두리·포커스링·상태·크기를 지고, 안쪽 input 은
 // 투명·무테로 값만 담는다. leading/trailing 어도먼트(아이콘·$·단위·clear·비밀번호)가
 // input 양옆에 앉는다. 크기(height·paddingInline·fontSize)는 fieldSize 가 래퍼에 준다.
 export const fieldWrap = style({
+  ...outlinedControlProfile,
   display: "flex",
   alignItems: "center",
   gap: tokens.shape.gap.sm,
@@ -16,18 +18,12 @@ export const fieldWrap = style({
   borderRadius: tokens.shape.radius.interaction,
   borderWidth: tokens.shape.constants.borderWidth,
   borderStyle: "solid",
-  borderColor: tokens.color.border.base,
-  color: tokens.color.ink.primary,
   cursor: "text",
   transition: stateTransition("border-color", "background"),
   selectors: {
     // neutral hover는 배경을 흔들지 않고 전용 border.hover 선으로 형태를 가볍게 세운다.
-    '&[data-pui-status="default"]:hover:not(:focus-within):has(input:enabled)': {
-      borderColor: tokens.color.border.hover,
-    },
-    // pointer focus는 keyboard ring 대신 hover보다 한 단계 또렷한 soft edge를 남긴다.
-    '&[data-pui-status="default"][data-pui-pointer-focus]:has(input:focus)': {
-      borderColor: tokens.color.ink.secondary,
+    '&[data-pui-status="default"]:hover:has(input:enabled)': {
+      ...outlinedControlHover,
     },
     // keyboard focus — 안쪽 input 이 :focus-visible일 때만 래퍼 *바깥* 에 파란 링.
     // 클릭은 caret과 edge만 남기고, Tab 탐색 위치에만 ring을 쓴다.

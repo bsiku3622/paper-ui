@@ -81,7 +81,7 @@ const PAPERS = ["canvas", "raised", "sunken"] as const;
 const ACCENTS = ["info", "success", "warning", "error"] as const;
 const STATUSES = ["info", "success", "warning", "error"] as const;
 const COLOR_ACCENTS = ["primary", ...ACCENTS] as const;
-const BUTTON_VARIANTS = ["solid", "soft", "hairline", "hairlineMuted", "ghost", "muted"] as const;
+const BUTTON_VARIANTS = ["solid", "soft", "hairline", "ghost", "muted"] as const;
 
 export const Playground = () => {
   const [tab, setTab] = useState("one");
@@ -211,6 +211,11 @@ export const Playground = () => {
               <Text variant="caption" as="span">inverse</Text>
             </Box>
           </Spec>
+          <Spec label="radius — 작은 면 4 · 카드 6 · 큰 면 8" testid="spec-layout-radius">
+            <Box surface="raised" border radius="sm" padding="md" data-testid="radius-small"><Text variant="caption">4px · small</Text></Box>
+            <Box surface="raised" border radius="md" padding="md" data-testid="radius-card"><Text variant="caption">6px · card</Text></Box>
+            <Box surface="raised" border radius="lg" padding="md" data-testid="radius-large"><Text variant="caption">8px · large</Text></Box>
+          </Spec>
         </Section>
 
         {/* ── Atoms ─────────────────────────────────────────── */}
@@ -219,7 +224,6 @@ export const Playground = () => {
             <Button variant="solid" data-testid="btn-solid">solid</Button>
             <Button variant="soft" data-testid="btn-soft">soft</Button>
             <Button variant="hairline" data-testid="btn-hairline">hairline</Button>
-            <Button variant="hairlineMuted" data-testid="btn-hairline-muted">hairlineMuted</Button>
             <Button variant="ghost" data-testid="btn-ghost">ghost</Button>
             <Button variant="muted" data-testid="btn-muted">muted</Button>
           </Spec>
@@ -340,7 +344,7 @@ export const Playground = () => {
               Textarea 는 줄 수만큼 자라 높이로는 줄을 못 세우고, Select 는 화살표 때문에
               오른쪽만 넓다. 왼쪽 여백 하나가 넷을 한 세로선에 세운다. */}
           <Spec label="base — radius 4 · 라벨 padding 11 · 값 padding 8" testid="spec-control-base">
-            <Button size="md" data-testid="base-button">Button</Button>
+            <Button variant="hairline" size="md" data-testid="base-button">hairline</Button>
             <Box style={{ width: "9rem" }}><Field size="md" placeholder="Field" aria-label="field base" data-testid="base-field" /></Box>
             <Box style={{ width: "9rem" }}><Select size="md" data-testid="base-select"><Select.Option value="a">Select</Select.Option></Select></Box>
             <Box style={{ width: "12rem" }}><Textarea size="md" rows={2} placeholder="Textarea" aria-label="textarea base" data-testid="base-textarea" /></Box>
@@ -540,9 +544,9 @@ export const Playground = () => {
         <Section id="sec-feedback" title="Alert · variants">
           {/* Alert 은 Button·Badge 와 같은 color × variant 매트릭스를 문다. 면을 위한
               별도 축을 세우지 않은 건 variant 가 이미 *면의 무게* 축이기 때문이다. */}
-          <Spec label="Alert — variant (같은 색, 여섯 가지 면의 무게)" testid="spec-alert-variant">
+          <Spec label="Alert — variant (같은 색, 다섯 가지 면의 무게)" testid="spec-alert-variant">
             <Inline gap="md" wrap align="start">
-              {(["solid", "soft", "hairline", "hairlineMuted", "ghost", "muted"] as const).map((v) => (
+              {(["solid", "soft", "hairline", "ghost", "muted"] as const).map((v) => (
                 <Box key={v} style={{ width: "15rem" }} data-testid={`alert-${v}`}>
                   <Alert accent="error" variant={v}>
                     <Alert.Title>확인이 필요합니다</Alert.Title>
