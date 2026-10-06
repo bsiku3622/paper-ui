@@ -1,3 +1,12 @@
+## 2026-10-06 — Rebalance the control ladder to 30/34/40
+
+- Files: Shape tokens, Playground specimens and registry descriptions, geometry tests, token documentation, and `AGENTS.md`.
+- Summary: Adjust the experimental control heights to 30/34/40px, button padding to 10/12/16px, and input padding to 7/9/12px while keeping interaction radius 4px and typography unchanged.
+
+The 30px small step preserves the Paperdown toolbar size while the 34px default gives general forms more room. Input ink insets including the border are 8/10/13px, within 0.5px of the corresponding vertical ink insets for the existing 13/13/14px type. Textarea uses 3.5/5.5/9px block padding derived from its 20px line height, preserving equal first-line ink insets. Layout, palette, and pill geometry remain independent.
+
+Typecheck, library and app builds, and all three geometry browser checks pass; the latter also assert button padding, value space, cross-control alignment, and keyboard focus. The live Playground shows the updated sizing and documentation. Existing baseline lint failures in Tokens inspector remain outside this geometry change. Full-suite baseline issues recorded in the preceding experiment are not claimed resolved. The experiment stays on `dev/paperdown-control-geometry` without publication or merge. Screenshot and validation logs are preserved under the dated Bufs folder, with the screenshot copied to Downloads.
+
 ## 2026-10-06 — Experiment with Paperdown control geometry
 
 - Files: `workspace/packages/paper-ui/src/tokens/shape.ts`, Playground specimens and registry descriptions, geometry E2E tests, token documentation, and `AGENTS.md`.
