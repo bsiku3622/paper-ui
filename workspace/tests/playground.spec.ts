@@ -198,11 +198,11 @@ test("shape · 기본은 4, pill 은 999 (Button·Badge 같은 어휘)", async (
 // buttonIconOnly 와 buttonSize 는 특정도가 같아 소스 순서로만 갈린다. 순서가 뒤집히면
 // 사다리의 13px 이 살아남아 34 가 아니라 44 로 그려진다 — aspect-ratio 가 붙어 있어도
 // 콘텐츠 폭이 그걸 넘기므로 조용히 깨진다. 계산값으로 못 박는다.
-test("button · iconOnly 는 정사각(md 30×30)", async ({ page }) => {
+test("button · iconOnly 는 정사각(md 34×34)", async ({ page }) => {
   const box = await page.getByTestId("btn-icononly").boundingBox();
   expect(box).not.toBeNull();
-  expect(Math.round(box!.width)).toBe(30);
-  expect(Math.round(box!.height)).toBe(30);
+  expect(Math.round(box!.width)).toBe(34);
+  expect(Math.round(box!.height)).toBe(34);
 });
 
 // ── SegmentedControl / Tabs — 닫힌 선택과 열린 panel navigation을 분리한다 ──
@@ -214,7 +214,7 @@ test("segmented control · 클릭하면 단일 선택이 바뀐다", async ({ pa
   await two.click();
   await expect(two).toHaveCSS("background-color", hexToRgb("#ffffff"));
   await expect(two).toHaveAttribute("aria-checked", "true");
-  await expect(two).toHaveCSS("height", "26px");
+  await expect(two).toHaveCSS("height", "30px");
 });
 
 test("tabs · underline trigger가 md panel을 전환한다", async ({ page }) => {
@@ -224,7 +224,7 @@ test("tabs · underline trigger가 md panel을 전환한다", async ({ page }) =
   await props.click();
 
   await expect(list).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-  await expect(props).toHaveCSS("height", "30px");
+  await expect(props).toHaveCSS("height", "34px");
   await expect(props).toHaveCSS("border-bottom-width", "2px");
   await expect(props).toHaveCSS("border-bottom-color", hexToRgb("#26262b"));
   await expect(props).toHaveCSS("border-radius", "0px");
@@ -380,14 +380,14 @@ test("control base · 높이·글자는 공유, 가로 여백은 라벨과 값�
   }
   // 버튼 라벨은 상자를 정의하는 글자라 좌우가 넉넉하고(13), 입력칸은 높이가 정한 세로
   // 잉크와 사방을 맞춘다(md: border 1 + padding 9 = 10).
-  await expect(page.getByTestId("base-button")).toHaveCSS("padding-left", "10px");
+  await expect(page.getByTestId("base-button")).toHaveCSS("padding-left", "12px");
   for (const id of ["base-field", "base-select", "base-textarea"]) {
-    await expect(page.getByTestId(id)).toHaveCSS("padding-left", "8px");
+    await expect(page.getByTestId(id)).toHaveCSS("padding-left", "9px");
   }
   // 화살표 자리는 오른쪽만 넓다 — 통로로 한 축 더 덮는다.
   await expect(page.getByTestId("base-select")).toHaveCSS("padding-right", "24px");
   // Textarea 의 세로만 자기 값이다 — 가로에서 계산한다(9 − 반 줄 3.5).
-  await expect(page.getByTestId("base-textarea")).toHaveCSS("padding-top", "4.5px");
+  await expect(page.getByTestId("base-textarea")).toHaveCSS("padding-top", "5.5px");
 });
 
 // ── 입력 글자는 시스템 굵기를 든다 ───────────────────────────────────────────
@@ -462,9 +462,9 @@ test("pill · 곡선만 바뀌고 각자의 가로 여백은 그대로다", asyn
     await expect(page.getByTestId(id)).toHaveCSS("border-radius", "999px");
   }
   // 알약이 됐다고 여백이 따라 움직이지 않는다 — 각진 형제와 글자 시작점이 같다.
-  await expect(page.getByTestId("field-pill")).toHaveCSS("padding-left", "8px");
-  await expect(page.getByTestId("select-pill")).toHaveCSS("padding-left", "8px");
-  await expect(page.getByTestId("button-pill-row")).toHaveCSS("padding-left", "10px");
+  await expect(page.getByTestId("field-pill")).toHaveCSS("padding-left", "9px");
+  await expect(page.getByTestId("select-pill")).toHaveCSS("padding-left", "9px");
+  await expect(page.getByTestId("button-pill-row")).toHaveCSS("padding-left", "12px");
 });
 
 // ── SegmentedControl shape — 트랙과 항목이 함께 갈리고, 각진 쪽은 동심이다 ─
@@ -482,7 +482,7 @@ test("segmented control · shape이 트랙·항목에 함께 걸리고 안쪽은
 
   // 여백은 두 shape 이 같다 — 실루엣 축이지 밀도 축이 아니다(sm 사다리 10).
   for (const root of [def, pill]) {
-    await expect(root.getByRole("radio").first()).toHaveCSS("padding-left", "8px");
+    await expect(root.getByRole("radio").first()).toHaveCSS("padding-left", "10px");
   }
 });
 

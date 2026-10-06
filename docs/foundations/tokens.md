@@ -41,18 +41,18 @@ Interaction overlay, scrim, shadow tint의 반투명 값은 중립 양 끝점에
 
 크기는 **5단 사다리(xs~xl) × intent(interaction·layout)** 구조입니다 — chrome(Button·Field)은 `interaction`, container(Box·Modal)는 `layout`을 씁니다. 기본 control은 compact한 32px 높이와 8px corner를 앵커로 둡니다.
 
-**height** — `interaction` 24/26/30/36/44 (control = `md.interaction` 32) · `layout` 64~320
+**height** — `interaction` 24/30/34/40/44 (control = `md.interaction` 32) · `layout` 64~320
 **입력 글자는 `weight.normal`(450), 13px(control)**입니다. `normal`은 작은 sans가 Retina에서 힘이 빠지지 않게 보정한 half-step입니다. Button primary는 demo의 묵직한 인상에 맞춰 별도 `weight.strong`(650)를 사용하고, 보조 버튼은 `medium`(500)을 씁니다. 입력 자간은 `tracking.body`로 UI 라벨과 구분합니다.
 
 ⚠ Field의 안쪽 `<input>`은 자간을 따로 이어 붙여야 합니다. `font` 단축 속성은 font-* 만 다시 세우는데, 브라우저 기본 스타일시트가 폼 컨트롤에 `letter-spacing: normal`을 **명시**해 두어 상속이 거기서 끊깁니다.
 
-**controlSize** — 컴포넌트 `size` 3단(`sm`·`md`·`lg`)은 Shape의 height·padding만 선택합니다. Typography는 각 컴포넌트가 해당 size를 자기 역할 preset에 전달합니다(Button·input·select·textarea 등). Control 글자는 주로 13/13/14px이며, 일반 Text variant 사다리와 분리되어 있습니다. **controlPaddingX** 8/10/12(버튼·탭) · **inputPaddingX** 6/8/10(입력칸) · **textareaPaddingY** 2.5/4.5/7
+**controlSize** — 컴포넌트 `size` 3단(`sm`·`md`·`lg`)은 Shape의 height·padding만 선택합니다. Typography는 각 컴포넌트가 해당 size를 자기 역할 preset에 전달합니다(Button·input·select·textarea 등). Control 글자는 주로 13/13/14px이며, 일반 Text variant 사다리와 분리되어 있습니다. **controlPaddingX** 10/12/16(버튼·탭) · **inputPaddingX** 7/9/12(입력칸) · **textareaPaddingY** 3.5/5.5/9
 
-**가로 여백은 라벨과 값이 갈립니다.** 버튼과 탭의 글자는 상자를 *정의하는* 라벨이라 좌우가 넉넉해야 형태가 살고(`controlPaddingX` 8/10/12), 입력칸은 상자가 먼저 있고 값이 그 안에 놓이는 자리라 가로 inset을 별도로 선택합니다(`inputPaddingX` 6/8/10).
+**가로 여백은 라벨과 값이 갈립니다.** 버튼과 탭의 글자는 상자를 *정의하는* 라벨이라 좌우가 넉넉해야 형태가 살고(`controlPaddingX` 10/12/16), 입력칸은 상자가 먼저 있고 값이 그 안에 놓이는 자리라 가로 inset을 별도로 선택합니다(`inputPaddingX` 7/9/12).
 
-입력칸은 글자를 세로 중앙에 두고 가로 여백을 별도 축으로 유지합니다. 이번 md는 30px control 안에 13px 글자를 두며, 가로 잉크 여백은 `border 1 + padding 8 = 9px`입니다. 정사각 여백을 강제하기보다 문서 도구의 짧은 높이와 좁은 입력 여백을 시험합니다. 아이콘과 chevron 슬롯을 고려해 Field·Select의 x padding을 버튼보다 좁게 둡니다.
+입력칸은 글자를 세로 중앙에 두고 가로 여백을 별도 축으로 유지합니다. 이번 md는 34px control 안에 13px 글자를 두며, 가로 잉크 여백은 `border 1 + padding 9 = 10px`입니다. 정사각 여백을 강제하기보다 문서 도구의 짧은 높이와 좁은 입력 여백을 시험합니다. 아이콘과 chevron 슬롯을 고려해 Field·Select의 x padding을 버튼보다 좁게 둡니다.
 
-`textareaPaddingY`는 **가로에서 세로를 계산합니다** — md에서는 `inputPaddingX 8 − 반 줄 여백 3.5 = 4.5px`입니다. 반 줄 여백은 `(줄상자 20 − 글자 13) / 2`로, 줄상자가 글자 위아래에 이미 갖고 있는 몫입니다. md에서 `border 1 + padding 4.5 + 반 줄 3.5 = 9px`이 되어 가로(`border 1 + padding 8`)와 같은 잉크 여백을 만듭니다.
+`textareaPaddingY`는 **가로에서 세로를 계산합니다** — md에서는 `inputPaddingX 9 − 반 줄 여백 3.5 = 5.5px`입니다. 반 줄 여백은 `(줄상자 20 − 글자 13) / 2`로, 줄상자가 글자 위아래에 이미 갖고 있는 몫입니다. md에서 `border 1 + padding 5.5 + 반 줄 3.5 = 10px`이 되어 가로(`border 1 + padding 9`)와 같은 잉크 여백을 만듭니다.
 
 `Button`·`Field`·`Select`·`Textarea`·`SegmentedControl`·`Tabs`가 이 사다리를 공유합니다 — geometry 규칙입니다. Typography는 resolver로 역할별 클래스를 따로 붙입니다. Select는 오른쪽을 화살표 자리로 한 번 더 덮고, Textarea는 height를 빼고 세로 여백을 더합니다. SegmentedControl은 `sm`, Tabs는 `md`를 각 역할의 기본값으로 고릅니다.
 
@@ -72,7 +72,7 @@ Link는 여기 없습니다 — 상자가 아니라 글자라, 높이도 여백�
 **shadow** (2단, 떠 있는 것만) — `shadow.overlay`(Modal·Tooltip) · `shadow.overlayMinimal`(Switch 손잡이). Geometry는 Shape가 맡고 tint만 Color token에서 선택합니다.
 **constants** — `borderWidth` 1 · `focusRingWidth` 2 · `focusRingOffset` 2 · `activeIndicatorWidth` 2 · `checkMarkStrokeWidth` 2 · `spinnerStrokeWidth` 2 등. **atom/component intrinsic**은 사다리 밖 치수이며 각 소비 주체에 둡니다.
 
-기본 컨트롤 사다리는 `sm 26px / md 30px / lg 36px`, 버튼 여백 `8 / 10 / 12px`, 입력 여백 `6 / 8 / 10px`입니다. 글자 크기는 `13 / 13 / 14px`로 각 단계에 맞춥니다. 이번 실험의 md는 Paperdown 도구 모음의 30px 높이와 4px 모서리를 기준으로 삼았습니다. sm·lg와 버튼 padding은 그 기준을 확장한 실험값이며, typography와 layout 여백은 유지합니다.
+기본 컨트롤 사다리는 `sm 30px / md 34px / lg 40px`, 버튼 여백 `10 / 12 / 16px`, 입력 여백 `7 / 9 / 12px`입니다. 글자 크기는 `13 / 13 / 14px`로 각 단계에 맞춥니다. Paperdown의 30px를 sm 하한으로 유지하고 md 34px·lg 40px로 확장했습니다. radius 4px와 typography·layout 여백은 유지하며, 높이에 맞춰 버튼과 입력 padding을 조정했습니다.
 
 `radius.full`은 사다리의 끝이 아니라 사다리 밖입니다. 999px은 크기가 아니라 "높이의 절반까지"라는 규칙이어서, 같은 값이 30px 버튼에서는 15px 곡선이 되고 22px 배지에서는 11px 곡선이 됩니다. 어디에 얹히느냐가 실제 반경을 정하니 intent(interaction·layout)로 갈릴 이유가 없고, 그래서 둘과 나란한 셋째 가지로 섭니다.
 

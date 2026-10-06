@@ -1,9 +1,9 @@
 import { expect, test } from "@playwright/test";
 
-for (const [size, height, padding, font] of [
-  ["sm", 26, 6, 13],
-  ["md", 30, 8, 13],
-  ["lg", 36, 10, 14],
+for (const [size, height, padding, font, buttonPadding] of [
+  ["sm", 30, 7, 13, 10],
+  ["md", 34, 9, 13, 12],
+  ["lg", 40, 12, 14, 16],
 ] as const) {
   test(`Paperdown geometry: ${size} controls align and preserve value space`, async ({ page }) => {
     await page.goto("/playground");
@@ -19,6 +19,7 @@ for (const [size, height, padding, font] of [
     }
     await expect(field).toHaveCSS("padding-left", `${padding}px`);
     await expect(select).toHaveCSS("padding-left", `${padding}px`);
+    await expect(button).toHaveCSS("padding-left", `${buttonPadding}px`);
     const boxes = await Promise.all([field, select, button].map((control) => control.boundingBox()));
     expect(Math.max(...boxes.map((box) => box!.y)) - Math.min(...boxes.map((box) => box!.y))).toBeLessThanOrEqual(1);
     await input.fill("11.25");
