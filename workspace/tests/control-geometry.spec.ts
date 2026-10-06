@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 for (const [size, height, padding, font, buttonPadding] of [
   ["sm", 30, 7, 13, 10],
   ["md", 32, 8, 13, 11],
-  ["lg", 40, 12, 14, 16],
+  ["lg", 36, 10, 14, 14],
 ] as const) {
   test(`Paperdown geometry: ${size} controls align and preserve value space`, async ({ page }) => {
     await page.goto("/playground");

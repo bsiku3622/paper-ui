@@ -1,3 +1,10 @@
+## 2026-10-06 — Try a 36px large control
+
+- Changed files: Shape tokens, control specimens, geometry tests, and token documentation.
+- Summary: Use 30/32/36px control heights. Reduce lg button inline padding to 14px, input inline padding to 10px, and textarea block padding to 7px.
+
+The 4px reduction in lg height removes 2px from each vertical side, so inline padding also drops by 2px to preserve the balance. Typography and radius remain unchanged. All three size alignment tests passed, including value space and keyboard focus.
+
 ## 2026-10-06 — Try a 32px default control
 
 - Changed files: Shape tokens, control specimens, geometry tests, and token documentation.
