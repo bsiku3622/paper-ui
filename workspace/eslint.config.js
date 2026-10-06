@@ -111,6 +111,27 @@ export default [
     },
   },
 
+  // Foundations token inspector may read the two source modules it displays.
+  // Keep ladder/shape and other raw-token imports restricted in this file.
+  {
+    files: ["app/src/playground/Tokens.tsx"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [{
+            group: [
+              "**/tokens/palette", "**/tokens/color-ladder", "**/tokens/colors", "**/tokens/shape",
+              "!../../../packages/paper-ui/src/tokens/colors",
+              "!../../../packages/paper-ui/src/tokens/palette",
+            ],
+            message: "규칙 2 — inspector에서 허용한 colors·palette 외의 raw VALUES는 직접 import하지 않는다.",
+          }],
+        },
+      ],
+    },
+  },
+
   // ── 규칙 3 — inline style 로 토큰 주입 금지 ─────────────────────────────
   {
     files: ["packages/paper-ui/src/**/*.tsx"],
