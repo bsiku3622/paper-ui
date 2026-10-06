@@ -97,7 +97,7 @@ export const COMPONENTS: CompSpec[] = [
     slug: "text",
     name: "Text",
     group: "Primitives",
-    blurb: "일곱 variant 로 위계를 정한다. variant 가 크기·굵기·잉크를, family 가 서체(sans·mono)를 정한다.",
+    blurb: "일곱 variant 로 제목 위계와 텍스트 역할을 정한다. variant 가 크기·굵기·잉크를, family 가 서체(sans·mono)를 정한다.",
     controls: [
       { kind: "enum", prop: "variant", label: "variant", options: ["display", "title", "heading", "subheading", "body", "caption", "label"], def: "body" },
       { kind: "enum", prop: "family", label: "family", options: ["sans", "mono"], def: "sans" },
@@ -122,7 +122,7 @@ export const COMPONENTS: CompSpec[] = [
     group: "Primitives",
     blurb: "구조 패널. surface·border·radius·shadow와 padding을 얹고, width·height·min/max·overflow로 box model을 정한다. sm~xl 크기는 layout token, 실제 CSS 길이는 화면 고유 layout의 escape hatch다. 색과 flex/position 책임은 열지 않는다.",
     controls: [
-      { kind: "enum", prop: "surface", label: "surface", options: ["none", "raised", "canvas", "sunken", "well"], def: "raised" },
+      { kind: "enum", prop: "surface", label: "surface", options: ["none", "raised", "canvas", "sunken"], def: "raised" },
       { kind: "bool", prop: "border", label: "border", def: false },
       { kind: "bool", prop: "inverse", label: "inverse", def: false },
       { kind: "enum", prop: "shadow", label: "shadow", options: ["none", "overlay", "overlayMinimal"], def: "none" },
@@ -160,7 +160,7 @@ export const COMPONENTS: CompSpec[] = [
     render: (st) => (
       <Stack gap={s(st.gap) as "xs" | "sm" | "md" | "lg" | "xl"} align={s(st.align) as "start" | "center" | "end" | "stretch"} style={{ width: "12rem" }}>
         {["하나", "둘", "셋"].map((t) => (
-          <Box key={t} surface="well" radius="sm" padding="sm">
+          <Box key={t} surface="sunken" radius="sm" padding="sm">
             <Text variant="caption" as="span">{t}</Text>
           </Box>
         ))}
@@ -182,7 +182,7 @@ export const COMPONENTS: CompSpec[] = [
     render: (st) => (
       <Inline gap={s(st.gap) as "xs" | "sm" | "md" | "lg" | "xl"} align={s(st.align) as "start" | "center" | "end" | "baseline"} justify={s(st.justify) as "start" | "center" | "end" | "between"} wrap={b(st.wrap)} style={{ width: "18rem", height: "4rem" }}>
         {["A", "B", "C"].map((t) => (
-          <Box key={t} surface="well" radius="sm" padding="sm">
+          <Box key={t} surface="sunken" radius="sm" padding="sm">
             <Text variant="caption" as="span">{t}</Text>
           </Box>
         ))}
@@ -236,11 +236,11 @@ export const COMPONENTS: CompSpec[] = [
       { kind: "enum", prop: "accent", label: "accent", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
       { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "hairline", "ghost", "muted"], def: "solid" },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
-      { kind: "enum", prop: "iconSize", label: "iconSize", options: ["label", "caption", "body", "subheading"], def: "body" },
+      { kind: "enum", prop: "iconSize", label: "iconSize", options: ["label", "caption", "body", "heading3"], def: "body" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
     ],
     render: (st) => (
-      <IconButton accent={s(st.accent) as Accent} variant={s(st.variant) as Variant} size={s(st.size) as "sm" | "md" | "lg"} iconSize={s(st.iconSize) as "label" | "caption" | "body" | "subheading"} disabled={b(st.disabled)} aria-label="추가">
+      <IconButton accent={s(st.accent) as Accent} variant={s(st.variant) as Variant} size={s(st.size) as "sm" | "md" | "lg"} iconSize={s(st.iconSize) as "label" | "caption" | "body" | "heading3"} disabled={b(st.disabled)} aria-label="추가">
         <Icon><path d="M12 5v14M5 12h14" /></Icon>
       </IconButton>
     ),
@@ -385,13 +385,13 @@ export const COMPONENTS: CompSpec[] = [
     slug: "icon",
     name: "Icon",
     group: "Primitives",
-    blurb: "Primitive 아이콘. typography ladder 이름(label·caption·body·subheading)으로 아트보드 크기를 고르고 currentColor 또는 ink로 그린다.",
+    blurb: "Primitive 아이콘. typography ladder 이름(label·caption·body·heading3)으로 아트보드 크기를 고르고 currentColor 또는 ink로 그린다.",
     controls: [
       { kind: "enum", prop: "ink", label: "ink", options: ["default", "base", "soft", "faint", "info", "success", "warning", "error"], def: "default" },
-      { kind: "enum", prop: "size", label: "size", options: ["label", "caption", "body", "subheading"], def: "body" },
+      { kind: "enum", prop: "size", label: "size", options: ["label", "caption", "body", "heading3"], def: "body" },
     ],
     render: (st) => (
-      <Icon aria-label="정보" ink={st.ink === "default" ? undefined : (s(st.ink) as Ink)} size={s(st.size) as "label" | "caption" | "body" | "subheading"}>
+      <Icon aria-label="정보" ink={st.ink === "default" ? undefined : (s(st.ink) as Ink)} size={s(st.size) as "label" | "caption" | "body" | "heading3"}>
         <circle cx="12" cy="12" r="9" />
         <path d="M12 11v5M12 8h.01" />
       </Icon>
@@ -798,8 +798,8 @@ export const COMPONENTS: CompSpec[] = [
             자식이 그걸 상속한다 — 여기서 색을 박으면 tone 토글이 그 계약을 못 보여준다.
             (Text 를 쓰면 variant 클래스가 자기 ink 를 들고 와 같은 문제가 난다.) */}
         <Banner accent={s(st.accent) as Accent}>
-          <Banner.Content><span style={{ fontWeight: tokens.text.weight.semibold }}>Paper UI</span><span>{s(st.children)}</span></Banner.Content>
-          <Banner.Action><span style={{ fontWeight: tokens.text.weight.medium }}>← 사이트로</span></Banner.Action>
+          <Banner.Content><span style={{ fontWeight: tokens.text.palette.weight.semibold }}>Paper UI</span><span>{s(st.children)}</span></Banner.Content>
+          <Banner.Action><span style={{ fontWeight: tokens.text.palette.weight.medium }}>← 사이트로</span></Banner.Action>
         </Banner>
       </Box>
     ),

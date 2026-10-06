@@ -4,6 +4,7 @@ import { Children, createContext, isValidElement, useContext, type KeyboardEvent
 
 import { Box, Inline, type BoxProps } from "../primitives";
 import { joinClass } from "../internal/joinClass";
+import { resolveControlTypography } from "../resolvers";
 import { useControllableState } from "../internal/useControllableState";
 import type { ControlSize } from "../tokens";
 import { segmentedItem, segmentedItemActive, segmentedItemShape, segmentedItemSize, segmentedRoot, segmentedRootShape } from "./SegmentedControl.css";
@@ -29,7 +30,7 @@ const SegmentedControlRoot = ({ value: controlledValue, defaultValue, onValueCha
 export type SegmentedControlItemProps = Omit<BoxProps<"button">, "as" | "value"> & { value: string };
 export const SegmentedControlItem = ({ value, className, onClick, ...rest }: SegmentedControlItemProps) => {
   const context = useContext(SegmentedContext); if (!context) throw new Error("SegmentedControl.Item must be used inside SegmentedControl"); const selected = value === context.value;
-  return <Box {...rest} as="button" type="button" role="radio" aria-checked={selected} tabIndex={selected ? 0 : -1} className={joinClass(segmentedItem, segmentedItemSize[context.size], segmentedItemShape[context.shape], selected && segmentedItemActive, className)} onClick={(event) => { onClick?.(event); if (!event.defaultPrevented) context.onValueChange(value); }} />;
+  return <Box {...rest} as="button" type="button" role="radio" aria-checked={selected} tabIndex={selected ? 0 : -1} className={joinClass(segmentedItem, segmentedItemSize[context.size], resolveControlTypography("button", "md", "regular"), segmentedItemShape[context.shape], selected && segmentedItemActive, className)} onClick={(event) => { onClick?.(event); if (!event.defaultPrevented) context.onValueChange(value); }} />;
 };
 
 export const SegmentedControl = Object.assign(SegmentedControlRoot, { Item: SegmentedControlItem });

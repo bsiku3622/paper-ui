@@ -19,7 +19,7 @@ export const PageHeaderContent = ({ children, className }: PageHeaderPartProps) 
   <Stack gap="sm" className={joinClass(pageHeaderContent, className)}>{children}</Stack>
 );
 export const PageHeaderTitle = ({ children, className }: PageHeaderPartProps) => (
-  <Text variant="display" className={className}>{children}</Text>
+  <Text variant="title" className={className}>{children}</Text>
 );
 export const PageHeaderDescription = ({ children, className }: PageHeaderPartProps) => (
   <Text variant="body" ink="soft" className={className}>{children}</Text>

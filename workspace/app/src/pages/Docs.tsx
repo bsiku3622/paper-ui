@@ -8,7 +8,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 
-import { Box, Sidebar, Stack, Text, tokens } from "@studio-baeks/paper-ui";
+import { Box, PageHeader, Sidebar, Stack, Text, tokens } from "@studio-baeks/paper-ui";
 
 import { SiteNav, NAV_HEIGHT } from "../site/chrome";
 import "../site/markdown.css";
@@ -31,11 +31,12 @@ export const Docs = () => {
   }, []);
 
   // slug 없으면 README(개요)
-  const activeFile = useMemo(() => {
+  const activeDoc = useMemo(() => {
     const all = groups.flatMap((g) => g.docs);
-    if (!slug) return all.find((d) => d.slug === "")?.file ?? "README.md";
-    return all.find((d) => d.slug === slug)?.file ?? null;
+    if (!slug) return all.find((d) => d.slug === "") ?? null;
+    return all.find((d) => d.slug === slug) ?? null;
   }, [groups, slug]);
+  const activeFile = activeDoc?.file ?? (!slug ? "README.md" : null);
 
   useEffect(() => {
     if (!activeFile) { setContent(null); return; }
@@ -72,6 +73,11 @@ export const Docs = () => {
           {content === null ? (
             <Text variant="caption">불러오는 중…</Text>
           ) : (
+            <Stack gap="xl">
+              <PageHeader>
+                <PageHeader.Location><Text variant="caption" ink="soft">{groups.find((group) => group.group === activeDoc?.group)?.label || "Documentation"}</Text></PageHeader.Location>
+                <PageHeader.Content><PageHeader.Title>{activeDoc?.title ?? "Documentation"}</PageHeader.Title></PageHeader.Content>
+              </PageHeader>
               <div className="md">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
@@ -93,9 +99,10 @@ export const Docs = () => {
                   },
                 }}
               >
-                {content}
+                {content.replace(/^#\s+.+(?:\r?\n)+/, "")}
               </ReactMarkdown>
               </div>
+            </Stack>
           )}
         </Box>
       </Box>

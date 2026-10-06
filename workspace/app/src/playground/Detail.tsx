@@ -11,11 +11,29 @@
 import { useMemo, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 
-import { Box, Button, Field, Icon, IconButton, Inline, Select, Stack, Switch, Text, tokens } from "@studio-baeks/paper-ui";
+import { Box, Button, Field, Icon, IconButton, Inline, PageHeader, Select, Stack, Switch, Text, tokens, type Surface } from "@studio-baeks/paper-ui";
 
 import { PlaygroundLayout } from "./shell";
 import { bySlug, defaultState, type CompSpec, type Control, type State } from "./registry";
 import "./detail.css";
+
+const PREVIEW_SURFACES = ["raised", "canvas", "sunken"] as const satisfies readonly Surface[];
+const PREVIEW_BACKGROUNDS = [...PREVIEW_SURFACES, "track"] as const;
+type PreviewBackground = (typeof PREVIEW_BACKGROUNDS)[number];
+const PREVIEW_SURFACE_KEY = "paper-ui-preview-surface";
+
+const readPreviewBackground = (): PreviewBackground => {
+  try {
+    const stored = window.localStorage.getItem(PREVIEW_SURFACE_KEY);
+    if (stored === "well") {
+      window.localStorage.setItem(PREVIEW_SURFACE_KEY, "track");
+      return "track";
+    }
+    return PREVIEW_BACKGROUNDS.find((background) => background === stored) ?? "raised";
+  } catch {
+    return "raised";
+  }
+};
 
 // prop 토글 한 줄.
 //
@@ -81,7 +99,7 @@ const parseCodeState = (code: string, spec: CompSpec, previous: State): State | 
 };
 
 const expandCodePlaceholders = (code: string) => code
-  .replaceAll("<Box>…</Box>", "<Box surface=\"well\" radius=\"sm\" padding=\"sm\"><Text variant=\"caption\">내용</Text></Box>")
+  .replaceAll("<Box>…</Box>", "<Box surface=\"sunken\" radius=\"sm\" padding=\"sm\"><Text variant=\"caption\">내용</Text></Box>")
   .replaceAll("\n  …\n", "\n  <Text variant=\"caption\">A · B · C</Text>\n")
   .replaceAll("<Icon>…</Icon>", "<Icon><path d=\"M12 5v14M5 12h14\" /></Icon>")
   .replaceAll("<Breadcrumb>…</Breadcrumb>", "<Breadcrumb><Breadcrumb.Item>Components</Breadcrumb.Item><Breadcrumb.Item current>Component</Breadcrumb.Item></Breadcrumb>");
@@ -122,11 +140,16 @@ const CodeBlock = ({ code, onChange, error }: { code: string; onChange: (code: s
 // 상태를 든 몸통. slug 마다 remount(key) 돼 defaultState 로 새로 시작한다.
 const DetailView = ({ spec }: { spec: CompSpec }) => {
   const [state, setState] = useState<State>(() => defaultState(spec));
+  const [previewBackground, setPreviewBackground] = useState<PreviewBackground>(readPreviewBackground);
   const [draft, setDraft] = useState<string>();
   const [codeError, setCodeError] = useState<string>();
   const preview = useMemo(() => spec.render(state), [spec, state]);
   const generatedCode = useMemo(() => expandCodePlaceholders(spec.code(state)), [spec, state]);
   const code = draft ?? generatedCode;
+  const selectPreviewBackground = (background: PreviewBackground) => {
+    setPreviewBackground(background);
+    try { window.localStorage.setItem(PREVIEW_SURFACE_KEY, background); } catch { /* Keep the current page usable when storage is unavailable. */ }
+  };
   const set = (prop: string) => (v: string | boolean) => {
     setState((s) => ({ ...s, [prop]: v }));
     setDraft(undefined);
@@ -145,23 +168,37 @@ const DetailView = ({ spec }: { spec: CompSpec }) => {
 
   return (
     <Stack gap="xl" style={{ maxWidth: "52rem" }}>
-      {/* 머리 — 브레드크럼은 제목에 붙이고, 설명은 한 숨 띄운다 */}
-      <Stack gap="md">
-        <Stack gap="xs">
-          <Inline gap="xs" align="center">
-            <Text variant="caption" ink="faint" as="span">{spec.group}</Text>
-            <Text variant="caption" ink="faint" as="span">/</Text>
-            <Text variant="caption" ink="soft" as="span">Component</Text>
-          </Inline>
-          <Text variant="title">{spec.name}</Text>
-        </Stack>
-        <Text variant="body" ink="soft" style={{ maxWidth: "40rem" }}>{spec.blurb}</Text>
-      </Stack>
+      <PageHeader>
+        <PageHeader.Location><Inline gap="xs" align="center"><Text variant="caption" ink="faint" as="span">{spec.group}</Text><Text variant="caption" ink="faint" as="span">/</Text><Text variant="caption" ink="soft" as="span">Component</Text></Inline></PageHeader.Location>
+        <PageHeader.Content>
+          <PageHeader.Title>{spec.name}</PageHeader.Title>
+          <PageHeader.Description>{spec.blurb}</PageHeader.Description>
+        </PageHeader.Content>
+      </PageHeader>
 
       <div className="detail-body">
         {/* preview + code */}
         <Stack gap="md" style={{ minWidth: 0 }}>
-          <div className={`preview-stage${spec.preview === "flush" ? " preview-stage--flush" : ""}`}>{preview}</div>
+          <div className="preview-frame">
+            <Box surface={previewBackground === "track" ? undefined : previewBackground} className={`preview-stage${spec.preview === "flush" ? " preview-stage--flush" : ""}${previewBackground === "track" ? " preview-stage--track" : ""}`} data-preview-background={previewBackground}>{preview}</Box>
+            <div className="preview-surface-switcher" role="group" aria-label="미리보기 배경">
+              {PREVIEW_BACKGROUNDS.map((background) => (
+                <Box
+                  as="button"
+                  type="button"
+                  key={background}
+                  surface={background === "track" ? undefined : background}
+                  className={`preview-surface-button${background === "track" ? " preview-surface-button--track" : ""}`}
+                  aria-label={`${background} background`}
+                  aria-pressed={previewBackground === background}
+                  title={`${background} background`}
+                  onClick={() => selectPreviewBackground(background)}
+                >
+                  {previewBackground === background ? <Icon size="caption"><path d="m5 12 4 4L19 6" /></Icon> : null}
+                </Box>
+              ))}
+            </div>
+          </div>
           <Stack gap="xs">
             <Text variant="label">코드</Text>
             <CodeBlock code={code} onChange={editCode} error={codeError} />

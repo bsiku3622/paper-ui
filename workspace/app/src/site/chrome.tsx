@@ -99,13 +99,13 @@ export const DemoBar = () => (
       <Link to="/" style={{ textDecoration: "none", color: tokens.color.bg.canvas, display: "inline-flex" }} aria-label="Paper UI 홈">
         <Logo height={17} />
       </Link>
-      <Text variant="caption" as="span" style={{ color: tokens.color.bg.well }}>
+      <Text variant="caption" as="span" style={{ color: tokens.color.accent.primary.wash }}>
         데모 · 이슈 트래커
       </Text>
     </Banner.Content>
     <Banner.Action>
       <Link to="/" style={{ textDecoration: "none" }}>
-        <Text variant="caption" as="span" style={{ color: tokens.color.bg.canvas, fontWeight: tokens.text.weight.medium }}>
+        <Text variant="caption" as="span" style={{ color: tokens.color.bg.canvas, fontWeight: tokens.text.palette.weight.medium }}>
           ← 사이트로
         </Text>
       </Link>

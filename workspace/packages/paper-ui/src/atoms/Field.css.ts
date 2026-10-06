@@ -18,11 +18,6 @@ export const fieldWrap = style({
   borderStyle: "solid",
   borderColor: tokens.color.border.base,
   color: tokens.color.ink.primary,
-  fontFamily: tokens.text.font.sans,
-  lineHeight: tokens.text.leading.control,
-  // 사용자가 입력하는 값은 CTA 라벨보다 가볍게, 본문 자간으로 표시한다.
-  fontWeight: tokens.text.weight.normal,
-  letterSpacing: tokens.text.tracking.body,
   cursor: "text",
   transition: stateTransition("border-color", "background"),
   selectors: {
@@ -72,7 +67,7 @@ export const fieldInput = style({
   // control line-height(1)까지 물려받으면 브라우저 caret와 한글 fallback glyph가
   // 한 줄 상자에 눌려 위아래가 잘릴 수 있다. 입력 잉크에는 본문 행간을 주고 래퍼 안에서
   // 중앙 정렬해 caret 높이만 확보한다.
-  lineHeight: tokens.text.leading.body,
+  lineHeight: tokens.text.style.body.leading,
   letterSpacing: "inherit",
   color: "inherit",
   padding: 0,
@@ -86,7 +81,7 @@ export const fieldInput = style({
 });
 
 // size 3 단 — 베이스에서 **가로 여백만** inputPaddingX(7 · 9 · 12)로 갈아 끼운다.
-// height 와 글자는 베이스 그대로라 폼 한 줄에서 버튼과 같은 높이에 선다.
+// 글자 preset은 Field 역할의 class가 정하고 폼 한 줄의 높이는 Button과 공유한다.
 //
 // Field·Select·Textarea가 같은 form geometry를 공유한다. 자세한 계산은 tokens/shape.ts.
 export const fieldSize = styleVariants(
@@ -94,7 +89,7 @@ export const fieldSize = styleVariants(
 );
 
 export const fieldFontSize = styleVariants(
-  Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.text.size[variant] }])) as Record<TextVariant, { fontSize: string }>,
+  Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.text.style[variant].size }])) as Record<TextVariant, { fontSize: string }>,
 );
 
 // status — semantic Form은 accent solid 선으로 상태를 분명히 표시한다.

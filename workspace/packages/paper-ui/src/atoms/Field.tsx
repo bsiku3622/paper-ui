@@ -22,6 +22,7 @@ import {
 } from "react";
 
 import { joinClass } from "../internal/joinClass";
+import { resolveControlTypography } from "../resolvers";
 import type { StatusName, ControlSize, TextVariant } from "../tokens";
 import { Icon } from "../primitives";
 import { fieldWrap, fieldInput, fieldSize, fieldFontSize, fieldStatus, fieldSurface, fieldNumeric, fieldAlign, fieldAdornment, fieldAction, fieldPill } from "./Field.css";
@@ -134,7 +135,7 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
     // 진짜 컨트롤은 input 이라 role·키보드를 붙이는 게 오히려 틀리다.
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
-      className={joinClass(fieldWrap, fieldSurface[surface], fieldSize[size], fontSize && fieldFontSize[fontSize], shape === "pill" && fieldPill, status !== "default" && fieldStatus[status], className)}
+      className={joinClass(fieldWrap, fieldSurface[surface], fieldSize[size], resolveControlTypography("field", size), fontSize && fieldFontSize[fontSize], shape === "pill" && fieldPill, status !== "default" && fieldStatus[status], className)}
       style={style}
       data-testid={testid}
       data-pui-status={status}

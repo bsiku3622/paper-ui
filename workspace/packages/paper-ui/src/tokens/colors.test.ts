@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { PALETTE_TOKENS } from "./color-ladder";
+import { OKLCH_PALETTE, PALETTE_TOKENS } from "./palette";
 import { COLOR_VALUES, COLOR_VALUES_DARK, STATUS, STATUS_PALETTE } from "./colors";
-import { ACCENT_PALETTES, ALPHA_STEPS, OKLCH_PALETTE, PALETTE_STEPS } from "./palette";
+import { ACCENT_PALETTES, ALPHA_STEPS, PALETTE_STEPS } from "./palette";
 
 const leaves = (value: unknown): string[] =>
   typeof value === "string"
@@ -37,26 +37,26 @@ describe("color systems", () => {
       const dark = mode === "dark";
 
       expect(semantic.bg).toEqual({
-        raised: palette.neutral[dark ? "950" : "0"],
-        canvas: palette.neutral[dark ? "925" : "50"],
-        sunken: palette.neutral[dark ? "800" : "200"],
-        well: palette.neutral[dark ? "700" : "300"],
+        raised: palette.neutral[dark ? "925" : "0"],
+        canvas: palette.neutral[dark ? "950" : "50"],
+        sunken: palette.neutral[dark ? "950" : "100"],
       });
+      expect(semantic.control.track).toBe(palette.neutral[dark ? "900" : "200"]);
       expect(semantic.border).toEqual({
-        base: palette.neutral[dark ? "800" : "200"],
-        strong: palette.neutral[dark ? "700" : "300"],
-        hover: palette.neutral[dark ? "600" : "400"],
+        base: palette.neutral[dark ? "900" : "200"],
+        strong: palette.neutral[dark ? "800" : "300"],
+        hover: palette.neutral[dark ? "700" : "400"],
       });
       expect(semantic.ink).toEqual({
-        primary: palette.neutral[dark ? "0" : "950"],
+        primary: palette.neutral[dark ? "100" : "950"],
         secondary: palette.neutral[dark ? "400" : "700"],
-        tertiary: palette.neutral["500"],
+        tertiary: palette.neutral[dark ? "600" : "500"],
       });
       expect(semantic.accent.primary).toEqual({
-        solid: palette.neutral[dark ? "100" : "950"],
+        solid: palette.neutral[dark ? "300" : "950"],
         wash: palette.neutral[dark ? "950" : "0"],
-        soft: palette.neutral[dark ? "800" : "300"],
-        subtle: palette.neutral[dark ? "300" : "400"],
+        soft: palette.neutral[dark ? "900" : "300"],
+        subtle: palette.neutral[dark ? "500" : "400"],
       });
     }
   });
@@ -69,10 +69,10 @@ describe("color systems", () => {
         const generated = PALETTE_TOKENS.accent[palette];
         const accent = mode === "light" ? COLOR_VALUES.accent[status] : COLOR_VALUES_DARK.accent[status];
         expect(accent).toEqual({
-          solid: generated[dark ? "400" : "600"],
+          solid: generated[dark ? "300" : "600"],
           wash: generated[dark ? "950" : "50"],
-          soft: generated[dark ? "925" : "150"],
-          subtle: generated[dark ? "500" : "300"],
+          soft: generated[dark ? "950" : "150"],
+          subtle: generated[dark ? "400" : "300"],
         });
       }
     }

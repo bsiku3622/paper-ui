@@ -3,7 +3,7 @@ import { style, styleVariants } from "@vanilla-extract/css";
 import { tokens, stateTransition, TEXT_VARIANTS, type TextVariant } from "../tokens";
 import { ladderRules } from "../internal/sizeLadder";
 
-// 크기(height·fontSize·좌우 padding)는 size 축(selectSize)이 정한다 — Button·Field 와
+// 크기(height·좌우 padding)는 size 축(selectSize)이 정한다 — Button·Field 와
 // 같은 사다리를 그대로 가져온다. 오른쪽만 화살표 자리라 size 무관하게 넉넉히 고정.
 export const selectRoot = style({
   width: "100%",
@@ -13,11 +13,6 @@ export const selectRoot = style({
   borderStyle: "solid",
   borderColor: tokens.color.border.base,
   color: tokens.color.ink.primary,
-  fontFamily: tokens.text.font.sans,
-  lineHeight: tokens.text.leading.control,
-  // 사용자가 입력하는 값은 Button label보다 가볍게, 본문 자간으로 표시한다.
-  fontWeight: tokens.text.weight.normal,
-  letterSpacing: tokens.text.tracking.body,
   cursor: "pointer",
   appearance: "none",
   // 드롭다운 화살표는 background-image data-URI 라 currentColor 를 못 물려받는다(배경
@@ -79,7 +74,7 @@ export const selectSize = styleVariants(
 );
 
 export const selectFontSize = styleVariants(
-  Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.text.size[variant] }])) as Record<TextVariant, { fontSize: string }>,
+  Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.text.style[variant].size }])) as Record<TextVariant, { fontSize: string }>,
 );
 
 // 알약 — Field 와 같은 어휘. 화살표는 오른쪽 여백 24 안에 앉아 곡선과 안 부딪친다

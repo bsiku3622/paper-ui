@@ -59,7 +59,7 @@ const AppMockup = () => {
       <div className="home-mockup-bar">
         <Inline gap="xs">
           {[0, 1, 2].map((i) => (
-            <Box key={i} surface="well" radius="full" style={{ width: "0.6rem", height: "0.6rem" }} />
+            <Box key={i} surface="sunken" radius="full" style={{ width: "0.6rem", height: "0.6rem" }} />
           ))}
         </Inline>
         <Box surface="canvas" radius="full" paddingX="sm" style={{ marginInline: "auto", border: `1px solid ${tokens.color.border.base}` }}>
@@ -71,7 +71,7 @@ const AppMockup = () => {
         <aside className="home-mockup-side">
           <Inline gap="sm" align="center" style={{ paddingInline: tokens.shape.padding.sm.interaction }}>
             <Box style={{ width: "1.5rem", height: "1.5rem", borderRadius: tokens.shape.radius.interaction, background: tokens.color.ink.primary, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Text variant="caption" as="span" style={{ color: tokens.color.bg.canvas, fontWeight: tokens.text.weight.bold }}>S</Text>
+              <Text variant="caption" as="span" style={{ color: tokens.color.bg.canvas, fontWeight: tokens.text.palette.weight.bold }}>S</Text>
             </Box>
             <Text variant="subheading" as="span">Studio</Text>
           </Inline>
@@ -139,12 +139,12 @@ export const Home = () => (
             <Text variant="caption" ink="soft">Design System · v0.1.0</Text>
           </Inline>
 
-          <h1 className="home-headline">
+          <Text as="h1" variant="display" className="home-headline">
             복잡한 웹앱을 위한<br />
             조용한 바탕<span className="home-dot">.</span>
-          </h1>
+          </Text>
 
-          <Text variant="subheading" as="p" ink="soft" className="home-sub">
+          <Text variant="body" as="p" ink="soft" className="home-sub">
             서른여덟 개의 컴포넌트로 실제 화면을 세웁니다. 색은 의미가 있을 때만 쓰고, 구조는 빌드가 지킵니다 — 순백 위에 부드럽게.
           </Text>
 
@@ -172,7 +172,7 @@ export const Home = () => (
         <Inline gap="sm" align="center" wrap style={{ paddingBlock: tokens.shape.padding.lg.layout }}>
           <Text variant="caption" ink="soft">갤러리가 아니라 실제 화면(이슈 트래커)으로 검증합니다.</Text>
           <Link to="/demo" style={{ textDecoration: "none" }}>
-            <Text variant="caption" as="span" className="pui-info-ink" style={{ fontWeight: tokens.text.weight.medium }}>데모 열기 →</Text>
+            <Text variant="caption" as="span" className="pui-info-ink" style={{ fontWeight: tokens.text.palette.weight.medium }}>데모 열기 →</Text>
           </Link>
         </Inline>
 

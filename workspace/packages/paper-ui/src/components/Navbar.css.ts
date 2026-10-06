@@ -48,7 +48,6 @@ export const navItem = style({
   alignItems: "center",
   flexShrink: 0,
   borderRadius: tokens.shape.radius.interaction,
-  fontFamily: tokens.text.font.sans,
   color: tokens.color.ink.secondary,
   transition: stateTransition("background", "color"),
   selectors: { "&:hover": { color: tokens.color.ink.primary, background: tokens.color.interaction.bgHover.onSurface } },
@@ -59,7 +58,6 @@ export const navItem = style({
 // 에만 — 그건 포인터에 답하는 것이라 사라질 표시다.
 export const navItemActive = style({
   color: tokens.color.ink.primary,
-  fontWeight: tokens.text.weight.medium,
 });
 
 export const navbarBrand = style({ marginRight: tokens.shape.gap.lg, display: "inline-flex", alignItems: "center" });

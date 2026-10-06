@@ -3,7 +3,7 @@
 // Every semantic leaf selects a generated palette token. No semantic value contains a raw color,
 // performs color math, or reads another semantic branch.
 
-import { PALETTE_TOKENS, type PaletteToken } from "./color-ladder";
+import { PALETTE_TOKENS, type PaletteToken } from "./palette";
 import type { AccentPalette, ColorMode } from "./palette";
 
 export const STATUS = ["info", "success", "warning", "error"] as const;
@@ -30,16 +30,16 @@ const colorTokens = (mode: ColorMode) => {
   const { neutral, accent } = PALETTE_TOKENS;
   const isDark = mode === "dark";
   const primary: AccentToken = {
-    solid: neutral[isDark ? "100" : "950"],
+    solid: neutral[isDark ? "300" : "950"],
     wash: neutral[isDark ? "950" : "0"],
-    soft: neutral[isDark ? "800" : "300"],
-    subtle: neutral[isDark ? "700" : "400"],
+    soft: neutral[isDark ? "900" : "300"],
+    subtle: neutral[isDark ? "500" : "400"],
   };
   const accentToken = (palette: AccentPalette): AccentToken => ({
-    solid: accent[palette][isDark ? "400" : "600"],
+    solid: accent[palette][isDark ? "300" : "600"],
     wash: accent[palette][isDark ? "950" : "50"],
-    soft: accent[palette][isDark ? "925" : "150"],
-    subtle: accent[palette][isDark ? "800" : "300"],
+    soft: accent[palette][isDark ? "950" : "150"],
+    subtle: accent[palette][isDark ? "400" : "300"],
   });
 
   const accents: Record<AccentName, AccentToken> = {
@@ -53,21 +53,22 @@ const colorTokens = (mode: ColorMode) => {
   const whiteAlpha = (step: "05" | "10" | "15" | "30" | "45" | "60") => PALETTE_TOKENS[`alpha${step}`].neutral["0"];
 
   return {
+    // Dark surfaces use a narrow range: the page and inset cells recede, while panels lift gently.
     bg: {
-      raised: neutral[isDark ? "950" : "0"],
-      canvas: neutral[isDark ? "925" : "50"],
-      sunken: neutral[isDark ? "800" : "200"],
-      well: neutral[isDark ? "700" : "300"],
+      raised: neutral[isDark ? "925" : "0"],
+      canvas: neutral[isDark ? "950" : "50"],
+      sunken: neutral[isDark ? "950" : "100"],
     },
+    control: { track: neutral[isDark ? "900" : "200"] },
     border: {
-      base: neutral[isDark ? "800" : "200"],
-      strong: neutral[isDark ? "700" : "300"],
-      hover: neutral[isDark ? "600" : "400"],
+      base: neutral[isDark ? "900" : "200"],
+      strong: neutral[isDark ? "800" : "300"],
+      hover: neutral[isDark ? "700" : "400"],
     },
     ink: {
-      primary: neutral[isDark ? "0" : "950"],
+      primary: neutral[isDark ? "100" : "950"],
       secondary: neutral[isDark ? "400" : "700"],
-      tertiary: neutral[isDark ? "500" : "500"],
+      tertiary: neutral[isDark ? "600" : "500"],
     },
     accent: accents,
     interaction: {

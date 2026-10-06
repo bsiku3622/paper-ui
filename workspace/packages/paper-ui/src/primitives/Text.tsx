@@ -1,6 +1,6 @@
 // Text — 글자. variant 가 크기·굵기·잉크 농도를 한 번에 정하고, family 가 서체를 정한다.
 //
-// size/weight/color 를 따로 고르는 prop 은 없다. 7 개 목소리(variant) 중 하나를
+// size/weight/color 를 따로 고르는 prop 은 없다. Text 역할 variant 중 하나를
 // 고르는 것이 전부다 — 고를 게 없으면 화면이 저절로 일관된다. 서체만 family 축
 // (sans 기본 · mono)으로 교차한다.
 

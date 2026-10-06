@@ -10,7 +10,7 @@ import { joinClass } from "../internal/joinClass";
 import { resolveInk, type Ink } from "../resolvers";
 import { iconRoot, iconSize } from "./Icon.css";
 
-export const ICON_SIZES = ["label", "caption", "body", "subheading"] as const;
+export const ICON_SIZES = ["label", "caption", "body", "heading3"] as const;
 export type IconSize = (typeof ICON_SIZES)[number];
 
 export type IconProps = {

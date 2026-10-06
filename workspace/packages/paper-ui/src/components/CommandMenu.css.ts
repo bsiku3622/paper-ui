@@ -23,7 +23,6 @@ export const commandItem = style({
   borderRadius: tokens.shape.radius.interaction,
   background: "transparent",
   color: tokens.color.ink.primary,
-  fontFamily: tokens.text.font.sans,
   textAlign: "start",
   cursor: "pointer",
   transition: stateTransition("background"),

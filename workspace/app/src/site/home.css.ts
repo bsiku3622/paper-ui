@@ -20,11 +20,11 @@ globalStyle(".home-hero", {
 
 globalStyle(".home-headline", {
   margin: 0,
-  fontFamily: tokens.text.font.sans,
+  fontFamily: tokens.text.palette.family.sans,
   fontSize: "clamp(2.25rem, 6vw, 3.75rem)",
   lineHeight: 1.04,
   letterSpacing: "-0.035em",
-  fontWeight: tokens.text.weight.bold,
+  fontWeight: tokens.text.palette.weight.bold,
   color: tokens.color.ink.primary,
 });
 
@@ -75,7 +75,7 @@ globalStyle(".home-mockup-side", {
   flexDirection: "column",
   gap: tokens.shape.gap.md,
   padding: tokens.shape.padding.md.interaction,
-  // 사이드바는 well 로 가라앉는다 — 흰 본문과 대비해 ChatGPT 결(흰 메인 · 회색 사이드바).
+  // 사이드바는 sunken 으로 가라앉는다 — 흰 본문과 대비해 ChatGPT 결(흰 메인 · 회색 사이드바).
   //
   // ⚠ 선을 두르지 않는다. **면이 이미 나눈 자리에 선을 더하면 같은 말을 두 번 한다.**
   // 원칙 2("회색은 카드를 감싸지 않고 받친다")가 여기서도 그대로다 — 받치는 면은 자기
@@ -106,7 +106,7 @@ globalStyle(".home-navitem", {
   height: tokens.shape.height.sm.interaction,
   paddingInline: tokens.shape.padding.sm.interaction,
   borderRadius: tokens.shape.radius.interaction,
-  fontSize: tokens.text.size.body,
+  fontSize: tokens.text.style.body.size,
   color: tokens.color.ink.secondary,
 });
 
@@ -124,7 +124,7 @@ globalStyle(".home-filterhead", {
 globalStyle(".home-navitem[data-active='true']", {
   background: tokens.color.interaction.selected,
   color: tokens.color.ink.primary,
-  fontWeight: tokens.text.weight.medium,
+  fontWeight: tokens.text.palette.weight.medium,
 });
 
 // 하단 요약 한 줄 — 카드 나열이 아니라 인라인 사실들.

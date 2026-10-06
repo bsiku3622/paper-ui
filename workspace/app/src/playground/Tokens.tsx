@@ -2,11 +2,10 @@
 
 import { useParams } from "react-router-dom";
 
-import { Box, Button, Inline, PageHeader, Stack, Text, tokens, useResolvedTheme } from "@studio-baeks/paper-ui";
+import { Box, Button, Inline, PageHeader, Stack, Text, tokens, useResolvedTheme, resolveControlTypography, type TextVariant, type ControlSize } from "@studio-baeks/paper-ui";
 
 import { COLOR_VALUES, COLOR_VALUES_DARK } from "../../../packages/paper-ui/src/tokens/colors";
-import { PALETTE_TOKENS } from "../../../packages/paper-ui/src/tokens/color-ladder";
-import { ACCENT_STEPS } from "../../../packages/paper-ui/src/tokens/palette";
+import { ACCENT_STEPS, PALETTE_TOKENS } from "../../../packages/paper-ui/src/tokens/palette";
 import { PlaygroundLayout, Crumb } from "./shell";
 import { FOUNDATION_SECTIONS } from "./foundation-sections";
 import "./foundations.css";
@@ -33,6 +32,30 @@ const ValueRow = ({ name, value, sample }: { name: string; value: string; sample
   </Inline>
 );
 
+type TypographyPaletteGroup = "fontSize" | "weight" | "leading" | "tracking" | "family";
+const SIZE_LEADING: Record<string, keyof typeof tokens.text.palette.leading> = {
+  "12": "16",
+  "13": "16",
+  "14": "20",
+  "16": "24",
+  "20": "28",
+  "24": "32",
+  "32": "40",
+};
+const TypographyPaletteSpecimen = ({ group, name, value }: { group: TypographyPaletteGroup; name: string; value: string }) => {
+  const sample = group === "fontSize" ? "Aa 가나다 0123"
+    : group === "weight" ? "Aa 가나다 0123"
+      : group === "leading" ? <>한 줄과 다음 줄의 간격을<br />눈으로 확인합니다.</>
+        : group === "tracking" ? "TRACKING · 가나다"
+          : "Aa 가나다 0123";
+  const style: React.CSSProperties = group === "fontSize" ? { fontSize: value, lineHeight: tokens.text.palette.leading[SIZE_LEADING[name]!] }
+    : group === "weight" ? { fontWeight: value }
+      : group === "leading" ? { lineHeight: value }
+        : group === "tracking" ? { letterSpacing: value }
+          : { fontFamily: value, fontSize: name === "mono" ? `calc(${tokens.text.palette.fontSize["14"]} * ${tokens.text.palette.monoSizeScale})` : tokens.text.palette.fontSize["14"] };
+  return <Text className={`foundation-typography-specimen foundation-typography-palette-specimen foundation-typography-specimen--${group}`} variant="body" ink="base" style={style}>{sample}</Text>;
+};
+
 type ColorRow = { token: string; description: string; light: string; dark: string };
 const semanticRows = (branch: "bg" | "ink" | "border", names: readonly string[], descriptions: Record<string, string>): ColorRow[] =>
   names.map((name) => ({
@@ -43,7 +66,10 @@ const semanticRows = (branch: "bg" | "ink" | "border", names: readonly string[],
   }));
 
 const COLOR_GROUPS: { title: string; description: string; rows: ColorRow[] }[] = [
-  { title: "Background", description: "Surface depth and neutral interaction context.", rows: semanticRows("bg", ["canvas", "raised", "sunken", "well"], { canvas: "Default page surface", raised: "Cards and floating surfaces", sunken: "Recessed controls and grouped areas", well: "Deep inset surface" }) },
+  { title: "Background", description: "Page and container surface depth.", rows: semanticRows("bg", ["canvas", "raised", "sunken"], { canvas: "Default page surface", raised: "Cards and floating surfaces", sunken: "Recessed areas" }) },
+  { title: "Control", description: "Dedicated surfaces inside interactive controls.", rows: [
+    { token: "control.track", description: "Switch and SegmentedControl track", light: COLOR_VALUES.control.track, dark: COLOR_VALUES_DARK.control.track },
+  ] },
   { title: "Text", description: "Content hierarchy across surfaces.", rows: semanticRows("ink", ["primary", "secondary", "tertiary"], { primary: "Main content and headings", secondary: "Supporting content", tertiary: "Metadata and low emphasis" }) },
   { title: "Border", description: "Structural boundaries and emphasis.", rows: semanticRows("border", ["base", "strong", "hover"], { base: "Default component boundary", strong: "Higher contrast boundary", hover: "Boundary emphasis on pointer hover" }) },
   { title: "Interaction", description: "State overlays and keyboard focus.", rows: [
@@ -130,8 +156,31 @@ const PaletteMatrix = () => {
 
 const ACCENTS = ["primary", "info", "success", "warning", "error"] as const;
 const LADDER = ["solid", "wash", "soft", "subtle"] as const;
-const TEXT_VARIANTS = ["display", "title", "heading", "subheading", "body", "caption", "label"] as const;
-const WEIGHTS = ["regular", "normal", "medium", "semibold", "bold"] as const;
+const TEXT_SAMPLES = {
+  display: "복잡한 화면을 더 명확하게",
+  title: "큰 흐름을 한눈에 보여줍니다",
+  heading: "필요한 정보에 집중할 수 있도록",
+  subheading: "작업의 맥락을 놓치지 않게",
+  body: "팀의 진행 상황과 다음 할 일을 한곳에서 확인하세요.",
+  caption: "마지막 수정 · 오늘 오전 10:42",
+  label: "담당자 · 진행 상태 · 마감일",
+} satisfies Record<TextVariant, string>;
+const TEXT_ROLE_DESCRIPTIONS: Record<TextVariant, string> = {
+  display: "랜딩 헤드라인",
+  title: "페이지 제목",
+  heading: "섹션 제목",
+  subheading: "작은 제목",
+  body: "읽기 본문",
+  caption: "보조 정보",
+  label: "짧은 이름",
+};
+const TEXT_VARIANTS = Object.keys(tokens.text.style) as TextVariant[];
+const CONTROL_PRESET_ROWS = [
+  { role: "Button · regular", path: "button.regular", token: (size: ControlSize) => tokens.text.control.button.regular[size], style: (size: ControlSize) => resolveControlTypography("button", size, "regular"), sample: "Continue" },
+  { role: "Button · strong", path: "button.strong", token: (size: ControlSize) => tokens.text.control.button.strong[size], style: (size: ControlSize) => resolveControlTypography("button", size, "strong"), sample: "Save changes" },
+  { role: "Field · Input / Select", path: "field", token: (size: ControlSize) => tokens.text.control.field[size], style: (size: ControlSize) => resolveControlTypography("field", size), sample: "Search projects" },
+  { role: "Textarea", path: "textarea", token: (size: ControlSize) => tokens.text.control.textarea[size], style: (size: ControlSize) => resolveControlTypography("textarea", size), sample: "Add a description" },
+] as const;
 
 const findPaletteToken = (color: string): string => {
   const visit = (value: unknown, path: string[]): string | undefined => {
@@ -166,11 +215,69 @@ export const Tokens = () => {
 
           {section[0] === "typography" && <Section id="typography">
             <Stack className="foundation-subsection" gap="md">
-              <Text variant="heading">Type scale</Text>
-              <Stack className="foundation-type-list" gap="sm">{TEXT_VARIANTS.map((variant) => <Inline key={variant} className="foundation-type-row" align="baseline" gap="md"><Text as="code" variant="caption" family="mono" ink="faint">text.{variant}</Text><Text variant={variant}>{variant === "display" || variant === "title" ? "Aa 가나다 0123" : "Aa · 가나다 · 0123"}</Text><Text variant="caption" family="mono" ink="faint">{val(tokens.text.size[variant])}</Text></Inline>)}</Stack>
+              <Stack gap="xs"><Text variant="heading">Typography Palette</Text><Text variant="body" ink="soft">Text와 Control preset이 함께 참조하는 원본 값입니다.</Text></Stack>
+              <Box className="foundation-type-board foundation-typography-palette-board" surface="raised" border radius="lg" padding="md">
+              <div className="foundation-typography-palette-header"><Text variant="label" ink="base">Token</Text><Text variant="label" ink="base">Specimen</Text><Text variant="label" ink="base">Value</Text></div>
+                {(["fontSize", "weight", "leading", "tracking", "family"] as const).map((group) => {
+                  const values = tokens.text.palette[group] as Record<string, string>;
+                  const labels: Record<typeof group, string> = { fontSize: "Font size", weight: "Weight", leading: "Leading", tracking: "Tracking", family: "Family" };
+                  return <div className="foundation-typography-palette-group" key={group}>
+                    <Text className="foundation-typography-palette-group-label" variant="label" ink="soft">{labels[group]}</Text>
+                    {Object.entries(values).map(([name, value]) => <div className="foundation-typography-palette-row" key={`${group}-${name}`}>
+                      <Text className="foundation-typography-palette-token" as="code" variant="caption" family="mono" ink="base">text.palette.{group}.{name}</Text>
+                      <TypographyPaletteSpecimen group={group} name={name} value={value} />
+                      <Text className="foundation-typography-palette-value" variant="caption" family="mono" ink="base">{val(value)}</Text>
+                    </div>)}
+                  </div>;
+                })}
+              </Box>
             </Stack>
-            <Inline className="foundation-weight-list" gap="lg" wrap>{WEIGHTS.map((weight) => <Stack key={weight} gap="xs"><Text variant="body" style={{ fontWeight: tokens.text.weight[weight] }}>Paper UI · {weight}</Text><Text as="code" variant="caption" family="mono" ink="faint">{weight} · {val(tokens.text.weight[weight])}</Text></Stack>)}</Inline>
-            <Inline gap="xl" wrap><Stack gap="xs"><Text variant="heading" family="sans">Aa 가나다 0123</Text><Text variant="caption" ink="soft">sans · default</Text></Stack><Stack gap="xs"><Text variant="heading" family="mono">Aa 0123</Text><Text variant="caption" ink="soft">mono · code and numeric labels</Text></Stack></Inline>
+            <Stack className="foundation-subsection" gap="md">
+              <Stack gap="xs"><Text variant="heading">Type scale</Text><Text variant="body" ink="soft">페이지 제목부터 보조 정보까지, 화면에서 맡은 역할로 크기와 굵기를 고릅니다.</Text></Stack>
+              <Box className="foundation-type-board" surface="raised" border radius="lg" padding="md">
+                <div className="foundation-type-header"><Text variant="label" ink="base">Role</Text><Text variant="label" ink="base">Specimen</Text><Text variant="label" ink="base">Weight</Text><Text variant="label" ink="base">Size / leading</Text></div>
+                <div className="foundation-type-list">{TEXT_VARIANTS.map((variant) => {
+                  const size = val(tokens.text.style[variant].size);
+                  const leading = val(tokens.text.style[variant].leading);
+                  const weight = val(tokens.text.style[variant].weight);
+                  const px = (value: string) => value.match(/([\d.]+px)$/)?.[1] ?? value;
+                  return <div key={variant} className="foundation-type-row">
+                    <Stack className="foundation-type-role" gap="xs"><Text as="code" variant="caption" family="mono" ink="base">text.{variant}</Text><Text variant="caption" ink="base">{TEXT_ROLE_DESCRIPTIONS[variant]}</Text></Stack>
+                    <Text as="p" variant={variant} ink="base" className="foundation-type-sample">{TEXT_SAMPLES[variant]}</Text>
+                    <Text className="foundation-type-weight" variant="caption" family="mono" ink="base">{weight}</Text>
+                    <Text className="foundation-type-measure" variant="caption" family="mono" ink="base" title={`${size} / ${leading}`}>{px(size)} / {px(leading)}</Text>
+                  </div>;
+                })}</div>
+              </Box>
+              <Stack gap="xs"><Text variant="heading">Control presets</Text><Text variant="body" ink="soft">비슷한 컴포넌트는 같은 완성 typography class를 공유합니다. size는 geometry와 함께 선택됩니다.</Text></Stack>
+              <Box className="foundation-control-type-board" surface="raised" border radius="lg" padding="md">
+                <div className="foundation-control-type-header"><Text variant="label" ink="base">Preset</Text>{(["sm", "md", "lg"] as const).map((size) => <Text key={size} variant="label" ink="base">{size}</Text>)}</div>
+                {CONTROL_PRESET_ROWS.map((row) => <div className="foundation-control-type-row" key={row.path}>
+                  <Stack gap="xs"><Text as="code" variant="caption" family="mono" ink="base">text.control.{row.path}</Text><Text variant="caption" ink="soft">{row.role}</Text></Stack>
+                  {(["sm", "md", "lg"] as const).map((size) => {
+                    const spec = row.token(size);
+                    const px = (value: string) => val(value).match(/([\d.]+px)$/)?.[1] ?? val(value);
+                    return <Stack className="foundation-control-type-cell" key={size} gap="xs">
+                      <span className={row.style(size)}>{row.sample}</span>
+                      <Text variant="caption" family="mono" ink="faint">{px(spec.size)} / {px(spec.leading)} · {val(spec.weight)}</Text>
+                    </Stack>;
+                  })}
+                </div>)}
+                <div className="foundation-control-type-row foundation-control-type-states">
+                  <Stack gap="xs"><Text as="code" variant="caption" family="mono" ink="base">text.control.navigation</Text><Text variant="caption" ink="soft">Sidebar · Tree · Menu · Navbar · Command</Text></Stack>
+                  <Stack className="foundation-control-type-cell" gap="xs"><span className={resolveControlTypography("navigation", "regular")}>Navigation item</span><Text variant="caption" family="mono" ink="faint">14 / 20 · 450</Text></Stack>
+                  <Stack className="foundation-control-type-cell" gap="xs"><span className={resolveControlTypography("navigation", "active")}>Active item</span><Text variant="caption" family="mono" ink="faint">14 / 20 · 500</Text></Stack>
+                  <Stack className="foundation-control-type-cell" gap="xs"><span className={resolveControlTypography("navigation", "groupLabel")}>Group label</span><Text variant="caption" family="mono" ink="faint">13 / 16 · 600 · +0.01em</Text></Stack>
+                </div>
+                <div className="foundation-control-type-row foundation-control-type-fixed">
+                  <Stack gap="xs"><Text as="code" variant="caption" family="mono" ink="base">text.control.badge / tooltip</Text><Text variant="caption" ink="soft">크기와 무관한 역할</Text></Stack>
+                  <Stack className="foundation-control-type-cell" gap="xs"><span className={resolveControlTypography("badge")}>In progress</span><Text variant="caption" family="mono" ink="faint">badge · 12 / 16 · 500</Text></Stack>
+                  <Stack className="foundation-control-type-cell" gap="xs"><span className={resolveControlTypography("tooltip", "regular")}>Tooltip text</span><Text variant="caption" family="mono" ink="faint">tooltip · 12 / 16 · 450</Text></Stack>
+                  <Stack className="foundation-control-type-cell" gap="xs"><span className={resolveControlTypography("button", "md", "regular")}>Tab · segmented</span><Text variant="caption" family="mono" ink="faint">action · 13 / 16 · 500</Text></Stack>
+                </div>
+              </Box>
+              <Text variant="caption" ink="soft">공유 매핑: Tab·Segmented → Button regular · md, Navbar·Command → Navigation active, Banner·Table of Contents 기본 → Text caption</Text>
+            </Stack>
           </Section>}
 
           {section[0] === "spacing" && <Section id="spacing">

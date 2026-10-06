@@ -16,11 +16,6 @@ export const textareaRoot = style({
   borderStyle: "solid",
   borderColor: tokens.color.border.base,
   color: tokens.color.ink.primary,
-  fontFamily: tokens.text.font.sans,
-  // 입력값은 CTA 라벨과 구분해 normal weight와 본문 자간으로 표시한다.
-  fontWeight: tokens.text.weight.normal,
-  letterSpacing: tokens.text.tracking.body,
-  lineHeight: tokens.text.leading.body,
   resize: "vertical",
   transition: stateTransition("border-color", "box-shadow", "background"),
   selectors: {
@@ -60,5 +55,5 @@ export const textareaSize = styleVariants(
 );
 
 export const textareaFontSize = styleVariants(
-  Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.text.size[variant] }])) as Record<TextVariant, { fontSize: string }>,
+  Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.text.style[variant].size }])) as Record<TextVariant, { fontSize: string }>,
 );

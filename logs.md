@@ -1,3 +1,197 @@
+## 2026-10-06 — Document the current Paper UI implementation
+
+- 변경 파일: Reports의 `2026-10-06_01-49-paper-ui-implementation-report.tex`, 동명 PDF·Markdown 및 `logs.md`; 제품 구현 변경 없음
+- 요약: 미커밋 작업 트리를 포함해 Paper UI 전체를 19개 장·3개 부록·36쪽 보고서로 분석했습니다. [보고서](</Users/baeks/Reports/2026-10-06_01-49-paper-ui-implementation-report.pdf>)
+
+파일별 코드 나열 대신 철학과 닫힌 어휘, palette의 생성·semantic 매핑, token 참조·CSS emission, typography와 geometry의 분리, native DOM·compound 상태·접근성 관계, theme context와 portal, 개발 앱·배포·검증의 연결을 설명했습니다. 기준 HEAD는 `6c2c80941e0f6baf93f704d80e3925d4b152ccc1`이며 조사 시작의 tracked 수정 74개와 untracked 3개를 모두 포함했습니다. registry는 실제 5/13/10/11 분포의 39개 항목으로 확인했습니다. 과거 docs·주석·테스트의 수치를 현재 구현값의 근거로 삼으면 잘못된 설명이 생기므로 의도·관찰·해석을 구분했습니다.
+
+`pnpm -r typecheck`·단위 테스트 13파일/45개·library/app production build는 통과했습니다. Lint는 Tokens inspector의 private colors/palette import 2건, Chromium E2E는 53개 중 23개가 실패했습니다. 의도된 palette·size 갱신과 검토가 필요한 여백·border 관계를 구분했으며, semantic hover 검사는 첫 border assertion에서 멈춰 후속 shadow 부재는 source에서 확인했습니다. 제품 source나 테스트를 수정하여 통과시키지 않았습니다.
+
+myformats-latex의 기본 article·kotex·A4·2.5cm 여백·표지 전용 페이지·번호 인용 양식을 적용했습니다. native compiler와 pdfLaTeX 빌드가 성공했고 전체 페이지 overview 및 표지·밀집 본문·References를 렌더링해 확인했습니다. Overfull·missing glyph·미해결 인용은 없습니다. 원본은 Reports, 전달 PDF/TeX 사본은 Downloads, Git diff·status·untracked source 스냅샷과 검증·조판 중간 파일은 Bufs에 보존했습니다.
+
+## 2026-10-02 — Propose cross-app Shape and Typography contracts
+
+- 변경 파일: `/Users/baeks/Reports/Paper UI Cross-App System Proposal 2026-10-02.tex`, 동명 PDF; 제품 구현 변경 없음
+- 요약: Doodle·BOM Manager·Todos(daily-todo)·Books(booklog)·Cyclone Atlas(typhoon-atlas)의 source와 로컬 화면을 비교하고 Shape·Typography·컴포넌트 외형·적용 순서를 15쪽 보고서로 제안했습니다. [보고서](</Users/baeks/Reports/Paper UI Cross-App System Proposal 2026-10-02.pdf>)
+
+전역 Dense 모드보다 컨트롤 recipe가 Typography와 Shape 및 root/input/icon slot을 함께 선택하도록 만드는 것이 우선입니다. 반복 행의 density, 실제 hit area, Prose 읽기 리듬, 앱의 콘텐츠 좌표를 분리해야 Books의 116px media 행과 BOM의 52px 편집 행을 예외 토큰으로 늘리지 않고 설명할 수 있습니다. 현재 Text Ladder와 32px 기본 컨트롤을 출발점으로 유지하고, Field/Select/Textarea에는 20px value leading과 첫 줄 정렬을 명시하는 안을 제안했습니다. ListRow·Toolbar·Prose·Toast 등 반복된 공백은 공통화 후보, 책 표지·캔버스·지도/차트 등 domain 형태는 앱 소유로 남겼습니다.
+
+소비 앱의 같은 0.1.0 표기가 같은 패키지 내용은 아니었습니다. 네 앱과 BOM의 설치 CSS fingerprint가 다르며 Atlas는 html 14px로 인해 의도한 13px가 11.375px로 축소됩니다. 10월 1일 검토의 BOM 66px 행/root 축소 문제는 현재 52px 토큰/16px root로 정리되어 있어 현행 결함으로 재기록하지 않았습니다. 이 버전·단위 차이를 baseline 정렬 전에 사다리 평가의 근거로 삼으면 잘못된 결론이 생깁니다.
+
+데스크톱 1280×720 light 화면·computed style을 확인했습니다. 모바일은 source만 조사했고 viewport 도구가 실제 크기를 바꾸지 못해 실행 검증은 하지 못했습니다. dark 전체·접근성·실사용 흐름의 전수 검증도 수행하지 않았습니다. 제품 테스트는 실행하지 않았으며 조사용 dev server 다섯 개는 종료했습니다. native compiler와 pdfLaTeX 빌드가 성공했고 표지·밀집 표·시각 예시·코드·References를 렌더링하여 확인했습니다. overfull/미해결 참조는 없으며 원본은 Reports, 전달 사본은 Downloads, 조사·조판 중간 파일은 Bufs에 보존합니다.
+
+## 2026-10-02 — Review typography contracts and component usage
+
+- 변경 파일: `/Users/baeks/Reports/Paper UI Typography Review 2026-10-02.tex`, 동명 PDF; 제품 구현 변경 없음
+- 요약: Typography Palette·Text·Control·CSS 생성·전체 컴포넌트·소비 앱의 경로를 조사하고 12쪽 보고서를 작성했습니다. [보고서](</Users/baeks/Reports/Paper UI Typography Review 2026-10-02.pdf>)
+
+현재 사다리와 Palette 기반은 유지할 가치가 있습니다. 다만 수치가 같다는 이유로 Navbar/Command의 기본 문구를 navigation.active, TOC의 활성 문구를 button regular에 묶으면 의미가 다른 역할이 함께 바뀝니다. 물리적 CSS 중복 제거와 semantic 역할 합병을 분리하는 것이 개선의 중심입니다. 전역 body는 400, Text body는 500이며 Field wrapper leading 16과 실제 input leading 20도 달랐습니다. Textarea padding의 19.5px line-box 가정은 현행 20px과 어긋납니다. 450·650은 현재 preset에서 실제 사용 중이므로 미사용 단계로 삭제할 이유는 없습니다.
+
+Typecheck·패키지 build는 통과했습니다. 관련 E2E 10개 중 8개가 통과했고 입력=본문 weight라는 과거 assertion과 Textarea 여백 근사 관계가 실패했습니다. 전자는 현행 역할 차이, 후자는 geometry 산식 갱신 문제로 구분했습니다. Lint는 Tokens.tsx의 기존 colors/palette import 제한 위반 2개로 실패했습니다. navigation size를 999로 바꾼 격리 복사본도 strict typecheck를 통과하여 leaf 검증 공백을 재현했습니다. native compiler·pdfLaTeX 컴파일 및 표지·밀집 본문·References 조판 검사가 성공했고 overfull/미해결 참조는 없습니다. Reports에 원본, Downloads에 전달 사본, Bufs에 검증용 파일을 보존합니다.
+
+## 2026-10-01 — Review Shape contracts through BOM Manager
+
+- 변경 파일: `/Users/baeks/Reports/Paper UI Shape System Review 2026-10-01.tex`, 동명 PDF; 공유 라이브러리 변경 없음
+- 요약: BOM Manager 디자인 정돈 중 Shape·Typography·문서·소비 CSS의 계약을 비교하고 5쪽 보고서를 작성했습니다. [보고서](/Users/baeks/Reports/Paper%20UI%20Shape%20System%20Review%202026-10-01.pdf)
+
+`AGENTS.md`의 radius 6/md height 34와 실제 Shape의 8/32가 다릅니다. Textarea padding 계산은 19.5px line box와 3.25px 반 줄 여백을 전제로 하지만 현재 preset은 13/20 또는 14/20입니다. 다만 실제 glyph 잉크 실측과 line-box 모델을 혼동하면 안 되며, Field 첫 줄 정렬과 사방 같은 여백을 동시에 만족시키는 조건도 먼저 정해야 합니다. 소비 앱의 66px td 높이는 Table comfortable 52px을 무효화했고, root body font-size는 rem 크기를 암묵적으로 축소했습니다. 이 둘은 토큰 자체 결함과 구분해 소비 위험으로 기록했습니다.
+
+공유 시스템의 값 변경은 후속 판단으로 남겼습니다. native LaTeX compiler와 pdfLaTeX 빌드가 성공했고 표지·밀집 본문·References를 렌더링해 확인했습니다. 긴 파일 경로는 `\path`로 줄바꿈하여 overfull과 미해결 참조를 없앴습니다. 출력 사본은 Downloads, 원본은 Reports, 빌드 중간 파일은 Bufs에 보존합니다.
+
+## 2026-09-29 — Keep light well at neutral.200
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/colors.ts`, `colors.test.ts`, 색 토큰 설명 문서
+- 요약: 라이트 `bg.well`을 `neutral.150`으로 시각 비교한 뒤 `neutral.200`으로 되돌렸습니다. 다크 매핑은 그대로입니다.
+
+스크린샷의 트랙 배경 `#eeeef0`은 현행 팔레트에 없고 옛 `neutral.200` 값이었습니다. 현행 ramp에서 가장 가까운 `neutral.150`(`#ececee`)을 Switch·SegmentedControl과 preview surface에 적용해 봤지만, 컨트롤 트랙은 `neutral.200`(`#e5e5e7`)의 분리가 더 적절하다는 판단으로 되돌렸습니다. `well`을 범용 surface로 둘지는 별도 semantic API 결정으로 남깁니다.
+
+## 2026-09-29 — Add persistent surface comparison to previews
+
+- 변경 파일: `workspace/app/src/playground/Detail.tsx`, `detail.css.ts`, `workspace/tests/detail-surface.spec.ts`
+- 요약: 컴포넌트 상세 preview 왼쪽 상단에 네 surface 색상 버튼을 추가하고, 선택을 페이지 이동과 새로고침 뒤에도 유지하도록 했습니다.
+
+선택값은 컴포넌트별 prop 상태와 달리 공유해야 하므로 keyed `DetailView`가 다시 생성될 때 localStorage에서 읽습니다. 버튼은 각 surface 자체를 배경으로 보여주고 현재 선택에만 체크를 그립니다. Table의 flush preview에는 toolbar 높이만큼 위쪽 공간을 둬 표 머리와 겹치지 않게 했습니다.
+
+## 2026-09-29 — Keep well on control tracks after comparison
+
+- 변경 파일: `workspace/packages/paper-ui/src/atoms/Switch.css.ts`, `workspace/packages/paper-ui/src/molecules/SegmentedControl.css.ts`
+- 요약: 두 컨트롤의 트랙을 `bg.sunken`으로 비교한 뒤 `bg.well`로 되돌렸습니다.
+
+별도 깊이 토큰 없이도 트랙이 읽히는지 라이트·다크 preview에서 확인했습니다. SegmentedControl은 선택 면과 트랙이 구별됐지만, 꺼진 Switch는 라이트에서 너무 옅어졌고 다크에서도 손잡이와 주변 raised 면의 차이가 작아졌습니다. 라이트 `well=neutral.200`을 유지한 채 두 트랙에 다시 적용했습니다.
+
+## 2026-09-29 — Rebalance light inset surfaces
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/colors.ts`, `colors.test.ts`, 색 토큰 설명 문서
+- 요약: 라이트 `bg.sunken`을 `neutral.200`에서 `neutral.100`, `bg.well`을 `neutral.300`에서 `neutral.200`으로 옮겼습니다.
+
+다크 매핑을 검토하며 반복되는 inset 면이 정보보다 먼저 보이지 않도록 명도 차이를 좁혔습니다. 같은 원칙을 라이트에도 적용해 `canvas.50 → sunken.100 → well.200` 순서로 정리했습니다. 각 면은 여전히 구별되고, 다크 토큰은 그대로 유지했습니다.
+
+## 2026-09-29 — Calm the dark semantic color mapping
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/colors.ts`, `colors.test.ts`, 색 토큰 설명 문서
+- 요약: 다크 전용 surface를 좁은 neutral 단계로 다시 매핑해 canvas 위에 raised가 미묘하게 떠 보이도록 하고, border·텍스트·accent 면과 primary control의 대비를 낮췄습니다.
+
+`canvas`와 `sunken`은 같은 가장 어두운 step을 사용합니다. 두 토큰은 같은 화면에서 역할이 다르지만, 반복되는 inset 셀이 카드처럼 튀지 않도록 색 차이를 강제하지 않는 선택입니다. `raised`는 한 단계만 밝히고 `well`도 기존보다 어둡게 내려 큰 면의 깊이를 선이 아닌 명도로 읽히게 했습니다. 이 변경은 semantic 매핑에 한정하며 palette source나 컴포넌트 스타일은 바꾸지 않았습니다.
+
+## 2026-09-29 — Consolidate Control typography presets
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/text.ts`, typography resolver/styles, control atoms·navigation consumers, Table, Typography Playground, `docs/foundations/tokens.md`, `AGENTS.md`
+- 요약: 전체 컴포넌트의 font-size·weight·leading·tracking 조합을 대조해 중복 preset family를 13개에서 6개로 줄였습니다. Field(Input·Select), Navigation(Menu·Sidebar·Tree·Navbar·Command), Button action(Tab·Segmented 포함)을 공유하고, Badge의 가짜 size별 typography를 하나의 고정 preset으로 통합했습니다. Banner·TableOfContents의 기본 글자는 Control 토큰 대신 Text caption을 사용합니다.
+
+값이 같다는 이유만으로 의미가 다른 스타일을 한 군데로 억지로 합치지 않고, 실제 소비 컴포넌트가 같은 역할을 수행하는지 확인해 매핑했습니다. Text caption과 Navigation active는 숫자 조합이 일부 겹쳐도 잉크 색상과 상태 의미가 다르므로 서로 독립적으로 유지합니다. Table cell의 단일 font-size 지정도 완성된 Text body class로 바꿔 나머지 속성 누락을 막았습니다. `pnpm typecheck`와 패키지 build는 통과했습니다. `pnpm lint`는 기존 `Tokens.tsx`의 palette/colors 직접 import 제한 두 건에서 실패했습니다.
+
+## 2026-09-28 — Apply role-based Typography preset classes
+
+- 변경 파일: Typography token/preset resolver, control atoms·navigation components, Typography Playground, docs/foundations/tokens.md
+- 요약: Control Typography를 button/input/select/textarea/badge와 navigation·menu·tab 등 역할별 완성 preset으로 나누고 resolveControlTypography()가 CSS class 하나를 반환하도록 연결했습니다. sizeLadder는 Shape geometry만 소유하며 Playground에는 역할×크기 비교표를 추가했습니다.
+
+폰트 속성을 컴포넌트마다 네 개씩 복사하던 구조에서는 역할별 weight·leading 차이가 흩어져 있고 빠뜨려도 알기 어려웠습니다. 각 프리셋의 원본 조합은 tokens/text.ts, Palette CSS variable 참조는 tokens/index.ts, 완성 클래스 생성은 styles/typography.css.ts에 둡니다. 처음 화면 검토에서 raw 숫자 "16"을 CSS line-height로 넣어 브라우저가 16배로 해석하는 걸 발견했습니다. 클래스 생성은 반드시 tokens.text.control.* variable refs를 사용해야 합니다. pnpm typecheck와 package build를 통과했고 Playground에서 실제 computed font/line-height 및 표 배치를 확인했습니다.
+
+## 2026-09-28 — Make palette assembly own the dependency direction
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/palette.ts`, `color-ladder.ts`, `colors.ts`, `tokens/index.ts`, Palette/Tokens playground, color architecture docs
+- 요약: `color-ladder.ts`를 palette 데이터를 모르는 순수 계산 모듈로 바꾸고, `palette.ts`가 generator 함수로 완성된 `OKLCH_PALETTE`와 `PALETTE_TOKENS`를 조립해 내보내도록 했습니다.
+
+Semantic colors는 이제 완성된 palette facade만 참조합니다. Palette inspector도 원본 anchor와 중간 생성 좌표를 같은 export에서 읽습니다. 순환 import를 피하면서 palette를 조립하는 책임이 이름 그대로 palette 모듈에 드러나도록 했습니다.
+
+## 2026-09-27 — Move neutral ramp generation into color ladder
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/palette.ts`, `workspace/packages/paper-ui/src/tokens/color-ladder.ts`, `workspace/packages/paper-ui/src/tokens/colors.test.ts`, `workspace/app/src/playground/Palette.tsx`
+- 요약: Neutral anchor 보간을 `color-ladder.ts`로 옮겨 Neutral·Accent의 ramp 생성 책임을 한곳으로 모았습니다.
+
+Palette source에는 neutral anchors와 accent anchors만 두고, 완성된 neutral 좌표는 `PALETTE_COORDINATES`를 통해 접근하도록 정리했습니다. Playground와 기존 palette assertion도 생성 좌표를 읽게 바꿨습니다. 배열 순서 보간과 150·925의 midpoint 처리, chroma/hue 값은 그대로 유지했습니다.
+
+## 2026-09-26 — Raise caption size to 13px
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/text.ts`, Typography 문서와 기존 scale assertion
+- 요약: `caption` 크기를 12px에서 13px로 올리고 16px leading과 400 weight는 유지했습니다.
+
+보조 정보도 작은 화면에서 읽기 쉬워야 한다는 판단에 따라 크기만 한 단계 올렸습니다. `control`과 같은 크기지만 용도·기본 weight·ink가 달라 역할은 구분됩니다.
+
+## 2026-09-26 — Set body text weight to 500
+
+- 변경 파일: `text.ts`, Typography playground, 토큰 문서, 기존 scale assertion
+- 요약: `body` 기본 weight를 `regular` 400에서 `medium` 500으로 올렸습니다.
+
+본문 샘플과 페이지 전반에서 기준이 되는 굵기이므로 variant 기본값, 비교 표, 문서의 설명을 함께 맞췄습니다. caption의 400은 그대로 둡니다.
+
+## 2026-09-26 — Restore compact typography ladder and show weights
+
+- 변경 파일: Text tokens/API, playground Type scale, Markdown heading styles, typography docs
+- 요약: 제목 사다리를 `display 32 · title 24 · heading 20 · subheading 16`으로 복원하고 Type scale 표에 기본 Weight 열을 추가했습니다.
+
+세분화한 heading1–4는 표와 실제 화면에서 단계가 과하게 늘어났습니다. 기존의 간결한 위계가 더 읽기 좋아 이를 되돌렸고, 크기·행간에 더해 variant 기본 weight까지 같은 표에서 비교할 수 있게 했습니다. 좁은 화면에서는 Size/leading 열을 접고 Weight는 남깁니다.
+
+## 2026-09-26 — Expand the heading type ladder
+
+- 변경 파일: text tokens/API, Text 사용처, Markdown heading styles, typography playground, 토큰 문서와 기존 scale assertion
+- 요약: `display 40`, `title 28`, `heading1–4 24/20/18/16`으로 사다리를 확장하고 이전 `heading`·`subheading` 사용처를 새 단계에 대응시켰습니다.
+
+페이지 제목은 `title`, 섹션 깊이는 `heading1–4`로 명시해 실제 문서 heading과 맞췄습니다. line-height는 40/48, 28/36, 24/32, 20/28, 18/24, 16/24로 정리했고 body 이하 역할은 기존 값을 유지했습니다.
+
+## 2026-09-26 — Standardize page headers
+
+- 변경 파일: playground overview/detail, demo, docs 페이지
+- 요약: 개별 페이지에서 조립하던 페이지 제목·설명·액션 헤더를 공통 `PageHeader` anatomy로 통일했습니다. Home의 표현형 hero는 그대로 둡니다.
+
+문서 페이지 제목은 manifest에서 가져오고 Markdown 본문의 첫 H1을 헤더로 올려 중복을 피했습니다. 컴포넌트 상세의 분류 breadcrumb, 데모의 상태 배지와 공유 액션은 공통 헤더 슬롯 안에 유지했습니다.
+
+## 2026-09-26 — Keep display for expressive headlines
+
+- 변경 파일: `workspace/packages/paper-ui/src/components/PageHeader.tsx`
+- 요약: 공통 페이지 제목을 `display`에서 `title`로 되돌렸습니다.
+
+`Primitives`, `Atoms`처럼 현재 위치를 나타내는 페이지명은 히어로 문구와 다른 역할입니다. 일반 페이지 헤더는 `title`을 쓰고, `display`는 랜딩 헤드라인처럼 표현적 강조가 필요한 자리에 남깁니다.
+
+## 2026-09-26 — Refine typography scale and specimen contrast
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/text.ts`, `docs/foundations/tokens.md`, `workspace/app/src/playground/Tokens.tsx`
+- 요약: `title`을 24/32px로 조정하고 sans tracking의 음수 자간을 완화했습니다. Typography의 Type scale 표는 모든 텍스트를 `ink.primary`로 표시합니다.
+
+본문·설명·측정값의 기본 잉크 역할은 전역에서 유지하고, foundation 표본에서만 색 차이 없이 글자 위계를 비교하도록 명시적으로 덮었습니다. mono는 본래 폭이 넓어 이를 보정하는 자간을 유지합니다.
+
+## 2026-09-26 — Refine typography foundation layout
+
+- 변경 파일: `workspace/app/src/playground/Tokens.tsx`, `foundations.css.ts`
+- 요약: Type scale을 역할·실제 샘플·크기/행간이 정렬된 보드로 바꾸고, Weight와 Family는 surface card 없이 비교 섹션으로 정리했습니다.
+
+기존 3열 토큰 목록은 수치 열이 좁아 여러 줄로 깨지고 큰 샘플과 설명의 관계도 흐렸습니다. 새 보드는 token role과 샘플을 정렬하고 측정값을 한 줄에 보여줍니다. Weight/Family는 값의 묶음보다 비교 관점이 중요해 별도 Raised 면 대신 얇은 경계선과 간격으로 Type scale 아래에 이어 붙였습니다.
+
+## 2026-09-26 — Remap typography variants by content role
+
+- 변경 파일: `PageHeader.tsx`, Home/Demo 화면, typography docs
+- 요약: 일반 페이지 제목을 `title`, Home의 표현형 헤드라인을 `display`, Demo의 진행률 수치를 `heading`, Home의 설명 문장을 `body`로 매핑했습니다.
+
+기존에는 재사용 PageHeader가 display를 사용해 모든 문서·플레이그라운드 페이지 제목이 홈 랜딩의 큰 헤드라인과 같은 역할을 했습니다. 또한 17% 수치가 페이지 제목과 같은 title 크기라 시선 우선순위가 겹쳤습니다. 크기 사다리는 유지하고 콘텐츠 역할만 바로잡았습니다.
+
+## 2026-09-26 — Increase amber chroma uniformly
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/palette.ts`
+- 요약: Amber의 OKLCH hue·lightness 흐름을 유지하고 모든 anchor의 chroma를 `+0.015` 평행 이동했습니다.
+
+색상 성격과 명도 리듬을 다시 바꾸지 않고 전체 ramp만 조금 더 선명하게 하려는 조정입니다. Light/dark 의미 매핑도 그대로 유지됩니다.
+
+## 2026-09-26 — Refine amber palette hue trajectory
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/palette.ts`
+- 요약: Amber의 hue가 밝은 yellow에서 dark brown으로 급격히 회전하던 anchor를 좁히고, 중간·어두운 단계의 chroma를 소폭 보강했습니다.
+
+이전 ramp의 `200 → 600`은 hue가 약 `95° → 49°`로 크게 이동해 한 팔레트 안에서 yellow, orange, brown이 따로 노는 인상을 줬습니다. 새 anchor는 밝은 쪽 `~90°`에서 dark 쪽 `60°`까지 점진적으로 이동하도록 하고, canonical 600의 chroma를 조금 높였습니다. Semantic mapping은 그대로라 라이트·다크 테마가 같은 원천 ramp를 계속 선택합니다.
+
+## 2026-09-26 — Remap typography to role-based heading tokens
+
+- 변경 파일: Text tokens/API, 데모 및 playground 사용처, 마크다운 스타일, 문서
+- 요약: `heading1–4`를 `title · heading · subheading`으로 바꾸고, 기존 화면에서 선호한 페이지 제목 크기 28/36을 `title`로 유지했습니다.
+
+“웹사이트 리뉴얼”의 제목 위계는 보기 좋다는 피드백을 기준으로 28/36으로 보존했습니다. 중간 단계를 추가한 뒤 화면 위계가 맞지 않아 해당 보정은 되돌렸습니다. 최종 scale은 heading 20/28, subheading 16/24이며 데모의 제목 역할도 기존 매핑을 유지합니다. `Text`의 시각 variant와 HTML heading 태그는 `as` prop으로 분리합니다.
+
+## 2026-09-26 — Preview revised typography scale
+
+- 변경 파일: `workspace/app/src/playground/Tokens.tsx`, `workspace/app/src/playground/foundations.css.ts`
+- 요약: 이슈 트래커 데모의 임시 확대 스타일을 되돌리고, Typography foundation 데모를 `body.md 14px` 기준의 `16 / 14 / 13px` 사다리로 갱신했습니다.
+
+미리보기는 새 위계와 caption의 역할을 화면에서 판단하기 위한 것이므로 패키지의 실제 Text API나 토큰 수치는 변경하지 않았습니다. 이슈 트래커 본문 크기를 16px로 올리자 기존 밀도와 맞지 않아 실제 데모는 원래 스타일로 복원했습니다. caption 미리보기는 Paper UI의 tertiary ink를 사용합니다.
+
 ## 2026-09-26 — Merge accent edge into soft
 
 - 변경 파일: `workspace/packages/paper-ui/src/tokens/colors.ts`, accent styles, Tokens playground, color docs/report
@@ -755,3 +949,57 @@ Palette leaf에는 nominal `PaletteToken` 타입을 붙여 semantic 계층이 �
 - 요약: Light neutral palette의 미세한 보라/청색 chroma를 0으로 낮췄습니다. 기존 lightness 단계는 유지해 표면 밝기와 hierarchy는 그대로 둡니다.
 
 Neutral source가 사실상 achromatic한 dark ramp와 달리 light 쪽은 hue 286°의 작은 chroma를 계속 갖고 있어, 넓은 surface 면적에서 zinc/stone 계열 기운으로 읽힐 수 있었습니다. 이 변경은 saturation cast만 걷어내고 step 밝기와 semantic mapping은 손대지 않습니다.
+## 2026-09-26 — Rebuild Paper UI demo with primitives and atoms
+
+- 변경 파일: `workspace/app/src/pages/Demo.tsx`, `workspace/app/src/pages/Demo.css.ts`
+- 요약: 이슈 트래커 데모를 Paper UI의 Primitive와 Atom으로 재구성했습니다. 검색·필터·작업 완료·작업 추가 동작은 유지하고, 화면 배치만 데모 전용 CSS로 정의했습니다.
+
+데모의 구조 태그는 모두 `Box as`로 표현하고 텍스트·레이아웃·컨트롤은 Paper UI API를 사용합니다. 프로젝트 전용 표와 진행 표시처럼 전용 시각 배치가 필요한 부분만 className으로 꾸몄습니다.
+## 2026-09-26 — Separate Text roles from control typography presets
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/text.ts`, `internal/sizeLadder.ts`, control atoms, Typography playground, token docs, 기존 type-scale assertion
+- 요약: `control`을 Text variant에서 분리하고 `tokens.text.control.sm/md/lg`를 신설했습니다. Shape의 컨트롤 `size`가 각 preset의 글자 크기와 leading을 geometry와 함께 선택합니다.
+
+조작 문구는 제목·본문 같은 읽기 위계가 아니라 컴포넌트 밀도에 붙는다는 구조를 반영했습니다. 현재 화면의 크기는 sm 13/16, md 13/16, lg 14/16으로 유지하고, 본문·캡션 같은 Text 역할을 컨트롤 크기 매핑에 빌려 쓰지 않게 했습니다. 컨트롤 종류별 weight 차이는 컴포넌트에서 계속 선택합니다.
+## 2026-09-26 — Fix Typography playground ink type errors
+
+- 변경 파일: `workspace/app/src/playground/Tokens.tsx`
+- 요약: 지원하지 않는 `ink="primary"` 값을 유효한 `ink="base"`로 교체해 앱 typecheck 오류를 해결했습니다.
+
+Typography 표의 specimen과 메타 라벨은 중립 기본 잉크를 의도하므로 API에 실제로 존재하는 `base`가 맞습니다. `primary`는 semantic `tokens.color.ink` 경로와 혼동해 사용한 이름이었습니다.
+## 2026-09-26 — Add a Typography Palette layer
+
+- 변경 파일: Typography tokens, component token consumers, Typography Playground, foundation docs
+- 요약: raw typography values를 `text.palette.*`로 모으고, Text 역할은 `text.style.*`, Control 크기는 `text.control.*` preset으로 Palette를 참조하도록 계층화했습니다.
+
+이름은 Primitive 대신 Typography Palette로 정했습니다. Text variant와 Control preset이 같은 수치 원본을 재사용하지만, 컨트롤 `size`는 Shape geometry와 Control typography를 함께 고릅니다. 컴포넌트가 의미 역할별 size를 직접 조합하던 지점도 완성된 Text 스타일 경로로 옮겼습니다.
+## 2026-09-26 — Keep caption weight at regular 400
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/text.ts`, Typography Playground, 기존 type-scale assertion, Typography 문서
+- 요약: `caption`을 `normal` 450으로 시각 검토했지만 보조 정보에는 `regular` 400이 더 적합해 되돌렸습니다. `regular` Palette weight도 유지했습니다.
+
+13px caption은 450에서도 읽히지만 본문·컨트롤과의 위계가 덜 분명해졌습니다. 400이 secondary ink와 함께 보조 정보의 톤을 더 잘 유지한다는 판단을 반영했습니다.
+## 2026-09-26 — Present the Control Ladder as a type table
+
+- 변경 파일: `workspace/app/src/playground/Tokens.tsx`
+- 요약: Typography의 Control 미리보기를 `Control Ladder`로 이름 짓고, Type scale과 같은 raised 표로 구성했습니다.
+
+각 sm·md·lg 행에서 실제 컨트롤 문구, preset weight, size/leading을 같은 열 구조로 비교할 수 있게 했습니다. 샘플은 공통 크기 사다리를 쓰는 Button의 ghost variant를 사용해 색 강조가 측정값을 가리지 않게 했습니다.
+## 2026-09-26 — Rename typography palette size to fontSize
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/text.ts`, `workspace/packages/paper-ui/src/tokens/index.ts`, `workspace/app/src/playground/Tokens.tsx`, `docs/foundations/tokens.md`
+- 요약: 원본 타이포그래피 크기 축을 `text.palette.size.*`에서 `text.palette.fontSize.*`로 명확히 했습니다.
+
+`size`는 Shape의 control size나 완성된 Text style의 크기 속성과 혼동될 수 있어 CSS 속성 축을 직접 드러내는 이름으로 바꿨습니다. Text/Control preset 내부의 `size`는 preset field이므로 그대로 유지합니다. 최초 변경에서 preset → palette CSS variable 참조 경로가 이전 키를 가리켜 Text 크기 적용이 깨졌고, 같은 날 참조 경로를 `fontSize`로 맞춰 복구했습니다.
+## 2026-09-26 — Name typography palette steps by pixel value
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/text.ts`, `workspace/app/src/playground/Tokens.tsx`, `docs/foundations/tokens.md`
+- 요약: fontSize와 leading Palette 키를 단계 별칭 대신 실제 px 값으로 바꾸고, Text·Control preset 조합을 갱신했습니다.
+
+두 scale은 단계 수와 대응이 달라 `fontSize.3xl → leading.2xl`처럼 같은 단계를 기대하게 하는 이름이 혼란을 만들었습니다. 실제 px 키를 사용하면 display 32/40px처럼 서로 다른 축의 조합을 명확히 읽을 수 있습니다.
+## 2026-09-29 — Move control tracks out of the surface scale
+
+- 변경 파일: `workspace/packages/paper-ui/src/tokens/colors.ts`, `workspace/app/src/`, `docs/`, `workspace/tests/`
+- 요약: 일반 `bg.well`과 네 번째 Box surface를 제거하고 `color.control.track`으로 이동했습니다. Light는 `neutral.200`, dark는 `neutral.900`을 유지하며 Switch·SegmentedControl만 이 토큰을 사용합니다.
+
+트랙은 조작부의 내부 구조라 페이지·패널과 같은 Box surface 목록에 두면 surface scale이 컴포넌트 구현 세부까지 떠안습니다. 그래서 semantic branch를 분리했고, playground의 네 번째 배경은 트랙 비교 옵션으로 보존했습니다. 이전에 저장된 `well` 선택값은 `track`으로 자동 이전합니다.

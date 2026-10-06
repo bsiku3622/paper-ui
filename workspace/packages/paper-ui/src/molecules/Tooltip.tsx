@@ -13,6 +13,7 @@ import {
 } from "react";
 
 import { Box, type BoxProps } from "../primitives";
+import { resolveControlTypography } from "../resolvers";
 import { tooltipWrap, tooltipBubble, tooltipPlacement, tooltipTrigger } from "./Tooltip.css";
 
 type TooltipContextValue = {
@@ -82,7 +83,7 @@ export const TooltipContent = ({ children, width = "max-content", maxWidth = "xl
   const { open, id, placement } = useTooltip();
   if (!open) return null;
   return (
-    <Box {...rest} id={id} role="tooltip" width={width} maxWidth={maxWidth} className={[tooltipBubble, tooltipPlacement[placement], className].filter(Boolean).join(" ")}>
+    <Box {...rest} id={id} role="tooltip" width={width} maxWidth={maxWidth} className={[tooltipBubble, resolveControlTypography("tooltip", "regular"), tooltipPlacement[placement], className].filter(Boolean).join(" ")}>
       {children}
     </Box>
   );

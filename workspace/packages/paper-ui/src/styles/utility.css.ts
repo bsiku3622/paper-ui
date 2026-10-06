@@ -10,14 +10,13 @@ import { NEUTRAL_INKS, SURFACES } from "../resolvers";
 
 // ───── surface — 면 (Box 전용 구조 축) ──────────────────────────────────────
 //
-// 깊이 사다리: raised(최명) — canvas(기준) — sunken — well(최암). 색이 아니라 지면이다.
+// 깊이 사다리: raised — canvas — sunken. 색이 아니라 지면이다.
 // 카드 테두리는 별도(Box 의 border prop). hover 는 면이 아니라 앱의 interaction 이 맡는다.
 
 const SURFACE_TOKEN = {
   canvas: tokens.color.bg.canvas,
   raised: tokens.color.bg.raised,
   sunken: tokens.color.bg.sunken,
-  well: tokens.color.bg.well,
 } as const;
 
 for (const s of SURFACES) {

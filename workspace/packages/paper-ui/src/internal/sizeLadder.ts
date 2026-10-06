@@ -1,14 +1,14 @@
 // sizeLadder — 컨트롤 크기 사다리 (3 단 sm·md·lg) + 거기서 벗어나는 통로.
 //
-// height × paddingInline × fontSize 를 묶되, **뒤의 둘은 밀도와 분리**한다:
-//   fontSize — 컨트롤 사다리에 맞춰 caption(12) · control(13) · body(14)를 쓴다.
-//     md 13px은 Project Manager demo의 버튼·입력 밀도에서 가져왔다.
+// Shape geometry만 공유한다. Typography preset은 소비 컴포넌트의 semantic role이
+// 선택한다(button·input·badge 등). size 하나로 글자 속성까지 공통 적용하면 역할 간
+// weight와 leading 차이를 표현할 수 없고, 각 컴포넌트가 따로 덮어쓰게 된다.
 //   paddingInline — Box 여백 사다리가 아니라 CONTROL_PADDING_X 를 쓴다. 버튼은
 //     라벨이 상자를 정의하고, 입력은 상자 안에 값이 놓여 서로 다른 가로 여백을 가진다.
 //     자세한 근거는 tokens/shape.ts 의 CONTROL_PADDING_X · INPUT_PADDING_X.
 //
 // Button·Field·Select·Textarea·Tabs 가 이 사다리를 공유해 같은 size 는 같은 height 에
-// 앉는다. **공유하는 건 height 와 fontSize 고, 가로 여백은 역할에 따라 갈린다** —
+// 앉는다. 가로 여백은 역할에 따라 갈린다 —
 // 아래 통로로 나간다.
 
 import type { StyleRule } from "@vanilla-extract/css";
@@ -21,7 +21,6 @@ export const sizeLadderRules = Object.fromEntries(
     {
       height: tokens.shape.height[s].interaction,
       paddingInline: tokens.shape.controlPaddingX[s], // ← Box 여백과 분리 (가로:세로 비)
-      fontSize: s === "sm" ? tokens.text.size.caption : s === "md" ? tokens.text.size.control : tokens.text.size.body,
     } satisfies StyleRule,
   ]),
 ) as Record<ControlSize, StyleRule>;

@@ -4,6 +4,8 @@ import { createContext, useContext, type ComponentPropsWithoutRef, type ElementT
 
 import { Box, Text, type BoxProps } from "../primitives";
 import { joinClass } from "../internal/joinClass";
+import { resolveControlTypography } from "../resolvers";
+import { textTypography } from "../styles/typography.css";
 import { useControllableState } from "../internal/useControllableState";
 import { tocDepth, tocItem, tocItemActive, tocLabel, tocRoot } from "./TableOfContents.css";
 
@@ -25,7 +27,7 @@ const TableOfContentsItemImpl = <As extends ElementType = "a">({ as, value, dept
   const { value: selectedValue, onValueChange } = useContext(TocContext);
   const Tag = as ?? "a";
   return <Box as={Tag as ElementType} {...(Tag === "a" ? { href: `#${value}` } : null)} {...(rest as object)} aria-current={value === selectedValue ? "location" : undefined}
-    className={joinClass(tocItem, tocDepth[depth], value === selectedValue && tocItemActive, className)} onClick={(event: MouseEvent<HTMLElement>) => {
+    className={joinClass(tocItem, tocDepth[depth], textTypography.caption, value === selectedValue && resolveControlTypography("button", "sm", "regular"), value === selectedValue && tocItemActive, className)} onClick={(event: MouseEvent<HTMLElement>) => {
       (onClick as ((event: MouseEvent<HTMLElement>) => void) | undefined)?.(event);
       if (!event.defaultPrevented) onValueChange?.(value);
     }}>{children}</Box>;

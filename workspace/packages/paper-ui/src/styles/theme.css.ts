@@ -8,7 +8,7 @@ import { globalStyle } from "@vanilla-extract/css";
 import { COLOR_VALUES, COLOR_VALUES_DARK } from "../tokens/colors";
 import { SHAPE_VALUES, SHADOW_GEOMETRY } from "../tokens/shape";
 import { LAYOUT_VALUES } from "../tokens/layout";
-import { TEXT_VALUES, TEXT_SPEC, TEXT_CONTENT, TEXT_VARIANTS } from "../tokens/text";
+import { TEXT_VALUES, TEXT_CONTENT, TEXT_VARIANTS } from "../tokens/text";
 import { walkValues, pathToCssVar } from "../tokens/helpers";
 import { tokens } from "../tokens";
 
@@ -83,10 +83,10 @@ globalStyle("body", {
   margin: 0,
   background: tokens.color.bg.canvas,
   color: tokens.color.ink.primary,
-  fontFamily: tokens.text.font.sans,
-  fontSize: tokens.text.size.body,
-  lineHeight: tokens.text.leading.body,
-  letterSpacing: tokens.text.tracking.body,
+  fontFamily: tokens.text.palette.family.sans,
+  fontSize: tokens.text.style.body.size,
+  lineHeight: tokens.text.style.body.leading,
+  letterSpacing: tokens.text.style.body.tracking,
   WebkitFontSmoothing: "antialiased",
   MozOsxFontSmoothing: "grayscale",
 });
@@ -106,20 +106,20 @@ globalStyle(":focus-visible", {
 // ╰──────────────────────────────────────────────────────────────────────────╯
 
 for (const v of TEXT_VARIANTS) {
-  const spec = TEXT_SPEC[v];
+  const spec = tokens.text.style[v];
   globalStyle(`.pui-text-${v}`, {
     // size · leading · tracking 은 :root var 를 참조 — 값은 Pass 1 한 곳에서만.
-    fontFamily: tokens.text.font.sans,
-    fontSize: tokens.text.size[v],
-    fontWeight: spec.weight, // weight 는 variant→굵기 매핑이라 spec 의 raw 어휘값
-    lineHeight: tokens.text.leading[v],
-    letterSpacing: tokens.text.tracking[v],
+    fontFamily: tokens.text.palette.family.sans,
+    fontSize: spec.size,
+    fontWeight: spec.weight,
+    lineHeight: spec.leading,
+    letterSpacing: spec.tracking,
     color: tokens.color.ink[TEXT_CONTENT[v]],
     margin: 0,
   });
   // mono 일 때만 — variant px 를 MONO_SCALE 로 줄인다. 두 클래스라 .pui-text-* 를 이긴다.
   globalStyle(`.pui-text-${v}.pui-mono`, {
-    fontSize: `calc(${tokens.text.size[v]} * ${tokens.text.monoSizeScale})`,
+    fontSize: `calc(${tokens.text.style[v].size} * ${tokens.text.palette.monoSizeScale})`,
   });
 }
 
@@ -130,18 +130,8 @@ for (const v of TEXT_VARIANTS) {
 // 요소당 하나라 영어·한글을 한 런에서 따로 못 준다 — 코드·토큰(영어) 기준 단일값.
 // loop 뒤에 와서 같은 특정도의 .pui-text-* 를 순서로 이긴다.
 globalStyle(".pui-mono", {
-  fontFamily: tokens.text.font.mono,
-  letterSpacing: tokens.text.tracking.mono,
-});
-
-// mono 는 half-step 이 필요 없다. half-step(450·550)은 작은 *sans* 가 Retina 에서
-// 힘 빠지는 걸 잡으려는 보정인데, mono 는 획이 균일해 그 문제가 없다. 게다가 정적
-// 시스템 mono(SF Mono 등)는 450 을 500 으로 반올림해 되레 무거워진다. Text variant
-// 중 half-step 을 쓰는 건 body·caption 뿐이라, 이 둘의 mono 만 whole-step 400 으로
-// 내린다 (title·heading 등은 이미 whole-step 600·700 이라 그대로). 두 클래스 셀렉터라
-// 특정도가 높아 .pui-text-* 를 이긴다.
-globalStyle(".pui-text-body.pui-mono, .pui-text-caption.pui-mono", {
-  fontWeight: tokens.text.weight.regular,
+  fontFamily: tokens.text.palette.family.mono,
+  letterSpacing: tokens.text.palette.tracking.mono,
 });
 
 // ╭──────────────────────────────────────────────────────────────────────────╮

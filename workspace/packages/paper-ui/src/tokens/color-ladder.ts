@@ -1,23 +1,10 @@
-// L1 — OKLCH source → HEX palette tokens
-//
-// This is the only color-generation layer. Semantic tokens and consumers see only generated
-// HEX values; palette identity and generated values share one source of truth.
+// Pure color-ladder operations. This module knows how to interpolate and encode colors, but it
+// does not import or own palette data. palette.ts supplies the anchors and assembles the results.
 
-import {
-  ACCENT_PALETTES,
-  ACCENT_STEPS,
-  ALPHA_OPACITY,
-  ALPHA_STEPS,
-  OKLCH_PALETTE,
-  PALETTE_STEPS,
-} from "./palette";
-import type { AccentPalette, AccentStep, AlphaStep, Oklch, PaletteStep } from "./palette";
+type Oklch = readonly [lightness: number, chroma: number, hue: number];
 
 declare const paletteTokenBrand: unique symbol;
 export type PaletteToken = string & { readonly [paletteTokenBrand]: true };
-type NeutralPalette = Record<PaletteStep, PaletteToken>;
-type AccentRamp = Record<AccentStep, PaletteToken>;
-type AlphaPalette = Record<`alpha${AlphaStep}`, { neutral: { "0": PaletteToken; "950": PaletteToken } }>;
 
 const linearToSrgb = (value: number): number => {
   const channel = value <= 0.0031308 ? 12.92 * value : 1.055 * value ** (1 / 2.4) - 0.055;
@@ -56,12 +43,12 @@ const gamutMapped = ([lightness, chroma, hue]: Oklch): readonly [number, number,
   return oklchToLinearRgb([lightness, low, hue]);
 };
 
-const toHex = (color: Oklch): PaletteToken => {
+export const toPaletteToken = (color: Oklch): PaletteToken => {
   const channels = gamutMapped(color).map(linearToSrgb);
   return `#${channels.map((channel) => channel.toString(16).padStart(2, "0")).join("")}` as PaletteToken;
 };
 
-const withAlpha = (color: PaletteToken, opacity: number): PaletteToken => {
+export const withAlpha = (color: PaletteToken, opacity: number): PaletteToken => {
   if (opacity < 0 || opacity > 1) throw new Error(`Palette alpha must be between 0 and 1; received ${opacity}`);
   return `${color}${Math.round(opacity * 255).toString(16).padStart(2, "0")}` as PaletteToken;
 };
@@ -71,13 +58,13 @@ const interpolateHue = (from: number, to: number, ratio: number): number => {
   return (from + delta * ratio + 360) % 360;
 };
 
-const interpolateOklch = (from: Oklch, to: Oklch, ratio: number): Oklch => [
+export const interpolateOklch = (from: Oklch, to: Oklch, ratio: number): Oklch => [
   from[0] + (to[0] - from[0]) * ratio,
   from[1] + (to[1] - from[1]) * ratio,
   interpolateHue(from[2], to[2], ratio),
 ];
 
-const completeOklchRamp = <Step extends string>(
+export const completeOklchRamp = <Step extends string>(
   steps: readonly Step[],
   anchors: Partial<Record<Step, Oklch>>,
 ): Record<Step, Oklch> => {
@@ -96,28 +83,3 @@ const completeOklchRamp = <Step extends string>(
     return [step, color];
   })) as Record<Step, Oklch>;
 };
-
-const generateCoordinates = () => ({
-  neutral: OKLCH_PALETTE.neutral,
-  accent: Object.fromEntries(ACCENT_PALETTES.map((name) => [
-    name,
-    completeOklchRamp(ACCENT_STEPS, OKLCH_PALETTE[name]),
-  ])) as Record<AccentPalette, Record<AccentStep, Oklch>>,
-});
-
-// The Palette inspector and every semantic theme share these exact generated values.
-export const PALETTE_COORDINATES = generateCoordinates();
-
-const neutral = Object.fromEntries(PALETTE_STEPS.map((step) => [step, toHex(OKLCH_PALETTE.neutral[step])])) as NeutralPalette;
-const accent = Object.fromEntries(ACCENT_PALETTES.map((name) => [
-    name,
-    Object.fromEntries(ACCENT_STEPS.map((step) => [step, toHex(PALETTE_COORDINATES.accent[name][step])])) as AccentRamp,
-  ])) as Record<AccentPalette, AccentRamp>;
-const alpha = Object.fromEntries(ALPHA_STEPS.map((step) => [`alpha${step}`, {
-  neutral: {
-    "0": withAlpha(neutral["0"], ALPHA_OPACITY[step]),
-    "950": withAlpha(neutral["950"], ALPHA_OPACITY[step]),
-  },
-}])) as AlphaPalette;
-
-export const PALETTE_TOKENS = { neutral, accent, ...alpha };

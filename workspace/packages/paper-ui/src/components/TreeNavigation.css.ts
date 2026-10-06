@@ -14,8 +14,6 @@ export const treeRow = style({
   borderRadius: tokens.shape.radius.interaction,
   background: "transparent",
   color: tokens.color.ink.secondary,
-  fontFamily: tokens.text.font.sans,
-  fontSize: tokens.text.size.body,
   textAlign: "start",
   textDecoration: "none",
   cursor: "pointer",
@@ -27,7 +25,6 @@ export const treeRow = style({
 export const treeRowActive = style({
   background: tokens.color.interaction.selected,
   color: tokens.color.ink.primary,
-  fontWeight: tokens.text.weight.medium,
   selectors: { "&:hover": { background: tokens.color.interaction.selected } },
 });
 export const treeDepth = styleVariants({

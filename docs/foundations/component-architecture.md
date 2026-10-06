@@ -31,11 +31,11 @@ Paper UI의 상위 레이어는 아래 일곱 축에서 필요한 것만 고릅�
 | `paper.raised` | `#ffffff` | 입력·모달의 순백 면 |
 | `paper.canvas` | `#f9f9fa` | 페이지 기준면 |
 | `paper.sunken` | `#f4f4f5` | 얕게 가라앉은 구조면 |
-| `paper.well` | `#e2e2e5` | 세그먼트 트랙 |
+| `control.track` | `neutral.200` | 세그먼트·스위치 트랙 |
 | `ink.base` | `#26262b` | 본문·현재 상태 |
 | `border.base` | `#e6e6ea` | 쉬는 괘선 |
 
-서체와 위계도 바꾸지 않습니다. Pretendard를 기본으로 쓰고, body 14px을 밀도의 기준점으로 둡니다. 새 Component는 `title/heading/subheading/body/caption` 조합만 사용합니다. 새 색, 새 서체, 장식용 gradient, 지속 shadow는 추가하지 않습니다.
+서체와 위계도 바꾸지 않습니다. Pretendard를 기본으로 쓰고, body 14px을 밀도의 기준점으로 둡니다. 새 Component는 `display/title/heading/subheading/body/control/caption/label` 역할을 사용합니다. 새 색, 새 서체, 장식용 gradient, 지속 shadow는 추가하지 않습니다.
 
 ## 화면의 문장
 

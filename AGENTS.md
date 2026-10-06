@@ -46,8 +46,8 @@ OKLCH Palette source → HEX Palette Token generation → semantic systems → r
      palette.ts              color-ladder.ts           colors.ts       CSS vars / UI
 ```
 
-- palette.ts만 단일 OKLCH neutral·accent ramp와 `alpha05`~`alpha95` opacity scale을 소유합니다. Palette 값은 테마와 무관하며, semantic layer가 light/dark 역할에 맞는 step을 선택합니다.
-- color-ladder.ts는 source를 보간·gamut-map해 6자리 HEX와 alpha scale의 8자리 HEX Palette Token을 생성합니다. 여기에는 semantic role 이름을 두지 않습니다.
+- palette.ts만 OKLCH neutral·accent anchor와 `alpha05`~`alpha95` opacity scale을 소유합니다. color-ladder.ts의 순수 함수를 호출해 완성된 coordinates와 HEX Palette Token을 조립해 export합니다. Palette 값은 테마와 무관하며, semantic layer가 light/dark 역할에 맞는 step을 선택합니다.
+- color-ladder.ts는 palette.ts를 import하지 않는 순수 계산 모듈입니다. 입력받은 좌표·단계에 대해 보간·gamut-map·HEX 인코딩을 수행하며 semantic role 이름을 두지 않습니다.
 - colors.ts의 semantic leaf는 생성된 Palette Token만 선택합니다. 다른 semantic leaf, 직접 입력한 HEX, color math를 참조하지 않습니다.
 - theme.css.ts는 semantic tree를 CSS variable로 내보냅니다. Component·resolver·app은 tokens.color var 참조만 씁니다. /playground/palette만 source와 생성 결과를 확인하는 예외입니다.
 
@@ -55,7 +55,8 @@ semantic color는 surface·ink·border·accent·interaction·overlay·shadow 역
 
 | system | API | roles |
 |---|---|---|
-| Surface | `bg.<level>` | raised · canvas · sunken · well |
+| Surface | `bg.<level>` | raised · canvas · sunken |
+| Control | `control.<role>` | track |
 | Border | `border.<level>` | base · strong · hover |
 | Ink | `ink.<level>` | primary · secondary · tertiary |
 | Accent | `accent.<name>.<ladder>` | primary · info · success · warning · error × solid · wash · soft · subtle |
@@ -80,7 +81,7 @@ focus ring 색은 `interaction.focus`에 둡니다. focus는 상호작용 상태
   싸우기 때문 — 모서리가 물러날수록 면과 헤어라인이 앞으로 나온다. `full` 은 intent 로
   갈리지 않아 두 가지와 나란한 셋째 가지다.
 - **회색은 받친다** — Card의 기본은 shared `primary × hairline`이고, 강조가 필요할 때도
-  별도 Card variant를 만들지 않고 shared `accent × variant` 안에서 고릅니다. `well`은 table head·marker·segmented track처럼
+  별도 Card variant를 만들지 않고 shared `accent × variant` 안에서 고릅니다. `control.track`은 Switch·SegmentedControl 내부 트랙에만
   구조를 받치는 더 깊은 면입니다. 같은 깊이의 회색 위에 같은 회색을 겹치지 않습니다.
 - **shadow 는 2 단 토큰(elevation 축 아님)** — 떠 있는 것만 지속 그림자를 갖는다. `overlay`
   (Modal·Tooltip·Popover) · `overlayMinimal`(Switch 손잡이 등). 붙어있는 면(Button·Field·
@@ -90,7 +91,7 @@ focus ring 색은 `interaction.focus`에 둡니다. focus는 상호작용 상태
   pigment shadow는 elevation이 아니라 상태를 잃지 않고 hover를 보이는 일시적 예외다.
 - **hover 는 조용히** — 면은 interaction 오버레이로 한 단 움직인다. neutral Form은 면을 흔들지
   않고 `primary.base` solid 선으로 올라가고, semantic Form만 같은 accent의 중앙 shadow를 더한다.
-- **밀도** — 간격(Space) 5단(4px 배수 xs4~xl24)과 컨트롤 크기(ControlSize) 3단(sm·md·lg)을 분리한다. 컨트롤 글자는 `text.size.body`를 공유하고, control size는 height·padding만 바꾼다. control 높이 md 34 · table 행 44.
+- **밀도** — 간격(Space) 5단(4px 배수 xs4~xl24)과 컨트롤 크기(ControlSize) 3단(sm·md·lg)을 분리한다. control size는 Shape의 height·padding과 Typography의 `text.control.<preset>.<size>` 중 해당 preset을 함께 선택한다. control 높이 md 34 · table 행 44.
   가로 여백은 **라벨과 값이 갈린다** — 버튼·탭은 `controlPaddingX` 10/13/17, 입력칸은
   `inputPaddingX` 7/9/12. Field·Select·Textarea의 보이는 잉크가 사방 같은 거리다. md는 세로
   `(34 − 14) / 2 = 10`, 가로 `border 1 + padding 9 = 10`이다. Textarea의 `textareaPaddingY`는
@@ -118,25 +119,24 @@ focus ring 색은 `interaction.focus`에 둡니다. focus는 상호작용 상태
 
 ## 글자
 
-네 축이 직교한다 — **size · weight · leading · tracking**. 각 축이 `tokens.text.*`
-토큰이라 컴포넌트가 `"0.875rem"` 같은 raw 값을 박지 못한다. variant 는 이 축들을
-조합한 7 단 위계다:
+Typography는 원본 수치인 **Palette**, 이를 조합한 **Text 스타일**, 실제 반복되는 완성 스타일만 담는 **Control preset**으로 나뉜다. 각 스타일은 Palette의 size · weight · leading · tracking을 참조하므로 컴포넌트가 `"0.875rem"` 같은 raw 값을 박지 않는다. Text variant는 제목 위계와 텍스트 역할을 조합한다:
 
-`display 32 · title 22 · heading 17 · subheading 15 · body 14 · caption 12 · label 12`.
+`display 32 · title 28 · heading 20 · subheading 16 · body 14 · control 13 · caption 12 · label 12`.
 
 서체는 위계가 아니라 **family 축**이다 — `Text` 의 `family`(sans 기본 · mono)가 어느
 variant 에도 교차한다. mono 는 `.pui-mono` 가 등폭·전용 tracking·크기 배율을 적용한다.
 
-- **body 14px** anchor — 복잡한 웹앱의 표준 밀도(shadcn text-sm · Atlassian).
-- **제목 위계 셋** — `title·heading·subheading` = h1·h2·h3. 페이지·문서의 계층이 또렷.
-  `display` 는 랜딩 hero 한 자리만.
-- **weight 는 variant 와 직교한 별도 축** — `regular 400 · normal 450 · medium 550 ·
-  semibold 600 · bold 700`. `regular`는 mono 본문·caption 전용이고 Button·Tab 은 variant 기본
-  굵기 대신 여기서 골라 쓴다(`tokens.text.weight.*`).
+- **body 14px** anchor — 복잡한 웹앱의 표준 밀도. 자주 쓰지 않는 16px 본문과 body size variant는
+  두지 않는다. 조작 문구는 컴포넌트 간 중복을 제거한 `text.control` preset, 보조 정보는 `caption`, 짧은 이름은 `label`로 나눈다.
+- **제목 위계** — `display` 는 큰 제목, `title`은 페이지 제목, `heading`과 `subheading`은 섹션 제목용이다. HTML 태그는 `as`로 별도 지정한다.
+- **leading은 px 고정값** — Text: `display 32/40 · title 24/32 · heading 20/28 · subheading 16/24 · body 14/20 · caption 13/16 · label 12/16`. Control: `sm 13/16 · md 13/16 · lg 14/16`.
+- **weight 는 variant 와 직교한 별도 축** — `regular 400 · normal 450 · medium 500 ·
+  semibold 600 · strong 650 · bold 700`. Body·caption은 regular, control은 medium, label은
+  semibold를 기본으로 쓴다(`tokens.text.palette.weight.*`).
 - **서체** — Pretendard 를 맨 앞에(라틴·한글을 한 몸으로 그려 굵기가 균형), `-apple-system`
   은 fallback. `family="mono"` 는 코드·토큰·식별자 같은 기술적 자리에만 — 숫자를 무조건
   등폭으로 두지 않는다. 데이터 표의 숫자 열은 sans 그대로 `tabular-nums` 로 자리만 맞춘다.
-- **label 은 sentence-case medium** — mono·uppercase 아님(그건 ledger 였다). shadcn 결.
+- **label 은 sentence-case semibold** — mono·uppercase 아님.
 
 ---
 

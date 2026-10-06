@@ -4,6 +4,7 @@ import { createContext, useContext, type ComponentPropsWithoutRef, type ElementT
 
 import { Box, Inline } from "../primitives";
 import { joinClass } from "../internal/joinClass";
+import { resolveControlTypography } from "../resolvers";
 import { useControllableState } from "../internal/useControllableState";
 import { navbarActions, navbarBrand, navbarInner, navbarRoot, navItem, navItemActive } from "./Navbar.css";
 
@@ -26,7 +27,7 @@ type NavbarItemOwn<As extends ElementType> = { as?: As; value: string; children:
 export type NavbarItemProps<As extends ElementType = "button"> = NavbarItemOwn<As> & Omit<ComponentPropsWithoutRef<As>, keyof NavbarItemOwn<As>>;
 const NavbarItemImpl = <As extends ElementType = "button">({ as, value, children, className, onClick, ...rest }: NavbarItemProps<As>) => {
   const { value: selectedValue, onValueChange } = useContext(NavbarContext); const Tag = as ?? "button";
-  return <Box as={Tag as ElementType} {...(Tag === "button" ? { type: "button" as const } : null)} {...(rest as object)} aria-current={value === selectedValue ? "page" : undefined} className={joinClass(navItem, value === selectedValue && navItemActive, className)} onClick={(event: MouseEvent<HTMLElement>) => {
+  return <Box as={Tag as ElementType} {...(Tag === "button" ? { type: "button" as const } : null)} {...(rest as object)} aria-current={value === selectedValue ? "page" : undefined} className={joinClass(navItem, resolveControlTypography("navigation", "active"), value === selectedValue && navItemActive, className)} onClick={(event: MouseEvent<HTMLElement>) => {
     (onClick as ((event: MouseEvent<HTMLElement>) => void) | undefined)?.(event); if (!event.defaultPrevented) onValueChange?.(value);
   }}>{children}</Box>;
 };

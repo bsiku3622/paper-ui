@@ -10,7 +10,8 @@
 
 | 시스템 | 경로 | 토큰 |
 |---|---|---|
-| Surface | `bg.<level>` | `raised · canvas · sunken · well` |
+| Surface | `bg.<level>` | `raised · canvas · sunken` |
+| Control | `control.<role>` | `track` |
 | Border | `border.<level>` | `base · strong · hover` |
 | Ink | `ink.<level>` | `primary · secondary · tertiary` |
 | Accent | `accent.<name>.<ladder>` | `primary · info · success · warning · error` × `solid · wash · soft · subtle` |
@@ -18,13 +19,13 @@
 | Overlay | `overlay.<role>` | `scrim` |
 | Shadow | `shadow.<role>` | `overlay · overlayMinimal` |
 
-예: `tokens.color.bg.canvas`, `tokens.color.ink.primary`, `tokens.color.accent.warning.soft`, `tokens.color.interaction.bgHover.onSurface`, `tokens.color.overlay.scrim`, `tokens.color.shadow.overlay`. Semantic tree의 모든 leaf는 생성된 Palette Token과 값이 같습니다. 다른 semantic leaf를 참조하거나 semantic 단계에서 색 계산을 하지 않습니다.
+예: `tokens.color.bg.canvas`, `tokens.color.control.track`, `tokens.color.ink.primary`, `tokens.color.accent.warning.soft`, `tokens.color.interaction.bgHover.onSurface`, `tokens.color.overlay.scrim`, `tokens.color.shadow.overlay`. Semantic tree의 모든 leaf는 생성된 Palette Token과 값이 같습니다. 다른 semantic leaf를 참조하거나 semantic 단계에서 색 계산을 하지 않습니다.
 
 ### OKLCH Palette → HEX Palette Token
 
-`palette.ts`는 테마와 무관한 중립·accent OKLCH ramp와 `alpha05`~`alpha95` percentage scale을 하나씩 가집니다. `color-ladder.ts`는 anchor 사이를 OKLCH에서 보간하고 sRGB 밖의 색은 chroma를 낮춰 gamut 안으로 옮깁니다. 일반 색은 6자리 HEX, alpha step은 8자리 HEX Palette Token으로 생성합니다. Raw HEX를 직접 관리하지 않습니다.
+`palette.ts`는 테마와 무관한 중립·accent OKLCH anchor와 `alpha05`~`alpha95` percentage scale을 소유하고, color-ladder 함수들을 호출해 완성된 `OKLCH_PALETTE`와 `PALETTE_TOKENS`를 조립해 내보냅니다. `color-ladder.ts`는 palette 데이터를 import하지 않는 순수 계산 모듈입니다. anchor 사이 보간, sRGB gamut mapping, HEX 및 alpha HEX 인코딩을 맡습니다. Raw HEX를 직접 관리하지 않습니다.
 
-중립 step 번호는 밝은 쪽에서 어두운 쪽으로 진행합니다. `0`은 white에 가까운 끝점이고 `950`은 near-black 끝점입니다. Neutral과 Accent 모두 `900 · 925 · 950`을 가지며, `925`는 두 ramp에서 앞뒤 anchor 사이에 생성합니다. Dark `bg.canvas`는 `neutral.925`, `bg.raised`는 `neutral.950`을 선택합니다. Palette 화면은 테마가 바뀌어도 같은 ramp를 보여줍니다. Light/Dark surface·ink·border·accent 의미 역할은 `colors.ts`에서 서로 다른 step을 선택합니다. Neutral은 hue 286°·낮은 chroma의 단일 cool-neutral ramp입니다. Accent palette는 13 step으로 만들고, `primary · info · success · warning · error`가 neutral·blue·green·amber·red의 토큰을 선택합니다.
+중립 step 번호는 밝은 쪽에서 어두운 쪽으로 진행합니다. `0`은 white에 가까운 끝점이고 `950`은 near-black 끝점입니다. Neutral과 Accent 모두 `900 · 925 · 950`을 가지며, `925`는 두 ramp에서 앞뒤 anchor 사이에 생성합니다. Light에서는 `bg.canvas`가 `neutral.50`, `bg.sunken`이 가까운 `neutral.100`, `control.track`이 `neutral.200`을 선택합니다. Dark에서는 `bg.canvas`와 `bg.sunken`이 `neutral.950`, `bg.raised`가 `neutral.925`, `control.track`이 `neutral.900`을 선택합니다. `control.track`은 Switch와 SegmentedControl처럼 조작부 자체의 트랙에 쓰며, 일반 Box surface로 노출하지 않습니다. 기본 경계는 `neutral.900`으로 낮추고, status의 `soft` 면은 각 accent의 `950`을 선택해 반복되는 색 면을 차분하게 합니다. Palette 화면은 테마가 바뀌어도 같은 ramp를 보여줍니다. Light/Dark surface·control·ink·border·accent 의미 역할은 `colors.ts`에서 서로 다른 step을 선택합니다. Neutral은 hue 286°·낮은 chroma의 단일 cool-neutral ramp입니다. Accent palette는 13 step으로 만들고, `primary · info · success · warning · error`가 neutral·blue·green·amber·red의 토큰을 선택합니다.
 
 Accent는 `solid`(채운 면과 지면 위 색 글자) · `wash`(solid 위 전경과 가벼운 tint) · `soft`(부드러운 면과 hairline 경계) · `subtle`(muted 글자)를 공유합니다. `muted`는 Ghost형 투명 면에 선택된 accent의 `subtle` 전경을 쓰는 보조 variant입니다.
 
@@ -41,11 +42,11 @@ Interaction overlay, scrim, shadow tint의 반투명 값은 중립 양 끝점에
 크기는 **5단 사다리(xs~xl) × intent(interaction·layout)** 구조입니다 — chrome(Button·Field)은 `interaction`, container(Box·Modal)는 `layout`을 씁니다. 기본 control은 compact한 32px 높이와 8px corner를 앵커로 둡니다.
 
 **height** — `interaction` 24/30/32/40/44 (control = `md.interaction` 32) · `layout` 64~320
-**입력 글자는 `weight.normal`(450), 13px(control)**입니다. `normal`은 400이 아니라 작은 sans가 Retina에서 힘이 빠지지 않게 보정한 half-step입니다. Button primary는 demo의 묵직한 인상에 맞춰 별도 `weight.strong`(650)를 사용하고, 보조 버튼은 `medium`(550)을 씁니다. 입력 자간은 `tracking.body`로 UI 라벨과 구분합니다.
+**입력 글자는 `weight.normal`(450), 13px(control)**입니다. `normal`은 작은 sans가 Retina에서 힘이 빠지지 않게 보정한 half-step입니다. Button primary는 demo의 묵직한 인상에 맞춰 별도 `weight.strong`(650)를 사용하고, 보조 버튼은 `medium`(500)을 씁니다. 입력 자간은 `tracking.body`로 UI 라벨과 구분합니다.
 
 ⚠ Field의 안쪽 `<input>`은 자간을 따로 이어 붙여야 합니다. `font` 단축 속성은 font-* 만 다시 세우는데, 브라우저 기본 스타일시트가 폼 컨트롤에 `letter-spacing: normal`을 **명시**해 두어 상속이 거기서 끊깁니다.
 
-**controlSize** — 컴포넌트 `size` 3단(`sm`·`md`·`lg`)은 height·padding·font-size를 함께 움직입니다: height 30/32/40, 글자 12/13/14px · **controlPaddingX** 10/12/16(버튼·탭) · **inputPaddingX** 7/9/12(입력칸) · **textareaPaddingY** 3.75/5.75/8.75
+**controlSize** — 컴포넌트 `size` 3단(`sm`·`md`·`lg`)은 Shape의 height·padding만 선택합니다. Typography는 각 컴포넌트가 해당 size를 자기 역할 preset에 전달합니다(Button·input·select·textarea 등). Control 글자는 주로 13/13/14px이며, 일반 Text variant 사다리와 분리되어 있습니다. **controlPaddingX** 10/12/16(버튼·탭) · **inputPaddingX** 7/9/12(입력칸) · **textareaPaddingY** 3.75/5.75/8.75
 
 **가로 여백은 라벨과 값이 갈립니다.** 버튼과 탭의 글자는 상자를 *정의하는* 라벨이라 좌우가 넉넉해야 형태가 살고(`controlPaddingX` 10/12/16), 입력칸은 상자가 먼저 있고 값이 그 안에 놓이는 자리라 정사각 geometry를 씁니다(`inputPaddingX` 7/9/12).
 
@@ -53,7 +54,7 @@ Interaction overlay, scrim, shadow tint의 반투명 값은 중립 양 끝점에
 
 `textareaPaddingY`는 **가로에서 세로를 계산합니다** — md에서는 `inputPaddingX 9 − 반 줄 여백 3.25 = 5.75px`입니다. 반 줄 여백은 `(줄상자 19.5 − 글자 13) / 2`로, 줄상자가 글자 위아래에 이미 갖고 있는 몫입니다. md에서 `border 1 + padding 5.75 + 반 줄 3.25 = 10px`이 되어 가로(`border 1 + padding 9`)와 같은 잉크 여백을 만듭니다.
 
-`Button`·`Field`·`Select`·`Textarea`·`SegmentedControl`·`Tabs`가 이 사다리를 공유합니다 — height와 글자 크기입니다. Select는 오른쪽을 화살표 자리로 한 번 더 덮고, Textarea는 height를 빼고 세로 여백을 더합니다. SegmentedControl은 `sm`, Tabs는 `md`를 각 역할의 기본값으로 고릅니다.
+`Button`·`Field`·`Select`·`Textarea`·`SegmentedControl`·`Tabs`가 이 사다리를 공유합니다 — geometry 규칙입니다. Typography는 resolver로 역할별 클래스를 따로 붙입니다. Select는 오른쪽을 화살표 자리로 한 번 더 덮고, Textarea는 height를 빼고 세로 여백을 더합니다. SegmentedControl은 `sm`, Tabs는 `md`를 각 역할의 기본값으로 고릅니다.
 
 상위 구조의 크기는 control 사다리에 넣지 않습니다. `shape.component.modalWidth`의 360·432·640px은 Modal이 담는 일의 폭이고, `shape.component.tableRowHeight`의 36·44·52px은 Table의 정보 밀도입니다. 전자는 `size`, 후자는 `density`로 노출됩니다. 이름과 값이 비슷해 보여도 누르는 표적 크기와 정보량은 서로 따라 움직이지 않습니다.
 
@@ -89,23 +90,45 @@ Link는 여기 없습니다 — 상자가 아니라 글자라, 높이도 여백�
 
 ## Text
 
-타이포는 네 축이 직교합니다 — **size · weight · leading · tracking**. 각 축이 토큰(`tokens.text.size.body` = `var(--pui-text-size-body)`)이라, 컴포넌트가 `"0.875rem"` 같은 raw 값을 박을 일이 없습니다. variant는 이 축들을 조합한 7단 위계입니다. 서체는 위계가 아니라 별도의 **family 축**(sans·mono)으로, 어느 variant에도 교차합니다.
+타이포는 원본 수치인 **Typography Palette**, 읽기 역할별 **Text 스타일**, 반복 사용되는 **Control preset**으로 나뉩니다. 각 preset은 Palette의 font size · weight · leading · tracking을 한 스타일로 묶습니다. Text는 `text.display` 같은 클래스, 컨트롤은 `resolveControlTypography("field", size)`처럼 완성 클래스를 선택합니다. Shape의 `size`는 geometry를, resolver는 typography preset을 고릅니다.
 
-| variant | size | weight | 자리 |
-|---|---|---|---|
-| `display` | 32px | 700 | 랜딩 hero (페이지당 하나) |
-| `title` | 22px | 700 | 페이지 제목 (h1) |
-| `heading` | 17px | 600 | 섹션 제목 (h2) |
-| `subheading` | 15px | 600 | 카드·소제목 (h3) |
-| `body` (기본) | 14px | 450 | 본문 |
-| `caption` | 12px | 450 | 부연·메타 |
-| `label` | 12px | 600 | 폼 라벨·표 머리 |
+| variant | size / leading | weight | 자리 |
+|---|---:|---:|---|
+| `display` | 32 / 40px | 700 | 랜딩 히어로·표현형 헤드라인 |
+| `title` | 24 / 32px | 700 | 페이지 제목 (h1) |
+| `heading` | 20 / 28px | 600 | 섹션 제목·강조 수치 (h2) |
+| `subheading` | 16 / 24px | 600 | 작은 섹션 제목 (h3/h4) |
+| `body` (기본) | 14 / 20px | 500 | 본문 |
+| `caption` | 13 / 16px | 400 | 보조·메타 정보 |
+| `label` | 12 / 16px | 600 | 필드 라벨·표 머리 |
 
-**body 14px**가 anchor입니다 — 복잡한 앱의 표준 밀도(shadcn·Atlassian·Linear). 콘텐츠 사이트의 16px로 키우면 밀도가 풀려 대시보드가 늘어집니다. 제목 위계는 셋(`title`·`heading`·`subheading` = h1·h2·h3)이라 페이지와 문서의 계층이 또렷합니다.
+Weight 열은 Text variant 기본값을 나타냅니다. `display`·`title`은 700, `heading`·`subheading`·`label`은 600, `body`는 500, `caption`은 400을 씁니다. 컨트롤의 기본 문구 weight는 컴포넌트 역할에 따라 선택합니다.
 
-**family — sans · mono.** 서체는 variant 위에 교차하는 축입니다(`<Text family="mono">`). `mono`(시스템 등폭 = macOS SF Mono)는 코드·토큰·식별자 같은 기술적 자리에만 씁니다 — 숫자라고 무조건 등폭으로 두지 않습니다(표의 숫자 열은 sans 그대로 `tabular-nums`). mono는 variant마다 다른 sans 자간(display `-0.03em` 등)을 얹으면 큰 글씨가 짓눌리므로 그걸 버리고 `tracking.mono`(`-0.04em`)를 씁니다 — SF Mono·D2Coding은 advance가 넓어 UI에서 벌어져 보이기 때문에 조입니다. half-step weight도 쓰지 않습니다(그 보정은 작은 sans용) — `body`·`caption`의 mono는 `weight.regular`(`400`)으로 렌더됩니다. 같은 px에서 sans보다 크게 읽히므로 크기는 `monoSizeScale`(`0.95`)을 곱합니다(`body` mono는 13.3px).
+**family — sans · mono.** 서체는 variant 위에 교차하는 축입니다(`<Text family="mono">`). `mono`(시스템 등폭 = macOS SF Mono)는 코드·토큰·식별자 같은 기술적 자리에만 씁니다 — 숫자라고 무조건 등폭으로 두지 않습니다(표의 숫자 열은 sans 그대로 `tabular-nums`). mono는 sans의 역할별 자간을 얹으면 큰 글씨가 짓눌리므로 그걸 버리고 `tracking.mono`(`-0.04em`)를 씁니다 — SF Mono·D2Coding은 advance가 넓어 UI에서 벌어져 보이기 때문에 조입니다. `body`는 기본 weight 500, `caption`은 400이며 mono에서도 variant 기본값을 유지합니다. 같은 px에서 sans보다 크게 읽히므로 크기는 `monoSizeScale`(`0.95`)을 곱합니다(`body` mono는 약 13.3px).
 
-`weight`는 variant와 **직교하는 별도 축**입니다(`regular` 400 · `normal` 450 · `medium` 550 · `semibold` 600 · `strong` 650 · `bold` 700). `regular`는 mono 본문·caption의 보정 전 굵기이고, Button·Tab처럼 UI 컨트롤은 variant 기본 굵기 대신 여기서 골라 씁니다 — sans의 450·550·650 보정 단계는 작은 글씨가 Retina에 눌리지 않게 하기 위함입니다.
+**Control presets** — 전수 조사에서 발견한 사용처를 실제 조합으로 묶어 중복 role을 줄였습니다. 정본은 `button.regular/strong` 사다리, `field`(Input·Select 공유), `textarea`, 고정 `badge`, `navigation`(regular·active·groupLabel), `tooltip`입니다. Tab·Segmented는 Button regular의 md 스타일을 공유하고, Menu·Sidebar·TreeNavigation은 Navigation regular/active를 공유합니다. Navbar·Command item은 Navigation active와 같은 조합을 씁니다. Banner와 TableOfContents의 기본 글자는 별도 Control preset이 아니라 Text caption을 사용합니다. `resolveControlTypography("button", size, "strong")`는 완성 CSS class 하나를 돌려주므로 속성별 복사나 사후 weight 변경이 없습니다. `fontSize` prop은 의도적으로 크기를 바꾸는 escape hatch입니다.
+
+사용처 매핑도 조합 기준으로 관리합니다:
+
+| 사용처 | 스타일 출처 |
+|---|---|
+| Button · IconButton · Pagination action | `button.regular/strong` × size |
+| Tabs · SegmentedControl | `button.regular.md` |
+| Field · Select | `field` × size |
+| Textarea | `textarea` × size |
+| Badge · Steps marker | 고정 `badge` |
+| Sidebar · TreeNavigation · Menu · DropdownMenu | `navigation.regular/active` |
+| Navbar · CommandMenu item | `navigation.active` (14/20, 500) |
+| Tooltip | 고정 `tooltip` |
+| Banner · TableOfContents item | Text `caption`; TOC active item은 `button.regular.sm` |
+| Table cells | Text `body`; headers/caption은 `label`/`caption` |
+| PageHeader · Modal · EmptyState · Alert · FormField · RadioGroup · Breadcrumb · Steps copy · Menu/Command details | Text `title`/`heading`/`subheading`/`body`/`caption`/`label` |
+
+Label과 모든 text-bearing component는 Text style class를 그대로 소비합니다. Geometry만 있는 컴포넌트는 자기 글자 preset을 만들지 않습니다; 자식 Text를 받아야 할 때는 부모의 Typography를 상속합니다.
+
+**Typography Palette** — 재사용하는 원본 수치입니다. `tokens.text.palette.fontSize.12`처럼 font size와 leading은 실제 px 값을 키로 쓰므로 서로 다른 단계 이름을 억지로 짝짓지 않습니다. `weight.*` · `tracking.*` · `family.*`도 Palette가 소유하고, Text/Control 스타일은 이 Palette를 조합합니다. 컴포넌트는 원본 수치 대신 완성 스타일을 선택합니다.
+
+`weight` 원본 값은 Palette에 모여 있습니다(`regular` 400 · `normal` 450 · `medium` 500 · `semibold` 600 · `strong` 650 · `bold` 700). 컴포넌트는 raw weight를 직접 고르지 않고 이름 있는 preset을 선택합니다. 그래서 450은 input 계열의 가벼운 입력 잉크, 650은 강조가 필요한 solid Button preset에서 실제로 쓰입니다.
 
 ## 참조 방식
 

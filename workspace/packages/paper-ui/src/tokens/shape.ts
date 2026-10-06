@@ -202,7 +202,7 @@ export const SHAPE_ICON_TEXT_SIZE = {
   label: REM(14),
   caption: REM(16),
   body: REM(18),
-  subheading: REM(20),
+  heading3: REM(20),
 } as const;
 
 // ───── badge — 인라인 라벨 높이 사다리 (3 단) ───────────────────────────────

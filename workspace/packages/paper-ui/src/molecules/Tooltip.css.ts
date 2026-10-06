@@ -20,9 +20,6 @@ export const tooltipBubble = style({
   borderRadius: tokens.shape.radius.interaction,
   background: tokens.color.ink.primary,
   color: tokens.color.bg.raised,
-  fontFamily: tokens.text.font.sans,
-  fontSize: tokens.text.size.label,
-  fontWeight: tokens.text.weight.normal,
   boxShadow: tokens.shape.shadow.overlay,
   pointerEvents: "none",
 });

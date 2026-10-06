@@ -21,8 +21,6 @@ export const menuItem = style({
   borderRadius: tokens.shape.radius.interaction,
   background: "transparent",
   color: tokens.color.ink.primary,
-  fontFamily: tokens.text.font.sans,
-  fontSize: tokens.text.size.body,
   textAlign: "start",
   textDecoration: "none",
   cursor: "pointer",
@@ -37,7 +35,6 @@ export const menuItem = style({
 
 export const menuItemActive = style({
   background: tokens.color.interaction.selected,
-  fontWeight: tokens.text.weight.medium,
   selectors: { "&:hover": { background: tokens.color.interaction.selected } },
 });
 

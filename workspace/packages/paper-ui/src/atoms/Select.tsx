@@ -9,6 +9,7 @@ import {
 } from "react";
 
 import { joinClass } from "../internal/joinClass";
+import { resolveControlTypography } from "../resolvers";
 import type { ControlSize, TextVariant } from "../tokens";
 import { selectRoot, selectSize, selectFontSize, selectPill } from "./Select.css";
 
@@ -35,7 +36,7 @@ const SelectRoot = forwardRef<HTMLSelectElement, SelectProps>(function SelectRoo
         delete event.currentTarget.dataset.puiPointerFocus;
         onBlur?.(event);
       }}
-      className={joinClass(selectRoot, selectSize[size], fontSize && selectFontSize[fontSize], shape === "pill" && selectPill, className)}
+      className={joinClass(selectRoot, selectSize[size], resolveControlTypography("field", size), fontSize && selectFontSize[fontSize], shape === "pill" && selectPill, className)}
       {...rest}
     >
       {children}

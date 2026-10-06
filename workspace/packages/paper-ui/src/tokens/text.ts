@@ -1,18 +1,15 @@
 // ╔══════════════════════════════════════════════════════════════════════════╗
 // ║ Text — 타이포그래피 시스템                                               ║
 // ║                                                                          ║
-// ║ 모든 수치의 단일 출처. 네 축이 직교한다 — size · weight · leading ·      ║
-// ║ tracking. 각 축이 토큰이라 컴포넌트가 "0.875rem" 같은 raw 값을 박지      ║
-// ║ 못한다. variant 는 이 축들을 조합한 7 단 위계일 뿐이다.                  ║
+// ║ Typography Palette가 원본 수치를 소유한다. Text와 Control은 이 값을      ║
+// ║ 조합한 완성 스타일이다. 컴포넌트는 임의 수치 대신 스타일을 선택한다.    ║
 // ╚══════════════════════════════════════════════════════════════════════════╝
 //
 // 구조 —
-//   SIZE · LEADING · TRACKING  7 단 variant 스케일 (정본 수치)
-//   WEIGHT                     굵기 어휘 (variant 와 직교 — 컨트롤이 골라 씀)
-//   FAMILY                     서체 축 (sans·mono) — variant 위에 교차. Text 의
-//                              family prop 으로 고르고, .pui-mono 가 자간을 리셋
-//   TEXT_SPEC                  variant = 위 축들의 조합
-//   TEXT_VALUES.text           → tokens.text.{size,weight,leading,tracking,font}
+//   TYPOGRAPHY_PALETTE         fontSize · weight · leading · tracking · family 원본값
+//   TEXT_SPEC                  의미 역할별 완성 스타일
+//   CONTROL_SPEC               공유 사용처를 묶은 완성 Control 스타일
+//   TEXT_VALUES.text.palette   → tokens.text.palette.* CSS variables
 //
 // 서체 —
 //   Pretendard 를 맨 앞에 둔다. 라틴·한글을 한 폰트가 함께 그려 굵기가 균형 잡힌다.
@@ -39,108 +36,125 @@ export const FONT = {
 // mono는 sans 대비 시각 크기가 커 보여 동일한 잉크 크기를 위해 살짝 줄인다.
 export const MONO_SIZE_SCALE = "0.95";
 
-// ───── weight — 굵기 어휘 (variant 와 직교) ─────────────────────────────────
+// ───── Typography Palette — 재사용하는 원자 값 ──────────────────────────────
 //
-// 컴포넌트가 "550" 같은 임의 숫자를 하드코딩하지 않게, 굵기도 토큰이다. Button ·
-// Tab · Nav 는 여기서 골라 variant 기본 굵기를 덮는다.
+// 컴포넌트가 임의 숫자를 하드코딩하지 않게, 굵기도 Palette 토큰이다. Button ·
+// Navigation 등은 여기서 골라 역할별 preset을 완성한다.
 //
-// 값이 반 단계 무겁다 (450·550, not 400·500). dense 시스템이라 글씨가 작은데
-// 400 은 Retina 에서 힘이 빠진다 — 작은 자리일수록 half-step 을 얹어 밀도에
-// 눌리지 않게. Button primary는 Demo 기준의 strong weight를 별도 사용한다.
-export const WEIGHT = {
-  regular: "400", // mono 본문·caption의 whole-step weight
-  normal: "450", // 본문 · 부연 (읽기)
-  medium: "550", // UI 컨트롤 — Button · Tab · Nav
-  strong: "650", // 기본 primary action — Demo button anchor
-  semibold: "600", // 라벨 · 소제목 · 활성/강조
-  bold: "700", // 제목 · 특대
+// 450은 작은 sans 글씨가 Retina에서 힘이 빠지지 않도록 둔 보정 단계다.
+// Button primary는 Demo 기준의 strong weight를 별도 사용한다.
+export const TYPOGRAPHY_PALETTE = {
+  family: FONT,
+  fontSize: {
+    "12": REM(12),
+    "13": REM(13),
+    "14": REM(14),
+    "16": REM(16),
+    "20": REM(20),
+    "24": REM(24),
+    "32": REM(32),
+  },
+  weight: {
+    regular: "400", // caption처럼 가벼운 보조 정보
+    normal: "450", // 본문 · 부연 (읽기)
+    medium: "500", // UI 컨트롤 — Button · Tab · Nav
+    strong: "650", // 기본 primary action — Demo button anchor
+    semibold: "600", // 라벨 · 소제목 · 활성/강조
+    bold: "700", // 제목 · 특대
+  },
+  leading: {
+    "16": REM(16),
+    "20": REM(20),
+    "24": REM(24),
+    "28": REM(28),
+    "32": REM(32),
+    "40": REM(40),
+  },
+  tracking: {
+    mono: "-0.04em",
+    tight: "-0.02em",
+    snug: "-0.01em",
+    normal: "0",
+    wide: "0.01em",
+  },
+  monoSizeScale: MONO_SIZE_SCALE,
 } as const;
+export const WEIGHT = TYPOGRAPHY_PALETTE.weight;
 export type WeightKey = keyof typeof WEIGHT;
 
-// ───── variant — 7 단 컨텐츠 위계 ───────────────────────────────────────────
+// ───── variant — 역할별 텍스트 스타일 ───────────────────────────────────────
 //
-// display 부터 label 까지, 크기 내림차순. heading 위계가 셋(title·heading·
-// subheading = h1·h2·h3) 이라 페이지·문서의 제목 계층이 또렷하다. 서체(mono)는
+// display·title·heading·subheading은 제목 계층, body·caption·label은 사용 역할이다. 서체(mono)는
 // 위계가 아니라 family 축이라 여기 없다 — 어느 variant 에도 얹는다.
 
 export const TEXT_VARIANTS = [
-  "display", // 랜딩 hero — 페이지당 단 한 자리의 큰 호흡
-  "title", // 페이지 제목 (h1)
-  "heading", // 섹션 제목 (h2)
-  "subheading", // 카드 · 소제목 (h3)
-  "body", // 본문 ◀ default
-  "caption", // 부연 · 메타
-  "label", // 폼 라벨 · 표 머리
+  "display",
+  "title",
+  "heading",
+  "subheading",
+  "body",
+  "caption",
+  "label",
 ] as const;
 export type TextVariant = (typeof TEXT_VARIANTS)[number];
 
-// ───── SIZE — variant 별 글자 크기 (base 16px) ──────────────────────────────
-//
-// body 14px 이 본문 anchor — 복잡한 웹앱의 기본 밀도. Control 13px은 버튼과 입력의 기준.
-// heading 셋은 22·17·15 로 한 단씩. caption과 label은 크기를 공유하고 굵기로 갈린다.
+// ───── Text · Control — Palette 값을 조합한 완성 스타일 ──────────────────────
 
-export const SIZE = {
-  display: REM(32), // 2rem
-  title: REM(22), // 1.375rem
-  heading: REM(17), // 1.0625rem
-  subheading: REM(15), // 0.9375rem
-  body: REM(14), // 0.875rem ◀ anchor
-  control: REM(13), // 0.8125rem — Button·Field·Select의 기본 글자 크기
-  caption: REM(12), // 0.75rem
-  label: REM(12), // 0.75rem
-} as const;
-
-// ───── LEADING — 행간 ───────────────────────────────────────────────────────
-//
-// 큰 글자는 촘촘하게(1.12~1.4), 읽는 본문은 넉넉하게(1.45~1.5).
-
-export const LEADING = {
-  control: "1", // Button chrome — 높이 사다리 안에서 세로 중심을 맞춤
-  display: "1.12",
-  title: "1.25",
-  heading: "1.35",
-  subheading: "1.4",
-  body: "1.5",
-  caption: "1.45",
-  label: "1.4",
-} as const;
-
-// ───── TRACKING — 자간 ──────────────────────────────────────────────────────
-//
-// 큰 글자는 조이고(음수), 작은 라벨은 살짝 벌린다(양수). 본문은 -0.006em 로
-// 아주 미세하게만 — Retina 에서 sans 가 살짝 벌어져 보이는 걸 잡는 정도.
-
-export const TRACKING = {
-  mono: "-0.04em", // 등폭 글꼴의 넓은 advance를 조임
-  display: "-0.03em",
-  title: "-0.02em",
-  heading: "-0.015em",
-  subheading: "-0.01em",
-  body: "-0.006em",
-  caption: "0",
-  label: "0.01em",
-} as const;
-
-// ───── TEXT_SPEC — variant = 축들의 조합 ────────────────────────────────────
-
-type TextSpec = {
-  size: string;
-  weight: string;
-  lineHeight: string;
-  tracking: string;
+type StyleKeys = {
+  size: keyof typeof TYPOGRAPHY_PALETTE.fontSize;
+  weight: keyof typeof TYPOGRAPHY_PALETTE.weight;
+  leading: keyof typeof TYPOGRAPHY_PALETTE.leading;
+  tracking: keyof typeof TYPOGRAPHY_PALETTE.tracking;
 };
 
 export const TEXT_SPEC = {
-  display: { size: SIZE.display, weight: WEIGHT.bold, lineHeight: LEADING.display, tracking: TRACKING.display },
-  title: { size: SIZE.title, weight: WEIGHT.bold, lineHeight: LEADING.title, tracking: TRACKING.title },
-  heading: { size: SIZE.heading, weight: WEIGHT.semibold, lineHeight: LEADING.heading, tracking: TRACKING.heading },
-  subheading: { size: SIZE.subheading, weight: WEIGHT.semibold, lineHeight: LEADING.subheading, tracking: TRACKING.subheading },
-  body: { size: SIZE.body, weight: WEIGHT.normal, lineHeight: LEADING.body, tracking: TRACKING.body },
-  caption: { size: SIZE.caption, weight: WEIGHT.normal, lineHeight: LEADING.caption, tracking: TRACKING.caption },
-  label: { size: SIZE.label, weight: WEIGHT.semibold, lineHeight: LEADING.label, tracking: TRACKING.label },
-} as const satisfies Record<TextVariant, TextSpec>;
+  display: { size: "32", weight: "bold", leading: "40", tracking: "tight" },
+  title: { size: "24", weight: "bold", leading: "32", tracking: "snug" },
+  heading: { size: "20", weight: "semibold", leading: "28", tracking: "normal" },
+  subheading: { size: "16", weight: "semibold", leading: "24", tracking: "normal" },
+  body: { size: "14", weight: "medium", leading: "20", tracking: "normal" },
+  caption: { size: "13", weight: "regular", leading: "16", tracking: "normal" },
+  label: { size: "12", weight: "semibold", leading: "16", tracking: "wide" },
+} as const satisfies Record<TextVariant, StyleKeys>;
 
-// variant 별 기본 content token — label · caption 은 secondary(부연 자리).
+const BUTTON_REGULAR = {
+  sm: { size: "13", weight: "medium", leading: "16", tracking: "normal" },
+  md: { size: "13", weight: "medium", leading: "16", tracking: "normal" },
+  lg: { size: "14", weight: "medium", leading: "16", tracking: "normal" },
+} as const satisfies Record<"sm" | "md" | "lg", StyleKeys>;
+const BUTTON_STRONG = {
+  sm: { ...BUTTON_REGULAR.sm, weight: "strong" },
+  md: { ...BUTTON_REGULAR.md, weight: "strong" },
+  lg: { ...BUTTON_REGULAR.lg, weight: "strong" },
+} as const satisfies Record<"sm" | "md" | "lg", StyleKeys>;
+const FIELD_CONTROL = {
+  sm: { size: "13", weight: "normal", leading: "16", tracking: "normal" },
+  md: { size: "13", weight: "normal", leading: "16", tracking: "normal" },
+  lg: { size: "14", weight: "normal", leading: "16", tracking: "normal" },
+} as const satisfies Record<"sm" | "md" | "lg", StyleKeys>;
+const TEXTAREA_CONTROL = {
+  sm: { ...FIELD_CONTROL.sm, leading: "20" },
+  md: { ...FIELD_CONTROL.md, leading: "20" },
+  lg: { ...FIELD_CONTROL.lg, leading: "20" },
+} as const satisfies Record<"sm" | "md" | "lg", StyleKeys>;
+const BADGE_PRESET = { size: "12", weight: "medium", leading: "16", tracking: "normal" } as const satisfies StyleKeys;
+
+export const CONTROL_SPEC = {
+  button: { regular: BUTTON_REGULAR, strong: BUTTON_STRONG },
+  field: FIELD_CONTROL,
+  textarea: TEXTAREA_CONTROL,
+  badge: BADGE_PRESET,
+  navigation: {
+    regular: { size: "14", weight: "normal", leading: "20", tracking: "normal" },
+    active: { size: "14", weight: "medium", leading: "20", tracking: "normal" },
+    groupLabel: { size: "13", weight: "semibold", leading: "16", tracking: "wide" },
+  },
+  tooltip: {
+    regular: { size: "12", weight: "normal", leading: "16", tracking: "normal" },
+  },
+} as const;
+
+// variant 별 기본 ink — caption · label 은 secondary(부연/짧은 이름 자리).
 export const TEXT_CONTENT: Record<TextVariant, "primary" | "secondary"> = {
   display: "primary",
   title: "primary",
@@ -153,16 +167,11 @@ export const TEXT_CONTENT: Record<TextVariant, "primary" | "secondary"> = {
 
 // ───── VALUES — emit 대상 트리 (tokens.text.*) ──────────────────────────────
 //
-// 네 축을 text 도메인으로 묶는다. buildVarTree 가 걸어 tokens.text.size.body
-// = "var(--pui-text-size-body)" 를, theme.css.ts 가 :root 에 그 값을 emit 한다.
+// Typography Palette를 buildVarTree가 tokens.text.palette.* CSS var로 내보낸다.
+// Text/Control 스타일은 tokens/index.ts에서 이 Palette var를 조합해 참조한다.
 
 export const TEXT_VALUES = {
   text: {
-    font: FONT,
-    weight: WEIGHT,
-    size: SIZE,
-    leading: LEADING,
-    tracking: TRACKING,
-    monoSizeScale: MONO_SIZE_SCALE,
+    palette: TYPOGRAPHY_PALETTE,
   },
 } as const;

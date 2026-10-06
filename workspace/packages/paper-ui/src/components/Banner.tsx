@@ -4,7 +4,8 @@ import type { ReactNode } from "react";
 
 import { Inline, Box } from "../primitives";
 import { joinClass } from "../internal/joinClass";
-import type { Accent } from "../resolvers";
+import { type Accent } from "../resolvers";
+import { textTypography } from "../styles/typography.css";
 import { bannerColor, bannerRoot } from "./Banner.css";
 
 export type BannerProps = {
@@ -16,7 +17,7 @@ export type BannerProps = {
 const BannerRoot = ({ accent = "primary", children, className }: BannerProps) => {
   const live = accent === "error" || accent === "warning" ? "alert" : accent === "info" || accent === "success" ? "status" : undefined;
   return (
-    <Inline as="header" role={live} justify="between" align="center" gap="md" className={joinClass(bannerRoot, bannerColor[accent], className)}>
+    <Inline as="header" role={live} justify="between" align="center" gap="md" className={joinClass(bannerRoot, textTypography.caption, bannerColor[accent], className)}>
       {children}
     </Inline>
   );

@@ -11,8 +11,6 @@ export const bannerRoot = style({
   minHeight: tokens.shape.height.lg.interaction, // 40 — 얇은 chrome 바
   paddingInline: tokens.shape.padding.xl.interaction, // 24
   paddingBlock: tokens.shape.padding.xs.interaction, // 2 (두 줄로 자라면 숨 쉬게)
-  fontFamily: tokens.text.font.sans,
-  fontSize: tokens.text.size.caption,
 });
 
 // color — primary(검정) 기본 + status 색 면. 채운 면 위 대비쌍 글자.
