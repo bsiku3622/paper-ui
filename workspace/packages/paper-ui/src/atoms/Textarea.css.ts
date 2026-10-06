@@ -1,30 +1,26 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
 import { tokens, stateTransition, TEXT_VARIANTS, type TextVariant } from "../tokens";
+import { outlinedControlProfile, outlinedControlHover } from "../styles/color-profile";
 import { ladderRules } from "../internal/sizeLadder";
 
 // Field 와 같은 결의 여러 줄 입력. 높이만 자라고, 세로로만 resize.
 // 크기(padding·fontSize)는 size 축(textareaSize)이 정한다 — 컨트롤 높이·글자 사다리를
 // 공유하고, 여러 줄 입력에 필요한 세로 여백만 별도 축으로 보정한다.
 export const textareaRoot = style({
+  ...outlinedControlProfile,
   width: "100%",
   // 줄 수가 높이를 정하므로(rows) 여기서 잡는 건 바닥뿐이다.
   minHeight: tokens.shape.height.sm.layout,
-  background: tokens.color.bg.raised,
   borderRadius: tokens.shape.radius.interaction,
   borderWidth: tokens.shape.constants.borderWidth,
   borderStyle: "solid",
-  borderColor: tokens.color.border.base,
-  color: tokens.color.ink.primary,
   resize: "vertical",
   transition: stateTransition("border-color", "box-shadow", "background"),
   selectors: {
     "&::placeholder": { color: tokens.color.ink.tertiary },
-    '&[data-pui-status="default"]:hover:not(:focus):not(:disabled)': {
-      borderColor: tokens.color.border.hover,
-    },
-    '&[data-pui-status="default"][data-pui-pointer-focus]:focus': {
-      borderColor: tokens.color.ink.secondary,
+    '&[data-pui-status="default"]:hover:not(:disabled)': {
+      ...outlinedControlHover,
     },
     // keyboard focus만 바깥 ring으로 알린다. 클릭은 caret과 edge만 남긴다.
     "&:focus-visible:not([data-pui-pointer-focus])": {

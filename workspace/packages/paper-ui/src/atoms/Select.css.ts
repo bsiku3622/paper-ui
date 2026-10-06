@@ -1,18 +1,17 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
 import { tokens, stateTransition, TEXT_VARIANTS, type TextVariant } from "../tokens";
+import { outlinedControlProfile, outlinedControlHover } from "../styles/color-profile";
 import { ladderRules } from "../internal/sizeLadder";
 
 // 크기(height·좌우 padding)는 size 축(selectSize)이 정한다 — Button·Field 와
 // 같은 사다리를 그대로 가져온다. 오른쪽만 화살표 자리라 size 무관하게 넉넉히 고정.
 export const selectRoot = style({
+  ...outlinedControlProfile,
   width: "100%",
-  background: tokens.color.bg.raised,
   borderRadius: tokens.shape.radius.interaction,
   borderWidth: tokens.shape.constants.borderWidth,
   borderStyle: "solid",
-  borderColor: tokens.color.border.base,
-  color: tokens.color.ink.primary,
   cursor: "pointer",
   appearance: "none",
   // 드롭다운 화살표는 background-image data-URI 라 currentColor 를 못 물려받는다(배경
@@ -34,8 +33,7 @@ export const selectRoot = style({
       backgroundImage:
         "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%23a1a1aa' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E\")",
     },
-    "&:hover:not(:focus)": { borderColor: tokens.color.border.hover },
-    "&[data-pui-pointer-focus]:focus": { borderColor: tokens.color.ink.secondary },
+    "&:hover:not(:disabled)": outlinedControlHover,
     // keyboard focus만 바깥 ring으로 알린다. 클릭은 native open state와 edge로 충분하다.
     "&:focus-visible:not([data-pui-pointer-focus])": {
       outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.interaction.focus}`,

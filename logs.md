@@ -1,3 +1,12 @@
+## 2026-10-06 — Unify outlined controls and tighten panel corners
+
+- Changed files: Shared color profiles/emitter, Field/Select/Textarea styles, radius tokens, Playground specimens/options, integration tests, and foundation documentation.
+- Summary: Remove hairlineMuted. Share raised surface, base border, primary foreground, and hover border between neutral hairline and default form controls. Set layout corners to 4/6/8px alongside the existing 4px interaction corner.
+
+Paperdown's controls use raised background and border.base, while the previous hairline selected accent.soft and overlaid the background on hover. A shared outlined profile now owns the resting colors and hover border, preventing drift. Semantic hairline accents retain their pigment foreground; form status and sunken surfaces retain their separate roles. Pointer focus no longer substitutes a different neutral border, while keyboard focus rings remain. Cards use 6px and larger panels use 8px; pill corners and 30/32/36px heights are unchanged.
+
+Typecheck, library/app builds, 45 unit tests, and five integration tests passed. The integration tests compare default and hover styles in both themes and verify the radius specimens. Hover comparisons must await the final semantic border value rather than sampling halfway through a transition. Lint still reports the two pre-existing restricted imports in Tokens.tsx. The in-app browser connection timed out during visual verification, so no new browser screenshot was captured.
+
 ## 2026-10-06 — Add an experimental hairlineMuted variant
 
 - Changed files: Shared variant resolver/profile, profile tests, Playground controls and specimens, and foundation documentation.

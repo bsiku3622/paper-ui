@@ -116,9 +116,9 @@ export const SHAPE_GAP = {
 export const SHAPE_RADIUS = {
   interaction: REM(4), // Paperdown control corner; layout radii remain independent
   layout: {
-    sm: REM(6), // Tooltip·Popover — 작은 면 전용 곡선
-    md: REM(8), // Box ◀ anchor
-    lg: REM(12), // Modal·큰 면
+    sm: REM(4), // Tooltip·Popover — 작은 면 전용 곡선
+    md: REM(6), // Box ◀ anchor
+    lg: REM(8), // Modal·큰 면
   },
   full: "999px", // 알약 — 높이의 절반. intent 로 안 갈린다(어느 면에나 같은 값)
 } as const;

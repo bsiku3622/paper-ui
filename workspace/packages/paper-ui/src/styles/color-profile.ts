@@ -10,7 +10,16 @@ export type ColorSpec = {
   hoverBackground?: string;
   hoverOverlay?: string;
   hoverColor?: string;
+  hoverBorderColor?: string;
 };
+
+// Paperdown-style outlined surface shared by hairline and form controls.
+export const outlinedControlProfile = {
+  background: tokens.color.bg.raised,
+  color: tokens.color.ink.primary,
+  borderColor: tokens.color.border.base,
+};
+export const outlinedControlHover = { borderColor: tokens.color.border.hover };
 
 type AccentTones = typeof tokens.color.accent.primary;
 
@@ -32,16 +41,9 @@ const variantProfile = (t: AccentTones, primary: boolean): Record<Variant, Color
     hoverOverlay: tokens.color.interaction.bgHover.onSurface,
   },
   hairline: {
-    background: "transparent",
-    color: t.solid,
-    borderColor: t.soft,
-    hoverOverlay: tokens.color.interaction.bgHover.onSurface,
-  },
-  hairlineMuted: {
-    background: "transparent",
-    color: t.subtle,
-    borderColor: t.soft,
-    hoverOverlay: tokens.color.interaction.bgHover.onSurface,
+    ...outlinedControlProfile,
+    color: primary ? outlinedControlProfile.color : t.solid,
+    hoverBorderColor: outlinedControlHover.borderColor,
   },
   ghost: {
     background: "transparent",

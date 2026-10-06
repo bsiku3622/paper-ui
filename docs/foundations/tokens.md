@@ -27,7 +27,7 @@
 
 중립 step 번호는 밝은 쪽에서 어두운 쪽으로 진행합니다. `0`은 white에 가까운 끝점이고 `950`은 near-black 끝점입니다. Neutral과 Accent 모두 `900 · 925 · 950`을 가지며, `925`는 두 ramp에서 앞뒤 anchor 사이에 생성합니다. Light에서는 `bg.canvas`가 `neutral.50`, `bg.sunken`이 가까운 `neutral.100`, `control.track`이 `neutral.200`을 선택합니다. Dark에서는 `bg.canvas`와 `bg.sunken`이 `neutral.950`, `bg.raised`가 `neutral.925`, `control.track`이 `neutral.900`을 선택합니다. `control.track`은 Switch와 SegmentedControl처럼 조작부 자체의 트랙에 쓰며, 일반 Box surface로 노출하지 않습니다. 기본 경계는 `neutral.900`으로 낮추고, status의 `soft` 면은 각 accent의 `950`을 선택해 반복되는 색 면을 차분하게 합니다. Palette 화면은 테마가 바뀌어도 같은 ramp를 보여줍니다. Light/Dark surface·control·ink·border·accent 의미 역할은 `colors.ts`에서 서로 다른 step을 선택합니다. Neutral은 hue 286°·낮은 chroma의 단일 cool-neutral ramp입니다. Accent palette는 13 step으로 만들고, `primary · info · success · warning · error`가 neutral·blue·green·amber·red의 토큰을 선택합니다.
 
-Accent는 `solid`(채운 면과 지면 위 색 글자) · `wash`(solid 위 전경과 가벼운 tint) · `soft`(부드러운 면과 hairline 경계) · `subtle`(muted 글자)를 공유합니다. `muted`는 Ghost형 투명 면에 선택된 accent의 `subtle` 전경을 쓰는 보조 variant입니다. `hairlineMuted`는 hairline의 투명 배경·soft 경계·hover를 유지하고 muted와 같은 subtle 전경을 사용합니다.
+Accent는 `solid`(채운 면과 지면 위 색 글자) · `wash`(solid 위 전경과 가벼운 tint) · `soft`(부드러운 면) · `subtle`(muted 글자)를 공유합니다. `muted`는 Ghost형 투명 면에 선택된 accent의 `subtle` 전경을 쓰는 보조 variant입니다.
 
 ### Interaction과 상수
 
@@ -65,7 +65,7 @@ Link는 여기 없습니다 — 상자가 아니라 글자라, 높이도 여백�
 **badge** — 높이 20/22/24, 가로 여백 `badgePaddingX` 6/8/10, **글자는 12 고정**입니다. 가로 여백이 높이와 같은 보폭(Δ2)으로 움직여 세 크기가 한 실루엣의 축소·확대로 읽힙니다. 배지는 컨트롤이 아니라 자기 축을 듭니다 — 컨트롤의 가로 여백은 세로 여백에 대한 비로 잡히는데, 배지는 20~24 상자에 18짜리 줄상자가 들어가 나눌 세로가 0~2밖에 없습니다. 배지도 컨트롤과 같은 규칙을 집니다. 밀도와 가독성은 다른 축이라, 배지가 작아진다고 글자가 따라 내려가지 않습니다. 기본 컨트롤 13px보다 한 단계 낮은 12px 표식으로 쓰며, 각 tier가 자기 앵커를 하나씩 듭니다.
 **padding** — `interaction` 4/8/12/16/24 (Box 여백) · `layout` 8/12/16/20/32 (container)
 **gap** — 4/8/12/16/24 (4px 배수)
-**radius** — `interaction` 단일 4 · `layout` `sm` 6 · `md` 8 · `lg` 12 · `full` 999(알약). `interaction`은 Button·Field·Select뿐 아니라 Badge·Menu·Tooltip·navigation처럼 반복되는 작은 표면에도 공유됩니다.
+**radius** — `interaction` 단일 4 · `layout` `sm` 4 · `md` 6 · `lg` 8 · `full` 999(알약). `interaction`은 Button·Field·Select뿐 아니라 Badge·Menu·Tooltip·navigation처럼 반복되는 작은 표면에도 공유됩니다.
 **measure**(읽기 폭) — 5단. 글자 크기는 Shape가 아니라 Text system이 소유합니다.
 **icon** — 아이콘·스피너 16/18/20. **아트보드지 잉크가 아닙니다.** `Icon`은 viewBox 24짜리 path를 받아 그리는데 아이콘 규격(lucide 등)은 그 24 안에 여백을 두고 18~20만 채우므로, 화면의 잉크는 아트보드의 75~83%입니다. 그래서 아트보드가 Checkbox와 같은 16이면 아이콘만 한 단 작아 보입니다 — 숫자가 같은 것과 같아 보이는 것은 다릅니다. 사다리가 한 단 위에 있는 이유입니다(이 축의 옛 이름은 `dot`이었는데, status dot은 이 축을 안 쓰고 소비처가 Icon·Spinner 둘뿐이라 이름이 축을 잘못 가리키고 있었습니다)
 **switch** — 트랙 30×17 / 32×18 / 36×20, 손잡이 13/14/16. 손잡이가 Checkbox 변 − 2라 트랙이 Checkbox + 2로 앉습니다. 옛 규칙은 반대로 손잡이를 Checkbox에 맞춰(16) 트랙이 20이 됐는데, 스위치는 폭이 트랙 두 배라 같은 높이에서도 면적이 세 배입니다 — 높이까지 크면 폼 한 줄에서 스위치만 튑니다. 여백 `(h − thumb) / 2`가 사방에 같이 걸려 켜짐 이동이 `w − h` 한 항등식으로 떨어집니다

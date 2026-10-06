@@ -30,3 +30,32 @@ for (const [size, height, padding, font, buttonPadding] of [
     await expect(select).toHaveCSS("outline-style", "solid");
   });
 }
+
+for (const theme of ["light", "dark"] as const) {
+  test(`outlined controls share surfaces and hover in ${theme}`, async ({ page }) => {
+    await page.goto("/playground");
+    await page.evaluate((theme) => document.documentElement.setAttribute("data-theme", theme), theme);
+    const controls = ["base-button", "base-field", "base-select", "base-textarea"].map(id => page.getByTestId(id));
+    const styles = async () => Promise.all(controls.map(control => control.evaluate(el => {
+      const s = getComputedStyle(el);
+      return { background: s.backgroundColor, border: s.borderColor, color: s.color, radius: s.borderRadius };
+    })));
+    const resting = await styles();
+    for (const style of resting) expect(style).toEqual(resting[0]);
+    const hoverColor = await page.evaluate(() => {
+      const hex = getComputedStyle(document.documentElement).getPropertyValue("--pui-color-border-hover").trim();
+      return `rgb(${[1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16)).join(", ")})`;
+    });
+    const hovered = [];
+    for (const control of controls) {
+      await control.hover();
+      await expect(control).toHaveCSS("border-color", hoverColor);
+      hovered.push(await control.evaluate(el => { const s = getComputedStyle(el); return { border:s.borderColor, background:s.backgroundColor }; }));
+    }
+    for (const style of hovered) expect(style).toEqual(hovered[0]);
+    for (const [id, radius] of [["radius-small", 4], ["radius-card", 6], ["radius-large", 8]] as const) {
+      await expect(page.getByTestId(id)).toHaveCSS("border-radius", `${radius}px`);
+    }
+    await expect(page.getByTestId("btn-hairline-muted")).toHaveCount(0);
+  });
+}

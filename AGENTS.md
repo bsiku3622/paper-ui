@@ -64,7 +64,7 @@ semantic color는 surface·ink·border·accent·interaction·overlay·shadow 역
 | Overlay | `overlay.<role>` | scrim |
 | Shadow | `shadow.<role>` | overlay · overlayMinimal |
 
-Accent status는 palette와 분리합니다: info→blue, success→green, warning→amber, error→red. Accent는 같은 네 role을 공유합니다. `soft`는 soft surface와 hairline 경계에, `subtle`은 muted foreground에 씁니다.
+Accent status는 palette와 분리합니다: info→blue, success→green, warning→amber, error→red. Accent는 같은 네 role을 공유합니다. `soft`는 soft surface에, `subtle`은 muted foreground에 씁니다.
 
 focus ring 색은 `interaction.focus`에 둡니다. focus는 상호작용 상태이고 색도 Palette Token에서 오기 때문입니다. 링 두께·offset은 색이 아닌 geometry이므로 `shape.constants.focusRingWidth`와 shape 상수에 둡니다. Scrim은 `overlay.scrim`, shadow tint는 `shadow.overlay`와 `shadow.overlayMinimal`에 두고, 거리·blur·spread는 shape geometry로 둡니다. Semantic Form hover glow는 사용하지 않습니다.
 
@@ -72,8 +72,8 @@ focus ring 색은 `interaction.focus`에 둡니다. focus는 상호작용 상태
 
 ## 형태
 
-- **radius 는 날만 죽인다** — `interaction` 단일 4 (버튼·입력·배지) · `layout` `sm 6`(Tooltip) ·
-  `md 8`(카드) · `lg 12`(모달) · `full 999`(알약). 알약을 여는 prop 이름은 Box 가 `radius="full"`
+- **radius 는 날만 죽인다** — `interaction` 단일 4 (버튼·입력·배지) · `layout` `sm 4`(Tooltip) ·
+  `md 6`(카드) · `lg 8`(모달) · `full 999`(알약). 알약을 여는 prop 이름은 Box 가 `radius="full"`
   (사다리 한 칸), Button·Badge·Field·Select·Tabs 가 `shape="pill"`(실루엣) 이다. Tabs 는 한 축이
   트랙·항목 두 곡선을 함께 정하고, 각진 쪽 안쪽 반경은 `바깥 − 트랙 여백` 동심 계산이다.
   Textarea 엔 없다 —
@@ -87,7 +87,7 @@ focus ring 색은 `interaction.focus`에 둡니다. focus는 상호작용 상태
   (Modal·Tooltip·Popover) · `overlayMinimal`(Switch 손잡이 등). 붙어있는 면(Button·Field·
   Card·Table)은 그림자 없음(prop 을 안 준다). 다크에선 near-black 이 사라지므로 더 짙은 그림자로
   교체(테마 인식). `raised` 는 이제 surface color 지 그림자가 아니다(옛 elevation.raised 충돌 해소).
-  radius 는 독립 — 면 크기가 정한다(작은 Tooltip 6, 큰 Modal 12). semantic Form hover의 중앙
+  radius 는 독립 — 면 크기가 정한다(작은 Tooltip 4, 큰 Modal 8). semantic Form hover의 중앙
   pigment shadow는 elevation이 아니라 상태를 잃지 않고 hover를 보이는 일시적 예외다.
 - **hover 는 조용히** — 면은 interaction 오버레이로 한 단 움직인다. neutral Form은 면을 흔들지
   않고 `primary.base` solid 선으로 올라가고, semantic Form만 같은 accent의 중앙 shadow를 더한다.

@@ -57,10 +57,12 @@ Accent names are `primary`, `info`, `success`, `warning`, and `error`. They map 
 |---|---|
 | `solid` | Filled surface or pigment text on a neutral surface |
 | `wash` | Foreground on a solid accent surface; light tint |
-| `soft` | Soft variant surface and hairline border |
+| `soft` | Soft variant surface |
 | `subtle` | Muted variant foreground |
 
 Interaction values select from the shared alpha Palette too. `interaction.bgHover` provides `onSurface`, `onPrimarySolid`, and `onAccentSolid` overlays. Selected, active, scrim, and shadow tints select a neutral endpoint and alpha percentage appropriate to the theme. Focus uses a step from the shared blue ramp. Focus ring width and offset remain geometry constants in the shape system. Shadow colors are exposed as `shadow.overlay` and `shadow.overlayMinimal`; their geometry remains in shape.
+
+Hairline and default form controls share a raised surface, base neutral border, primary ink, and hover border. Semantic hairline accents retain their pigment foreground.
 
 ## Real use
 
