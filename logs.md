@@ -1,3 +1,10 @@
+## 2026-10-06 — Try a 32px default control
+
+- Changed files: Shape tokens, control specimens, geometry tests, and token documentation.
+- Summary: Reduce md height from 34px to 32px with button inline padding 11px, input inline padding 8px, and textarea block padding 4.5px. Preserve sm 30px, lg 40px, radius, and typography.
+
+The narrower default keeps the small step at 30px while making everyday controls more compact. Reducing horizontal padding by 1px follows the 1px reduction on each vertical side; textarea padding still subtracts half the line-box surplus. All three control geometry integration tests passed, including alignment, padding, value space, and keyboard focus.
+
 ## 2026-10-06 — Rebalance the control ladder to 30/34/40
 
 - Files: Shape tokens, Playground specimens and registry descriptions, geometry tests, token documentation, and `AGENTS.md`.

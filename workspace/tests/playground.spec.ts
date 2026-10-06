@@ -196,13 +196,13 @@ test("shape · 기본은 4, pill 은 999 (Button·Badge 같은 어휘)", async (
 // ── iconOnly — 정사각이다. size 사다리의 paddingInline 을 실제로 이기는가 ────────
 //
 // buttonIconOnly 와 buttonSize 는 특정도가 같아 소스 순서로만 갈린다. 순서가 뒤집히면
-// 사다리의 13px 이 살아남아 34 가 아니라 44 로 그려진다 — aspect-ratio 가 붙어 있어도
+// 사다리의 13px 이 살아남아 32 가 아니라 44 로 그려진다 — aspect-ratio 가 붙어 있어도
 // 콘텐츠 폭이 그걸 넘기므로 조용히 깨진다. 계산값으로 못 박는다.
-test("button · iconOnly 는 정사각(md 34×34)", async ({ page }) => {
+test("button · iconOnly 는 정사각(md 32×32)", async ({ page }) => {
   const box = await page.getByTestId("btn-icononly").boundingBox();
   expect(box).not.toBeNull();
-  expect(Math.round(box!.width)).toBe(34);
-  expect(Math.round(box!.height)).toBe(34);
+  expect(Math.round(box!.width)).toBe(32);
+  expect(Math.round(box!.height)).toBe(32);
 });
 
 // ── SegmentedControl / Tabs — 닫힌 선택과 열린 panel navigation을 분리한다 ──
@@ -224,7 +224,7 @@ test("tabs · underline trigger가 md panel을 전환한다", async ({ page }) =
   await props.click();
 
   await expect(list).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-  await expect(props).toHaveCSS("height", "34px");
+  await expect(props).toHaveCSS("height", "32px");
   await expect(props).toHaveCSS("border-bottom-width", "2px");
   await expect(props).toHaveCSS("border-bottom-color", hexToRgb("#26262b"));
   await expect(props).toHaveCSS("border-radius", "0px");
@@ -379,15 +379,15 @@ test("control base · 높이·글자는 공유, 가로 여백은 라벨과 값�
     await expect(page.getByTestId(id)).toHaveCSS("font-size", "13px");
   }
   // 버튼 라벨은 상자를 정의하는 글자라 좌우가 넉넉하고(13), 입력칸은 높이가 정한 세로
-  // 잉크와 사방을 맞춘다(md: border 1 + padding 9 = 10).
-  await expect(page.getByTestId("base-button")).toHaveCSS("padding-left", "12px");
+  // 잉크와 사방을 맞춘다(md: border 1 + padding 8 = 9).
+  await expect(page.getByTestId("base-button")).toHaveCSS("padding-left", "11px");
   for (const id of ["base-field", "base-select", "base-textarea"]) {
-    await expect(page.getByTestId(id)).toHaveCSS("padding-left", "9px");
+    await expect(page.getByTestId(id)).toHaveCSS("padding-left", "8px");
   }
   // 화살표 자리는 오른쪽만 넓다 — 통로로 한 축 더 덮는다.
   await expect(page.getByTestId("base-select")).toHaveCSS("padding-right", "24px");
-  // Textarea 의 세로만 자기 값이다 — 가로에서 계산한다(9 − 반 줄 3.5).
-  await expect(page.getByTestId("base-textarea")).toHaveCSS("padding-top", "5.5px");
+  // Textarea 의 세로만 자기 값이다 — 가로에서 계산한다(8 − 반 줄 3.5).
+  await expect(page.getByTestId("base-textarea")).toHaveCSS("padding-top", "4.5px");
 });
 
 // ── 입력 글자는 시스템 굵기를 든다 ───────────────────────────────────────────
@@ -438,7 +438,7 @@ test("field · 가로·세로 잉크 여백 차이가 1px 이하이다", async (
 
 // ── Textarea 의 글자는 사방 같은 거리에 앉는다 ───────────────────────────────
 //
-// 선언값이 아니라 **잉크의 자리**를 잰다. 세로 선언은 5.5지만 줄상자에 반 줄 여백(3.5)이
+// 선언값이 아니라 **잉크의 자리**를 잰다. 세로 선언은 4.5지만 줄상자에 반 줄 여백(3.5)이
 // 들어 있어 잉크는 10 — 가로(1 + 9)와 같은 자리다. 선언값을 정사각으로 맞추면 되레 첫 줄이
 // 왼쪽 여백보다 3.5 내려간다.
 test("textarea · 글자가 테두리에서 사방 같은 거리에 앉는다", async ({ page }) => {
@@ -462,9 +462,9 @@ test("pill · 곡선만 바뀌고 각자의 가로 여백은 그대로다", asyn
     await expect(page.getByTestId(id)).toHaveCSS("border-radius", "999px");
   }
   // 알약이 됐다고 여백이 따라 움직이지 않는다 — 각진 형제와 글자 시작점이 같다.
-  await expect(page.getByTestId("field-pill")).toHaveCSS("padding-left", "9px");
-  await expect(page.getByTestId("select-pill")).toHaveCSS("padding-left", "9px");
-  await expect(page.getByTestId("button-pill-row")).toHaveCSS("padding-left", "12px");
+  await expect(page.getByTestId("field-pill")).toHaveCSS("padding-left", "8px");
+  await expect(page.getByTestId("select-pill")).toHaveCSS("padding-left", "8px");
+  await expect(page.getByTestId("button-pill-row")).toHaveCSS("padding-left", "11px");
 });
 
 // ── SegmentedControl shape — 트랙과 항목이 함께 갈리고, 각진 쪽은 동심이다 ─
