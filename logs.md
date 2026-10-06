@@ -1,3 +1,14 @@
+## 2026-10-06 — Experiment with Paperdown control geometry
+
+- Files: `workspace/packages/paper-ui/src/tokens/shape.ts`, Playground specimens and registry descriptions, geometry E2E tests, token documentation, and `AGENTS.md`.
+- Summary: Preserve all pending work in snapshot commit `a818e5e`, then experiment on `dev/paperdown-control-geometry` with heights 26/30/36px, interaction radius 4px, button padding 8/10/12px, and input padding 6/8/10px.
+
+Paperdown has a 30px toolbar field and 4px corner rather than a complete size ladder. The medium step adopts that geometry; small and large steps extrapolate it without changing the existing 13/13/14px typography. Layout heights, Box spacing, layout radii, palette, and pill silhouette stay independent. Shared interaction radius also affects badges, menus, and navigation; this is a deliberate consequence to review on this experimental branch, not a button-only CSS override. Textarea padding follows the actual 20px leading and font size: 2.5/4.5/7px preserves the first-line horizontal/vertical ink relationship. The old perfectly-square single-line ink contract becomes a maximum 1px difference because control height and input inset are independently chosen.
+
+Typecheck, all 45 unit tests, library build, and application build pass. Three new browser integration checks cover cross-control alignment at every size, value space, radius, unchanged type size, and keyboard focus. Existing geometry expectations were updated for intentional changes only. The full 56-test E2E suite reports 39 passing and 17 failing; remaining failures include pre-existing palette, semantic border, typography, and default segmented-shape expectations and are not a declaration of a green release. Lint still reports the two baseline private imports in the Tokens inspector. The previous implementation report already recorded baseline lint and E2E failures before this experiment.
+
+The live Playground control rows and Project Manager demo were visually inspected. No package publication, production deployment, or merge into the parent branch was performed. Validation output and screenshots remain in `/Users/baeks/Bufs/Codex Files/2026-10-06/paper-ui-geometry/`; the review screenshot is also delivered in Downloads.
+
 ## 2026-10-06 — Document the current Paper UI implementation
 
 - 변경 파일: Reports의 `2026-10-06_01-49-paper-ui-implementation-report.tex`, 동명 PDF·Markdown 및 `logs.md`; 제품 구현 변경 없음

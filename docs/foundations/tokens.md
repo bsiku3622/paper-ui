@@ -41,18 +41,18 @@ Interaction overlay, scrim, shadow tint의 반투명 값은 중립 양 끝점에
 
 크기는 **5단 사다리(xs~xl) × intent(interaction·layout)** 구조입니다 — chrome(Button·Field)은 `interaction`, container(Box·Modal)는 `layout`을 씁니다. 기본 control은 compact한 32px 높이와 8px corner를 앵커로 둡니다.
 
-**height** — `interaction` 24/30/32/40/44 (control = `md.interaction` 32) · `layout` 64~320
+**height** — `interaction` 24/26/30/36/44 (control = `md.interaction` 32) · `layout` 64~320
 **입력 글자는 `weight.normal`(450), 13px(control)**입니다. `normal`은 작은 sans가 Retina에서 힘이 빠지지 않게 보정한 half-step입니다. Button primary는 demo의 묵직한 인상에 맞춰 별도 `weight.strong`(650)를 사용하고, 보조 버튼은 `medium`(500)을 씁니다. 입력 자간은 `tracking.body`로 UI 라벨과 구분합니다.
 
 ⚠ Field의 안쪽 `<input>`은 자간을 따로 이어 붙여야 합니다. `font` 단축 속성은 font-* 만 다시 세우는데, 브라우저 기본 스타일시트가 폼 컨트롤에 `letter-spacing: normal`을 **명시**해 두어 상속이 거기서 끊깁니다.
 
-**controlSize** — 컴포넌트 `size` 3단(`sm`·`md`·`lg`)은 Shape의 height·padding만 선택합니다. Typography는 각 컴포넌트가 해당 size를 자기 역할 preset에 전달합니다(Button·input·select·textarea 등). Control 글자는 주로 13/13/14px이며, 일반 Text variant 사다리와 분리되어 있습니다. **controlPaddingX** 10/12/16(버튼·탭) · **inputPaddingX** 7/9/12(입력칸) · **textareaPaddingY** 3.75/5.75/8.75
+**controlSize** — 컴포넌트 `size` 3단(`sm`·`md`·`lg`)은 Shape의 height·padding만 선택합니다. Typography는 각 컴포넌트가 해당 size를 자기 역할 preset에 전달합니다(Button·input·select·textarea 등). Control 글자는 주로 13/13/14px이며, 일반 Text variant 사다리와 분리되어 있습니다. **controlPaddingX** 8/10/12(버튼·탭) · **inputPaddingX** 6/8/10(입력칸) · **textareaPaddingY** 2.5/4.5/7
 
-**가로 여백은 라벨과 값이 갈립니다.** 버튼과 탭의 글자는 상자를 *정의하는* 라벨이라 좌우가 넉넉해야 형태가 살고(`controlPaddingX` 10/12/16), 입력칸은 상자가 먼저 있고 값이 그 안에 놓이는 자리라 정사각 geometry를 씁니다(`inputPaddingX` 7/9/12).
+**가로 여백은 라벨과 값이 갈립니다.** 버튼과 탭의 글자는 상자를 *정의하는* 라벨이라 좌우가 넉넉해야 형태가 살고(`controlPaddingX` 8/10/12), 입력칸은 상자가 먼저 있고 값이 그 안에 놓이는 자리라 가로 inset을 별도로 선택합니다(`inputPaddingX` 6/8/10).
 
-입력칸 값은 **보이는 잉크가 정사각**입니다. md 한 줄 입력은 32px control 안에서 13px 글자를 세로 중앙에 두고, 가로는 `border 1 + padding 9 = 10px`의 잉크 여백을 기준으로 삼습니다. 아이콘과 chevron 슬롯을 고려해 Field·Select의 x padding을 버튼보다 좁게 둡니다.
+입력칸은 글자를 세로 중앙에 두고 가로 여백을 별도 축으로 유지합니다. 이번 md는 30px control 안에 13px 글자를 두며, 가로 잉크 여백은 `border 1 + padding 8 = 9px`입니다. 정사각 여백을 강제하기보다 문서 도구의 짧은 높이와 좁은 입력 여백을 시험합니다. 아이콘과 chevron 슬롯을 고려해 Field·Select의 x padding을 버튼보다 좁게 둡니다.
 
-`textareaPaddingY`는 **가로에서 세로를 계산합니다** — md에서는 `inputPaddingX 9 − 반 줄 여백 3.25 = 5.75px`입니다. 반 줄 여백은 `(줄상자 19.5 − 글자 13) / 2`로, 줄상자가 글자 위아래에 이미 갖고 있는 몫입니다. md에서 `border 1 + padding 5.75 + 반 줄 3.25 = 10px`이 되어 가로(`border 1 + padding 9`)와 같은 잉크 여백을 만듭니다.
+`textareaPaddingY`는 **가로에서 세로를 계산합니다** — md에서는 `inputPaddingX 8 − 반 줄 여백 3.5 = 4.5px`입니다. 반 줄 여백은 `(줄상자 20 − 글자 13) / 2`로, 줄상자가 글자 위아래에 이미 갖고 있는 몫입니다. md에서 `border 1 + padding 4.5 + 반 줄 3.5 = 9px`이 되어 가로(`border 1 + padding 8`)와 같은 잉크 여백을 만듭니다.
 
 `Button`·`Field`·`Select`·`Textarea`·`SegmentedControl`·`Tabs`가 이 사다리를 공유합니다 — geometry 규칙입니다. Typography는 resolver로 역할별 클래스를 따로 붙입니다. Select는 오른쪽을 화살표 자리로 한 번 더 덮고, Textarea는 height를 빼고 세로 여백을 더합니다. SegmentedControl은 `sm`, Tabs는 `md`를 각 역할의 기본값으로 고릅니다.
 
@@ -65,16 +65,16 @@ Link는 여기 없습니다 — 상자가 아니라 글자라, 높이도 여백�
 **badge** — 높이 20/22/24, 가로 여백 `badgePaddingX` 6/8/10, **글자는 12 고정**입니다. 가로 여백이 높이와 같은 보폭(Δ2)으로 움직여 세 크기가 한 실루엣의 축소·확대로 읽힙니다. 배지는 컨트롤이 아니라 자기 축을 듭니다 — 컨트롤의 가로 여백은 세로 여백에 대한 비로 잡히는데, 배지는 20~24 상자에 18짜리 줄상자가 들어가 나눌 세로가 0~2밖에 없습니다. 배지도 컨트롤과 같은 규칙을 집니다. 밀도와 가독성은 다른 축이라, 배지가 작아진다고 글자가 따라 내려가지 않습니다. 기본 컨트롤 13px보다 한 단계 낮은 12px 표식으로 쓰며, 각 tier가 자기 앵커를 하나씩 듭니다.
 **padding** — `interaction` 4/8/12/16/24 (Box 여백) · `layout` 8/12/16/20/32 (container)
 **gap** — 4/8/12/16/24 (4px 배수)
-**radius** — `interaction` 단일 8 · `layout` `sm` 6 · `md` 8 · `lg` 12 · `full` 999(알약). `interaction`은 Button·Field·Select뿐 아니라 Badge·Menu·Tooltip·navigation처럼 반복되는 작은 표면에도 공유됩니다.
+**radius** — `interaction` 단일 4 · `layout` `sm` 6 · `md` 8 · `lg` 12 · `full` 999(알약). `interaction`은 Button·Field·Select뿐 아니라 Badge·Menu·Tooltip·navigation처럼 반복되는 작은 표면에도 공유됩니다.
 **measure**(읽기 폭) — 5단. 글자 크기는 Shape가 아니라 Text system이 소유합니다.
 **icon** — 아이콘·스피너 16/18/20. **아트보드지 잉크가 아닙니다.** `Icon`은 viewBox 24짜리 path를 받아 그리는데 아이콘 규격(lucide 등)은 그 24 안에 여백을 두고 18~20만 채우므로, 화면의 잉크는 아트보드의 75~83%입니다. 그래서 아트보드가 Checkbox와 같은 16이면 아이콘만 한 단 작아 보입니다 — 숫자가 같은 것과 같아 보이는 것은 다릅니다. 사다리가 한 단 위에 있는 이유입니다(이 축의 옛 이름은 `dot`이었는데, status dot은 이 축을 안 쓰고 소비처가 Icon·Spinner 둘뿐이라 이름이 축을 잘못 가리키고 있었습니다)
 **switch** — 트랙 30×17 / 32×18 / 36×20, 손잡이 13/14/16. 손잡이가 Checkbox 변 − 2라 트랙이 Checkbox + 2로 앉습니다. 옛 규칙은 반대로 손잡이를 Checkbox에 맞춰(16) 트랙이 20이 됐는데, 스위치는 폭이 트랙 두 배라 같은 높이에서도 면적이 세 배입니다 — 높이까지 크면 폼 한 줄에서 스위치만 튑니다. 여백 `(h − thumb) / 2`가 사방에 같이 걸려 켜짐 이동이 `w − h` 한 항등식으로 떨어집니다
 **shadow** (2단, 떠 있는 것만) — `shadow.overlay`(Modal·Tooltip) · `shadow.overlayMinimal`(Switch 손잡이). Geometry는 Shape가 맡고 tint만 Color token에서 선택합니다.
 **constants** — `borderWidth` 1 · `focusRingWidth` 2 · `focusRingOffset` 2 · `activeIndicatorWidth` 2 · `checkMarkStrokeWidth` 2 · `spinnerStrokeWidth` 2 등. **atom/component intrinsic**은 사다리 밖 치수이며 각 소비 주체에 둡니다.
 
-기본 컨트롤 사다리는 `sm 30px / md 32px / lg 40px`, 버튼 여백 `10 / 12 / 16px`, 입력 여백 `7 / 9 / 12px`입니다. 글자 크기는 `12 / 13 / 14px`로 각 단계에 맞춥니다. 기본 md는 Project Manager 데모의 버튼·검색 입력에서 가져왔습니다.
+기본 컨트롤 사다리는 `sm 26px / md 30px / lg 36px`, 버튼 여백 `8 / 10 / 12px`, 입력 여백 `6 / 8 / 10px`입니다. 글자 크기는 `13 / 13 / 14px`로 각 단계에 맞춥니다. 이번 실험의 md는 Paperdown 도구 모음의 30px 높이와 4px 모서리를 기준으로 삼았습니다. sm·lg와 버튼 padding은 그 기준을 확장한 실험값이며, typography와 layout 여백은 유지합니다.
 
-`radius.full`은 사다리의 끝이 아니라 사다리 밖입니다. 999px은 크기가 아니라 "높이의 절반까지"라는 규칙이어서, 같은 값이 32px 버튼에서는 16px 곡선이 되고 22px 배지에서는 11px 곡선이 됩니다. 어디에 얹히느냐가 실제 반경을 정하니 intent(interaction·layout)로 갈릴 이유가 없고, 그래서 둘과 나란한 셋째 가지로 섭니다.
+`radius.full`은 사다리의 끝이 아니라 사다리 밖입니다. 999px은 크기가 아니라 "높이의 절반까지"라는 규칙이어서, 같은 값이 30px 버튼에서는 15px 곡선이 되고 22px 배지에서는 11px 곡선이 됩니다. 어디에 얹히느냐가 실제 반경을 정하니 intent(interaction·layout)로 갈릴 이유가 없고, 그래서 둘과 나란한 셋째 가지로 섭니다.
 
 이 값은 원래 `constants.pillRadius`였습니다. 이름은 맞았지만 자리가 틀렸습니다. radius 축을 읽는 사람에게 알약이 보이지 않았고, 쓰려면 축 바깥의 서랍을 뒤져야 했습니다. 그러는 동안 데모의 hero CTA는 라이브러리 밖에서 CSS로 버튼 모서리를 덮어쓰고 있었습니다. 축이 자기 최대값을 API로 들지 않으면 소비처는 축을 우회합니다.
 

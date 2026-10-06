@@ -197,7 +197,7 @@ export const COMPONENTS: CompSpec[] = [
     change: "mod",
     name: "Button",
     group: "Atoms",
-    blurb: "accent × variant가 독립된 시각 무게 축이다. primary도 neutral accent family라 모든 accent가 같은 five-slot contract를 공유한다. fontSize는 버튼 실루엣과 별도로 조절한다.",
+    blurb: "accent × variant가 독립된 시각 무게 축이다. primary도 neutral accent family라 모든 accent가 같은 five-slot contract를 공유한다. fontSize는 버튼 실루엣과 별도로 조절한다. 이 브랜치에서는 height 26/30/36 · radius 4 · padding 8/10/12를 시험한다.",
     controls: [
       { kind: "enum", prop: "accent", label: "accent", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
       { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "hairline", "ghost", "muted"], def: "solid" },
@@ -270,7 +270,7 @@ export const COMPONENTS: CompSpec[] = [
     slug: "field",
     name: "Field",
     group: "Atoms",
-    blurb: "input group — raised/sunken surface와 leading/trailing 어도먼트(아이콘·$·단위), clear(×), 비밀번호 보기를 조합한다. 래퍼가 테두리·키보드 focus ring·상태를 맡고 내부 input은 입력과 caret 렌더링을 맡는다.",
+    blurb: "input group — raised/sunken surface와 leading/trailing 어도먼트(아이콘·$·단위), clear(×), 비밀번호 보기를 조합한다. 래퍼가 테두리·키보드 focus ring·상태를 맡고 내부 input은 입력과 caret 렌더링을 맡는다. 공통 height 26/30/36 · radius 4 · 입력 padding 6/8/10.",
     controls: [
       { kind: "text", prop: "placeholder", label: "placeholder", def: "검색…" },
       { kind: "enum", prop: "type", label: "type", options: ["text", "password"], def: "text" },

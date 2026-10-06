@@ -72,7 +72,7 @@ focus ring 색은 `interaction.focus`에 둡니다. focus는 상호작용 상태
 
 ## 형태
 
-- **radius 는 날만 죽인다** — `interaction` 단일 6 (버튼·입력·배지) · `layout` `sm 6`(Tooltip) ·
+- **radius 는 날만 죽인다** — `interaction` 단일 4 (버튼·입력·배지) · `layout` `sm 6`(Tooltip) ·
   `md 8`(카드) · `lg 12`(모달) · `full 999`(알약). 알약을 여는 prop 이름은 Box 가 `radius="full"`
   (사다리 한 칸), Button·Badge·Field·Select·Tabs 가 `shape="pill"`(실루엣) 이다. Tabs 는 한 축이
   트랙·항목 두 곡선을 함께 정하고, 각진 쪽 안쪽 반경은 `바깥 − 트랙 여백` 동심 계산이다.
@@ -91,12 +91,10 @@ focus ring 색은 `interaction.focus`에 둡니다. focus는 상호작용 상태
   pigment shadow는 elevation이 아니라 상태를 잃지 않고 hover를 보이는 일시적 예외다.
 - **hover 는 조용히** — 면은 interaction 오버레이로 한 단 움직인다. neutral Form은 면을 흔들지
   않고 `primary.base` solid 선으로 올라가고, semantic Form만 같은 accent의 중앙 shadow를 더한다.
-- **밀도** — 간격(Space) 5단(4px 배수 xs4~xl24)과 컨트롤 크기(ControlSize) 3단(sm·md·lg)을 분리한다. control size는 Shape의 height·padding과 Typography의 `text.control.<preset>.<size>` 중 해당 preset을 함께 선택한다. control 높이 md 34 · table 행 44.
-  가로 여백은 **라벨과 값이 갈린다** — 버튼·탭은 `controlPaddingX` 10/13/17, 입력칸은
-  `inputPaddingX` 7/9/12. Field·Select·Textarea의 보이는 잉크가 사방 같은 거리다. md는 세로
-  `(34 − 14) / 2 = 10`, 가로 `border 1 + padding 9 = 10`이다. Textarea의 `textareaPaddingY`는
-  3.5/5.5/8.5 = 가로 − 반 줄 3.5
-  (= (height − 테두리 2 − 줄상자 21) / 2). 분모는 글자 크기가 아니라 **줄상자**다 — 브라우저가
+- **밀도** — 간격(Space) 5단(4px 배수 xs4~xl24)과 컨트롤 크기(ControlSize) 3단(sm·md·lg)을 분리한다. control size는 Shape의 height·padding과 Typography의 `text.control.<preset>.<size>` 중 해당 preset을 함께 선택한다. control 높이 sm/md/lg 26/30/36 · table 행 44.
+  가로 여백은 **라벨과 값이 갈린다** — 버튼·탭은 `controlPaddingX` 8/10/12, 입력칸은
+  `inputPaddingX` 6/8/10. Field·Select·Textarea의 보이는 잉크가 사방 같은 거리다. md는 30px 높이와 13px 글자를 유지하고, 가로는 `border 1 + padding 8 = 9`이다. Textarea의 `textareaPaddingY`는
+  2.5/4.5/7 = 가로 − (textarea leading − 글자 크기) / 2이다. 분모는 글자 크기가 아니라 **줄상자**다 — 브라우저가
   세로 가운데 두는 게 줄상자라, 이 산식이라야 Textarea 첫 줄이 Field 와 같은 자리에 앉는다.
   Badge 는 컨트롤이 아니라 자기 축 `badgePaddingX` 6/8/10 을 쓴다(높이 20/22/24 와 같은 Δ2).
   **Box 여백 사다리(8/12/16)를 컨트롤에 빌려 쓰지 말 것** — 비가 눌려 답답해지고 형제와 1~2px 어긋난다.

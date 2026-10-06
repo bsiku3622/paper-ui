@@ -320,12 +320,17 @@ export const Playground = () => {
             </Box>
           </Spec>
           {/* size 정렬 — Field·Select·Button 이 같은 사다리라 나란히 두면 높이가 맞는다 */}
-          <Spec label="size md — Field · Select · Button 같은 높이" testid="spec-size-md">
+          <Spec label="size sm — compact 26px" testid="spec-size-sm">
+            <Box style={{ width: "10rem" }}><Field size="sm" defaultValue="11.25" trailing="pt" aria-label="field sm" /></Box>
+            <Box style={{ width: "9rem" }}><Select size="sm" aria-label="select sm"><Select.Option value="a">본명조</Select.Option></Select></Box>
+            <Button size="sm">Button</Button>
+          </Spec>
+          <Spec label="size md — Paperdown 30px · radius 4px" testid="spec-size-md">
             <Box style={{ width: "10rem" }}><Field size="md" placeholder="Field" aria-label="field md" /></Box>
             <Box style={{ width: "9rem" }}><Select size="md"><Select.Option value="a">Select</Select.Option></Select></Box>
             <Button size="md">Button</Button>
           </Spec>
-          <Spec label="size lg — 셋이 함께 커진다" testid="spec-size-lg">
+          <Spec label="size lg — roomy 36px" testid="spec-size-lg">
             <Box style={{ width: "10rem" }}><Field size="lg" placeholder="Field" aria-label="field lg" /></Box>
             <Box style={{ width: "9rem" }}><Select size="lg"><Select.Option value="a">Select</Select.Option></Select></Box>
             <Button size="lg">Button</Button>
@@ -333,7 +338,7 @@ export const Playground = () => {
           {/* 공통 base — 넷이 같은 컨트롤 여백을 쓰는가. 높이가 아니라 *글자 시작점* 을 본다:
               Textarea 는 줄 수만큼 자라 높이로는 줄을 못 세우고, Select 는 화살표 때문에
               오른쪽만 넓다. 왼쪽 여백 하나가 넷을 한 세로선에 세운다. */}
-          <Spec label="base — 높이·글자는 공유, 가로는 라벨 13 · 값 9로 갈린다" testid="spec-control-base">
+          <Spec label="base — radius 4 · 라벨 padding 10 · 값 padding 8" testid="spec-control-base">
             <Button size="md" data-testid="base-button">Button</Button>
             <Box style={{ width: "9rem" }}><Field size="md" placeholder="Field" aria-label="field base" data-testid="base-field" /></Box>
             <Box style={{ width: "9rem" }}><Select size="md" data-testid="base-select"><Select.Option value="a">Select</Select.Option></Select></Box>
