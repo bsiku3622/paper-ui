@@ -7,7 +7,7 @@
 //     라벨이 상자를 정의하고, 입력은 상자 안에 값이 놓여 서로 다른 가로 여백을 가진다.
 //     자세한 근거는 tokens/shape.ts 의 CONTROL_PADDING_X · INPUT_PADDING_X.
 //
-// Button·Field·Select·Textarea·Tabs 가 이 사다리를 공유해 같은 size 는 같은 height 에
+// Button·Field·Select·Textarea 가 이 사다리를 공유해 같은 size 는 같은 height 에
 // 앉는다. 가로 여백은 역할에 따라 갈린다 —
 // 아래 통로로 나간다.
 
@@ -34,7 +34,7 @@ export const sizeLadderRules = Object.fromEntries(
 //
 // 그래서 **베이스는 공유하고, 벗어나는 축만 이름으로 짚는다.**
 //
-//   ladderRules()                                   베이스 그대로       Button · Tabs
+//   ladderRules()                                   베이스 그대로       Button
 //   ladderRules((s) => ({ paddingInline: X[s] }))   한 축만 교체        Field · Select
 //   ladderRules((s) => ({ height: null }))          그 축을 아예 뺀다   Textarea
 //

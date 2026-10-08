@@ -1,4 +1,4 @@
-// Radio — 여럿 중 하나. 보통 RadioGroup 이 묶어 쓰지만 단독으로도 된다.
+// Radio — 여럿 중 하나. 관련 선택지는 사용하는 화면에서 묶는다.
 
 import { forwardRef, type InputHTMLAttributes } from "react";
 

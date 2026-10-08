@@ -32,27 +32,25 @@ resolveAccent(accent, variant)  →  "pui-a-error-solid"   (이름 규칙)
 styles/color.css.ts  ── ACCENTS × VARIANTS 를 loop ──┘  (그 클래스의 실체)
 ```
 
-`resolveAccent("error", "solid")`가 `"pui-a-error-solid"`를 돌려주고, 그 클래스가 무엇인지(background·color·border)는 `styles/color.css.ts`가 같은 `ACCENTS × VARIANTS` 배열을 걸어 굳힙니다. 면은 색과 다른 종류라 resolver도 따로입니다 — `resolveSurface(surface)` → `"pui-surface-raised"`. 두 자리가 한 배열을 돌기 때문에 resolver가 만들 수 있는 모든 이름에 대응하는 규칙이 반드시 있습니다 — 조합이 빠지거나 어긋날 수 없습니다. shared accent hover는 `.pui-interactive` gate가 함께 있을 때만 물고, Form의 border/focus와 navigation의 selected 우선순위는 각 컴포넌트가 소유합니다. 전체 계약은 [Interaction](interaction.md)에 고정합니다.
+`resolveAccent("error", "solid")`가 `"pui-a-error-solid"`를 돌려주고, 그 클래스가 무엇인지(background·color·border)는 `styles/color.css.ts`가 같은 `ACCENTS × VARIANTS` 배열을 걸어 굳힙니다. 면은 색과 다른 종류라 resolver도 따로입니다 — `resolveSurface(surface)` → `"pui-surface-raised"`. 두 자리가 한 배열을 돌기 때문에 resolver가 만들 수 있는 모든 이름에 대응하는 규칙이 반드시 있습니다 — 조합이 빠지거나 어긋날 수 없습니다. shared accent hover는 `.pui-interactive` gate가 함께 있을 때만 물고, Form atoms의 border/focus와 선택 가능한 행의 우선순위는 각 소비자가 소유합니다. 전체 계약은 [Interaction](interaction.md)에 고정합니다.
 
-## 레이어
+## 패키지 경계
 
 ```
-Primitives(4) → Atoms(13) → Molecules(6) → Components(4)
+Tokens → Primitives → Atoms
 ```
 
-**raw HTML은 Primitive와 Atom까지입니다.** `Box · Stack · Inline · Text`(Primitive)가 기본 태그 레이어이고, Atom도 자기 시맨틱 태그를 직접 렌더합니다(`Button`→`button` · `Field`→`input` · `Link`→`a`). **Molecule부터는** raw 태그를 직접 쓰지 않고 Primitive·Atom으로 합성합니다 — raw 태그가 꼭 필요하면 `<Box as="button">`이 유일한 통로입니다. eslint는 이 금지를 Molecule·Component 레이어에 강제합니다(규칙 4).
+패키지는 레이아웃을 조합하는 Primitive와 단일 역할의 Atom까지 제공합니다. 페이지 헤더·표·메뉴 같은 더 큰 조합은 실제 제품의 요구가 반복되어 공통 API의 경계가 분명해질 때까지 소비 앱이 소유합니다. 앱에서 의미 있는 HTML이 필요하면 `<Box as="button">`처럼 Primitive의 typed `as` 경로를 사용하거나, 앱의 semantic markup을 직접 작성합니다.
 
 Atom에도 `as`가 있지만(`<Button as={Link} to="/docs">`) 그건 raw 태그를 뚫는 구멍이 아니라 같은 자리의 역할을 바꾸는 축입니다. 버튼처럼 생겼는데 실제로 하는 일이 이동이라면 그것은 링크여야 하고, 그렇다고 `<Link>`로 `<Button>`을 감싸면 `<a>` 안에 `<button>`이 들어가 탭 정지가 둘로 늘어납니다. 태그 하나만 그리게 하는 것이 `as`의 몫입니다.
 
-## 절대 규칙 4
+## 빌드 규칙
 
-원칙은 기억이 아니라 빌드가 지킵니다. 넷 다 eslint가 강제합니다.
+원칙은 기억이 아니라 빌드가 지킵니다. 아래 세 규칙은 eslint가 강제합니다.
 
 1. **raw 색값 금지** — OKLCH source는 `tokens/palette.ts`, HEX 생성과 gamut mapping은 `tokens/color-ladder.ts`에만 둡니다. 소비처는 `tokens.color.X`만 참조하고 runtime color math를 하지 않습니다.
 2. **color layer import 격리** — palette·ladder·semantic VALUES는 component·resolver·app에서 import하지 않습니다.
 3. **inline style로 토큰 주입 금지** — `.css.ts`의 className으로만 적용합니다.
-4. **Primitive 위에서 raw HTML 금지** — Molecule부터는 Primitive/Atom으로 합성합니다.
-
 ## 검증
 
-시스템에는 검증 표면이 둘 있습니다. 데모(이슈 트래커)는 실제 화면에서 시스템이 서는지 보는 자리이고, playground는 컴포넌트를 전수 깔아 자동 테스트가 정렬·색·포커스·타입을 계산값으로 assert하는 표면입니다. 값을 하드코딩해 두어, 토큰이 의도치 않게 바뀌면 테스트가 걸립니다. `paper`를 `surface`로, CSS prefix를 `pui-`로, 토큰 구조를 studio-ui 결로 재개편하면서도 마음이 편했던 건 이 하네스 덕입니다.
+데모(이슈 트래커)는 Primitive와 Atom을 실제 화면에 조합해 보는 자리입니다. Playground는 Palette와 Foundations 값을 표시합니다. 제품 조합은 별도의 라이브러리 카탈로그에 포함하지 않습니다.

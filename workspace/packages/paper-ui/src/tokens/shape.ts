@@ -40,23 +40,22 @@ const REM = (px: number) => `${px / 16}rem`;
 export const SHAPE_SIZES = ["xs", "sm", "md", "lg", "xl"] as const;
 export type ShapeSize = (typeof SHAPE_SIZES)[number];
 
-// 컨트롤 크기 3 단 — Button·Field·Select·Tabs·Icon·Spinner·Badge·Checkbox·Switch·
-// Radio 의 size prop. md 가 anchor(기본), sm 은 밀집/보조, lg 는 강조/CTA.
+// Control size ladder used by Buttons, fields, and single-purpose controls.
 export const CONTROL_SIZES = ["sm", "md", "lg"] as const;
 export type ControlSize = (typeof CONTROL_SIZES)[number];
 
 // ───── height — interaction · layout ────────────────────────────────────────
 //
-// interaction: chrome (Button · Field · Select · NavItem). md=32 anchor
+// interaction: controls (Button · Field · Select). md=32 anchor
 //   (Project Manager demo의 기본 버튼·검색 필드 기준). 차분한 범위 24~44.
-// layout: container surface (Box · Sidebar · Modal). endpoint-driven.
+// layout: container surfaces. endpoint-driven.
 
 export const SHAPE_HEIGHT = {
   xs: { interaction: REM(24), layout: REM(64) },
   sm: { interaction: REM(30), layout: REM(96) }, // compact control
   md: { interaction: REM(32), layout: REM(144) }, // default control anchor
   lg: { interaction: REM(36), layout: REM(216) }, // roomy control
-  xl: { interaction: REM(44), layout: REM(320) }, // 44 = Table 한 줄·가장 큰 CTA
+  xl: { interaction: REM(44), layout: REM(320) }, // largest control target
 } as const;
 
 // ───── width — layout 만 ────────────────────────────────────────────────────
@@ -99,7 +98,7 @@ export const SHAPE_GAP = {
 
 // ───── radius — interaction(단일) · layout(3 단) · full(scope 없음) ─────────
 //
-// interaction 은 단일(chrome 은 size 별 radius 차이가 거의 안 보임), layout 은 3 단
+// interaction 은 단일(controls 는 size 별 radius 차이가 거의 안 보임), layout 은 3 단
 // (큰 면일수록 한 호흡 곡선). Paperdown의 30px 컨트롤에서 4px은 날을 부드럽게 하되
 // pill처럼 부풀지 않는 반경이다. 큰 면일수록 radius도 커지는 비율은 유지한다.
 //
@@ -116,16 +115,16 @@ export const SHAPE_GAP = {
 export const SHAPE_RADIUS = {
   interaction: REM(4), // Paperdown control corner; layout radii remain independent
   layout: {
-    sm: REM(4), // Tooltip·Popover — 작은 면 전용 곡선
+    sm: REM(4), // Small container curve
     md: REM(6), // Box ◀ anchor
-    lg: REM(8), // Modal·큰 면
+    lg: REM(8), // Large container curve
   },
   full: "999px", // 알약 — 높이의 절반. intent 로 안 갈린다(어느 면에나 같은 값)
 } as const;
 
 // ───── control paddingInline — 밀도와 분리한 컨트롤 가로 여백 (3 단) ────────
 //
-// Button·Field·Select·Tabs 의 좌우 여백. Box 여백 사다리(SHAPE_PADDING)에서 떼어
+// Button·Field·Select 의 좌우 여백. Box 여백 사다리(SHAPE_PADDING)에서 떼어
 // 냈다 — 면의 여백과 컨트롤의 여백은 다른 요구인데 같은 값을 쓰고 있었다.
 //
 // 기본 라벨은 12 · 13 · 14px(caption · control · body)로 높이 단계와 함께 움직인다.
@@ -281,13 +280,13 @@ export const SHAPE_MEASURE = {
 
 // ───── shadow — 떠 있는 것의 표식 (2단, 축 아님) ────────────────────────────
 //
-// 원칙 4: "떠 있는 것만 지속 그림자를 갖는다". 붙어있는 면(Button·Field·Box·Table)은
+// 원칙 4: "떠 있는 것만 지속 그림자를 갖는다". 붙어있는 면(Button·Field·Box)은
 // resting 그림자 없음 — semantic Form hover의 일시적 pigment 피드백만 아래 helper로 예외다.
 // radius·size 와 나란한 shape 토큰일 뿐,
 // "elevation" 같은 추상 축이 아니다 (그 이름은 surface 의 'raised' 와 충돌했다 —
 // 떠오른 흰 면(raised)은 그림자 없이 뜨는데 elevation.raised 는 그림자였다).
 //
-// overlay        — 자유롭게 뜬 것 (Modal · Tooltip · Popover · 제품 목업).
+// overlay        — 자유롭게 뜬 면.
 // overlayMinimal — 아주 살짝 뜬 것 (Switch 손잡이 등). overlay 결의 최소치.
 
 // Shadow geometry is shape; its tint is a color constant generated from the neutral palette.
@@ -325,29 +324,6 @@ export const ATOM_INTRINSIC = {
   selectArrow: REM(10), //     Select 화살표 아이콘 크기 (0.625rem)
 } as const;
 
-// ───── component intrinsic — 상위 구조가 소유하는 크기 ────────────────────
-//
-// 컨트롤 사다리(size)와 섞지 않는다. Modal 폭은 담는 일의 범위이고, Table 행 높이는
-// 같은 정보를 얼마나 촘촘하게 읽는가(density)다. 둘 다 컴포넌트가 소유하는 축이라 atom
-// 서랍에 두면 이름과 책임이 어긋난다.
-export const COMPONENT_INTRINSIC = {
-  navbarHeight: REM(52),
-  segmentedTrackGap: "1px",
-  // 안쪽 반경은 radius.interaction - segmentedTrackPad로 계산한다.
-  segmentedTrackPad: "3px",
-  modalWidth: {
-    sm: REM(360),
-    md: REM(432),
-    lg: REM(640),
-  },
-  pageHeaderContentWidth: REM(704),
-  tableRowHeight: {
-    compact: REM(36),
-    default: REM(44),
-    comfortable: REM(52),
-  },
-} as const;
-
 // ───── VALUES — emit 대상 트리 ─────────────────────────────────────────────
 
 export const SHAPE_VALUES = {
@@ -368,7 +344,6 @@ export const SHAPE_VALUES = {
   measure: SHAPE_MEASURE,
   constants: SHAPE_CONSTANTS,
   atom: ATOM_INTRINSIC,
-  component: COMPONENT_INTRINSIC,
 } as const;
 
 // ───── Box override prop keys ───────────────────────────────────────────────

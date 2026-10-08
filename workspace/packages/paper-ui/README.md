@@ -50,18 +50,14 @@ white, black, and whitespace.
 
 ## What is in the box
 
-| Layer | Count | |
-|---|---|---|
-| Primitives | 4 | `Box · Stack · Inline · Text` |
-| Atoms | 13 | `Button · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Icon · Spinner · Divider · Link` |
-| Molecules | 10 | `FormField · RadioGroup · SegmentedControl · Tabs · Tooltip · Alert · Breadcrumb · Menu · Steps · TableOfContents` |
-| Components | 11 | `Table · Modal · Navbar · Banner · PageHeader · EmptyState · Pagination · Sidebar · DropdownMenu · CommandMenu · TreeNavigation` |
+| Layer | Exports |
+|---|---|
+| Primitives | `Box · Stack · Inline · Text` |
+| Atoms | `Button · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Icon · Spinner · Divider · Link` |
 
-Thirty-eight components is the baseline — with forms, feedback, loading, location
-and page-level data flows included, it is the smallest set that finishes a real screen.
-
-Raw HTML stops at Atoms; each renders its own semantic tag. From Molecules up,
-everything is composed from Primitives and Atoms.
+The package stops at primitives and atoms. Product-specific compositions belong
+to the consuming app, where their structure and lifecycle can follow the product.
+Atoms render their own semantic elements; primitives provide layout and text.
 `Box` also exposes typed dimension and overflow props; named `xs`–`xl` values resolve
 to layout tokens, while CSS lengths remain available for application-specific layout.
 
@@ -84,8 +80,7 @@ the Primitive layer.
 
 ## Documentation
 
-The seven principles behind every visual decision, the token reference, and the
-component overview live in the repository:
+The principles behind visual decisions and the token reference live in the repository:
 <https://github.com/bsiku3622/paper-ui>
 
 ## Licence

@@ -43,7 +43,7 @@ export const LOOP = {
 // ───── role — 의미별 모션 묶음 ──────────────────────────────────────────────
 //
 // 컴포넌트는 "무슨 상황의 모션인지"(role)만 고른다. hover · state 는 duration+
-// easing, enter 는 등장 변위(offset·scale)도 갖는다 (Modal·Tooltip 이 keyframe 에
+// easing, enter 는 등장 변위(offset·scale)도 갖는다 (floating·blocking surfaces 가 keyframe 에
 // 그 값을 인라인).
 
 export type MotionRole = {

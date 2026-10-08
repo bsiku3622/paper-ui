@@ -1,54 +1,55 @@
-// PlaygroundLayout — 시스템 Sidebar로 세우는 공용 reference shell.
-
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 
-import { Box, Breadcrumb, Sidebar, Stack, tokens } from "@studio-baeks/paper-ui";
+import { Box, Inline, Stack, Text, tokens } from "@studio-baeks/paper-ui";
 
 import { SiteNav, NAV_HEIGHT } from "../site/chrome";
-import { COMPONENTS, GROUPS } from "./registry";
 import { FOUNDATION_SECTIONS } from "./foundation-sections";
 
-const CHANGE_BADGE = {
-  new: { label: "NEW", color: "info" },
-  mod: { label: "MOD", color: "warning" },
-} as const;
+const linkStyle = (active: boolean) => ({
+  display: "block",
+  padding: `${tokens.shape.padding.xs.layout} ${tokens.shape.padding.sm.layout}`,
+  color: active ? tokens.color.ink.primary : tokens.color.ink.secondary,
+  background: active ? tokens.color.interaction.selected : "transparent",
+  textDecoration: "none",
+  fontSize: tokens.text.style.body.size,
+});
 
 export const PlaygroundLayout = ({ value, children }: { value: string; children: ReactNode }) => (
   <Stack>
     <SiteNav />
     <Box style={{ display: "grid", gridTemplateColumns: `${tokens.shape.width.lg.layout} 1fr`, maxWidth: tokens.layout.container.content, marginInline: "auto", width: "100%" }}>
-      <Sidebar
-        value={value}
-        aria-label="컴포넌트 레퍼런스"
-        style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, top: NAV_HEIGHT, position: "sticky" }}
-      >
-        <Sidebar.Group label="레퍼런스">
-          <Sidebar.Item value="palette" as={Link} to="/playground/palette">팔레트 · Foundations</Sidebar.Item>
-          <Sidebar.Item value="all" as={Link} to="/playground">전수 · 한 화면</Sidebar.Item>
-        </Sidebar.Group>
-        <Sidebar.Group label="Foundations">
-          {FOUNDATION_SECTIONS.map(([slug, label]) => <Sidebar.Item key={slug} value={`foundation-${slug}`} as={Link} to={`/playground/foundations/${slug}`}>{label}</Sidebar.Item>)}
-        </Sidebar.Group>
-        {GROUPS.map((group) => (
-          <Sidebar.Group key={group} label={group}>
-            {COMPONENTS.filter((component) => component.group === group).map((component) => {
-              const badge = component.change ? CHANGE_BADGE[component.change] : undefined;
-              return (
-                <Sidebar.Item key={component.slug} value={component.slug} as={Link} to={`/playground/${component.slug}`}>
-                  {component.name}
-                  {badge ? <Sidebar.Badge accent={badge.color}>{badge.label}</Sidebar.Badge> : null}
-                </Sidebar.Item>
-              );
-            })}
-          </Sidebar.Group>
-        ))}
-      </Sidebar>
+      <Box as="nav" aria-label="Foundations" style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, top: NAV_HEIGHT, position: "sticky", alignSelf: "start", padding: tokens.shape.padding.md.layout, borderRight: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }}>
+        <Stack gap="lg">
+          <Stack gap="xs">
+            <Text variant="label" ink="faint">REFERENCE</Text>
+            <Link to="/playground/palette" style={linkStyle(value === "palette")}>Palette</Link>
+          </Stack>
+          <Stack gap="xs">
+            <Text variant="label" ink="faint">FOUNDATIONS</Text>
+            {FOUNDATION_SECTIONS.map(([slug, label]) => (
+              <Link key={slug} to={`/playground/foundations/${slug}`} style={linkStyle(value === `foundation-${slug}`)}>{label}</Link>
+            ))}
+          </Stack>
+        </Stack>
+      </Box>
       <Box paddingX="xl" paddingY="xl" style={{ minWidth: 0 }}>{children}</Box>
     </Box>
   </Stack>
 );
 
 export const Crumb = ({ group, name }: { group: string; name: string }) => (
-  <Breadcrumb><Breadcrumb.Item>{group}</Breadcrumb.Item><Breadcrumb.Item current>{name}</Breadcrumb.Item></Breadcrumb>
+  <Inline gap="xs" align="center">
+    <Text variant="caption" ink="faint">{group}</Text>
+    <Text variant="caption" ink="faint">/</Text>
+    <Text variant="caption" ink="soft">{name}</Text>
+  </Inline>
+);
+
+export const ReferenceHeading = ({ group, name, description }: { group: string; name: string; description: string }) => (
+  <Stack gap="xs">
+    <Crumb group={group} name={name} />
+    <Text as="h1" variant="title">{name}</Text>
+    <Text variant="body" ink="soft">{description}</Text>
+  </Stack>
 );

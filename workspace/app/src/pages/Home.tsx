@@ -1,9 +1,4 @@
-// 홈 — paper-ui 랜딩.
-//
-// shadcn/ui 전략: 정제된 헤드라인 + CTA 아래에 "완전한 앱 목업 하나"를 주인공으로
-// 세운다. 조각난 컴포넌트 카드를 나열하지 않고, 사이드바·검색·탭·테이블·배지가 다
-// 들어간 실제 이슈 트래커 화면으로 "컴포넌트가 함께 선다"를 증명한다 — paper 정체성
-// (갤러리가 아니라 실제 화면으로 검증)과 같은 결.
+// Paper UI landing page. Product-level compositions stay local to this app.
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -15,8 +10,6 @@ import {
   Field,
   Inline,
   Stack,
-  Table,
-  SegmentedControl,
   Text,
   tokens,
   type StatusName,
@@ -51,7 +44,7 @@ const FILTERS: { label: string; accent: "info" | "success" | "warning" | "error"
   { label: "완료", accent: "success" },
 ];
 
-// 완전한 앱 목업 — 랜딩의 주인공. 실제 paper 컴포넌트로만 조립한 이슈 트래커.
+// App-local issue tracker composition used to show the primitives and atoms in context.
 const AppMockup = () => {
   const [tab, setTab] = useState("all");
   return (
@@ -112,13 +105,23 @@ const AppMockup = () => {
             </Inline>
 
             <Inline align="center" justify="between" gap="sm">
-              <SegmentedControl shape="pill" value={tab} onValueChange={setTab}><SegmentedControl.Item value="all">전체</SegmentedControl.Item><SegmentedControl.Item value="open">열림</SegmentedControl.Item><SegmentedControl.Item value="done">완료</SegmentedControl.Item></SegmentedControl>
+              <Inline gap="xs" role="group" aria-label="이슈 필터">
+                {([["all", "전체"], ["open", "열림"], ["done", "완료"]] as const).map(([value, label]) => <Button key={value} size="sm" shape="pill" variant={tab === value ? "soft" : "ghost"} aria-pressed={tab === value} onClick={() => setTab(value)}>{label}</Button>)}
+              </Inline>
               <Text variant="caption" as="span" ink="soft">6건 · 열림 4</Text>
             </Inline>
           </Stack>
 
           <Box style={{ padding: tokens.shape.padding.md.interaction }}>
-            <Table><Table.Header><Table.Column>키</Table.Column><Table.Column>이슈</Table.Column><Table.Column>담당</Table.Column><Table.Column>상태</Table.Column></Table.Header><Table.Body>{ISSUES.map((issue) => <Table.Row key={issue.id}><Table.Cell><Text variant="caption" family="mono" as="span" ink="soft">{issue.key}</Text></Table.Cell><Table.Cell>{issue.title}</Table.Cell><Table.Cell><Text variant="caption" as="span" ink="soft">{issue.who}</Text></Table.Cell><Table.Cell><Badge accent={issue.status}>{issue.label}</Badge></Table.Cell></Table.Row>)}</Table.Body></Table>
+            <Box as="table" style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
+              <Box as="thead"><Box as="tr">{["키", "이슈", "담당", "상태"].map((label) => <Box as="th" key={label} style={{ padding: tokens.shape.padding.sm.interaction, color: tokens.color.ink.tertiary, borderBottom: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }}>{label}</Box>)}</Box></Box>
+              <Box as="tbody">{ISSUES.map((issue) => <Box as="tr" key={issue.id}>
+                <Box as="td" style={{ padding: tokens.shape.padding.sm.interaction, borderBottom: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }}><Text variant="caption" family="mono" as="span" ink="soft">{issue.key}</Text></Box>
+                <Box as="td" style={{ padding: tokens.shape.padding.sm.interaction, borderBottom: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }}>{issue.title}</Box>
+                <Box as="td" style={{ padding: tokens.shape.padding.sm.interaction, borderBottom: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }}><Text variant="caption" as="span" ink="soft">{issue.who}</Text></Box>
+                <Box as="td" style={{ padding: tokens.shape.padding.sm.interaction, borderBottom: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }}><Badge accent={issue.status}>{issue.label}</Badge></Box>
+              </Box>)}</Box>
+            </Box>
           </Box>
         </main>
       </div>
@@ -145,23 +148,16 @@ export const Home = () => (
           </Text>
 
           <Text variant="body" as="p" ink="soft" className="home-sub">
-            서른여덟 개의 컴포넌트로 실제 화면을 세웁니다. 색은 의미가 있을 때만 쓰고, 구조는 빌드가 지킵니다 — 순백 위에 부드럽게.
+            레이아웃은 Primitive로, 상호작용은 Atom으로 시작합니다. 색은 의미가 있을 때만 쓰고, 순백 위에 부드럽게.
           </Text>
 
-          {/* CTA 둘은 알약을 고른다 — 세그먼트까지 합쳐 화면에 알약이 셋이고, 각각 자기
-              영역에서 가장 중요한 행동을 표시한다. 알약이 기본값이 아니라 *선택* 일 때
-              갖는 뜻이다. 예전엔 이걸 `.home-cta button` CSS 로 덮어썼다 — 앱이 라이브러리
-              밖에서 컴포넌트 모서리에 손을 넣던 자리라, shape prop 으로 안으로 들였다.
-
-              둘 다 누르면 이동하는 자리라 Button 이 아니라 *링크* 다 — as={Link} 로 <a>
-              하나만 그린다. 감싸면(<Link><Button/></Link>) 탭 정지가 둘이 되고 같은 자리에
-              포커스 링이 두 번, 그것도 두 모양으로 잡힌다. */}
+          {/* Both actions navigate, so Button renders the router link directly. */}
           <Inline gap="sm" style={{ marginTop: tokens.shape.gap.xl }}>
             <Button as={Link} to="/docs" size="lg" shape="pill" style={{ textDecoration: "none" }}>
               문서 읽기
             </Button>
             <Button as={Link} to="/playground" size="lg" variant="hairline" shape="pill" style={{ textDecoration: "none" }}>
-              컴포넌트 보기
+              Foundations 살펴보기
             </Button>
           </Inline>
         </div>

@@ -26,8 +26,8 @@ paper-ui/
     │       ├── tokens/         # 값의 유일한 정의 위치
     │       ├── styles/         # theme.css.ts (raw 값 → CSS var) · utility.css.ts
     │       ├── resolvers/      # 규칙의 주인 (prop → className)
-    │       ├── primitives/     # raw HTML 을 렌더하는 유일한 레이어
-    │       ├── atoms/ molecules/ components/
+    │       ├── primitives/     # layout·text·icon building blocks
+    │       ├── atoms/
     │       └── provider/
     └── app/                    # 데모 — 이슈 트래커 화면 하나
 ```
@@ -49,7 +49,7 @@ OKLCH Palette source → HEX Palette Token generation → semantic systems → r
 - palette.ts만 OKLCH neutral·accent anchor와 `alpha05`~`alpha95` opacity scale을 소유합니다. color-ladder.ts의 순수 함수를 호출해 완성된 coordinates와 HEX Palette Token을 조립해 export합니다. Palette 값은 테마와 무관하며, semantic layer가 light/dark 역할에 맞는 step을 선택합니다.
 - color-ladder.ts는 palette.ts를 import하지 않는 순수 계산 모듈입니다. 입력받은 좌표·단계에 대해 보간·gamut-map·HEX 인코딩을 수행하며 semantic role 이름을 두지 않습니다.
 - colors.ts의 semantic leaf는 생성된 Palette Token만 선택합니다. 다른 semantic leaf, 직접 입력한 HEX, color math를 참조하지 않습니다.
-- theme.css.ts는 semantic tree를 CSS variable로 내보냅니다. Component·resolver·app은 tokens.color var 참조만 씁니다. /playground/palette는 source와 생성 결과를 확인하는 예외입니다. Foundations의 Tokens.tsx inspector도 색상 비교표를 위해 colors·palette 두 source 모듈을 정확한 경로로 읽습니다. 다른 raw-token import 제한은 유지합니다.
+- theme.css.ts는 semantic tree를 CSS variable로 내보냅니다. Package consumers는 tokens.color var 참조만 씁니다. /playground/palette는 source와 생성 결과를 확인하는 예외입니다. Foundations의 Tokens.tsx inspector도 색상 비교표를 위해 colors·palette 두 source 모듈을 정확한 경로로 읽습니다. 다른 raw-token import 제한은 유지합니다.
 
 semantic color는 surface·ink·border·accent·interaction·overlay·shadow 역할로 나뉩니다.
 
@@ -72,33 +72,25 @@ focus ring 색은 `interaction.focus`에 둡니다. focus는 상호작용 상태
 
 ## 형태
 
-- **radius 는 날만 죽인다** — `interaction` 단일 4 (버튼·입력·배지) · `layout` `sm 4`(Tooltip) ·
-  `md 6`(카드) · `lg 8`(모달) · `full 999`(알약). 알약을 여는 prop 이름은 Box 가 `radius="full"`
-  (사다리 한 칸), Button·Badge·Field·Select·Tabs 가 `shape="pill"`(실루엣) 이다. Tabs 는 한 축이
-  트랙·항목 두 곡선을 함께 정하고, 각진 쪽 안쪽 반경은 `바깥 − 트랙 여백` 동심 계산이다.
-  Textarea 엔 없다 —
-  알약은 "높이의 절반" 이라 한 줄짜리에서만 성립하고, 여러 줄 상자에선 경기장이 된다. 사다리를 한 단 조인 건 큰 곡선이 밀도와
-  싸우기 때문 — 모서리가 물러날수록 면과 헤어라인이 앞으로 나온다. `full` 은 intent 로
-  갈리지 않아 두 가지와 나란한 셋째 가지다.
-- **회색은 받친다** — Card의 기본은 shared `primary × hairline`이고, 강조가 필요할 때도
-  별도 Card variant를 만들지 않고 shared `accent × variant` 안에서 고릅니다. `control.track`은 Switch·SegmentedControl 내부 트랙에만
+- **radius 는 날만 죽인다** — `interaction` 단일 4 · `layout` sm 4 / md 6 / lg 8 · `full` 999.
+  `full`은 pill silhouette에 쓰는 별도 값이다. 큰 곡선이 밀도와 싸우지 않도록 layout 곡선은
+  세 단계에서 멈춘다. 소비처가 없는 값은 실제 사용 사례가 생길 때 다시 검토한다.
+- **회색은 받친다** — 면은 뉴트럴 경계와 배경으로 구조를 만듭니다. `control.track`은 Switch 내부 트랙에만
   구조를 받치는 더 깊은 면입니다. 같은 깊이의 회색 위에 같은 회색을 겹치지 않습니다.
-- **shadow 는 2 단 토큰(elevation 축 아님)** — 떠 있는 것만 지속 그림자를 갖는다. `overlay`
-  (Modal·Tooltip·Popover) · `overlayMinimal`(Switch 손잡이 등). 붙어있는 면(Button·Field·
-  Card·Table)은 그림자 없음(prop 을 안 준다). 다크에선 near-black 이 사라지므로 더 짙은 그림자로
+- **shadow 는 2 단 토큰(elevation 축 아님)** — 떠 있는 것만 지속 그림자를 갖는다. `overlay` ·
+  `overlayMinimal`(작은 조작 요소). 붙어있는 면은 그림자 없음(prop 을 안 준다). 다크에선 near-black 이 사라지므로 더 짙은 그림자로
   교체(테마 인식). `raised` 는 이제 surface color 지 그림자가 아니다(옛 elevation.raised 충돌 해소).
-  radius 는 독립 — 면 크기가 정한다(작은 Tooltip 4, 큰 Modal 8). semantic Form hover의 중앙
-  pigment shadow는 elevation이 아니라 상태를 잃지 않고 hover를 보이는 일시적 예외다.
+  semantic Form hover의 중앙 pigment shadow는 상태를 보이는 일시적 예외다.
 - **hover 는 조용히** — 면은 interaction 오버레이로 한 단 움직인다. neutral Form은 면을 흔들지
   않고 `primary.base` solid 선으로 올라가고, semantic Form만 같은 accent의 중앙 shadow를 더한다.
-- **밀도** — 간격(Space) 5단(4px 배수 xs4~xl24)과 컨트롤 크기(ControlSize) 3단(sm·md·lg)을 분리한다. control size는 Shape의 height·padding과 Typography의 `text.control.<preset>.<size>` 중 해당 preset을 함께 선택한다. control 높이 sm/md/lg 30/32/36 · table 행 44.
-  가로 여백은 **라벨과 값이 갈린다** — 버튼·탭은 `controlPaddingX` 10/11/14, 입력칸은
+- **밀도** — 간격(Space) 5단(4px 배수 xs4~xl24)과 컨트롤 크기(ControlSize) 3단(sm·md·lg)을 분리한다. control size는 Shape의 height·padding과 Typography의 `text.control.<preset>.<size>` 중 해당 preset을 함께 선택한다. control 높이 sm/md/lg 30/32/36.
+  가로 여백은 **라벨과 값이 갈린다** — 버튼은 `controlPaddingX` 10/11/14, 입력칸은
   `inputPaddingX` 7/8/10. Field·Select·Textarea의 보이는 잉크가 사방 같은 거리다. md는 32px 높이와 13px 글자를 유지하고, 가로는 `border 1 + padding 8 = 9`이다. Textarea의 `textareaPaddingY`는
   3.5/4.5/7 = 가로 − (textarea leading − 글자 크기) / 2이다. 분모는 글자 크기가 아니라 **줄상자**다 — 브라우저가
   세로 가운데 두는 게 줄상자라, 이 산식이라야 Textarea 첫 줄이 Field 와 같은 자리에 앉는다.
   Badge 는 컨트롤이 아니라 자기 축 `badgePaddingX` 6/8/10 을 쓴다(높이 20/22/24 와 같은 Δ2).
   **Box 여백 사다리(8/12/16)를 컨트롤에 빌려 쓰지 말 것** — 비가 눌려 답답해지고 형제와 1~2px 어긋난다.
-  Button·Field·Select·Textarea·Tabs 가 `internal/sizeLadder` 를 공유한다(Link 는 글자라 제외).
+  Button·Field·Select·Textarea 가 `internal/sizeLadder` 를 공유한다(Link 는 글자라 제외).
   ⚠ **공유하는 건 height 와 글자고, 벗어나는 축은 통로로 나간다** — `ladderRules(patch)`.
   인자 없으면 베이스 그대로, 키를 돌려주면 그 축만 교체, `null` 이면 그 축을 뺀다(Textarea height).
   사다리를 손으로 베끼지 말 것 — Select 가 그래서 갈라졌다.
@@ -107,11 +99,7 @@ focus ring 색은 `interaction.focus`에 둡니다. focus는 상호작용 상태
   `checkbox` 15/16/18, `switch` 손잡이 = checkbox − 2 → 트랙 = checkbox + 2, 이동 = w − h.
   Badge 는 자기 높이 사다리(20/22/24)를 쓰되 **글자는 12 고정** — 컨트롤 14 와 같은 규칙, 다른 tier.
 
-- **상위 레이어의 축** — 공유 `accent × variant`는 레이어와 무관하게 의미색과 시각 무게가 필요한
-  컴포넌트가 우선 사용합니다(Button·Badge·Alert·Card). 지역 `variant`는 shared 축으로 표현할 수 없는
-  구조만 고릅니다(Table `plain·ruled·striped`, Tabs `segmented·underline`). Table의 `density`는 같은 14px 정보의 행 높이(36·44·52)이고, Modal의
-  `size`는 담는 일의 폭(360·432·640)입니다. 상태(`selected·open·error`)는 이 축들과 섞지 않습니다.
-  전체 매트릭스와 금지 조합은 `docs/foundations/component-architecture.md`가 정본입니다.
+상위 화면 조합과 그 prop 축은 현재 패키지 API에 포함하지 않습니다. 실제 제품에서 반복되는 요구가 생기면 공통 책임과 축을 먼저 설계합니다.
 
 ---
 
@@ -138,50 +126,33 @@ variant 에도 교차한다. mono 는 `.pui-mono` 가 등폭·전용 tracking·�
 
 ---
 
-## 레이어 · 절대 규칙 4
+## 레이어 · 빌드 규칙
 
 ```
-Tokens → Primitives → Atoms → Molecules → Components
+Tokens → Primitives → Atoms
 ```
 
 | 레이어 | 수 | |
 |---|---|---|
-| Primitives | 4 | `Box · Stack · Inline · Text` — raw HTML 을 렌더하는 유일한 자리 |
-| Atoms | 13 | `Button · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Icon · Spinner · Divider · Link` |
-| Molecules | 12 | `Card · TextField · FormField · SearchField · RadioGroup · Tabs · Tooltip · Alert · Breadcrumb · Menu · Steps · TableOfContents` |
-| Components | 11 | `Table · Modal · Navbar · Banner · PageHeader · EmptyState · Pagination · Sidebar · DropdownMenu · CommandMenu · TreeNavigation` |
+| Primitives | 5 | `Box · Stack · Inline · Text · Icon` |
+| Atoms | 13 | `Button · IconButton · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Spinner · Divider · Link` |
 
-**= 40(기준선).** 폼의 라벨 연결(FormField)·검색(SearchField)·피드백(Alert)·로딩(Spinner)과
-데이터 화면의 위치·시작·빈 상태·이동·계층 탐색까지 시스템이 완결되는 최소 집합.
-Banner 는 데모·공지 chrome 의 얇은 풀폭 바(검정 solid + status).
-
-**컴포넌트 추가 잣대는 단계로 갈린다.** *"실제 화면에서 두 번 이상 필요했다는 증거"* 는
-**v1 배포 이후** 의 규칙이다 — 배포 전엔 소비자가 없어 "수요 2회" 가 성립할 수 없다. **v1 로
-가는 지금은** 기준이 다르다: **표준 primitive 이거나(공개 DS 가 으레 제공하는 것) 실제
-semantic 공백을 메우는가.** 그래도 장식적 중복(같은 걸 이름만 바꿔 두 개)은 여전히 금지 —
-가능하면 새 컴포넌트보다 기존 것의 확장(prop·폴리모피즘)을 먼저 본다.
+패키지는 Primitive와 Atom만 공개합니다. 제품별 조합은 앱이 소유하고, 여러 제품에서 반복된 뒤에만 공통 API로 승격합니다.
 
 1. **raw 색값 금지** — surface hex는 `tokens/palette.ts`, accent hex·OKLCH는 `tokens/color-ladder.ts`에만. 소비처는 `tokens.color.X`로만 참조.
-2. **color layer import 격리** — palette·ladder·semantic VALUES는 component·resolver·app에서 import 금지. `/playground/palette` Foundations inspector만 예외.
-3. **inline style 로 토큰 주입 금지** — `.css.ts` className 으로만.
-4. **Primitive 위에서 raw HTML 금지** — Molecule 부터는 Primitive/Atom 합성. raw 태그가
-   필요하면 `<Box as="button">` 이 유일한 통로.
+2. **color layer import 격리** — palette·ladder·semantic VALUES는 consumer에서 import 금지. `/playground/palette` Foundations inspector만 허용된 source 예외입니다.
+3. **inline style 로 토큰 주입 금지** — package 스타일은 `.css.ts` className 으로만 토큰을 적용합니다.
 
-네 규칙 모두 **eslint 가** 막는다 (문서가 아니라 빌드가).
+세 규칙은 **eslint 가** 막습니다 (문서가 아니라 빌드가).
 
-**+ 접근성도 빌드가 지킨다.** `eslint-plugin-jsx-a11y`(recommended)를 `polymorphicPropName:"as"`
-로 걸어 `<Box as="button">` 같은 폴리모픽 요소까지 검사한다 — 유효한 role·aria, 대체텍스트,
-양수 tabindex 금지 등. 우리 폼 아톰은 `label-has-associated-control` 의 `controlComponents`
-로 컨트롤 등록. runtime 계약(Modal focus trap 등)은 lint 로 못 잡으니 컴포넌트가 직접 진다.
-원칙 6("빌드가 규칙을 지킨다")의 확장.
+**접근성도 빌드가 지킵니다.** `eslint-plugin-jsx-a11y`(recommended)를 `polymorphicPropName:"as"`로 설정해 `<Box as="button">` 같은 polymorphic 요소까지 검사합니다. 유효한 role·aria, 대체텍스트, 양수 tabindex 금지 등을 lint하며, 폼 아톰은 `label-has-associated-control`의 `controlComponents`에 등록합니다. 상호작용별 runtime 계약은 실제 제품 구현과 검토가 책임집니다.
 
 ---
 
 ## 작업 완료 전 체크
 
 - [ ] `pnpm -r typecheck` · `pnpm lint` 통과했는가
-- [ ] 색을 추가했다면 — 정말 *의미* 가 있는가. 장식이면 넣지 않는다 (색은 의미가 없으면 쓰지 않는다)
+- [ ] 색을 추가했다면 — 정말 *의미* 가 있는가. 장식이면 넣지 않는다
 - [ ] 큰 면을 색으로 채우지 않았는가 (면은 검정 primary만)
-- [ ] 컴포넌트를 추가했다면 — (v1 배포 후) 실제 화면에서 두 번 이상 필요했다는 증거가 있는가 / (배포 전, 지금) 표준 primitive·semantic 공백을 메우는가, 기존 것의 확장으로 안 되는가
-- [ ] 컴포넌트·prop·variant·token을 수정했다면 — 반드시 `app` Playground의 해당 preview·Props table·생성 코드를 함께 반영하고, 실제 Playground에서 동작을 확인했는가
-- [ ] 데모(`app/`)가 여전히 서는가. 데모가 이 시스템의 유일한 검증이다
+- [ ] Primitive·Atom API를 수정했다면 — app의 실제 사용 예와 문서를 갱신했는가
+- [ ] 데모(`app/`)가 여전히 서는가

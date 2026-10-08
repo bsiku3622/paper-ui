@@ -32,7 +32,7 @@ All semantic values select Palette Tokens according to the current theme. They s
 | Ink | `ink.<level>` | Primary, secondary, and tertiary text |
 | Accent | `accent.<name>.<ladder>` | Primary or status pigment roles: `solid`, `wash`, `ink`, `soft`, `subtle` |
 | Interaction | `interaction.<state>` | Background hover overlays, selected, active, and focus feedback |
-| Overlay | `overlay.<role>` | Modal backdrop scrim |
+| Overlay | `overlay.<role>` | Overlay backdrop scrim |
 | Shadow | `shadow.<role>` | Palette-derived shadow tints |
 
 Examples:
@@ -49,7 +49,7 @@ tokens.color.overlay.scrim
 tokens.color.shadow.overlay
 ```
 
-The surface levels are `raised`, `canvas`, and `sunken`. In light mode, `canvas` and `sunken` select neutral `50` and `100`; `control.track` selects neutral `200` for the recessed track inside Switch and SegmentedControl. In dark mode it selects neutral `800`. Keeping this track outside `bg` prevents a component detail from becoming a general-purpose page surface. Borders use `base`, `strong`, and `hover`; ink uses `primary`, `secondary`, and `tertiary`.
+The surface levels are `raised`, `canvas`, and `sunken`. In light mode, `canvas` and `sunken` select neutral `50` and `100`; `control.track` selects neutral `200` for recessed control tracks such as Switch. In dark mode it selects neutral `800`. Keeping this track outside `bg` prevents a control detail from becoming a general-purpose page surface. Borders use `base`, `strong`, and `hover`; ink uses `primary`, `secondary`, and `tertiary`.
 
 Accent names are `primary`, `info`, `success`, `warning`, and `error`. They map to neutral, blue, green, amber, and red Palette Tokens. Every name has the same ladder:
 

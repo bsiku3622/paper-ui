@@ -32,17 +32,11 @@ const addPreset = (name: string, preset: Preset) => {
 const addSizeLadder = (key: string, presets: Record<ControlSize, Preset>) => {
   for (const size of CONTROL_SIZES) addPreset(`${key}${cap(size)}`, presets[size]);
 };
-const addNamed = (key: string, presets: Record<string, Preset>) => {
-  for (const [name, preset] of Object.entries(presets)) addPreset(`${key}${cap(name)}`, preset);
-};
-
 addSizeLadder("buttonRegular", tokens.text.control.button.regular);
 addSizeLadder("buttonStrong", tokens.text.control.button.strong);
 addSizeLadder("field", tokens.text.control.field);
 addSizeLadder("textarea", tokens.text.control.textarea);
 addPreset("badge", tokens.text.control.badge);
-addNamed("navigation", tokens.text.control.navigation);
-addNamed("tooltip", tokens.text.control.tooltip);
 
 const classes = styleVariants(uniqueRules);
 const classFor = (name: string) => (classes as Record<string, string>)[aliases[name] ?? name] ?? "";
@@ -55,10 +49,4 @@ export const controlTypography = {
   field: sizeClasses("field"),
   textarea: sizeClasses("textarea"),
   badge: classFor("badge"),
-  navigation: {
-    regular: classFor("navigationRegular"),
-    active: classFor("navigationActive"),
-    groupLabel: classFor("navigationGroupLabel"),
-  },
-  tooltip: { regular: classFor("tooltipRegular") },
 } as const;

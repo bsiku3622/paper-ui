@@ -144,14 +144,6 @@ export const CONTROL_SPEC = {
   field: FIELD_CONTROL,
   textarea: TEXTAREA_CONTROL,
   badge: BADGE_PRESET,
-  navigation: {
-    regular: { size: "14", weight: "normal", leading: "20", tracking: "normal" },
-    active: { size: "14", weight: "medium", leading: "20", tracking: "normal" },
-    groupLabel: { size: "13", weight: "semibold", leading: "16", tracking: "wide" },
-  },
-  tooltip: {
-    regular: { size: "12", weight: "normal", leading: "16", tracking: "normal" },
-  },
 } as const;
 
 // variant 별 기본 ink — caption · label 은 secondary(부연/짧은 이름 자리).

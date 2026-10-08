@@ -2,11 +2,11 @@
 
 import { useParams } from "react-router-dom";
 
-import { Box, Button, Inline, PageHeader, Stack, Text, tokens, useResolvedTheme, resolveControlTypography, type TextVariant, type ControlSize } from "@studio-baeks/paper-ui";
+import { Box, Button, Inline, Stack, Text, tokens, useResolvedTheme, resolveControlTypography, type TextVariant, type ControlSize } from "@studio-baeks/paper-ui";
 
 import { COLOR_VALUES, COLOR_VALUES_DARK } from "../../../packages/paper-ui/src/tokens/colors";
 import { ACCENT_STEPS, PALETTE_TOKENS } from "../../../packages/paper-ui/src/tokens/palette";
-import { PlaygroundLayout, Crumb } from "./shell";
+import { PlaygroundLayout, ReferenceHeading } from "./shell";
 import { FOUNDATION_SECTIONS } from "./foundation-sections";
 import "./foundations.css";
 
@@ -68,7 +68,7 @@ const semanticRows = (branch: "bg" | "ink" | "border", names: readonly string[],
 const COLOR_GROUPS: { title: string; description: string; rows: ColorRow[] }[] = [
   { title: "Background", description: "Page and container surface depth.", rows: semanticRows("bg", ["canvas", "raised", "sunken"], { canvas: "Default page surface", raised: "Cards and floating surfaces", sunken: "Recessed areas" }) },
   { title: "Control", description: "Dedicated surfaces inside interactive controls.", rows: [
-    { token: "control.track", description: "Switch and SegmentedControl track", light: COLOR_VALUES.control.track, dark: COLOR_VALUES_DARK.control.track },
+    { token: "control.track", description: "Switch track", light: COLOR_VALUES.control.track, dark: COLOR_VALUES_DARK.control.track },
   ] },
   { title: "Text", description: "Content hierarchy across surfaces.", rows: semanticRows("ink", ["primary", "secondary", "tertiary"], { primary: "Main content and headings", secondary: "Supporting content", tertiary: "Metadata and low emphasis" }) },
   { title: "Border", description: "Structural boundaries and emphasis.", rows: semanticRows("border", ["base", "strong", "hover"], { base: "Default component boundary", strong: "Higher contrast boundary", hover: "Boundary emphasis on pointer hover" }) },
@@ -201,10 +201,7 @@ export const Tokens = () => {
   return (
     <PlaygroundLayout value={`foundation-${section[0]}`}>
       <Stack className="foundation-page" gap="xl">
-        <PageHeader>
-          <PageHeader.Location><Crumb group="Foundations" name={section[1]} /></PageHeader.Location>
-          <PageHeader.Content><PageHeader.Title>{section[1]}</PageHeader.Title><PageHeader.Description>{section[2]} 실제 <code>tokens.*</code>에서 값을 읽으며 현재 테마에 따라 갱신됩니다.</PageHeader.Description></PageHeader.Content>
-        </PageHeader>
+        <ReferenceHeading group="Foundations" name={section[1]} description={`${section[2]} 실제 tokens.*에서 값을 읽으며 현재 테마에 따라 갱신됩니다.`} />
 
         <Stack className="foundation-content" gap="xl">
           {section[0] === "color" && <Stack gap="xl">
@@ -263,20 +260,13 @@ export const Tokens = () => {
                     </Stack>;
                   })}
                 </div>)}
-                <div className="foundation-control-type-row foundation-control-type-states">
-                  <Stack gap="xs"><Text as="code" variant="caption" family="mono" ink="base">text.control.navigation</Text><Text variant="caption" ink="soft">Sidebar · Tree · Menu · Navbar · Command</Text></Stack>
-                  <Stack className="foundation-control-type-cell" gap="xs"><span className={resolveControlTypography("navigation", "regular")}>Navigation item</span><Text variant="caption" family="mono" ink="faint">14 / 20 · 450</Text></Stack>
-                  <Stack className="foundation-control-type-cell" gap="xs"><span className={resolveControlTypography("navigation", "active")}>Active item</span><Text variant="caption" family="mono" ink="faint">14 / 20 · 500</Text></Stack>
-                  <Stack className="foundation-control-type-cell" gap="xs"><span className={resolveControlTypography("navigation", "groupLabel")}>Group label</span><Text variant="caption" family="mono" ink="faint">13 / 16 · 600 · +0.01em</Text></Stack>
-                </div>
-                <div className="foundation-control-type-row foundation-control-type-fixed">
-                  <Stack gap="xs"><Text as="code" variant="caption" family="mono" ink="base">text.control.badge / tooltip</Text><Text variant="caption" ink="soft">크기와 무관한 역할</Text></Stack>
+                <div className="foundation-control-type-row">
+                  <Stack gap="xs"><Text as="code" variant="caption" family="mono" ink="base">text.control.badge</Text><Text variant="caption" ink="soft">고정 크기 표식</Text></Stack>
                   <Stack className="foundation-control-type-cell" gap="xs"><span className={resolveControlTypography("badge")}>In progress</span><Text variant="caption" family="mono" ink="faint">badge · 12 / 16 · 500</Text></Stack>
-                  <Stack className="foundation-control-type-cell" gap="xs"><span className={resolveControlTypography("tooltip", "regular")}>Tooltip text</span><Text variant="caption" family="mono" ink="faint">tooltip · 12 / 16 · 450</Text></Stack>
-                  <Stack className="foundation-control-type-cell" gap="xs"><span className={resolveControlTypography("button", "md", "regular")}>Tab · segmented</span><Text variant="caption" family="mono" ink="faint">action · 13 / 16 · 500</Text></Stack>
+                  <Stack className="foundation-control-type-cell" gap="xs"><span className={resolveControlTypography("button", "md", "regular")}>Button · regular</span><Text variant="caption" family="mono" ink="faint">13 / 16 · 500</Text></Stack>
+                  <Stack className="foundation-control-type-cell" gap="xs"><span className={resolveControlTypography("button", "md", "strong")}>Button · strong</span><Text variant="caption" family="mono" ink="faint">13 / 16 · 650</Text></Stack>
                 </div>
               </Box>
-              <Text variant="caption" ink="soft">공유 매핑: Tab·Segmented → Button regular · md, Navbar·Command → Navigation active, Banner·Table of Contents 기본 → Text caption</Text>
             </Stack>
           </Section>}
 

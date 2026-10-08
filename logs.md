@@ -1168,3 +1168,9 @@ Typography 표의 specimen과 메타 라벨은 중립 기본 잉크를 의도하
 - 요약: 일반 `bg.well`과 네 번째 Box surface를 제거하고 `color.control.track`으로 이동했습니다. Light는 `neutral.200`, dark는 `neutral.900`을 유지하며 Switch·SegmentedControl만 이 토큰을 사용합니다.
 
 트랙은 조작부의 내부 구조라 페이지·패널과 같은 Box surface 목록에 두면 surface scale이 컴포넌트 구현 세부까지 떠안습니다. 그래서 semantic branch를 분리했고, playground의 네 번째 배경은 트랙 비교 옵션으로 보존했습니다. 이전에 저장된 `well` 선택값은 `track`으로 자동 이전합니다.
+## 2026-10-08 — Remove Molecules and Components layers
+
+- 변경 파일: `workspace/packages/paper-ui/src/`, `workspace/app/src/`, `docs/`, `workspace/tests/`
+- 요약: 공개 package를 Primitives와 Atoms로 축소하고, 제품별 화면 조합과 navigation을 app 소유 코드로 옮겼습니다. 컴포넌트 Playground/catalog와 관련 docs·오래된 E2E 계약을 제거했습니다.
+
+이전 UI 묶음은 정리 비용이 크고 Shape와 typography의 실제 사용 경계를 흐렸습니다. 이제 public API에는 재사용 가능한 저수준 요소만 남기고, 화면 조합은 소비 앱에서 정의합니다. Shape의 component intrinsic 가지와 사용되지 않는 navigation/tooltip typography preset도 함께 제거했습니다. 제거한 구현과 API는 직전 커밋 및 삭제 이력에서 복구할 수 있습니다.
