@@ -3,11 +3,10 @@
 // 이 시스템의 Box 는 "무엇이든 되는 div" 가 아니다. 종이 위의 *칸* 이다:
 // 면(surface 깊이) · 테두리(border) · 간격(space) · 모서리(radius) · 그림자(shadow)와
 // box model의 크기·잘림을 말할 수 있다. 색(잉크)은 여기 없다 — 큰 면을 색으로 채우지
-// 않는 게 정체성이라, 색은 Button·Badge·Alert(accent × variant)가, 잉크는 Text가 정한다.
+// 않는 게 정체성이라, 색은 Button·Badge(accent × variant)가, 잉크는 Text가 정한다.
 // position·flex layout은 열지 않는다. 그건 Stack·Inline 또는 소비처 className의 책임이다.
 //
-// `as` 는 상위 레이어가 raw 태그에 닿는 유일한 통로다 — Molecule 이 <button> 을
-// 직접 못 쓰는 대신 <Box as="button"> 을 쓴다. 그래서 DOM prop 을 통과시킨다.
+// `as` preserves the semantic tag when a caller needs a native element.
 
 import type { ComponentPropsWithoutRef, CSSProperties, ElementType, ReactNode } from "react";
 
@@ -52,7 +51,7 @@ type OwnProps<As extends ElementType> = BoxLike & BoxLayoutProps & {
   border?: boolean;
   // 모서리 — 안 주면 각지게 둔다. full 은 알약(높이의 절반).
   radius?: "sm" | "md" | "lg" | "full";
-  // 뜨는 건 overlay 뿐이다 (Modal · Popover). 면은 그림자로 뜨지 않는다.
+  // Shadow is reserved for surfaces that float above the page.
   shadow?: "overlay" | "overlayMinimal";
   // 이 면을 주변의 반대 테마로 — 라이트 위 어두운 판, 다크 위 밝은 판. ThemeScope
   // inverse 와 같은 엔진을 이 Box 자신에 건다(별도 DOM 노드 없이).

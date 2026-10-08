@@ -25,8 +25,8 @@ export const Z = {
   base: "0",
   raised: "10", // 살짝 뜬 것 (세그먼트 활성 등)
   sticky: "20", // sticky 헤더 · 사이드바
-  overlay: "30", // Tooltip · Popover
-  modal: "40", // Modal · Drawer
+  overlay: "30", // Floating content
+  modal: "40", // Blocking surfaces
   toast: "50", // 가장 위 알림
 } as const;
 export type ZTier = keyof typeof Z;

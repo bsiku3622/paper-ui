@@ -5,7 +5,7 @@
 
 import { Link, useLocation } from "react-router-dom";
 
-import { Box, Inline, Navbar, Banner, Text, tokens, useTheme, type Theme, type ResolvedTheme } from "@studio-baeks/paper-ui";
+import { Box, Inline, Text, tokens, useTheme, type Theme, type ResolvedTheme } from "@studio-baeks/paper-ui";
 
 import { Logo } from "./Logo";
 import "./site.css";
@@ -39,14 +39,14 @@ const ThemeToggle = () => {
 export const SITE_NAV = [
   { to: "/", label: "홈" },
   { to: "/demo", label: "데모" },
-  { to: "/playground", label: "플레이그라운드" },
+  { to: "/playground", label: "기초" },
   { to: "/docs", label: "문서" },
 ] as const;
 
 const isActive = (pathname: string, to: string) =>
   to === "/" ? pathname === "/" : pathname.startsWith(to);
 
-export const NAV_HEIGHT = tokens.shape.component.navbarHeight;
+export const NAV_HEIGHT = "52px";
 
 // 브랜드 — 손글씨 로고. 홈으로 가는 통로.
 const Brand = ({ height = 26 }: { height?: number }) => (
@@ -55,63 +55,35 @@ const Brand = ({ height = 26 }: { height?: number }) => (
   </Link>
 );
 
-// 사이트 GNB — **라이브러리 Navbar 를 그대로 쓴다.**
-//
-// 오래 여기서 손으로 다시 짜고 있었다. 이유는 하나였다: Navbar 항목이 `<button>` 이라
-// 라우터 링크가 될 수 없었다. 자기 시스템으로 자기 사이트의 헤더를 못 짜는 건 시스템
-// 쪽의 결함이지 사이트 쪽 사정이 아니라, Navbar 에 `as` 를 열어 고쳤다.
-// `width="content"` 는 안쪽 줄만 본문 격자에 맞추고 괘선은 화면 끝까지 보낸다.
+// Site navigation belongs to the documentation app, not the component package.
 export const SiteNav = () => {
   const { pathname } = useLocation();
   const active = SITE_NAV.find((n) => isActive(pathname, n.to))?.to;
   return (
-    <Navbar
-      width="content"
-      value={active}
-    >
-      <Navbar.Brand><Brand /></Navbar.Brand>
-      {SITE_NAV.map((n) => <Navbar.Item key={n.to} value={n.to} as={Link} to={n.to}>{n.label}</Navbar.Item>)}
-      <Navbar.Actions>
+    <Box as="header" style={{ position: "sticky", top: 0, zIndex: tokens.layout.z.sticky, height: NAV_HEIGHT, background: tokens.color.bg.canvas, borderBottom: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }}>
+      <Inline align="center" gap="lg" style={{ maxWidth: tokens.layout.container.content, height: "100%", paddingInline: tokens.shape.padding.md.layout, marginInline: "auto" }}>
+        <Brand />
+        <Box as="nav" aria-label="주요 메뉴" style={{ display: "flex", alignItems: "center", gap: tokens.shape.gap.sm, flex: 1 }}>
+          {SITE_NAV.map((n) => <Link key={n.to} to={n.to} aria-current={active === n.to ? "page" : undefined} style={{ color: active === n.to ? tokens.color.ink.primary : tokens.color.ink.secondary, textDecoration: "none", padding: `${tokens.shape.padding.xs.interaction} ${tokens.shape.padding.sm.interaction}` }}>{n.label}</Link>)}
+        </Box>
         <Inline gap="sm" align="center">
           <ThemeToggle />
-          <Box
-            surface="sunken"
-            radius="full"
-            paddingX="sm"
-            paddingY="xs"
-            style={{ border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }}
-          >
-            <Text variant="caption" as="span" ink="soft" style={{ fontVariantNumeric: "tabular-nums" }}>
-              v0.1.0
-            </Text>
+          <Box surface="sunken" radius="full" paddingX="sm" paddingY="xs" style={{ border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }}>
+            <Text variant="caption" as="span" ink="soft" style={{ fontVariantNumeric: "tabular-nums" }}>v0.1.0</Text>
           </Box>
         </Inline>
-      </Navbar.Actions>
-    </Navbar>
+      </Inline>
+    </Box>
   );
 };
 
-// 데모용 얇은 통합 바 — 라이브러리 Banner(검정 solid)로 브랜드를 이어 붙이고 사이트로
-// 돌아가는 escape 를 준다. 데모의 제품 Navbar 는 이 아래에 그대로 살아 사실감을 지킨다.
+// Demo escape bar is app chrome and stays outside the component package.
 export const DemoBar = () => (
-  <Banner>
-    <Banner.Content>
-      <Link to="/" style={{ textDecoration: "none", color: tokens.color.bg.canvas, display: "inline-flex" }} aria-label="Paper UI 홈">
-        <Logo height={17} />
-      </Link>
-      <Text variant="caption" as="span" style={{ color: tokens.color.accent.primary.wash }}>
-        데모 · 이슈 트래커
-      </Text>
-    </Banner.Content>
-    <Banner.Action>
-      <Link to="/" style={{ textDecoration: "none" }}>
-        <Text variant="caption" as="span" style={{ color: tokens.color.bg.canvas, fontWeight: tokens.text.palette.weight.medium }}>
-          ← 사이트로
-        </Text>
-      </Link>
-    </Banner.Action>
-  </Banner>
+  <Inline as="header" align="center" justify="between" paddingX="md" paddingY="xs" style={{ background: tokens.color.ink.primary, color: tokens.color.bg.canvas }}>
+    <Inline gap="md" align="center">
+      <Link to="/" style={{ textDecoration: "none", color: "inherit", display: "inline-flex" }} aria-label="Paper UI 홈"><Logo height={17} /></Link>
+      <Text variant="caption" as="span" style={{ color: tokens.color.accent.primary.wash }}>데모 · 이슈 트래커</Text>
+    </Inline>
+    <Link to="/" style={{ textDecoration: "none", color: "inherit" }}><Text variant="caption" as="span">← 사이트로</Text></Link>
+  </Inline>
 );
-
-// Navbar 를 직접 쓰고 싶은 페이지용. 위 SiteNav 가 기본.
-export { Navbar };

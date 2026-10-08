@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Badge, Box, Button, Checkbox, Divider, Field, Icon, IconButton, Inline, PageHeader, Stack, Text } from "@studio-baeks/paper-ui";
+import { Badge, Box, Button, Checkbox, Divider, Field, Icon, IconButton, Inline, Stack, Text } from "@studio-baeks/paper-ui";
 import * as s from "./Demo.css";
 
 type Task = { id: number; code: string; title: string; project: string; status: "진행 중" | "검토" | "할 일" | "완료"; priority: "긴급" | "높음" | "보통" | "낮음"; owner: string; due: string };
@@ -64,13 +64,13 @@ export const Demo = () => {
       </Box>
       <Stack as="main" className={s.main} gap="lg">
         <Inline className={s.breadcrumb}><Text variant="body" ink="faint">프로젝트</Text><Glyph name="chevron"/><Text variant="body">웹사이트 리뉴얼</Text></Inline>
-        <PageHeader className={s.projectHeading}>
-          <PageHeader.Content>
-            <Inline gap="xs"><PageHeader.Title>웹사이트 리뉴얼</PageHeader.Title><Badge fontSize="body" accent="info" dot>진행 중</Badge></Inline>
-            <PageHeader.Description>새로운 브랜드 경험을 위한 웹사이트 개편 프로젝트</PageHeader.Description>
-          </PageHeader.Content>
-          <PageHeader.Actions><Badge fontSize="body" shape="pill">재</Badge><Badge fontSize="body" shape="pill">민</Badge><Badge fontSize="body" shape="pill">지</Badge><Button variant="soft">공유 <Glyph name="arrow"/></Button></PageHeader.Actions>
-        </PageHeader>
+        <Inline as="header" className={s.projectHeading} justify="between" align="center">
+          <Stack gap="xs">
+            <Inline gap="xs" align="center"><Text as="h1" variant="title">웹사이트 리뉴얼</Text><Badge fontSize="body" accent="info" dot>진행 중</Badge></Inline>
+            <Text variant="body" ink="soft">새로운 브랜드 경험을 위한 웹사이트 개편 프로젝트</Text>
+          </Stack>
+          <Inline align="center"><Badge fontSize="body" shape="pill">재</Badge><Badge fontSize="body" shape="pill">민</Badge><Badge fontSize="body" shape="pill">지</Badge><Button variant="soft">공유 <Glyph name="arrow"/></Button></Inline>
+        </Inline>
         <Box className={s.sprint} border radius="md" padding="lg">
           <Inline justify="between"><Stack gap="sm"><Inline><Glyph name="spark"/><Text variant="body" ink="soft">SPRINT 04　/　9월 21일 — 10월 4일</Text></Inline><Text as="h2" variant="heading">이번 주, 출시 경험을 다듬어요.</Text><Text ink="soft">핵심 화면을 마무리하고 첫 사용자 테스트를 준비합니다.</Text></Stack><Stack className={s.percent} align="center"><Text variant="heading">{Math.round(doneCount / tasks.length * 100)}%</Text><Text variant="body" ink="faint">완료</Text></Stack></Inline>
           <Box className={s.progress}><Box className={s.progressFill} style={{ width: `${Math.max(18, doneCount / tasks.length * 100)}%` }}/></Box>

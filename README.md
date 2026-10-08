@@ -13,30 +13,25 @@ Atlassian, finished like SwiftUI.
 
 The seven principles behind every visual decision: **[docs/get-started/philosophy.md](docs/get-started/philosophy.md)**.
 
-- **40 components — the baseline.** Forms, feedback, loading, location and page-level data
-  flows included, this is
-  the smallest set that finishes a real screen. After v1 a 41st needs evidence it
-  was needed twice; until then it has to be a standard primitive or fill a real
-  semantic gap, and extending an existing component comes first either way.
+- **Primitive and Atom foundation.** The package currently stops at composable layout
+  primitives and single-purpose controls. Page-level compositions stay in the consuming app
+  until repeated product use gives them a clear, shared shape.
 - **Black is the workhorse.** Primary actions are black, not blue — a blue button
   on every screen stops being a point. Colour stays small.
 - **No `primaryColor`.** A brand has no colour to pick here; the identity is
   white, black, and whitespace. The one thing the provider picks is the theme
   (`light` · `dark` · `system`).
-- **Four absolute rules**, enforced by eslint rather than by documentation.
+- **Core constraints and accessibility checks**, enforced by eslint.
 
 ## Layers
 
 | Layer | Count | |
 |---|---|---|
-| Primitives | 4 | `Box · Stack · Inline · Text` |
-| Atoms | 13 | `Button · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Icon · Spinner · Divider · Link` |
-| Molecules | 9 | `Card · TextField · FormField · SearchField · RadioGroup · Tabs · Tooltip · Alert · Breadcrumb` |
-| Components | 8 | `Table · Modal · Navbar · Banner · PageHeader · EmptyState · Pagination · Sidebar` |
+| Primitives | 5 | `Box · Stack · Inline · Text · Icon` |
+| Atoms | 13 | `Button · IconButton · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Spinner · Divider · Link` |
 
-Raw HTML stops at Atoms — each renders its own semantic tag. From Molecules up,
-everything is composed from Primitives and Atoms, and `<Box as="…">` is the only
-way back to a raw tag.
+Compositions are owned by consuming applications. The package exposes Primitives and Atoms;
+`<Box as="…">` remains the typed route to semantic HTML when an application needs it.
 
 ## Running
 

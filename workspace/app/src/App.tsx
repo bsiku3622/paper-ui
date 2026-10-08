@@ -1,11 +1,10 @@
 // App — paper-ui 사이트. 네 라우트 그룹.
 //   /            홈 (랜딩)
 //   /demo        데모 (이슈 트래커, 실사용 검증)
-//   /playground  플레이그라운드 (컴포넌트 전수 · 테스트 표면)
+//   /playground  플레이그라운드 (Foundations · Tokens)
 //   /docs/*      문서 (마크다운)
 //
-// site chrome 은 앱에만 산다 — 라이브러리 컴포넌트 집합에 nav 를 더하지 않는다
-// (원칙 5: 증거 없이 늘리지 않는다). chrome 은 paper-ui 프리미티브로 조립한다.
+// Site chrome and page-level compositions stay in the app. The package stops at Primitives and Atoms.
 
 import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
@@ -14,10 +13,8 @@ import { Box, Text } from "@studio-baeks/paper-ui";
 
 const Home = lazy(() => import("./pages/Home").then((m) => ({ default: m.Home })));
 const Demo = lazy(() => import("./pages/Demo").then((m) => ({ default: m.Demo })));
-const Playground = lazy(() => import("./pages/Playground").then((m) => ({ default: m.Playground })));
 const PalettePage = lazy(() => import("./playground/Palette").then((m) => ({ default: m.Palette })));
 const TokensPage = lazy(() => import("./playground/Tokens").then((m) => ({ default: m.Tokens })));
-const ComponentDetail = lazy(() => import("./playground/Detail").then((m) => ({ default: m.ComponentDetail })));
 const Docs = lazy(() => import("./pages/Docs").then((m) => ({ default: m.Docs })));
 
 const Loading = () => (
@@ -31,12 +28,11 @@ export const App = () => (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/demo" element={<Demo />} />
-      <Route path="/playground" element={<Playground />} />
+      <Route path="/playground" element={<Navigate to="/playground/foundations/color-typography" replace />} />
       <Route path="/playground/palette" element={<PalettePage />} />
       <Route path="/playground/foundations" element={<Navigate to="/playground/foundations/color-typography" replace />} />
       <Route path="/playground/foundations/:section" element={<TokensPage />} />
       <Route path="/playground/tokens" element={<Navigate to="/playground/foundations/color-typography" replace />} />
-      <Route path="/playground/:slug" element={<ComponentDetail />} />
       <Route path="/docs/*" element={<Docs />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

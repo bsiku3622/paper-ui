@@ -3,11 +3,11 @@
 // Tokens 화면은 소비자가 쓰는 semantic token을 보여준다. 여기는 OKLCH palette source와
 // 생성된 HEX Palette Token을 나란히 보여주는 Foundations inspector다.
 
-import { Box, Inline, PageHeader, Stack, Text } from "@studio-baeks/paper-ui";
+import { Box, Inline, Stack, Text } from "@studio-baeks/paper-ui";
 
 import { ACCENT_PALETTES, ACCENT_STEPS, ALPHA_STEPS, OKLCH_PALETTE, PALETTE_STEPS, PALETTE_TOKENS } from "../../../packages/paper-ui/src/tokens/palette";
 
-import { Crumb, PlaygroundLayout } from "./shell";
+import { PlaygroundLayout, ReferenceHeading } from "./shell";
 import "./palette.css";
 
 const paletteIdentity = (palette: (typeof ACCENT_PALETTES)[number]) => {
@@ -90,13 +90,7 @@ export const Palette = () => {
   return (
     <PlaygroundLayout value="palette">
       <Stack className="palette-page" gap="xl">
-        <PageHeader>
-          <PageHeader.Location><Crumb group="Reference" name="Palette" /></PageHeader.Location>
-          <PageHeader.Content>
-            <PageHeader.Title>Palette</PageHeader.Title>
-            <PageHeader.Description>테마와 무관한 단일 OKLCH palette와 생성된 HEX token입니다. Light/Dark 테마 차이는 semantic token이 필요한 palette step을 선택해 만듭니다.</PageHeader.Description>
-          </PageHeader.Content>
-        </PageHeader>
+        <ReferenceHeading group="Reference" name="Palette" description="테마와 무관한 단일 OKLCH palette와 생성된 HEX token입니다. Light/Dark 테마 차이는 semantic token이 필요한 palette step을 선택해 만듭니다." />
 
         <Section
           title="Neutral"

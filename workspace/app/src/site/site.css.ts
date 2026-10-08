@@ -31,11 +31,8 @@ globalStyle(".principles-grid", {
   },
 });
 
-// ── GNB — 지면 맨 위 한 줄 ───────────────────────────────────────────────────
-// 흰 지면 위 깔끔한 바. 스크롤에도 조용히 붙어 있다.
-// ⚠ .gnb · .gnb-inner · .gnb-nav · .gnb-link 은 지웠다. 사이트 GNB 가 라이브러리
-// Navbar 를 직접 쓰게 되면서(항목이 링크가 될 수 있게 `as` 를 열었다) 손으로 짠 헤더가
-// 통째로 사라졌다. 남은 .gnb-theme 은 헤더가 아니라 테마 토글 버튼의 모양이다.
+// ── GNB theme toggle ─────────────────────────────────────────────────────────
+// Site navigation is app-owned; this class styles only its theme toggle button.
 
 globalStyle(".gnb-theme", {
   display: "inline-flex",

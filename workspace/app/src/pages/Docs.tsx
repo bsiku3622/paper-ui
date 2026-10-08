@@ -8,7 +8,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 
-import { Box, PageHeader, Sidebar, Stack, Text, tokens } from "@studio-baeks/paper-ui";
+import { Box, Stack, Text, tokens } from "@studio-baeks/paper-ui";
 
 import { SiteNav, NAV_HEIGHT } from "../site/chrome";
 import "../site/markdown.css";
@@ -52,21 +52,20 @@ export const Docs = () => {
     <Stack>
       <SiteNav />
       <Box style={{ display: "grid", gridTemplateColumns: `${tokens.shape.width.lg.layout} 1fr`, maxWidth: tokens.layout.container.content, marginInline: "auto", width: "100%" }}>
-        <Sidebar
-          value={slug}
-          aria-label="문서 목차"
-          style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, top: NAV_HEIGHT, position: "sticky" }}
-        >
-          {groups.map((group) => (
-            <Sidebar.Group key={group.group} label={group.label || undefined}>
-              {group.docs.map((doc) => (
-                <Sidebar.Item key={doc.slug || "overview"} value={doc.slug} as={Link} to={`/docs/${doc.slug}`}>
-                  {doc.title}
-                </Sidebar.Item>
-              ))}
-            </Sidebar.Group>
-          ))}
-        </Sidebar>
+        <Box as="nav" aria-label="문서 목차" style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, top: NAV_HEIGHT, position: "sticky", alignSelf: "start", padding: tokens.shape.padding.md.layout, borderRight: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }}>
+          <Stack gap="lg">
+            {groups.map((group) => (
+              <Stack key={group.group} gap="xs">
+                {group.label ? <Text variant="label" ink="faint">{group.label}</Text> : null}
+                {group.docs.map((doc) => (
+                  <Link key={doc.slug || "overview"} to={`/docs/${doc.slug}`} aria-current={slug === doc.slug ? "page" : undefined} style={{ display: "block", padding: `${tokens.shape.padding.xs.layout} ${tokens.shape.padding.sm.layout}`, color: slug === doc.slug ? tokens.color.ink.primary : tokens.color.ink.secondary, textDecoration: "none" }}>
+                    {doc.title}
+                  </Link>
+                ))}
+              </Stack>
+            ))}
+          </Stack>
+        </Box>
 
         {/* 본문 */}
         <Box paddingX="xl" paddingY="xl">
@@ -74,10 +73,10 @@ export const Docs = () => {
             <Text variant="caption">불러오는 중…</Text>
           ) : (
             <Stack gap="xl">
-              <PageHeader>
-                <PageHeader.Location><Text variant="caption" ink="soft">{groups.find((group) => group.group === activeDoc?.group)?.label || "Documentation"}</Text></PageHeader.Location>
-                <PageHeader.Content><PageHeader.Title>{activeDoc?.title ?? "Documentation"}</PageHeader.Title></PageHeader.Content>
-              </PageHeader>
+              <Stack gap="xs">
+                <Text variant="caption" ink="soft">{groups.find((group) => group.group === activeDoc?.group)?.label || "Documentation"}</Text>
+                <Text as="h1" variant="title">{activeDoc?.title ?? "Documentation"}</Text>
+              </Stack>
               <div className="md">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}

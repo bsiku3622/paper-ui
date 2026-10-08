@@ -26,7 +26,7 @@ open state와 `ink.soft` edge만 남기고 focus ring을 그리지 않습니다.
 | neutral `Field`·`Select`·`Textarea` | `border.base` | `border.hover` | keyboard ring | 배경은 바꾸지 않음 |
 | pointer-focused neutral Form | `border.hover` | — | `ink.soft` edge | 클릭에는 ring 없음 |
 | semantic Form (`info`·`success`·`warning`·`error`) | 해당 accent `solid` edge | 같은 경계 유지 | keyboard ring | 상태색 경계로 의미를 계속 표시 |
-| Sidebar·Menu·Tree·CommandMenu·Table row | base 면 | `interaction.bgHover.onSurface` overlay | keyboard ring 또는 selected state | selected 면이 hover보다 우선 |
+| 선택 가능한 행·항목 | base 면 | `interaction.bgHover.onSurface` overlay | keyboard ring 또는 selected state | selected 면이 hover보다 우선 |
 | Link | 본문 잉크 | underline/색 변화 | keyboard ring | 면을 만들지 않음 |
 | Badge·상태 점·정적 표시 | 그대로 | 없음 | 해당 없음 | 정보 표식에 hover를 추가하지 않음 |
 

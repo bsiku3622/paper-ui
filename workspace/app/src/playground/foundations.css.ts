@@ -54,10 +54,6 @@ globalStyle(".foundation-control-type-row", { padding: `${tokens.shape.padding.m
 globalStyle(".foundation-control-type-row:last-child", { borderBottom: 0, paddingBottom: tokens.shape.padding.xs.layout });
 globalStyle(".foundation-control-type-cell", { minWidth: 0, padding: tokens.shape.padding.xs.layout, borderRadius: tokens.shape.radius.layout.sm, background: tokens.color.bg.canvas });
 globalStyle(".foundation-control-type-cell > span", { display: "block", overflowWrap: "anywhere" });
-globalStyle(".foundation-control-type-states", { borderTop: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` });
-globalStyle(".foundation-control-type-states > :nth-child(2)", { gridColumn: "2" });
-globalStyle(".foundation-control-type-states > :nth-child(3)", { gridColumn: "3" });
-globalStyle(".foundation-control-type-states > :nth-child(4)", { gridColumn: "4" });
 globalStyle(".foundation-typography-palette-board", { minWidth: 0 });
 globalStyle(".foundation-typography-palette-header, .foundation-typography-palette-row", { display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr)", gap: tokens.shape.gap.md, alignItems: "center", minWidth: 0 });
 globalStyle(".foundation-typography-palette-header", { padding: `${tokens.shape.padding.xs.layout} ${tokens.shape.padding.sm.layout}`, borderBottom: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` });

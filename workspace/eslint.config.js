@@ -91,7 +91,7 @@ export default [
   // foundations viewer만 source layer를 그대로 보여주는 inspector라 예외다.
   {
     files: [
-      "packages/paper-ui/src/{primitives,atoms,molecules,components,provider,resolvers}/**/*.{ts,tsx}",
+      "packages/paper-ui/src/{primitives,atoms,provider,resolvers}/**/*.{ts,tsx}",
       "app/src/**/*.{ts,tsx}",
     ],
     ignores: ["app/src/playground/Palette.tsx"],
@@ -151,29 +151,4 @@ export default [
     },
   },
 
-  // ── 규칙 4 — Primitive 위에서 raw HTML 금지 ─────────────────────────────
-  // raw HTML 은 Primitive 와 Atom 까지다(Button→button · Field→input). Molecule 부터는
-  // Primitive·Atom 합성만 — raw 태그가 꼭 필요하면 <Box as="…"> 가 유일한 통로다.
-  {
-    files: [
-      "packages/paper-ui/src/molecules/**/*.tsx",
-      "packages/paper-ui/src/components/**/*.tsx",
-    ],
-    ignores: ["**/*.test.tsx"],
-    rules: {
-      "no-restricted-syntax": [
-        "error",
-        {
-          selector: "JSXAttribute[name.name='style'] MemberExpression[object.name='tokens']",
-          message: "규칙 3 — 토큰을 inline style 로 주입 금지.",
-        },
-        {
-          selector:
-            "JSXOpeningElement[name.name=/^(a|article|aside|b|blockquote|button|caption|dd|div|dl|dt|em|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|header|hr|i|img|input|label|legend|li|main|nav|ol|p|pre|section|select|small|span|strong|table|tbody|td|textarea|tfoot|th|thead|tr|ul)$/]",
-          message:
-            "규칙 4 — Molecule 이상에서 raw HTML 금지. Primitive(Box·Stack·Inline·Text) 또는 Atom 으로 합성하라. (svg 는 예외)",
-        },
-      ],
-    },
-  },
 ];
