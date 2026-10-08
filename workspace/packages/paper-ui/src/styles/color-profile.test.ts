@@ -23,7 +23,7 @@ describe("muted color profile", () => {
       expect(profile.borderColor).toBe(tokens.color.border.base);
       expect(profile.hoverBorderColor).toBe(tokens.color.border.hover);
       expect(profile.hoverOverlay).toBeUndefined();
-      expect(profile.color).toBe(accent === "primary" ? tokens.color.ink.primary : tokens.color.accent[accent].solid);
+      expect(profile.color).toBe(accent === "primary" ? tokens.color.ink.primary : tokens.color.accent[accent].ink);
     }
   });
 });

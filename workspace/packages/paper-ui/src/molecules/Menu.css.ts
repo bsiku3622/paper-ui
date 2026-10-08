@@ -38,7 +38,7 @@ export const menuItemActive = style({
   selectors: { "&:hover": { background: tokens.color.interaction.selected } },
 });
 
-export const menuItemDanger = style({ color: tokens.color.accent.error.solid });
+export const menuItemDanger = style({ color: tokens.color.accent.error.ink });
 export const menuItemCopy = style({ flex: 1, minWidth: 0 });
 export const menuItemIcon = style({ color: "currentColor", display: "inline-flex" });
 export const menuShortcut = style({ color: tokens.color.ink.tertiary, whiteSpace: "nowrap" });

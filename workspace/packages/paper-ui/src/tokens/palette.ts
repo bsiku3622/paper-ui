@@ -10,9 +10,9 @@ export type { PaletteToken } from "./color-ladder";
 
 export type ColorMode = "light" | "dark";
 
-export const PALETTE_STEPS = ["0", "50", "100", "150", "200", "300", "400", "500", "600", "700", "800", "900", "925", "950"] as const;
+export const PALETTE_STEPS = ["0", "50", "100", "150", "200", "300", "400", "500", "600", "650", "700", "800", "875", "900", "925", "950"] as const;
 export type PaletteStep = (typeof PALETTE_STEPS)[number];
-export const ACCENT_STEPS = ["50", "100", "150", "200", "300", "400", "500", "600", "700", "800", "900", "925", "950"] as const;
+export const ACCENT_STEPS = ["50", "100", "150", "200", "300", "400", "500", "600", "650", "700", "800", "900", "925", "950"] as const;
 export type AccentStep = (typeof ACCENT_STEPS)[number];
 export const ALPHA_STEPS = ["05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95"] as const;
 export type AlphaStep = (typeof ALPHA_STEPS)[number];
@@ -40,34 +40,18 @@ export const NEUTRAL_ANCHORS: Partial<Record<NeutralBaseStep, Oklch>> = {
 
 export const ACCENT_PALETTES = ["blue", "green", "amber", "red"] as const;
 export type AccentPalette = (typeof ACCENT_PALETTES)[number];
-type AccentAnchors = Partial<Record<AccentStep, Oklch>>;
-
-// Theme-independent accent anchors. Semantic roles choose steps from the completed shared ramp.
-const ACCENT_ANCHORS: Record<AccentPalette, AccentAnchors> = {
-    blue: {
-      "50": [0.9805, 0.0079, 253.852], "100": [0.9304, 0.0263, 254],
-      "200": [0.9039, 0.0324, 254.0011], "400": [0.6636, 0.1426, 256.7203],
-      "600": [0.5461, 0.2152, 262.8809], "700": [0.4882, 0.2172, 264.3763],
-      "950": [0.2853, 0.1048, 263.5904],
-    },
-    green: {
-      "50": [0.9867, 0.0107, 158.8533], "100": [0.9319, 0.0355, 158.8],
-      "200": [0.9259, 0.0437, 158.8359], "400": [0.6472, 0.1473, 151.7973],
-      "600": [0.5273, 0.1371, 150.0693], "700": [0.4479, 0.1083, 151.3277],
-      "950": [0.2567, 0.0572, 154.1303],
-    },
-    amber: {
-      "50": [0.9882, 0.0260, 89.7201], "100": [0.9323, 0.0674, 88],
-      "200": [0.9262, 0.0812, 84], "400": [0.6678, 0.1600, 75],
-      "600": [0.5553, 0.1750, 68], "700": [0.4732, 0.1500, 64],
-      "950": [0.2838, 0.0870, 60],
-    },
-    red: {
-      "50": [0.9808, 0.0064, 17.2665], "100": [0.9304, 0.0250, 17.7],
-      "200": [0.9053, 0.0312, 17.7420], "400": [0.6825, 0.1639, 22.4015],
-      "600": [0.5771, 0.2152, 27.3250], "700": [0.5054, 0.1905, 27.5181],
-      "950": [0.2979, 0.0947, 24.9980],
-    },
+// All accent families share perceptual lightness and a base chroma envelope.
+// Hue-specific chroma ceilings preserve pigment identity within the sRGB gamut.
+const ACCENT_CURVE: Record<AccentStep, readonly [lightness: number, chromaRatio: number]> = {
+  "50": [0.985, 0.04], "100": [0.955, 0.16], "150": [0.930, 0.26],
+  "200": [0.900, 0.38], "300": [0.800, 0.65], "400": [0.670, 0.80],
+  "500": [0.610, 0.95], "600": [0.525, 1],
+  "650": [0.4975, 0.95], "700": [0.470, 0.90],
+  "800": [0.400, 0.75], "900": [0.330, 0.55], "925": [0.295, 0.475],
+  "950": [0.260, 0.40],
+};
+const ACCENT_IDENTITIES: Record<AccentPalette, readonly [hue: number, chroma: number]> = {
+  blue: [263, 0.215], green: [153, 0.155], amber: [65, 0.240], red: [25, 0.215],
 };
 
 const neutralBaseRamp = completeOklchRamp(NEUTRAL_BASE_STEPS, NEUTRAL_ANCHORS);
@@ -75,14 +59,27 @@ const neutral: Record<PaletteStep, Oklch> = Object.fromEntries(PALETTE_STEPS.map
   step,
   step === "150"
     ? interpolateOklch(neutralBaseRamp["100"], neutralBaseRamp["200"], 0.5)
-    : step === "925"
+    : step === "650"
+      ? interpolateOklch(neutralBaseRamp["600"], neutralBaseRamp["700"], 0.5)
+      : step === "875"
+      ? interpolateOklch(neutralBaseRamp["800"], neutralBaseRamp["900"], 0.75)
+      : step === "925"
       ? interpolateOklch(neutralBaseRamp["900"], neutralBaseRamp["950"], 0.5)
-      : neutralBaseRamp[step as Exclude<PaletteStep, "150" | "925">],
+      : neutralBaseRamp[step as Exclude<PaletteStep, "150" | "650" | "875" | "925">],
 ])) as Record<PaletteStep, Oklch>;
 
 const accent = Object.fromEntries(ACCENT_PALETTES.map((name) => [
   name,
-  completeOklchRamp(ACCENT_STEPS, ACCENT_ANCHORS[name]),
+  Object.fromEntries(ACCENT_STEPS.map((step) => {
+    const [lightness, ratio] = ACCENT_CURVE[step];
+    const [hue, chroma] = ACCENT_IDENTITIES[name];
+    // Pale amber starts yellow, then transitions into its orange pigment by 400.
+    const rampHue = name === "amber" ? 90 - (90 - hue) * Math.max(0, Math.min(1, (Number(step) - 200) / 200)) : hue;
+    // Ease amber into its vivid middle range instead of jumping from pale 200 to 300.
+    const rampRatio = name === "amber" && step === "200" ? 0.44
+      : name === "amber" && step === "300" ? 0.55 : ratio;
+    return [step, [lightness, chroma * rampRatio, rampHue] as Oklch];
+  })) as Record<AccentStep, Oklch>,
 ])) as Record<AccentPalette, Record<AccentStep, Oklch>>;
 
 // Complete theme-independent OKLCH palette. Semantic systems select from these coordinates' HEX

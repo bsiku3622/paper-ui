@@ -89,7 +89,7 @@ const COLOR_GROUPS: { title: string; description: string; rows: ColorRow[] }[] =
 
 const AccentColorGroup = () => ({
   title: "Accent",
-  description: "Semantic accent names share the same four-step ladder.",
+  description: "Semantic accent names share the same five color roles.",
   rows: ACCENTS.flatMap((accent) => LADDER.map((ladder) => ({
     token: `accent.${accent}.${ladder}`,
     description: `${accent} · ${ladder}`,
@@ -155,7 +155,7 @@ const PaletteMatrix = () => {
 };
 
 const ACCENTS = ["primary", "info", "success", "warning", "error"] as const;
-const LADDER = ["solid", "wash", "soft", "subtle"] as const;
+const LADDER = ["solid", "wash", "ink", "soft", "subtle"] as const;
 const TEXT_SAMPLES = {
   display: "복잡한 화면을 더 명확하게",
   title: "큰 흐름을 한눈에 보여줍니다",

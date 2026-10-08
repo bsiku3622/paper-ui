@@ -233,7 +233,7 @@ export const Playground = () => {
             <Button variant="soft" accent="warning" data-testid="btn-soft-warning">주의</Button>
             <Button variant="ghost" accent="error">지우기</Button>
           </Spec>
-          <Spec label="solid — 텍스트도 그 색의 톤으로 (모노크로매틱, 버튼 전체가 한 색)">
+          <Spec label="solid — 선명한 채움과 밝은 글자 · primary는 무채색 반전">
             <Button accent="primary">primary</Button>
             <Button accent="info">info</Button>
             <Button accent="success">success</Button>

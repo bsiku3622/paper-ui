@@ -22,6 +22,7 @@ export const STATUS_PALETTE: Record<StatusName, AccentPalette> = {
 export type AccentToken = {
   solid: PaletteToken;
   wash: PaletteToken;
+  ink: PaletteToken;
   soft: PaletteToken;
   subtle: PaletteToken;
 };
@@ -30,16 +31,18 @@ const colorTokens = (mode: ColorMode) => {
   const { neutral, accent } = PALETTE_TOKENS;
   const isDark = mode === "dark";
   const primary: AccentToken = {
-    solid: neutral[isDark ? "300" : "950"],
+    solid: neutral[isDark ? "50" : "950"],
     wash: neutral[isDark ? "950" : "0"],
-    soft: neutral[isDark ? "900" : "300"],
-    subtle: neutral[isDark ? "500" : "400"],
+    ink: neutral[isDark ? "100" : "900"],
+    soft: neutral[isDark ? "875" : "200"],
+    subtle: neutral[isDark ? "500" : "700"],
   };
   const accentToken = (palette: AccentPalette): AccentToken => ({
-    solid: accent[palette][isDark ? "300" : "600"],
-    wash: accent[palette][isDark ? "950" : "50"],
-    soft: accent[palette][isDark ? "950" : "150"],
-    subtle: accent[palette][isDark ? "400" : "300"],
+    solid: accent[palette][!isDark && palette === "amber" ? "400" : "600"],
+    wash: !isDark && palette === "amber" ? neutral["0"] : accent[palette]["50"],
+    ink: accent[palette][isDark ? "300" : "700"],
+    soft: accent[palette][isDark ? "925" : "150"],
+    subtle: accent[palette][isDark ? "400" : "700"],
   });
 
   const accents: Record<AccentName, AccentToken> = {
@@ -59,16 +62,16 @@ const colorTokens = (mode: ColorMode) => {
       canvas: neutral[isDark ? "950" : "50"],
       sunken: neutral[isDark ? "950" : "100"],
     },
-    control: { track: neutral[isDark ? "900" : "200"] },
+    control: { track: neutral[isDark ? "800" : "200"] },
     border: {
-      base: neutral[isDark ? "900" : "200"],
-      strong: neutral[isDark ? "800" : "300"],
-      hover: neutral[isDark ? "700" : "400"],
+      base: neutral[isDark ? "800" : "200"],
+      strong: neutral[isDark ? "700" : "300"],
+      hover: neutral[isDark ? "600" : "400"],
     },
     ink: {
-      primary: neutral[isDark ? "100" : "950"],
+      primary: neutral[isDark ? "100" : "900"],
       secondary: neutral[isDark ? "400" : "700"],
-      tertiary: neutral[isDark ? "600" : "500"],
+      tertiary: neutral[isDark ? "500" : "650"],
     },
     accent: accents,
     interaction: {

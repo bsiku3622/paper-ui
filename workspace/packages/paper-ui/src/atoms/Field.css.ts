@@ -88,12 +88,12 @@ export const fieldFontSize = styleVariants(
   Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.text.style[variant].size }])) as Record<TextVariant, { fontSize: string }>,
 );
 
-// status — semantic Form은 accent solid 선으로 상태를 분명히 표시한다.
+// status — semantic Form은 accent ink 선으로 상태를 분명히 표시한다.
 export const fieldStatus = styleVariants(
   Object.fromEntries(
     STATUS.map((s) => {
       const accent = tokens.color.accent[s];
-      return [s, { borderColor: accent.solid }];
+      return [s, { borderColor: accent.ink }];
     }),
   ) as Record<StatusName, { borderColor: string }>,
 );
