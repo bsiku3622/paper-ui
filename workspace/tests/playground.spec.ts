@@ -45,24 +45,24 @@ test("type · family=mono 는 크기 유지 + 등폭 서체", async ({ page }) =
 
 // ── 색 토큰 — :root 의 CSS var 가 기대 hex 와 일치 ─────────────────────────
 const VARS: Record<string, string> = {
-  "--pui-color-bg-canvas": "#f9f9fa",
+  "--pui-color-bg-canvas": "#f9f9fb",
   "--pui-color-bg-raised": "#ffffff",
-  "--pui-color-bg-sunken": "#f4f4f5",
+  "--pui-color-bg-sunken": "#f3f3f5",
   "--pui-color-control-track": "#e5e5e7",
-  "--pui-color-ink-primary": "#26262b",
-  "--pui-color-ink-secondary": "#64646d",
-  "--pui-color-ink-tertiary": "#a1a1aa",
-  "--pui-color-border-base": "#e6e6ea",
-  "--pui-color-border-strong": "#ccccd1",
-  "--pui-color-accent-info-solid": "#2563eb",
-  "--pui-color-accent-info-wash": "#f5f9fe",
-  "--pui-color-accent-success-solid": "#15803d",
-  "--pui-color-accent-warning-solid": "#b45309",
-  "--pui-color-accent-error-solid": "#dc2626",
-  "--pui-color-accent-primary-solid": "#26262b",
-  "--pui-color-interaction-focus": "#2563eb",
-  "--pui-color-interaction-hover-neutral": "#26262b0d",
-  "--pui-color-interaction-scrim": "#26262b52",
+  "--pui-color-ink-primary": "#29292a",
+  "--pui-color-ink-secondary": "#5d5d5f",
+  "--pui-color-ink-tertiary": "#6b6b6d",
+  "--pui-color-border-base": "#e5e5e7",
+  "--pui-color-border-strong": "#d7d7d9",
+  "--pui-color-accent-info-solid": "#205ce3",
+  "--pui-color-accent-info-wash": "#f8faff",
+  "--pui-color-accent-success-solid": "#008042",
+  "--pui-color-accent-warning-solid": "#d37e00",
+  "--pui-color-accent-error-solid": "#c80020",
+  "--pui-color-accent-primary-solid": "#111113",
+  "--pui-color-interaction-focus": "#205ce3",
+  "--pui-color-interaction-bg-hover-on-surface": "#1111130d",
+  "--pui-color-overlay-scrim": "#1111134d",
 };
 
 test("color · 토큰이 기대 hex 로 emit 된다", async ({ page }) => {
@@ -76,21 +76,19 @@ test("color · 토큰이 기대 hex 로 emit 된다", async ({ page }) => {
 // ── 다크 — [data-theme=dark] 스코프가 색 var 세트를 통째로 교체한다 (T4) ──────
 // var 이름은 그대로, 스코프만 바뀌면 값이 바뀐다. 면 사다리(raised>canvas)·ink 반전·
 // primary 반전을 대표로 검증한다.
-// 다크는 canvas 가 최암이고 나머지가 그 위로 쌓인다(라이트와 방향이 반대다).
-// 이 순서가 뒤집히면 table head 가 몸통보다 어두운 구멍이 된다.
+// Dark panels lift gently above the shared canvas and recessed surface.
 const DARK_VARS: Record<string, string> = {
-  "--pui-color-bg-canvas": "#171717",
-  "--pui-color-control-track": "#29292a",
-  "--pui-color-bg-sunken": "#212121",
-  "--pui-color-bg-raised": "#101010",
-  "--pui-color-ink-primary": "#f5f5f5",
-  "--pui-color-accent-primary-solid": "#e8e8e8",
-  // ⚠ 다크 채움(accent solid)은 밝다. 채움 위 글자는 같은 hue의 반대 끝인 wash다.
-  // 다크 wash는 어두워 밝은 solid와 AA를 만들고, 라이트 wash는 반대로 옅게 올라간다.
-  "--pui-color-accent-info-solid": "#5492ec",
-  "--pui-color-accent-error-solid": "#df6768",
-  "--pui-color-accent-info-wash": "#0d1c32",
-  "--pui-color-interaction-focus": "#5492ec",
+  "--pui-color-bg-canvas": "#111113",
+  "--pui-color-control-track": "#424244",
+  "--pui-color-bg-sunken": "#111113",
+  "--pui-color-bg-raised": "#1d1d1e",
+  "--pui-color-ink-primary": "#f3f3f5",
+  "--pui-color-accent-primary-solid": "#f9f9fb",
+  // Status fills keep their saturated pigment and bright foreground in both themes.
+  "--pui-color-accent-info-solid": "#205ce3",
+  "--pui-color-accent-error-solid": "#c80020",
+  "--pui-color-accent-info-wash": "#f8faff",
+  "--pui-color-interaction-focus": "#5b90fe",
 };
 test("dark · [data-theme=dark] 로 색 var 가 다크 세트로 바뀐다", async ({ page }) => {
   await page.evaluate(() => document.documentElement.setAttribute("data-theme", "dark"));
@@ -116,7 +114,7 @@ test("align · Field 와 Button 의 top 이 일치", async ({ page }) => {
 test("focus · Field 포커스 시 보더 바깥 파란 링(outline)", async ({ page }) => {
   const wrap = page.getByTestId("align-field");
   await wrap.locator("input").focus();
-  await expect(wrap).toHaveCSS("outline-color", hexToRgb("#2563eb"));
+  await expect(wrap).toHaveCSS("outline-color", hexToRgb("#205ce3"));
   await expect(wrap).toHaveCSS("outline-style", "solid");
   await expect(wrap).toHaveCSS("outline-width", "2px");
   await expect(wrap).toHaveCSS("outline-offset", "2px");
@@ -139,17 +137,17 @@ test("form · neutral은 solid hover, semantic은 pigment shadow", async ({ page
   }
 
   const error = page.getByTestId("field-invalid");
-  await expect(error).toHaveCSS("border-color", hexToRgb("#dc2626"));
+  await expect(error).toHaveCSS("border-color", hexToRgb("#c80020"));
   await expect(error).toHaveCSS("box-shadow", "none");
   await error.hover();
-  await expect(error).toHaveCSS("border-color", hexToRgb("#dc2626"));
+  await expect(error).toHaveCSS("border-color", hexToRgb("#c80020"));
   await expect(error).toHaveCSS("box-shadow", /12px/);
 });
 
 // ── Badge status → 색 (info·success·warning·danger) ─────────────────────────
 const BADGE = {
   info: hexToRgb("#1d4ed8"),
-  success: hexToRgb("#15803d"),
+  success: hexToRgb("#008042"),
   warning: hexToRgb("#b45309"),
   error: hexToRgb("#b91c1c"),
 } as const;
@@ -175,7 +173,7 @@ test("button · soft 는 회색 면(muted)", async ({ page }) => {
 });
 test("button · status=danger 는 빨강 채움", async ({ page }) => {
   // 기본 variant=solid 에 status=danger → error.solid 배경
-  await expect(page.getByTestId("btn-danger")).toHaveCSS("background-color", hexToRgb("#dc2626"));
+  await expect(page.getByTestId("btn-danger")).toHaveCSS("background-color", hexToRgb("#c80020"));
   await expect(page.getByTestId("btn-danger")).toHaveCSS("color", hexToRgb("#fdf7f7"));
 });
 test("button · disabled 는 비활성", async ({ page }) => {

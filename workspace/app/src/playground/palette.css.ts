@@ -13,11 +13,11 @@ globalStyle(".palette-grid", {
 });
 
 globalStyle(".palette-grid--neutral", {
-  gridTemplateColumns: "repeat(14, minmax(3.5rem, 1fr))",
+  gridTemplateColumns: "repeat(16, minmax(3.5rem, 1fr))",
 });
 
 globalStyle(".palette-grid--accent", {
-  gridTemplateColumns: "repeat(13, minmax(3.5rem, 1fr))",
+  gridTemplateColumns: "repeat(14, minmax(3.5rem, 1fr))",
 });
 
 globalStyle(".palette-cell", { minWidth: 0 });

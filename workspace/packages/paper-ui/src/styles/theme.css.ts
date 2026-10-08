@@ -68,12 +68,12 @@ emitShadowVars("light", lightVars);
 emitShadowVars("dark", darkVars);
 
 // :root — 테마 불변 축 + light 색(기본값). Provider 없이도 라이트로 바로 선다.
-globalStyle(":root", { vars: { ...baseVars, ...lightVars } });
+globalStyle(":root", { colorScheme: "light", vars: { ...baseVars, ...lightVars } });
 
 // 테마 스코프 — 색 세트만 교체한다. :root[...] 를 겹쳐 root 레벨(html)에서 특정도로
 // 확실히 이기고, 뒤 홑 [data-theme] 셀렉터가 중첩 div(ThemeScope · Box inverse)를 잡는다.
-globalStyle(':root[data-theme="light"], [data-theme="light"]', { vars: lightVars });
-globalStyle(':root[data-theme="dark"], [data-theme="dark"]', { vars: darkVars });
+globalStyle(':root[data-theme="light"], [data-theme="light"]', { colorScheme: "light", vars: lightVars });
+globalStyle(':root[data-theme="dark"], [data-theme="dark"]', { colorScheme: "dark", vars: darkVars });
 
 // ╭──────────────────────────────────────────────────────────────────────────╮
 // │ Pass 2 — 캔버스 (body)                                                   │

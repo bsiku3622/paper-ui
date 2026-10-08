@@ -1,3 +1,111 @@
+## 2026-10-06 — Ease amber’s 200-to-300 saturation transition
+
+- Changed files: Amber transition chroma ratios, shared-envelope test scope, and color architecture documentation.
+- Summary: Raise amber 200 ratio from 0.38 to 0.44 and lower 300 from 0.65 to 0.55. Keep every lightness, hue, and 400+ coordinate unchanged.
+
+The previous ceiling increase amplified the source chroma jump from 200 to 300 (0.0648), making 300 look like an isolated vivid yellow-orange. Balancing both neighbors reduces that jump to 0.0264. Generated amber 200/300 are now #f9db8a/#edb251; light warning solid stays #d37e00. Common lightness is retained, but amber’s two transition steps intentionally deviate from the base relative chroma envelope. Dark warning ink selects 300 and therefore also changes.
+
+Typecheck, zero-warning lint, 11 color unit tests, and both browser variant contrast matrices passed. Verified the actual palette strip’s generated values and the rendered Foundations matrix. Screenshot retained in Bufs and copied to Downloads as paper-amber-eased.jpg.
+
+## 2026-10-06 — Increase amber pigment clarity
+
+- Changed files: Amber chroma ceiling/hue source, amber hue test, generated warning HEX expectation, and color architecture documentation.
+- Summary: Increase amber chroma ceiling from 0.200 to 0.240 and guide its yellow light tints toward hue 65 at 400 instead of hue 70. Shared lightness and relative chroma curves remain intact.
+
+Increasing authored chroma alone cannot brighten already gamut-mapped middle tones; changing their hue slightly toward orange yields a more vivid warm pigment without another lightness swing. Light tints retain hue 90 and gain yellow saturation instead of returning to peach. Light warning solid changes from #cd8300 to #d37e00 with its requested white label. The palette’s dark amber samples remain appropriately dark because the common lightness curve is unchanged.
+
+Typecheck, zero-warning lint, 11 color unit tests, and 4 focused browser tests passed. Reviewed light palette and actual variant buttons, plus contrast checks across both themes at rest/hover. Screenshots retained in Bufs with Downloads copies.
+
+## 2026-10-06 — Remove palette 550 and consolidate 675 into 700
+
+- Changed files: Palette step lists/curve/interpolation, light subtle semantic selection, inspector column counts, color documentation, and focused checks.
+- Summary: Remove 550 and 675 from neutral and all four accent ramps. Move light status subtle from 675 to 700; retain 650 for light tertiary neutral ink.
+
+550 had no UI consumers. Only accent 675 was consumed, by light muted labels. Choose 700 over 650 to preserve stronger small-label contrast across light surfaces. Light status ink and subtle now intentionally share a color; ghost/muted differ by surface treatment only where their variants provide it. Other surviving palette coordinates are unchanged because accent steps are direct curve values and neutral intermediates are separate from the base ramp. Neutral has 16 steps and each accent has 14. Update both inspectors and the 15-column matrix regression expectation together to avoid the earlier row-spill defect.
+
+Typecheck, zero-warning lint, 11 color unit tests, and 4 browser matrix/layout tests passed. Verified the rendered palette; screenshot retained in Bufs with a Downloads copy. The preceding usage audit is a dated snapshot before this cleanup.
+
+## 2026-10-06 — Audit palette step consumption
+
+- Changed files: logs.md; audit report saved in Reports with a Downloads copy, provenance JSON and audit script retained in Bufs.
+- Summary: Trace all 120 generated palette leaves through both semantic themes and actual UI style consumers. 47 of 82 color steps are consumed; 35 are inspector/test-only. Alpha adds 8 consumed, 1 semantic-only, and 29 unselected leaves.
+
+Do not count inspector rendering, tests, or CSS variable emission as actual UI consumption. Substitute palette leaf identifiers before evaluating both semantic themes so identical HEX values cannot misattribute usage. Dynamic accent profiles and assembled shadow consumers are included. interaction.active has no general style consumer; its dark white alpha15 is semantic-only, while its light black alpha15 is consumed elsewhere. Neutral 0 and 875 are actively used although omitted from the screenshot’s 80-cell matrix. No palette or UI source changes were made.
+
+Report: [Paper UI palette usage audit — 2026-10-06](/Users/baeks/Reports/Paper UI palette usage audit — 2026-10-06.md)
+
+## 2026-10-06 — Align accent scales and guide pale amber toward yellow
+
+- Changed files: Palette source, color architecture documentation, shared-curve unit checks, and browser HEX expectations.
+- Summary: Give all four accents a common OKLCH lightness curve and relative chroma envelope. Keep pale amber yellow through 200, then move smoothly to orange by 400.
+
+Independent per-family lightness anchors made matching step numbers look unrelated. One shared curve now owns every accent step; hue and chroma ceiling retain each pigment’s identity. The 600 lightness is 0.525 so green labels retain contrast, and 400 is 0.670 to keep dark muted red readable during hover. Warning stays close to the accepted orange-amber reference (#cd8300 versus #cb8100) with white labels. Fixed orange hue made light amber look peach; hue 90 through 200 transitions to hue 70 at 400 while leaving common lightness/chroma ratios intact. Neutral ramps and semantic step choices are unchanged.
+
+Typecheck, zero-warning lint, 11 unit tests, and focused browser checks verify shared curves, amber hue continuity, both variant matrices at rest/hover, inspector alignment at 760px/1440px, and generated CSS values. White light warning remains the previously requested contrast exception. Reviewed and retained the light palette screenshot in Bufs with a Downloads copy.
+
+## 2026-10-06 — Repair palette continuity and inspector alignment
+
+- Changed files: Palette anchors, both palette inspector styles, color architecture documentation, color unit tests, and browser layout/variant checks.
+- Summary: Remove isolated desaturated accent anchors and interpolate intermediate steps. Restore 16-step accent rows and 18-step neutral rows in the inspectors. Set light warning to orange-amber #cb8100 with white labels.
+
+Individual 550/675/925 chroma overrides created muddy dips inside otherwise saturated ramps. Intermediate steps now follow neighboring anchors, and 200 tints stay stronger than 150 instead of reversing chroma. This changes dark soft fills and light muted ink through their existing semantic token selections. Neutral surfaces remain unchanged. Warning 400 lowers lightness from 0.685 to 0.665 and moves hue from 75 to 70. White labels remain the requested contrast exception.
+
+The inspector still assumed 13 accent columns after the ramp grew to 16, so labels and swatches spilled into following rows. Update both inspectors and add regression checks at 760px and 1440px, plus ramp lightness/chroma continuity coverage. Typecheck, zero-warning lint, 9 color unit tests, and 6 focused browser tests passed. Reviewed rendered palette and variant matrix; screenshots retained in Bufs and copied to Downloads.
+
+## 2026-10-06 — Set light warning to the intermediate amber step
+
+- Changed files: Warning solid/wash semantic mappings, generated HEX expectations, and color architecture documentation.
+- Summary: Select existing amber 400 (#c68600) for light warning solid and neutral 950 (#111113) for its label.
+
+The saturated amber 300 proposal was too bright after the earlier amber 600 fill felt muddy. Amber 400 keeps the same 0.16 chroma while bringing lightness from 0.80 to 0.6678, near the midpoint between the reviewed extremes. Only semantic selection changes; keep the palette source and other variants intact. Neutral 950 labels retain 4.5:1 contrast even under the solid hover overlay, where the previous brown foreground would lose contrast.
+
+Typecheck, zero-warning lint, 8 color unit tests, and 4 focused browser tests passed. Both 25-combination matrices still pass rest/hover contrast checks. Saved the final matrix as paper-warning-balanced.jpg in Bufs with a Downloads copy.
+
+## 2026-10-06 — Refine light variants and brighten warning solid
+
+- Changed files: Light semantic color selections, explicit accent 150/300/650/675 palette anchors, neutral intermediate steps, color architecture documentation, and contrast/HEX browser checks.
+- Summary: Keep vivid status solid fills, strengthen light soft tints, separate darker pigment ink from desaturated muted text, and use bright amber with dark text for light warning solid.
+
+The initial light proposal combined faint soft fills with deeper, lower-chroma solids; review found the former too pale and the latter muddy. Keep status solid at 600, primary solid at neutral 950, and strengthen accent 150 soft anchors. Primary soft selects neutral 200. Light accent ink uses 700 and muted uses low-chroma 675; body/secondary/tertiary ink use neutral 900/700/650. Extra neutral steps are interpolated outside the base ramp to avoid shifting existing dark neutrals.
+
+White text forced warning toward a brown fill. Light warning instead selects an explicit bright amber 300 anchor (#f3b01d) with amber 950 text (#412000). This is still a generated palette selection, not a component override. The shared amber 300 also makes dark warning ink more vivid; dark warning solid remains at 600. The other reviewed dark semantics retain their values.
+
+Typecheck, zero-warning lint, 47 unit tests, and 8 focused browser tests passed. All 25 combinations in each theme pass 4.5:1 label contrast at rest and hover. The HEX checks use generated values, including warning 600's actual #a16300 rather than the obsolete #b45309 literal. Reviewed and saved the final light matrix as paper-accent-light-balanced.jpg in Bufs with a Downloads copy.
+
+## 2026-10-06 — Balance dark soft variants between the reviewed extremes
+
+- Changed files: Palette 925 accent anchors, neutral 875 interpolation, primary soft semantics, color expectations, and color architecture documentation.
+- Summary: Set primary soft to #2f2f30 and reduce the saturation of the four dark soft fills while preserving their status identity, solid fills, ink, and general surfaces.
+
+The first quiet soft proposal lost too much color, while the restored version competed with solid. Explicit accent 925 coordinates keep a middle strength instead of deriving a saturated fill from the 700-to-950 ramp. Primary needs a similar middle value between neutral 800 and 900, so generate 875 separately without adding it to the base interpolation sequence. That preserves every existing neutral base value. Final dark soft colors are info #1f3055, success #1b3424, warning #452b0a, and error #512320. Light semantics and solid/inverse matching remain unchanged.
+
+Typecheck, zero-warning lint, 7 color unit tests, and 3 browser tests passed. The browser matrix checks all 25 combinations for 4.5:1 label contrast at rest and hover. Reviewed the final rendered matrix; capture is in Bufs with a Downloads copy named paper-accent-soft-balanced.jpg.
+
+## 2026-10-06 — Refine accent fills and separate pigment ink
+
+- Changed files: Accent semantics and palette, shared variant profile, semantic text/link/form consumers, Foundations inspector, component/color documentation, and unit/browser coverage.
+- Summary: Use saturated status solid fills with bright labels in both themes, add independent accent ink for soft/hairline/ghost, match dark primary solid to the inverse canvas, and retain the previously preferred colored soft surfaces.
+
+A single solid token could not serve saturated fills and readable foregrounds in dark mode. Add ink while preserving existing variant props, and migrate semantic text, links, and status form borders to it. The first reduced-chroma dark soft proposal was too faint in review, so restore the earlier 925 accent fills and 800 neutral soft. Primary solid selects neutral 50, exactly matching the light canvas inside the inverse scope. General bg surfaces retain the user's earlier rollback. A low-chroma 550 accent step improves muted light text; neutral 550 is interpolated separately so adding this inspector column does not shift existing neutral base interpolation.
+
+References: https://dribbble.com/shots/27475300-Light-Dark-Mode-Buttons and https://www.radix-ui.com/colors/docs/palette-composition/understanding-the-scale. Reviewed the rendered light and dark matrices. All 25 dark combinations clear 4.5:1 label contrast at rest and hover, without attached-surface shadows. Typecheck, lint, app/library builds, 46 unit tests, and focused browser checks passed. The inverse-canvas HEX is generated as #f9f9fb; copying the old approximate #f9f9fa literal caused a browser expectation failure, fixed to the generated value. Final matrix capture is preserved in Bufs with a Downloads delivery copy.
+
+## 2026-10-06 — Restore the previous dark surface mapping
+
+- Changed files: Dark background semantics, color architecture documentation, and matching unit/browser expectations.
+- Summary: Restore bg.raised to neutral 925 (#1d1d1e) and bg.canvas/bg.sunken to neutral 950 (#111113), as requested after previewing the lighter surfaces.
+
+The rollback is limited to the bg surface system. Keep the updated control track, borders, text, accent roles, and scoped native color-scheme. The canvas and sunken roles intentionally share a value again, so depth tests must allow equality rather than require three distinct surfaces. Typecheck, zero-warning lint, 7 color unit tests, and 5 focused browser tests passed, including the demo and live inspector values.
+
+## 2026-10-06 — Rebalance dark surfaces and readable metadata
+
+- Changed files: Semantic color mappings, theme CSS, color architecture documentation, color tests, and dark-mode integration tests.
+- Summary: Separate dark sunken/canvas/raised surfaces at neutral 950/925/900, lift borders and control tracks, brighten tertiary ink, distinguish accent soft from solid foreground wash, and apply native color-scheme per theme scope.
+
+The previous canvas and sunken colors were identical, and status soft surfaces reused wash. Keeping the shared palette unchanged preserves light mode and palette identity; only dark semantic selections move. A dark canvas at #1d1d1e and raised panels at #29292a preserve the restrained neutral character while showing depth. Metadata reaches 5.05:1 on raised panels; status muted text remains above 4.71:1. Each accent solid/wash and solid/soft pair clears 4.5:1. Theme scopes must set color-scheme as well as variables, otherwise native selects and scrollbars can retain the OS scheme inside an inverse surface.
+
+Typecheck, zero-warning lint, app/library builds, 46 unit tests, and 8 focused browser tests passed. Browser checks cover light/dark outlined controls, toggle persistence, inverse native schemes, OS dark preference, demo surfaces, and the live token inspector. Reviewed the rendered dark demo and captured demo, inspector, palette, and mobile screenshots in Bufs. The existing dark HEX expectations predated the current palette, so that dark test is updated; unrelated legacy playground expectations are outside this change.
+
 ## 2026-10-06 — Fix token inspector lint exceptions
 
 - Changed files: workspace/eslint.config.js and AGENTS.md.

@@ -14,7 +14,7 @@
 | Control | `control.<role>` | `track` |
 | Border | `border.<level>` | `base · strong · hover` |
 | Ink | `ink.<level>` | `primary · secondary · tertiary` |
-| Accent | `accent.<name>.<ladder>` | `primary · info · success · warning · error` × `solid · wash · soft · subtle` |
+| Accent | `accent.<name>.<ladder>` | `primary · info · success · warning · error` × `solid · wash · ink · soft · subtle` |
 | Interaction | `interaction.<state>` | `bgHover · selected · active · focus` |
 | Overlay | `overlay.<role>` | `scrim` |
 | Shadow | `shadow.<role>` | `overlay · overlayMinimal` |
@@ -27,7 +27,7 @@
 
 중립 step 번호는 밝은 쪽에서 어두운 쪽으로 진행합니다. `0`은 white에 가까운 끝점이고 `950`은 near-black 끝점입니다. Neutral과 Accent 모두 `900 · 925 · 950`을 가지며, `925`는 두 ramp에서 앞뒤 anchor 사이에 생성합니다. Light에서는 `bg.canvas`가 `neutral.50`, `bg.sunken`이 가까운 `neutral.100`, `control.track`이 `neutral.200`을 선택합니다. Dark에서는 `bg.canvas`와 `bg.sunken`이 `neutral.950`, `bg.raised`가 `neutral.925`, `control.track`이 `neutral.900`을 선택합니다. `control.track`은 Switch와 SegmentedControl처럼 조작부 자체의 트랙에 쓰며, 일반 Box surface로 노출하지 않습니다. 기본 경계는 `neutral.900`으로 낮추고, status의 `soft` 면은 각 accent의 `950`을 선택해 반복되는 색 면을 차분하게 합니다. Palette 화면은 테마가 바뀌어도 같은 ramp를 보여줍니다. Light/Dark surface·control·ink·border·accent 의미 역할은 `colors.ts`에서 서로 다른 step을 선택합니다. Neutral은 hue 286°·낮은 chroma의 단일 cool-neutral ramp입니다. Accent palette는 13 step으로 만들고, `primary · info · success · warning · error`가 neutral·blue·green·amber·red의 토큰을 선택합니다.
 
-Accent는 `solid`(채운 면과 지면 위 색 글자) · `wash`(solid 위 전경과 가벼운 tint) · `soft`(부드러운 면) · `subtle`(muted 글자)를 공유합니다. `muted`는 Ghost형 투명 면에 선택된 accent의 `subtle` 전경을 쓰는 보조 variant입니다.
+Accent는 `solid`(채운 면) · `wash`(solid 위 전경) · `ink`(soft·hairline·ghost와 지면 위 색 글자) · `soft`(부드러운 면) · `subtle`(muted 글자)를 공유합니다. `muted`는 Ghost형 투명 면에 선택된 accent의 `subtle` 전경을 쓰는 보조 variant입니다.
 
 ### Interaction과 상수
 

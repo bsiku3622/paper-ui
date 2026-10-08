@@ -14,7 +14,7 @@ The Palette is one theme-independent source of truth. It owns hue, chroma, light
 
 ## Palette source and generated tokens
 
-`tokens/palette.ts` is the only authored color source and the assembly point for the completed Palette. Neutral and accent families are described by one OKLCH ramp each. Neutral step numbering runs from light to dark: `0` is the lightest endpoint and `950` the darkest; both ramps include `925` between `900` and `950`. Dark `bg.canvas` and `bg.sunken` select neutral `950`; `bg.raised` selects `925`, and `control.track` selects `900`. The close spacing keeps broad surfaces calm while letting panels lift slightly above the page. Accent families keep one set of reviewed anchors; intermediate tones, including `925`, are interpolated in OKLCH. `alpha05` through `alpha95` are fixed percentage ramps applied to the neutral endpoints and are shared by every theme.
+`tokens/palette.ts` is the only authored color source and the assembly point for the completed Palette. Neutral and accent families are described by one OKLCH ramp each. Neutral step numbering runs from light to dark: `0` is the lightest endpoint and `950` the darkest; both ramps include `925` between `900` and `950`. Dark `bg.canvas` and `bg.sunken` select neutral `950`; `bg.raised` selects `925`. The close spacing keeps broad surfaces calm while letting panels lift slightly above the page. `control.track` and base borders select `800` so control boundaries remain visible on raised surfaces. Dark secondary and tertiary ink use `400` and `500`. Light primary/secondary/tertiary ink use `900`/`700`/`650`, preserving readable metadata without matching primary text. Accent families share one explicit perceptual lightness curve and a base relative chroma envelope. Each family supplies its hue and chroma ceiling; pale amber stays yellow at hue 90 through 200, then smoothly moves to orange hue 65 by 400; Amber uses a 0.240 chroma ceiling to keep its light yellow tints vivid, with 200/300 chroma ratios eased to 0.44/0.55 to avoid a sudden saturation jump; its orange hue also keeps middle tones warmer. sRGB gamut mapping reduces chroma only when required. Matching step numbers therefore represent matching OKLCH lightness across the four hues, without isolated desaturated steps. Neutral `650` is interpolated between `600` and `700`, and `875` between `800` and `900`, without changing the base ramp. Other intermediate tones are interpolated in OKLCH. `alpha05` through `alpha95` are fixed percentage ramps applied to the neutral endpoints and are shared by every theme.
 
 `tokens/color-ladder.ts` contains pure operations only: completing a ramp, interpolating OKLCH coordinates, mapping out-of-gamut colors into sRGB, encoding HEX, and appending alpha. It does not import or assemble palette data. `palette.ts` applies these functions and exports generated `PaletteToken`s; they are not semantic roles.
 
@@ -22,7 +22,7 @@ Palette Token keys are internal. Components and application code do not import t
 
 ## Semantic systems
 
-All semantic values select Palette Tokens according to the current theme. They share the public root `tokens.color`. For example, dark mode can select a lighter accent solid and a deeper accent soft surface from the same blue ramp; no second dark palette is generated.
+All semantic values select Palette Tokens according to the current theme. They share the public root `tokens.color`. Filled surfaces and foreground ink have separate roles. Status `solid` selects the saturated `600` step and `wash` selects `50` for a bright label. Light warning is the deliberate exception: amber `400` supplies a mid-brightness orange-amber fill, with neutral `0` (white) ink, as an explicit visual preference. This white-on-amber light solid does not meet the 4.5:1 small-text contrast target; the remaining variant combinations retain that target. Dark `ink` selects `300`, while `soft` selects a restrained colored `925` surface and `subtle` selects `400`. Light soft uses the shared curve’s colored `150` step, ink uses `700`, and subtle uses the shared curve’s `700` text tone. Light ink and subtle deliberately share step `700`; their component variants still differ in surface treatment. Unused `550` and replaced `675` steps are removed from both neutral and accent palettes. This keeps solid controls saturated and text independently readable. Primary stays neutral: dark solid uses `50`, matching the inverse canvas, soft uses the intermediate `875` neutral, and ink uses `100`; light solid uses `950`, ink uses `900`, and soft uses `200`.
 
 | System | Public shape | Responsibility |
 |---|---|---|
@@ -30,7 +30,7 @@ All semantic values select Palette Tokens according to the current theme. They s
 | Control | `control.<role>` | Tracks built into interactive controls |
 | Border | `border.<level>` | Base, strong, and hover boundaries |
 | Ink | `ink.<level>` | Primary, secondary, and tertiary text |
-| Accent | `accent.<name>.<ladder>` | Primary or status pigment roles: `solid`, `wash`, `soft`, `subtle` |
+| Accent | `accent.<name>.<ladder>` | Primary or status pigment roles: `solid`, `wash`, `ink`, `soft`, `subtle` |
 | Interaction | `interaction.<state>` | Background hover overlays, selected, active, and focus feedback |
 | Overlay | `overlay.<role>` | Modal backdrop scrim |
 | Shadow | `shadow.<role>` | Palette-derived shadow tints |
@@ -49,24 +49,25 @@ tokens.color.overlay.scrim
 tokens.color.shadow.overlay
 ```
 
-The surface levels are `raised`, `canvas`, and `sunken`. In light mode, `canvas` and `sunken` select neutral `50` and `100`; `control.track` selects neutral `200` for the recessed track inside Switch and SegmentedControl. In dark mode it selects neutral `900`. Keeping this track outside `bg` prevents a component detail from becoming a general-purpose page surface. Borders use `base`, `strong`, and `hover`; ink uses `primary`, `secondary`, and `tertiary`.
+The surface levels are `raised`, `canvas`, and `sunken`. In light mode, `canvas` and `sunken` select neutral `50` and `100`; `control.track` selects neutral `200` for the recessed track inside Switch and SegmentedControl. In dark mode it selects neutral `800`. Keeping this track outside `bg` prevents a component detail from becoming a general-purpose page surface. Borders use `base`, `strong`, and `hover`; ink uses `primary`, `secondary`, and `tertiary`.
 
 Accent names are `primary`, `info`, `success`, `warning`, and `error`. They map to neutral, blue, green, amber, and red Palette Tokens. Every name has the same ladder:
 
 | Ladder token | Use |
 |---|---|
-| `solid` | Filled surface or pigment text on a neutral surface |
-| `wash` | Foreground on a solid accent surface; light tint |
+| `solid` | Filled surface or status dot |
+| `wash` | Foreground on a solid accent surface |
+| `ink` | Foreground on soft, hairline, and ghost variants; links and semantic text |
 | `soft` | Soft variant surface |
 | `subtle` | Muted variant foreground |
 
 Interaction values select from the shared alpha Palette too. `interaction.bgHover` provides `onSurface`, `onPrimarySolid`, and `onAccentSolid` overlays. Selected, active, scrim, and shadow tints select a neutral endpoint and alpha percentage appropriate to the theme. Focus uses a step from the shared blue ramp. Focus ring width and offset remain geometry constants in the shape system. Shadow colors are exposed as `shadow.overlay` and `shadow.overlayMinimal`; their geometry remains in shape.
 
-Hairline and default form controls share a raised surface, base neutral border, primary ink, and hover border. Semantic hairline accents retain their pigment foreground.
+Hairline and default form controls share a raised surface, base neutral border, primary ink, and hover border. Semantic hairline accents use their dedicated accent ink; status form borders also use ink for visibility in dark mode.
 
 ## Real use
 
-`theme.css.ts` emits the semantic tree as theme-scoped CSS variables. `tokens.color` contains only `var(...)` references. Components and apps consume those references; they do not read palette source or generated palette token modules.
+`theme.css.ts` emits the semantic tree as theme-scoped CSS variables and declares the matching CSS `color-scheme` on each scope, including nested scopes, so native controls and scrollbars follow the theme. `tokens.color` contains only `var(...)` references. Components and apps consume those references; they do not read palette source or generated palette token modules.
 
 When changing color:
 

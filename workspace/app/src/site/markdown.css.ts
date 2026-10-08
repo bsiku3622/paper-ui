@@ -46,7 +46,7 @@ globalStyle(".md h4", {
 });
 
 globalStyle(".md p", { margin: `0 0 ${tokens.shape.gap.lg}` });
-globalStyle(".md a", { color: tokens.color.accent.info.solid, textDecoration: "none" });
+globalStyle(".md a", { color: tokens.color.accent.info.ink, textDecoration: "none" });
 globalStyle(".md a:hover", { textDecoration: "underline", textUnderlineOffset: "0.2em" });
 globalStyle(".md ul, .md ol", { margin: `0 0 ${tokens.shape.gap.lg}`, paddingLeft: tokens.shape.padding.xl.interaction });
 globalStyle(".md li", { margin: `${tokens.shape.gap.xs} 0` });

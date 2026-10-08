@@ -47,10 +47,10 @@ globalStyle(".pui-ink-inherit", { color: "inherit" });
 
 for (const status of STATUS) {
   const t = tokens.color.accent[status];
-  globalStyle(`.pui-${status}-solid`, { color: t.solid });
+  globalStyle(`.pui-${status}-solid`, { color: t.ink });
   globalStyle(`.pui-${status}-wash`, {
-    background: t.wash,
-    color: t.solid,
+    background: t.soft,
+    color: t.ink,
     borderColor: t.soft,
   });
   globalStyle(`.pui-${status}-dot`, { background: t.solid, color: t.solid });

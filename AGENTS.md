@@ -59,12 +59,12 @@ semantic color는 surface·ink·border·accent·interaction·overlay·shadow 역
 | Control | `control.<role>` | track |
 | Border | `border.<level>` | base · strong · hover |
 | Ink | `ink.<level>` | primary · secondary · tertiary |
-| Accent | `accent.<name>.<ladder>` | primary · info · success · warning · error × solid · wash · soft · subtle |
+| Accent | `accent.<name>.<ladder>` | primary · info · success · warning · error × solid · wash · ink · soft · subtle |
 | Interaction | `interaction.<state>` | bgHover (onSurface·onPrimarySolid·onAccentSolid) · selected · active · focus |
 | Overlay | `overlay.<role>` | scrim |
 | Shadow | `shadow.<role>` | overlay · overlayMinimal |
 
-Accent status는 palette와 분리합니다: info→blue, success→green, warning→amber, error→red. Accent는 같은 네 role을 공유합니다. `soft`는 soft surface에, `subtle`은 muted foreground에 씁니다.
+Accent status는 palette와 분리합니다: info→blue, success→green, warning→amber, error→red. Accent는 같은 다섯 role을 공유합니다. `solid`는 채움, `wash`는 채움 위 글자, `ink`는 soft·hairline·ghost와 의미색 글자, `soft`는 soft surface, `subtle`은 muted foreground에 씁니다.
 
 focus ring 색은 `interaction.focus`에 둡니다. focus는 상호작용 상태이고 색도 Palette Token에서 오기 때문입니다. 링 두께·offset은 색이 아닌 geometry이므로 `shape.constants.focusRingWidth`와 shape 상수에 둡니다. Scrim은 `overlay.scrim`, shadow tint는 `shadow.overlay`와 `shadow.overlayMinimal`에 두고, 거리·blur·spread는 shape geometry로 둡니다. Semantic Form hover glow는 사용하지 않습니다.
 
