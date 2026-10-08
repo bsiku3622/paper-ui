@@ -1,7 +1,7 @@
 // App — paper-ui 사이트. 네 라우트 그룹.
 //   /            홈 (랜딩)
 //   /demo        데모 (이슈 트래커, 실사용 검증)
-//   /playground  플레이그라운드 (Foundations · Tokens)
+//   /playground  플레이그라운드 (Foundations · Primitives · Atoms)
 //   /docs/*      문서 (마크다운)
 //
 // Site chrome and page-level compositions stay in the app. The package stops at Primitives and Atoms.
@@ -13,6 +13,7 @@ import { Box, Text } from "@studio-baeks/paper-ui";
 
 const Home = lazy(() => import("./pages/Home").then((m) => ({ default: m.Home })));
 const Demo = lazy(() => import("./pages/Demo").then((m) => ({ default: m.Demo })));
+const Playground = lazy(() => import("./pages/Playground").then((m) => ({ default: m.Playground })));
 const PalettePage = lazy(() => import("./playground/Palette").then((m) => ({ default: m.Palette })));
 const TokensPage = lazy(() => import("./playground/Tokens").then((m) => ({ default: m.Tokens })));
 const Docs = lazy(() => import("./pages/Docs").then((m) => ({ default: m.Docs })));
@@ -28,7 +29,7 @@ export const App = () => (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/demo" element={<Demo />} />
-      <Route path="/playground" element={<Navigate to="/playground/foundations/color-typography" replace />} />
+      <Route path="/playground" element={<Playground />} />
       <Route path="/playground/palette" element={<PalettePage />} />
       <Route path="/playground/foundations" element={<Navigate to="/playground/foundations/color-typography" replace />} />
       <Route path="/playground/foundations/:section" element={<TokensPage />} />

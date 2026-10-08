@@ -23,6 +23,7 @@ export const PlaygroundLayout = ({ value, children }: { value: string; children:
         <Stack gap="lg">
           <Stack gap="xs">
             <Text variant="label" ink="faint">REFERENCE</Text>
+            <Link to="/playground" style={linkStyle(value === "all")}>Primitives & Atoms</Link>
             <Link to="/playground/palette" style={linkStyle(value === "palette")}>Palette</Link>
           </Stack>
           <Stack gap="xs">

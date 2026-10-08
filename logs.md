@@ -1174,3 +1174,9 @@ Typography 표의 specimen과 메타 라벨은 중립 기본 잉크를 의도하
 - 요약: 공개 package를 Primitives와 Atoms로 축소하고, 제품별 화면 조합과 navigation을 app 소유 코드로 옮겼습니다. 컴포넌트 Playground/catalog와 관련 docs·오래된 E2E 계약을 제거했습니다.
 
 이전 UI 묶음은 정리 비용이 크고 Shape와 typography의 실제 사용 경계를 흐렸습니다. 이제 public API에는 재사용 가능한 저수준 요소만 남기고, 화면 조합은 소비 앱에서 정의합니다. Shape의 component intrinsic 가지와 사용되지 않는 navigation/tooltip typography preset도 함께 제거했습니다. 제거한 구현과 API는 직전 커밋 및 삭제 이력에서 복구할 수 있습니다.
+## 2026-10-08 — Restore the Primitives and Atoms playground
+
+- 변경 파일: `workspace/app/src/App.tsx`, `workspace/app/src/pages/Playground.tsx`, `workspace/app/src/playground/shell.tsx`
+- 요약: `/playground`를 다시 Primitives·Atoms 레퍼런스 페이지로 연결하고, Foundation·Palette 링크를 보존했습니다. 제거된 조합 컴포넌트 표본은 원자 요소 조합으로 대체했습니다.
+
+Molecules/Components 정리와 Playground 전체 삭제는 별개의 범위였습니다. Playground는 기반 요소를 검토하는 유효한 표면이므로 유지하고, package에 남은 API만 직접 보여주도록 구성합니다.
