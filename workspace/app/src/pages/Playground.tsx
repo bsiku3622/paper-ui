@@ -1,4 +1,4 @@
-// Primitives and Atoms reference specimens.
+// Playground overview for tokens, primitives, and atoms.
 
 import { Fragment, useState } from "react";
 
@@ -63,9 +63,9 @@ export const Playground = () => {
     <PlaygroundLayout value="all">
       <Stack gap="xl" style={{ maxWidth: "48rem" }}>
         <ReferenceHeading
-          group="PLAYGROUND"
-          name="Primitives & Atoms"
-          description="Paper UI의 기반 요소와 개별 컨트롤을 한 화면에서 살펴봅니다."
+          group="REFERENCE"
+          name="Playground"
+          description="Paper UI의 토큰과 기반 요소, 개별 컨트롤을 한곳에서 살펴봅니다."
         />
 
         {/* ── Tokens ─────────────────────────────────────────── */}

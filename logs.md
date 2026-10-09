@@ -1180,3 +1180,9 @@ Typography 표의 specimen과 메타 라벨은 중립 기본 잉크를 의도하
 - 요약: `/playground`를 다시 Primitives·Atoms 레퍼런스 페이지로 연결하고, Foundation·Palette 링크를 보존했습니다. 제거된 조합 컴포넌트 표본은 원자 요소 조합으로 대체했습니다.
 
 Molecules/Components 정리와 Playground 전체 삭제는 별개의 범위였습니다. Playground는 기반 요소를 검토하는 유효한 표면이므로 유지하고, package에 남은 API만 직접 보여주도록 구성합니다.
+## 2026-10-10 — Name the Playground overview consistently
+
+- 변경 파일: `workspace/app/src/pages/Playground.tsx`, `workspace/app/src/playground/shell.tsx`
+- 요약: 복구된 `/playground` 페이지 제목과 navigation label을 Playground 이름에 맞췄습니다. Primitive·Atom 범위는 설명 문구로 남겼습니다.
+
+페이지 제목은 영역 목록이 아니라 사용자가 찾는 화면 이름을 써야 하므로, “Primitives & Atoms”를 Playground로 바꾸고 Overview를 navigation entry로 사용합니다.

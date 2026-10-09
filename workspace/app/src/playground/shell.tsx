@@ -22,8 +22,8 @@ export const PlaygroundLayout = ({ value, children }: { value: string; children:
       <Box as="nav" aria-label="Foundations" style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, top: NAV_HEIGHT, position: "sticky", alignSelf: "start", padding: tokens.shape.padding.md.layout, borderRight: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }}>
         <Stack gap="lg">
           <Stack gap="xs">
-            <Text variant="label" ink="faint">REFERENCE</Text>
-            <Link to="/playground" style={linkStyle(value === "all")}>Primitives & Atoms</Link>
+            <Text variant="label" ink="faint">PLAYGROUND</Text>
+            <Link to="/playground" style={linkStyle(value === "all")}>Overview</Link>
             <Link to="/playground/palette" style={linkStyle(value === "palette")}>Palette</Link>
           </Stack>
           <Stack gap="xs">
