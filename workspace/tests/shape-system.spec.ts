@@ -65,10 +65,13 @@ test("all control sizes retain their geometry and optical marks", async ({ page 
     const select = await metrics(page, `span:has(> select[aria-label=select-${size}])`);
     expect(select.height).toBe(button.height);
     expect(select.padding).toBe([7, 8, 10][i]);
-    expect((await metrics(page, `textarea[aria-label=textarea-${size}]`)).blockPadding).toBe([3.5, 4.5, 7][i]);
+    // One textarea row is exactly one control tall.
+    expect((await metrics(page, `textarea[aria-label=textarea-${size}]`)).blockPadding).toBe([4, 5, 7][i]);
+    expect((await metrics(page, `span:has(> select[aria-label=select-${size}]) > svg`)).width).toBe([16, 18, 20][i]);
     expect((await metrics(page, `[aria-label=checkbox-${size}]`)).width).toBe([15, 16, 18][i]);
-    expect((await metrics(page, `[aria-label=checkbox-${size}]`, "::after")).width).toBe([7, 8, 9][i]);
-    expect((await metrics(page, `[aria-label=radio-${size}]`, "::after")).width).toBe([7, 8, 9][i]);
+    expect((await metrics(page, `[aria-label=checkbox-${size}]`)).radius).toBe(3);
+    expect((await metrics(page, `[aria-label=checkbox-${size}]`, "::after")).width).toBe([7.5, 8, 9][i]);
+    expect((await metrics(page, `[aria-label=radio-${size}]`, "::after")).width).toBe([7.5, 8, 9][i]);
     const track = await metrics(page, `[aria-label=switch-${size}]`);
     const thumb = await metrics(page, `[aria-label=switch-${size}]`, "::after");
     expect(track.width).toBe([30, 32, 36][i]);
@@ -79,27 +82,30 @@ test("all control sizes retain their geometry and optical marks", async ({ page 
   }
 });
 
-test("nested shared-token overrides propagate to derived recipes with independent roles", async ({ page }) => {
+test("one source override in a subtree re-derives every role built on it", async ({ page }) => {
   await mount(page);
   await page.locator("#shape-fixture").evaluate((element) => {
     for (const [name, value] of Object.entries({
-      "--pui-shape-selection-size-md": "20px",
-      "--pui-shape-control-inset-input-md": "12px",
+      "--pui-shape-control-height-md": "40px",
       "--pui-shape-radius-control": "9px",
       "--pui-shape-radius-surface-sm": "3px",
       "--pui-shape-focus-width": "5px",
     })) element.style.setProperty(name, value);
   });
+  // control height 40 → inset (40 − 16) / 2 = 12, button round(12 × 1.4) = 17, selection 20.
+  expect((await metrics(page, "[data-testid=button-md]")).height).toBe(40);
+  expect((await metrics(page, "[data-testid=button-md]")).padding).toBe(17);
+  expect((await metrics(page, "[data-testid=field-md]")).padding).toBe(12);
   expect((await metrics(page, "[aria-label=checkbox-md]")).width).toBe(20);
   expect((await metrics(page, "[aria-label=checkbox-md]", "::after")).width).toBe(10);
   expect((await metrics(page, "[aria-label=radio-md]", "::after")).width).toBe(10);
   expect((await metrics(page, "[aria-label=switch-md]")).width).toBe(40);
   expect((await metrics(page, "[aria-label=switch-md]")).height).toBe(22);
   expect((await metrics(page, "[aria-label=switch-md]", "::after")).width).toBe(18);
-  expect((await metrics(page, "textarea[aria-label=textarea-md]")).blockPadding).toBe(8.5);
+  expect((await metrics(page, "textarea[aria-label=textarea-md]")).blockPadding).toBe(9);
   expect((await metrics(page, "[data-testid=button-md]")).radius).toBe(9);
   expect((await metrics(page, "[data-testid=surface-corner]")).radius).toBe(3);
-  // Focus width changes do not alter the switch's clearance or checkbox mark thickness.
+  // Focus width changes do not alter the switch rim or checkbox mark thickness.
   expect((await metrics(page, "[aria-label=switch-md]", "::after")).inset).toBe(2);
   await page.locator("#shape-fixture").evaluate((element) => { element.dir = "rtl"; });
   await expect.poll(async () => (await metrics(page, "[aria-label=switch-md]", "::after")).transform).toBe("matrix(1, 0, 0, 1, -18, -9)");
@@ -110,10 +116,12 @@ test("rem geometry scales together while edge strokes stay in CSS pixels", async
   await page.evaluate(() => { document.documentElement.style.fontSize = "20px"; });
   expect((await metrics(page, "[data-testid=button-md]")).height).toBe(40);
   expect((await metrics(page, "[aria-label=switch-md]")).width).toBe(40);
-  expect((await metrics(page, "[aria-label=switch-md]")).height).toBe(22.5);
-  expect((await metrics(page, "[aria-label=switch-md]", "::after")).width).toBe(17.5);
-  expect((await metrics(page, "[aria-label=switch-md]", "::after")).inset).toBe(2.5);
-  expect((await metrics(page, "textarea[aria-label=textarea-md]")).blockPadding).toBe(5.625);
+  // The switch rim is an emphasis stroke, so it stays 2px while the track grows.
+  expect((await metrics(page, "[aria-label=switch-md]")).height).toBe(22);
+  expect((await metrics(page, "[aria-label=switch-md]", "::after")).width).toBe(18);
+  expect((await metrics(page, "[aria-label=switch-md]", "::after")).inset).toBe(2);
+  // (40 − 25) / 2 − 1: the textarea line still sits where a Field's would.
+  expect((await metrics(page, "textarea[aria-label=textarea-md]")).blockPadding).toBe(6.5);
   await expect(page.locator("#shape-fixture [data-testid=button-md]")).toHaveCSS("border-top-width", "1px");
 });
 
@@ -140,7 +148,8 @@ test("Select keeps native form and keyboard contracts while its arrow follows sc
   expect((await select.locator("..").boundingBox())!.width).toBe(240);
   const selectBox = (await select.locator("..").boundingBox())!;
   const arrowBox = (await arrow.boundingBox())!;
-  expect(selectBox.x + selectBox.width - arrowBox.x - arrowBox.width).toBe(13);
+  // The arrow is a trailing icon at the input inset (8) inside the 1px border.
+  expect(selectBox.x + selectBox.width - arrowBox.x - arrowBox.width).toBe(9);
   // A nested light scope must win over the outer dark scope in both text and arrow.
   const dark = page.getByLabel("dark-select", { exact: true });
   const nested = page.getByLabel("nested-light-select", { exact: true });

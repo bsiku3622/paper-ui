@@ -1,8 +1,9 @@
 // Foundations — 역할별 디자인 토큰을 계층대로 살펴보는 reference page.
 
+import { useLayoutEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { Box, Button, Inline, Stack, Text, tokens, useResolvedTheme, resolveControlTypography, type TextVariant, type ControlSize } from "@studio-baeks/paper-ui";
+import { Box, Button, Inline, Stack, Text, tokens, useResolvedTheme, resolveControlTypography, CONTROL_SIZES, DIMENSION_KEYS, ELEVATIONS, ICON_SIZES, SPACE_KEYS, type TextVariant, type ControlSize } from "@studio-baeks/paper-ui";
 
 import { COLOR_VALUES, COLOR_VALUES_DARK } from "../../../packages/paper-ui/src/tokens/colors";
 import { ACCENT_STEPS, PALETTE_TOKENS } from "../../../packages/paper-ui/src/tokens/palette";
@@ -25,12 +26,34 @@ const Section = ({ id, children }: { id: string; children: React.ReactNode }) =>
   <Stack as="section" id={id} className="foundation-section" gap="lg">{children}</Stack>
 );
 
+// Derived roles are calc() formulas; the browser computes them on a probe element.
+const Computed = ({ value }: { value: string }) => {
+  const probe = useRef<HTMLSpanElement>(null);
+  const [px, setPx] = useState("");
+  useLayoutEffect(() => {
+    if (probe.current) setPx(`${Math.round(parseFloat(getComputedStyle(probe.current).width) * 100) / 100}px`);
+  }, [value]);
+  return <>{value.startsWith("var(") ? val(value) : px}<span ref={probe} aria-hidden style={{ position: "absolute", visibility: "hidden", width: value }} /></>;
+};
+
 const ValueRow = ({ name, value, sample }: { name: string; value: string; sample?: React.ReactNode }) => (
   <Inline className="foundation-value-row" align="center" gap="sm">
     <Text as="code" variant="caption" family="mono">{name}</Text>{sample}
-    <Text variant="caption" family="mono" ink="faint">{val(value)}</Text>
+    <Text variant="caption" family="mono" ink="faint">{/^(var|calc|round)\(/.test(value) && !value.startsWith("var(") ? <Computed value={value} /> : val(value)}</Text>
   </Inline>
 );
+
+const Subsection = ({ title, note, children }: { title: string; note: string; children: React.ReactNode }) => (
+  <Stack className="foundation-subsection" gap="md">
+    <Stack gap="xs"><Text variant="subheading">{title}</Text><Text variant="caption" ink="soft">{note}</Text></Stack>
+    {children}
+  </Stack>
+);
+
+const RADIUS_ROWS = [
+  ["control", tokens.shape.radius.control], ["selection", tokens.shape.radius.selection], ["surface.sm", tokens.shape.radius.surface.sm],
+  ["surface.md", tokens.shape.radius.surface.md], ["surface.lg", tokens.shape.radius.surface.lg], ["full", tokens.shape.radius.full],
+] as const;
 
 type TypographyPaletteGroup = "fontSize" | "weight" | "leading" | "tracking" | "family";
 const SIZE_LEADING: Record<string, keyof typeof tokens.text.palette.leading> = {
@@ -270,41 +293,52 @@ export const Tokens = () => {
             </Stack>
           </Section>}
 
-          {section[0] === "spacing" && <Section id="spacing">
-            <Stack className="foundation-scale" gap="sm">{(["xs", "sm", "md", "lg", "xl"] as const).map((size) => <ValueRow key={size} name={`shape.space.${size}`} value={tokens.shape.space[size]} sample={<Box className="foundation-measure" radius="full" style={{ width: tokens.shape.space[size], height: tokens.shape.space.xs, background: tokens.color.accent.primary.solid }} />} />)}</Stack>
-            <Inline className="foundation-inline-note" align="baseline" gap="md"><Text variant="subheading">Padding</Text><Text variant="caption" ink="soft">공통 Space와 별도로, block padding은 Layout이 소유합니다.</Text></Inline>
-            <div className="foundation-value-grid">{Object.entries(tokens.layout.padding).map(([size, value]) => <ValueRow key={size} name={`layout.padding.${size}`} value={value} />)}</div>
+          {section[0] === "shape" && <Section id="shape">
+            <Text className="foundation-note" variant="caption" ink="soft">원본(source)만 CSS 변수로 굽고, 역할은 그 변수의 별칭이거나 쓰이는 자리에서 계산되는 식입니다. 파생 값은 브라우저가 계산한 결과를 보여줍니다.</Text>
+            <Subsection title="Inset" note="요소 안쪽 여백. Layout gap과 같은 scale을 씁니다.">
+              <Stack className="foundation-scale" gap="sm">{SPACE_KEYS.map((step) => <ValueRow key={step} name={`shape.inset.${step}`} value={tokens.shape.inset[step]} sample={<Box className="foundation-measure" radius="full" style={{ width: tokens.shape.inset[step], height: tokens.shape.inset.xs, background: tokens.color.accent.primary.solid }} />} />)}</Stack>
+            </Subsection>
+            <Subsection title="Radius" note="모서리는 날만 죽이고, 같은 가족은 크기와 무관하게 한 값을 씁니다.">
+              <div className="foundation-radius-list">{RADIUS_ROWS.map(([name, value]) => <Stack key={name} gap="sm"><Box className="foundation-radius-sample" border style={{ borderRadius: value }} surface="sunken" /><Text as="code" variant="caption" family="mono">radius.{name}</Text><Text variant="caption" family="mono" ink="faint">{val(value)}</Text></Stack>)}</div>
+            </Subsection>
+            <Subsection title="Stroke · Focus" note="선과 포커스 링은 rem으로 커지지 않는 px입니다. icon은 24 artboard의 SVG 단위입니다.">
+              <div className="foundation-value-grid">{Object.entries(tokens.shape.stroke).map(([name, value]) => <ValueRow key={name} name={`shape.stroke.${name}`} value={value} />)}{Object.entries(tokens.shape.focus).map(([name, value]) => <ValueRow key={name} name={`shape.focus.${name}`} value={value} />)}</div>
+            </Subsection>
+            <Subsection title="Control" note="높이만 원본이고, inset은 컨트롤 글자 줄에서, 선택 표식은 높이의 절반에서 계산합니다.">
+              <Inline className="foundation-control-samples" gap="lg" align="end" wrap>{CONTROL_SIZES.map((size) => <Stack key={size} gap="xs" align="start"><Box className="foundation-control" border radius="sm" surface="sunken" style={{ height: tokens.shape.control.height[size], paddingInline: tokens.shape.control.inset.button[size] }}><Text variant="body">Aa</Text></Box><Text variant="caption" family="mono" ink="faint">{size} · <Computed value={tokens.shape.control.height[size]} /></Text></Stack>)}</Inline>
+              <div className="foundation-value-grid">
+                {CONTROL_SIZES.map((size) => <ValueRow key={`input-${size}`} name={`control.inset.input.${size}`} value={tokens.shape.control.inset.input[size]} />)}
+                {CONTROL_SIZES.map((size) => <ValueRow key={`button-${size}`} name={`control.inset.button.${size}`} value={tokens.shape.control.inset.button[size]} />)}
+                {CONTROL_SIZES.map((size) => <ValueRow key={`icon-${size}`} name={`control.icon.${size}`} value={tokens.shape.control.icon[size]} />)}
+                {CONTROL_SIZES.map((size) => <ValueRow key={`selection-${size}`} name={`selection.size.${size}`} value={tokens.shape.selection.size[size]} />)}
+                <ValueRow name="control.gap" value={tokens.shape.control.gap} />
+              </div>
+            </Subsection>
+            <Subsection title="Sizing" note="아이콘은 옆에 서는 Text 역할 이름을, Box의 이름 있는 크기와 읽기 폭은 다섯 단계를 씁니다.">
+              <div className="foundation-value-grid">
+                {ICON_SIZES.map((size) => <ValueRow key={`icon-${size}`} name={`icon.size.${size}`} value={tokens.shape.icon.size[size]} />)}
+                {DIMENSION_KEYS.map((step) => <ValueRow key={`width-${step}`} name={`dimension.width.${step}`} value={tokens.shape.dimension.width[step]} />)}
+                {DIMENSION_KEYS.map((step) => <ValueRow key={`height-${step}`} name={`dimension.height.${step}`} value={tokens.shape.dimension.height[step]} />)}
+                {DIMENSION_KEYS.map((step) => <ValueRow key={`measure-${step}`} name={`measure.${step}`} value={tokens.shape.measure[step]} />)}
+              </div>
+            </Subsection>
           </Section>}
 
-          {section[0] === "sizing" && <Section id="sizing">
-            <Stack className="foundation-subsection" gap="md"><Text variant="subheading">Control height</Text><Inline className="foundation-control-samples" gap="lg" align="end" wrap>{(["sm", "md", "lg"] as const).map((size) => <Stack key={size} gap="xs" align="start"><Box className="foundation-control" border radius="sm" surface="sunken" style={{ height: tokens.shape.control.height[size], paddingInline: tokens.shape.control.inset.button[size] }}><Text variant="body">Aa</Text></Box><Text variant="caption" family="mono" ink="faint">{size} · {val(tokens.shape.control.height[size])}</Text></Stack>)}</Inline></Stack>
-            <div className="foundation-value-grid">
-              {Object.entries(tokens.shape.icon.size).map(([name, value]) => <ValueRow key={`icon-${name}`} name={`icon.size.${name}`} value={value} />)}
-              {Object.entries(tokens.shape.selection.size).map(([name, value]) => <ValueRow key={`selection-${name}`} name={`selection.size.${name}`} value={value} />)}
-              {Object.entries(tokens.layout.width).map(([name, value]) => <ValueRow key={`width-${name}`} name={`layout.width.${name}`} value={value} />)}
-              {Object.entries(tokens.layout.height).map(([name, value]) => <ValueRow key={`height-${name}`} name={`layout.height.${name}`} value={value} />)}
-              {Object.entries(tokens.layout.measure).map(([name, value]) => <ValueRow key={`measure-${name}`} name={`layout.measure.${name}`} value={value} />)}
-              {Object.entries(tokens.layout.breakpoint).map(([name, value]) => <ValueRow key={`bp-${name}`} name={`breakpoint.${name}`} value={value} />)}
-              {Object.entries(tokens.layout.container).map(([name, value]) => <ValueRow key={`container-${name}`} name={`container.${name}`} value={value} />)}
-              {Object.entries(tokens.layout.sizeIntent).map(([name, value]) => <ValueRow key={`intent-${name}`} name={`sizeIntent.${name}`} value={value} />)}
-              {Object.entries(tokens.shape.control.inset).flatMap(([role, values]) => Object.entries(values).map(([size, value]) => <ValueRow key={`${role}-${size}`} name={`control.inset.${role}.${size}`} value={value} />))}
-            </div>
-          </Section>}
-
-          {section[0] === "radius" && <Section id="radius">
-            <div className="foundation-radius-list">{[
-              ["control", tokens.shape.radius.control], ["surface.sm", tokens.shape.radius.surface.sm], ["surface.md", tokens.shape.radius.surface.md], ["surface.lg", tokens.shape.radius.surface.lg], ["full", tokens.shape.radius.full],
-            ].map(([name, value]) => <Stack key={name as string} gap="sm"><Box className="foundation-radius-sample" border style={{ borderRadius: value }} surface="sunken" /><Text as="code" variant="caption" family="mono">radius.{name}</Text><Text variant="caption" family="mono" ink="faint">{val(value as string)}</Text></Stack>)}</div>
-          </Section>}
-
-          {section[0] === "border" && <Section id="border">
-            <div className="foundation-border-demo">{(["base", "strong", "hover"] as const).map((key) => <Stack key={key} className="foundation-border-sample" gap="md" surface="raised" border radius="md" padding="md" style={{ borderColor: tokens.color.border[key] }}><Text as="code" variant="caption" family="mono">border.{key}</Text><Text variant="caption" family="mono" ink="faint">{val(tokens.color.border[key])}</Text></Stack>)}</div>
-            <div className="foundation-value-grid">{Object.entries(tokens.shape.stroke).map(([name, value]) => <ValueRow key={name} name={`shape.stroke.${name}`} value={value} />)}{Object.entries(tokens.shape.focus).map(([name, value]) => <ValueRow key={name} name={`shape.focus.${name}`} value={value} />)}</div>
-          </Section>}
-
-          {section[0] === "elevation" && <Section id="elevation">
-            <div className="foundation-elevation-demo"><Stack className="foundation-overlay-demo" gap="sm" surface="sunken" border radius="md" padding="md"><Box className="foundation-scrim-sample" radius="sm" style={{ background: tokens.color.overlay.scrim }} /><Text variant="caption">overlay.scrim · {val(tokens.color.overlay.scrim)}</Text></Stack><div className="foundation-shadow-demo">{(["overlay", "overlayMinimal"] as const).map((key) => <Stack key={key} className="foundation-shadow-sample" gap="md" surface="raised" border radius="md" padding="md" style={{ boxShadow: tokens.shape.shadow[key] }}><Text variant="caption">shadow.{key}</Text><Text as="code" variant="caption" family="mono" ink="faint">color.shadow.{key}</Text></Stack>)}</div></div>
-            <Text className="foundation-note" variant="caption" ink="soft">Scrim은 뒤쪽 화면을 눌러 overlay와의 깊이를 보여주는 면이고, shadow는 표면 아래의 빛과 깊이를 나타냅니다.</Text>
+          {section[0] === "layout" && <Section id="layout">
+            <Subsection title="Gap" note="형제 사이의 거리. Shape inset과 같은 scale이라 같은 단계는 같은 길이입니다.">
+              <Stack className="foundation-scale" gap="sm">{SPACE_KEYS.map((step) => <ValueRow key={step} name={`layout.gap.${step}`} value={tokens.layout.gap[step]} sample={<Box className="foundation-measure" radius="full" style={{ width: tokens.layout.gap[step], height: tokens.shape.inset.xs, background: tokens.color.ink.tertiary }} />} />)}</Stack>
+            </Subsection>
+            <Subsection title="Page" note="페이지 가장자리와 내용 사이(gutter), 본문 최대 폭, 뷰포트 분기점입니다. breakpoint는 미디어 쿼리가 변수를 못 읽어 값으로 둡니다.">
+              <div className="foundation-value-grid">
+                <ValueRow name="layout.gutter" value={tokens.layout.gutter} />
+                {Object.entries(tokens.layout.container).map(([name, value]) => <ValueRow key={`container-${name}`} name={`container.${name}`} value={value} />)}
+                {Object.entries(tokens.layout.breakpoint).map(([name, value]) => <ValueRow key={`bp-${name}`} name={`breakpoint.${name}`} value={value} />)}
+              </div>
+            </Subsection>
+            <Subsection title="Elevation" note="층 하나가 쌓임 순서(z)와 그림자를 함께 정합니다. 떠 있는 층만 그림자를 갖고, 색은 Color의 shadow tint에서 옵니다.">
+              <div className="foundation-elevation-list">{ELEVATIONS.map((level) => <Stack key={level} className="foundation-shadow-sample" gap="sm" surface="raised" border radius="md" padding="md" style={{ boxShadow: tokens.layout.elevation[level].shadow }}><Text as="code" variant="caption" family="mono">elevation.{level}</Text><Text variant="caption" family="mono" ink="faint">z {val(tokens.layout.elevation[level].z)}</Text></Stack>)}</div>
+              <Stack className="foundation-overlay-demo" gap="sm" surface="sunken" border radius="md" padding="md"><Box className="foundation-scrim-sample" radius="sm" style={{ background: tokens.color.overlay.scrim }} /><Text variant="caption">modal 아래 scrim · color.overlay.scrim · {val(tokens.color.overlay.scrim)}</Text></Stack>
+            </Subsection>
           </Section>}
 
           {section[0] === "motion" && <Section id="motion">

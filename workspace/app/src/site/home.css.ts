@@ -1,6 +1,6 @@
-// 홈 랜딩 전용 스타일. 사이트 나머지는 site.css.ts 의 "raw 값 없음" 규칙을 지키지만,
-// 랜딩은 예외 자리다 — 초대형 clamp 타이포처럼 토큰으로 표현되지 않는 표현적 값을
-// 여기서만 허용한다. 색·간격은 여전히 tokens.* 로 참조한다.
+// 홈 랜딩 전용 스타일. 초대형 clamp 타이포처럼 토큰으로 표현되지 않는 표현적 글자 값은
+// 여기서만 쓴다. 색·간격·형태는 사이트 나머지와 같이 tokens.* 로 참조한다 — 히어로의
+// 유동 여백도 scale 단계 사이를 뷰포트 높이로 오간다.
 //
 // 결: shadcn/ui 랜딩 전략 — 정제된 헤드라인 + 아래 "완전한 앱 목업 하나"로 컴포넌트가
 // 실제 화면에서 함께 서는 모습을 증명한다(개별 카드 나열 아님). paper 정체성인
@@ -14,7 +14,7 @@ const BP = tokens.layout.breakpoint;
 
 // ── hero ─────────────────────────────────────────────────────────────────────
 globalStyle(".home-hero", {
-  paddingBlock: "clamp(3rem, 8vh, 5.5rem) clamp(2rem, 5vh, 3rem)",
+  paddingBlock: `clamp(${tokens.shape.inset["3xl"]}, 8vh, calc(${tokens.shape.inset["3xl"]} * 2)) clamp(${tokens.shape.inset["2xl"]}, 5vh, ${tokens.shape.inset["3xl"]})`,
   maxWidth: "46rem",
 });
 
@@ -29,7 +29,7 @@ globalStyle(".home-headline", {
 });
 
 globalStyle(".home-sub", {
-  marginTop: tokens.shape.space.lg,
+  marginTop: tokens.layout.gap.lg,
   maxWidth: "38rem",
 });
 
@@ -45,16 +45,16 @@ globalStyle(".home-mockup", {
   overflow: "hidden",
   background: tokens.color.bg.raised,
   // 제품 목업은 지면 위로 살짝 떠 있다(원칙 4 의 overlay 자리). 카드가 아니라 화면.
-  boxShadow: tokens.shape.shadow.overlay,
+  boxShadow: tokens.layout.elevation.overlay.shadow,
 });
 
 // 창 머리
 globalStyle(".home-mockup-bar", {
   display: "flex",
   alignItems: "center",
-  gap: tokens.shape.space.sm,
+  gap: tokens.layout.gap.sm,
   height: "2.6rem",
-  paddingInline: tokens.shape.space.md,
+  paddingInline: tokens.shape.inset.md,
   // 선 없음 — 면이 이미 나눈다. sunken 인 창 머리와 raised 인 본문 사이엔 톤 차이가 있고,
   // 같은 sunken 인 사이드바와는 애초에 이어져야 하는 자리다.
   background: tokens.color.bg.sunken,
@@ -73,8 +73,8 @@ globalStyle(".home-mockup-body", {
 globalStyle(".home-mockup-side", {
   display: "flex",
   flexDirection: "column",
-  gap: tokens.shape.space.md,
-  padding: tokens.shape.space.md,
+  gap: tokens.layout.gap.md,
+  padding: tokens.shape.inset.md,
   // 사이드바는 sunken 으로 가라앉는다 — 흰 본문과 대비해 ChatGPT 결(흰 메인 · 회색 사이드바).
   //
   // ⚠ 선을 두르지 않는다. **면이 이미 나눈 자리에 선을 더하면 같은 말을 두 번 한다.**
@@ -96,15 +96,15 @@ globalStyle(".home-mockup-main", {
 globalStyle(".home-nav", {
   display: "flex",
   flexDirection: "column",
-  gap: "2px",
+  gap: tokens.layout.gap.xs,
 });
 
 globalStyle(".home-navitem", {
   display: "flex",
   alignItems: "center",
-  gap: tokens.shape.space.sm,
+  gap: tokens.layout.gap.sm,
   height: tokens.shape.control.height.sm,
-  paddingInline: tokens.shape.space.sm,
+  paddingInline: tokens.shape.inset.sm,
   borderRadius: tokens.shape.radius.control,
   fontSize: tokens.text.style.body.size,
   color: tokens.color.ink.secondary,
@@ -114,11 +114,11 @@ globalStyle(".home-navitem", {
    모아 두면 shape 이 통째로 바꿀 수 있다. */
 globalStyle(".home-filterrow", {
   height: "1.75rem",
-  paddingInline: tokens.shape.space.sm,
+  paddingInline: tokens.shape.inset.sm,
 });
 
 globalStyle(".home-filterhead", {
-  paddingInline: tokens.shape.space.sm,
+  paddingInline: tokens.shape.inset.sm,
 });
 
 globalStyle(".home-navitem[data-active='true']", {
@@ -131,6 +131,6 @@ globalStyle(".home-navitem[data-active='true']", {
 globalStyle(".home-facts", {
   display: "flex",
   flexWrap: "wrap",
-  gap: tokens.shape.space.md,
+  gap: tokens.layout.gap.md,
   alignItems: "baseline",
 });

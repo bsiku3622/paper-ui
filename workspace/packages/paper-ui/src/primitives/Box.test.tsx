@@ -5,12 +5,12 @@ import { Box } from "./Box";
 import { tokens } from "../tokens";
 
 describe("Box layout props", () => {
-  it("named dimensions는 layout token으로 해석한다", () => {
+  it("named dimensions는 Shape sizing token으로 해석한다", () => {
     render(<Box data-testid="box" width="md" maxWidth="xl" height="sm" overflow="auto" />);
     const box = screen.getByTestId("box");
-    expect(box.style.width).toBe(tokens.layout.width.md);
-    expect(box.style.maxWidth).toBe(tokens.layout.width.xl);
-    expect(box.style.height).toBe(tokens.layout.height.sm);
+    expect(box.style.width).toBe(tokens.shape.dimension.width.md);
+    expect(box.style.maxWidth).toBe(tokens.shape.dimension.width.xl);
+    expect(box.style.height).toBe(tokens.shape.dimension.height.sm);
     expect(box.style.overflow).toBe("auto");
   });
 

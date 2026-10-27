@@ -6,13 +6,12 @@
 import { globalStyle } from "@vanilla-extract/css";
 
 import { COLOR_VALUES, COLOR_VALUES_DARK } from "../tokens/colors";
-import { SHAPE_VALUES, SHADOW_GEOMETRY } from "../tokens/shape";
-import { SHAPE_LEGACY_VALUES } from "../tokens/shape-legacy";
-import { SHAPE_RECIPE_VALUES } from "../tokens/shape-recipes";
-import { LAYOUT_VALUES } from "../tokens/layout";
+import { SHAPE_VALUES } from "../tokens/shape";
+import { ELEVATIONS, LAYOUT_VALUES, elevationShadow, elevationShadowPath } from "../tokens/layout";
 import { TEXT_VALUES, TEXT_CONTENT, TEXT_VARIANTS } from "../tokens/text";
 import { walkValues, pathToCssVar } from "../tokens/helpers";
 import { tokens } from "../tokens";
+import { focusRing } from "../internal/shape";
 
 // ╭──────────────────────────────────────────────────────────────────────────╮
 // │ Pass 1 — :root vars                                                      │
@@ -30,13 +29,9 @@ const baseVars: Record<string, string> = {}; // shape · layout · text (테마 
 const lightVars: Record<string, string> = {};
 const darkVars: Record<string, string> = {};
 
+// Shape·Layout은 원본(source)만 변수로 굽는다. 역할은 그 변수의 별칭이거나 소비 요소에서
+// 계산되는 calc() 라 따로 굽지 않는다 (tokens/shape.ts).
 walkValues(SHAPE_VALUES, ["shape"], (path, value) => {
-  baseVars[pathToCssVar(path)] = value;
-});
-walkValues(SHAPE_LEGACY_VALUES, ["shape"], (path, value) => {
-  baseVars[pathToCssVar(path)] = value;
-});
-walkValues(SHAPE_RECIPE_VALUES, ["geometry"], (path, value) => {
   baseVars[pathToCssVar(path)] = value;
 });
 walkValues(LAYOUT_VALUES, ["layout"], (path, value) => {
@@ -51,29 +46,13 @@ walkValues(COLOR_VALUES, ["color"], (path, value) => {
 walkValues(COLOR_VALUES_DARK, ["color"], (path, value) => {
   darkVars[pathToCssVar(path)] = value;
 });
-// Shadow geometry belongs to shape; tint comes from the semantic shadow color tokens. Theme
-// scopes replace the assembled value so both geometry and palette-derived tint can adapt.
-const shadowColors = tokens.color.shadow;
-type ShadowName = keyof typeof SHADOW_GEOMETRY.light;
-type ShadowTintName = keyof typeof shadowColors;
-const SHADOW_TINTS: Record<ShadowName, readonly ShadowTintName[]> = {
-  overlay: ["overlay", "overlay"],
-  overlayMinimal: ["overlayMinimal"],
-};
-const emitShadowVars = (mode: "light" | "dark", target: Record<string, string>) => {
-  const geometry = SHADOW_GEOMETRY[mode];
-  for (const name of Object.keys(geometry) as ShadowName[]) {
-    target[pathToCssVar(["shape", "shadow", name])] = geometry[name]
-      .map((layer, index) => {
-        const tint = SHADOW_TINTS[name][index];
-        if (!tint) throw new Error(`Missing palette tint for shadow layer ${name}[${index}]`);
-        return `${layer} ${shadowColors[tint]}`;
-      })
-      .join(", ");
+// Elevation shadow — geometry는 Layout, 색은 Color의 shadow tint. 테마마다 둘 다 바뀌므로
+// 조립된 값을 테마 스코프가 통째로 교체한다.
+for (const [theme, target] of [["light", lightVars], ["dark", darkVars]] as const) {
+  for (const level of ELEVATIONS) {
+    target[pathToCssVar(elevationShadowPath(level))] = elevationShadow(level, theme, (tint) => tokens.color.shadow[tint]);
   }
-};
-emitShadowVars("light", lightVars);
-emitShadowVars("dark", darkVars);
+}
 
 // :root — 테마 불변 축 + light 색(기본값). Provider 없이도 라이트로 바로 선다.
 globalStyle(":root", { colorScheme: "light", vars: { ...baseVars, ...lightVars } });
@@ -104,8 +83,7 @@ globalStyle("*", { boxSizing: "border-box" });
 // 포커스는 interaction.focus로 통일 (Apple · Atlassian 시그니처). 색이 가장 작게,
 // 가장 자주 등장하는 포인트 자리.
 globalStyle(":focus-visible", {
-  outline: `${tokens.shape.focus.width} solid ${tokens.color.interaction.focus}`,
-  outlineOffset: tokens.shape.focus.offset,
+  ...focusRing,
   borderRadius: tokens.shape.radius.control,
 });
 

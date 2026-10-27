@@ -43,9 +43,10 @@ test("consumer styles, CSS classes, inherited ink and system colors stay availab
 
 test("raw imports cannot bypass the boundary through a barrel", async () => {
   assert.equal(await hasRule('import {COLOR_VALUES} from "../tokens"; export {COLOR_VALUES};', "no-restricted-imports"), true);
-  assert.equal(await hasRule('import {SHAPE_PALETTE} from "../tokens/shape-palette"; export {SHAPE_PALETTE};', "no-restricted-imports"), true);
+  assert.equal(await hasRule('import {SHAPE_SOURCE} from "../tokens/shape"; export {SHAPE_SOURCE};', "no-restricted-imports"), true);
   assert.equal(await hasRule('import {COLOR_VALUES} from "../tokens/index.ts"; export {COLOR_VALUES};', "no-restricted-imports"), true);
-  assert.equal(await hasRule('import {SHAPE_PALETTE} from "../tokens/shape-palette.ts"; export {SHAPE_PALETTE};', "no-restricted-imports"), true);
+  assert.equal(await hasRule('import {LAYOUT_SOURCE} from "../tokens/layout.ts"; export {LAYOUT_SOURCE};', "no-restricted-imports"), true);
+  assert.equal(await hasRule('import {SPACE} from "../tokens"; export {SPACE};', "no-restricted-imports"), true);
   assert.deepEqual(await errors('import {COLOR_VALUES} from "../../../packages/paper-ui/src/tokens/colors"; export {COLOR_VALUES};', "app/src/playground/Tokens.tsx"), []);
 });
 
@@ -55,4 +56,19 @@ test("fixed component geometry belongs to tokens while structural CSS stays loca
     assert.equal(await hasRule(code, "token-boundaries/no-raw-geometry", path), true, code);
   }
   assert.deepEqual(await errors('export const style={width:"100%",margin:0,aspectRatio:"1",transform:"translateY(-50%)"};', path), []);
+});
+
+test("the package writes no length outside a token source", async () => {
+  for (const path of ["packages/paper-ui/src/primitives/TokenProbe.tsx", "packages/paper-ui/src/internal/probe.ts", "packages/paper-ui/src/tokens/shape-recipes.ts"]) {
+    assert.equal(await hasRule('export const style={marginTop:"2px"};', "token-boundaries/no-raw-geometry", path), true, path);
+  }
+  assert.deepEqual(await errors('export const SOURCE={space:{sm:8}, stroke:"1px"};', "packages/paper-ui/src/tokens/shape.ts"), []);
+});
+
+test("apps take spacing, form and depth from roles but own their content dimensions", async () => {
+  const path = "app/src/pages/Probe.css.ts";
+  for (const code of ['export const s={padding:"0 28px"};', 'export const s={gap:26};', 'export const s={zIndex:10};', 'export const s={borderRadius:6};', 'export const s={top:20};', 'export const s={boxShadow:"0 1px 2px"};', 'export const X=()=> <div style={{marginTop:8}} />;']) {
+    assert.equal(await hasRule(code, "token-boundaries/no-raw-geometry", path.replace(".css.ts", code.includes("<") ? ".tsx" : ".css.ts")), true, code);
+  }
+  assert.deepEqual(await errors('export const s={width:218, height:58, gridTemplateColumns:"218px minmax(0,1fr) 260px", maxWidth:1540, flex:1, margin:0};', path), []);
 });

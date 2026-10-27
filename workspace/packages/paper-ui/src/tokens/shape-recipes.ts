@@ -1,71 +1,57 @@
-// Private authored anatomy. No component-specific leaves enter the public token tree.
-import { buildVarTree, pathToVarRef } from "./helpers";
-import { SHAPE_VALUES, controlSizes } from "./shape";
-import { SHAPE_PALETTE as p } from "./shape-palette";
+// Shape recipes — component anatomy built from Shape roles. No number is written here: every
+// value is a Shape role, a SHAPE_SOURCE anatomy value, or a formula over them. Formulas stay
+// strings and are evaluated on the consuming element, like the roles they read.
+
+import { pathToVarRef } from "./helpers";
+import { ANATOMY, SHAPE, SPACE, controlSizes } from "./shape";
 import { CONTROL_SPEC } from "./text";
 
-export const SHAPE_RECIPE_VALUES = {
-  button: { spinnerSize: "0.95em" },
-  textarea: { minHeight: p.size[96] },
-  select: { arrowSize: p.size[10], arrowInset: p.space[12], arrowGap: "0.125rem", arrowStroke: "1.5" },
-  badge: {
-    height: { sm: p.size[20], md: p.size[22], lg: p.size[24] },
-    paddingInline: { sm: p.space[6], md: p.space[8], lg: p.space[10] },
-    dotSize: "0.5em",
-  },
-  checkbox: {
-    radius: { sm: p.radius[2.5], md: p.radius[3], lg: p.radius[3.5] },
-    smallMarkCorrection: "0.03125rem",
-    markTransform: "rotate(-45deg) translate(0.5px, -1px)",
-    dashWidth: "58%",
-    dashRadius: "1px",
-  },
-  // Dot geometry is independent of the checkbox's optical mark correction.
-  radio: { smallDotCorrection: "0.03125rem" },
-  switch: { clearance: "0.125rem" },
-  spinner: { size: { sm: p.size[16], md: p.size[18], lg: p.size[20] } },
-  link: { underlineOffset: "0.2em" },
-} as const;
+const { control, selection, stroke, radius } = SHAPE;
 
-const shape = buildVarTree(SHAPE_VALUES, ["shape"]);
-const recipe = buildVarTree(SHAPE_RECIPE_VALUES, ["geometry"]);
-const mark = (size: "sm" | "md" | "lg") =>
-  `calc(${shape.selection.size[size]} / 2${size === "sm" ? ` - ${recipe.checkbox.smallMarkCorrection}` : ""})`;
-const thumb = controlSizes((size) => `calc(${shape.selection.size[size]} - ${recipe.switch.clearance})`);
-const trackHeight = controlSizes((size) => `calc(${shape.selection.size[size]} + ${recipe.switch.clearance})`);
-const trackWidth = controlSizes((size) => `calc(${thumb[size]} * 2 + ${recipe.switch.clearance} * 2)`);
+// Half a selection box: the check's long side and the radio dot.
+const half = controlSizes((size) => `calc(${selection.size[size]} / 2)`);
+// The track showing around a switch thumb reads as an emphasis stroke.
+const rim = stroke.emphasis;
+const thumb = controlSizes((size) => `calc(${selection.size[size]} - ${rim})`);
 
-// Derived expressions are applied by classes on the consuming element. Emitting them
-// on :root would resolve their dependencies there and break nested token overrides.
 export const SHAPE_RECIPES = {
-  ...recipe,
+  button: { spinner: ANATOMY.inline.spinner },
+  badge: { height: ANATOMY.badge.height, inset: ANATOMY.badge.inset, gap: SPACE.xs, dot: ANATOMY.inline.dot },
+  checkbox: {
+    radius: radius.selection,
+    // The check is an L, half the box wide and a quarter tall, turned onto its diagonal. Turning
+    // leaves its visual mass low and left, so it shifts by fractions of its own stroke.
+    mark: half,
+    short: controlSizes((size) => `calc(${half[size]} / 2)`),
+    stroke: stroke.emphasis,
+    markTransform: `rotate(-45deg) translate(calc(${stroke.emphasis} / 4), calc(${stroke.emphasis} / -2))`,
+    // Indeterminate: the check's long side as one round-capped emphasis line.
+    dash: { width: half, height: stroke.emphasis, radius: radius.full },
+  },
+  radio: { dot: half },
+  // Track = one control wide and the thumb plus a rim tall, so the thumb travels its own width.
+  switch: {
+    width: control.height,
+    height: controlSizes((size) => `calc(${selection.size[size]} + ${rim})`),
+    thumb,
+    inset: rim,
+    travel: thumb,
+  },
+  // The arrow is a trailing icon: it sits at the input inset, and the value stops a control gap
+  // before it — the mirror of a Field's leading icon.
+  select: {
+    arrow: control.icon,
+    arrowInset: control.inset.input,
+    paddingEnd: controlSizes((size) => `calc(${control.inset.input[size]} + ${control.icon[size]} + ${control.gap})`),
+  },
+  // One row of a textarea is exactly a Field of the same size: the first line sits where the
+  // Field's line would.
   textarea: {
-    ...recipe.textarea,
+    minHeight: SHAPE.dimension.height.sm,
     paddingBlock: controlSizes((size) => {
-      const spec = CONTROL_SPEC.textarea[size];
-      const leading = pathToVarRef(["text", "palette", "leading", spec.leading]);
-      const fontSize = pathToVarRef(["text", "palette", "fontSize", spec.size]);
-      return `calc(${shape.control.inset.input[size]} - (${leading} - ${fontSize}) / 2)`;
+      const line = pathToVarRef(["text", "palette", "leading", CONTROL_SPEC.textarea[size].leading]);
+      return `calc((${control.height[size]} - ${line}) / 2 - ${stroke.border})`;
     }),
   },
-  select: {
-    ...recipe.select,
-    paddingEnd: `calc(${recipe.select.arrowSize} + ${recipe.select.arrowInset} + ${recipe.select.arrowGap})`,
-  },
-  checkbox: {
-    ...recipe.checkbox,
-    mark: controlSizes(mark),
-    short: controlSizes((size) => `calc(${mark(size)} / 2)`),
-    markStroke: shape.stroke.emphasis,
-  },
-  radio: { ...recipe.radio, dot: controlSizes((size) => `calc(${shape.selection.size[size]} / 2${size === "sm" ? ` - ${recipe.radio.smallDotCorrection}` : ""})`) },
-  switch: {
-    ...recipe.switch,
-    thumb,
-    height: trackHeight,
-    width: trackWidth,
-    inset: controlSizes((size) => `calc((${trackHeight[size]} - ${thumb[size]}) / 2)`),
-    travel: controlSizes((size) => `calc(${trackWidth[size]} - ${trackHeight[size]})`),
-  },
-  spinner: { ...recipe.spinner, stroke: shape.stroke.emphasis },
+  spinner: { size: control.icon, stroke: stroke.emphasis },
 } as const;

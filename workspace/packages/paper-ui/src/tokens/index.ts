@@ -11,11 +11,10 @@
 
 import { buildVarTree, pathToVarRef } from "./helpers";
 import { COLOR_VALUES } from "./colors";
-import { SHAPE_VALUES, SHADOW_NAMES, type ShadowName } from "./shape";
-import { SHAPE_LEGACY_VALUES } from "./shape-legacy";
+import { SHAPE } from "./shape";
 import { CONTROL_SPEC, TEXT_SPEC, TEXT_VALUES } from "./text";
 import { MOTION_VALUES } from "./motion";
-import { LAYOUT_VALUES, LAYOUT_CONST } from "./layout";
+import { LAYOUT } from "./layout";
 
 const textPaletteTokens = buildVarTree(TEXT_VALUES, []);
 type StyleKeys = { size: string; weight: string; leading: string; tracking: string };
@@ -38,22 +37,11 @@ const styleRefs = <T extends Record<string, unknown>>(specs: T): StyleRefTree<T>
     return [name, styleRefs(spec as Record<string, unknown>)];
   })) as StyleRefTree<T>;
 
-const shapeTokens = buildVarTree(SHAPE_VALUES, ["shape"]);
-const legacyShapeTokens = buildVarTree(SHAPE_LEGACY_VALUES, ["shape"]);
-
 export const tokens = {
   color: buildVarTree(COLOR_VALUES, ["color"]),
-  shape: {
-    ...legacyShapeTokens,
-    ...shapeTokens,
-    radius: { ...legacyShapeTokens.radius, ...shapeTokens.radius },
-    icon: { ...legacyShapeTokens.icon, ...shapeTokens.icon },
-    shadow: Object.fromEntries(
-      SHADOW_NAMES.map((name) => [name, pathToVarRef(["shape", "shadow", name])]),
-    ) as Record<ShadowName, string>,
-  },
-  // z 는 var, breakpoint·sizeIntent·inset 은 값(어휘). layout.ts 참고.
-  layout: { ...buildVarTree(LAYOUT_VALUES, ["layout"]), ...LAYOUT_CONST },
+  // Shape은 요소 하나의 형태, Layout은 요소 사이의 관계. 둘 다 역할만 노출한다 (shape.ts · layout.ts).
+  shape: SHAPE,
+  layout: LAYOUT,
   // motion 은 var 로 굽지 않는다 — 값(duration·easing)을 직접 든다 (motion.ts 참고).
   motion: MOTION_VALUES,
   text: {
@@ -70,8 +58,8 @@ export const tokens = {
 export { ACCENTS, STATUS, STATUS_PALETTE } from "./colors";
 export type { AccentName, AccentToken, StatusName } from "./colors";
 
-export { SHAPE_SIZES, SPACE_KEYS, CONTROL_SIZES } from "./shape";
-export type { ShapeSize, Space, ControlSize } from "./shape";
+export { SPACE_KEYS, DIMENSION_KEYS, CONTROL_SIZES, ICON_SIZES, CONTROL_ICON } from "./shape";
+export type { Space, Dimension, ControlSize, IconSize } from "./shape";
 
 export { TEXT_VALUES, TEXT_VARIANTS, TEXT_SPEC, CONTROL_SPEC, TEXT_CONTENT, TYPOGRAPHY_PALETTE, WEIGHT } from "./text";
 export type { TextVariant, WeightKey } from "./text";
@@ -79,7 +67,7 @@ export type { TextVariant, WeightKey } from "./text";
 export { MOTION_VALUES, DURATION, EASING, MOTION, stateTransition } from "./motion";
 export type { MotionDuration, MotionEasing, MotionRole } from "./motion";
 
-export { LAYOUT_VALUES, LAYOUT_CONST, Z, BREAKPOINT, SIZE_INTENT, POSITIONS, INSET } from "./layout";
-export type { ZTier, Breakpoint, SizeIntent, Position, InsetSize } from "./layout";
+export { ELEVATIONS } from "./layout";
+export type { Elevation } from "./layout";
 
 export { kebab, pathToCssVar, pathToVarRef, walkValues, buildVarTree } from "./helpers";

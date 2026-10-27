@@ -77,6 +77,8 @@ export const TYPOGRAPHY_PALETTE = {
     normal: "0",
     wide: "0.01em",
   },
+  // 밑줄은 글자의 장식이라 글자 크기(em)를 따른다.
+  decoration: { underlineOffset: "0.2em" },
   monoSizeScale: MONO_SIZE_SCALE,
 } as const;
 export const WEIGHT = TYPOGRAPHY_PALETTE.weight;

@@ -9,7 +9,7 @@ import { COMPONENTS, GROUPS } from "./registry";
 
 const linkStyle = (active: boolean) => ({
   display: "block",
-  padding: `${tokens.layout.padding.xs} ${tokens.layout.padding.sm}`,
+  padding: `${tokens.shape.inset.sm} ${tokens.shape.inset.md}`,
   color: active ? tokens.color.ink.primary : tokens.color.ink.secondary,
   background: active ? tokens.color.interaction.selected : "transparent",
   textDecoration: "none",
@@ -19,8 +19,8 @@ const linkStyle = (active: boolean) => ({
 export const PlaygroundLayout = ({ value, children }: { value: string; children: ReactNode }) => (
   <Stack>
     <SiteNav />
-    <Box style={{ display: "grid", gridTemplateColumns: `${tokens.layout.width.lg} 1fr`, maxWidth: tokens.layout.container.content, marginInline: "auto", width: "100%" }}>
-      <Box as="nav" aria-label="플레이그라운드" style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, maxHeight: `calc(100dvh - ${NAV_HEIGHT})`, overflowY: "auto", top: NAV_HEIGHT, position: "sticky", alignSelf: "start", padding: tokens.layout.padding.md, borderRight: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
+    <Box style={{ display: "grid", gridTemplateColumns: `${tokens.shape.dimension.width.lg} 1fr`, maxWidth: tokens.layout.container.content, marginInline: "auto", width: "100%" }}>
+      <Box as="nav" aria-label="플레이그라운드" style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, maxHeight: `calc(100dvh - ${NAV_HEIGHT})`, overflowY: "auto", top: NAV_HEIGHT, position: "sticky", alignSelf: "start", padding: tokens.shape.inset.lg, borderRight: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
         <Stack gap="lg">
           <Stack gap="xs">
             <Text variant="label" ink="faint">PLAYGROUND</Text>

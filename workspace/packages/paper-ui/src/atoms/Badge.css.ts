@@ -10,7 +10,7 @@ import { tokens, CONTROL_SIZES, TEXT_VARIANTS, type ControlSize, type TextVarian
 export const badgeRoot = style({
   display: "inline-flex",
   alignItems: "center",
-  gap: tokens.shape.space.xs,
+  gap: geometry.badge.gap,
   borderRadius: tokens.shape.radius.control,
   borderWidth: tokens.shape.stroke.border,
   borderStyle: "solid",
@@ -24,8 +24,8 @@ export const badgePill = style({ borderRadius: tokens.shape.radius.full });
 
 // 상태 점 — 글자색(currentColor)을 따라 배지와 한 색. em 이라 size 에 비례.
 export const badgeDot = style({
-  width: geometry.badge.dotSize,
-  height: geometry.badge.dotSize,
+  width: geometry.badge.dot,
+  height: geometry.badge.dot,
   borderRadius: tokens.shape.radius.full,
   background: "currentColor",
   flexShrink: 0,
@@ -51,7 +51,7 @@ export const badgeSize = styleVariants(
       s,
       {
         height: geometry.badge.height[s],
-        paddingInline: geometry.badge.paddingInline[s],
+        paddingInline: geometry.badge.inset[s],
       },
     ]),
   ) as Record<ControlSize, { height: string; paddingInline: string }>,

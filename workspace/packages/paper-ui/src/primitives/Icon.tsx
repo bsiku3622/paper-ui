@@ -8,10 +8,10 @@ import { forwardRef, type SVGProps } from "react";
 
 import { joinClass } from "../internal/joinClass";
 import { resolveInk, type Ink } from "../resolvers";
+import type { IconSize } from "../tokens";
 import { iconRoot, iconSize } from "./Icon.css";
 
-export const ICON_SIZES = ["label", "caption", "body", "heading3"] as const;
-export type IconSize = (typeof ICON_SIZES)[number];
+export { ICON_SIZES, type IconSize } from "../tokens";
 
 export type IconProps = Omit<SVGProps<SVGSVGElement>, "size"> & {
   // typography ladder와 같은 이름을 쓰는 아이콘 아트보드 크기.

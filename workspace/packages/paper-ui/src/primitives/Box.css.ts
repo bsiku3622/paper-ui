@@ -1,6 +1,6 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
-import { tokens } from "../tokens";
+import { tokens, ELEVATIONS, type Elevation } from "../tokens";
 
 // theme + utility 를 여기서 한 번 끌어온다 — Box 를 import 하면 캔버스와
 // resolver 가 가리키는 클래스가 함께 따라온다.
@@ -14,11 +14,12 @@ export const boxRadius = styleVariants({
   full: { borderRadius: tokens.shape.radius.full },
 });
 
-// Box `shadow` prop → overlay(자유롭게 뜸) · overlayMinimal(살짝). 붙은 면은 prop 생략.
-export const boxShadow = styleVariants({
-  overlay: { boxShadow: tokens.shape.shadow.overlay },
-  overlayMinimal: { boxShadow: tokens.shape.shadow.overlayMinimal },
-});
+// Box `elevation` prop → 층 하나가 z와 그림자를 함께 정한다(Layout elevation). 붙은 면은 prop 생략.
+const LIFTED = ELEVATIONS.filter((level): level is Exclude<Elevation, "base"> => level !== "base");
+export const boxElevation = styleVariants(Object.fromEntries(LIFTED.map((level) => [level, {
+  zIndex: tokens.layout.elevation[level].z,
+  boxShadow: tokens.layout.elevation[level].shadow,
+}])) as Record<Exclude<Elevation, "base">, { zIndex: string; boxShadow: string }>);
 
 // Box `border` prop → 카드 헤어라인. 면(surface) 위에 얇은 뉴트럴 선.
 // 불리언이라 CSS 값 주입과 헷갈리지 않는다 — 선이 필요하면 켜고, 색은 border.base 로 고정.

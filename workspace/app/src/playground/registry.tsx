@@ -12,7 +12,7 @@ import {
   Badge, Box, Button, Checkbox, Divider, Field, Icon, IconButton, Inline, Label,
   Link, Select, Stack, Text, Textarea, Switch, Radio, Spinner,
   type BoxDimension, type Surface, type Accent, type Variant, type Ink,
-  type StatusName, type TextVariant,
+  type StatusName, type TextVariant, type Elevation, type IconSize,
 } from "@studio-baeks/paper-ui";
 
 // ── 컨트롤 ───────────────────────────────────────────────────────────────────
@@ -164,12 +164,12 @@ export const COMPONENTS: CompSpec[] = [
     slug: "box",
     name: "Box",
     group: "Layout",
-    blurb: "구조 패널. radius sm/md/lg는 4/6/8px. surface·border·radius·shadow와 padding을 얹고, width·height·min/max·overflow로 box model을 정한다. sm~xl 크기는 layout token, 실제 CSS 길이는 화면 고유 layout의 escape hatch다. 색과 flex/position 책임은 열지 않는다.",
+    blurb: "구조 패널. radius sm/md/lg는 4/6/8px. surface·border·radius·elevation과 padding을 얹고, width·height·min/max·overflow로 box model을 정한다. sm~xl 크기는 Shape sizing token, 실제 CSS 길이는 화면 고유 layout의 escape hatch다. elevation은 z와 그림자를 함께 정한다. 색과 flex/position 책임은 열지 않는다.",
     controls: [
       { kind: "enum", prop: "surface", label: "surface", options: ["none", "raised", "canvas", "sunken"], def: "raised" },
       { kind: "bool", prop: "border", label: "border", def: false },
       { kind: "bool", prop: "inverse", label: "inverse", def: false },
-      { kind: "enum", prop: "shadow", label: "shadow", options: ["none", "overlay", "overlayMinimal"], def: "none" },
+      { kind: "enum", prop: "elevation", label: "elevation", options: ["none", "raised", "sticky", "overlay", "modal", "toast"], def: "none" },
       { kind: "enum", prop: "radius", label: "radius", options: ["none", "sm", "md", "lg", "full"], def: "md" },
       { kind: "enum", prop: "width", label: "width", options: ["fit", "xs", "sm", "md", "lg", "xl", "full"], def: "md" },
       { kind: "enum", prop: "maxWidth", label: "maxWidth", options: ["none", "xs", "sm", "md", "lg", "xl", "full"], def: "none" },
@@ -180,7 +180,7 @@ export const COMPONENTS: CompSpec[] = [
         surface={s(st.surface) === "none" ? undefined : (s(st.surface) as Surface)}
         border={b(st.border)}
         inverse={b(st.inverse)}
-        shadow={s(st.shadow) === "none" ? undefined : (s(st.shadow) as "overlay" | "overlayMinimal")}
+        elevation={s(st.elevation) === "none" ? undefined : (s(st.elevation) as Exclude<Elevation, "base">)}
         radius={s(st.radius) === "none" ? undefined : (s(st.radius) as "sm" | "md" | "lg" | "full")}
         padding={s(st.padding) === "none" ? undefined : (s(st.padding) as "sm" | "md" | "lg" | "xl")}
         width={s(st.width) as BoxDimension}
@@ -190,7 +190,7 @@ export const COMPONENTS: CompSpec[] = [
         <Text variant="caption" as="span">surface={s(st.surface)}</Text>
       </Box>
     ),
-    code: (st) => `<Box${AE("surface", s(st.surface), "raised")}${A("border", b(st.border))}${A("inverse", b(st.inverse))}${AE("shadow", s(st.shadow), "none")}${AE("radius", s(st.radius), "md")}${AE("width", s(st.width), "md")}${AE("maxWidth", s(st.maxWidth), "none")}${AE("overflow", s(st.overflow), "visible")}>\n  <Text variant="caption" as="span">surface=${s(st.surface)}</Text>\n</Box>`,
+    code: (st) => `<Box${AE("surface", s(st.surface), "raised")}${A("border", b(st.border))}${A("inverse", b(st.inverse))}${AE("elevation", s(st.elevation), "none")}${AE("radius", s(st.radius), "md")}${AE("width", s(st.width), "md")}${AE("maxWidth", s(st.maxWidth), "none")}${AE("overflow", s(st.overflow), "visible")}>\n  <Text variant="caption" as="span">surface=${s(st.surface)}</Text>\n</Box>`,
   },
   {
     slug: "stack",
@@ -280,11 +280,11 @@ export const COMPONENTS: CompSpec[] = [
       { kind: "enum", prop: "accent", label: "accent", options: ["primary", "info", "success", "warning", "error"], def: "primary" },
       { kind: "enum", prop: "variant", label: "variant", options: ["solid", "soft", "hairline", "ghost", "muted"], def: "solid" },
       { kind: "enum", prop: "size", label: "size", options: ["sm", "md", "lg"], def: "md" },
-      { kind: "enum", prop: "iconSize", label: "iconSize", options: ["label", "caption", "body", "heading3"], def: "body" },
+      { kind: "enum", prop: "iconSize", label: "iconSize", options: ["label", "caption", "body", "subheading"], def: "body" },
       { kind: "bool", prop: "disabled", label: "disabled", def: false },
     ],
     render: (st) => (
-      <IconButton accent={s(st.accent) as Accent} variant={s(st.variant) as Variant} size={s(st.size) as "sm" | "md" | "lg"} iconSize={s(st.iconSize) as "label" | "caption" | "body" | "heading3"} disabled={b(st.disabled)} aria-label="추가">
+      <IconButton accent={s(st.accent) as Accent} variant={s(st.variant) as Variant} size={s(st.size) as "sm" | "md" | "lg"} iconSize={s(st.iconSize) as IconSize} disabled={b(st.disabled)} aria-label="추가">
         <Icon><path d="M12 5v14M5 12h14" /></Icon>
       </IconButton>
     ),
@@ -429,13 +429,13 @@ export const COMPONENTS: CompSpec[] = [
     slug: "icon",
     name: "Icon",
     group: "Content",
-    blurb: "Primitive 아이콘. typography ladder 이름(label·caption·body·heading3)으로 아트보드 크기를 고르고 currentColor 또는 ink로 그린다.",
+    blurb: "Primitive 아이콘. 옆에 서는 Text 역할 이름(label·caption·body·subheading)으로 아트보드 크기를 고르고 currentColor 또는 ink로 그린다.",
     controls: [
       { kind: "enum", prop: "ink", label: "ink", options: ["default", "base", "soft", "faint", "info", "success", "warning", "error"], def: "default" },
-      { kind: "enum", prop: "size", label: "size", options: ["label", "caption", "body", "heading3"], def: "body" },
+      { kind: "enum", prop: "size", label: "size", options: ["label", "caption", "body", "subheading"], def: "body" },
     ],
     render: (st) => (
-      <Icon aria-label="정보" ink={st.ink === "default" ? undefined : (s(st.ink) as Ink)} size={s(st.size) as "label" | "caption" | "body" | "heading3"}>
+      <Icon aria-label="정보" ink={st.ink === "default" ? undefined : (s(st.ink) as Ink)} size={s(st.size) as IconSize}>
         <circle cx="12" cy="12" r="9" />
         <path d="M12 11v5M12 8h.01" />
       </Icon>

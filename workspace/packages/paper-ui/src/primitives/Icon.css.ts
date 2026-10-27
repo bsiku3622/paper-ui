@@ -1,9 +1,8 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
-import { tokens } from "../tokens";
-import type { IconSize } from "./Icon";
+import { tokens, ICON_SIZES, type IconSize } from "../tokens";
 
-// 이름은 typography ladder를 따르고, 값은 viewBox 안의 path 여백을 고려한
+// 이름은 옆에 서는 Text 역할을 따르고, 값은 viewBox 안의 path 여백을 고려한
 // 광학 아트보드 크기(14·16·18·20)로 매핑한다.
 export const iconRoot = style({
   display: "inline-block",
@@ -15,9 +14,7 @@ export const iconRoot = style({
   strokeLinejoin: "round",
 });
 
-export const iconSize = styleVariants({
-  label: { width: tokens.shape.icon.size.label, height: tokens.shape.icon.size.label },
-  caption: { width: tokens.shape.icon.size.caption, height: tokens.shape.icon.size.caption },
-  body: { width: tokens.shape.icon.size.body, height: tokens.shape.icon.size.body },
-  heading3: { width: tokens.shape.icon.size.heading3, height: tokens.shape.icon.size.heading3 },
-} satisfies Record<IconSize, { width: string; height: string }>);
+export const iconSize = styleVariants(Object.fromEntries(ICON_SIZES.map((size) => [size, {
+  width: tokens.shape.icon.size[size],
+  height: tokens.shape.icon.size[size],
+}])) as Record<IconSize, { width: string; height: string }>);
