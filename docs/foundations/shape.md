@@ -1,93 +1,108 @@
-# Shape architecture
+# Shape
 
-Shape은 **원본 수치 → 공통 역할 → 내부 geometry recipe → CSS class** 순서로 적용합니다. Color가 Palette에서 역할별 색을 고르듯, Shape도 원본 수치와 사용 역할을 분리합니다. 컴포넌트의 광학 보정과 조립식은 내부 recipe가 소유합니다.
+Shape은 요소 하나의 형태를 정하는 시스템입니다. 빈 캔버스에 버튼 하나만 놓아도 보이는 것 — 곡률, 선 두께, 포커스 링, 크기, 안쪽 여백 — 이 모두 Shape에 속합니다. 형제 사이의 간격이나 페이지 틀, 쌓임 순서처럼 두 번째 요소나 화면이 있어야 생기는 값은 [Layout](layout.md)이 맡습니다.
+
+디자인 시스템은 다섯 층으로 쌓이고, 각 층은 자기보다 위에 있는 층만 참조합니다. Shape은 Typography를 읽을 수 있고(컨트롤 글자 줄이 inset을 정합니다), Layout은 Shape의 길이 scale 위에 섭니다. Shape은 Layout을 읽지 않습니다.
 
 ```text
-tokens/shape-palette.ts   원본 length · radius · stroke · measure
-             ↓
-tokens/shape.ts           공통 Shape 역할
-tokens/layout.ts         면의 크기 · block padding · 읽기 폭
-             ↓
-tokens/shape-recipes.ts   Atom anatomy와 파생식
-internal/shape.ts         역할별 control geometry
-             ↓
-*.css.ts                 className으로 실제 적용
+Color → Typography → Shape → Layout → Motion → Primitives
 ```
 
-## 공개 토큰
+## 원본 → 역할 → recipe
 
-아래는 새 코드에서 사용하는 canonical 경로입니다. `tokens.shape`의 leaf는 CSS variable 참조이며, 기존 경로는 호환 목적으로 함께 남아 있습니다. 표의 px 환산은 root font size 16px 기준입니다.
+Shape의 숫자는 `tokens/shape.ts`의 `SHAPE_SOURCE` 한 곳에만 dp 단위로 적습니다(기본 root 16px에서 1dp = 1px). 그 아래는 한 방향으로만 흐릅니다.
 
-| 경로 | 키 | 값 |
-| --- | --- | --- |
-| `shape.space` | xs / sm / md / lg / xl | 4 / 8 / 12 / 16 / 24px |
-| `shape.radius.control` | 단일 | 4px |
-| `shape.radius.surface` | sm / md / lg | 4 / 6 / 8px |
-| `shape.radius.full` | 단일 | 999px |
-| `shape.stroke` | border / emphasis / icon | 1px / 2px / 1.75 |
-| `shape.focus` | width / offset | 2px / 2px |
-| `shape.control.height` | sm / md / lg | 30 / 32 / 36px |
-| `shape.control.inset.button` | sm / md / lg | 10 / 11 / 14px |
-| `shape.control.inset.input` | sm / md / lg | 7 / 8 / 10px |
-| `shape.selection.size` | sm / md / lg | 15 / 16 / 18px |
-| `shape.icon.size` | label / caption / body / heading3 | 14 / 16 / 18 / 20px |
-| `shape.shadow` | overlay / overlayMinimal | 테마별 geometry와 semantic shadow tint 조립 |
+```text
+SHAPE_SOURCE    원본 숫자 (dp)
+     ↓
+SHAPE_VALUES    CSS 값으로 바꾼 원본 → --pui-shape-* 변수로 한 번만 emit
+     ↓
+SHAPE           공개 역할: 원본 변수의 별칭이거나, 원본 위의 calc() 식
+     ↓
+SHAPE_RECIPES   컴포넌트 anatomy: 역할과 원본 anatomy를 조합한 식 (비공개)
+     ↓
+*.css.ts        className으로 적용
+```
 
-Space는 gap과 padding이 함께 쓰는 공통 scale입니다. `gap="sm"`과 `padding="sm"`은 같은 8px을 고릅니다. 모든 간격에 별도 의미 이름을 붙이지 않습니다. 버튼 라벨과 입력값처럼 요구가 갈리는 자리에만 `control.inset.button`과 `control.inset.input`을 둡니다.
+역할은 자기 변수를 갖지 않습니다. 별칭은 원본 변수 그 자체이고, 식은 그 식을 쓰는 요소에서 계산됩니다. 그래서 어떤 하위 트리에서 원본 변수 하나를 덮어쓰면, 그 위에 지은 역할과 recipe가 그 자리에서 모두 다시 계산됩니다. 아래 예시는 한 영역의 컨트롤 높이만 바꿉니다.
 
-ControlSize는 `sm · md · lg`, Space는 `xs · sm · md · lg · xl`입니다. 이름 일부가 겹쳐도 서로 다른 축입니다. 같은 ControlSize의 Button·Field·Select는 같은 외곽 높이를 선택하며, typography는 각 역할의 `text.control` preset에서 별도로 선택합니다.
+```css
+.dense { --pui-shape-control-height-md: 40px; }
+```
 
-Box의 `radius="sm"`은 `radius.surface.sm`을 선택합니다. Control의 `radius.control`과 값이 같아도 역할과 CSS variable은 독립적입니다. Focus 폭도 `stroke.emphasis`와 독립적인 역할이므로, focus를 두껍게 만들어도 체크 표시가 함께 두꺼워지지 않습니다.
+이 한 줄로 그 영역의 md 버튼 높이는 40, 입력 inset은 12, 버튼 inset은 17, 체크박스는 20, 스위치 트랙은 40×22가 됩니다. 역할 변수를 따로 구웠다면 `:root`에서 이미 계산이 끝나 이 재정의를 따라가지 못합니다.
 
-## Layout 경계
+패키지 안에서는 숫자를 원본 파일(`shape.ts` · `layout.ts` · `text.ts` · `motion.ts`와 색 원본)에만 씁니다. recipe와 stylesheet에는 숫자가 없고, eslint `no-raw-geometry`가 패키지 전체에서 이를 막습니다.
 
-면의 폭·높이·읽기 폭·block padding은 Layout이 소유합니다. Box의 공개 props는 유지하며 내부 참조만 새 경로로 바꿨습니다.
+## 길이 scale — inset
 
-| 경로 | xs / sm / md / lg / xl |
-| --- | --- |
-| `layout.width` | 72 / 108 / 160 / 240 / 360px |
-| `layout.height` | 64 / 96 / 144 / 216 / 320px |
-| `layout.padding` | 8 / 12 / 16 / 20 / 32px |
-| `layout.measure` | 28 / 32 / 38 / 42 / 46rem |
+안쪽 여백은 `tokens.shape.inset`으로 고릅니다. Layout의 `gap`과 같은 scale이라, 같은 단계는 같은 길이입니다. 4dp 격자로 xl까지 오르고, 페이지 단위 거리는 8dp 흐름으로 이어집니다.
 
-`layout.padding`은 앱의 block 배치를 위한 별도 scale입니다. Box의 `padding` prop은 공통 `shape.space`를 선택합니다. `layout.z`와 기존 breakpoint·container·inset·sizeIntent 어휘도 유지합니다.
+| 단계 | xs | sm | md | lg | xl | 2xl | 3xl |
+|---|---|---|---|---|---|---|---|
+| dp | 4 | 8 | 12 | 16 | 24 | 32 | 48 |
 
-## 내부 recipe
+Box의 `padding` · `paddingX` · `paddingY`가 이 단계를 받습니다. 앱 stylesheet에서는 `padding`류 속성에 `tokens.shape.inset`을 씁니다.
 
-`SHAPE_RECIPE_VALUES`에는 원본 anatomy 값을, `SHAPE_RECIPES`에는 그 참조와 파생식을 둡니다. 내부 원본값은 `--pui-geometry-*` 변수로 emit하지만 패키지의 공개 `tokens` API에는 노출하지 않습니다. 앱은 이 private 변수 이름에 의존하지 않습니다.
+## Radius
 
-| 대상 | recipe의 책임 |
-| --- | --- |
-| Button / IconButton | 공유 control 높이·button inset, loading spinner 0.95em, 아이콘 버튼 정사각형 |
-| Field / Select | 공유 control 높이·input inset |
-| Textarea | input inset, typography 보정식, 독립적인 최소 높이 96px |
-| Select 화살표 | 크기 10px + 끝 여백 12px + 글자와의 간격 2px = 예약 공간 24px |
-| Badge | 높이 20 / 22 / 24px, inset 6 / 8 / 10px, dot 0.5em |
-| Checkbox | 공통 selection 외곽 크기, mark 비율, sm 광학 보정, 작은 모서리, indeterminate dash |
-| Radio | 공통 selection 외곽 크기, 독립적인 dot 비율과 sm 광학 보정 |
-| Switch | 공통 selection 크기에서 track·thumb·이동 거리 계산 |
-| Spinner / Link | spinner 크기·stroke, underline offset |
+모서리는 날만 죽입니다. 그래서 한 가족은 크기와 무관하게 한 값을 씁니다.
 
-Textarea의 block inset은 `input inset − (textarea leading − font size) / 2`입니다. 기본 preset에서는 3.5 / 4.5 / 7px이 됩니다. `fontSize` escape prop으로 글자 크기만 바꾸는 경우에도 geometry는 선택한 size의 기본 preset을 기준으로 유지합니다.
+| 역할 | 값 | 쓰는 곳 |
+|---|---|---|
+| `radius.control` | 4 | Button · Field · Select · Textarea · Badge, 포커스 링 |
+| `radius.selection` | 3 | Checkbox |
+| `radius.surface.sm / md / lg` | 4 / 6 / 8 | Box의 `radius` prop |
+| `radius.full` | 999px | 알약, 원(Radio · Switch · Spinner) |
 
-Switch는 `thumb = selection − clearance`, `track height = selection + clearance`, `track width = thumb × 2 + clearance × 2`입니다. Clearance는 root 16px 기준 2px이며 rem으로 함께 확대됩니다. 손잡이 inset은 `(track height − thumb) / 2`, 켜졌을 때 이동 거리는 `track width − track height`입니다. RTL에서는 이동 방향을 뒤집습니다.
+Box의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값이 같아도 역할과 변수는 따로입니다.
 
-Checkbox mark와 Radio dot은 외곽의 절반으로 계산하되 sm에서는 각자의 0.5px 보정을 뺍니다. 두 보정은 별도 recipe이므로 체크 모양을 고쳐도 Radio 점이 바뀌지 않습니다. 체크 표시의 회전·이동처럼 glyph에 종속된 보정도 공통 토큰으로 승격하지 않습니다.
+## Stroke · Focus
 
-파생 `calc()`는 실제 소비 요소의 class 선언에 둡니다. 이를 `:root` 변수에 미리 조립하면 참조가 root에서 계산되어, 중첩 영역의 토큰 재정의를 따라가지 못합니다. 내부 원본값과 공개 역할 변수는 상속하고, 관계식은 소비 위치에서 평가합니다.
+선과 포커스 링은 root 글자 크기를 따라 커지지 않도록 CSS px로 둡니다. `stroke.border` 1px은 테두리와 Divider, `stroke.emphasis` 2px은 체크 표시·Spinner 링·스위치 손잡이 둘레, `stroke.icon` 1.75는 24 artboard 위 SVG 선입니다. 포커스 링은 `focus.width` 2px · `focus.offset` 2px이고, 패키지의 모든 포커스 링은 한 스타일(`focusRing`)을 공유합니다. 링의 두께와 offset은 Shape, 색은 Color(`interaction.focus`)가 소유합니다.
 
-## 실제 적용
+## Control
 
-패키지는 `.css.ts` className으로 토큰을 적용합니다. 같은 size가 필요한 컴포넌트는 `controlGeometry.button / field / select / textarea` 중 역할을 선택합니다. 임의 CSS key를 덮어쓰거나 `null`로 삭제하던 `ladderRules(patch)`는 제거했습니다.
+컨트롤에서 원본은 높이 하나입니다. 나머지는 높이와 컨트롤 글자 줄(Typography의 control preset, 행간 16)에서 계산합니다.
 
-색은 계속 `tokens.color`를 사용합니다. Select는 고정 색이 든 background SVG를 제거하고, native select 옆의 장식 SVG가 semantic ink를 상속하도록 바꿨습니다. 따라서 light/dark·중첩 ThemeScope·placeholder 색을 같은 경로에서 처리합니다. Select의 `className`과 `style`은 보이는 wrapper에, `ref`와 native form 속성은 안쪽 select에 적용됩니다.
+| 역할 | sm | md | lg | 식 |
+|---|---|---|---|---|
+| `control.height` | 30 | 32 | 36 | 원본 |
+| `control.inset.input` | 7 | 8 | 10 | (높이 − 글자 줄) / 2 — 입력값은 줄상자 사방에 같은 여백 |
+| `control.inset.button` | 10 | 11 | 14 | 입력 inset × 1.4, 1px로 반올림 — 라벨이 상자를 정의하므로 더 넓게 |
+| `selection.size` | 15 | 16 | 18 | 높이 / 2 |
+| `control.icon` | 16 | 18 | 20 | icon caption · body · subheading |
+| `control.gap` | 8 | 8 | 8 | 아이콘과 라벨 사이, inset sm |
 
-Box의 dimension props와 호출자가 제공하는 `style`은 유지합니다. named dimension은 Layout 토큰으로 해석하며, 임의 CSS 길이는 앱의 배치를 위한 escape입니다. 내부 anatomy가 이 통로를 사용하지는 않습니다.
+같은 size의 Button · Field · Select는 같은 높이를 고르고, 글자는 Typography의 control preset에서 따로 고릅니다. 각 컨트롤은 `internal/shape.ts`의 `controlGeometry`에서 자기 역할을 고르며, stylesheet가 자기만의 크기 사다리를 만들지 않습니다.
 
-## 호환과 검증
+## Sizing
 
-`shape-legacy.ts`는 기존 `gap`, `padding.*.interaction/layout`, `height.*.interaction/layout`, `width.*.layout`, `radius.interaction/layout`, `constants`, 각 Atom geometry 경로를 새 소스로 연결합니다. 기존 JS 경로와 `--pui-shape-*` 변수 이름은 계속 emit합니다. 외곽 size xs/xl처럼 새 control API에 없는 값은 기존 소비자용으로만 유지합니다.
+| 역할 | 단계 | dp |
+|---|---|---|
+| `icon.size` | label · caption · body · subheading | 14 · 16 · 18 · 20 |
+| `dimension.width` | xs ~ xl | 72 · 108 · 160 · 240 · 360 |
+| `dimension.height` | xs ~ xl | 64 · 96 · 144 · 216 · 320 |
+| `measure` | xs ~ xl | 448 · 512 · 608 · 672 · 736 (28 ~ 46rem) |
 
-새 패키지 코드와 Playground는 canonical 경로를 사용합니다. 이전 변수 이름을 override해 새 컴포넌트까지 변경하는 동작은 지원하지 않습니다. override가 필요하면 canonical 변수 이름으로 옮깁니다. 호환 alias는 `:root`에서 계산되므로 중첩 영역의 재정의에도 canonical API를 사용합니다.
+아이콘 artboard는 옆에 서는 Text 역할의 이름을 씁니다. `dimension`은 Box의 `width="md"` 같은 이름 있는 크기이고, `measure`는 글 덩어리의 읽기 폭입니다.
 
-Lint는 패키지의 inline token 참조와 변수 별칭, 소비처 raw source import, raw color·직접 작성한 token var 문자열, Primitive·Atom stylesheet의 고정 길이 literal을 검사합니다. 0·100%·가운데 정렬·회전 같은 구조적 CSS는 컴포넌트가 소유합니다. 테스트는 변수 참조의 완전성·순환 여부, 세 size의 브라우저 계산값, 중첩 토큰 재정의, native Select의 form·keyboard·theme 계약을 확인합니다.
+## Recipe — 컴포넌트 anatomy
+
+`SHAPE_RECIPES`에는 숫자가 없습니다. 모든 값이 역할이거나, 원본의 anatomy 값이거나, 그 둘 위의 식입니다.
+
+| 대상 | 규칙 |
+|---|---|
+| Checkbox | 모서리 `radius.selection`. 체크는 상자의 절반 너비·4분의 1 높이인 L자를 대각선으로 돌린 것이고, 돌리면 시각 무게가 아래 왼쪽으로 쏠려 자기 획의 ¼ · ½만큼 옮깁니다. indeterminate 대시는 체크의 긴 변 길이로 그은 둥근 끝 emphasis 선입니다. |
+| Radio | 점은 상자의 절반입니다. |
+| Switch | 트랙 폭 = 컨트롤 높이, 트랙 높이 = 선택 상자 + 테, 손잡이 = 선택 상자 − 테. 테는 `stroke.emphasis`라, 손잡이는 사방 2px 안쪽에 앉고 정확히 자기 폭만큼 이동합니다. RTL에서는 이동 방향을 뒤집습니다. |
+| Textarea | 한 줄은 같은 size의 Field와 정확히 같은 높이입니다: block 여백 = (컨트롤 높이 − textarea 글자 줄) / 2 − 테두리. 최소 높이는 `dimension.height.sm`입니다. |
+| Select | 화살표는 trailing icon입니다. `control.icon` 크기의 Icon이 입력 inset 자리에 앉고, 값은 그보다 `control.gap`만큼 앞에서 멈춥니다 — Field의 leading icon을 거울로 비춘 구조입니다. |
+| Spinner | 지름은 `control.icon`, 링은 `stroke.emphasis`입니다. 버튼 안 스피너는 라벨 글자(1em)를 따릅니다. |
+| Badge | 높이 20 · 22 · 24와 inset 6 · 8 · 10은 규칙으로 나오지 않아 원본 anatomy에 둡니다. 점은 글자의 0.5em, 점과 글자 사이는 inset xs입니다. |
+
+링크 밑줄 offset은 글자의 장식이라 Typography(`text.palette.decoration.underlineOffset`)가 소유합니다.
+
+## 앱에서
+
+앱은 간격·형태·깊이를 역할로 고릅니다. 안쪽 여백은 `tokens.shape.inset`, 형제 사이·margin·위치 offset은 `tokens.layout.gap`, 선은 `tokens.shape.stroke`, 그림자와 z는 `tokens.layout.elevation`입니다. 사이드바 폭이나 그리드 트랙처럼 그 화면에만 있는 치수는 앱이 직접 씁니다. eslint `no-raw-geometry`의 앱 범위가 이 경계를 지킵니다.

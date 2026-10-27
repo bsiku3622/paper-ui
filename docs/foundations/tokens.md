@@ -39,17 +39,17 @@ Interaction overlay, scrim, shadow tint의 반투명 값은 중립 양 끝점에
 
 ## Shape
 
-Shape은 원본 Palette → 공통 역할 → 내부 recipe → CSS class로 적용합니다. 공개 토큰은 `shape.space`, `radius`, `stroke`, `focus`, `control`, `selection`, `icon`, `shadow`로 나뉩니다. Space는 gap·padding이 함께 쓰는 5단 scale이고, ControlSize는 별도 3단 scale입니다. Box의 폭·높이·읽기 폭·block padding은 `layout.width / height / measure / padding`으로 옮겼습니다.
+Shape은 요소 하나의 형태입니다. 원본(`SHAPE_SOURCE`)만 CSS 변수로 굽고, 공개 역할은 그 변수의 별칭이거나 쓰이는 자리에서 계산되는 식입니다. 역할은 `inset`(안쪽 여백) · `radius` · `stroke` · `focus` · `control` · `selection` · `icon` · `dimension` · `measure`입니다.
 
-`shape.control.height`는 30 / 32 / 36px, button inset은 10 / 11 / 14px, input inset은 7 / 8 / 10px입니다. `radius.control`은 4px, `radius.surface.sm / md / lg`는 4 / 6 / 8px이며 Box는 surface 쪽을 선택합니다. Focus ring의 폭과 offset은 `shape.focus`, 선 두께는 `shape.stroke`가 소유합니다.
+`shape.control.height`는 30 / 32 / 36px이 원본이고, input inset 7 / 8 / 10px과 button inset 10 / 11 / 14px, 선택 상자 15 / 16 / 18px은 높이와 컨트롤 글자 줄에서 계산합니다. `radius.control`은 4px, `radius.selection`은 3px, `radius.surface.sm / md / lg`는 4 / 6 / 8px입니다. 체크 표시·Radio 점·Switch 비례·Textarea 여백·Select 화살표 자리는 숫자 없는 내부 recipe입니다. 전체 규칙과 수식은 [Shape](shape.md)에 있습니다.
 
-체크 표시·Radio dot·Switch 비례·Textarea 여백·Select 화살표 예약 공간은 내부 recipe입니다. 파생식은 소비 요소에서 계산하므로 중첩 영역의 공통 토큰 재정의도 반영합니다. 기존 Shape JS 경로와 CSS variable은 호환 alias로 유지하지만 새 코드는 canonical 경로를 사용합니다. 전체 토큰 목록, 수식, 단위와 이관 규칙은 [Shape architecture](shape-architecture.md)에서 확인합니다.
+## Layout
 
-## Motion · Layout
+Layout은 요소 사이의 관계입니다. `gap`(형제 사이, Shape inset과 같은 scale 4 · 8 · 12 · 16 · 24 · 32 · 48) · `gutter`(페이지 가장자리와 내용 사이) · `container`(본문 최대 폭) · `breakpoint`(sm~xl, 값) · `elevation`(base~toast 여섯 층, 각 층의 `z`와 `shadow`)으로 나뉩니다. 층 하나를 고르면 쌓임 순서와 그림자가 함께 정해집니다. 자세한 규칙은 [Layout](layout.md)에 있습니다.
+
+## Motion
 
 **motion** — `duration`(instant·reduced·fast~slow) · `easing`(linear·standard·decelerate·accelerate·overshoot) · `loop`(spin·pulse) · `role`(press·hover·state·enter…). `reduced`는 reduced-motion 환경용 최소 duration이고 `linear`는 반복 회전 등에 씁니다. 유일하게 CSS 변수로 굽지 않고 값을 직접 듭니다 — `stateTransition("background", "color")`로 인라인됩니다.
-
-**layout** — `z` 6단 tier(base~toast) · `breakpoint`(sm~xl) · `container`(콘텐츠 폭) · `sizeIntent`(full·fit…) · `inset` · `width/height/measure/padding`. 배치 어휘를 노출하되 반응형 Box 프로퍼티를 전면 열지는 않습니다 — 유연함은 escape로 엽니다(정체성: 구조 안전 > 자유도).
 
 ## Text
 

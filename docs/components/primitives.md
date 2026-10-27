@@ -13,7 +13,7 @@ Paper UI의 Primitives는 배치·콘텐츠·입력 행동·접근성을 조합�
 
 ## 공통 적용 계약
 
-Box·Stack·Inline·Grid·Text·Hoverable은 `as`로 렌더 대상을 선택하고 native props와 ref를 같은 요소로 전달합니다. 기존 Box의 surface·spacing·radius·shadow·dimension 계약을 유지합니다. Icon도 SVG ref와 native SVG props를 전달하며, 기존 size·ink·viewBox 기본값을 유지합니다.
+Box·Stack·Inline·Grid·Text·Hoverable은 `as`로 렌더 대상을 선택하고 native props와 ref를 같은 요소로 전달합니다. Box는 surface·spacing(padding은 Shape inset, gap은 Layout gap)·radius·elevation·dimension 계약을 갖습니다. Icon도 SVG ref와 native SVG props를 전달하며, 기존 size·ink·viewBox 기본값을 유지합니다.
 
 Pressable·Toggleable·Draggable.Handle은 native button을 렌더링하고 type 기본값은 button입니다. Draggable과 Droppable은 div를 렌더링합니다. 이 요소들은 자신의 className·style·native props·ref를 받으며, 중첩 wrapper를 더하지 않습니다. Hoverable을 기존 Box에 합성하는 예시는 다음과 같습니다.
 
@@ -31,12 +31,12 @@ Hoverable은 button 역할이나 tab stop을 자동으로 추가하지 않습니
 
 | 컴포넌트 | 계약 |
 | --- | --- |
-| Box | 기존 surface·padding·gap·border·radius·shadow·inverse·dimension·overflow props 유지 |
+| Box | surface·padding·gap·border·radius·elevation(z와 그림자를 함께)·inverse·dimension·overflow props |
 | Stack | Box + 세로 flex, align=start/center/end/stretch |
 | Inline | Box + 가로 flex, align=start/center/end/baseline, justify=start/center/end/between, wrap |
 | Grid | Box + columns/rows, autoFlow, align/justify=start/center/end/stretch, rowGap/columnGap |
 | Text | 기존 variant·family·ink·의미 태그 기본값 유지 |
-| Icon | 기존 label/caption/body/heading3 크기와 ink 유지, native SVG 속성·ref 전달 |
+| Icon | label/caption/body/subheading 크기(옆에 서는 Text 역할 이름)와 ink, native SVG 속성·ref 전달 |
 
 Grid의 columns 기본값은 1입니다. columns·rows에 양의 정수를 주면 같은 폭의 track을 만들며, CSS track 문자열도 받습니다. gap·rowGap·columnGap은 공통 Space scale을 선택합니다. Style escape는 명시한 track을 덮어쓸 수 있습니다.
 

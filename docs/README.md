@@ -7,7 +7,7 @@ paper-ui는 복잡한 웹앱을 위한 디자인 시스템입니다. 순백과 �
 ## 지도
 
 - **시작하기** — [설치](get-started/install.md) · [원칙](get-started/philosophy.md)
-- **기초** — [토큰](foundations/tokens.md) · [색 아키텍처](foundations/color-architecture.md) · [Shape architecture](foundations/shape-architecture.md) · [아키텍처](foundations/architecture.md) · [Interaction](foundations/interaction.md)
+- **기초** — [토큰](foundations/tokens.md) · [색 아키텍처](foundations/color-architecture.md) · [Shape](foundations/shape.md) · [Layout](foundations/layout.md) · [아키텍처](foundations/architecture.md) · [Interaction](foundations/interaction.md)
 - **컴포넌트 검토** — [현재 목록과 계약](components/inventory.md) · [Primitive API](components/primitives.md)
 - **플레이그라운드** — [Foundations](/playground/foundations/color-typography) · [Palette](/playground/palette)
 

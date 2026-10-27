@@ -70,21 +70,20 @@ focus ring 색은 `interaction.focus`에 둡니다. focus는 상호작용 상태
 
 색을 바꾸면 docs/foundations/color-architecture.md와 Palette·Tokens Playground를 함께 확인합니다. API 경로와 source 규칙을 동시에 갱신합니다.
 
-## 형태
+## 형태 — Shape와 Layout
 
-Shape은 `shape-palette.ts` 원본 수치 → `shape.ts` 공통 역할 → `shape-recipes.ts` 내부 anatomy → `.css.ts` className 순서입니다. 전체 경로와 단위·이관 계약은 [docs/foundations/shape-architecture.md](docs/foundations/shape-architecture.md)를 따릅니다.
+시스템은 `Color → Typography → Shape → Layout → Motion → Primitives`로 쌓이고, 각 층은 자기보다 위의 층만 참조합니다. **Shape은 요소 하나의 형태**(곡률·선·포커스 링·크기·안쪽 여백), **Layout은 요소 사이의 관계**(형제 간격·gutter·container·breakpoint·elevation)입니다. 경계는 "빈 캔버스에 그 요소 하나만 놓아도 남는가"로 가릅니다. 정본은 [docs/foundations/shape.md](docs/foundations/shape.md)와 [docs/foundations/layout.md](docs/foundations/layout.md)입니다.
 
-- 공개 역할은 `space · radius · stroke · focus · control · selection · icon · shadow`입니다. `space`는 gap/padding 공통 5단(4/8/12/16/24), control은 별도 3단(sm/md/lg)입니다.
-- radius는 날만 죽입니다. `radius.control` 4, `radius.surface` sm4/md6/lg8, `full` 999입니다. Box radius는 surface를 선택하며 control과 독립적입니다.
-- control 높이는 30/32/36, button inset은 10/11/14, input inset은 7/8/10입니다. Box 여백을 컨트롤에 빌리지 않습니다. `internal/shape.ts`의 typed `controlGeometry`에서 역할을 선택하고 임의 patch 사다리는 만들지 않습니다.
-- Textarea block inset은 `input inset − (leading − font size) / 2`로 3.5/4.5/7을 계산합니다. 최소 높이 96은 Textarea recipe가 소유합니다.
-- 공통 `selection.size` 15/16/18에서 Checkbox·Radio 외곽과 Switch geometry를 고릅니다. Checkbox mark와 Radio dot의 sm 0.5px 광학 보정은 각자의 recipe입니다. Switch는 thumb=selection−2, track height=selection+2, width=thumb×2+4, travel=width−height입니다.
-- Badge 높이20/22/24·inset6/8/10과 spinner artboard16/18/20은 private recipe입니다. Icon은 공개 크기 이름 label/caption/body/heading3와 artboard14/16/18/20을 유지합니다. 아이콘 path의 잉크와 artboard 크기는 다릅니다.
-- 내부 원본 geometry는 private `--pui-geometry-*` 변수로 emit합니다. 파생 calc는 실제 소비 요소에서 평가해 중첩 공통 토큰 override를 반영합니다. `:root`에 파생식을 미리 조립하지 않습니다.
-- 면의 width/height/measure/block padding은 Layout 책임입니다. Box의 named dimension은 `tokens.layout`으로 해석하고, Box padding prop은 `shape.space`를 선택합니다.
-- shadow는 `overlay · overlayMinimal` 두 역할입니다. 떠 있는 것만 지속 그림자를 가지며 tint는 semantic Color, geometry는 Shape가 소유합니다. 회색은 구조를 받치며 `color.control.track`은 Switch 내부 트랙에 사용합니다.
-- 패키지 내부에서는 canonical 경로만 사용합니다. `shape-legacy.ts`의 기존 JS/CSS 경로는 호환용이며 새 기능의 source로 사용하지 않습니다. 새 override는 canonical 변수에 적용합니다.
-- Select는 native select와 decorative SVG를 wrapper 안에 둡니다. ref와 폼 속성은 native select, className/style은 보이는 wrapper에 전달합니다. 화살표는 semantic ink를 사용합니다.
+- 숫자는 `SHAPE_SOURCE`(tokens/shape.ts)·`LAYOUT_SOURCE`(tokens/layout.ts)에 dp로 한 번만 씁니다. **원본만 CSS 변수로 굽고**, 역할은 원본 변수의 별칭이거나 소비 요소에서 계산되는 calc() 식입니다. 역할에 변수를 따로 만들지 않습니다 — 하위 트리에서 원본 하나를 덮으면 그 위의 역할·recipe가 모두 다시 계산되어야 합니다.
+- 길이 scale은 하나입니다: `xs4 · sm8 · md12 · lg16 · xl24 · 2xl32 · 3xl48`. 안쪽 여백은 `tokens.shape.inset`, 형제 사이·margin·위치 offset은 `tokens.layout.gap`으로 고릅니다. 둘은 같은 단계면 같은 길이입니다.
+- radius는 날만 죽이고 가족마다 한 값입니다: `control` 4 · `selection` 3 · `surface` sm4/md6/lg8 · `full` 999px. Box radius는 surface를 선택합니다.
+- control은 높이 30/32/36만 원본입니다. input inset = (높이 − 컨트롤 글자 줄)/2 = 7/8/10, button inset = input × 1.4 반올림 = 10/11/14, selection = 높이/2 = 15/16/18, `control.icon` 16/18/20, `control.gap` 8. `internal/shape.ts`의 `controlGeometry`에서 역할을 고르고 stylesheet가 자기 사다리를 만들지 않습니다.
+- recipe(`tokens/shape-recipes.ts`)에는 숫자가 없습니다. Switch 트랙 폭 = 컨트롤 높이, 테 = `stroke.emphasis`, 손잡이는 자기 폭만큼 이동. Textarea 한 줄 = 같은 size Field 높이(block 여백 4/5/7). Select 화살표는 `control.icon` 크기 Icon, 입력 inset 자리, 값은 `control.gap` 앞에서 멈춤. Checkbox mark·Radio dot = 선택 상자의 절반(크기별 보정 없음). Badge 높이 20/22/24·inset 6/8/10만 원본 anatomy입니다.
+- 선(`stroke.border` 1 · `emphasis` 2)과 포커스 링(`focus.width`·`offset` 2)은 px, `stroke.icon` 1.75는 SVG 단위입니다. 모든 포커스 링은 `focusRing` 하나를 씁니다(색은 `interaction.focus`).
+- Icon 크기 이름은 옆에 서는 Text 역할입니다: label 14 · caption 16 · body 18 · subheading 20. Box의 named dimension(`dimension.width/height` xs~xl)과 읽기 폭(`measure`)도 Shape sizing입니다.
+- elevation은 `base 0 · raised 10 · sticky 20 · overlay 30 · modal 40 · toast 50` 여섯 층이고, **층 하나가 z와 그림자를 함께 정합니다.** 그림자 깊이는 lifted(raised)·floating(overlay·modal·toast) 둘뿐, base·sticky는 그림자가 없습니다. 기하는 Layout, 색은 Color의 shadow tint입니다. Box는 `elevation` prop으로 고릅니다.
+- breakpoint(480/768/1024/1280)는 미디어 쿼리가 변수를 못 읽어 값입니다. `color.control.track`은 Switch 트랙과 진행 막대 홈에 씁니다.
+- Select는 native select와 장식 Icon을 wrapper 안에 둡니다. ref와 폼 속성은 native select, className/style은 보이는 wrapper에 전달합니다. 화살표는 semantic ink를 사용합니다.
 
 상위 화면 조합과 그 prop 축은 현재 패키지 API에 포함하지 않습니다. 실제 제품에서 반복되는 요구가 생기면 공통 책임과 축을 먼저 설계합니다.
 
@@ -136,8 +135,7 @@ Primitive 계약의 정본은 [docs/components/primitives.md](docs/components/pr
 1. **raw 색값 금지** — surface hex는 `tokens/palette.ts`, accent hex·OKLCH는 `tokens/color-ladder.ts`에만. 소비처는 `tokens.color.X`로만 참조.
 2. **color layer import 격리** — palette·ladder·semantic VALUES는 consumer에서 import 금지. `/playground/palette` Foundations inspector만 허용된 source 예외입니다.
 3. **inline style 로 토큰 주입 금지** — package 스타일은 `.css.ts` className 으로만 토큰을 적용합니다.
-
-Primitive·Atom stylesheet의 고정 geometry literal도 semantic 역할이나 private recipe로 옮깁니다. 0·100%·정렬·회전 같은 구조적 CSS는 컴포넌트가 소유합니다.
+4. **길이는 token source에만** — 패키지는 예외 없이 원본 파일(shape·layout·text·motion·색)에만 숫자를 씁니다. 앱은 간격·형태·깊이(padding·margin·gap·offset·radius·선·그림자·z)를 역할로 고르고, 그 화면에만 있는 치수(폭·높이·그리드 트랙)만 직접 씁니다. 0·100%·정렬·회전 같은 구조적 CSS는 컴포넌트가 소유합니다.
 
 네 규칙은 **eslint 가** 막습니다 (문서가 아니라 빌드가).
 
