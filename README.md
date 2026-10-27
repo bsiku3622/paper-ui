@@ -27,10 +27,13 @@ The seven principles behind every visual decision: **[docs/get-started/philosoph
 
 | Layer | Count | |
 |---|---|---|
-| Primitives | 5 | `Box · Stack · Inline · Text · Icon` |
+| Layout | 4 | `Box · Stack · Inline · Grid` |
+| Content | 2 | `Text · Icon` |
+| Interaction | 7 | `Pressable · Hoverable · Toggleable · Draggable · Droppable · ToggleGroup · Overlay` |
+| A11y | 4 | `FocusScope · VisuallyHidden · RovingFocus · FormField` |
 | Atoms | 13 | `Button · IconButton · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Spinner · Divider · Link` |
 
-Compositions are owned by consuming applications. The package exposes Primitives and Atoms;
+Product-specific compositions are owned by consuming applications. The package exposes Primitives and Atoms;
 `<Box as="…">` remains the typed route to semantic HTML when an application needs it.
 
 ## Running

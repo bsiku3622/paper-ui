@@ -1,5 +1,7 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
+import { geometry } from "../internal/shape";
+
 import { tokens, stateTransition, CONTROL_SIZES, type ControlSize } from "../tokens";
 
 // 크기(변·틱·radius)는 size 축(checkboxSize)이 정한다. 색·틱 모양은 여기 고정.
@@ -8,7 +10,7 @@ export const checkboxRoot = style({
   margin: 0,
   flexShrink: 0,
   background: tokens.color.bg.raised,
-  borderWidth: tokens.shape.constants.borderWidth,
+  borderWidth: tokens.shape.stroke.border,
   borderStyle: "solid",
   borderColor: tokens.color.border.strong,
   cursor: "pointer",
@@ -19,22 +21,22 @@ export const checkboxRoot = style({
     "&:checked": { background: tokens.color.accent.primary.solid, borderColor: tokens.color.accent.primary.solid },
     "&:checked::after": {
       content: "''",
-      borderLeft: `${tokens.shape.constants.checkMarkStrokeWidth} solid ${tokens.color.accent.primary.wash}`,
-      borderBottom: `${tokens.shape.constants.checkMarkStrokeWidth} solid ${tokens.color.accent.primary.wash}`,
-      transform: "rotate(-45deg) translate(0.5px, -1px)",
+      borderLeft: `${geometry.checkbox.markStroke} solid ${tokens.color.accent.primary.wash}`,
+      borderBottom: `${geometry.checkbox.markStroke} solid ${tokens.color.accent.primary.wash}`,
+      transform: geometry.checkbox.markTransform,
     },
     // indeterminate — 부분 선택. 체크 대신 가로 대시. width % 라 size 를 자동으로 따른다.
     "&:indeterminate": { background: tokens.color.accent.primary.solid, borderColor: tokens.color.accent.primary.solid },
     "&:indeterminate::after": {
       content: "''",
-      width: "58%",
-      height: tokens.shape.constants.checkMarkStrokeWidth,
-      borderRadius: "1px",
+      width: geometry.checkbox.dashWidth,
+      height: geometry.checkbox.markStroke,
+      borderRadius: geometry.checkbox.dashRadius,
       background: tokens.color.accent.primary.wash,
     },
     "&:focus-visible": {
-      outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.interaction.focus}`,
-      outlineOffset: tokens.shape.constants.focusRingOffset,
+      outline: `${tokens.shape.focus.width} solid ${tokens.color.interaction.focus}`,
+      outlineOffset: tokens.shape.focus.offset,
     },
     "&:disabled": { opacity: 0.45, cursor: "not-allowed" },
   },
@@ -46,13 +48,13 @@ export const checkboxSize = styleVariants(
     CONTROL_SIZES.map((s) => [
       s,
       {
-        width: tokens.shape.checkbox[s].box,
-        height: tokens.shape.checkbox[s].box,
-        borderRadius: tokens.shape.checkbox[s].radius,
+        width: tokens.shape.selection.size[s],
+        height: tokens.shape.selection.size[s],
+        borderRadius: geometry.checkbox.radius[s],
         selectors: {
           "&:checked::after": {
-            width: tokens.shape.checkbox[s].mark,
-            height: tokens.shape.checkbox[s].short,
+            width: geometry.checkbox.mark[s],
+            height: geometry.checkbox.short[s],
           },
         },
       },

@@ -1,6 +1,6 @@
 // Inline — 가로로 늘어놓는다. 장부 한 줄 안의 배치가 대부분 이것.
 
-import type { ElementType } from "react";
+import { forwardRef, type ElementType, type ReactElement } from "react";
 
 import { Box, type BoxProps } from "./Box";
 import { joinClass } from "../internal/joinClass";
@@ -12,14 +12,15 @@ export type InlineProps<As extends ElementType = "div"> = BoxProps<As> & {
   wrap?: boolean;
 };
 
-export const Inline = <As extends ElementType = "div">({
+const InlineImpl = forwardRef<HTMLDivElement, Omit<InlineProps, "as" | "ref"> & { as?: ElementType }>(function Inline({
   align = "center",
   justify,
   wrap,
   className,
   ...rest
-}: InlineProps<As>) => (
-  <Box
+}, ref) {
+  return (
+  <Box ref={ref}
     className={joinClass(
       inlineRoot,
       inlineAlign[align],
@@ -30,3 +31,6 @@ export const Inline = <As extends ElementType = "div">({
     {...(rest as object)}
   />
 );
+});
+
+export const Inline = InlineImpl as <As extends ElementType = "div">(props: InlineProps<As>) => ReactElement;

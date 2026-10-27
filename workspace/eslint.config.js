@@ -2,6 +2,15 @@ import tseslint from "@typescript-eslint/eslint-plugin";
 import tsparser from "@typescript-eslint/parser";
 import reactHooks from "eslint-plugin-react-hooks";
 import jsxA11y from "eslint-plugin-jsx-a11y";
+import tokenBoundaries from "./eslint-rules/token-boundaries.js";
+
+const rawSourcePatterns = ["palette", "color-ladder", "colors", "shape", "shape-palette", "shape-recipes", "shape-legacy"]
+  .flatMap((name) => ["", ".ts", ".js"].map((extension) => `**/tokens/${name}${extension}`));
+const rawBarrelRestriction = {
+  regex: String.raw`(?:^|/)(?:tokens(?:/index(?:\.[tj]s)?)?|@studio-baeks/paper-ui)$`,
+  importNames: ["COLOR_VALUES", "COLOR_VALUES_DARK", "PALETTE", "SHAPE_VALUES", "SHAPE_RECIPES", "SHAPE_RECIPE_VALUES", "SHAPE_PALETTE"],
+  message: "Raw source를 barrel로 우회하지 말고 semantic tokens를 사용하세요.",
+};
 
 // 절대 규칙을 문서가 아니라 빌드가 지킨다.
 // 규칙을 적어두고 리뷰어의 기억력에 맡기면 3 개월 뒤에 안 지켜져 있다.
@@ -59,31 +68,8 @@ export default [
       "packages/paper-ui/src/tokens/color-ladder.ts",
       "**/*.test.{ts,tsx}",
     ],
-    rules: {
-      "no-restricted-syntax": [
-        "error",
-        {
-          selector: "Literal[value=/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/]",
-          message:
-            "규칙 1 — raw hex 금지. OKLCH source는 palette, HEX generation은 color-ladder에 두고 tokens.color.X 로 참조하라.",
-        },
-        {
-          selector: "Literal[value=/^(?:rgba?|hsla?|oklch|color-mix)\\(/i]",
-          message:
-            "규칙 1 — raw color function 금지. 색은 Palette에서 생성하고 tokens.color semantic 참조를 사용하라.",
-        },
-        {
-          selector: "TemplateLiteral[quasis.0.value.raw=/\\b(?:rgba?|hsla?|oklch|color-mix)\\(/i]",
-          message:
-            "규칙 1 — runtime color math 금지. alpha/glow 값도 Palette Token으로 생성하라.",
-        },
-        {
-          selector: "Literal[value=/^var\\(--paper-/]",
-          message:
-            "규칙 1 — CSS var 문자열 직접 작성 금지. tokens.X.Y 참조 객체를 쓰라 (이름이 어긋난다).",
-        },
-      ],
-    },
+    plugins: { "token-boundaries": tokenBoundaries },
+    rules: { "token-boundaries/no-raw-color": "error" },
   },
 
   // ── 규칙 2 — VALUES(raw) import 격리 ────────────────────────────────────
@@ -100,8 +86,9 @@ export default [
         "error",
         {
           patterns: [
+            rawBarrelRestriction,
             {
-              group: ["**/tokens/palette", "**/tokens/color-ladder", "**/tokens/colors", "**/tokens/shape"],
+              group: rawSourcePatterns,
               message:
                 "규칙 2 — palette·ladder·raw VALUES는 소비처에서 import하지 않는다. tokens 배럴의 semantic var 참조를 쓰라.",
             },
@@ -119,9 +106,9 @@ export default [
       "no-restricted-imports": [
         "error",
         {
-          patterns: [{
+          patterns: [rawBarrelRestriction, {
             group: [
-              "**/tokens/palette", "**/tokens/color-ladder", "**/tokens/colors", "**/tokens/shape",
+              ...rawSourcePatterns,
               "!../../../packages/paper-ui/src/tokens/colors",
               "!../../../packages/paper-ui/src/tokens/palette",
             ],
@@ -136,19 +123,13 @@ export default [
   {
     files: ["packages/paper-ui/src/**/*.tsx"],
     ignores: ["**/*.test.tsx"],
-    rules: {
-      "no-restricted-syntax": [
-        "error",
-        {
-          selector: "JSXAttribute[name.name='style'] MemberExpression[object.name='tokens']",
-          message: "규칙 3 — 토큰을 inline style 로 주입 금지. .css.ts 의 className 으로 옮겨라.",
-        },
-        {
-          selector: "Literal[value=/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/]",
-          message: "규칙 1 — raw hex 금지.",
-        },
-      ],
-    },
+    plugins: { "token-boundaries": tokenBoundaries },
+    rules: { "token-boundaries/no-inline-tokens": "error" },
+  },
+
+  {
+    files: ["packages/paper-ui/src/{atoms,primitives}/**/*.css.ts"],
+    rules: { "token-boundaries/no-raw-geometry": "error" },
   },
 
 ];

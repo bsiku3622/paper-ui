@@ -11,8 +11,9 @@ import {
 import { joinClass } from "../internal/joinClass";
 import { resolveControlTypography } from "../resolvers";
 import type { ControlSize, TextVariant } from "../tokens";
-import { selectRoot, selectSize, selectFontSize, selectPill } from "./Select.css";
+import { selectRoot, selectSize, selectFontSize, selectPill, selectWrap, selectArrow } from "./Select.css";
 
+// className/style target the visible wrapper; ref and native attributes target select.
 export type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "className" | "children" | "size"> & {
   children: ReactNode;
   size?: ControlSize;
@@ -22,25 +23,28 @@ export type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "classNa
 };
 
 const SelectRoot = forwardRef<HTMLSelectElement, SelectProps>(function SelectRoot(
-  { children, size = "md", fontSize, shape = "rounded", className, onPointerDown, onBlur, ...rest },
+  { children, size = "md", fontSize, shape = "rounded", className, style, onPointerDown, onBlur, ...rest },
   ref,
 ) {
   return (
-    <select
-      ref={ref}
-      onPointerDown={(event) => {
-        event.currentTarget.dataset.puiPointerFocus = "true";
-        onPointerDown?.(event);
-      }}
-      onBlur={(event) => {
-        delete event.currentTarget.dataset.puiPointerFocus;
-        onBlur?.(event);
-      }}
-      className={joinClass(selectRoot, selectSize[size], resolveControlTypography("field", size), fontSize && selectFontSize[fontSize], shape === "pill" && selectPill, className)}
-      {...rest}
-    >
-      {children}
-    </select>
+    <span style={style} className={joinClass(selectWrap, selectSize[size], resolveControlTypography("field", size), fontSize && selectFontSize[fontSize], shape === "pill" && selectPill, className)}>
+      <select
+        ref={ref}
+        onPointerDown={(event) => {
+          event.currentTarget.dataset.puiPointerFocus = "true";
+          onPointerDown?.(event);
+        }}
+        onBlur={(event) => {
+          delete event.currentTarget.dataset.puiPointerFocus;
+          onBlur?.(event);
+        }}
+        className={selectRoot}
+        {...rest}
+      >
+        {children}
+      </select>
+      <svg className={selectArrow} viewBox="0 0 12 8" aria-hidden="true" focusable="false"><path d="M1 1.5 6 6.5 11 1.5" /></svg>
+    </span>
   );
 });
 

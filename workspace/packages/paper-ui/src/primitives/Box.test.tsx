@@ -8,9 +8,9 @@ describe("Box layout props", () => {
   it("named dimensions는 layout token으로 해석한다", () => {
     render(<Box data-testid="box" width="md" maxWidth="xl" height="sm" overflow="auto" />);
     const box = screen.getByTestId("box");
-    expect(box.style.width).toBe(tokens.shape.width.md.layout);
-    expect(box.style.maxWidth).toBe(tokens.shape.width.xl.layout);
-    expect(box.style.height).toBe(tokens.shape.height.sm.layout);
+    expect(box.style.width).toBe(tokens.layout.width.md);
+    expect(box.style.maxWidth).toBe(tokens.layout.width.xl);
+    expect(box.style.height).toBe(tokens.layout.height.sm);
     expect(box.style.overflow).toBe("auto");
   });
 

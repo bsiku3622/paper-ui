@@ -62,8 +62,8 @@ const AppMockup = () => {
 
       <div className="home-mockup-body">
         <aside className="home-mockup-side">
-          <Inline gap="sm" align="center" style={{ paddingInline: tokens.shape.padding.sm.interaction }}>
-            <Box style={{ width: "1.5rem", height: "1.5rem", borderRadius: tokens.shape.radius.interaction, background: tokens.color.ink.primary, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Inline gap="sm" align="center" style={{ paddingInline: tokens.shape.space.sm }}>
+            <Box style={{ width: "1.5rem", height: "1.5rem", borderRadius: tokens.shape.radius.control, background: tokens.color.ink.primary, display: "flex", alignItems: "center", justifyContent: "center" }}>
               <Text variant="caption" as="span" style={{ color: tokens.color.bg.canvas, fontWeight: tokens.text.palette.weight.bold }}>S</Text>
             </Box>
             <Text variant="subheading" as="span">Studio</Text>
@@ -112,14 +112,14 @@ const AppMockup = () => {
             </Inline>
           </Stack>
 
-          <Box style={{ padding: tokens.shape.padding.md.interaction }}>
+          <Box style={{ padding: tokens.shape.space.md }}>
             <Box as="table" style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
-              <Box as="thead"><Box as="tr">{["키", "이슈", "담당", "상태"].map((label) => <Box as="th" key={label} style={{ padding: tokens.shape.padding.sm.interaction, color: tokens.color.ink.tertiary, borderBottom: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }}>{label}</Box>)}</Box></Box>
+              <Box as="thead"><Box as="tr">{["키", "이슈", "담당", "상태"].map((label) => <Box as="th" key={label} style={{ padding: tokens.shape.space.sm, color: tokens.color.ink.tertiary, borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>{label}</Box>)}</Box></Box>
               <Box as="tbody">{ISSUES.map((issue) => <Box as="tr" key={issue.id}>
-                <Box as="td" style={{ padding: tokens.shape.padding.sm.interaction, borderBottom: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }}><Text variant="caption" family="mono" as="span" ink="soft">{issue.key}</Text></Box>
-                <Box as="td" style={{ padding: tokens.shape.padding.sm.interaction, borderBottom: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }}>{issue.title}</Box>
-                <Box as="td" style={{ padding: tokens.shape.padding.sm.interaction, borderBottom: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }}><Text variant="caption" as="span" ink="soft">{issue.who}</Text></Box>
-                <Box as="td" style={{ padding: tokens.shape.padding.sm.interaction, borderBottom: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }}><Badge accent={issue.status}>{issue.label}</Badge></Box>
+                <Box as="td" style={{ padding: tokens.shape.space.sm, borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}><Text variant="caption" family="mono" as="span" ink="soft">{issue.key}</Text></Box>
+                <Box as="td" style={{ padding: tokens.shape.space.sm, borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>{issue.title}</Box>
+                <Box as="td" style={{ padding: tokens.shape.space.sm, borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}><Text variant="caption" as="span" ink="soft">{issue.who}</Text></Box>
+                <Box as="td" style={{ padding: tokens.shape.space.sm, borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}><Badge accent={issue.status}>{issue.label}</Badge></Box>
               </Box>)}</Box>
             </Box>
           </Box>
@@ -137,7 +137,7 @@ export const Home = () => (
       <Box style={{ maxWidth: tokens.layout.container.content, marginInline: "auto", width: "100%" }}>
         {/* ── Hero ─────────────────────────────────────────────── */}
         <div className="home-hero">
-          <Inline gap="sm" align="center" style={{ marginBottom: tokens.shape.gap.lg }}>
+          <Inline gap="sm" align="center" style={{ marginBottom: tokens.shape.space.lg }}>
             <Badge accent="info">Studio Baeks</Badge>
             <Text variant="caption" ink="soft">Design System · v0.1.0</Text>
           </Inline>
@@ -152,12 +152,12 @@ export const Home = () => (
           </Text>
 
           {/* Both actions navigate, so Button renders the router link directly. */}
-          <Inline gap="sm" style={{ marginTop: tokens.shape.gap.xl }}>
+          <Inline gap="sm" style={{ marginTop: tokens.shape.space.xl }}>
             <Button as={Link} to="/docs" size="lg" shape="pill" style={{ textDecoration: "none" }}>
               문서 읽기
             </Button>
             <Button as={Link} to="/playground" size="lg" variant="hairline" shape="pill" style={{ textDecoration: "none" }}>
-              Foundations 살펴보기
+              Playground 살펴보기
             </Button>
           </Inline>
         </div>
@@ -165,7 +165,7 @@ export const Home = () => (
         {/* ── 완전한 앱 목업 ──────────────────────────────────────── */}
         <AppMockup />
 
-        <Inline gap="sm" align="center" wrap style={{ paddingBlock: tokens.shape.padding.lg.layout }}>
+        <Inline gap="sm" align="center" wrap style={{ paddingBlock: tokens.layout.padding.lg }}>
           <Text variant="caption" ink="soft">갤러리가 아니라 실제 화면(이슈 트래커)으로 검증합니다.</Text>
           <Link to="/demo" style={{ textDecoration: "none" }}>
             <Text variant="caption" as="span" className="pui-info-ink" style={{ fontWeight: tokens.text.palette.weight.medium }}>데모 열기 →</Text>
@@ -173,7 +173,7 @@ export const Home = () => (
         </Inline>
 
         {/* ── 푸터 ────────────────────────────────────────────────── */}
-        <Box as="footer" style={{ borderTop: `1px solid ${tokens.color.border.base}`, marginTop: tokens.shape.gap.lg, paddingBlock: "1.5rem 2.5rem" }}>
+        <Box as="footer" style={{ borderTop: `1px solid ${tokens.color.border.base}`, marginTop: tokens.shape.space.lg, paddingBlock: "1.5rem 2.5rem" }}>
           <Inline justify="between" align="center" wrap gap="md">
             <Logo height={18} style={{ opacity: 0.7 }} />
             <Inline gap="md" wrap align="center">

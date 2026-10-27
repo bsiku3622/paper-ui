@@ -8,7 +8,7 @@
     "build": "pnpm --filter @studio-baeks/paper-ui build",
     "typecheck": "pnpm -r typecheck",
     "lint": "eslint packages app --max-warnings 0",
-    "test": "pnpm -r test",
+    "test": "node --test eslint-rules/*.test.js && pnpm -r test",
     "test:e2e": "playwright test"
   },
   "devDependencies": {

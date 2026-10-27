@@ -4,7 +4,7 @@
 
 ## 트리를 한 번 걷는다
 
-`shape` · `text` · `motion` · `layout`은 각자 한 values tree를 갖습니다. 색은 **OKLCH Palette → generated HEX Palette Tokens → semantic systems** 순서로 만듭니다. `walkValues`와 `buildVarTree`는 마지막 semantic tree를 걸어 CSS 변수와 컴포넌트 참조 객체를 함께 만듭니다. 색의 네 단계는 [색 아키텍처](color-architecture.md)가 정본입니다.
+`shape` · `text` · `motion` · `layout`은 각자 한 values tree를 갖습니다. 색은 **OKLCH Palette → generated HEX Palette Tokens → semantic systems** 순서로 만듭니다. `walkValues`와 `buildVarTree`는 마지막 semantic tree를 걸어 CSS 변수와 컴포넌트 참조 객체를 함께 만듭니다. 색의 네 단계는 [색 아키텍처](color-architecture.md)가 정본입니다. Shape은 별도의 Palette와 공통 역할, 내부 geometry recipe를 사용하며 파생식은 소비 요소의 class에서 평가합니다. 구조와 이관 규칙은 [Shape architecture](shape-architecture.md)에 있습니다.
 
 ```
 palette.ts (L0 OKLCH source)
@@ -34,6 +34,10 @@ styles/color.css.ts  ── ACCENTS × VARIANTS 를 loop ──┘  (그 클래�
 
 `resolveAccent("error", "solid")`가 `"pui-a-error-solid"`를 돌려주고, 그 클래스가 무엇인지(background·color·border)는 `styles/color.css.ts`가 같은 `ACCENTS × VARIANTS` 배열을 걸어 굳힙니다. 면은 색과 다른 종류라 resolver도 따로입니다 — `resolveSurface(surface)` → `"pui-surface-raised"`. 두 자리가 한 배열을 돌기 때문에 resolver가 만들 수 있는 모든 이름에 대응하는 규칙이 반드시 있습니다 — 조합이 빠지거나 어긋날 수 없습니다. shared accent hover는 `.pui-interactive` gate가 함께 있을 때만 물고, Form atoms의 border/focus와 선택 가능한 행의 우선순위는 각 소비자가 소유합니다. 전체 계약은 [Interaction](interaction.md)에 고정합니다.
 
+## Primitive 기반
+
+Primitives는 Layout(Box·Stack·Inline·Grid), Content(Text·Icon), Interaction(Pressable·Hoverable·Toggleable·Draggable·Droppable·ToggleGroup·Overlay), A11y(FocusScope·VisuallyHidden·RovingFocus·FormField)로 나뉩니다. 행동과 그룹 상태·입력 관계는 hook으로도 조립합니다. Paper는 공개 API와 native ref·상태 연결을 소유하고, React Aria가 입력 정규화·포커스·Overlay·native drag and drop을 처리합니다. MergeProps·mergeRefs·composeEventHandlers는 같은 DOM에 행동을 연결하는 도구입니다. 전체 계약과 예시는 [Primitives](../components/primitives.md)에 있습니다.
+
 ## 패키지 경계
 
 ```
@@ -50,7 +54,8 @@ Atom에도 `as`가 있지만(`<Button as={Link} to="/docs">`) 그건 raw 태그�
 
 1. **raw 색값 금지** — OKLCH source는 `tokens/palette.ts`, HEX 생성과 gamut mapping은 `tokens/color-ladder.ts`에만 둡니다. 소비처는 `tokens.color.X`만 참조하고 runtime color math를 하지 않습니다.
 2. **color layer import 격리** — palette·ladder·semantic VALUES는 component·resolver·app에서 import하지 않습니다.
-3. **inline style로 토큰 주입 금지** — `.css.ts`의 className으로만 적용합니다.
+3. **패키지의 inline style로 토큰 주입 금지** — 내부 스타일은 `.css.ts`의 className으로 적용합니다. 호출자가 제공한 style과 Box의 dimension escape는 유지합니다.
+4. **컴포넌트의 고정 geometry literal 금지** — Primitive·Atom stylesheet의 길이는 공통 역할이나 private recipe에서 선택합니다. 0·100%·정렬 같은 구조적 CSS는 소비처에 둡니다.
 ## 검증
 
 데모(이슈 트래커)는 Primitive와 Atom을 실제 화면에 조합해 보는 자리입니다. Playground는 Palette와 Foundations 값을 표시합니다. 제품 조합은 별도의 라이브러리 카탈로그에 포함하지 않습니다.

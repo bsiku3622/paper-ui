@@ -39,7 +39,7 @@ const ThemeToggle = () => {
 export const SITE_NAV = [
   { to: "/", label: "홈" },
   { to: "/demo", label: "데모" },
-  { to: "/playground", label: "기초" },
+  { to: "/playground", label: "플레이그라운드" },
   { to: "/docs", label: "문서" },
 ] as const;
 
@@ -60,15 +60,15 @@ export const SiteNav = () => {
   const { pathname } = useLocation();
   const active = SITE_NAV.find((n) => isActive(pathname, n.to))?.to;
   return (
-    <Box as="header" style={{ position: "sticky", top: 0, zIndex: tokens.layout.z.sticky, height: NAV_HEIGHT, background: tokens.color.bg.canvas, borderBottom: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }}>
-      <Inline align="center" gap="lg" style={{ maxWidth: tokens.layout.container.content, height: "100%", paddingInline: tokens.shape.padding.md.layout, marginInline: "auto" }}>
+    <Box as="header" style={{ position: "sticky", top: 0, zIndex: tokens.layout.z.sticky, height: NAV_HEIGHT, background: tokens.color.bg.canvas, borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
+      <Inline align="center" gap="lg" style={{ maxWidth: tokens.layout.container.content, height: "100%", paddingInline: tokens.layout.padding.md, marginInline: "auto" }}>
         <Brand />
-        <Box as="nav" aria-label="주요 메뉴" style={{ display: "flex", alignItems: "center", gap: tokens.shape.gap.sm, flex: 1 }}>
-          {SITE_NAV.map((n) => <Link key={n.to} to={n.to} aria-current={active === n.to ? "page" : undefined} style={{ color: active === n.to ? tokens.color.ink.primary : tokens.color.ink.secondary, textDecoration: "none", padding: `${tokens.shape.padding.xs.interaction} ${tokens.shape.padding.sm.interaction}` }}>{n.label}</Link>)}
+        <Box as="nav" aria-label="주요 메뉴" style={{ display: "flex", alignItems: "center", gap: tokens.shape.space.sm, flex: 1 }}>
+          {SITE_NAV.map((n) => <Link key={n.to} to={n.to} aria-current={active === n.to ? "page" : undefined} style={{ color: active === n.to ? tokens.color.ink.primary : tokens.color.ink.secondary, textDecoration: "none", padding: `${tokens.shape.space.xs} ${tokens.shape.space.sm}` }}>{n.label}</Link>)}
         </Box>
         <Inline gap="sm" align="center">
           <ThemeToggle />
-          <Box surface="sunken" radius="full" paddingX="sm" paddingY="xs" style={{ border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}` }}>
+          <Box surface="sunken" radius="full" paddingX="sm" paddingY="xs" style={{ border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
             <Text variant="caption" as="span" ink="soft" style={{ fontVariantNumeric: "tabular-nums" }}>v0.1.0</Text>
           </Box>
         </Inline>

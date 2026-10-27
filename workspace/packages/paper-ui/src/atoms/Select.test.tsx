@@ -1,4 +1,5 @@
-import { render, screen, within } from "@testing-library/react";
+import { createRef } from "react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { Select } from "./Select";
@@ -19,5 +20,20 @@ describe("Select", () => {
     expect(within(select).getAllByRole("option")).toHaveLength(3);
     expect(screen.getByRole("group", { name: "추가 옵션" })).toBeTruthy();
     expect(screen.getByRole("option", { name: "옵션 B" }).hasAttribute("disabled")).toBe(true);
+  });
+
+  it("ref와 폼 속성은 native select, className과 style은 wrapper로 전달한다", () => {
+    const ref = createRef<HTMLSelectElement>();
+    render(<form aria-label="form"><Select ref={ref} name="choice" aria-label="choice" className="custom-select" style={{ width: 240 }} defaultValue="a">
+      <Select.Option value="a">A</Select.Option>
+      <Select.Option value="b">B</Select.Option>
+    </Select></form>);
+    const select = screen.getByRole("combobox", { name: "choice" });
+    expect(ref.current).toBe(select);
+    expect(select.parentElement!.classList.contains("custom-select")).toBe(true);
+    expect(select.parentElement!.style.width).toBe("240px");
+    fireEvent.change(select, { target: { value: "b" } });
+    expect(new FormData(screen.getByRole("form") as HTMLFormElement).get("choice")).toBe("b");
+    expect(select.parentElement!.querySelector("svg")!.getAttribute("aria-hidden")).toBe("true");
   });
 });

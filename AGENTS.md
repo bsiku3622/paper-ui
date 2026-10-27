@@ -66,38 +66,25 @@ semantic color는 surface·ink·border·accent·interaction·overlay·shadow 역
 
 Accent status는 palette와 분리합니다: info→blue, success→green, warning→amber, error→red. Accent는 같은 다섯 role을 공유합니다. `solid`는 채움, `wash`는 채움 위 글자, `ink`는 soft·hairline·ghost와 의미색 글자, `soft`는 soft surface, `subtle`은 muted foreground에 씁니다.
 
-focus ring 색은 `interaction.focus`에 둡니다. focus는 상호작용 상태이고 색도 Palette Token에서 오기 때문입니다. 링 두께·offset은 색이 아닌 geometry이므로 `shape.constants.focusRingWidth`와 shape 상수에 둡니다. Scrim은 `overlay.scrim`, shadow tint는 `shadow.overlay`와 `shadow.overlayMinimal`에 두고, 거리·blur·spread는 shape geometry로 둡니다. Semantic Form hover glow는 사용하지 않습니다.
+focus ring 색은 `interaction.focus`에 둡니다. focus는 상호작용 상태이고 색도 Palette Token에서 오기 때문입니다. 링 두께·offset은 색이 아닌 geometry이므로 `shape.focus.width`와 `shape.focus.offset`에 둡니다. Scrim은 `overlay.scrim`, shadow tint는 `shadow.overlay`와 `shadow.overlayMinimal`에 두고, 거리·blur·spread는 shape geometry로 둡니다. Semantic Form hover glow는 사용하지 않습니다.
 
 색을 바꾸면 docs/foundations/color-architecture.md와 Palette·Tokens Playground를 함께 확인합니다. API 경로와 source 규칙을 동시에 갱신합니다.
 
 ## 형태
 
-- **radius 는 날만 죽인다** — `interaction` 단일 4 · `layout` sm 4 / md 6 / lg 8 · `full` 999.
-  `full`은 pill silhouette에 쓰는 별도 값이다. 큰 곡선이 밀도와 싸우지 않도록 layout 곡선은
-  세 단계에서 멈춘다. 소비처가 없는 값은 실제 사용 사례가 생길 때 다시 검토한다.
-- **회색은 받친다** — 면은 뉴트럴 경계와 배경으로 구조를 만듭니다. `control.track`은 Switch 내부 트랙에만
-  구조를 받치는 더 깊은 면입니다. 같은 깊이의 회색 위에 같은 회색을 겹치지 않습니다.
-- **shadow 는 2 단 토큰(elevation 축 아님)** — 떠 있는 것만 지속 그림자를 갖는다. `overlay` ·
-  `overlayMinimal`(작은 조작 요소). 붙어있는 면은 그림자 없음(prop 을 안 준다). 다크에선 near-black 이 사라지므로 더 짙은 그림자로
-  교체(테마 인식). `raised` 는 이제 surface color 지 그림자가 아니다(옛 elevation.raised 충돌 해소).
-  semantic Form hover의 중앙 pigment shadow는 상태를 보이는 일시적 예외다.
-- **hover 는 조용히** — 면은 interaction 오버레이로 한 단 움직인다. neutral Form은 면을 흔들지
-  않고 `primary.base` solid 선으로 올라가고, semantic Form만 같은 accent의 중앙 shadow를 더한다.
-- **밀도** — 간격(Space) 5단(4px 배수 xs4~xl24)과 컨트롤 크기(ControlSize) 3단(sm·md·lg)을 분리한다. control size는 Shape의 height·padding과 Typography의 `text.control.<preset>.<size>` 중 해당 preset을 함께 선택한다. control 높이 sm/md/lg 30/32/36.
-  가로 여백은 **라벨과 값이 갈린다** — 버튼은 `controlPaddingX` 10/11/14, 입력칸은
-  `inputPaddingX` 7/8/10. Field·Select·Textarea의 보이는 잉크가 사방 같은 거리다. md는 32px 높이와 13px 글자를 유지하고, 가로는 `border 1 + padding 8 = 9`이다. Textarea의 `textareaPaddingY`는
-  3.5/4.5/7 = 가로 − (textarea leading − 글자 크기) / 2이다. 분모는 글자 크기가 아니라 **줄상자**다 — 브라우저가
-  세로 가운데 두는 게 줄상자라, 이 산식이라야 Textarea 첫 줄이 Field 와 같은 자리에 앉는다.
-  Badge 는 컨트롤이 아니라 자기 축 `badgePaddingX` 6/8/10 을 쓴다(높이 20/22/24 와 같은 Δ2).
-  **Box 여백 사다리(8/12/16)를 컨트롤에 빌려 쓰지 말 것** — 비가 눌려 답답해지고 형제와 1~2px 어긋난다.
-  Button·Field·Select·Textarea 가 `internal/sizeLadder` 를 공유한다(Link 는 글자라 제외).
-  ⚠ **공유하는 건 height 와 글자고, 벗어나는 축은 통로로 나간다** — `ladderRules(patch)`.
-  인자 없으면 베이스 그대로, 키를 돌려주면 그 축만 교체, `null` 이면 그 축을 뺀다(Textarea height).
-  사다리를 손으로 베끼지 말 것 — Select 가 그래서 갈라졌다.
-  작은 표식은 따로 묶인다 — `icon` 16/18/20(**아트보드**지 잉크가 아니다. viewBox 24 안에서
-  path 는 18~20 만 채워 잉크는 75~83%. 그래서 Checkbox 와 같은 16 이면 아이콘만 작아 보인다),
-  `checkbox` 15/16/18, `switch` 손잡이 = checkbox − 2 → 트랙 = checkbox + 2, 이동 = w − h.
-  Badge 는 자기 높이 사다리(20/22/24)를 쓰되 **글자는 12 고정** — 컨트롤 14 와 같은 규칙, 다른 tier.
+Shape은 `shape-palette.ts` 원본 수치 → `shape.ts` 공통 역할 → `shape-recipes.ts` 내부 anatomy → `.css.ts` className 순서입니다. 전체 경로와 단위·이관 계약은 [docs/foundations/shape-architecture.md](docs/foundations/shape-architecture.md)를 따릅니다.
+
+- 공개 역할은 `space · radius · stroke · focus · control · selection · icon · shadow`입니다. `space`는 gap/padding 공통 5단(4/8/12/16/24), control은 별도 3단(sm/md/lg)입니다.
+- radius는 날만 죽입니다. `radius.control` 4, `radius.surface` sm4/md6/lg8, `full` 999입니다. Box radius는 surface를 선택하며 control과 독립적입니다.
+- control 높이는 30/32/36, button inset은 10/11/14, input inset은 7/8/10입니다. Box 여백을 컨트롤에 빌리지 않습니다. `internal/shape.ts`의 typed `controlGeometry`에서 역할을 선택하고 임의 patch 사다리는 만들지 않습니다.
+- Textarea block inset은 `input inset − (leading − font size) / 2`로 3.5/4.5/7을 계산합니다. 최소 높이 96은 Textarea recipe가 소유합니다.
+- 공통 `selection.size` 15/16/18에서 Checkbox·Radio 외곽과 Switch geometry를 고릅니다. Checkbox mark와 Radio dot의 sm 0.5px 광학 보정은 각자의 recipe입니다. Switch는 thumb=selection−2, track height=selection+2, width=thumb×2+4, travel=width−height입니다.
+- Badge 높이20/22/24·inset6/8/10과 spinner artboard16/18/20은 private recipe입니다. Icon은 공개 크기 이름 label/caption/body/heading3와 artboard14/16/18/20을 유지합니다. 아이콘 path의 잉크와 artboard 크기는 다릅니다.
+- 내부 원본 geometry는 private `--pui-geometry-*` 변수로 emit합니다. 파생 calc는 실제 소비 요소에서 평가해 중첩 공통 토큰 override를 반영합니다. `:root`에 파생식을 미리 조립하지 않습니다.
+- 면의 width/height/measure/block padding은 Layout 책임입니다. Box의 named dimension은 `tokens.layout`으로 해석하고, Box padding prop은 `shape.space`를 선택합니다.
+- shadow는 `overlay · overlayMinimal` 두 역할입니다. 떠 있는 것만 지속 그림자를 가지며 tint는 semantic Color, geometry는 Shape가 소유합니다. 회색은 구조를 받치며 `color.control.track`은 Switch 내부 트랙에 사용합니다.
+- 패키지 내부에서는 canonical 경로만 사용합니다. `shape-legacy.ts`의 기존 JS/CSS 경로는 호환용이며 새 기능의 source로 사용하지 않습니다. 새 override는 canonical 변수에 적용합니다.
+- Select는 native select와 decorative SVG를 wrapper 안에 둡니다. ref와 폼 속성은 native select, className/style은 보이는 wrapper에 전달합니다. 화살표는 semantic ink를 사용합니다.
 
 상위 화면 조합과 그 prop 축은 현재 패키지 API에 포함하지 않습니다. 실제 제품에서 반복되는 요구가 생기면 공통 책임과 축을 먼저 설계합니다.
 
@@ -134,16 +121,25 @@ Tokens → Primitives → Atoms
 
 | 레이어 | 수 | |
 |---|---|---|
-| Primitives | 5 | `Box · Stack · Inline · Text · Icon` |
+| Layout | 4 | `Box · Stack · Inline · Grid` |
+| Content | 2 | `Text · Icon` |
+| Interaction | 7 | `Pressable · Hoverable · Toggleable · Draggable · Droppable · ToggleGroup · Overlay` |
+| A11y | 4 | `FocusScope · VisuallyHidden · RovingFocus · FormField` |
 | Atoms | 13 | `Button · IconButton · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Spinner · Divider · Link` |
 
 패키지는 Primitive와 Atom만 공개합니다. 제품별 조합은 앱이 소유하고, 여러 제품에서 반복된 뒤에만 공통 API로 승격합니다.
+
+RovingFocus는 등록 항목의 Tab 진입점과 실제 DOM focus 탐색을 관리하며 선택과 분리합니다. ToggleGroup은 toggle button 그룹의 단일·복수 선택이고 다른 위젯의 role을 대체하지 않습니다. Overlay는 Trigger·Content·Close를 연결하며 기본 non-modal dialog, modal opt-in입니다. React Aria가 Portal·배치·중첩 dismissal·배경 inert·스크롤 잠금을 담당합니다. FormField/useField는 기존 Field Atom을 유지하면서 native label·설명·오류 ID를 연결합니다. 합성 도구 mergeProps는 additive handler 병합, composeEventHandlers는 caller preventDefault에 의한 내부 handler 취소, mergeRefs는 같은 DOM ref 연결입니다. 새 공통 상태·입력 관계 API도 Playground와 문서·실제 브라우저 검증을 함께 갱신합니다.
+
+Primitive 계약의 정본은 [docs/components/primitives.md](docs/components/primitives.md)입니다. 기존 Layout·Content props를 유지하고 native ref를 전달합니다. Interaction은 컴포넌트와 usePress/useHover/useToggle/useDrag/useDrop을 함께 제공하고, FocusScope·VisuallyHidden·focus hook은 A11y에 둡니다. press는 일시적 입력, toggle은 유지되는 boolean 선택입니다. Draggable은 move/transfer 모드를 구분하며 Handle은 부모 전체 박스를 조작합니다. handle activation에서는 pointer·keyboard 모두 손잡이에서만 시작합니다. Move 좌표·Grid track은 runtime 값이므로 inline style을 사용하지만 semantic 토큰은 기존 class 경로를 유지합니다. 저수준 입력·포커스·native transfer 처리는 React Aria를 재사용합니다. 기존 Atom을 자동으로 새 행동 컴포넌트로 교체하지 않습니다.
 
 1. **raw 색값 금지** — surface hex는 `tokens/palette.ts`, accent hex·OKLCH는 `tokens/color-ladder.ts`에만. 소비처는 `tokens.color.X`로만 참조.
 2. **color layer import 격리** — palette·ladder·semantic VALUES는 consumer에서 import 금지. `/playground/palette` Foundations inspector만 허용된 source 예외입니다.
 3. **inline style 로 토큰 주입 금지** — package 스타일은 `.css.ts` className 으로만 토큰을 적용합니다.
 
-세 규칙은 **eslint 가** 막습니다 (문서가 아니라 빌드가).
+Primitive·Atom stylesheet의 고정 geometry literal도 semantic 역할이나 private recipe로 옮깁니다. 0·100%·정렬·회전 같은 구조적 CSS는 컴포넌트가 소유합니다.
+
+네 규칙은 **eslint 가** 막습니다 (문서가 아니라 빌드가).
 
 **접근성도 빌드가 지킵니다.** `eslint-plugin-jsx-a11y`(recommended)를 `polymorphicPropName:"as"`로 설정해 `<Box as="button">` 같은 polymorphic 요소까지 검사합니다. 유효한 role·aria, 대체텍스트, 양수 tabindex 금지 등을 lint하며, 폼 아톰은 `label-has-associated-control`의 `controlComponents`에 등록합니다. 상호작용별 runtime 계약은 실제 제품 구현과 검토가 책임집니다.
 

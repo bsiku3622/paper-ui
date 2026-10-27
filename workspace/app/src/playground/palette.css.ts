@@ -6,10 +6,10 @@ globalStyle(".palette-page", { maxWidth: "100%" });
 
 globalStyle(".palette-grid", {
   display: "grid",
-  gap: tokens.shape.gap.xs,
+  gap: tokens.shape.space.xs,
   minWidth: 0,
   overflowX: "auto",
-  paddingBottom: tokens.shape.padding.xs.layout,
+  paddingBottom: tokens.layout.padding.xs,
 });
 
 globalStyle(".palette-grid--neutral", {
@@ -24,7 +24,7 @@ globalStyle(".palette-cell", { minWidth: 0 });
 
 globalStyle(".palette-swatch", {
   width: "100%",
-  height: tokens.shape.height.xs.layout,
+  height: tokens.layout.height.xs,
   boxSizing: "border-box",
   flexShrink: 0,
 });
@@ -36,6 +36,6 @@ globalStyle(".palette-cell > :last-child", {
 globalStyle(".palette-interaction-grid", {
   display: "grid",
   gridTemplateColumns: "repeat(auto-fit, minmax(8rem, 1fr))",
-  gap: tokens.shape.gap.lg,
+  gap: tokens.shape.space.lg,
   minWidth: 0,
 });
