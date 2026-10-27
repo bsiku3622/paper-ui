@@ -4,7 +4,7 @@
 
 ## 트리를 한 번 걷는다
 
-`shape` · `text` · `motion` · `layout`은 각자 한 values tree를 갖습니다. 색은 **OKLCH Palette → generated HEX Palette Tokens → semantic systems** 순서로 만듭니다. `walkValues`와 `buildVarTree`는 마지막 semantic tree를 걸어 CSS 변수와 컴포넌트 참조 객체를 함께 만듭니다. 색의 네 단계는 [색 아키텍처](color-architecture.md)가 정본입니다. Shape은 별도의 Palette와 공통 역할, 내부 geometry recipe를 사용하며 파생식은 소비 요소의 class에서 평가합니다. 구조와 이관 규칙은 [Shape architecture](shape-architecture.md)에 있습니다.
+`shape` · `text` · `motion` · `layout`은 각자 한 values tree를 갖습니다. 색은 **OKLCH Palette → generated HEX Palette Tokens → semantic systems** 순서로 만듭니다. `walkValues`와 `buildVarTree`는 마지막 semantic tree를 걸어 CSS 변수와 컴포넌트 참조 객체를 함께 만듭니다. 색의 네 단계는 [색 아키텍처](color-architecture.md)가 정본입니다. Shape과 Layout은 원본만 변수로 굽고, 역할은 그 변수의 별칭이거나 소비 요소의 class에서 계산되는 식입니다. 규칙은 [Shape](shape.md)과 [Layout](layout.md)에 있습니다.
 
 ```
 palette.ts (L0 OKLCH source)

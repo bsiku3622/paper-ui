@@ -21,12 +21,12 @@ Size는 geometry를 선택하고 typography는 역할별 preset에서 선택합�
 
 | 컴포넌트 | 책임과 공개 축 | 기본값·적용 계약 |
 | --- | --- | --- |
-| Box | `as`, surface, padding / paddingX / paddingY / gap, border, radius, shadow, inverse, width / minWidth / maxWidth / height / minHeight / maxHeight, overflow / overflowX / overflowY | div. 면·간격·모서리는 opt-in. radius=sm/md/lg/full은 surface radius 선택. shadow=overlay/overlayMinimal. inverse는 주변 반대 테마. dimension은 Space 이름·full/fit/min-content/max-content·CSS 길이·number 허용 |
+| Box | `as`, surface, padding / paddingX / paddingY / gap, border, radius, elevation, inverse, width / minWidth / maxWidth / height / minHeight / maxHeight, overflow / overflowX / overflowY | div. 면·간격·모서리는 opt-in. radius=sm/md/lg/full은 surface radius 선택. elevation=raised/sticky/overlay/modal/toast는 z와 그림자를 함께 선택. inverse는 주변 반대 테마. padding은 Shape inset, gap은 Layout gap 단계(xs~3xl). dimension은 xs~xl 이름·full/fit/min-content/max-content·CSS 길이·number 허용 |
 | Grid | Box 전체 축 + columns/rows, autoFlow, align/justify, rowGap/columnGap | columns=1, align/justify=stretch. 정수 또는 CSS track 문자열 |
 | Stack | Box 전체 축 + `align` start/center/end/stretch | 세로 flex, align 미지정 시 CSS stretch. gap은 명시적으로 선택 |
 | Inline | Box 전체 축 + `align` start/center/end/baseline, `justify` start/center/end/between, `wrap` | 가로 flex, align=center, justify 미지정, nowrap |
 | Text | `as`, variant, ink, family=sans/mono | variant=body, family=sans. 기본 태그는 display/title=h1, heading=h2, subheading=h3, body/caption=p, label=span. HTML 의미와 시각 위계는 별도 선택 |
-| Icon | size=label/caption/body/heading3, ink, SVG children, className, aria-label | size=body. artboard14/16/18/20px, viewBox24, 기본 currentColor. aria-label이 없으면 장식으로 숨김 |
+| Icon | size=label/caption/body/subheading, ink, SVG children, className, aria-label | size=body. artboard14/16/18/20px, viewBox24, 기본 currentColor. aria-label이 없으면 장식으로 숨김 |
 
 Layout·Text·Hoverable은 선택한 native tag의 속성과 ref를 전달합니다. Icon은 native SVG 속성과 ref를 전달합니다. Interaction·A11y의 구체적인 props, hook과 사용 예는 [Primitives](primitives.md)를 따릅니다.
 
