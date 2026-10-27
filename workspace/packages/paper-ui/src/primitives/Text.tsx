@@ -4,7 +4,7 @@
 // 고르는 것이 전부다 — 고를 게 없으면 화면이 저절로 일관된다. 서체만 family 축
 // (sans 기본 · mono)으로 교차한다.
 
-import type { ComponentPropsWithoutRef, ElementType, ReactNode } from "react";
+import { forwardRef, type ComponentPropsWithRef, type ComponentPropsWithoutRef, type ElementType, type ReactElement, type ReactNode } from "react";
 
 import { joinClass } from "../internal/joinClass";
 import { resolveInk, type Ink } from "../resolvers";
@@ -22,7 +22,7 @@ type OwnProps<As extends ElementType> = {
 };
 
 export type TextProps<As extends ElementType = "p"> = OwnProps<As> &
-  Omit<ComponentPropsWithoutRef<As>, keyof OwnProps<As>>;
+  Omit<ComponentPropsWithoutRef<As>, keyof OwnProps<As>> & { ref?: ComponentPropsWithRef<As>["ref"] };
 
 // 시각 위계(variant)와 의미 태그(as)는 직교한다. 기본만 깔아두고 필요하면 as 로 덮는다.
 const DEFAULT_TAG: Record<TextVariant, ElementType> = {
@@ -35,7 +35,7 @@ const DEFAULT_TAG: Record<TextVariant, ElementType> = {
   label: "span",
 };
 
-export const Text = <As extends ElementType = "p">({
+const TextImpl = forwardRef<HTMLElement, Omit<TextProps, "as" | "ref"> & { as?: ElementType }>(function Text({
   variant = "body",
   ink,
   family,
@@ -43,14 +43,17 @@ export const Text = <As extends ElementType = "p">({
   children,
   className,
   ...rest
-}: TextProps<As>) => {
+}, ref) {
   const Tag = (as ?? DEFAULT_TAG[variant]) as ElementType;
   return (
     <Tag
+      ref={ref}
       className={joinClass(`pui-text-${variant}`, family === "mono" && "pui-mono", resolveInk(ink), className)}
       {...(rest as object)}
     >
       {children}
     </Tag>
   );
-};
+});
+
+export const Text = TextImpl as <As extends ElementType = "p">(props: TextProps<As>) => ReactElement;

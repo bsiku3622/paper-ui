@@ -25,7 +25,7 @@ export type BadgeProps = Omit<HTMLAttributes<HTMLSpanElement>, "className"> & {
   fontSize?: TextVariant;
   // 앞에 작은 색 점(상태 표시자). 글자색(currentColor)을 따른다.
   dot?: boolean;
-  // 실루엣 — rounded 는 시스템 곡선(radius.interaction), pill 은 알약(높이의 절반).
+  // 실루엣 — rounded 는 시스템 곡선(radius.control), pill 은 알약(높이의 절반).
   // Button 과 같은 어휘라 나란히 서는 두 알약이 같은 곡선을 갖는다.
   shape?: "rounded" | "pill";
   children?: ReactNode;

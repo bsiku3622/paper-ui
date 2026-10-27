@@ -29,7 +29,7 @@ globalStyle(".home-headline", {
 });
 
 globalStyle(".home-sub", {
-  marginTop: tokens.shape.gap.lg,
+  marginTop: tokens.shape.space.lg,
   maxWidth: "38rem",
 });
 
@@ -40,8 +40,8 @@ globalStyle(".home-dot", {
 
 // ── 완전한 앱 목업 — 랜딩의 주인공 ────────────────────────────────────────────
 globalStyle(".home-mockup", {
-  borderRadius: tokens.shape.radius.layout.lg,
-  border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
+  borderRadius: tokens.shape.radius.surface.lg,
+  border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`,
   overflow: "hidden",
   background: tokens.color.bg.raised,
   // 제품 목업은 지면 위로 살짝 떠 있다(원칙 4 의 overlay 자리). 카드가 아니라 화면.
@@ -52,9 +52,9 @@ globalStyle(".home-mockup", {
 globalStyle(".home-mockup-bar", {
   display: "flex",
   alignItems: "center",
-  gap: tokens.shape.gap.sm,
+  gap: tokens.shape.space.sm,
   height: "2.6rem",
-  paddingInline: tokens.shape.padding.md.interaction,
+  paddingInline: tokens.shape.space.md,
   // 선 없음 — 면이 이미 나눈다. sunken 인 창 머리와 raised 인 본문 사이엔 톤 차이가 있고,
   // 같은 sunken 인 사이드바와는 애초에 이어져야 하는 자리다.
   background: tokens.color.bg.sunken,
@@ -73,8 +73,8 @@ globalStyle(".home-mockup-body", {
 globalStyle(".home-mockup-side", {
   display: "flex",
   flexDirection: "column",
-  gap: tokens.shape.gap.md,
-  padding: tokens.shape.padding.md.interaction,
+  gap: tokens.shape.space.md,
+  padding: tokens.shape.space.md,
   // 사이드바는 sunken 으로 가라앉는다 — 흰 본문과 대비해 ChatGPT 결(흰 메인 · 회색 사이드바).
   //
   // ⚠ 선을 두르지 않는다. **면이 이미 나눈 자리에 선을 더하면 같은 말을 두 번 한다.**
@@ -102,10 +102,10 @@ globalStyle(".home-nav", {
 globalStyle(".home-navitem", {
   display: "flex",
   alignItems: "center",
-  gap: tokens.shape.gap.sm,
-  height: tokens.shape.height.sm.interaction,
-  paddingInline: tokens.shape.padding.sm.interaction,
-  borderRadius: tokens.shape.radius.interaction,
+  gap: tokens.shape.space.sm,
+  height: tokens.shape.control.height.sm,
+  paddingInline: tokens.shape.space.sm,
+  borderRadius: tokens.shape.radius.control,
   fontSize: tokens.text.style.body.size,
   color: tokens.color.ink.secondary,
 });
@@ -114,11 +114,11 @@ globalStyle(".home-navitem", {
    모아 두면 shape 이 통째로 바꿀 수 있다. */
 globalStyle(".home-filterrow", {
   height: "1.75rem",
-  paddingInline: tokens.shape.padding.sm.interaction,
+  paddingInline: tokens.shape.space.sm,
 });
 
 globalStyle(".home-filterhead", {
-  paddingInline: tokens.shape.padding.sm.interaction,
+  paddingInline: tokens.shape.space.sm,
 });
 
 globalStyle(".home-navitem[data-active='true']", {
@@ -131,6 +131,6 @@ globalStyle(".home-navitem[data-active='true']", {
 globalStyle(".home-facts", {
   display: "flex",
   flexWrap: "wrap",
-  gap: tokens.shape.gap.md,
+  gap: tokens.shape.space.md,
   alignItems: "baseline",
 });

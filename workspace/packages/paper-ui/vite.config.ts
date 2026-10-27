@@ -6,7 +6,7 @@ export default defineConfig({
   build: {
     lib: { entry: "src/index.ts", formats: ["es"], fileName: () => "index.js" },
     rollupOptions: {
-      external: ["react", "react-dom", "react/jsx-runtime"],
+      external: ["react", "react-dom", "react/jsx-runtime", "@react-aria/interactions", "@react-aria/focus", "@react-aria/dnd", "@react-aria/visually-hidden", "@react-aria/utils", "@react-aria/overlays", "@react-stately/overlays"],
       output: { assetFileNames: "paper-ui.css" },
     },
   },

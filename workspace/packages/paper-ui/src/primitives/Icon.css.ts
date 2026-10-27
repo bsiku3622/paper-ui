@@ -10,14 +10,14 @@ export const iconRoot = style({
   flexShrink: 0,
   stroke: "currentColor",
   fill: "none",
-  strokeWidth: tokens.shape.constants.iconStrokeWidth,
+  strokeWidth: tokens.shape.stroke.icon,
   strokeLinecap: "round",
   strokeLinejoin: "round",
 });
 
 export const iconSize = styleVariants({
-  label: { width: tokens.shape.iconTextSize.label, height: tokens.shape.iconTextSize.label },
-  caption: { width: tokens.shape.iconTextSize.caption, height: tokens.shape.iconTextSize.caption },
-  body: { width: tokens.shape.iconTextSize.body, height: tokens.shape.iconTextSize.body },
-  heading3: { width: tokens.shape.iconTextSize.heading3, height: tokens.shape.iconTextSize.heading3 },
+  label: { width: tokens.shape.icon.size.label, height: tokens.shape.icon.size.label },
+  caption: { width: tokens.shape.icon.size.caption, height: tokens.shape.icon.size.caption },
+  body: { width: tokens.shape.icon.size.body, height: tokens.shape.icon.size.body },
+  heading3: { width: tokens.shape.icon.size.heading3, height: tokens.shape.icon.size.heading3 },
 } satisfies Record<IconSize, { width: string; height: string }>);

@@ -271,33 +271,35 @@ export const Tokens = () => {
           </Section>}
 
           {section[0] === "spacing" && <Section id="spacing">
-            <Stack className="foundation-scale" gap="sm">{(["xs", "sm", "md", "lg", "xl"] as const).map((size) => <ValueRow key={size} name={`shape.gap.${size}`} value={tokens.shape.gap[size]} sample={<Box className="foundation-measure" radius="full" style={{ width: tokens.shape.gap[size], height: tokens.shape.gap.xs, background: tokens.color.accent.primary.solid }} />} />)}</Stack>
-            <Inline className="foundation-inline-note" align="baseline" gap="md"><Text variant="subheading">Padding</Text><Text variant="caption" ink="soft">interaction과 layout 맥락에서 별도 scale을 사용합니다.</Text></Inline>
-            <div className="foundation-value-grid">{Object.entries(tokens.shape.padding).flatMap(([size, values]) => Object.entries(values).map(([context, value]) => <ValueRow key={`${size}-${context}`} name={`padding.${size}.${context}`} value={value} />))}</div>
+            <Stack className="foundation-scale" gap="sm">{(["xs", "sm", "md", "lg", "xl"] as const).map((size) => <ValueRow key={size} name={`shape.space.${size}`} value={tokens.shape.space[size]} sample={<Box className="foundation-measure" radius="full" style={{ width: tokens.shape.space[size], height: tokens.shape.space.xs, background: tokens.color.accent.primary.solid }} />} />)}</Stack>
+            <Inline className="foundation-inline-note" align="baseline" gap="md"><Text variant="subheading">Padding</Text><Text variant="caption" ink="soft">공통 Space와 별도로, block padding은 Layout이 소유합니다.</Text></Inline>
+            <div className="foundation-value-grid">{Object.entries(tokens.layout.padding).map(([size, value]) => <ValueRow key={size} name={`layout.padding.${size}`} value={value} />)}</div>
           </Section>}
 
           {section[0] === "sizing" && <Section id="sizing">
-            <Stack className="foundation-subsection" gap="md"><Text variant="subheading">Control height</Text><Inline className="foundation-control-samples" gap="lg" align="end" wrap>{(["sm", "md", "lg"] as const).map((size) => <Stack key={size} gap="xs" align="start"><Box className="foundation-control" border radius="sm" surface="sunken" style={{ height: tokens.shape.height[size].interaction, paddingInline: tokens.shape.controlPaddingX[size] }}><Text variant="body">Aa</Text></Box><Text variant="caption" family="mono" ink="faint">{size} · {val(tokens.shape.height[size].interaction)}</Text></Stack>)}</Inline></Stack>
+            <Stack className="foundation-subsection" gap="md"><Text variant="subheading">Control height</Text><Inline className="foundation-control-samples" gap="lg" align="end" wrap>{(["sm", "md", "lg"] as const).map((size) => <Stack key={size} gap="xs" align="start"><Box className="foundation-control" border radius="sm" surface="sunken" style={{ height: tokens.shape.control.height[size], paddingInline: tokens.shape.control.inset.button[size] }}><Text variant="body">Aa</Text></Box><Text variant="caption" family="mono" ink="faint">{size} · {val(tokens.shape.control.height[size])}</Text></Stack>)}</Inline></Stack>
             <div className="foundation-value-grid">
-              {Object.entries(tokens.shape.icon).map(([name, value]) => <ValueRow key={`icon-${name}`} name={`icon.${name}`} value={value} />)}
-              {Object.entries(tokens.shape.checkbox).map(([name, value]) => <ValueRow key={`checkbox-${name}`} name={`checkbox.${name}.box`} value={value.box} />)}
-              {Object.entries(tokens.shape.switch).map(([name, value]) => <ValueRow key={`switch-${name}`} name={`switch.${name}`} value={`${value.w} × ${value.h}`} />)}
-              {Object.entries(tokens.shape.width).map(([name, value]) => <ValueRow key={`width-${name}`} name={`width.${name}`} value={value.layout} />)}
+              {Object.entries(tokens.shape.icon.size).map(([name, value]) => <ValueRow key={`icon-${name}`} name={`icon.size.${name}`} value={value} />)}
+              {Object.entries(tokens.shape.selection.size).map(([name, value]) => <ValueRow key={`selection-${name}`} name={`selection.size.${name}`} value={value} />)}
+              {Object.entries(tokens.layout.width).map(([name, value]) => <ValueRow key={`width-${name}`} name={`layout.width.${name}`} value={value} />)}
+              {Object.entries(tokens.layout.height).map(([name, value]) => <ValueRow key={`height-${name}`} name={`layout.height.${name}`} value={value} />)}
+              {Object.entries(tokens.layout.measure).map(([name, value]) => <ValueRow key={`measure-${name}`} name={`layout.measure.${name}`} value={value} />)}
               {Object.entries(tokens.layout.breakpoint).map(([name, value]) => <ValueRow key={`bp-${name}`} name={`breakpoint.${name}`} value={value} />)}
               {Object.entries(tokens.layout.container).map(([name, value]) => <ValueRow key={`container-${name}`} name={`container.${name}`} value={value} />)}
               {Object.entries(tokens.layout.sizeIntent).map(([name, value]) => <ValueRow key={`intent-${name}`} name={`sizeIntent.${name}`} value={value} />)}
+              {Object.entries(tokens.shape.control.inset).flatMap(([role, values]) => Object.entries(values).map(([size, value]) => <ValueRow key={`${role}-${size}`} name={`control.inset.${role}.${size}`} value={value} />))}
             </div>
           </Section>}
 
           {section[0] === "radius" && <Section id="radius">
             <div className="foundation-radius-list">{[
-              ["interaction", tokens.shape.radius.interaction], ["layout.sm", tokens.shape.radius.layout.sm], ["layout.md", tokens.shape.radius.layout.md], ["layout.lg", tokens.shape.radius.layout.lg], ["full", tokens.shape.radius.full],
-            ].map(([name, value]) => <Stack key={name as string} gap="sm"><Box className="foundation-radius-sample" border radius={name === "interaction" || name === "full" ? name as "full" : name === "layout.sm" ? "sm" : name === "layout.md" ? "md" : "lg"} surface="sunken" /><Text as="code" variant="caption" family="mono">radius.{name}</Text><Text variant="caption" family="mono" ink="faint">{val(value as string)}</Text></Stack>)}</div>
+              ["control", tokens.shape.radius.control], ["surface.sm", tokens.shape.radius.surface.sm], ["surface.md", tokens.shape.radius.surface.md], ["surface.lg", tokens.shape.radius.surface.lg], ["full", tokens.shape.radius.full],
+            ].map(([name, value]) => <Stack key={name as string} gap="sm"><Box className="foundation-radius-sample" border style={{ borderRadius: value }} surface="sunken" /><Text as="code" variant="caption" family="mono">radius.{name}</Text><Text variant="caption" family="mono" ink="faint">{val(value as string)}</Text></Stack>)}</div>
           </Section>}
 
           {section[0] === "border" && <Section id="border">
             <div className="foundation-border-demo">{(["base", "strong", "hover"] as const).map((key) => <Stack key={key} className="foundation-border-sample" gap="md" surface="raised" border radius="md" padding="md" style={{ borderColor: tokens.color.border[key] }}><Text as="code" variant="caption" family="mono">border.{key}</Text><Text variant="caption" family="mono" ink="faint">{val(tokens.color.border[key])}</Text></Stack>)}</div>
-            <div className="foundation-value-grid"><ValueRow name="shape.constants.borderWidth" value={tokens.shape.constants.borderWidth} /><ValueRow name="shape.constants.focusRingWidth" value={tokens.shape.constants.focusRingWidth} /></div>
+            <div className="foundation-value-grid">{Object.entries(tokens.shape.stroke).map(([name, value]) => <ValueRow key={name} name={`shape.stroke.${name}`} value={value} />)}{Object.entries(tokens.shape.focus).map(([name, value]) => <ValueRow key={name} name={`shape.focus.${name}`} value={value} />)}</div>
           </Section>}
 
           {section[0] === "elevation" && <Section id="elevation">

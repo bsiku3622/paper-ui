@@ -1,5 +1,7 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
+import { geometry } from "../internal/shape";
+
 import { tokens, stateTransition, CONTROL_SIZES, type ControlSize } from "../tokens";
 
 // 하나만 고르는 원. 고르면 가운데 검정 점(색이 아니라 primary).
@@ -9,7 +11,7 @@ export const radioRoot = style({
   margin: 0,
   flexShrink: 0,
   background: tokens.color.bg.raised,
-  borderWidth: tokens.shape.constants.borderWidth,
+  borderWidth: tokens.shape.stroke.border,
   borderStyle: "solid",
   borderColor: tokens.color.border.strong,
   borderRadius: tokens.shape.radius.full,
@@ -25,25 +27,25 @@ export const radioRoot = style({
       background: tokens.color.accent.primary.solid,
     },
     "&:focus-visible": {
-      outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.interaction.focus}`,
-      outlineOffset: tokens.shape.constants.focusRingOffset,
+      outline: `${tokens.shape.focus.width} solid ${tokens.color.interaction.focus}`,
+      outlineOffset: tokens.shape.focus.offset,
     },
     "&:disabled": { opacity: 0.45, cursor: "not-allowed" },
   },
 });
 
-// size 3 단 — Checkbox 와 같은 변(box) 사다리. 채운 점은 변의 절반(= checkbox.mark).
+// size 3 단 — 공통 selection 크기. 점은 Radio recipe가 독립적으로 정한다.
 export const radioSize = styleVariants(
   Object.fromEntries(
     CONTROL_SIZES.map((s) => [
       s,
       {
-        width: tokens.shape.checkbox[s].box,
-        height: tokens.shape.checkbox[s].box,
+        width: tokens.shape.selection.size[s],
+        height: tokens.shape.selection.size[s],
         selectors: {
           "&:checked::after": {
-            width: tokens.shape.checkbox[s].mark,
-            height: tokens.shape.checkbox[s].mark,
+            width: geometry.radio.dot[s],
+            height: geometry.radio.dot[s],
           },
         },
       },

@@ -1,6 +1,6 @@
 // Stack — 세로로 쌓는다.
 
-import type { ElementType } from "react";
+import { forwardRef, type ElementType, type ReactElement } from "react";
 
 import { Box, type BoxProps } from "./Box";
 import { joinClass } from "../internal/joinClass";
@@ -10,10 +10,14 @@ export type StackProps<As extends ElementType = "div"> = BoxProps<As> & {
   align?: "start" | "center" | "end" | "stretch";
 };
 
-export const Stack = <As extends ElementType = "div">({
+const StackImpl = forwardRef<HTMLDivElement, Omit<StackProps, "as" | "ref"> & { as?: ElementType }>(function Stack({
   align,
   className,
   ...rest
-}: StackProps<As>) => (
-  <Box className={joinClass(stackRoot, align && stackAlign[align], className)} {...(rest as object)} />
+}, ref) {
+  return (
+  <Box ref={ref} className={joinClass(stackRoot, align && stackAlign[align], className)} {...(rest as object)} />
 );
+});
+
+export const Stack = StackImpl as <As extends ElementType = "div">(props: StackProps<As>) => ReactElement;

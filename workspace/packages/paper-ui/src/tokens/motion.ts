@@ -54,6 +54,7 @@ export type MotionRole = {
 };
 
 export const MOTION = {
+  press: { duration: DURATION.fast, easing: EASING.standard, offset: "1px" },
   hover: { duration: DURATION.fast, easing: EASING.standard },
   focus: { duration: DURATION.fast, easing: EASING.standard },
   state: { duration: DURATION.base, easing: EASING.standard },

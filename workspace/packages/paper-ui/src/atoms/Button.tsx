@@ -49,7 +49,7 @@ type ButtonOwn<As extends ElementType> = {
   size?: ControlSize;
   // 컨트롤 실루엣은 유지하고 라벨만 조정하는 통로. 기본값은 size 사다리를 따른다.
   fontSize?: TextVariant;
-  // 실루엣 — rounded 는 시스템 곡선(radius.interaction), pill 은 알약(높이의 절반).
+  // 실루엣 — rounded 는 시스템 곡선(radius.control), pill 은 알약(높이의 절반).
   // 값이 둘뿐인 건 의도다 — 고르는 건 *알약이냐 아니냐* 지 곡선의 크기가 아니다.
   shape?: "rounded" | "pill";
   // 진행 중 — 스피너를 얹고 aria-busy 를 세우며 클릭을 막는다(busy 는 다시 눌릴 수 없다).

@@ -12,20 +12,47 @@
     "directory": "workspace/packages/paper-ui"
   },
   "bugs": "https://github.com/bsiku3622/paper-ui/issues",
-  "keywords": ["react", "design-system", "components", "ui", "vanilla-extract", "typescript"],
+  "keywords": [
+    "react",
+    "design-system",
+    "components",
+    "ui",
+    "vanilla-extract",
+    "typescript"
+  ],
   "exports": {
-    ".": { "import": "./dist/index.js", "types": "./dist/index.d.ts" },
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
     "./styles.css": "./dist/paper-ui.css"
   },
-  "sideEffects": ["**/*.css", "**/*.css.ts"],
-  "files": ["dist"],
+  "sideEffects": [
+    "**/*.css",
+    "**/*.css.ts"
+  ],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "vite build && tsc -p tsconfig.json --declaration --emitDeclarationOnly --outDir dist --noEmit false",
     "typecheck": "tsc --noEmit",
     "test": "vitest --run"
   },
-  "dependencies": { "@vanilla-extract/css": "^1.16.0" },
-  "peerDependencies": { "react": ">=18", "react-dom": ">=18" },
+  "dependencies": {
+    "@react-aria/dnd": "^3.12.1",
+    "@react-aria/focus": "^3.22.1",
+    "@react-aria/interactions": "^3.28.1",
+    "@react-aria/overlays": "^3.32.1",
+    "@react-aria/utils": "^3.34.1",
+    "@react-aria/visually-hidden": "^3.9.1",
+    "@react-stately/overlays": "^3.7.1",
+    "@vanilla-extract/css": "^1.16.0"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
   "devDependencies": {
     "@testing-library/react": "^16.3.2",
     "@types/react": "^19.0.0",

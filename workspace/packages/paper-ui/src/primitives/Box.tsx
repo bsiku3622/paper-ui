@@ -8,17 +8,17 @@
 //
 // `as` preserves the semantic tag when a caller needs a native element.
 
-import type { ComponentPropsWithoutRef, CSSProperties, ElementType, ReactNode } from "react";
+import { forwardRef, type ComponentPropsWithRef, type ComponentPropsWithoutRef, type CSSProperties, type ElementType, type ReactElement, type ReactNode } from "react";
 
 import { resolveBoxClass, type BoxLike } from "../resolvers";
 import { joinClass } from "../internal/joinClass";
 import { boxRadius, boxShadow, boxBorder } from "./Box.css";
 import { ResolvedThemeContext, useResolvedTheme } from "./theme-context";
-import { SHAPE_SIZES, tokens, type ShapeSize } from "../tokens";
+import { SPACE_KEYS, tokens, type Space } from "../tokens";
 
 // named size는 layout token으로 해석한다. Primitive인 Box는 앱 고유 layout도 담아야 하므로
 // CSS 길이 escape hatch를 함께 둔다. `full`과 `fit`은 자주 쓰는 의도를 이름으로 남긴다.
-export type BoxDimension = ShapeSize | "full" | "fit" | "min-content" | "max-content" | number | (string & {});
+export type BoxDimension = Space | "full" | "fit" | "min-content" | "max-content" | number | (string & {});
 
 export type BoxLayoutProps = {
   width?: BoxDimension;
@@ -36,10 +36,10 @@ const resolveDimension = (value: BoxDimension | undefined, axis: "width" | "heig
   if (value === undefined) return undefined;
   if (value === "full") return "100%";
   if (value === "fit") return "fit-content";
-  if ((SHAPE_SIZES as readonly string[]).includes(String(value))) {
+  if ((SPACE_KEYS as readonly string[]).includes(String(value))) {
     return axis === "width"
-      ? tokens.shape.width[value as ShapeSize].layout
-      : tokens.shape.height[value as ShapeSize].layout;
+      ? tokens.layout.width[value as Space]
+      : tokens.layout.height[value as Space];
   }
   return value;
 };
@@ -62,7 +62,7 @@ type OwnProps<As extends ElementType> = BoxLike & BoxLayoutProps & {
 
 // 자기 prop 을 뺀 나머지 DOM 속성은 그대로 통과 (onClick · role · aria-*).
 export type BoxProps<As extends ElementType = "div"> = OwnProps<As> &
-  Omit<ComponentPropsWithoutRef<As>, keyof OwnProps<As>>;
+  Omit<ComponentPropsWithoutRef<As>, keyof OwnProps<As>> & { ref?: ComponentPropsWithRef<As>["ref"] };
 
 const OWN_KEYS = [
   "surface",
@@ -72,7 +72,7 @@ const OWN_KEYS = [
   "gap",
 ] as const;
 
-export const Box = <As extends ElementType = "div">({
+const BoxImpl = forwardRef<HTMLDivElement, Omit<BoxProps, "as" | "ref"> & { as?: ElementType }>(function Box({
   as,
   border,
   radius,
@@ -91,7 +91,7 @@ export const Box = <As extends ElementType = "div">({
   className,
   style: styleOverride,
   ...rest
-}: BoxProps<As>) => {
+}, ref) {
   const Tag = (as ?? "div") as ElementType;
   const ambient = useResolvedTheme();
   // inverse 면 이 Box 자신에 반대 테마를 심는다 — data-theme 로 색 var 를 갈고,
@@ -108,6 +108,7 @@ export const Box = <As extends ElementType = "div">({
 
   const node = (
     <Tag
+      ref={ref}
       className={joinClass(
         resolveBoxClass(style as BoxLike),
         border && boxBorder,
@@ -139,4 +140,6 @@ export const Box = <As extends ElementType = "div">({
   ) : (
     node
   );
-};
+});
+
+export const Box = BoxImpl as <As extends ElementType = "div">(props: BoxProps<As>) => ReactElement;

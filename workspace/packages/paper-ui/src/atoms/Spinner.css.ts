@@ -1,5 +1,7 @@
 import { style, styleVariants, keyframes } from "@vanilla-extract/css";
 
+import { geometry } from "../internal/shape";
+
 import { tokens, CONTROL_SIZES, type ControlSize } from "../tokens";
 
 const spin = keyframes({ to: { transform: "rotate(360deg)" } });
@@ -12,7 +14,7 @@ export const spinnerRoot = style({
   display: "inline-block",
   flexShrink: 0,
   borderRadius: tokens.shape.radius.full,
-  borderWidth: tokens.shape.constants.spinnerStrokeWidth,
+  borderWidth: geometry.spinner.stroke,
   borderStyle: "solid",
   borderColor: tokens.color.border.base,
   borderTopColor: tokens.color.ink.primary,
@@ -21,6 +23,6 @@ export const spinnerRoot = style({
 
 export const spinnerSize = styleVariants(
   Object.fromEntries(
-    CONTROL_SIZES.map((s) => [s, { width: tokens.shape.icon[s], height: tokens.shape.icon[s] }]),
+    CONTROL_SIZES.map((s) => [s, { width: geometry.spinner.size[s], height: geometry.spinner.size[s] }]),
   ) as Record<ControlSize, { width: string; height: string }>,
 );

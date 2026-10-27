@@ -2,7 +2,7 @@
 // ║ Layout — 배치 자리의 토큰 (studio-ui 구조 이식)                          ║
 // ║                                                                          ║
 // ║ 책임은 *배치* — z 층 · breakpoint · 자기 크기 intent · position.         ║
-// ║ 절대 크기 값(width/height ladder)은 shape 책임(SHAPE_WIDTH·HEIGHT.layout)║
+// ║ 면의 폭·높이·읽기 폭·block padding도 Layout이 소유한다.             ║
 // ╚══════════════════════════════════════════════════════════════════════════╝
 //
 // paper-ui 는 "고를 것을 줄인다" — 그래서 layout 은 *어휘* 를 노출하되(z tier ·
@@ -10,11 +10,11 @@
 // 유연함은 escape(Box style)로 연다(정체성: 구조 안전 > 자유도). 이 파일은 그
 // 어휘의 단일 출처다.
 //
-// z 만 CSS var 로 emit(LAYOUT_VALUES). breakpoint 는 @media 쿼리 조건이라 CSS var
+// z와 block geometry는 CSS var로 emit(LAYOUT_VALUES). breakpoint 는 @media 쿼리 조건이라 CSS var
 // 를 못 읽으므로 값으로만 둔다(motion 과 같은 결). size intent · position 은
 // keyword 어휘 — var 인디렉션 없이 값을 직접 쓴다.
 
-import { SHAPE_VALUES } from "./shape";
+import { SHAPE_PALETTE as p } from "./shape-palette";
 
 // ───── z — 층 tier (6 단, 10 간격) ──────────────────────────────────────────
 //
@@ -45,7 +45,7 @@ export type Breakpoint = keyof typeof BREAKPOINT;
 
 // ───── size intent — width/height keyword 어휘 ──────────────────────────────
 //
-// 절대값은 shape(SHAPE_WIDTH·HEIGHT.layout) 자리. 여기는 keyword 만.
+// 절대값은 LAYOUT_VALUES의 width·height에 둔다. 여기는 keyword만.
 
 export const SIZE_INTENT = {
   full: "100%",
@@ -63,22 +63,26 @@ export type SizeIntent = keyof typeof SIZE_INTENT;
 export const POSITIONS = ["relative", "absolute", "fixed", "sticky"] as const;
 export type Position = (typeof POSITIONS)[number];
 
-// ───── inset — container 안에서 띄우는 여백 어휘 (shape padding.layout 재사용) ─
+// ───── inset — container 안에서 띄우는 여백 어휘 (block padding scale) ─
 
 export const INSET = {
   "0": "0",
-  xs: SHAPE_VALUES.padding.xs.layout,
-  sm: SHAPE_VALUES.padding.sm.layout,
-  md: SHAPE_VALUES.padding.md.layout,
-  lg: SHAPE_VALUES.padding.lg.layout,
-  xl: SHAPE_VALUES.padding.xl.layout,
+  xs: p.space[8],
+  sm: p.space[12],
+  md: p.space[16],
+  lg: p.space[20],
+  xl: p.space[32],
 } as const;
 export type InsetSize = keyof typeof INSET;
 
-// ───── VALUES — z 만 CSS var 로 굽는다 ──────────────────────────────────────
+// ───── VALUES — z와 block geometry를 CSS var로 굽는다 ──────────────────────────────────────
 
 export const LAYOUT_VALUES = {
   z: Z,
+  width: { xs: p.size[72], sm: p.size[108], md: p.size[160], lg: p.size[240], xl: p.size[360] },
+  height: { xs: p.size[64], sm: p.size[96], md: p.size[144], lg: p.size[216], xl: p.size[320] },
+  padding: { xs: p.space[8], sm: p.space[12], md: p.space[16], lg: p.space[20], xl: p.space[32] },
+  measure: { xs: p.measure[28], sm: p.measure[32], md: p.measure[38], lg: p.measure[42], xl: p.measure[46] },
 } as const;
 
 // ───── container — 앱 셸 최대 폭 (읽기 폭 measure 와 별개) ──────────────────

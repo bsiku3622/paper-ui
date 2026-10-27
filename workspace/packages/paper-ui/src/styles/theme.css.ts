@@ -7,6 +7,8 @@ import { globalStyle } from "@vanilla-extract/css";
 
 import { COLOR_VALUES, COLOR_VALUES_DARK } from "../tokens/colors";
 import { SHAPE_VALUES, SHADOW_GEOMETRY } from "../tokens/shape";
+import { SHAPE_LEGACY_VALUES } from "../tokens/shape-legacy";
+import { SHAPE_RECIPE_VALUES } from "../tokens/shape-recipes";
 import { LAYOUT_VALUES } from "../tokens/layout";
 import { TEXT_VALUES, TEXT_CONTENT, TEXT_VARIANTS } from "../tokens/text";
 import { walkValues, pathToCssVar } from "../tokens/helpers";
@@ -29,6 +31,12 @@ const lightVars: Record<string, string> = {};
 const darkVars: Record<string, string> = {};
 
 walkValues(SHAPE_VALUES, ["shape"], (path, value) => {
+  baseVars[pathToCssVar(path)] = value;
+});
+walkValues(SHAPE_LEGACY_VALUES, ["shape"], (path, value) => {
+  baseVars[pathToCssVar(path)] = value;
+});
+walkValues(SHAPE_RECIPE_VALUES, ["geometry"], (path, value) => {
   baseVars[pathToCssVar(path)] = value;
 });
 walkValues(LAYOUT_VALUES, ["layout"], (path, value) => {
@@ -96,9 +104,9 @@ globalStyle("*", { boxSizing: "border-box" });
 // 포커스는 interaction.focus로 통일 (Apple · Atlassian 시그니처). 색이 가장 작게,
 // 가장 자주 등장하는 포인트 자리.
 globalStyle(":focus-visible", {
-  outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.interaction.focus}`,
-  outlineOffset: tokens.shape.constants.focusRingOffset,
-  borderRadius: tokens.shape.radius.interaction,
+  outline: `${tokens.shape.focus.width} solid ${tokens.color.interaction.focus}`,
+  outlineOffset: tokens.shape.focus.offset,
+  borderRadius: tokens.shape.radius.control,
 });
 
 // ╭──────────────────────────────────────────────────────────────────────────╮

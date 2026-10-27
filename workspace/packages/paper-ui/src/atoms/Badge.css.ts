@@ -1,5 +1,7 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
+import { geometry } from "../internal/shape";
+
 import { tokens, CONTROL_SIZES, TEXT_VARIANTS, type ControlSize, type TextVariant } from "../tokens";
 
 // geometry 만. 색은 resolveAccent(accent, variant) 가 붙이는 pui-a-{accent}-{variant}
@@ -8,9 +10,9 @@ import { tokens, CONTROL_SIZES, TEXT_VARIANTS, type ControlSize, type TextVarian
 export const badgeRoot = style({
   display: "inline-flex",
   alignItems: "center",
-  gap: tokens.shape.gap.xs,
-  borderRadius: tokens.shape.radius.interaction,
-  borderWidth: tokens.shape.constants.borderWidth,
+  gap: tokens.shape.space.xs,
+  borderRadius: tokens.shape.radius.control,
+  borderWidth: tokens.shape.stroke.border,
   borderStyle: "solid",
   whiteSpace: "nowrap",
 });
@@ -22,8 +24,8 @@ export const badgePill = style({ borderRadius: tokens.shape.radius.full });
 
 // 상태 점 — 글자색(currentColor)을 따라 배지와 한 색. em 이라 size 에 비례.
 export const badgeDot = style({
-  width: "0.5em",
-  height: "0.5em",
+  width: geometry.badge.dotSize,
+  height: geometry.badge.dotSize,
   borderRadius: tokens.shape.radius.full,
   background: "currentColor",
   flexShrink: 0,
@@ -48,8 +50,8 @@ export const badgeSize = styleVariants(
     CONTROL_SIZES.map((s) => [
       s,
       {
-        height: tokens.shape.badge[s],
-        paddingInline: tokens.shape.badgePaddingX[s],
+        height: geometry.badge.height[s],
+        paddingInline: geometry.badge.paddingInline[s],
       },
     ]),
   ) as Record<ControlSize, { height: string; paddingInline: string }>,

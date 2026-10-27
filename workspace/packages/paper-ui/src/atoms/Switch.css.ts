@@ -1,5 +1,7 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
+import { geometry } from "../internal/shape";
+
 import { tokens, stateTransition, CONTROL_SIZES, type ControlSize } from "../tokens";
 
 // 켬/끔 토글. control.track 위 raised 손잡이, 켜지면 primary 트랙.
@@ -29,8 +31,8 @@ export const switchRoot = style({
     },
     "&:checked": { background: tokens.color.accent.primary.solid },
     "&:focus-visible": {
-      outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.interaction.focus}`,
-      outlineOffset: tokens.shape.constants.focusRingOffset,
+      outline: `${tokens.shape.focus.width} solid ${tokens.color.interaction.focus}`,
+      outlineOffset: tokens.shape.focus.offset,
     },
     "&:disabled": { opacity: 0.45, cursor: "not-allowed" },
   },
@@ -45,16 +47,16 @@ export const switchRoot = style({
 export const switchSize = styleVariants(
   Object.fromEntries(
     CONTROL_SIZES.map((s) => {
-      const sw = tokens.shape.switch[s];
-      const inset = `calc((${sw.h} - ${sw.thumb}) / 2)`;
+      const sw = geometry.switch;
       return [
         s,
         {
-          width: sw.w,
-          height: sw.h,
+          width: sw.width[s],
+          height: sw.height[s],
           selectors: {
-            "&::after": { width: sw.thumb, height: sw.thumb, left: inset },
-            "&:checked::after": { transform: `translate(calc(${sw.w} - ${sw.h}), -50%)` },
+            "&::after": { width: sw.thumb[s], height: sw.thumb[s], insetInlineStart: sw.inset[s] },
+            "&:checked::after": { transform: `translate(${sw.travel[s]}, -50%)` },
+            "&:dir(rtl):checked::after": { transform: `translate(calc(${sw.travel[s]} * -1), -50%)` },
           },
         },
       ];

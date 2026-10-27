@@ -4,7 +4,7 @@ import { tokens, STATUS, stateTransition } from "../tokens";
 import type { StatusName, TextVariant } from "../tokens";
 import { TEXT_VARIANTS } from "../tokens";
 import { outlinedControlProfile, outlinedControlHover } from "../styles/color-profile";
-import { ladderRules } from "../internal/sizeLadder";
+import { controlGeometry } from "../internal/shape";
 
 // Field 는 input group — 래퍼가 면·테두리·포커스링·상태·크기를 지고, 안쪽 input 은
 // 투명·무테로 값만 담는다. leading/trailing 어도먼트(아이콘·$·단위·clear·비밀번호)가
@@ -13,10 +13,10 @@ export const fieldWrap = style({
   ...outlinedControlProfile,
   display: "flex",
   alignItems: "center",
-  gap: tokens.shape.gap.sm,
+  gap: tokens.shape.space.sm,
   width: "100%",
-  borderRadius: tokens.shape.radius.interaction,
-  borderWidth: tokens.shape.constants.borderWidth,
+  borderRadius: tokens.shape.radius.control,
+  borderWidth: tokens.shape.stroke.border,
   borderStyle: "solid",
   cursor: "text",
   transition: stateTransition("border-color", "background"),
@@ -28,8 +28,8 @@ export const fieldWrap = style({
     // keyboard focus — 안쪽 input 이 :focus-visible일 때만 래퍼 *바깥* 에 파란 링.
     // 클릭은 caret과 edge만 남기고, Tab 탐색 위치에만 ring을 쓴다.
     "&:not([data-pui-pointer-focus]):has(input:focus-visible)": {
-      outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.interaction.focus}`,
-      outlineOffset: tokens.shape.constants.focusRingOffset,
+      outline: `${tokens.shape.focus.width} solid ${tokens.color.interaction.focus}`,
+      outlineOffset: tokens.shape.focus.offset,
     },
     "&:has(input:disabled)": { opacity: 0.5, cursor: "not-allowed" },
   },
@@ -76,12 +76,9 @@ export const fieldInput = style({
   },
 });
 
-// size 3 단 — 베이스에서 **가로 여백만** inputPaddingX(7 · 9 · 12)로 갈아 끼운다.
-// 글자 preset은 Field 역할의 class가 정하고 폼 한 줄의 높이는 Button과 공유한다.
-//
-// Field·Select·Textarea가 같은 form geometry를 공유한다. 자세한 계산은 tokens/shape.ts.
+// Shared input geometry and the field typography preset.
 export const fieldSize = styleVariants(
-  ladderRules((s) => ({ paddingInline: tokens.shape.inputPaddingX[s] })),
+  controlGeometry.field,
 );
 
 export const fieldFontSize = styleVariants(
@@ -123,9 +120,9 @@ export const fieldAction = style({
   selectors: {
     "&:hover": { color: tokens.color.ink.primary },
     "&:focus-visible": {
-      outline: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.interaction.focus}`,
-      outlineOffset: tokens.shape.constants.focusRingOffset,
-      borderRadius: tokens.shape.radius.interaction,
+      outline: `${tokens.shape.focus.width} solid ${tokens.color.interaction.focus}`,
+      outlineOffset: tokens.shape.focus.offset,
+      borderRadius: tokens.shape.radius.control,
     },
   },
 });

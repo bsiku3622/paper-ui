@@ -15,17 +15,17 @@ const BP = tokens.layout.breakpoint;
 globalStyle(".hero-grid", {
   display: "grid",
   gridTemplateColumns: "minmax(0, 1.05fr) minmax(0, 0.95fr)",
-  gap: tokens.shape.gap.xl,
+  gap: tokens.shape.space.xl,
   alignItems: "center",
   "@media": {
-    [`screen and (max-width: ${BP.md})`]: { gridTemplateColumns: "1fr", gap: tokens.shape.gap.lg },
+    [`screen and (max-width: ${BP.md})`]: { gridTemplateColumns: "1fr", gap: tokens.shape.space.lg },
   },
 });
 
 globalStyle(".principles-grid", {
   display: "grid",
   gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-  gap: tokens.shape.gap.md,
+  gap: tokens.shape.space.md,
   "@media": {
     [`screen and (max-width: ${BP.md})`]: { gridTemplateColumns: "1fr" },
   },
@@ -38,11 +38,11 @@ globalStyle(".gnb-theme", {
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
-  width: tokens.shape.height.md.interaction,
-  height: tokens.shape.height.md.interaction,
+  width: tokens.shape.control.height.md,
+  height: tokens.shape.control.height.md,
   padding: 0,
-  border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
-  borderRadius: tokens.shape.radius.interaction,
+  border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`,
+  borderRadius: tokens.shape.radius.control,
   background: tokens.color.bg.raised,
   color: tokens.color.ink.secondary,
   cursor: "pointer",

@@ -39,21 +39,17 @@ Interaction overlay, scrim, shadow tint의 반투명 값은 중립 양 끝점에
 
 ## Shape
 
-Shape tokens define layout dimensions, control geometry, spacing, radii, borders, focus rings, icon sizes, and shadow geometry. Product-specific page and data-layout dimensions remain in the consuming app.
+Shape은 원본 Palette → 공통 역할 → 내부 recipe → CSS class로 적용합니다. 공개 토큰은 `shape.space`, `radius`, `stroke`, `focus`, `control`, `selection`, `icon`, `shadow`로 나뉩니다. Space는 gap·padding이 함께 쓰는 5단 scale이고, ControlSize는 별도 3단 scale입니다. Box의 폭·높이·읽기 폭·block padding은 `layout.width / height / measure / padding`으로 옮겼습니다.
 
-- **Ladders:** `shape.height` and `shape.padding` split into `interaction` and `layout`; `shape.width` is layout-only. `shape.gap` and `shape.measure` are flat five-step ladders (`xs`–`xl`).
-- **Control size:** `sm · md · lg` selects control height `30 · 32 · 36px`. Button inline padding is `10 · 11 · 14px`; input inline padding is `7 · 8 · 10px`; textarea block padding is `3.5 · 4.5 · 7px`.
-- **Radius:** `interaction` is `4px`; `layout.sm · md · lg` are `4 · 6 · 8px`; `full` is `999px`. Box exposes `radius="sm | md | lg | full"`; Button, Badge, Field, and Select expose `shape="pill"` where a pill silhouette is useful.
-- **Small controls:** Badge height is `20 · 22 · 24px` with inline padding `6 · 8 · 10px`; icon artboards are `16 · 18 · 20px`; Checkbox, Radio, and Switch use their own coordinated dimensions.
-- **Geometry constants:** border `1px`, focus ring `2px` with `2px` offset, and `2px` marks/strokes. Shadow geometry has `overlay` and `overlayMinimal` variants; its tint comes from Color tokens.
+`shape.control.height`는 30 / 32 / 36px, button inset은 10 / 11 / 14px, input inset은 7 / 8 / 10px입니다. `radius.control`은 4px, `radius.surface.sm / md / lg`는 4 / 6 / 8px이며 Box는 surface 쪽을 선택합니다. Focus ring의 폭과 offset은 `shape.focus`, 선 두께는 `shape.stroke`가 소유합니다.
 
-`Box` also accepts layout dimensions from the five-step width/height ladders and common intrinsic CSS sizing keywords. The Shape source of truth is `workspace/packages/paper-ui/src/tokens/shape.ts`.
+체크 표시·Radio dot·Switch 비례·Textarea 여백·Select 화살표 예약 공간은 내부 recipe입니다. 파생식은 소비 요소에서 계산하므로 중첩 영역의 공통 토큰 재정의도 반영합니다. 기존 Shape JS 경로와 CSS variable은 호환 alias로 유지하지만 새 코드는 canonical 경로를 사용합니다. 전체 토큰 목록, 수식, 단위와 이관 규칙은 [Shape architecture](shape-architecture.md)에서 확인합니다.
 
 ## Motion · Layout
 
-**motion** — `duration`(instant·reduced·fast~slow) · `easing`(linear·standard·decelerate·accelerate·overshoot) · `loop`(spin·pulse) · `role`(hover·state·enter…). `reduced`는 reduced-motion 환경용 최소 duration이고 `linear`는 반복 회전 등에 씁니다. 유일하게 CSS 변수로 굽지 않고 값을 직접 듭니다 — `stateTransition("background", "color")`로 인라인됩니다.
+**motion** — `duration`(instant·reduced·fast~slow) · `easing`(linear·standard·decelerate·accelerate·overshoot) · `loop`(spin·pulse) · `role`(press·hover·state·enter…). `reduced`는 reduced-motion 환경용 최소 duration이고 `linear`는 반복 회전 등에 씁니다. 유일하게 CSS 변수로 굽지 않고 값을 직접 듭니다 — `stateTransition("background", "color")`로 인라인됩니다.
 
-**layout** — `z` 6단 tier(base~toast) · `breakpoint`(sm~xl) · `container`(콘텐츠 폭) · `sizeIntent`(full·fit…) · `inset`. 배치 어휘를 노출하되 반응형 Box 프로퍼티를 전면 열지는 않습니다 — 유연함은 escape로 엽니다(정체성: 구조 안전 > 자유도).
+**layout** — `z` 6단 tier(base~toast) · `breakpoint`(sm~xl) · `container`(콘텐츠 폭) · `sizeIntent`(full·fit…) · `inset` · `width/height/measure/padding`. 배치 어휘를 노출하되 반응형 Box 프로퍼티를 전면 열지는 않습니다 — 유연함은 escape로 엽니다(정체성: 구조 안전 > 자유도).
 
 ## Text
 

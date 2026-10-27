@@ -6,7 +6,7 @@ import { globalStyle } from "@vanilla-extract/css";
 import { tokens } from "@studio-baeks/paper-ui";
 
 globalStyle(".md", {
-  maxWidth: tokens.shape.measure.lg,
+  maxWidth: tokens.layout.measure.lg,
   color: tokens.color.ink.primary,
   fontSize: tokens.text.style.body.size,
   lineHeight: tokens.text.style.body.leading,
@@ -19,37 +19,37 @@ globalStyle(".md h1", {
   fontWeight: tokens.text.palette.weight.bold,
   lineHeight: tokens.text.style.title.leading,
   letterSpacing: tokens.text.style.title.tracking,
-  margin: `0 0 ${tokens.shape.gap.sm}`,
+  margin: `0 0 ${tokens.shape.space.sm}`,
 });
 globalStyle(".md h2", {
   fontSize: tokens.text.style.heading.size,
   fontWeight: tokens.text.palette.weight.semibold,
   lineHeight: tokens.text.style.heading.leading,
   letterSpacing: tokens.text.style.heading.tracking,
-  margin: `${tokens.shape.gap.xl} 0 ${tokens.shape.gap.md}`,
-  paddingTop: tokens.shape.padding.lg.layout,
-  borderTop: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
+  margin: `${tokens.shape.space.xl} 0 ${tokens.shape.space.md}`,
+  paddingTop: tokens.layout.padding.lg,
+  borderTop: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`,
 });
 globalStyle(".md h3", {
   fontSize: tokens.text.style.subheading.size,
   fontWeight: tokens.text.palette.weight.semibold,
   lineHeight: tokens.text.style.subheading.leading,
   letterSpacing: tokens.text.style.subheading.tracking,
-  margin: `${tokens.shape.gap.lg} 0 ${tokens.shape.gap.sm}`,
+  margin: `${tokens.shape.space.lg} 0 ${tokens.shape.space.sm}`,
 });
 globalStyle(".md h4", {
   fontSize: tokens.text.style.subheading.size,
   fontWeight: tokens.text.palette.weight.semibold,
   lineHeight: tokens.text.style.subheading.leading,
   letterSpacing: tokens.text.style.subheading.tracking,
-  margin: `${tokens.shape.gap.md} 0 ${tokens.shape.gap.sm}`,
+  margin: `${tokens.shape.space.md} 0 ${tokens.shape.space.sm}`,
 });
 
-globalStyle(".md p", { margin: `0 0 ${tokens.shape.gap.lg}` });
+globalStyle(".md p", { margin: `0 0 ${tokens.shape.space.lg}` });
 globalStyle(".md a", { color: tokens.color.accent.info.ink, textDecoration: "none" });
 globalStyle(".md a:hover", { textDecoration: "underline", textUnderlineOffset: "0.2em" });
-globalStyle(".md ul, .md ol", { margin: `0 0 ${tokens.shape.gap.lg}`, paddingLeft: tokens.shape.padding.xl.interaction });
-globalStyle(".md li", { margin: `${tokens.shape.gap.xs} 0` });
+globalStyle(".md ul, .md ol", { margin: `0 0 ${tokens.shape.space.lg}`, paddingLeft: tokens.shape.space.xl });
+globalStyle(".md li", { margin: `${tokens.shape.space.xs} 0` });
 globalStyle(".md strong", { fontWeight: tokens.text.palette.weight.semibold });
 
 globalStyle(".md code", {
@@ -57,36 +57,36 @@ globalStyle(".md code", {
   fontSize: "0.85em", // em 상대 — 본문 글자에 비례
   background: tokens.color.bg.sunken,
   padding: "0.1em 0.4em",
-  borderRadius: tokens.shape.radius.interaction,
+  borderRadius: tokens.shape.radius.control,
 });
 globalStyle(".md pre", {
   background: tokens.color.bg.sunken,
-  border: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
-  borderRadius: tokens.shape.radius.layout.md,
-  padding: tokens.shape.padding.md.layout,
+  border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`,
+  borderRadius: tokens.shape.radius.surface.md,
+  padding: tokens.layout.padding.md,
   overflow: "auto",
-  margin: `0 0 ${tokens.shape.gap.lg}`,
+  margin: `0 0 ${tokens.shape.space.lg}`,
 });
 globalStyle(".md pre code", { background: "none", padding: 0, fontSize: tokens.text.style.caption.size, lineHeight: tokens.text.style.body.leading });
 
 globalStyle(".md blockquote", {
-  margin: `0 0 ${tokens.shape.gap.lg}`,
-  padding: `${tokens.shape.padding.sm.layout} ${tokens.shape.padding.md.layout}`,
-  borderLeft: `${tokens.shape.constants.focusRingWidth} solid ${tokens.color.border.strong}`,
+  margin: `0 0 ${tokens.shape.space.lg}`,
+  padding: `${tokens.layout.padding.sm} ${tokens.layout.padding.md}`,
+  borderLeft: `${tokens.shape.stroke.emphasis} solid ${tokens.color.border.strong}`,
   color: tokens.color.ink.secondary,
 });
 
-globalStyle(".md table", { width: "100%", borderCollapse: "collapse", margin: `0 0 ${tokens.shape.gap.lg}`, fontSize: tokens.text.style.body.size });
+globalStyle(".md table", { width: "100%", borderCollapse: "collapse", margin: `0 0 ${tokens.shape.space.lg}`, fontSize: tokens.text.style.body.size });
 globalStyle(".md th", {
   textAlign: "left",
   fontWeight: tokens.text.palette.weight.semibold,
-  padding: `${tokens.shape.padding.sm.interaction} ${tokens.shape.padding.md.interaction}`,
+  padding: `${tokens.shape.space.sm} ${tokens.shape.space.md}`,
   background: tokens.color.bg.sunken,
-  borderBottom: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.strong}`,
+  borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.strong}`,
 });
 globalStyle(".md td", {
-  padding: `${tokens.shape.padding.sm.interaction} ${tokens.shape.padding.md.interaction}`,
-  borderBottom: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`,
+  padding: `${tokens.shape.space.sm} ${tokens.shape.space.md}`,
+  borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`,
 });
 globalStyle(".md td code", { fontSize: "0.8em" });
-globalStyle(".md hr", { border: "none", borderTop: `${tokens.shape.constants.borderWidth} solid ${tokens.color.border.base}`, margin: `${tokens.shape.gap.xl} 0` });
+globalStyle(".md hr", { border: "none", borderTop: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`, margin: `${tokens.shape.space.xl} 0` });
