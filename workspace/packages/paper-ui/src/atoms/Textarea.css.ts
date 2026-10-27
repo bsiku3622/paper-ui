@@ -2,7 +2,7 @@ import { style, styleVariants } from "@vanilla-extract/css";
 
 import { tokens, stateTransition, TEXT_VARIANTS, type TextVariant } from "../tokens";
 import { outlinedControlProfile, outlinedControlHover } from "../styles/color-profile";
-import { controlGeometry, geometry } from "../internal/shape";
+import { controlGeometry, focusRing, geometry } from "../internal/shape";
 
 // Field 와 같은 결의 여러 줄 입력. 높이만 자라고, 세로로만 resize.
 // 크기(padding·fontSize)는 size 축(textareaSize)이 정한다 — 컨트롤 높이·글자 사다리를
@@ -23,10 +23,7 @@ export const textareaRoot = style({
       ...outlinedControlHover,
     },
     // keyboard focus만 바깥 ring으로 알린다. 클릭은 caret과 edge만 남긴다.
-    "&:focus-visible:not([data-pui-pointer-focus])": {
-      outline: `${tokens.shape.focus.width} solid ${tokens.color.interaction.focus}`,
-      outlineOffset: tokens.shape.focus.offset,
-    },
+    "&:focus-visible:not([data-pui-pointer-focus])": focusRing,
     "&[data-pui-pointer-focus]:focus-visible": { outline: "none" },
     "&:disabled": { opacity: 0.5, cursor: "not-allowed" },
   },

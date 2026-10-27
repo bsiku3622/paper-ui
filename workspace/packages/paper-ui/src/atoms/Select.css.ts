@@ -1,8 +1,8 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
-import { tokens, stateTransition, TEXT_VARIANTS, type TextVariant } from "../tokens";
+import { tokens, stateTransition, CONTROL_SIZES, TEXT_VARIANTS, type ControlSize, type TextVariant } from "../tokens";
 import { outlinedControlProfile, outlinedControlHover } from "../styles/color-profile";
-import { controlGeometry, geometry } from "../internal/shape";
+import { controlGeometry, focusRing, geometry } from "../internal/shape";
 
 // The wrapper owns appearance and layout; native select owns form and focus behavior.
 export const selectWrap = style({
@@ -20,10 +20,7 @@ export const selectWrap = style({
   selectors: {
     '&:has(option[value=""]:checked)': { color: tokens.color.ink.tertiary },
     "&:hover:has(select:enabled)": outlinedControlHover,
-    "&:has(select:focus-visible:not([data-pui-pointer-focus]))": {
-      outline: `${tokens.shape.focus.width} solid ${tokens.color.interaction.focus}`,
-      outlineOffset: tokens.shape.focus.offset,
-    },
+    "&:has(select:focus-visible:not([data-pui-pointer-focus]))": focusRing,
     "&:has(select:disabled)": { opacity: 0.5, cursor: "not-allowed" },
   },
 });
@@ -56,22 +53,20 @@ export const selectFontSize = styleVariants(
 );
 export const selectPill = style({ borderRadius: tokens.shape.radius.full });
 
-// SVG backgrounds cannot inherit semantic vars; this non-interactive decoration can.
+// The arrow is a trailing Icon: SVG backgrounds cannot inherit semantic vars; this
+// non-interactive decoration can. Its artboard and stroke come from Icon, its place from size.
 export const selectArrow = style({
   position: "absolute",
   top: "50%",
-  insetInlineEnd: geometry.select.arrowInset,
   transform: "translateY(-50%)",
-  width: geometry.select.arrowSize,
-  height: geometry.select.arrowSize,
   pointerEvents: "none",
   color: tokens.color.ink.secondary,
-  fill: "none",
-  stroke: "currentColor",
-  strokeWidth: geometry.select.arrowStroke,
-  strokeLinecap: "round",
   selectors: {
     [`${selectWrap}:has(option[value=""]:checked) &`]: { color: tokens.color.ink.tertiary },
     [`${selectRoot}[multiple] + &`]: { display: "none" },
   },
 });
+
+export const selectArrowSize = styleVariants(Object.fromEntries(CONTROL_SIZES.map((size) => [size, {
+  insetInlineEnd: geometry.select.arrowInset[size],
+}])) as Record<ControlSize, { insetInlineEnd: string }>);

@@ -4,11 +4,11 @@ import reactHooks from "eslint-plugin-react-hooks";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import tokenBoundaries from "./eslint-rules/token-boundaries.js";
 
-const rawSourcePatterns = ["palette", "color-ladder", "colors", "shape", "shape-palette", "shape-recipes", "shape-legacy"]
+const rawSourcePatterns = ["palette", "color-ladder", "colors", "shape", "shape-recipes", "layout"]
   .flatMap((name) => ["", ".ts", ".js"].map((extension) => `**/tokens/${name}${extension}`));
 const rawBarrelRestriction = {
   regex: String.raw`(?:^|/)(?:tokens(?:/index(?:\.[tj]s)?)?|@studio-baeks/paper-ui)$`,
-  importNames: ["COLOR_VALUES", "COLOR_VALUES_DARK", "PALETTE", "SHAPE_VALUES", "SHAPE_RECIPES", "SHAPE_RECIPE_VALUES", "SHAPE_PALETTE"],
+  importNames: ["COLOR_VALUES", "COLOR_VALUES_DARK", "PALETTE", "SHAPE_SOURCE", "SHAPE_VALUES", "SHAPE_RECIPES", "SPACE", "ANATOMY", "LAYOUT_SOURCE", "LAYOUT_VALUES"],
   message: "Raw source를 barrel로 우회하지 말고 semantic tokens를 사용하세요.",
 };
 
@@ -127,9 +127,23 @@ export default [
     rules: { "token-boundaries/no-inline-tokens": "error" },
   },
 
+  // ── 규칙 4 — 길이는 token source에만 ─────────────────────────────────────
+  // 패키지는 예외 없이: 숫자는 Shape·Layout·Typography·Motion source에서 한 번만 쓰고, 나머지는
+  // 역할·recipe·수식으로 고른다. 앱은 간격·형태·깊이를 역할로 고르고, 자기 화면의 치수
+  // (폭·높이·그리드 트랙)만 직접 쓴다.
   {
-    files: ["packages/paper-ui/src/{atoms,primitives}/**/*.css.ts"],
-    rules: { "token-boundaries/no-raw-geometry": "error" },
+    files: ["packages/paper-ui/src/**/*.{ts,tsx}"],
+    ignores: [
+      "packages/paper-ui/src/tokens/{shape,layout,text,motion,palette,color-ladder,colors}.ts",
+      "**/*.test.{ts,tsx}",
+    ],
+    plugins: { "token-boundaries": tokenBoundaries },
+    rules: { "token-boundaries/no-raw-geometry": ["error", { scope: "all" }] },
+  },
+  {
+    files: ["app/src/**/*.{ts,tsx}"],
+    plugins: { "token-boundaries": tokenBoundaries },
+    rules: { "token-boundaries/no-raw-geometry": ["error", { scope: "spacing" }] },
   },
 
 ];

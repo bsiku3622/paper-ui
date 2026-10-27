@@ -51,14 +51,14 @@ export const Docs = () => {
   return (
     <Stack>
       <SiteNav />
-      <Box style={{ display: "grid", gridTemplateColumns: `${tokens.layout.width.lg} 1fr`, maxWidth: tokens.layout.container.content, marginInline: "auto", width: "100%" }}>
-        <Box as="nav" aria-label="문서 목차" style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, top: NAV_HEIGHT, position: "sticky", alignSelf: "start", padding: tokens.layout.padding.md, borderRight: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
+      <Box style={{ display: "grid", gridTemplateColumns: `${tokens.shape.dimension.width.lg} 1fr`, maxWidth: tokens.layout.container.content, marginInline: "auto", width: "100%" }}>
+        <Box as="nav" aria-label="문서 목차" style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, top: NAV_HEIGHT, position: "sticky", alignSelf: "start", padding: tokens.shape.inset.lg, borderRight: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
           <Stack gap="lg">
             {groups.map((group) => (
               <Stack key={group.group} gap="xs">
                 {group.label ? <Text variant="label" ink="faint">{group.label}</Text> : null}
                 {group.docs.map((doc) => (
-                  <Link key={doc.slug || "overview"} to={`/docs/${doc.slug}`} aria-current={slug === doc.slug ? "page" : undefined} style={{ display: "block", padding: `${tokens.layout.padding.xs} ${tokens.layout.padding.sm}`, color: slug === doc.slug ? tokens.color.ink.primary : tokens.color.ink.secondary, textDecoration: "none" }}>
+                  <Link key={doc.slug || "overview"} to={`/docs/${doc.slug}`} aria-current={slug === doc.slug ? "page" : undefined} style={{ display: "block", padding: `${tokens.shape.inset.sm} ${tokens.shape.inset.md}`, color: slug === doc.slug ? tokens.color.ink.primary : tokens.color.ink.secondary, textDecoration: "none" }}>
                     {doc.title}
                   </Link>
                 ))}

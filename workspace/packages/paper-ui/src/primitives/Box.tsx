@@ -1,7 +1,7 @@
 // Box — 면 하나. raw HTML 을 렌더하는 4 개 자리 중 하나.
 //
 // 이 시스템의 Box 는 "무엇이든 되는 div" 가 아니다. 종이 위의 *칸* 이다:
-// 면(surface 깊이) · 테두리(border) · 간격(space) · 모서리(radius) · 그림자(shadow)와
+// 면(surface 깊이) · 테두리(border) · 간격(space) · 모서리(radius) · 높이(elevation)와
 // box model의 크기·잘림을 말할 수 있다. 색(잉크)은 여기 없다 — 큰 면을 색으로 채우지
 // 않는 게 정체성이라, 색은 Button·Badge(accent × variant)가, 잉크는 Text가 정한다.
 // position·flex layout은 열지 않는다. 그건 Stack·Inline 또는 소비처 className의 책임이다.
@@ -12,13 +12,13 @@ import { forwardRef, type ComponentPropsWithRef, type ComponentPropsWithoutRef, 
 
 import { resolveBoxClass, type BoxLike } from "../resolvers";
 import { joinClass } from "../internal/joinClass";
-import { boxRadius, boxShadow, boxBorder } from "./Box.css";
+import { boxRadius, boxElevation, boxBorder } from "./Box.css";
 import { ResolvedThemeContext, useResolvedTheme } from "./theme-context";
-import { SPACE_KEYS, tokens, type Space } from "../tokens";
+import { DIMENSION_KEYS, tokens, type Dimension, type Elevation } from "../tokens";
 
-// named size는 layout token으로 해석한다. Primitive인 Box는 앱 고유 layout도 담아야 하므로
-// CSS 길이 escape hatch를 함께 둔다. `full`과 `fit`은 자주 쓰는 의도를 이름으로 남긴다.
-export type BoxDimension = Space | "full" | "fit" | "min-content" | "max-content" | number | (string & {});
+// named size는 Shape sizing(dimension)으로 해석한다. Primitive인 Box는 앱 고유 layout도 담아야
+// 하므로 CSS 길이 escape hatch를 함께 둔다. `full`과 `fit`은 자주 쓰는 의도를 이름으로 남긴다.
+export type BoxDimension = Dimension | "full" | "fit" | "min-content" | "max-content" | number | (string & {});
 
 export type BoxLayoutProps = {
   width?: BoxDimension;
@@ -36,10 +36,10 @@ const resolveDimension = (value: BoxDimension | undefined, axis: "width" | "heig
   if (value === undefined) return undefined;
   if (value === "full") return "100%";
   if (value === "fit") return "fit-content";
-  if ((SPACE_KEYS as readonly string[]).includes(String(value))) {
+  if ((DIMENSION_KEYS as readonly string[]).includes(String(value))) {
     return axis === "width"
-      ? tokens.layout.width[value as Space]
-      : tokens.layout.height[value as Space];
+      ? tokens.shape.dimension.width[value as Dimension]
+      : tokens.shape.dimension.height[value as Dimension];
   }
   return value;
 };
@@ -51,8 +51,8 @@ type OwnProps<As extends ElementType> = BoxLike & BoxLayoutProps & {
   border?: boolean;
   // 모서리 — 안 주면 각지게 둔다. full 은 알약(높이의 절반).
   radius?: "sm" | "md" | "lg" | "full";
-  // Shadow is reserved for surfaces that float above the page.
-  shadow?: "overlay" | "overlayMinimal";
+  // 높이 — 쌓임 순서(z)와 그림자를 한 번에 정한다. 그림자는 떠 있는 층만 갖는다.
+  elevation?: Exclude<Elevation, "base">;
   // 이 면을 주변의 반대 테마로 — 라이트 위 어두운 판, 다크 위 밝은 판. ThemeScope
   // inverse 와 같은 엔진을 이 Box 자신에 건다(별도 DOM 노드 없이).
   inverse?: boolean;
@@ -76,7 +76,7 @@ const BoxImpl = forwardRef<HTMLDivElement, Omit<BoxProps, "as" | "ref"> & { as?:
   as,
   border,
   radius,
-  shadow,
+  elevation,
   inverse,
   width,
   minWidth,
@@ -113,7 +113,7 @@ const BoxImpl = forwardRef<HTMLDivElement, Omit<BoxProps, "as" | "ref"> & { as?:
         resolveBoxClass(style as BoxLike),
         border && boxBorder,
         radius && boxRadius[radius],
-        shadow && boxShadow[shadow],
+        elevation && boxElevation[elevation],
         className,
       )}
       data-theme={scoped}

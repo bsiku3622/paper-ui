@@ -1,6 +1,6 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
-import { geometry } from "../internal/shape";
+import { focusRing, geometry } from "../internal/shape";
 
 import { tokens, stateTransition, CONTROL_SIZES, type ControlSize } from "../tokens";
 
@@ -26,10 +26,7 @@ export const radioRoot = style({
       borderRadius: tokens.shape.radius.full,
       background: tokens.color.accent.primary.solid,
     },
-    "&:focus-visible": {
-      outline: `${tokens.shape.focus.width} solid ${tokens.color.interaction.focus}`,
-      outlineOffset: tokens.shape.focus.offset,
-    },
+    "&:focus-visible": focusRing,
     "&:disabled": { opacity: 0.45, cursor: "not-allowed" },
   },
 });

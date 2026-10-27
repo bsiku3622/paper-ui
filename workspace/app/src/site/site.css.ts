@@ -15,17 +15,17 @@ const BP = tokens.layout.breakpoint;
 globalStyle(".hero-grid", {
   display: "grid",
   gridTemplateColumns: "minmax(0, 1.05fr) minmax(0, 0.95fr)",
-  gap: tokens.shape.space.xl,
+  gap: tokens.layout.gap.xl,
   alignItems: "center",
   "@media": {
-    [`screen and (max-width: ${BP.md})`]: { gridTemplateColumns: "1fr", gap: tokens.shape.space.lg },
+    [`screen and (max-width: ${BP.md})`]: { gridTemplateColumns: "1fr", gap: tokens.layout.gap.lg },
   },
 });
 
 globalStyle(".principles-grid", {
   display: "grid",
   gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-  gap: tokens.shape.space.md,
+  gap: tokens.layout.gap.md,
   "@media": {
     [`screen and (max-width: ${BP.md})`]: { gridTemplateColumns: "1fr" },
   },

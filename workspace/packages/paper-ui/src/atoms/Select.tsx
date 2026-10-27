@@ -10,8 +10,9 @@ import {
 
 import { joinClass } from "../internal/joinClass";
 import { resolveControlTypography } from "../resolvers";
-import type { ControlSize, TextVariant } from "../tokens";
-import { selectRoot, selectSize, selectFontSize, selectPill, selectWrap, selectArrow } from "./Select.css";
+import { CONTROL_ICON, type ControlSize, type TextVariant } from "../tokens";
+import { Icon } from "../primitives/Icon";
+import { selectRoot, selectSize, selectFontSize, selectPill, selectWrap, selectArrow, selectArrowSize } from "./Select.css";
 
 // className/style target the visible wrapper; ref and native attributes target select.
 export type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "className" | "children" | "size"> & {
@@ -43,7 +44,7 @@ const SelectRoot = forwardRef<HTMLSelectElement, SelectProps>(function SelectRoo
       >
         {children}
       </select>
-      <svg className={selectArrow} viewBox="0 0 12 8" aria-hidden="true" focusable="false"><path d="M1 1.5 6 6.5 11 1.5" /></svg>
+      <Icon size={CONTROL_ICON[size]} className={joinClass(selectArrow, selectArrowSize[size])}><path d="m6 9 6 6 6-6" /></Icon>
     </span>
   );
 });

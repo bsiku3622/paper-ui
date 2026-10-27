@@ -4,7 +4,7 @@ import { tokens, STATUS, stateTransition } from "../tokens";
 import type { StatusName, TextVariant } from "../tokens";
 import { TEXT_VARIANTS } from "../tokens";
 import { outlinedControlProfile, outlinedControlHover } from "../styles/color-profile";
-import { controlGeometry } from "../internal/shape";
+import { controlGeometry, focusRing } from "../internal/shape";
 
 // Field 는 input group — 래퍼가 면·테두리·포커스링·상태·크기를 지고, 안쪽 input 은
 // 투명·무테로 값만 담는다. leading/trailing 어도먼트(아이콘·$·단위·clear·비밀번호)가
@@ -13,7 +13,7 @@ export const fieldWrap = style({
   ...outlinedControlProfile,
   display: "flex",
   alignItems: "center",
-  gap: tokens.shape.space.sm,
+  gap: tokens.shape.control.gap,
   width: "100%",
   borderRadius: tokens.shape.radius.control,
   borderWidth: tokens.shape.stroke.border,
@@ -27,10 +27,7 @@ export const fieldWrap = style({
     },
     // keyboard focus — 안쪽 input 이 :focus-visible일 때만 래퍼 *바깥* 에 파란 링.
     // 클릭은 caret과 edge만 남기고, Tab 탐색 위치에만 ring을 쓴다.
-    "&:not([data-pui-pointer-focus]):has(input:focus-visible)": {
-      outline: `${tokens.shape.focus.width} solid ${tokens.color.interaction.focus}`,
-      outlineOffset: tokens.shape.focus.offset,
-    },
+    "&:not([data-pui-pointer-focus]):has(input:focus-visible)": focusRing,
     "&:has(input:disabled)": { opacity: 0.5, cursor: "not-allowed" },
   },
 });
@@ -119,11 +116,7 @@ export const fieldAction = style({
   transition: stateTransition("color"),
   selectors: {
     "&:hover": { color: tokens.color.ink.primary },
-    "&:focus-visible": {
-      outline: `${tokens.shape.focus.width} solid ${tokens.color.interaction.focus}`,
-      outlineOffset: tokens.shape.focus.offset,
-      borderRadius: tokens.shape.radius.control,
-    },
+    "&:focus-visible": { ...focusRing, borderRadius: tokens.shape.radius.control },
   },
 });
 

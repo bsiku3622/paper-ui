@@ -8,8 +8,8 @@ const BP = tokens.layout.breakpoint;
 
 globalStyle(".detail-body", {
   display: "grid",
-  gridTemplateColumns: `1fr ${tokens.layout.width.lg}`,
-  gap: tokens.shape.space.xl,
+  gridTemplateColumns: `1fr ${tokens.shape.dimension.width.lg}`,
+  gap: tokens.layout.gap.xl,
   alignItems: "start",
   "@media": {
     [`screen and (max-width: ${BP.md})`]: { gridTemplateColumns: "1fr" },
@@ -22,8 +22,8 @@ globalStyle(".preview-stage", {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  minHeight: tokens.layout.height.lg,
-  padding: tokens.layout.padding.xl,
+  minHeight: tokens.shape.dimension.height.lg,
+  padding: tokens.shape.inset["2xl"],
   borderRadius: tokens.shape.radius.surface.lg,
   border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`,
   overflow: "auto",
@@ -32,11 +32,11 @@ globalStyle(".preview-stage--track", { background: tokens.color.control.track })
 
 globalStyle(".preview-surface-switcher", {
   position: "absolute",
-  top: tokens.shape.space.sm,
-  left: tokens.shape.space.sm,
-  zIndex: 1,
+  top: tokens.layout.gap.sm,
+  left: tokens.layout.gap.sm,
+  zIndex: tokens.layout.elevation.raised.z,
   display: "flex",
-  gap: tokens.shape.space.xs,
+  gap: tokens.layout.gap.xs,
 });
 globalStyle(".preview-surface-button", {
   display: "grid",
@@ -78,12 +78,12 @@ globalStyle(".code-block", {
 globalStyle(".code-editor", {
   display: "block",
   width: "100%",
-  minHeight: tokens.layout.height.xl,
+  minHeight: tokens.shape.dimension.height.xl,
   boxSizing: "border-box",
   resize: "vertical",
   margin: 0,
-  paddingBlock: tokens.shape.space.xl,
-  paddingInline: tokens.layout.padding.md,
+  paddingBlock: tokens.shape.inset.xl,
+  paddingInline: tokens.shape.inset.lg,
   border: 0,
   outline: 0,
   background: "transparent",
@@ -100,12 +100,12 @@ globalStyle(".code-editor", {
 
 globalStyle(".code-block--error", { borderColor: tokens.color.accent.error.soft });
 globalStyle(".code-block--editing", { background: tokens.color.bg.sunken });
-globalStyle(".code-error", { display: "block", paddingInline: tokens.layout.padding.md, paddingBottom: tokens.shape.space.sm });
+globalStyle(".code-error", { display: "block", paddingInline: tokens.shape.inset.lg, paddingBottom: tokens.shape.inset.sm });
 
 globalStyle(".code-block pre", {
   margin: 0,
-  paddingBlock: tokens.shape.space.xl,
-  paddingInline: tokens.layout.padding.md,
+  paddingBlock: tokens.shape.inset.xl,
+  paddingInline: tokens.shape.inset.lg,
   overflowX: "auto",
   fontFamily: tokens.text.palette.family.mono,
   fontSize: tokens.text.style.caption.size,
@@ -119,11 +119,11 @@ globalStyle(".code-block pre", {
 
 globalStyle(".code-actions", {
   position: "absolute",
-  top: tokens.layout.padding.xs,
-  right: tokens.layout.padding.xs,
-  zIndex: 1,
+  top: tokens.layout.gap.sm,
+  right: tokens.layout.gap.sm,
+  zIndex: tokens.layout.elevation.raised.z,
   display: "flex",
   alignItems: "center",
-  gap: tokens.shape.space.xs,
+  gap: tokens.layout.gap.xs,
 });
 globalStyle(".code-edit", { minWidth: tokens.shape.control.height.sm });

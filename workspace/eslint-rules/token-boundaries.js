@@ -59,12 +59,27 @@ const noInlineTokens = {
   },
 };
 
+// scope "all" (package): no length literal anywhere — every number lives in a token source.
+// scope "spacing" (apps): spacing, form and depth come from Shape / Layout roles; an app's own
+// content dimensions (widths, heights, grid tracks) stay the app's.
 const noRawGeometry = {
-  meta: { type: "problem", schema: [], messages: { raw: "고정 geometry는 semantic Shape / Layout 토큰이나 내부 recipe에서 선택하세요." } },
+  meta: {
+    type: "problem",
+    schema: [{ type: "object", properties: { scope: { enum: ["all", "spacing"] } }, additionalProperties: false }],
+    messages: { raw: "고정 geometry는 semantic Shape / Layout 토큰이나 내부 recipe에서 선택하세요." },
+  },
   create(context) {
-    const lengthProperty = /^(?:(?:min|max)?(?:Width|Height)|width|height|(?:padding|margin|inset|gap|rowGap|columnGap|top|right|bottom|left|borderRadius|borderWidth|outlineWidth|outlineOffset|strokeWidth).*)$/;
+    const scope = context.options[0]?.scope ?? "all";
+    const lengthProperty = /^(?:(?:min|max)?(?:Width|Height)|width|height|zIndex|(?:padding|margin|inset|gap|rowGap|columnGap|top|right|bottom|left|borderRadius|borderWidth|outlineWidth|outlineOffset|strokeWidth).*)$/;
+    const spacingProperty = /^(?:zIndex|boxShadow|border(?:Top|Right|Bottom|Left|Inline|Block)?|(?:padding|margin|inset|gap|rowGap|columnGap|top|right|bottom|left|borderRadius|outline|outlineWidth|outlineOffset|border\w*Width|border\w*Radius).*)$/;
+    const unitLength = /(?:^|[^\w])[-+]?(?:\d*\.)?\d+(?:px|rem|em|ch)\b/i;
     const check = (node, value) => {
-      if (typeof value === "string" && /(?:^|[^\w])[-+]?(?:\d*\.)?\d+(?:px|rem|em|ch)\b/i.test(value)
+      if (scope === "spacing") {
+        if (node.parent?.type !== "Property" || !spacingProperty.test(propertyName(node) ?? "")) return;
+        if (typeof value === "string" && unitLength.test(value) || typeof value === "number" && value !== 0) context.report({ node, messageId: "raw" });
+        return;
+      }
+      if (typeof value === "string" && unitLength.test(value)
         || typeof value === "number" && value !== 0 && lengthProperty.test(propertyName(node) ?? "")) context.report({ node, messageId: "raw" });
     };
     return {

@@ -60,11 +60,11 @@ export const SiteNav = () => {
   const { pathname } = useLocation();
   const active = SITE_NAV.find((n) => isActive(pathname, n.to))?.to;
   return (
-    <Box as="header" style={{ position: "sticky", top: 0, zIndex: tokens.layout.z.sticky, height: NAV_HEIGHT, background: tokens.color.bg.canvas, borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
-      <Inline align="center" gap="lg" style={{ maxWidth: tokens.layout.container.content, height: "100%", paddingInline: tokens.layout.padding.md, marginInline: "auto" }}>
+    <Box as="header" style={{ position: "sticky", top: 0, zIndex: tokens.layout.elevation.sticky.z, height: NAV_HEIGHT, background: tokens.color.bg.canvas, borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
+      <Inline align="center" gap="lg" style={{ maxWidth: tokens.layout.container.content, height: "100%", paddingInline: tokens.shape.inset.lg, marginInline: "auto" }}>
         <Brand />
-        <Box as="nav" aria-label="주요 메뉴" style={{ display: "flex", alignItems: "center", gap: tokens.shape.space.sm, flex: 1 }}>
-          {SITE_NAV.map((n) => <Link key={n.to} to={n.to} aria-current={active === n.to ? "page" : undefined} style={{ color: active === n.to ? tokens.color.ink.primary : tokens.color.ink.secondary, textDecoration: "none", padding: `${tokens.shape.space.xs} ${tokens.shape.space.sm}` }}>{n.label}</Link>)}
+        <Box as="nav" aria-label="주요 메뉴" style={{ display: "flex", alignItems: "center", gap: tokens.layout.gap.sm, flex: 1 }}>
+          {SITE_NAV.map((n) => <Link key={n.to} to={n.to} aria-current={active === n.to ? "page" : undefined} style={{ color: active === n.to ? tokens.color.ink.primary : tokens.color.ink.secondary, textDecoration: "none", padding: `${tokens.shape.inset.xs} ${tokens.shape.inset.sm}` }}>{n.label}</Link>)}
         </Box>
         <Inline gap="sm" align="center">
           <ThemeToggle />

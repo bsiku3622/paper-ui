@@ -121,8 +121,8 @@ export const Playground = () => {
             <Text variant="caption" ink="soft">
               Accent × variant · 각 칸은 실제 accent와 variant 조합입니다.
             </Text>
-            <Box surface="raised" border radius="md" style={{ maxWidth: "100%", overflowX: "auto", padding: "0.75rem" }}>
-              <Box role="table" data-testid="color-variant-matrix" aria-label="Accent and button variant combinations" style={{ display: "grid", gridTemplateColumns: `repeat(${COLOR_ACCENTS.length + 1}, max-content)`, gap: "0.5rem", alignItems: "center", width: "max-content" }}>
+            <Box surface="raised" border radius="md" padding="md" style={{ maxWidth: "100%", overflowX: "auto" }}>
+              <Box role="table" data-testid="color-variant-matrix" aria-label="Accent and button variant combinations" gap="sm" style={{ display: "grid", gridTemplateColumns: `repeat(${COLOR_ACCENTS.length + 1}, max-content)`, alignItems: "center", width: "max-content" }}>
                 <Text variant="caption">Variant</Text>
                 {COLOR_ACCENTS.map((accent) => <Text key={accent} variant="caption">{accent}</Text>)}
                 {BUTTON_VARIANTS.flatMap((variant) => [

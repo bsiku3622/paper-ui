@@ -1,102 +1,70 @@
-// ╔══════════════════════════════════════════════════════════════════════════╗
-// ║ Layout — 배치 자리의 토큰 (studio-ui 구조 이식)                          ║
-// ║                                                                          ║
-// ║ 책임은 *배치* — z 층 · breakpoint · 자기 크기 intent · position.         ║
-// ║ 면의 폭·높이·읽기 폭·block padding도 Layout이 소유한다.             ║
-// ╚══════════════════════════════════════════════════════════════════════════╝
+// Layout — the relations between elements: the gap between siblings, the page frame (gutter ·
+// container), the viewport (breakpoints) and depth (elevation = stacking order + shadow).
 //
-// paper-ui 는 "고를 것을 줄인다" — 그래서 layout 은 *어휘* 를 노출하되(z tier ·
-// breakpoint · size intent · position), 반응형 Box 프로퍼티를 전면 열지는 않는다.
-// 유연함은 escape(Box style)로 연다(정체성: 구조 안전 > 자유도). 이 파일은 그
-// 어휘의 단일 출처다.
+// Same direction as Shape:
 //
-// z와 block geometry는 CSS var로 emit(LAYOUT_VALUES). breakpoint 는 @media 쿼리 조건이라 CSS var
-// 를 못 읽으므로 값으로만 둔다(motion 과 같은 결). size intent · position 은
-// keyword 어휘 — var 인디렉션 없이 값을 직접 쓴다.
-
-import { SHAPE_PALETTE as p } from "./shape-palette";
-
-// ───── z — 층 tier (6 단, 10 간격) ──────────────────────────────────────────
+//   LAYOUT_SOURCE   authored dp numbers
+//   LAYOUT_VALUES   emitted once as --pui-layout-* (styles/theme.css.ts)
+//   LAYOUT          public roles
 //
-// 같은 tier 안에서 ±1~2 미세조정 여지를 남긴 10 간격. raised(카드 살짝 위) 와
-// toast(가장 위)를 더해 studio-ui 의 6 tier 를 채운다.
+// Distances select from the Shape space scale, so a gap and an inset of the same step are the
+// same length. Elevation shadows take their tint from Color when the theme is emitted.
 
-export const Z = {
-  base: "0",
-  raised: "10", // 살짝 뜬 것 (세그먼트 활성 등)
-  sticky: "20", // sticky 헤더 · 사이드바
-  overlay: "30", // Floating content
-  modal: "40", // Blocking surfaces
-  toast: "50", // 가장 위 알림
+import { buildVarTree, lengths, pathToVarRef, px } from "./helpers";
+import { SPACE } from "./shape";
+
+export const ELEVATIONS = ["base", "raised", "sticky", "overlay", "modal", "toast"] as const;
+export type Elevation = (typeof ELEVATIONS)[number];
+type Depth = "lifted" | "floating";
+type ShadowLayer = readonly [x: number, y: number, blur: number, spread: number];
+
+export const LAYOUT_SOURCE = {
+  container: { content: 1152 },
+  breakpoint: { sm: 480, md: 768, lg: 1024, xl: 1280 },
+  // One elevation decides how a layer stacks and whether it casts a shadow — only what floats
+  // has one. Tiers sit 10 apart so a layer can nudge within its tier without crossing the next.
+  elevation: {
+    base: { z: 0, depth: null },
+    raised: { z: 10, depth: "lifted" },
+    sticky: { z: 20, depth: null },
+    overlay: { z: 30, depth: "floating" },
+    modal: { z: 40, depth: "floating" },
+    toast: { z: 50, depth: "floating" },
+  } satisfies Record<Elevation, { z: number; depth: Depth | null }>,
+  // Shadow geometry per theme. Dark surfaces need tighter, negatively spread layers.
+  shadow: {
+    light: { lifted: [[0, 1, 3, 0]], floating: [[0, 8, 24, 0], [0, 2, 6, 0]] },
+    dark: { lifted: [[0, 1, 2, 0]], floating: [[0, 8, 22, -5], [0, 3, 7, -2]] },
+  } satisfies Record<"light" | "dark", Record<Depth, readonly ShadowLayer[]>>,
 } as const;
-export type ZTier = keyof typeof Z;
 
-// ───── breakpoint — 뷰포트 분기 (값. @media 는 CSS var 를 못 읽는다) ────────
-//
-// mobile 은 base(0). 앱이 @media 를 손으로 쓸 때 이 값을 기준으로 맞춘다.
-
-export const BREAKPOINT = {
-  sm: "480px",
-  md: "768px", // 2 열 → 1 열로 접히는 기준 (hero · 격자)
-  lg: "1024px",
-  xl: "1280px",
-} as const;
-export type Breakpoint = keyof typeof BREAKPOINT;
-
-// ───── size intent — width/height keyword 어휘 ──────────────────────────────
-//
-// 절대값은 LAYOUT_VALUES의 width·height에 둔다. 여기는 keyword만.
-
-export const SIZE_INTENT = {
-  full: "100%",
-  auto: "auto",
-  fit: "fit-content",
-  min: "min-content",
-  max: "max-content",
-  screenW: "100vw",
-  screenH: "100vh",
-} as const;
-export type SizeIntent = keyof typeof SIZE_INTENT;
-
-// ───── position — 자기 자리 keyword ─────────────────────────────────────────
-
-export const POSITIONS = ["relative", "absolute", "fixed", "sticky"] as const;
-export type Position = (typeof POSITIONS)[number];
-
-// ───── inset — container 안에서 띄우는 여백 어휘 (block padding scale) ─
-
-export const INSET = {
-  "0": "0",
-  xs: p.space[8],
-  sm: p.space[12],
-  md: p.space[16],
-  lg: p.space[20],
-  xl: p.space[32],
-} as const;
-export type InsetSize = keyof typeof INSET;
-
-// ───── VALUES — z와 block geometry를 CSS var로 굽는다 ──────────────────────────────────────
+// The Color shadow tint each depth is drawn with.
+export const SHADOW_TINT = { lifted: "overlayMinimal", floating: "overlay" } as const satisfies Record<Depth, string>;
 
 export const LAYOUT_VALUES = {
-  z: Z,
-  width: { xs: p.size[72], sm: p.size[108], md: p.size[160], lg: p.size[240], xl: p.size[360] },
-  height: { xs: p.size[64], sm: p.size[96], md: p.size[144], lg: p.size[216], xl: p.size[320] },
-  padding: { xs: p.space[8], sm: p.space[12], md: p.space[16], lg: p.space[20], xl: p.space[32] },
-  measure: { xs: p.measure[28], sm: p.measure[32], md: p.measure[38], lg: p.measure[42], xl: p.measure[46] },
+  container: lengths(LAYOUT_SOURCE.container),
+  elevation: Object.fromEntries(ELEVATIONS.map((level) => [level, { z: String(LAYOUT_SOURCE.elevation[level].z) }])) as Record<Elevation, { z: string }>,
 } as const;
 
-// ───── container — 앱 셸 최대 폭 (읽기 폭 measure 와 별개) ──────────────────
+// Shadows change with the theme, so theme.css.ts emits them per theme under this path.
+export const elevationShadowPath = (level: Elevation) => ["layout", "elevation", level, "shadow"] as const;
+export const elevationShadow = (level: Elevation, theme: "light" | "dark", tint: (name: (typeof SHADOW_TINT)[Depth]) => string): string => {
+  const depth = LAYOUT_SOURCE.elevation[level].depth;
+  if (!depth) return "none";
+  return LAYOUT_SOURCE.shadow[theme][depth].map((layer) => `${layer.map(px).join(" ")} ${tint(SHADOW_TINT[depth])}`).join(", ");
+};
 
-export const CONTAINER = {
-  content: "72rem", // 사이트 본문 격자·GNB 가 이 폭 안에서 가운데 정렬
-} as const;
-export type ContainerSize = keyof typeof CONTAINER;
+const source = buildVarTree(LAYOUT_VALUES, ["layout"]);
 
-// var 로 굽지 않는 어휘(값). tokens.layout 이 z(var) 옆에 이들을 값으로 든다.
-export const LAYOUT_CONST = {
-  breakpoint: BREAKPOINT,
-  sizeIntent: SIZE_INTENT,
-  position: POSITIONS,
-  inset: INSET,
-  container: CONTAINER,
+export const LAYOUT = {
+  gap: SPACE,
+  // The distance between the page edge and its content.
+  gutter: SPACE.lg,
+  container: source.container,
+  // Media queries cannot read variables, so breakpoints are values.
+  breakpoint: lengths(LAYOUT_SOURCE.breakpoint, px),
+  elevation: Object.fromEntries(ELEVATIONS.map((level) => [level, {
+    z: source.elevation[level].z,
+    shadow: pathToVarRef(elevationShadowPath(level)),
+  }])) as Record<Elevation, { z: string; shadow: string }>,
 } as const;

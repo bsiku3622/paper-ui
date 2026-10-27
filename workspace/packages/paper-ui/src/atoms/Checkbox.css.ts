@@ -1,6 +1,6 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
-import { geometry } from "../internal/shape";
+import { focusRing, geometry } from "../internal/shape";
 
 import { tokens, stateTransition, CONTROL_SIZES, type ControlSize } from "../tokens";
 
@@ -21,28 +21,24 @@ export const checkboxRoot = style({
     "&:checked": { background: tokens.color.accent.primary.solid, borderColor: tokens.color.accent.primary.solid },
     "&:checked::after": {
       content: "''",
-      borderLeft: `${geometry.checkbox.markStroke} solid ${tokens.color.accent.primary.wash}`,
-      borderBottom: `${geometry.checkbox.markStroke} solid ${tokens.color.accent.primary.wash}`,
+      borderLeft: `${geometry.checkbox.stroke} solid ${tokens.color.accent.primary.wash}`,
+      borderBottom: `${geometry.checkbox.stroke} solid ${tokens.color.accent.primary.wash}`,
       transform: geometry.checkbox.markTransform,
     },
-    // indeterminate — 부분 선택. 체크 대신 가로 대시. width % 라 size 를 자동으로 따른다.
+    // indeterminate — 부분 선택. 체크 대신 가로 대시. 길이는 size 축(checkboxSize)이 체크의 긴 변으로 준다.
     "&:indeterminate": { background: tokens.color.accent.primary.solid, borderColor: tokens.color.accent.primary.solid },
     "&:indeterminate::after": {
       content: "''",
-      width: geometry.checkbox.dashWidth,
-      height: geometry.checkbox.markStroke,
-      borderRadius: geometry.checkbox.dashRadius,
+      height: geometry.checkbox.dash.height,
+      borderRadius: geometry.checkbox.dash.radius,
       background: tokens.color.accent.primary.wash,
     },
-    "&:focus-visible": {
-      outline: `${tokens.shape.focus.width} solid ${tokens.color.interaction.focus}`,
-      outlineOffset: tokens.shape.focus.offset,
-    },
+    "&:focus-visible": focusRing,
     "&:disabled": { opacity: 0.45, cursor: "not-allowed" },
   },
 });
 
-// size 3 단 — 변(box)·모서리(radius) + 틱(mark 긴변·short 짧은변, 2:1).
+// size 3 단 — 변(box) + 틱(mark 긴변·short 짧은변, 2:1)과 대시 길이. 모서리는 크기와 무관한 한 값.
 export const checkboxSize = styleVariants(
   Object.fromEntries(
     CONTROL_SIZES.map((s) => [
@@ -50,12 +46,13 @@ export const checkboxSize = styleVariants(
       {
         width: tokens.shape.selection.size[s],
         height: tokens.shape.selection.size[s],
-        borderRadius: geometry.checkbox.radius[s],
+        borderRadius: geometry.checkbox.radius,
         selectors: {
           "&:checked::after": {
             width: geometry.checkbox.mark[s],
             height: geometry.checkbox.short[s],
           },
+          "&:indeterminate::after": { width: geometry.checkbox.dash.width[s] },
         },
       },
     ]),

@@ -1,6 +1,6 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
-import { geometry } from "../internal/shape";
+import { focusRing, geometry } from "../internal/shape";
 
 import { tokens, stateTransition, CONTROL_SIZES, type ControlSize } from "../tokens";
 
@@ -26,14 +26,11 @@ export const switchRoot = style({
       transform: "translate(0, -50%)",
       borderRadius: tokens.shape.radius.full,
       background: tokens.color.bg.raised,
-      boxShadow: tokens.shape.shadow.overlayMinimal,
+      boxShadow: tokens.layout.elevation.raised.shadow,
       transition: `transform ${tokens.motion.duration.base} ${tokens.motion.easing.standard}`,
     },
     "&:checked": { background: tokens.color.accent.primary.solid },
-    "&:focus-visible": {
-      outline: `${tokens.shape.focus.width} solid ${tokens.color.interaction.focus}`,
-      outlineOffset: tokens.shape.focus.offset,
-    },
+    "&:focus-visible": focusRing,
     "&:disabled": { opacity: 0.45, cursor: "not-allowed" },
   },
 });
@@ -43,7 +40,8 @@ export const switchRoot = style({
 // 여백은 (h − thumb) / 2 한 값이 사방에 걸린다. 그러면 켜짐 이동은 **w − h** 로 떨어진다:
 //   이동 = w − 여백 2 개 − thumb = w − (h − thumb) − thumb = w − h
 // 값 셋을 따로 계산하지 않고 항등식 하나로 두는 게 요점이다 — 트랙이나 손잡이를 바꿔도
-// 손잡이가 반대쪽 끝에 정확히 붙는다.
+// 손잡이가 반대쪽 끝에 정확히 붙는다. recipe는 트랙 폭을 컨트롤 높이(= 선택 상자 × 2)로 두므로
+// 여백은 손잡이 둘레의 테(rim) 하나, 이동은 손잡이 폭 그대로다.
 export const switchSize = styleVariants(
   Object.fromEntries(
     CONTROL_SIZES.map((s) => {
@@ -54,7 +52,7 @@ export const switchSize = styleVariants(
           width: sw.width[s],
           height: sw.height[s],
           selectors: {
-            "&::after": { width: sw.thumb[s], height: sw.thumb[s], insetInlineStart: sw.inset[s] },
+            "&::after": { width: sw.thumb[s], height: sw.thumb[s], insetInlineStart: sw.inset },
             "&:checked::after": { transform: `translate(${sw.travel[s]}, -50%)` },
             "&:dir(rtl):checked::after": { transform: `translate(calc(${sw.travel[s]} * -1), -50%)` },
           },

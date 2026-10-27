@@ -4,6 +4,15 @@
 //
 // 두 자리가 같은 트리 · 같은 변환 규칙을 쓰므로 이름이 어긋날 수 없다.
 
+// Length units — Shape·Layout author dp numbers (1dp = 1px at the default 16px root) and turn
+// them into CSS only here. Lengths scale with the root font (rem); edges stay in CSS px.
+export const rem = (dp: number): string => `${dp / 16}rem`;
+export const px = (dp: number): string => `${dp}px`;
+
+// Converts every number of a flat scale with one unit.
+export const lengths = <T extends Record<string, number>>(scale: T, unit: (dp: number) => string = rem): { [K in keyof T]: string } =>
+  Object.fromEntries(Object.entries(scale).map(([key, dp]) => [key, unit(dp)])) as { [K in keyof T]: string };
+
 // camelCase → kebab-case
 export const kebab = (s: string): string =>
   s.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`).replace(/^-/, "");

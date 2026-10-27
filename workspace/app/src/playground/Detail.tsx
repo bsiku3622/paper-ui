@@ -201,7 +201,7 @@ const DetailView = ({ spec }: { spec: CompSpec }) => {
         </Stack>
 
         {/* controls */}
-        <Box surface="canvas" radius="md" padding="lg" style={{ position: "sticky", top: `calc(${NAV_HEIGHT} + ${tokens.shape.space.xl})`, border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
+        <Box surface="canvas" radius="md" padding="lg" style={{ position: "sticky", top: `calc(${NAV_HEIGHT} + ${tokens.layout.gap.xl})`, border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
           <Stack gap="lg">
             <Inline justify="between" align="center">
               <Text variant="label">Props</Text>

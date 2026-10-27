@@ -56,11 +56,11 @@ for (const status of STATUS) {
   globalStyle(`.pui-${status}-dot`, { background: t.solid, color: t.solid });
 }
 
-// ───── space — 간격 ────────────────────────────────────────────────────────
+// ───── space — 안쪽 여백은 Shape inset, 형제 사이는 Layout gap ─────────────
 
 for (const s of SPACE_KEYS) {
-  globalStyle(`.pui-p-${s}`, { padding: tokens.shape.space[s] });
-  globalStyle(`.pui-px-${s}`, { paddingInline: tokens.shape.space[s] });
-  globalStyle(`.pui-py-${s}`, { paddingBlock: tokens.shape.space[s] });
-  globalStyle(`.pui-gap-${s}`, { gap: tokens.shape.space[s] });
+  globalStyle(`.pui-p-${s}`, { padding: tokens.shape.inset[s] });
+  globalStyle(`.pui-px-${s}`, { paddingInline: tokens.shape.inset[s] });
+  globalStyle(`.pui-py-${s}`, { paddingBlock: tokens.shape.inset[s] });
+  globalStyle(`.pui-gap-${s}`, { gap: tokens.layout.gap[s] });
 }
