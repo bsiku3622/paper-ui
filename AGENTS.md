@@ -33,9 +33,10 @@ paper-ui/
     │       ├── atoms/
     │       └── provider/
     ├── app/                    # 사이트 · Playground · 문서 · 데모
+    ├── fixtures/harness/       # @paper-ui/harness — e2e 가 패키지를 소비자처럼 마운트하는 페이지
     ├── eslint-rules/           # lint plugin `paper`
-    ├── scripts/                # 레포 검사 (docs-sync · browser-baseline)
-    └── tests/                  # Playwright e2e
+    ├── scripts/                # 레포 검사 (docs-sync · browser-baseline · check-contracts)
+    └── tests/                  # Playwright e2e — foundations · primitives · atoms · app · install, support/
 ```
 
 pnpm 명령은 `workspace/` 에서 실행한다. `core`/`web` 분리는 일부러 없다 — 존재하지
@@ -54,7 +55,7 @@ pui.components`, 뒤의 레이어가 특정도와 무관하게 이긴다. 레이
 `tokens/layers.css.ts` 하나가 정의하고, global.css.ts 가 그것을 맨 먼저 import 해 dist/paper-ui.css 는 레이어
 선언으로 시작한다. 파일마다 갈 레이어가 정해져 있다: theme.css.ts 의 변수는 theme, box-sizing 과 body margin 은
 reset, body 의 면·글자와 포커스 링 · Text 역할 class · reduced motion 은 base, utility.css · typography.css 는
-utilities, color.css 와 primitives · atoms 는 components. `@keyframes` 만 레이어 밖에 선다. 앱 CSS 는 레이어 밖에
+utilities, color.css 와 primitives · atoms 는 components. `@keyframes` 와 `@property` 만 레이어 밖에 선다. 앱 CSS 는 레이어 밖에
 두므로 앱 className 이 로드 순서와 무관하게 패키지를 이긴다.
 
 배포본은 ESM 전용이고 peer 는 react · react-dom `^18.2.0 || ^19.0.0` 이다. 타입은 `tsconfig.build.json`(테스트 ·
@@ -178,13 +179,24 @@ Primitive 계약의 정본은 [docs/primitives/](docs/primitives/README.md)(Layo
 
 ---
 
+## 계약과 테스트
+
+`docs/`의 계약 문장·문단·표 바로 앞에는 렌더되지 않는 표시 `[contract:<area>.<subject>.<slug>]: #`를 한 줄로 둡니다. area는 foundations · primitives · atoms · install · guardrails · app 중 하나입니다. 그 계약을 단언하는 테스트는 제목을 `[<id>]`로 시작하고, 한 테스트가 계약 여럿을 단언하면 id를 이어 씁니다(`[a] [b] 제목`). 새 계약 문장은 같은 변경에서 표시와 테스트를 함께 얻습니다. `scripts/check-contracts.mjs`가 `pnpm test` 안에서 둘을 1:1로 대조합니다 — 같은 id의 표시가 둘이거나, 테스트 없는 표시(skip · todo · fixme · fail 테스트는 세지 않습니다), 표시 없는 테스트 id, 내용 블록이 뒤따르지 않는 표시, 문단·목록·표에 이어 붙어 글자로 보이는 표시는 실패입니다. 표 바로 위의 표시는 GitHub에서 글자로 보이므로 표와 표시 사이에 빈 줄을 둡니다.
+
+테스트 파일은 계층과 시스템 이름을 따릅니다. 단위 테스트는 소스 옆에 `tokens/{color,shape,layout}.test.ts` · `primitives/{layout,content,interaction,a11y}.test.tsx` · `atoms/<Atom>.test.tsx`로, e2e는 `tests/{foundations,primitives,atoms,app,install}/<시스템>.spec.ts`로 둡니다. 테스트 이름에서 Foundations는 Color부터 Motion까지 다섯 시스템만 뜻합니다. e2e 도구(하네스 · 키보드 · 기하 · 콘솔)와 단위 테스트도 함께 쓰는 `dp()`는 `tests/support/`에 있습니다.
+
+e2e는 자기 서버를 직접 띄웁니다. 앱은 41731, 하네스(`fixtures/harness`, `?case=geometry|theme|layers`)는 41732 포트에서 `--strictPort`로 뜨고 이미 떠 있는 서버를 재사용하지 않으므로, 포트를 다른 서버가 쓰고 있으면 실행이 실패합니다. 포트는 `E2E_APP_PORT` · `E2E_HARNESS_PORT`로 바꿉니다. 하네스는 Vite 내부 경로 없이 패키지를 exports로만 불러옵니다. 프로젝트는 chromium · chromium-dark · chromium-reduced-motion · chromium-forced-colors · firefox · webkit 여섯입니다. firefox · webkit은 `foundations/shape` · `primitives` · `atoms` spec을 돌고, `tests/dist/`는 배포본 전용 설정만 돌립니다 — 이름은 dist여도 산출물이 아니라 소스이므로 git · eslint · check-contracts는 산출물 `dist/`와 달리 이 디렉터리를 읽습니다. Tab은 `tests/support/keyboard.ts`의 `tab()`으로만 누릅니다 — macOS WebKit에서는 Alt+Tab이어야 버튼까지 닿습니다. 한 엔진에서만 나는 실패는 `playwright.config.ts`의 `ENGINE_EXCLUSIONS`에 이유와 다시 켜는 단계를 적어 그 엔진에서만 끕니다.
+
+---
+
 ## 작업 완료 전 체크
 
-- [ ] `pnpm verify` 가 통과했는가 — check(lint · typecheck · 단위 테스트) → build(패키지 → 앱) → e2e. CI 와 배포 전 검사(`prepublishOnly`)가 같은 명령을 돌린다
+- [ ] `pnpm verify` 가 통과했는가 — check(lint · typecheck · 단위 테스트 · 계약 대조) → build(패키지 → 앱) → e2e. CI 와 배포 전 검사(`prepublishOnly`)가 같은 명령을 돌린다
 - [ ] 작업 중에는 `pnpm check` 로 빠르게 확인하고, Foundations · Primitives · Atoms 를 바꿨다면 `pnpm test:e2e` 도 함께 돌렸는가
 - [ ] 패키지 package.json · entry · 빌드를 바꿨다면 `pnpm --filter @studio-baeks/paper-ui check:package` 도 돌렸는가
 - [ ] CSS 기능을 새로 썼다면 `scripts/browser-baseline.mjs` 표에 그 행을 더했는가
 - [ ] 색을 추가했다면 — 정말 *의미* 가 있는가. 장식이면 넣지 않는다
 - [ ] 큰 면을 색으로 채우지 않았는가 (면은 검정 primary만)
 - [ ] Primitive·Atom API를 수정했다면 — app의 실제 사용 예와 문서를 갱신했는가
+- [ ] 문서에 계약 문장을 더했다면 — 같은 변경에서 `[contract:…]: #` 표시와 그 id로 시작하는 테스트를 더했는가
 - [ ] 데모(`app/`)가 여전히 서는가

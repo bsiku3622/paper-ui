@@ -24,6 +24,7 @@ SHAPE_RECIPES   컴포넌트 anatomy: 역할과 원본 anatomy를 조합한 식 
 *.css.ts        className으로 적용
 ```
 
+[contract:foundations.override.rederives-roles]: #
 역할은 자기 변수를 갖지 않습니다. 별칭은 원본 변수 그 자체이고, 식은 그 식을 쓰는 요소에서 계산됩니다. 그래서 어떤 하위 트리에서 원본 변수 하나를 덮어쓰면, 그 위에 지은 역할과 recipe가 그 자리에서 모두 다시 계산됩니다. 아래 예시는 한 영역의 컨트롤 높이만 바꿉니다.
 
 ```css
@@ -59,10 +60,12 @@ Box의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값이 
 
 ## Stroke · Focus
 
+[contract:foundations.shape.stroke-px]: #
 선과 포커스 링은 root 글자 크기를 따라 커지지 않도록 CSS px로 둡니다. `stroke.border` 1px은 테두리와 Divider, `stroke.emphasis` 2px은 체크 표시·Spinner 링·스위치 손잡이 둘레, `stroke.icon` 1.75는 24 artboard 위 SVG 선입니다. 포커스 링은 `focus.width` 2px · `focus.offset` 2px이고, 패키지의 모든 포커스 링은 한 스타일(`focusRing`)을 공유합니다. 링의 두께와 offset은 Shape, 색은 Color(`interaction.focus`)가 소유합니다.
 
 ## Control
 
+[contract:foundations.shape.control-geometry]: #
 컨트롤에서 원본은 높이 하나입니다. 나머지는 높이와 컨트롤 글자 줄(Typography의 control preset, 행간 16)에서 계산합니다.
 
 | 역할 | sm | md | lg | 식 |
@@ -90,6 +93,8 @@ Box의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값이 
 ## Recipe — 컴포넌트 anatomy
 
 `SHAPE_RECIPES`에는 숫자가 없습니다. 모든 값이 역할이거나, 원본의 anatomy 값이거나, 그 둘 위의 식입니다.
+
+[contract:foundations.shape.recipe-geometry]: #
 
 | 대상 | 규칙 |
 |---|---|

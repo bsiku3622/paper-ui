@@ -29,3 +29,6 @@ Atoms         Button · Field · Select · Checkbox · Badge …
 - **원본은 한 곳.** 모든 색·크기·시간은 각 시스템의 원본에 한 번만 적히고, 컴포넌트와 앱은 역할을 고릅니다.
 - **직교하는 축.** 컨트롤은 의미(accent)와 시각적 무게(variant), 밀도(size)와 글자(fontSize)를 각각 다른 축으로 고릅니다.
 - **규칙은 빌드가 지킨다.** 여섯 규칙과 접근성(jsx-a11y)을 문서가 아니라 eslint가 강제하고, 패키지 build와 배포 전 검사, CI가 그 검사를 매번 돌립니다.
+
+[contract:guardrails.contracts.one-to-one]: #
+문서의 계약 문장 앞에는 화면에 보이지 않는 표시(`[contract:<id>]: #`)가 있고 그 계약을 검사하는 테스트는 제목을 같은 id로 시작하므로, `pnpm test`가 둘을 1:1로 대조해 테스트 없는 계약과 문서에 없는 계약을 가리키는 테스트를 모두 실패로 잡습니다.

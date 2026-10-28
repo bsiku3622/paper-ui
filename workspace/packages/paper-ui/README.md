@@ -38,7 +38,7 @@ If the stylesheet is missing, `PaperProvider` warns once in development.
 
 Every rule in the stylesheet sits in the cascade layer `pui`, ordered
 `pui.reset < pui.theme < pui.base < pui.utilities < pui.components`; only `@keyframes`
-stand outside it. Your own CSS, left unlayered, beats all of it whatever the load
+and `@property` rules stand outside it. Your own CSS, left unlayered, beats all of it whatever the load
 order or specificity, so a `className` you pass overrides state rules such as hover
 and disabled too. Put element resets in a layer declared before `pui` — `@layer reset, pui;`
 in a stylesheet that loads before this one — or they will override the components as well.

@@ -22,7 +22,7 @@ describe("Select", () => {
     expect(screen.getByRole("option", { name: "옵션 B" }).hasAttribute("disabled")).toBe(true);
   });
 
-  it("ref와 폼 속성은 native select, className과 style은 wrapper로 전달한다", () => {
+  it("[atoms.select.native-form] ref와 폼 속성은 native select, className과 style은 wrapper로 전달한다", () => {
     const ref = createRef<HTMLSelectElement>();
     render(<form aria-label="form"><Select ref={ref} name="choice" aria-label="choice" className="custom-select" style={{ width: 240 }} defaultValue="a">
       <Select.Option value="a">A</Select.Option>

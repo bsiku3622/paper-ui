@@ -94,3 +94,10 @@ test("[guardrails.no-rule-disable.reason-required] other rules are switched off 
   const unused = await errors("// eslint-disable-next-line jsx-a11y/no-autofocus -- 가릴 것이 없는 주석\nexport const x = 1;");
   assert.equal(unused.some((message) => message.ruleId === null && message.message.startsWith("Unused eslint-disable directive")), true);
 });
+
+test("build output is not linted, but the specs under tests/dist are", async () => {
+  for (const path of ["packages/paper-ui/dist/index.js", "app/dist/assets/index.js", "fixtures/harness/dist/main.js", "tests/foundations/dist/probe.spec.ts"]) {
+    assert.equal(await eslint.isPathIgnored(path), true, path);
+  }
+  assert.equal(await eslint.isPathIgnored("tests/dist/consumer.spec.ts"), false);
+});

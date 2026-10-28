@@ -18,7 +18,8 @@ const rawBarrelRestriction = {
 export default [
   // 워크스페이스 전체(패키지 · 앱 · fixture · 테스트 · 스크립트 · eslint-rules · 설정 파일)를 본다.
   // 산출물은 린트하지 않는다 — 번들에 섞인 eslint-disable 주석이 dist 에선 미등록 규칙("unknown rule")으로 걸린다.
-  { ignores: ["**/dist/**", "**/.types/**", "**/node_modules/**", "**/test-results/**", "**/playwright-report/**", "app/public/docs/**"] },
+  // 배포본을 검사하는 spec 이 사는 tests/dist 는 산출물이 아니라 소스다.
+  { ignores: ["**/dist/**", "!tests/dist/**", "**/.types/**", "**/node_modules/**", "**/test-results/**", "**/playwright-report/**", "app/public/docs/**"] },
   // 쓰이지 않는 disable 주석도 오류다 — 이유가 사라진 주석이 남아 다음 위반을 가리지 않게.
   { linterOptions: { reportUnusedDisableDirectives: "error" } },
 

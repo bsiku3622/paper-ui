@@ -1,5 +1,7 @@
 node_modules/
+# build output, except the specs in tests/dist that run against it
 dist/
+!workspace/tests/dist/
 .types/
 *.tgz
 *.tsbuildinfo

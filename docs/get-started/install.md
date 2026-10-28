@@ -30,14 +30,16 @@ import "@studio-baeks/paper-ui/styles.css";
 
 ## 우선순위
 
+[contract:install.layers.every-rule-layered]: #
 패키지의 CSS 규칙은 모두 cascade layer `pui` 안에 있습니다. `pui`는 다섯 하위 레이어로 나뉘고, 뒤에 선언된 레이어가 특정도와 무관하게 앞의 레이어를 이깁니다.
 
 ```text
 pui.reset < pui.theme < pui.base < pui.utilities < pui.components
 ```
 
-`reset`에는 box-sizing과 body 여백, `theme`에는 CSS 변수, `base`에는 문서 바탕(body의 면과 글자, 포커스 링, Text 역할, reduced motion)이 있습니다. `utilities`에는 유틸리티 클래스가, `components`에는 Primitive와 Atom의 스타일이 있습니다. `@keyframes`만 레이어 밖에 섭니다.
+`reset`에는 box-sizing과 body 여백, `theme`에는 CSS 변수, `base`에는 문서 바탕(body의 면과 글자, 포커스 링, Text 역할, reduced motion)이 있습니다. `utilities`에는 유틸리티 클래스가, `components`에는 Primitive와 Atom의 스타일이 있습니다. `@keyframes`와 `@property`만 레이어 밖에 섭니다.
 
+[contract:install.layers.app-css-wins]: #
 앱의 CSS는 레이어 밖에 두는 것이 기본입니다. 레이어 밖의 CSS는 로드 순서와 특정도에 상관없이 패키지 CSS를 이깁니다. 그래서 앱이 컴포넌트에 넘긴 className은 스타일시트가 어떤 순서로 실리든 hover·disabled 같은 상태 규칙까지 덮습니다. `!important`는 반대로 레이어 안의 것이 이깁니다. 사용자가 움직임을 줄였을 때(reduced motion) 패키지가 거는 `!important`는 앱의 `!important`보다 강합니다.
 
 같은 이유로 앱의 요소 reset(예: `button { background: none }`)도 레이어 밖에 두면 컴포넌트 스타일까지 이깁니다. 전역 reset은 `pui`보다 먼저 선언한 레이어에 넣어주세요. 레이어의 순서는 처음 선언된 순서로 정해지므로, 아래 선언을 담은 CSS는 `styles.css`보다 먼저 불러와야 합니다.

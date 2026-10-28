@@ -1,56 +1,18 @@
-import { resolve } from "node:path";
 import { expect, test, type Page } from "@playwright/test";
 
-// Render the real package through Vite, without a test-only route in the product app.
+import { metrics as measure } from "../support/geometry";
+import { openHarness } from "../support/harness";
+import { tab } from "../support/keyboard";
+
+// The real package, mounted by the harness through its exports (?case=geometry).
 const mount = async (page: Page) => {
-  const modules: Record<string, string> = {};
-  page.on("response", (response) => {
-    for (const name of ["react.js", "react-dom_client.js"]) {
-      if (new URL(response.url()).pathname.endsWith(`/${name}`)) modules[name] = response.url();
-    }
-  });
-  await page.goto("/playground");
-  await expect(page.getByRole("heading", { name: "Playground", exact: true })).toBeVisible();
-  await page.evaluate(async ({ entry, modules }) => {
-    const react = await import(modules["react.js"]!);
-    const h = (react.default ?? react).createElement;
-    const dom = await import(modules["react-dom_client.js"]!);
-    const { createRoot } = dom.default ?? dom;
-    const ui = await import(entry);
-    document.getElementById("root")!.style.display = "none";
-    const host = document.createElement("div");
-    host.id = "shape-fixture";
-    document.body.append(host);
-    const options = [h(ui.Select.Option, { key: "empty", value: "" }, "Choose"), h(ui.Select.Option, { key: "a", value: "a" }, "Option A")];
-    createRoot(host).render(h("form", { id: "shape-form" },
-      h("button", { type: "button", id: "before-select" }, "Before"),
-      ...["sm", "md", "lg"].map((size) => h("div", { key: size, "data-size": size },
-        h(ui.Button, { size, "data-testid": `button-${size}` }, "Button"),
-        h(ui.IconButton, { size, "aria-label": `icon-${size}`, "data-testid": `icon-${size}` }, h(ui.Icon, {}, h("path", {d:"M12 4v16M4 12h16"}))),
-        h(ui.Field, { size, "aria-label": `field-${size}`, "data-testid": `field-${size}` }),
-        h(ui.Select, { size, name: `select-${size}`, "aria-label": `select-${size}` }, options),
-        h(ui.Textarea, { size, "aria-label": `textarea-${size}` }),
-        h(ui.Checkbox, { size, defaultChecked: true, "aria-label": `checkbox-${size}` }),
-        h(ui.Radio, { size, defaultChecked: true, "aria-label": `radio-${size}` }),
-        h(ui.Switch, { size, defaultChecked: true, "aria-label": `switch-${size}` }),
-        h(ui.Badge, { size, "data-testid": `badge-${size}` }, "Badge"),
-      )),
-      h(ui.Box, { radius: "sm", "data-testid": "surface-corner" }, "Surface"),
-      h(ui.ThemeScope, { theme: "dark" },
-        h(ui.Select, { "aria-label": "dark-select", defaultValue: "a" }, options),
-        h(ui.ThemeScope, { theme: "light" }, h(ui.Select, { "aria-label": "nested-light-select" }, options)),
-      ),
-    ));
-  }, { entry: `/@fs${resolve("packages/paper-ui/src/index.ts")}`, modules });
+  await openHarness(page, "geometry");
   await expect(page.getByLabel("select-md", { exact: true })).toBeVisible();
 };
 
-const metrics = (page: Page, selector: string, pseudo?: string) => page.locator("#shape-fixture").locator(selector).evaluate((element, pseudo) => {
-  const s = getComputedStyle(element, pseudo);
-  return { width: parseFloat(s.width), height: parseFloat(s.height), padding: parseFloat(s.paddingInlineStart), blockPadding: parseFloat(s.paddingBlockStart), radius: parseFloat(s.borderRadius), transform: s.transform, inset: parseFloat(s.insetInlineStart) };
-}, pseudo);
+const metrics = (page: Page, selector: string, pseudo?: string) => measure(page.locator("#shape-fixture").locator(selector), pseudo);
 
-test("all control sizes retain their geometry and optical marks", async ({ page }) => {
+test("[foundations.shape.control-geometry] [foundations.shape.recipe-geometry] all control sizes retain their geometry and optical marks", async ({ page }) => {
   await mount(page);
   const sizes = ["sm", "md", "lg"];
   for (const [i, size] of sizes.entries()) {
@@ -82,7 +44,7 @@ test("all control sizes retain their geometry and optical marks", async ({ page 
   }
 });
 
-test("one source override in a subtree re-derives every role built on it", async ({ page }) => {
+test("[foundations.override.rederives-roles] one source override in a subtree re-derives every role built on it", async ({ page }) => {
   await mount(page);
   await page.locator("#shape-fixture").evaluate((element) => {
     for (const [name, value] of Object.entries({
@@ -111,7 +73,7 @@ test("one source override in a subtree re-derives every role built on it", async
   await expect.poll(async () => (await metrics(page, "[aria-label=switch-md]", "::after")).transform).toBe("matrix(1, 0, 0, 1, -18, -9)");
 });
 
-test("rem geometry scales together while edge strokes stay in CSS pixels", async ({ page }) => {
+test("[foundations.shape.stroke-px] rem geometry scales together while edge strokes stay in CSS pixels", async ({ page }) => {
   await mount(page);
   await page.evaluate(() => { document.documentElement.style.fontSize = "20px"; });
   expect((await metrics(page, "[data-testid=button-md]")).height).toBe(40);
@@ -125,7 +87,7 @@ test("rem geometry scales together while edge strokes stay in CSS pixels", async
   await expect(page.locator("#shape-fixture [data-testid=button-md]")).toHaveCSS("border-top-width", "1px");
 });
 
-test("Select keeps native form and keyboard contracts while its arrow follows scoped ink", async ({ page }) => {
+test("[atoms.select.native-form] Select keeps native form and keyboard contracts while its arrow follows scoped ink", async ({ page }) => {
   await mount(page);
   const select = page.getByLabel("select-md", { exact: true });
   const arrow = select.locator("+ svg");
@@ -140,8 +102,8 @@ test("Select keeps native form and keyboard contracts while its arrow follows sc
   await select.click();
   await page.keyboard.press("Escape");
   await expect(select).toHaveCSS("outline-style", "none");
-  await page.keyboard.press("Tab");
-  await page.keyboard.press("Shift+Tab");
+  await tab(page);
+  await tab(page, { shift: true });
   await expect(select).toBeFocused();
   await expect(select.locator("..")).toHaveCSS("outline-width", "2px");
   await select.locator("..").evaluate((element) => { element.style.width = "240px"; });

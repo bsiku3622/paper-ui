@@ -11,6 +11,7 @@ Content Primitive는 화면에 읽히는 것 — 글자와 아이콘 — 을 그
 
 `variant`가 크기·굵기·행간·자간·기본 잉크를 한 번에 정하고, 태그는 `as`가 따로 정합니다. 시각 위계와 의미 태그가 직교하므로, 같은 `title`이 페이지에서는 `h1`, 대화상자 안에서는 `h2`가 될 수 있습니다. 역할별 값은 [Typography](../foundations/typography.md)에 있습니다.
 
+[contract:primitives.text.ink-beats-variant]: #
 크기·굵기·색을 따로 고르는 prop은 없습니다. `ink`만 variant 기본값 위로 한 번 덮을 수 있습니다.
 
 | ink | 뜻 |

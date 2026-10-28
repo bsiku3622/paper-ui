@@ -45,13 +45,19 @@ Every Foundations system writes its numbers once, in its source, and exposes rol
 cd workspace
 pnpm install
 pnpm dev          # site, playground, docs and the demo screen
-pnpm check        # lint, typecheck and unit tests: the fast loop while working
+pnpm check        # lint, typecheck, unit tests and the contract check: the fast loop while working
 pnpm verify       # check, then the package and app builds, then e2e: what CI and prepublish run
 pnpm typecheck
 pnpm lint
-pnpm test         # unit
-pnpm test:e2e     # playground contracts, asserted on computed values
+pnpm test         # unit tests and the contract check (every docs contract has its test)
+pnpm test:e2e     # e2e on computed values: six projects across Chromium, Firefox and WebKit
 ```
+
+`pnpm test:e2e` starts its own two servers: the app on port 41731 and the test harness
+(`workspace/fixtures/harness`) on 41732. Both run with `--strictPort` and are never reused,
+so the run fails when another process holds either port instead of testing that process.
+Set `E2E_APP_PORT` or `E2E_HARNESS_PORT` to move them. Firefox and WebKit come from
+`pnpm exec playwright install firefox webkit`.
 
 ## Licence
 

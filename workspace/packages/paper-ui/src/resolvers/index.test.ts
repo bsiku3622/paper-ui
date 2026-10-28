@@ -1,5 +1,5 @@
 // resolvers — 규칙의 주인. 브라우저 없이 검증하는 순수 로직 층.
-// (렌더된 구조·색은 tests/playground.spec.ts 의 e2e 가 맡는다.)
+// (렌더된 구조·색은 tests/foundations · tests/primitives 의 e2e 가 맡는다.)
 
 import { describe, it, expect } from "vitest";
 
