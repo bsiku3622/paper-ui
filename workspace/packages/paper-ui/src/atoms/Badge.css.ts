@@ -1,8 +1,9 @@
-import { style, styleVariants } from "@vanilla-extract/css";
-
 import { geometry } from "../internal/shape";
 
 import { tokens, CONTROL_SIZES, TEXT_VARIANTS, type ControlSize, type TextVariant } from "../tokens";
+import { layered } from "../tokens/layers.css";
+
+const { style, styleVariants } = layered("components");
 
 // geometry 만. 색은 resolveAccent(accent, variant) 가 붙이는 pui-a-{accent}-{variant}
 // 클래스가 정한다. Badge 는 gate(pui-interactive)를 안 붙여 hover 색이 뜨지 않는다 —

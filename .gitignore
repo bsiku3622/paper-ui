@@ -1,5 +1,7 @@
 node_modules/
 dist/
+.types/
+*.tgz
 *.tsbuildinfo
 .vite/
 coverage/

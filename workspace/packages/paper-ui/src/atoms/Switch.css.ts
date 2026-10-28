@@ -1,8 +1,9 @@
-import { style, styleVariants } from "@vanilla-extract/css";
-
 import { focusRing, geometry } from "../internal/shape";
 
 import { tokens, stateTransition, CONTROL_SIZES, type ControlSize } from "../tokens";
+import { layered } from "../tokens/layers.css";
+
+const { style, styleVariants } = layered("components");
 
 // 켬/끔 토글. control.track 위 raised 손잡이, 켜지면 primary 트랙.
 // 크기(트랙·손잡이·켜짐 이동)는 size 축(switchSize)이 정한다.

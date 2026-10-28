@@ -1,4 +1,6 @@
-import { style, styleVariants } from "@vanilla-extract/css";
+import { layered } from "../tokens/layers.css";
+
+const { style, styleVariants } = layered("components");
 
 export const inlineRoot = style({ display: "flex", flexDirection: "row", minWidth: 0 });
 

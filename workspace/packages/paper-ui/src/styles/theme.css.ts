@@ -3,8 +3,6 @@
 // 여기와 tokens/index.ts가 L2 semantic VALUES를 CSS variable로 emit한다. OKLCH source와
 // generated HEX는 각 private layer에 격리하고, component·resolver·app은 tokens var()만 본다.
 
-import { globalStyle } from "@vanilla-extract/css";
-
 import { COLOR_VALUES, COLOR_VALUES_DARK } from "../tokens/colors";
 import { SHAPE_VALUES } from "../tokens/shape";
 import { ELEVATIONS, LAYOUT_VALUES, elevationShadow, elevationShadowPath } from "../tokens/layout";
@@ -12,6 +10,13 @@ import { TEXT_VALUES, TEXT_CONTENT, TEXT_VARIANTS } from "../tokens/text";
 import { walkValues, pathToCssVar } from "../tokens/helpers";
 import { tokens } from "../tokens";
 import { focusRing } from "../internal/shape";
+import { layered } from "../tokens/layers.css";
+
+// 변수는 pui.theme, 문서 바탕(body · 포커스 링 · reduced motion)과 Text 역할 class 는 pui.base,
+// box-sizing 과 body margin 은 맨 앞의 pui.reset 에 든다. Text 역할이 base 에 있어서, 같은 요소에
+// 붙는 ink class(pui.utilities)가 출력 순서와 무관하게 역할의 기본 잉크를 이긴다.
+const reset = layered("reset");
+const base = layered("base");
 
 // ╭──────────────────────────────────────────────────────────────────────────╮
 // │ Pass 1 — :root vars                                                      │
@@ -55,19 +60,19 @@ for (const [theme, target] of [["light", lightVars], ["dark", darkVars]] as cons
 }
 
 // :root — 테마 불변 축 + light 색(기본값). Provider 없이도 라이트로 바로 선다.
-globalStyle(":root", { colorScheme: "light", vars: { ...baseVars, ...lightVars } });
+layered("theme").globalStyle(":root", { colorScheme: "light", vars: { ...baseVars, ...lightVars } });
 
 // 테마 스코프 — 색 세트만 교체한다. :root[...] 를 겹쳐 root 레벨(html)에서 특정도로
 // 확실히 이기고, 뒤 홑 [data-theme] 셀렉터가 중첩 div(ThemeScope · Box inverse)를 잡는다.
-globalStyle(':root[data-theme="light"], [data-theme="light"]', { colorScheme: "light", vars: lightVars });
-globalStyle(':root[data-theme="dark"], [data-theme="dark"]', { colorScheme: "dark", vars: darkVars });
+layered("theme").globalStyle(':root[data-theme="light"], [data-theme="light"]', { colorScheme: "light", vars: lightVars });
+layered("theme").globalStyle(':root[data-theme="dark"], [data-theme="dark"]', { colorScheme: "dark", vars: darkVars });
 
 // ╭──────────────────────────────────────────────────────────────────────────╮
 // │ Pass 2 — 캔버스 (body)                                                   │
 // ╰──────────────────────────────────────────────────────────────────────────╯
 
-globalStyle("body", {
-  margin: 0,
+reset.globalStyle("body", { margin: 0 });
+base.globalStyle("body", {
   background: tokens.color.bg.canvas,
   color: tokens.color.ink.primary,
   fontFamily: tokens.text.palette.family.sans,
@@ -78,11 +83,11 @@ globalStyle("body", {
   MozOsxFontSmoothing: "grayscale",
 });
 
-globalStyle("*", { boxSizing: "border-box" });
+reset.globalStyle("*", { boxSizing: "border-box" });
 
 // 포커스는 interaction.focus로 통일 (Apple · Atlassian 시그니처). 색이 가장 작게,
 // 가장 자주 등장하는 포인트 자리.
-globalStyle(":focus-visible", {
+base.globalStyle(":focus-visible", {
   ...focusRing,
   borderRadius: tokens.shape.radius.control,
 });
@@ -93,7 +98,7 @@ globalStyle(":focus-visible", {
 
 for (const v of TEXT_VARIANTS) {
   const spec = tokens.text.style[v];
-  globalStyle(`.pui-text-${v}`, {
+  base.globalStyle(`.pui-text-${v}`, {
     // size · leading · tracking 은 :root var 를 참조 — 값은 Pass 1 한 곳에서만.
     fontFamily: tokens.text.palette.family.sans,
     fontSize: spec.size,
@@ -104,7 +109,7 @@ for (const v of TEXT_VARIANTS) {
     margin: 0,
   });
   // mono 일 때만 — variant px 를 MONO_SCALE 로 줄인다. 두 클래스라 .pui-text-* 를 이긴다.
-  globalStyle(`.pui-text-${v}.pui-mono`, {
+  base.globalStyle(`.pui-text-${v}.pui-mono`, {
     fontSize: `calc(${tokens.text.style[v].size} * ${tokens.text.palette.monoSizeScale})`,
   });
 }
@@ -115,7 +120,7 @@ for (const v of TEXT_VARIANTS) {
 // 넓어 UI 에서 벌어져 보여 조인다 (균일 적용이라 tabular 정렬은 유지). letter-spacing 은
 // 요소당 하나라 영어·한글을 한 런에서 따로 못 준다 — 코드·토큰(영어) 기준 단일값.
 // loop 뒤에 와서 같은 특정도의 .pui-text-* 를 순서로 이긴다.
-globalStyle(".pui-mono", {
+base.globalStyle(".pui-mono", {
   fontFamily: tokens.text.palette.family.mono,
   letterSpacing: tokens.text.palette.tracking.mono,
 });
@@ -124,7 +129,7 @@ globalStyle(".pui-mono", {
 // │ Pass 4 — reduced motion                                                  │
 // ╰──────────────────────────────────────────────────────────────────────────╯
 
-globalStyle("*", {
+base.globalStyle("*", {
   "@media": {
     "(prefers-reduced-motion: reduce)": {
       transitionDuration: `${tokens.motion.duration.reduced} !important`,

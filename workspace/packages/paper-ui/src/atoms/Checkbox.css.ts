@@ -1,8 +1,9 @@
-import { style, styleVariants } from "@vanilla-extract/css";
-
 import { focusRing, geometry } from "../internal/shape";
 
 import { tokens, stateTransition, CONTROL_SIZES, type ControlSize } from "../tokens";
+import { layered } from "../tokens/layers.css";
+
+const { style, styleVariants } = layered("components");
 
 // 크기(변·틱·radius)는 size 축(checkboxSize)이 정한다. 색·틱 모양은 여기 고정.
 export const checkboxRoot = style({

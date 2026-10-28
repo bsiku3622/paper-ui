@@ -138,7 +138,7 @@ useToggleGroup은 같은 상태 옵션과 선택적인 values 목록을 받고 s
 
 ## Overlay
 
-Overlay는 열린 상태와 Trigger·Content·Close를 연결합니다. Root는 DOM wrapper를 만들지 않고 Content가 열릴 때 Portal과 focus 범위를 mount합니다. 기본값은 non-modal dialog overlay입니다. Content의 면·여백·테두리는 className으로 지정합니다.
+Overlay는 열린 상태와 Trigger·Content·Close를 연결합니다. Root는 DOM wrapper를 만들지 않고 Content가 열릴 때 Portal과 focus 범위를 mount합니다. 기본값은 non-modal dialog overlay입니다. Content의 면·여백·테두리는 className으로 지정합니다. 앱이 넘긴 class는 로드 순서가 아니라 레이어로 패키지 스타일을 이깁니다([우선순위](../get-started/install.md#우선순위)).
 
 명시적으로 연 모달에 이름과 닫기 버튼을 제공하는 예시입니다.
 

@@ -1,8 +1,9 @@
-import { style, styleVariants } from "@vanilla-extract/css";
-
 import { tokens, stateTransition, CONTROL_SIZES, TEXT_VARIANTS, type ControlSize, type TextVariant } from "../tokens";
 import { outlinedControlProfile, outlinedControlHover } from "../styles/color-profile";
 import { controlGeometry, focusRing, geometry } from "../internal/shape";
+import { layered } from "../tokens/layers.css";
+
+const { style, styleVariants } = layered("components");
 
 // The wrapper owns appearance and layout; native select owns form and focus behavior.
 export const selectWrap = style({

@@ -1,6 +1,9 @@
-import { styleVariants, type StyleRule } from "@vanilla-extract/css";
+import type { StyleRule } from "@vanilla-extract/css";
 
 import { tokens, CONTROL_SIZES, TEXT_VARIANTS, type ControlSize, type TextVariant } from "../tokens";
+import { layered } from "../tokens/layers.css";
+
+const { styleVariants } = layered("utilities");
 
 type Preset = { size: string; weight: string; leading: string; tracking: string };
 const rule = (preset: Preset): StyleRule => ({

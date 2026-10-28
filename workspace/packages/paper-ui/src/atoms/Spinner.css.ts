@@ -1,8 +1,11 @@
-import { style, styleVariants, keyframes } from "@vanilla-extract/css";
+import { keyframes } from "@vanilla-extract/css";
 
 import { geometry } from "../internal/shape";
 
 import { tokens, CONTROL_SIZES, type ControlSize } from "../tokens";
+import { layered } from "../tokens/layers.css";
+
+const { style, styleVariants } = layered("components");
 
 const spin = keyframes({ to: { transform: "rotate(360deg)" } });
 

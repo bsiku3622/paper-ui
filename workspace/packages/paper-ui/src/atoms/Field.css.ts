@@ -1,10 +1,11 @@
-import { style, styleVariants } from "@vanilla-extract/css";
-
 import { tokens, STATUS, stateTransition } from "../tokens";
 import type { StatusName, TextVariant } from "../tokens";
 import { TEXT_VARIANTS } from "../tokens";
 import { outlinedControlProfile, outlinedControlHover } from "../styles/color-profile";
 import { controlGeometry, focusRing } from "../internal/shape";
+import { layered } from "../tokens/layers.css";
+
+const { style, styleVariants } = layered("components");
 
 // Field 는 input group — 래퍼가 면·테두리·포커스링·상태·크기를 지고, 안쪽 input 은
 // 투명·무테로 값만 담는다. leading/trailing 어도먼트(아이콘·$·단위·clear·비밀번호)가

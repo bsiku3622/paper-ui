@@ -1,6 +1,7 @@
-import { style, styleVariants } from "@vanilla-extract/css";
-
 import { tokens, ELEVATIONS, type Elevation } from "../tokens";
+import { layered } from "../tokens/layers.css";
+
+const { style, styleVariants } = layered("components");
 
 export const boxRadius = styleVariants({
   sm: { borderRadius: tokens.shape.radius.surface.sm },

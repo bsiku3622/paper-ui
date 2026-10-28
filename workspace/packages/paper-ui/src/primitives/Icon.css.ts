@@ -1,6 +1,7 @@
-import { style, styleVariants } from "@vanilla-extract/css";
-
 import { tokens, ICON_SIZES, type IconSize } from "../tokens";
+import { layered } from "../tokens/layers.css";
+
+const { style, styleVariants } = layered("components");
 
 // 이름은 옆에 서는 Text 역할을 따르고, 값은 viewBox 안의 path 여백을 고려한
 // 광학 아트보드 크기(14·16·18·20)로 매핑한다.

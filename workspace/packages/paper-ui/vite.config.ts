@@ -3,17 +3,22 @@ import { defineConfig, type Plugin } from "vite";
 import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
 
 import pkg from "./package.json" with { type: "json" };
+import { buildTargets } from "../../scripts/browser-baseline.mjs";
 
 // The runtime dependencies stay outside the bundle, subpaths included; package.json is their only list.
 const runtime = [...Object.keys(pkg.dependencies), ...Object.keys(pkg.peerDependencies)];
 
-// dist/paper-ui.css keeps the order in which global.css.ts brings in the global styles (theme → typography →
-// utility → color), with the component styles after them. Rollup runs entries sorted by module id, so
-// src/index.ts would run first and pull typography.css ahead of theme.css. The styles entry is therefore
-// wrapped in a virtual module whose "\0" id sorts first, and src/styles shares one chunk, whose CSS keeps that
-// execution order.
+// JS and CSS are lowered only as far as the declared browser floor (package.json "browserslist").
+const target = buildTargets(pkg.browserslist);
+
+// dist/paper-ui.css opens with the layer statement of tokens/layers.css.ts, then keeps the order in which
+// global.css.ts brings in the global styles (theme → typography → utility → color), with the component styles
+// after them. Rollup runs entries sorted by module id, so src/index.ts would run first and pull typography.css
+// ahead of theme.css. The styles entry is therefore wrapped in a virtual module whose "\0" id sorts first, and
+// the layer module and src/styles share one chunk, whose CSS keeps that execution order.
 const STYLES_ENTRY = "\0paper-ui-styles";
 const globalStylesheet = fileURLToPath(new URL("src/styles/global.css.ts", import.meta.url));
+const layerModule = fileURLToPath(new URL("src/tokens/layers.css.ts", import.meta.url));
 const stylesDir = fileURLToPath(new URL("src/styles/", import.meta.url));
 
 const stylesEntryFirst = (): Plugin => ({
@@ -27,6 +32,8 @@ const stylesEntryFirst = (): Plugin => ({
 export default defineConfig({
   plugins: [stylesEntryFirst(), vanillaExtractPlugin()],
   build: {
+    target,
+    cssTarget: target,
     lib: {
       // styles carries the global stylesheet into dist/paper-ui.css only; its JS is not exported.
       entry: { styles: "src/styles/global.css.ts", index: "src/index.ts", tokens: "src/tokens/public.ts" },
@@ -39,7 +46,7 @@ export default defineConfig({
       output: {
         banner: (chunk) => (chunk.isEntry && chunk.name === "index" ? '"use client";' : ""),
         chunkFileNames: "chunks/[name]-[hash].js",
-        manualChunks: (id) => (id.startsWith(stylesDir) ? "global" : undefined),
+        manualChunks: (id) => (id.startsWith(stylesDir) || id.startsWith(layerModule) ? "global" : undefined),
       },
     },
   },

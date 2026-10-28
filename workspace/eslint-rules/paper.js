@@ -89,6 +89,45 @@ const sourceNumbersRule = {
   },
 };
 
+// Package stylesheets reach vanilla-extract's rule APIs only through layered() from tokens/layers.css.ts, so
+// every rule lands in a pui.* cascade layer. keyframes, createVar, fallbackVar and createGlobalVar stay direct
+// imports: @keyframes and @property sit outside layers by design. Type-only imports emit nothing.
+const RULE_APIS = {
+  "@vanilla-extract/css": new Set(["style", "styleVariants", "globalStyle", "createTheme", "createGlobalTheme", "layer", "globalLayer"]),
+  "@vanilla-extract/recipes": new Set(["recipe"]),
+};
+const layeredStylesRule = {
+  meta: {
+    type: "problem",
+    schema: [],
+    messages: {
+      direct: "패키지 stylesheet는 {{name}} 대신 tokens/layers.css.ts의 layered()를 쓰세요. 그래야 규칙이 pui layer 안에 듭니다.",
+      namespace: "패키지 stylesheet는 {{source}} 전체를 import하지 않습니다. 규칙은 tokens/layers.css.ts의 layered()로 만드세요.",
+    },
+  },
+  create(context) {
+    const check = (node, source, specifiers) => {
+      const apis = RULE_APIS[source];
+      if (!apis || node.importKind === "type" || node.exportKind === "type") return;
+      for (const specifier of specifiers) {
+        if (specifier.importKind === "type" || specifier.exportKind === "type") continue;
+        if (specifier.type === "ImportNamespaceSpecifier" || specifier.type === "ExportAllDeclaration") {
+          context.report({ node: specifier, messageId: "namespace", data: { source } });
+          continue;
+        }
+        const imported = specifier.type === "ImportSpecifier" ? specifier.imported : specifier.local;
+        const name = imported.name ?? imported.value;
+        if (apis.has(name)) context.report({ node: specifier, messageId: "direct", data: { name } });
+      }
+    };
+    return {
+      ImportDeclaration(node) { check(node, node.source.value, node.specifiers); },
+      ExportNamedDeclaration(node) { if (node.source) check(node, node.source.value, node.specifiers); },
+      ExportAllDeclaration(node) { check(node, node.source.value, [node]); },
+    };
+  },
+};
+
 // No eslint-disable comment names a paper rule and no `/* eslint */` comment configures one — an exception
 // is declared in eslint.config.js. Any other rule an eslint-disable comment switches off carries its reason
 // after `--`. Reports sit at column 0 of the comment's line: disable directives cover a line from column 1,
@@ -130,5 +169,11 @@ const noRuleDisableRule = {
 };
 
 export default {
-  rules: { "raw-color": rawColorRule, "inline-token": inlineTokenRule, "source-numbers": sourceNumbersRule, "no-rule-disable": noRuleDisableRule },
+  rules: {
+    "raw-color": rawColorRule,
+    "inline-token": inlineTokenRule,
+    "source-numbers": sourceNumbersRule,
+    "layered-styles": layeredStylesRule,
+    "no-rule-disable": noRuleDisableRule,
+  },
 };

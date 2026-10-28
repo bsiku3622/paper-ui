@@ -1,5 +1,7 @@
-import { style, styleVariants } from "@vanilla-extract/css";
 import { tokens, SPACE_KEYS, type Space } from "../tokens";
+import { layered } from "../tokens/layers.css";
+
+const { style, styleVariants } = layered("components");
 
 export const gridRoot = style({ display: "grid", minWidth: 0 });
 export const gridAlign = styleVariants({ start: { alignItems: "start" }, center: { alignItems: "center" }, end: { alignItems: "end" }, stretch: { alignItems: "stretch" } });
