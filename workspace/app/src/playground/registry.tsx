@@ -548,6 +548,8 @@ export const COMPONENTS: CompSpec[] = [
 export const bySlug = (slug: string): CompSpec | undefined => COMPONENTS.find((c) => c.slug === slug);
 
 export const GROUPS: CompSpec["group"][] = ["Layout", "Content", "Interaction", "A11y", "Atoms"];
+// Primitives are grouped by what they handle; Atoms are one flat list.
+export const PRIMITIVE_GROUPS = GROUPS.filter((group) => group !== "Atoms");
 
 export const defaultState = (spec: CompSpec): State => {
   const st: State = {};

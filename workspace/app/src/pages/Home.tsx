@@ -178,7 +178,7 @@ export const Home = () => (
             <Logo height={18} style={{ opacity: 0.7 }} />
             <Inline gap="md" wrap align="center">
               <Link to="/docs/get-started/philosophy" style={{ textDecoration: "none" }}><Text variant="caption" as="span" ink="soft">원칙</Text></Link>
-              <Link to="/docs/foundations/tokens" style={{ textDecoration: "none" }}><Text variant="caption" as="span" ink="soft">토큰</Text></Link>
+              <Link to="/docs/foundations" style={{ textDecoration: "none" }}><Text variant="caption" as="span" ink="soft">Foundations</Text></Link>
               <Link to="/docs" style={{ textDecoration: "none" }}><Text variant="caption" as="span" ink="soft">문서</Text></Link>
               <Text variant="caption" ink="faint" as="span">© Studio Baeks</Text>
             </Inline>

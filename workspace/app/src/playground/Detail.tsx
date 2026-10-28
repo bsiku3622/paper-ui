@@ -169,7 +169,7 @@ const DetailView = ({ spec }: { spec: CompSpec }) => {
 
   return (
     <Stack gap="xl" style={{ maxWidth: "52rem" }}>
-      <ReferenceHeading group={spec.group} name={spec.name} description={spec.blurb} />
+      <ReferenceHeading group={spec.group === "Atoms" ? "Atoms" : `Primitives / ${spec.group}`} name={spec.name} description={spec.blurb} />
 
       <div className="detail-body">
         {/* preview + code */}

@@ -11,18 +11,22 @@ const DOCS = join(here, "../../../docs");        // paper-ui/docs
 const OUT = join(here, "../public/docs");         // app/public/docs
 
 // 섹션 순서·라벨 (없는 그룹은 알파벳). slug 는 그룹/파일.
-const GROUP_ORDER = ["", "get-started", "foundations", "components", "recipes"];
+// Foundations → Primitives → Atoms, 시스템이 쌓이는 순서 그대로.
+const GROUP_ORDER = ["", "get-started", "foundations", "primitives", "atoms"];
 const GROUP_LABEL = {
   "get-started": "Getting Started",
   foundations: "Foundations",
-  components: "Components",
-  recipes: "Recipes",
+  primitives: "Primitives",
+  atoms: "Atoms",
   "": "", // 최상위 개요는 그룹 라벨 없이 단독 링크로
 };
 
 // 그룹 내 문서 순서 (여기 없는 문서는 알파벳으로 뒤에 붙는다).
 const DOC_ORDER = {
   "get-started": ["get-started/philosophy", "get-started/install"],
+  foundations: ["foundations", "foundations/color", "foundations/typography", "foundations/shape", "foundations/layout", "foundations/motion"],
+  primitives: ["primitives", "primitives/layout", "primitives/content", "primitives/interaction", "primitives/a11y"],
+  atoms: ["atoms", "atoms/states"],
 };
 
 const walk = async (dir, base = "") => {

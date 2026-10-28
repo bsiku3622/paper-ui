@@ -47,7 +47,9 @@ test("raw imports cannot bypass the boundary through a barrel", async () => {
   assert.equal(await hasRule('import {COLOR_VALUES} from "../tokens/index.ts"; export {COLOR_VALUES};', "no-restricted-imports"), true);
   assert.equal(await hasRule('import {LAYOUT_SOURCE} from "../tokens/layout.ts"; export {LAYOUT_SOURCE};', "no-restricted-imports"), true);
   assert.equal(await hasRule('import {SPACE} from "../tokens"; export {SPACE};', "no-restricted-imports"), true);
-  assert.deepEqual(await errors('import {COLOR_VALUES} from "../../../packages/paper-ui/src/tokens/colors"; export {COLOR_VALUES};', "app/src/playground/Tokens.tsx"), []);
+  assert.deepEqual(await errors('import {COLOR_VALUES} from "../../../../packages/paper-ui/src/tokens/colors"; export {COLOR_VALUES};', "app/src/playground/foundations/ColorPage.tsx"), []);
+  assert.deepEqual(await errors('import {SHAPE_SOURCE} from "../../../../packages/paper-ui/src/tokens/shape"; export {SHAPE_SOURCE};', "app/src/playground/foundations/ShapePage.tsx"), []);
+  assert.equal(await hasRule('import {COLOR_VALUES} from "../../packages/paper-ui/src/tokens/colors"; export {COLOR_VALUES};', "no-restricted-imports", "app/src/pages/Probe.tsx"), true);
 });
 
 test("fixed component geometry belongs to tokens while structural CSS stays local", async () => {
