@@ -18,7 +18,7 @@ const linkStyle = (active: boolean) => ({
 
 const NavGroup = ({ label, children }: { label: string; children: ReactNode }) => (
   <Stack gap="xs">
-    <Text variant="label" ink="soft">{label}</Text>
+    <Text variant="label" ink="secondary">{label}</Text>
     <Stack gap="sm">{children}</Stack>
   </Stack>
 );
@@ -30,7 +30,7 @@ const NavLinks = ({ items, value }: { items: PlaygroundItem[]; value: string }) 
 
 const SectionLinks = ({ section, value }: { section: PlaygroundSection; value: string }) => (
   <Stack gap="xs">
-    {section.label ? <Text variant="caption" ink="faint" style={{ paddingInline: tokens.shape.inset.md }}>{section.label}</Text> : null}
+    {section.label ? <Text variant="caption" ink="tertiary" style={{ paddingInline: tokens.shape.inset.md }}>{section.label}</Text> : null}
     <Stack gap="xs"><NavLinks items={section.items} value={value} /></Stack>
   </Stack>
 );
@@ -60,9 +60,9 @@ export const PlaygroundLayout = ({ value, children }: { value: string; children:
 
 export const Crumb = ({ group, name }: { group: string; name: string }) => (
   <Inline gap="xs" align="center">
-    <Text variant="caption" ink="faint">{group}</Text>
-    <Text variant="caption" ink="faint">/</Text>
-    <Text variant="caption" ink="soft">{name}</Text>
+    <Text variant="caption" ink="tertiary">{group}</Text>
+    <Text variant="caption" ink="tertiary">/</Text>
+    <Text variant="caption" ink="secondary">{name}</Text>
   </Inline>
 );
 
@@ -70,6 +70,6 @@ export const ReferenceHeading = ({ group, name, description }: { group: string; 
   <Stack gap="xs">
     <Crumb group={group} name={name} />
     <Text as="h1" variant="title">{name}</Text>
-    <Text variant="body" ink="soft">{description}</Text>
+    <Text variant="body" ink="secondary">{description}</Text>
   </Stack>
 );

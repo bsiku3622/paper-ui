@@ -192,4 +192,13 @@ export default [
     rules: { "paper/layered-styles": "error" },
   },
 
+  // ── 규칙 7 — 앱과 테스트는 패키지 내부 class 이름을 쓰지 않는다 ───────────────
+  // 공유 축의 class 는 패키지의 typed map 이 고른다. 앱과 테스트가 `pui-` 이름을 문자열로 알면 그 이름이
+  // 약속이 되어 버린다. 변수(--pui-*)와 속성(data-pui-*)은 이름을 따로 약속하므로 통과한다.
+  {
+    files: ["app/src/**/*.{ts,tsx}", "tests/**/*.{ts,tsx}"],
+    plugins: { paper },
+    rules: { "paper/internal-class": "error" },
+  },
+
 ];

@@ -48,7 +48,7 @@ export const Docs = () => {
           <Stack gap="lg">
             {DOC_GROUPS.map((group) => (
               <Stack key={group.id} gap="xs">
-                {group.label ? <Text variant="label" ink="faint">{group.label}</Text> : null}
+                {group.label ? <Text variant="label" ink="tertiary">{group.label}</Text> : null}
                 {DOCS.filter((doc) => doc.group === group.id).map((doc) => (
                   <Link key={doc.slug || "overview"} to={docPath(doc.slug)} aria-current={slug === doc.slug ? "page" : undefined} style={{ display: "block", padding: `${tokens.shape.inset.sm} ${tokens.shape.inset.md}`, color: slug === doc.slug ? tokens.color.ink.primary : tokens.color.ink.secondary, textDecoration: "none" }}>
                     {doc.title}
@@ -66,7 +66,7 @@ export const Docs = () => {
           ) : (
             <Stack gap="xl">
               <Stack gap="xs">
-                <Text variant="caption" ink="soft">{DOC_GROUPS.find((group) => group.id === activeDoc.group)?.label || "Documentation"}</Text>
+                <Text variant="caption" ink="secondary">{DOC_GROUPS.find((group) => group.id === activeDoc.group)?.label || "Documentation"}</Text>
                 <Text as="h1" variant="title">{activeDoc.title}</Text>
               </Stack>
               <Prose file={activeDoc.file}>{body}</Prose>

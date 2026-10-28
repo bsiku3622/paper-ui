@@ -28,8 +28,8 @@ paper-ui/
     │       ├── index.ts        # entry `.` — 컴포넌트 · hook · Provider ("use client")
     │       ├── inventory.ts    # 이름 · 분류 · 순서의 정본 — import 가 없고 inventory.test 가 export 와 대조
     │       ├── tokens/         # 값의 유일한 정의 위치 — SOURCE → VALUES → 역할, *-recipes = 조합 · vocabulary.ts = 어휘 짝 · color-modes.ts = 모드 어휘 · variables.ts · variables.css.ts = 모든 CSS 변수의 배출 · public.ts = entry `/tokens` · layers.css.ts = cascade layer
-    │       ├── styles/         # theme.css.ts (문서 바탕 · 스코프 잉크) · utility.css.ts · global.css.ts = entry `/styles.css`
-    │       ├── resolvers/      # 규칙의 주인 (prop → className)
+    │       ├── styles/         # class 의 실체 — color.css.ts (면 · 잉크 · accent × variant) · space.css.ts · theme.css.ts (문서 바탕 · 스코프 잉크) · global.css.ts = entry `/styles.css`. resolvers 를 import 하지 않음
+    │       ├── resolvers/      # 공유 축 이름 → class (styles/ 의 typed map 인덱싱)
     │       ├── theme/          # 테마 — engine.ts (React · CSS 없음) · store.ts = 문서당 저장소 · PaperProvider · context · scope · boot.ts = entry `/theme-boot`
     │       ├── primitives/     # layout·text·icon building blocks
     │       └── atoms/
@@ -56,8 +56,8 @@ workspace 에서는 `paper-ui-source` export 조건(Vite `resolve.conditions` ·
 pui.components`, 뒤의 레이어가 특정도와 무관하게 이긴다. 레이어 이름과 `layered(name)` wrapper 는
 `tokens/layers.css.ts` 하나가 정의하고, global.css.ts 가 그것을 맨 먼저 import 해 dist/paper-ui.css 는 레이어
 선언으로 시작한다. 파일마다 갈 레이어가 정해져 있다: tokens/variables.css.ts 의 변수는 theme, box-sizing 과 body margin 은
-reset, body 의 면·글자와 스코프 잉크 · 포커스 링 · Text 역할 class · reduced motion 은 base, utility.css · typography.css 는
-utilities, color.css 와 primitives · atoms 는 components. `@keyframes` 와 `@property` 만 레이어 밖에 선다. 앱 CSS 는 레이어 밖에
+reset, body 의 면·글자와 스코프 잉크 · 포커스 링 · Text 역할 class(typography.css) · reduced motion 은 base, 면 · 잉크 · 간격 지도(color.css 의 surfaceClass · inkClass, space.css)와
+typography.css 의 control preset 은 utilities, accent × variant 지도(color.css 의 accentVariantClass)와 primitives · atoms 는 components. `@keyframes` 와 `@property` 만 레이어 밖에 선다. 앱 CSS 는 레이어 밖에
 두므로 앱 className 이 로드 순서와 무관하게 패키지를 이긴다.
 
 배포본은 ESM 전용이고 peer 는 react · react-dom `^18.2.0 || ^19.0.0` 이다. 타입은 `tsconfig.build.json`(테스트 ·
@@ -99,7 +99,7 @@ semantic color는 surface·ink·border·accent·interaction·overlay·shadow 역
 | Shadow | `shadow.<depth>` | floating · lifted |
 | Opacity | `opacity.<role>` | disabled (alpha 50) · subdued (alpha 70) — 테마 불변, `COLOR_VALUES` 밖 |
 
-Accent status는 palette와 분리합니다: info→blue, success→green, warning→amber, error→red. Accent는 같은 다섯 role을 공유합니다. `solid`는 채움, `wash`는 채움 위 글자, `ink`는 soft·hairline·ghost와 의미색 글자, `soft`는 soft surface, `subtle`은 muted foreground에 씁니다.
+Accent status는 palette와 분리합니다: info→blue, success→green, warning→amber, error→red. Accent는 같은 다섯 role을 공유합니다. `solid`는 채움, `wash`는 채움 위 글자, `ink`는 soft·hairline·ghost와 의미색 글자, `soft`는 soft surface, `subtle`은 muted foreground에 씁니다. Text·Icon의 `ink`(`INKS`)는 Color 이름 그대로 `primary · secondary · tertiary`, 상태 넷, `inherit`입니다.
 
 focus ring 색은 `interaction.focus`에, 링크 색은 `interaction.link`에 둡니다. focus는 상호작용 상태이고 링크는 눌러서 이동한다는 표시이며, 둘 다 색은 Palette Token에서 옵니다. 링크는 info 상태색과 같은 blue.700/300을 고르지만 뜻이 다른 별도 역할입니다. 링 두께·offset은 색이 아닌 geometry이므로 `shape.focus.width`와 `shape.focus.offset`에 둡니다. Scrim은 `overlay.scrim`, 그림자 색(shadow colour)은 깊이로 이름 붙인 `shadow.floating`과 `shadow.lifted`에 두고, 거리·blur·spread는 shape geometry로 둡니다. "overlay"는 떠 있는 층(Overlay · elevation `overlay` · `overlay.scrim`)만 가리키고, 면 위의 상태 wash는 tint입니다. Semantic Form hover glow는 사용하지 않습니다.
 
@@ -191,8 +191,9 @@ Primitive 계약의 정본은 [docs/primitives/](docs/primitives/README.md)(Layo
 4. **길이는 token source에만** (`paper/source-numbers`) — 패키지는 예외 없이 원본 파일(shape·layout·typography·motion·색)에만 숫자를 씁니다. 앱은 간격·형태·깊이(padding·margin·gap·offset·radius·선·그림자·z)를 역할로 고르고, 그 화면에만 있는 치수(폭·높이·그리드 트랙)만 직접 씁니다. 0·100%·정렬·회전 같은 구조적 CSS는 컴포넌트가 소유합니다.
 5. **패키지 CSS는 레이어 안에** (`paper/layered-styles`) — 패키지 `.css.ts`는 vanilla-extract의 규칙 API(`style` · `styleVariants` · `globalStyle` · `globalLayer` …)를 직접 import하지 않고 `tokens/layers.css.ts`의 `layered(name)`으로 규칙을 만듭니다. 레이어를 정의하는 layers.css.ts만 예외이고, `keyframes` · `createVar` · `fallbackVar` · `createGlobalVar`는 그대로 씁니다.
 6. **규칙은 주석으로 끄지 않음** (`paper/no-rule-disable`) — paper 규칙은 `eslint-disable` 주석으로 끄지 않고, 예외는 `eslint.config.js`에만 선언합니다. 다른 규칙을 끄는 주석은 `-- 이유`를 답니다. 쓰이지 않는 disable 주석도 오류입니다.
+7. **앱은 내부 class 이름 문자열을 쓰지 않음** (`paper/internal-class`) — 앱(`app/src`)과 테스트(`tests/`)는 `pui-` 뒤에 글자가 오는 문자열(템플릿 포함)을 쓰지 않습니다. 공유 축의 class 는 resolver 가 styles/ 의 typed map(`surfaceClass` · `inkClass` · `accentVariantClass` · `spaceClass`)을 인덱싱해 고르고 이름은 빌드가 짓습니다. 변수 `--pui-*` 와 속성 `data-pui-*` 는 통과합니다.
 
-여섯 규칙은 eslint가 막고 build·prepublish·CI가 그 검사를 돌립니다.
+일곱 규칙은 eslint가 막고 build·prepublish·CI가 그 검사를 돌립니다.
 
 **접근성도 빌드가 지킵니다.** `eslint-plugin-jsx-a11y`(recommended)를 `polymorphicPropName:"as"`로 설정해 `<Box as="button">` 같은 polymorphic 요소까지 검사합니다. 유효한 role·aria, 대체텍스트, 양수 tabindex 금지 등을 lint하며, 폼 아톰은 `label-has-associated-control`의 `controlComponents`에 등록합니다. 상호작용별 runtime 계약은 실제 제품 구현과 검토가 책임집니다.
 

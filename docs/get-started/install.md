@@ -17,11 +17,11 @@ paper-ui는 React 18.2 이상 또는 React 19를 peer dependency로 받습니다
 | `@studio-baeks/paper-ui` | 컴포넌트, hook, `PaperProvider`와 그 prop 타입. 클라이언트에서 도는 코드라 `"use client"` 경계를 선언합니다. |
 | `@studio-baeks/paper-ui/tokens` | `tokens`, 어휘 상수(`CONTROL_SIZES` · `SPACES` …)와 어휘 타입(`Space` · `Accent` · `Variant` …). 축마다 상수와 타입이 한 짝이고, 목록은 [공개 어휘](../foundations/README.md#공개-어휘)에 있습니다. React와 CSS를 import하지 않는 값입니다. |
 | `@studio-baeks/paper-ui/theme-boot` | 첫 화면 전에 테마를 적용하는 `themeBootScript`와 `THEME_STORAGE_KEY` · `THEME_ATTRIBUTE`. React와 CSS를 import하지 않으므로 빌드 도구와 서버가 단독으로 불러옵니다. [Theming](theming.md)에서 씁니다. |
-| `@studio-baeks/paper-ui/styles.css` | 전역 스타일시트 하나. CSS 변수, 유틸리티 클래스, 컴포넌트 스타일이 모두 여기에 들어 있습니다. |
+| `@studio-baeks/paper-ui/styles.css` | 전역 스타일시트 하나. CSS 변수와 컴포넌트 스타일이 모두 여기에 들어 있습니다. |
 
 ## 스타일 불러오기
 
-컴포넌트를 쓰기 전에 앱 진입점에서 스타일시트를 한 번 import 합니다. 스타일이 들어오는 길은 이 한 줄뿐입니다. 이 한 줄이 `:root`에 모든 CSS 변수(색·크기·타이포)를 깔고, 유틸리티 클래스와 컴포넌트 스타일을 함께 들여옵니다.
+컴포넌트를 쓰기 전에 앱 진입점에서 스타일시트를 한 번 import 합니다. 스타일이 들어오는 길은 이 한 줄뿐입니다. 이 한 줄이 `:root`에 모든 CSS 변수(색·크기·타이포)를 깔고 컴포넌트 스타일을 함께 들여옵니다.
 
 ```ts
 import "@studio-baeks/paper-ui/styles.css";
@@ -38,7 +38,7 @@ import "@studio-baeks/paper-ui/styles.css";
 pui.reset < pui.theme < pui.base < pui.utilities < pui.components
 ```
 
-`reset`에는 box-sizing과 body 여백, `theme`에는 CSS 변수, `base`에는 문서 바탕(body의 면과 글자, 포커스 링, Text 역할, reduced motion)이 있습니다. `utilities`에는 유틸리티 클래스가, `components`에는 Primitive와 Atom의 스타일이 있습니다. `@keyframes`와 `@property`만 레이어 밖에 섭니다.
+`reset`에는 box-sizing과 body 여백, `theme`에는 CSS 변수, `base`에는 문서 바탕(body의 면과 글자, 포커스 링, Text 역할, reduced motion)이 있습니다. `utilities`에는 면·잉크·간격처럼 공유 축의 이름이 고르는 class가, `components`에는 Primitive와 Atom의 스타일이 있습니다. `@keyframes`와 `@property`만 레이어 밖에 섭니다.
 
 [contract:install.layers.app-css-wins]: #
 앱의 CSS는 레이어 밖에 두는 것이 기본입니다. 레이어 밖의 CSS는 로드 순서와 특정도에 상관없이 패키지 CSS를 이깁니다. 그래서 앱이 컴포넌트에 넘긴 className은 스타일시트가 어떤 순서로 실리든 hover·disabled 같은 상태 규칙까지 덮습니다. `!important`는 반대로 레이어 안의 것이 이깁니다. 사용자가 움직임을 줄였을 때(reduced motion) 패키지가 거는 `!important`는 앱의 `!important`보다 강합니다.

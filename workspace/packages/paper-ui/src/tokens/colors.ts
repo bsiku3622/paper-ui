@@ -154,6 +154,10 @@ export const SURFACES = keys(COLOR_VALUES.bg);
 export type Surface = keyof typeof COLOR_VALUES.bg;
 export const INK_LEVELS = keys(COLOR_VALUES.ink);
 export type InkLevel = keyof typeof COLOR_VALUES.ink;
+// The ink a mark (Text, Icon) asks for: a level, a status's own ink, or `inherit` to leave the colour to
+// the surface it stands on — a coloured surface has already set its text colour, and a role would paint over it.
+export const INKS = [...INK_LEVELS, ...STATUSES, "inherit"] as const;
+export type Ink = (typeof INKS)[number];
 export const BORDER_LEVELS = keys(COLOR_VALUES.border);
 export type BorderLevel = keyof typeof COLOR_VALUES.border;
 export const DIVIDER_LEVELS = ["base", "strong"] as const satisfies readonly BorderLevel[];

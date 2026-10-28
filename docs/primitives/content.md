@@ -16,16 +16,18 @@ Content Primitive는 화면에 읽히는 것 — 글자와 아이콘 — 을 그
 
 | ink | 뜻 |
 | --- | --- |
-| base · soft · faint | Color `ink.primary` · `secondary` · `tertiary` |
+| primary · secondary · tertiary | Color `ink.*`와 같은 이름 |
 | info · success · warning · error | 그 상태색의 `ink` |
 | inherit | 내 색을 정하지 않고 부모 면의 글자색을 받음 — 색면 위의 글자 |
+
+세 줄의 이름은 `/tokens`의 `INKS`와 같고, Icon의 `ink`도 같은 어휘입니다.
 
 `family="mono"`는 어느 variant에도 얹어 등폭 서체로 바꿉니다. 코드·토큰·식별자에만 쓰고, 숫자 열은 mono 대신 `tabular-nums`로 자리만 맞춥니다.
 
 ```tsx
 <Text as="h1" variant="title">웹사이트 리뉴얼</Text>
 <Text variant="caption">마지막 수정 · 오늘 오전 10:42</Text>
-<Text variant="body" family="mono" ink="soft">WEB-24</Text>
+<Text variant="body" family="mono" ink="secondary">WEB-24</Text>
 ```
 
 ## Icon
@@ -36,6 +38,6 @@ Content Primitive는 화면에 읽히는 것 — 글자와 아이콘 — 을 그
 
 ```tsx
 <Icon><path d="M12 5v14M5 12h14" /></Icon>
-<Icon size="label" ink="soft"><circle cx="12" cy="12" r="8" /></Icon>
+<Icon size="label" ink="secondary"><circle cx="12" cy="12" r="8" /></Icon>
 <Icon aria-label="경고" ink="warning"><path d="M12 8v5M12 16h.01" /></Icon>
 ```

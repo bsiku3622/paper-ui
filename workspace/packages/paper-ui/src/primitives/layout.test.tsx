@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { Box, Grid, Stack, Inline, Text, Icon } from "./index";
+import { spaceClass } from "../styles/space.css";
 import { tokens } from "../tokens";
 
 describe("primitive composition", () => {
@@ -30,7 +31,7 @@ describe("primitive composition", () => {
     expect(ref.current).toBe(screen.getByTestId("grid"));
     expect(ref.current?.style.gridTemplateColumns).toBe("minmax(0, 1fr) auto");
     expect(ref.current?.style.gridTemplateRows).toBe("repeat(2, minmax(0, 1fr))");
-    expect(ref.current?.className).toContain("pui-gap-md");
+    expect(ref.current?.classList.contains(spaceClass.gap.md)).toBe(true);
   });
 });
 

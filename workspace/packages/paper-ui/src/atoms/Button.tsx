@@ -24,7 +24,8 @@ import {
 } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import { resolveAccent, resolveControlTypography, INTERACTIVE } from "../resolvers";
+import { resolveAccent, resolveControlTypography } from "../resolvers";
+import { interactiveClass } from "../styles/color.css";
 import type { Accent, ControlShape, ControlSize, TextVariant, Variant } from "../tokens";
 import {
   buttonRoot,
@@ -102,7 +103,7 @@ const ButtonImpl = forwardRef<HTMLElement, ButtonImplProps>(function Button(
           : null)}
       aria-busy={loading || undefined}
       className={joinClass(
-        INTERACTIVE,
+        interactiveClass,
         buttonRoot,
         buttonSize[size],
         resolveControlTypography("button", size, variant === "solid" ? "strong" : "regular"),

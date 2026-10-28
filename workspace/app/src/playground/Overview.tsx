@@ -26,6 +26,7 @@ import {
 } from "@studio-baeks/paper-ui";
 import { ACCENTS, CONTROL_SIZES, STATUSES, SURFACES, TEXT_VARIANTS, VARIANTS, tokens, type ControlSize } from "@studio-baeks/paper-ui/tokens";
 
+import { Dot } from "../compositions/Dot";
 import { Computed, px } from "./foundations/kit";
 import { PlaygroundLayout, ReferenceHeading } from "./shell";
 
@@ -72,7 +73,7 @@ export const Overview = () => {
         {/* ── Tokens ─────────────────────────────────────────── */}
         <Section id="sec-type" title="Type scale">
           {/* sans 기본. family="mono" 를 주면 어느 variant 에도 등폭이 교차한다 (· mono 행). */}
-          <Text variant="caption" ink="soft">sans 기본 · family=&quot;mono&quot; 는 어느 variant 에도 교차한다 (바로 밑 · mono 행에서 비교).</Text>
+          <Text variant="caption" ink="secondary">sans 기본 · family=&quot;mono&quot; 는 어느 variant 에도 교차한다 (바로 밑 · mono 행에서 비교).</Text>
           <Stack gap="sm">
             {TEXT_VARIANTS.map((v) => (
               <Fragment key={v}>
@@ -87,7 +88,7 @@ export const Overview = () => {
                 {MONO_DEMO[v] && (
                   <Inline gap="lg" align="baseline">
                     <Box style={{ width: "6rem" }}>
-                      <Text variant="caption" as="span" ink="faint">{v} · mono</Text>
+                      <Text variant="caption" as="span" ink="tertiary">{v} · mono</Text>
                     </Box>
                     <Text variant={v} family="mono" as="span" data-testid={v === "body" ? "text-mono" : undefined}>
                       {MONO_DEMO[v]}
@@ -108,11 +109,10 @@ export const Overview = () => {
               </Box>
             ))}
           </Spec>
-          <Spec label="accent — 작게 얹는 색 (dot=채운 점, ink=글자, wash=옅은 면)">
+          <Spec label="accent — 상태 점(solid) · 잉크 · Badge">
             {STATUSES.map((a) => (
               <Inline key={a} gap="sm" align="center">
-                <Box className={`pui-${a}-dot`} radius="full" data-testid={`dot-${a}`}
-                  style={{ width: "1rem", height: "1rem" }} />
+                <Dot status={a} size="md" data-testid={`dot-${a}`} />
                 <Text variant="body" as="span" ink={a} data-testid={`ink-${a}`}>{a}</Text>
                 <Badge accent={a}>{a}</Badge>
               </Inline>
@@ -307,7 +307,7 @@ export const Overview = () => {
             <Stack gap="xs" style={{ width: "16rem" }}>
               <Label htmlFor="playground-name">이름</Label>
               <Field id="playground-name" placeholder="입력" data-testid="formfield-field" />
-              <Text variant="caption" ink="soft">공백 없이 입력하세요</Text>
+              <Text variant="caption" ink="secondary">공백 없이 입력하세요</Text>
             </Stack>
             <Stack gap="xs" style={{ width: "16rem" }}>
               <Label htmlFor="playground-amount">금액</Label>

@@ -4,6 +4,3 @@
 export { tokens, stateTransition } from "./index";
 export { SYSTEM_COLORS } from "./colors";
 export * from "./vocabulary";
-
-// resolver 가 정의하는 어휘 — 타입만 다시 내보내므로 런타임 import 는 생기지 않는다.
-export type { Ink } from "../resolvers";

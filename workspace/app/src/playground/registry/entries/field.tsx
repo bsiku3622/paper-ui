@@ -29,7 +29,7 @@ export default defineSpec({
       placeholder={words(state, "placeholder") || undefined}
       type={pick(state, "type")}
       leading={flag(state, "leading") ? glyph.search : undefined}
-      trailing={flag(state, "trailing") ? <Text variant="caption" as="span" ink="faint">kg</Text> : undefined}
+      trailing={flag(state, "trailing") ? <Text variant="caption" as="span" ink="tertiary">kg</Text> : undefined}
       clearable={flag(state, "clearable")}
       showPasswordToggle={flag(state, "showPasswordToggle")}
       defaultValue={flag(state, "clearable") ? "지울 값" : undefined}

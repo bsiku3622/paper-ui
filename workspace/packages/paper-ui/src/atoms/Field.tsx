@@ -22,10 +22,10 @@ import {
 } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import { resolveControlTypography } from "../resolvers";
-import type { Status, ControlShape, ControlSize, TextVariant } from "../tokens";
+import { resolveControlTypography, resolveSurface } from "../resolvers";
+import type { Status, ControlShape, ControlSize, Surface, TextVariant } from "../tokens";
 import { Icon } from "../primitives";
-import { fieldWrap, fieldInput, fieldSize, fieldFontSize, fieldStatus, fieldSurface, fieldNumeric, fieldAlign, fieldAdornment, fieldAction, fieldPill } from "./Field.css";
+import { fieldWrap, fieldInput, fieldSize, fieldFontSize, fieldStatus, fieldNumeric, fieldAlign, fieldAdornment, fieldAction, fieldPill } from "./Field.css";
 
 export type FieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "size" | "prefix"> & {
   status?: Status;
@@ -33,7 +33,7 @@ export type FieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className"
   size?: ControlSize;
   // 면의 깊이 — raised 가 기본, sunken 은 canvas 안에서 살짝 눌린 검색·필터 입력에 적합하다. 다크에서는
   // sunken 이 canvas 와 같은 단계라 canvas 위에서는 border 가 구분하고, raised 위에서는 두 모드 모두 물러나 보인다.
-  surface?: "raised" | "sunken";
+  surface?: Extract<Surface, "raised" | "sunken">;
   fontSize?: TextVariant;
   // 실루엣 — Button·Badge 와 같은 어휘. pill 은 알약(검색창 결).
   shape?: ControlShape;
@@ -136,7 +136,7 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
     // 진짜 컨트롤은 input 이라 role·키보드를 붙이는 게 오히려 틀리다.
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions -- 여백 클릭만 안쪽 input 으로 넘긴다
     <div
-      className={joinClass(fieldWrap, fieldSurface[surface], fieldSize[size], resolveControlTypography("field", size), fontSize && fieldFontSize[fontSize], shape === "pill" && fieldPill, status && fieldStatus[status], className)}
+      className={joinClass(fieldWrap, resolveSurface(surface), fieldSize[size], resolveControlTypography("field", size), fontSize && fieldFontSize[fontSize], shape === "pill" && fieldPill, status && fieldStatus[status], className)}
       style={style}
       data-testid={testid}
       data-status={status}

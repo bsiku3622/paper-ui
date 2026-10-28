@@ -17,7 +17,7 @@ Atom이 hover·focus·selected·disabled에 어떻게 반응하는지 정합니�
 
 | 대상 | resting | hover | focus | 비고 |
 |---|---|---|---|---|
-| `Button`·interactive `Badge` 등 shared accent 컴포넌트 | `accent × variant` | variant profile의 tint 또는 hover color/background | keyboard ring | `.pui-interactive`가 있을 때만 적용 |
+| `Button`·interactive `Badge` 등 shared accent 컴포넌트 | `accent × variant` | variant profile의 tint 또는 경계 | keyboard ring | interactive gate(`interactiveClass`)가 있을 때만 적용 |
 | primary `solid` | `accent.primary.solid` | `interaction.bgHover.onPrimarySolid` tint | keyboard ring | 검정 면은 더 어두워질 수 없어 한 단계 밝힘 |
 | neutral `Field`·`Select`·`Textarea` | `border.base` | `border.hover` | keyboard ring | 배경은 바꾸지 않음 |
 | pointer-focused neutral Form | `border.base` | `border.hover` | ring 없음 | 클릭한 입력은 경계를 바꾸지 않음 |
@@ -32,7 +32,7 @@ neutral Form의 `border.hover`는 `border.base`·`border.strong`보다 진하고
 
 `soft`·`ghost`·`muted`와 solid의 hover는 배경을 직접 바꾸지 않고 `tokens.color.interaction.bgHover`를 `backgroundImage` tint로 겹칩니다. 그래서 raised·canvas·sunken 어느 면 위에서도 같은 방향으로 읽힙니다. `hairline`은 면 대신 경계를 `border.hover`로 올립니다.
 
-이 규칙은 `tokens/color-recipes.ts`가 정의하고 `styles/color.css.ts`가 `ACCENTS × VARIANTS` 전체에 방출합니다. 표시 전용 컴포넌트는 `.pui-interactive`를 받지 않으므로 Badge처럼 hover가 의미 없는 곳에 상태색이 번지지 않습니다.
+이 규칙은 `tokens/color-recipes.ts`가 정의하고 `styles/color.css.ts`가 `ACCENTS × VARIANTS` 전체에 방출합니다. 표시 전용 컴포넌트는 interactive gate를 받지 않으므로 Badge처럼 hover가 의미 없는 곳에 상태색이 번지지 않습니다.
 
 ## Focus와 transition
 

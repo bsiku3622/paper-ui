@@ -1,0 +1,15 @@
+// 색의 주인은 하나다 — accent 색을 입는 Atom 의 stylesheet 는 색 토큰을 가리키지 않는다.
+// 색은 accent × variant 지도(styles/color.css.ts)가 붙이는 class 로만 온다.
+
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { describe, expect, it } from "vitest";
+
+const stylesheet = (name: string) => readFileSync(join(dirname(fileURLToPath(import.meta.url)), `${name}.css.ts`), "utf8");
+
+describe("accent-coloured Atoms", () => {
+  it("never reference tokens.color in their stylesheet", () => {
+    for (const atom of ["Button", "Badge"]) expect(stylesheet(atom), atom).not.toMatch(/tokens\.color\b/);
+  });
+});

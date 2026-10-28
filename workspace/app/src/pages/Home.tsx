@@ -14,6 +14,7 @@ import {
 } from "@studio-baeks/paper-ui";
 import { tokens, type Status } from "@studio-baeks/paper-ui/tokens";
 
+import { Dot } from "../compositions/Dot";
 import { SiteNav } from "../site/chrome";
 import { Logo } from "../site/Logo";
 import "../site/home.css";
@@ -55,7 +56,7 @@ const AppMockup = () => {
           ))}
         </Inline>
         <Box surface="canvas" radius="full" paddingX="sm" style={{ marginInline: "auto", border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
-          <Text variant="caption" as="span" ink="faint">app.studio-baeks.dev / issues</Text>
+          <Text variant="caption" as="span" ink="tertiary">app.studio-baeks.dev / issues</Text>
         </Box>
       </div>
 
@@ -71,18 +72,18 @@ const AppMockup = () => {
           <div className="home-nav">
             {NAV.map((n) => (
               <div key={n.label} className="home-navitem" data-active={n.active}>
-                <Box radius="full" style={{ width: "0.4rem", height: "0.4rem", background: n.active ? tokens.color.ink.primary : tokens.color.ink.tertiary }} />
+                <Dot ink={n.active ? "primary" : "tertiary"} size="xs" />
                 {n.label}
               </div>
             ))}
           </div>
 
           <Stack gap="xs">
-            <Text variant="label" as="p" ink="soft" className="home-filterhead">필터</Text>
+            <Text variant="label" as="p" ink="secondary" className="home-filterhead">필터</Text>
             {FILTERS.map((f) => (
               <Inline key={f.label} className="home-filterrow" gap="sm" align="center">
-                <Box className={`pui-${f.accent}-dot`} radius="full" style={{ width: "0.55rem", height: "0.55rem" }} />
-                <Text variant="caption" as="span" ink="soft">{f.label}</Text>
+                <Dot status={f.accent} size="sm" />
+                <Text variant="caption" as="span" ink="secondary">{f.label}</Text>
               </Inline>
             ))}
           </Stack>
@@ -107,7 +108,7 @@ const AppMockup = () => {
               <Inline gap="xs" role="group" aria-label="이슈 필터">
                 {([["all", "전체"], ["open", "열림"], ["done", "완료"]] as const).map(([value, label]) => <Button key={value} size="sm" shape="pill" variant={tab === value ? "soft" : "ghost"} aria-pressed={tab === value} onClick={() => setTab(value)}>{label}</Button>)}
               </Inline>
-              <Text variant="caption" as="span" ink="soft">6건 · 열림 4</Text>
+              <Text variant="caption" as="span" ink="secondary">6건 · 열림 4</Text>
             </Inline>
           </Stack>
 
@@ -115,9 +116,9 @@ const AppMockup = () => {
             <Box as="table" style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
               <Box as="thead"><Box as="tr">{["키", "이슈", "담당", "상태"].map((label) => <Box as="th" key={label} style={{ padding: tokens.shape.inset.sm, color: tokens.color.ink.tertiary, borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>{label}</Box>)}</Box></Box>
               <Box as="tbody">{ISSUES.map((issue) => <Box as="tr" key={issue.id}>
-                <Box as="td" style={{ padding: tokens.shape.inset.sm, borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}><Text variant="caption" family="mono" as="span" ink="soft">{issue.key}</Text></Box>
+                <Box as="td" style={{ padding: tokens.shape.inset.sm, borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}><Text variant="caption" family="mono" as="span" ink="secondary">{issue.key}</Text></Box>
                 <Box as="td" style={{ padding: tokens.shape.inset.sm, borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>{issue.title}</Box>
-                <Box as="td" style={{ padding: tokens.shape.inset.sm, borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}><Text variant="caption" as="span" ink="soft">{issue.who}</Text></Box>
+                <Box as="td" style={{ padding: tokens.shape.inset.sm, borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}><Text variant="caption" as="span" ink="secondary">{issue.who}</Text></Box>
                 <Box as="td" style={{ padding: tokens.shape.inset.sm, borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}><Badge accent={issue.status}>{issue.label}</Badge></Box>
               </Box>)}</Box>
             </Box>
@@ -138,7 +139,7 @@ export const Home = () => (
         <div className="home-hero">
           <Inline gap="sm" align="center" style={{ marginBottom: tokens.layout.gap.lg }}>
             <Badge accent="info">Studio Baeks</Badge>
-            <Text variant="caption" ink="soft">Design System · v0.1.0</Text>
+            <Text variant="caption" ink="secondary">Design System · v0.1.0</Text>
           </Inline>
 
           <Text as="h1" variant="display" className="home-headline">
@@ -146,7 +147,7 @@ export const Home = () => (
             조용한 바탕<span className="home-dot">.</span>
           </Text>
 
-          <Text variant="body" as="p" ink="soft" className="home-sub">
+          <Text variant="body" as="p" ink="secondary" className="home-sub">
             레이아웃은 Primitive로, 상호작용은 Atom으로 시작합니다. 색은 의미가 있을 때만 쓰고, 순백 위에 부드럽게.
           </Text>
 
@@ -165,9 +166,9 @@ export const Home = () => (
         <AppMockup />
 
         <Inline gap="sm" align="center" wrap style={{ paddingBlock: tokens.shape.inset.xl }}>
-          <Text variant="caption" ink="soft">갤러리가 아니라 실제 화면(이슈 트래커)으로 검증합니다.</Text>
+          <Text variant="caption" ink="secondary">갤러리가 아니라 실제 화면(이슈 트래커)으로 검증합니다.</Text>
           <Link to="/demo" style={{ textDecoration: "none" }}>
-            <Text variant="caption" as="span" className="pui-info-ink" style={{ fontWeight: tokens.typography.palette.weight.medium }}>데모 열기 →</Text>
+            <Text variant="caption" as="span" style={{ fontWeight: tokens.typography.palette.weight.medium }}>데모 열기 →</Text>
           </Link>
         </Inline>
 
@@ -176,10 +177,10 @@ export const Home = () => (
           <Inline justify="between" align="center" wrap gap="md">
             <Logo height={18} style={{ opacity: 0.7 }} />
             <Inline gap="md" wrap align="center">
-              <Link to="/docs/get-started/philosophy" style={{ textDecoration: "none" }}><Text variant="caption" as="span" ink="soft">원칙</Text></Link>
-              <Link to="/docs/foundations" style={{ textDecoration: "none" }}><Text variant="caption" as="span" ink="soft">Foundations</Text></Link>
-              <Link to="/docs" style={{ textDecoration: "none" }}><Text variant="caption" as="span" ink="soft">문서</Text></Link>
-              <Text variant="caption" ink="faint" as="span">© Studio Baeks</Text>
+              <Link to="/docs/get-started/philosophy" style={{ textDecoration: "none" }}><Text variant="caption" as="span" ink="secondary">원칙</Text></Link>
+              <Link to="/docs/foundations" style={{ textDecoration: "none" }}><Text variant="caption" as="span" ink="secondary">Foundations</Text></Link>
+              <Link to="/docs" style={{ textDecoration: "none" }}><Text variant="caption" as="span" ink="secondary">문서</Text></Link>
+              <Text variant="caption" ink="tertiary" as="span">© Studio Baeks</Text>
             </Inline>
           </Inline>
         </Box>

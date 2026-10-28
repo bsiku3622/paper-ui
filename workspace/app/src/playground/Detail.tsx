@@ -222,7 +222,7 @@ const DetailView = ({ entry }: { entry: Entry }) => {
               )}
             </Inline>
             {entry.controls.length === 0 ? (
-              <Text variant="caption" ink="soft">토글할 prop 이 없는 컴포넌트입니다. 위 미리보기가 기본 형태입니다.</Text>
+              <Text variant="caption" ink="secondary">토글할 prop 이 없는 컴포넌트입니다. 위 미리보기가 기본 형태입니다.</Text>
             ) : (
               <Stack gap="md">
                 {entry.controls.map((c) => (

@@ -7,7 +7,6 @@ export const dividerRoot = style({
   border: "none",
   margin: 0,
   flexShrink: 0,
-  background: tokens.color.border.base,
 });
 
 export const dividerLevel = styleVariants({

@@ -15,7 +15,7 @@ describe("vocabulary", () => {
   it("[foundations.vocabulary.one-pair-per-axis] exports every constant once and nothing else", () => {
     expect(constants.map(([name]) => name).sort()).toEqual([
       "ACCENTS", "ACCENT_TONES", "BORDER_LEVELS", "BOX_THEMES", "BREAKPOINTS", "COLOR_MODES", "CONTAINERS", "CONTROL_PRESETS", "CONTROL_SHAPES",
-      "CONTROL_SIZES", "DEPTHS", "DIMENSIONS", "DIVIDER_LEVELS", "ELEVATIONS", "ICON_SIZES", "INK_LEVELS", "MEASURES", "ORIENTATIONS",
+      "CONTROL_SIZES", "DEPTHS", "DIMENSIONS", "DIVIDER_LEVELS", "ELEVATIONS", "ICON_SIZES", "INKS", "INK_LEVELS", "MEASURES", "ORIENTATIONS",
       "SELECTABLE_VARIANTS", "SPACES", "STATUSES", "SURFACES", "TEXT_FAMILIES", "TEXT_VARIANTS", "THEME_PREFERENCES", "VARIANTS",
     ]);
   });
@@ -34,6 +34,7 @@ describe("vocabulary", () => {
   it("[foundations.vocabulary.one-pair-per-axis] derives the Color axes from the trees that author them", () => {
     expect(vocabulary.SURFACES).toEqual(keysOf(COLOR_VALUES.bg));
     expect(vocabulary.INK_LEVELS).toEqual(keysOf(COLOR_VALUES.ink));
+    expect(vocabulary.INKS).toEqual([...keysOf(COLOR_VALUES.ink), ...keysOf(STATUS_PALETTE), "inherit"]);
     expect(vocabulary.BORDER_LEVELS).toEqual(keysOf(COLOR_VALUES.border));
     expect(vocabulary.ACCENTS).toEqual(keysOf(COLOR_VALUES.accent));
     expect(vocabulary.STATUSES).toEqual(keysOf(STATUS_PALETTE));
@@ -102,6 +103,7 @@ describe("vocabulary", () => {
     expectTypeOf<vocabulary.BoxTheme>().toEqualTypeOf<(typeof vocabulary.BOX_THEMES)[number]>();
     expectTypeOf<vocabulary.Surface>().toEqualTypeOf<(typeof vocabulary.SURFACES)[number]>();
     expectTypeOf<vocabulary.InkLevel>().toEqualTypeOf<(typeof vocabulary.INK_LEVELS)[number]>();
+    expectTypeOf<vocabulary.Ink>().toEqualTypeOf<(typeof vocabulary.INKS)[number]>();
     expectTypeOf<vocabulary.BorderLevel>().toEqualTypeOf<(typeof vocabulary.BORDER_LEVELS)[number]>();
     expectTypeOf<vocabulary.DividerLevel>().toEqualTypeOf<(typeof vocabulary.DIVIDER_LEVELS)[number]>();
     expectTypeOf<vocabulary.TextVariant>().toEqualTypeOf<(typeof vocabulary.TEXT_VARIANTS)[number]>();
@@ -123,6 +125,7 @@ describe("vocabulary", () => {
     expectTypeOf<vocabulary.Status>().toEqualTypeOf<"info" | "success" | "warning" | "error">();
     expectTypeOf<vocabulary.Accent>().toEqualTypeOf<"primary" | "info" | "success" | "warning" | "error">();
     expectTypeOf<vocabulary.Surface>().toEqualTypeOf<"canvas" | "raised" | "sunken">();
+    expectTypeOf<vocabulary.Ink>().toEqualTypeOf<"primary" | "secondary" | "tertiary" | "info" | "success" | "warning" | "error" | "inherit">();
     expectTypeOf<vocabulary.ControlSize>().toEqualTypeOf<"sm" | "md" | "lg">();
     expectTypeOf<vocabulary.Space>().toEqualTypeOf<"xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl">();
     expectTypeOf<vocabulary.DividerLevel>().toEqualTypeOf<"base" | "strong">();

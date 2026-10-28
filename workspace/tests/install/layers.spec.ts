@@ -56,3 +56,24 @@ test("[install.layers.every-rule-layered] every package rule sits in a pui subla
   // Every sublayer holds rules, so the walk saw the whole stylesheet.
   expect(filled.sort()).toEqual([...SUBLAYERS].sort());
 });
+
+test("the package stylesheet names no global pui- class; its classes are scoped to the build", async ({ page }) => {
+  await openHarness(page, "layers");
+  const selectors = await page.evaluate(() => {
+    const found: string[] = [];
+    const walk = (rules: CSSRuleList) => {
+      for (const rule of Array.from(rules)) {
+        if (rule instanceof CSSStyleRule) found.push(rule.selectorText);
+        if ("cssRules" in rule) walk((rule as CSSGroupingRule).cssRules);
+      }
+    };
+    for (const sheet of Array.from(document.styleSheets)) {
+      if (sheet.href?.endsWith("/consumer-first.css")) continue;
+      walk(sheet.cssRules);
+    }
+    return found;
+  });
+  // The walk saw the package's rules, and none of them is a hand-named class.
+  expect(selectors.length).toBeGreaterThan(100);
+  expect(selectors.filter((selector) => /\.pui-[a-z]/.test(selector))).toEqual([]);
+});

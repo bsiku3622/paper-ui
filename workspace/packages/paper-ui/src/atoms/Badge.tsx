@@ -1,5 +1,5 @@
 // Badge — 상태 한 낱말. Button 과 같은 accent 시스템(accent × variant)을 쓴다. 표시용이라
-// hover gate(pui-interactive)는 안 붙인다.
+// hover gate(interactiveClass)는 안 붙인다.
 //   variant  soft(옅은 면, 기본) · solid(강조) · hairline · ghost · muted(accent subtle 보조 글자)
 //   dot      앞에 작은 색 점 — 상태 표시자
 //

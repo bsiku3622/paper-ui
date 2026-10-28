@@ -75,6 +75,22 @@ test("apps take spacing, form and depth from roles but own their content dimensi
   assert.deepEqual(await errors('export const s={width:218, height:58, gridTemplateColumns:"218px minmax(0,1fr) 260px", maxWidth:1540, flex:1, margin:0};', path), []);
 });
 
+test("[guardrails.internal-class.no-class-names] an app or a test cannot spell a package class name, but variables and attributes keep their prefix", async () => {
+  for (const [code, path] of [
+    ['export const className = "pui-info-ink";', "app/src/pages/Probe.tsx"],
+    ['export const className = `pui-${accent}-dot`;', "app/src/pages/Probe.tsx"],
+    ['export const X = () => <div className="home pui-gap-sm" />;', "app/src/pages/Probe.tsx"],
+    ['export const selector = ".pui-gap-sm";', "tests/primitives/probe.spec.ts"],
+  ]) assert.equal(await hasRule(code, "paper/internal-class", path), true, `${path}: ${code}`);
+  for (const [code, path] of [
+    ['export const color = "var(--pui-color-ink-primary)";', "app/src/pages/Probe.tsx"],
+    ['export const attribute = "data-pui-status";', "app/src/pages/Probe.tsx"],
+    ['export const variable = `--pui-${name}`;', "app/src/pages/Probe.tsx"],
+    ['export const selector = "[data-pui-theme]";', "tests/foundations/probe.spec.ts"],
+    ['export const className = "pui-info-ink";', "packages/paper-ui/src/atoms/TokenProbe.tsx"],
+  ]) assert.equal(await hasRule(code, "paper/internal-class", path), false, `${path}: ${code}`);
+});
+
 test("[guardrails.no-rule-disable.paper-rules-stay-on] a comment cannot switch a paper rule off", async () => {
   for (const code of [
     '// eslint-disable-next-line paper/raw-color -- 브랜드 색\nexport const style = { color: "#f00" };',

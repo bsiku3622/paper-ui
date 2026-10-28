@@ -2,6 +2,7 @@ import { createRef } from "react";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { Box, Pressable, Toggleable, Hoverable, Draggable, ToggleGroup, useToggleGroup, Overlay, useOverlay, useToggle, mergeProps, mergeRefs, composeEventHandlers } from "./index";
+import { spaceClass } from "../styles/space.css";
 
 describe("interaction primitives", () => {
   it("Pressable composes caller events and forwards the native button ref", () => {
@@ -131,7 +132,7 @@ describe("composition contracts", () => {
     expect(second).toHaveBeenCalledTimes(1);
     expect(a.current).toBe(screen.getByText("Run"));
     expect(b).toHaveBeenLastCalledWith(a.current);
-    expect(a.current?.className).toContain("pui-p-md");
+    expect(a.current?.classList.contains(spaceClass.padding.md)).toBe(true);
     view.unmount();
     expect(a.current).toBeNull();
     expect(b).toHaveBeenLastCalledWith(null);

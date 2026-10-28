@@ -97,6 +97,7 @@ prop이 받는 닫힌 값의 집합을 **축**이라 부릅니다. 축마다 상
 | `SELECTABLE_VARIANTS` · `SelectableVariant` | `tokens/color-recipes.ts` | 선택된 상태를 soft 면으로 알릴 수 있는 variant — `VARIANTS`의 부분집합 |
 | `SURFACES` · `Surface` | `tokens/colors.ts` | Box의 `surface`, `tokens.color.bg.<surface>` |
 | `INK_LEVELS` · `InkLevel` | `tokens/colors.ts` | `tokens.color.ink.<level>` |
+| `INKS` · `Ink` | `tokens/colors.ts` | Text · Icon의 `ink` — `INK_LEVELS`와 `STATUSES`, 그리고 `inherit` |
 | `BORDER_LEVELS` · `BorderLevel` | `tokens/colors.ts` | `tokens.color.border.<level>` |
 | `DIVIDER_LEVELS` · `DividerLevel` | `tokens/colors.ts` | Divider의 `level` — `BORDER_LEVELS`의 부분집합 |
 | `DEPTHS` · `Depth` | `tokens/colors.ts` | `tokens.color.shadow.<depth>`, Layout elevation이 가진 그림자 깊이 |
@@ -117,7 +118,7 @@ prop이 받는 닫힌 값의 집합을 **축**이라 부릅니다. 축마다 상
 | `CONTAINERS` · `Container` | `tokens/layout.ts` | `tokens.layout.container.<container>` |
 | `ORIENTATIONS` · `Orientation` | `tokens/layout.ts` | Divider의 `orientation`, RovingFocus의 `orientation`(`both` 추가) |
 
-새 축은 원본 tree에서 파생하거나 `satisfies`로 양방향 묶고 `vocabulary.ts`에 상수·타입 짝으로 공개합니다. 원본 tree에서 파생한 축은 단계를 더하면 상수와 타입이 함께 늘고, `satisfies`로 묶은 축은 한쪽만 늘면 타입 검사가 막습니다. 글자·아이콘의 잉크 `Ink`만은 아직 상수 없이 타입으로만 같은 entry에서 나옵니다.
+새 축은 원본 tree에서 파생하거나 `satisfies`로 양방향 묶고 `vocabulary.ts`에 상수·타입 짝으로 공개합니다. 원본 tree에서 파생한 축은 단계를 더하면 상수와 타입이 함께 늘고, `satisfies`로 묶은 축은 한쪽만 늘면 타입 검사가 막습니다.
 
 ## 앱에서 쓰기
 
@@ -148,6 +149,7 @@ export const panel = style({
 [contract:guardrails.layered-styles.package-css-layered]: #
 [contract:guardrails.no-rule-disable.paper-rules-stay-on]: #
 [contract:guardrails.no-rule-disable.reason-required]: #
+[contract:guardrails.internal-class.no-class-names]: #
 
 1. **raw 색값 금지** (`paper/raw-color`). OKLCH source는 `palette.ts`, HEX 생성은 `color-ladder.ts`에만 있습니다. 소비처는 `tokens.color`만 참조하고 색을 계산하지 않습니다.
 2. **원본 import 격리** (`no-restricted-imports`). palette·ladder·shape·layout의 원본 모듈은 컴포넌트·resolver·앱이 import하지 않습니다. 원본을 그대로 보여주는 Foundations inspector만 예외입니다.
@@ -155,6 +157,10 @@ export const panel = style({
 4. **길이는 원본에만** (`paper/source-numbers`). 패키지는 원본 파일 밖에서 길이 숫자를 쓰지 않습니다. 앱은 간격·형태·깊이(padding·margin·gap·offset·radius·선·그림자·z)를 역할로 고르고, 화면 고유의 치수만 직접 씁니다.
 5. **패키지 CSS는 레이어 안에** (`paper/layered-styles`). 패키지 stylesheet는 vanilla-extract의 `style` · `styleVariants` · `globalStyle`을 직접 부르지 않고 `tokens/layers.css.ts`의 `layered()`로 규칙을 만듭니다. 그래서 모든 규칙이 cascade layer `pui` 안에 들고, 레이어 밖의 앱 CSS가 로드 순서와 무관하게 이깁니다([우선순위](../get-started/install.md#우선순위)). 레이어를 정의하는 `layers.css.ts`만 예외이고, `keyframes`·`createVar`는 그대로 씁니다.
 6. **규칙은 주석으로 끄지 않음** (`paper/no-rule-disable`). paper 규칙은 `eslint-disable` 주석으로 끌 수 없고, 예외는 `eslint.config.js`에만 선언합니다. 다른 규칙을 끄는 주석은 `--` 뒤에 이유를 적고, 아무것도 가리지 않는 주석은 그 자체로 오류입니다.
+7. **앱은 패키지 내부 class 이름을 쓰지 않음** (`paper/internal-class`). 앱과 테스트는 `pui-` 뒤에 글자가 오는 문자열을 쓰지 않습니다. 공유 축의 class는 패키지가 가진 타입 있는 지도(`surfaceClass` · `inkClass` · `accentVariantClass` · `spaceClass`)에서 고르고, 그 이름은 빌드가 짓습니다. 변수 `--pui-*`와 속성 `data-pui-*`는 이름을 따로 약속하므로 통과합니다.
+
+[contract:foundations.class-maps.follow-vocabulary]: #
+값만 원본에서 나오는 것이 아닙니다. 어휘 상수와 타입, class 지도의 키도 같은 원본 tree를 돌아 만들어지므로, 원본에 단계를 더하면 상수 · 타입 · class가 함께 늘고 어휘 밖의 이름은 타입에서 걸립니다.
 
 이 검사는 사람이 기억해서 돌리지 않습니다. 패키지 build는 lint와 typecheck를 통과해야 번들을 만들고, 배포 전(`prepublishOnly`)과 CI는 `pnpm verify`로 lint · typecheck · 단위 테스트 · build · e2e를 같은 순서로 돌립니다.
 

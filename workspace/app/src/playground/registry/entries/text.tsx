@@ -1,6 +1,5 @@
 import { Text, type TextProps } from "@studio-baeks/paper-ui";
 
-import { inkOptions } from "../demo";
 import { defineSpec, enumControl, pick, textControl, vocab, words } from "../schema";
 
 export default defineSpec({
@@ -9,7 +8,7 @@ export default defineSpec({
   controls: [
     enumControl<TextProps, "variant">("variant", vocab("TEXT_VARIANTS")),
     enumControl<TextProps, "family">("family", vocab("TEXT_FAMILIES")),
-    enumControl<TextProps, "ink">("ink", inkOptions()),
+    enumControl<TextProps, "ink">("ink", vocab("INKS")),
     textControl<TextProps, "children">("children", "다람쥐 헌 쳇바퀴 Aa 0123"),
   ],
   defaults: { variant: "body", family: "sans" },
