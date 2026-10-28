@@ -3,10 +3,6 @@
 import { Box, Icon, Text } from "@studio-baeks/paper-ui";
 
 import { named } from "./jsx";
-import { pending } from "./schema";
-
-// The ink select, until INKS joins the vocabulary.
-export const inkOptions = () => pending(["base", "soft", "faint", "info", "success", "warning", "error", "inherit"] as const, "S11", "INKS");
 
 export const glyph = {
   grip: <Icon size="caption"><path d="M9 5h.01M9 12h.01M9 19h.01M15 5h.01M15 12h.01M15 19h.01" /></Icon>,

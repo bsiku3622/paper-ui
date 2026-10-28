@@ -43,9 +43,7 @@ export type ColorSpec = {
   background: string;
   color: string;
   borderColor: string;
-  hoverBackground?: string;
   hoverTint?: string;
-  hoverColor?: string;
   hoverBorderColor?: string;
 };
 

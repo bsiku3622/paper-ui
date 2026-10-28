@@ -3,6 +3,7 @@
 import type { LabelHTMLAttributes, ReactNode } from "react";
 
 import { joinClass } from "../internal/joinClass";
+import { resolveText } from "../resolvers";
 
 export type LabelProps = Omit<LabelHTMLAttributes<HTMLLabelElement>, "className"> & {
   children?: ReactNode;
@@ -10,7 +11,7 @@ export type LabelProps = Omit<LabelHTMLAttributes<HTMLLabelElement>, "className"
 };
 
 export const Label = ({ children, className, ...rest }: LabelProps) => (
-  <label className={joinClass("pui-text-label", className)} {...rest}>
+  <label className={joinClass(resolveText({ variant: "label" }), className)} {...rest}>
     {children}
   </label>
 );

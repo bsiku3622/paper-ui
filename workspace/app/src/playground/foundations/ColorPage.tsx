@@ -26,8 +26,8 @@ const ColorValue = ({ path, mode, compact = false }: { path: ChipRole; mode: Col
     <Stack className={compact ? `${s.value} ${s.valueCompact}` : s.value} surface="canvas" gap="sm" border radius="md" padding="sm" title={`${paletteToken} · ${hex}`}>
       <Chip path={path} />
       <div className={s.meta}>
-        <Text as="span" variant="caption" family="mono" ink="base">{paletteToken}</Text>
-        <Text as="span" variant="caption" family="mono" ink="faint">{hex}</Text>
+        <Text as="span" variant="caption" family="mono" ink="primary">{paletteToken}</Text>
+        <Text as="span" variant="caption" family="mono" ink="tertiary">{hex}</Text>
       </div>
     </Stack>
   );
@@ -38,7 +38,7 @@ const TokenPill = ({ token }: { token: string }) => (
 );
 
 const SectionHeading = ({ title, description }: { title: string; description: string }) => (
-  <Stack gap="xs"><Text variant="heading">{title}</Text><Text variant="body" ink="soft">{description}</Text></Stack>
+  <Stack gap="xs"><Text variant="heading">{title}</Text><Text variant="body" ink="secondary">{description}</Text></Stack>
 );
 
 const ColorGroup = ({ title, description, branches }: (typeof GROUPS)[number]) => {
@@ -51,7 +51,7 @@ const ColorGroup = ({ title, description, branches }: (typeof GROUPS)[number]) =
         {rolesOf(branches).map((role) => <div className={s.row} key={role}>
           <Stack className={s.copy} gap="sm">
             <TokenPill token={role} />
-            <Text variant="body" ink="soft">{ROLE_NOTES[role]}</Text>
+            <Text variant="body" ink="secondary">{ROLE_NOTES[role]}</Text>
           </Stack>
           <ColorValue path={role} mode={mode} />
         </div>)}
@@ -72,7 +72,7 @@ const AccentGroup = () => {
           <div className={s.toneRow} key={accent}>
             <Stack className={s.copy} gap="sm">
               <TokenPill token={`accent.${accent}`} />
-              <Text variant="body" ink="soft">{ACCENT_PALETTE[accent]}</Text>
+              <Text variant="body" ink="secondary">{ACCENT_PALETTE[accent]}</Text>
             </Stack>
             {ACCENT_TONES.map((tone) => <ColorValue key={tone} path={`accent.${accent}.${tone}`} mode={mode} compact />)}
           </div>
@@ -91,10 +91,10 @@ const PaletteMatrix = () => {
   ];
   return (
     <Stack gap="md">
-      <Inline align="baseline" justify="between" wrap><SectionHeading title="Palette" description="테마와 무관한 원본 ramp 하나입니다. light와 dark의 의미 역할이 모두 여기서 단계를 고릅니다." /><Text variant="caption" family="mono" ink="faint">{isDark ? "950 → 50" : "50 → 950"}</Text></Inline>
+      <Inline align="baseline" justify="between" wrap><SectionHeading title="Palette" description="테마와 무관한 원본 ramp 하나입니다. light와 dark의 의미 역할이 모두 여기서 단계를 고릅니다." /><Text variant="caption" family="mono" ink="tertiary">{isDark ? "950 → 50" : "50 → 950"}</Text></Inline>
       <Box className={s.paletteScroll} surface="raised" border radius="lg" padding="md">
         <StepGrid steps={steps.length} data-testid="palette-matrix">
-          <span className={s.headCell} />{steps.map((step) => <Text key={step} className={s.headCell} variant="caption" family="mono" ink="faint">{step}</Text>)}
+          <span className={s.headCell} />{steps.map((step) => <Text key={step} className={s.headCell} variant="caption" family="mono" ink="tertiary">{step}</Text>)}
           {rows.flatMap((row) => [
             <Text key={`${row.name}-label`} className={s.rowLabel} variant="caption">{row.name}</Text>,
             ...row.values.map((color, index) => <Swatch key={`${row.name}-${steps[index]}`} color={color} label={`${row.name} ${steps[index]}`} />),
@@ -125,7 +125,7 @@ const AccentVariantGroup = () => (
           <div role="row" className={s.toneRow} key={variant}>
             <Stack role="rowheader" className={s.copy} gap="sm">
               <TokenPill token={variant} />
-              <Text variant="body" ink="soft">{recipeCaption(variant)}</Text>
+              <Text variant="body" ink="secondary">{recipeCaption(variant)}</Text>
             </Stack>
             {ACCENTS.map((accent) => (
               <Stack role="cell" key={accent} gap="sm" align="start">

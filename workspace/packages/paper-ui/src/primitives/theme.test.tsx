@@ -2,8 +2,9 @@ import { render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { Box, Grid, Inline, Overlay, Stack } from "./index";
+import { surfaceClass } from "../styles/color.css";
 import { ScopeModeContext, useResolvedTheme } from "../theme/context";
-import { THEME_ATTRIBUTE, type BoxTheme } from "../tokens";
+import { SURFACES, THEME_ATTRIBUTE, type BoxTheme } from "../tokens";
 
 const root = document.documentElement;
 
@@ -69,10 +70,10 @@ describe("Box theme", () => {
         <Box data-testid="plain" />
       </>,
     );
-    expect(screen.getByTestId("board").className).toContain("pui-surface-canvas");
-    expect(screen.getByTestId("raised").className).toContain("pui-surface-raised");
-    expect(screen.getByTestId("raised").className).not.toContain("pui-surface-canvas");
-    expect(screen.getByTestId("plain").className).not.toContain("pui-surface-");
+    expect(screen.getByTestId("board").classList.contains(surfaceClass.canvas)).toBe(true);
+    expect(screen.getByTestId("raised").classList.contains(surfaceClass.raised)).toBe(true);
+    expect(screen.getByTestId("raised").classList.contains(surfaceClass.canvas)).toBe(false);
+    for (const surface of SURFACES) expect(screen.getByTestId("plain").classList.contains(surfaceClass[surface]), surface).toBe(false);
   });
 
   it("writes no attribute and gives no scope without a theme", () => {

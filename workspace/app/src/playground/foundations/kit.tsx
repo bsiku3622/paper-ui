@@ -16,7 +16,7 @@ export const FoundationSection = ({ title, description, children }: { title: str
   <Stack as="section" className={s.section} gap="md">
     <Stack gap="xs">
       <Text as="h2" variant="heading">{title}</Text>
-      <Text variant="body" ink="soft">{description}</Text>
+      <Text variant="body" ink="secondary">{description}</Text>
     </Stack>
     {children}
   </Stack>
@@ -27,7 +27,7 @@ export const Board = ({ columns, template, minWidth, children }: { columns: Colu
   <Box className={s.board} surface="raised" border radius="lg" padding="md">
     <div className={s.grid} style={{ gridTemplateColumns: `0 ${template} 0`, minWidth }}>
       <div className={s.header}>
-        {columns.map((column) => <Text key={column.label} className={s.align[column.align ?? "start"]} variant="label" ink="base">{column.label}</Text>)}
+        {columns.map((column) => <Text key={column.label} className={s.align[column.align ?? "start"]} variant="label" ink="primary">{column.label}</Text>)}
       </div>
       {children}
     </div>
@@ -36,7 +36,7 @@ export const Board = ({ columns, template, minWidth, children }: { columns: Colu
 
 export const BoardGroup = ({ label, children }: { label?: string; children: ReactNode }) => (
   <div className={s.group}>
-    {label ? <Text className={s.groupLabel} variant="label" ink="soft">{label}</Text> : null}
+    {label ? <Text className={s.groupLabel} variant="label" ink="secondary">{label}</Text> : null}
     {children}
   </div>
 );
@@ -47,8 +47,8 @@ export const BoardRow = ({ size = "sm", children }: { size?: keyof typeof s.row;
 
 export const TokenCell = ({ name, note }: { name: string; note?: ReactNode }) => (
   <Stack className={s.cell} gap="xs">
-    <Text as="code" variant="caption" family="mono" ink="base">{name}</Text>
-    {note ? <Text variant="caption" ink="soft">{note}</Text> : null}
+    <Text as="code" variant="caption" family="mono" ink="primary">{name}</Text>
+    {note ? <Text variant="caption" ink="secondary">{note}</Text> : null}
   </Stack>
 );
 
@@ -58,13 +58,13 @@ export const Cell = ({ align, children }: { align?: Align; children: ReactNode }
 );
 
 export const ValueCell = ({ children, title }: { children: ReactNode; title?: string }) => (
-  <Text className={s.value} variant="caption" family="mono" ink="base" title={title}>{children}</Text>
+  <Text className={s.value} variant="caption" family="mono" ink="primary" title={title}>{children}</Text>
 );
 
 export const MatrixCell = ({ caption, children }: { caption?: ReactNode; children: ReactNode }) => (
   <Stack className={s.matrixCell} gap="xs">
     {children}
-    {caption ? <Text variant="caption" family="mono" ink="faint">{caption}</Text> : null}
+    {caption ? <Text variant="caption" family="mono" ink="tertiary">{caption}</Text> : null}
   </Stack>
 );
 

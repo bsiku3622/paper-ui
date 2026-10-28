@@ -7,8 +7,8 @@
 import { forwardRef, type SVGProps } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import { resolveInk, type Ink } from "../resolvers";
-import type { IconSize } from "../tokens";
+import { resolveInk } from "../resolvers";
+import type { IconSize, Ink } from "../tokens";
 import { iconRoot, iconSize } from "./Icon.css";
 
 export type IconProps = Omit<SVGProps<SVGSVGElement>, "size"> & {

@@ -5,8 +5,8 @@ import { layered } from "../tokens/layers.css";
 
 const { style, styleVariants } = layered("components");
 
-// geometry 만. 색은 resolveAccent(accent, variant) 가 붙이는 pui-a-{accent}-{variant}
-// 클래스가 정한다. Badge 는 gate(pui-interactive)를 안 붙여 hover 색이 뜨지 않는다 —
+// geometry 만. 색은 resolveAccent(accent, variant) 가 붙이는 accentVariantClass 가
+// 정한다. Badge 는 gate(interactiveClass)를 안 붙여 hover 색이 뜨지 않는다 —
 // 표시용이지 누르는 자리가 아니다. 크기(height·paddingInline·fontSize)는 badgeSize.
 export const badgeRoot = style({
   display: "inline-flex",

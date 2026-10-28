@@ -11,7 +11,8 @@ const { style, styleVariants } = layered("components");
 // 투명·무테로 값만 담는다. leading/trailing 어도먼트(아이콘·$·단위·clear·비밀번호)가
 // input 양옆에 앉는다. 크기(height·paddingInline·fontSize)는 fieldSize 가 래퍼에 준다.
 export const fieldWrap = style({
-  ...outlinedControlProfile,
+  color: outlinedControlProfile.color,
+  borderColor: outlinedControlProfile.borderColor,
   display: "flex",
   alignItems: "center",
   gap: tokens.shape.control.gap,
@@ -31,13 +32,6 @@ export const fieldWrap = style({
     "&:not([data-pui-pointer-focus]):has(input:focus-visible)": focusRing,
     "&:has(input:disabled)": { opacity: 0.5, cursor: "not-allowed" },
   },
-});
-
-// Raised 는 기본 입력 표면, sunken 은 검색·필터처럼 주변 canvas 안에 잠기는 입력 표면.
-// 양쪽 모두 semantic surface token만 사용하고 경계선은 같은 border.base를 유지한다.
-export const fieldSurface = styleVariants({
-  raised: { background: tokens.color.bg.raised },
-  sunken: { background: tokens.color.bg.sunken },
 });
 
 // 안쪽 input — 면·테두리·아웃라인 없음. 폰트·색은 래퍼에서 상속.

@@ -128,6 +128,22 @@ const layeredStylesRule = {
   },
 };
 
+// An app or a test never writes the name of a package class. Shared axes reach their class through the
+// package's typed maps, so a `pui-` string is a name the package no longer promises. `--pui-*` variables and
+// `data-pui-*` attributes pass: the character before the prefix is `-` there. A template literal counts each
+// placeholder as a letter, so `pui-${name}-dot` is read as a class name too.
+const internalClass = /(^|[^-\w])pui-[a-z]/;
+const internalClassRule = {
+  meta: { type: "problem", schema: [], messages: { internal: "패키지 내부 class 이름을 문자열로 쓰지 않습니다. 공유 축은 컴포넌트 prop 으로 고릅니다." } },
+  create(context) {
+    const check = (node, value) => { if (internalClass.test(value)) context.report({ node, messageId: "internal" }); };
+    return {
+      Literal(node) { if (typeof node.value === "string") check(node, node.value); },
+      TemplateLiteral(node) { check(node, node.quasis.map((part) => part.value.cooked ?? part.value.raw).join("x")); },
+    };
+  },
+};
+
 // No eslint-disable comment names a paper rule and no `/* eslint */` comment configures one — an exception
 // is declared in eslint.config.js. Any other rule an eslint-disable comment switches off carries its reason
 // after `--`. Reports sit at column 0 of the comment's line: disable directives cover a line from column 1,
@@ -174,6 +190,7 @@ export default {
     "inline-token": inlineTokenRule,
     "source-numbers": sourceNumbersRule,
     "layered-styles": layeredStylesRule,
+    "internal-class": internalClassRule,
     "no-rule-disable": noRuleDisableRule,
   },
 };

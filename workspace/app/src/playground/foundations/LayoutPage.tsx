@@ -24,7 +24,7 @@ const ELEVATION_USE: Record<Elevation, string> = {
 // A raised card on the page canvas carrying the level's shadow, in the current theme.
 const ElevationCard = ({ level }: { level: Elevation }) => (
   <div className={s.elevationStage}>
-    <div className={s.elevationCard} style={{ boxShadow: layout.elevation[level].shadow }}><Text variant="caption" ink="soft">{level}</Text></div>
+    <div className={s.elevationCard} style={{ boxShadow: layout.elevation[level].shadow }}><Text variant="caption" ink="secondary">{level}</Text></div>
   </div>
 );
 

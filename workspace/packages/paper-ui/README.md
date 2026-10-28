@@ -28,8 +28,7 @@ The package has four entries, and every name comes from exactly one of them:
 
 Import the stylesheet once at your entry point. It is the only way styles load:
 neither the components nor `PaperProvider` import CSS. That single line puts every
-CSS variable — colour, size, type — on `:root` and brings in the utility classes
-and the component styles.
+CSS variable — colour, size, type — on `:root` and brings in the component styles.
 
 ```ts
 import "@studio-baeks/paper-ui/styles.css";

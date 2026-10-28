@@ -12,7 +12,7 @@ const runtime = [...Object.keys(pkg.dependencies), ...Object.keys(pkg.peerDepend
 const target = buildTargets(pkg.browserslist);
 
 // dist/paper-ui.css opens with the layer statement of tokens/layers.css.ts, then keeps the order in which
-// global.css.ts brings in the global styles (variables → theme → typography → utility → color), with the component
+// global.css.ts brings in the global styles (variables → theme → typography → space → color), with the component
 // styles after them. Rollup runs entries sorted by module id, so src/index.ts would run first and pull typography.css
 // ahead of theme.css. The styles entry is therefore wrapped in a virtual module whose "\0" id sorts first, and
 // the layer module, the variables module and src/styles share one chunk, whose CSS keeps that execution order.

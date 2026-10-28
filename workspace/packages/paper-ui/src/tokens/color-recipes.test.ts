@@ -26,7 +26,6 @@ describe("muted color profile", () => {
       expect(profile.color).toBe(tokens.color.accent[accent].subtle);
       expect(profile.borderColor).toBe("transparent");
       expect(profile.hoverTint).toBe(tokens.color.interaction.bgHover.onSurface);
-      expect(profile.hoverBackground).toBeUndefined();
     }
   });
 

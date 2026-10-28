@@ -14,7 +14,7 @@ export default defineSpec({
   subject: (state) => {
     const columns = pick(state, "columns");
     return (
-      <Grid columns={columns === undefined ? undefined : Number(columns)} gap="sm" width="full">
+      <Grid data-testid="grid-example" columns={columns === undefined ? undefined : Number(columns)} gap="sm" width="full">
         {CELLS.map((cell) => (
           <Box key={cell} border radius="sm" padding="md"><Text>{cell}</Text></Box>
         ))}

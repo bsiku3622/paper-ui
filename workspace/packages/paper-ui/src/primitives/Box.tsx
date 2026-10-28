@@ -10,7 +10,7 @@
 
 import { forwardRef, type ComponentPropsWithRef, type ComponentPropsWithoutRef, type CSSProperties, type ElementType, type ReactElement, type ReactNode } from "react";
 
-import { resolveBoxClass, type BoxLike } from "../resolvers";
+import { BOX_STYLE_KEYS, resolveBoxClass, type BoxStyleProps } from "../resolvers";
 import { joinClass } from "../internal/joinClass";
 import { boxRadius, boxElevation, boxBorder } from "./Box.css";
 import { useThemeScope } from "../theme/scope";
@@ -45,7 +45,7 @@ const resolveDimension = (value: BoxDimension | undefined, axis: "width" | "heig
 };
 
 // `as` 를 제네릭으로 묶어야 <Box as="button" type="submit"> 의 type 이 검사된다.
-type OwnProps<As extends ElementType> = BoxLike & BoxLayoutProps & {
+type OwnProps<As extends ElementType> = BoxStyleProps & BoxLayoutProps & {
   as?: As;
   // 카드 헤어라인 — 켜면 border.base 로 얇은 선. 면 위에 얹는다.
   border?: boolean;
@@ -64,14 +64,6 @@ type OwnProps<As extends ElementType> = BoxLike & BoxLayoutProps & {
 // 자기 prop 을 뺀 나머지 DOM 속성은 그대로 통과 (onClick · role · aria-*).
 export type BoxProps<As extends ElementType = "div"> = OwnProps<As> &
   Omit<ComponentPropsWithoutRef<As>, keyof OwnProps<As>> & { ref?: ComponentPropsWithRef<As>["ref"] };
-
-const OWN_KEYS = [
-  "surface",
-  "padding",
-  "paddingX",
-  "paddingY",
-  "gap",
-] as const;
 
 const BoxImpl = forwardRef<HTMLDivElement, Omit<BoxProps, "as" | "ref"> & { as?: ElementType }>(function Box({
   as,
@@ -100,7 +92,7 @@ const BoxImpl = forwardRef<HTMLDivElement, Omit<BoxProps, "as" | "ref"> & { as?:
   const style: Record<string, unknown> = {};
   const dom: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(rest)) {
-    if ((OWN_KEYS as readonly string[]).includes(k)) style[k] = v;
+    if ((BOX_STYLE_KEYS as readonly string[]).includes(k)) style[k] = v;
     else dom[k] = v;
   }
   if (theme !== undefined) style.surface ??= "canvas";
@@ -109,7 +101,7 @@ const BoxImpl = forwardRef<HTMLDivElement, Omit<BoxProps, "as" | "ref"> & { as?:
     <Tag
       ref={ref}
       className={joinClass(
-        resolveBoxClass(style as BoxLike),
+        resolveBoxClass(style as BoxStyleProps),
         border && boxBorder,
         radius && boxRadius[radius],
         elevation && boxElevation[elevation],

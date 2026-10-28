@@ -59,7 +59,7 @@ const ThemeSwap = () => {
 
 const HoverSample = () => (
   <div className={s.hoverSample} style={{ transition: `background-color ${motion.role.hover.duration} ${motion.role.hover.easing}` }}>
-    <Text variant="caption" ink="soft">포인터를 올려 보세요</Text>
+    <Text variant="caption" ink="secondary">포인터를 올려 보세요</Text>
   </div>
 );
 

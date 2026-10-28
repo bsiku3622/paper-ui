@@ -6,8 +6,8 @@ import { layered } from "../tokens/layers.css";
 
 const { style, styleVariants } = layered("components");
 
-// geometry·motion 만. 색(background·color·border-color)은 resolveAccent 가 붙이는 pui-a-*
-// 클래스가 정한다 — Button 은 어떤 색인지 모른다.
+// geometry·motion 만. 색(background·color·border-color)은 resolveAccent 가 붙이는
+// accentVariantClass 가 정한다 — Button 은 어떤 색인지 모른다.
 // 크기(height·padding·fontSize·weight)는 size 축(buttonSize) 이 정한다.
 export const buttonRoot = style({
   display: "inline-flex",

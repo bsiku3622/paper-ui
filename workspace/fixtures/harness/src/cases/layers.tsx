@@ -8,7 +8,7 @@ export const LayersCase = () => (
     <Button>Package button</Button>
     <Field className="consumer-field" data-testid="consumer-field" aria-label="Consumer field" />
     <Field data-testid="package-field" aria-label="Package field" />
-    <Text variant="caption" ink="base">Caption with base ink</Text>
+    <Text variant="caption" ink="primary">Caption with primary ink</Text>
     <Text variant="caption">Caption with its own ink</Text>
   </>
 );

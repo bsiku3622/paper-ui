@@ -73,14 +73,14 @@ export const TypographyPage = () => (
             {group.rows.map((row) => (
               <BoardRow key={row.name}>
                 <TokenCell name={`typography.palette.${group.key}.${row.name}`} />
-                <Text className={s.specimen} variant="body" ink="base" style={row.style}>{row.sample ?? SPECIMEN}</Text>
+                <Text className={s.specimen} variant="body" ink="primary" style={row.style}>{row.sample ?? SPECIMEN}</Text>
                 <ValueCell>{resolved(row.value)}</ValueCell>
               </BoardRow>
             ))}
             {group.key === "family" ? (
               <BoardRow>
                 <TokenCell name={`typography.palette.${MONO_SCALE.name}`} note="mono가 sans와 같은 크기로 읽히도록 줄이는 배율" />
-                <Text className={s.specimen} variant="body" family="mono" ink="base">{SPECIMEN}</Text>
+                <Text className={s.specimen} variant="body" family="mono" ink="primary">{SPECIMEN}</Text>
                 <ValueCell>{resolved(MONO_SCALE.value)}</ValueCell>
               </BoardRow>
             ) : null}
@@ -94,7 +94,7 @@ export const TypographyPage = () => (
         {TEXT_VARIANTS.map((variant) => (
           <BoardRow key={variant} size="md">
             <TokenCell name={`typography.role.${variant}`} note={TEXT_ROLES[variant]} />
-            <Text as="p" variant={variant} ink="base" className={s.specimen}>{TEXT_SAMPLES[variant]}</Text>
+            <Text as="p" variant={variant} ink="primary" className={s.specimen}>{TEXT_SAMPLES[variant]}</Text>
             <ValueCell>{resolved(tokens.typography.role[variant].weight)}</ValueCell>
             <ValueCell>{px(tokens.typography.role[variant].size)} / {px(tokens.typography.role[variant].leading)}</ValueCell>
           </BoardRow>

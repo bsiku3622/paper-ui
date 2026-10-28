@@ -64,7 +64,7 @@ export const SiteNav = () => {
         <Inline gap="sm" align="center">
           <ThemeToggle />
           <Box surface="sunken" radius="full" paddingX="sm" paddingY="xs" style={{ border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
-            <Text variant="caption" as="span" ink="soft" style={{ fontVariantNumeric: "tabular-nums" }}>v0.1.0</Text>
+            <Text variant="caption" as="span" ink="secondary" style={{ fontVariantNumeric: "tabular-nums" }}>v0.1.0</Text>
           </Box>
         </Inline>
       </Inline>
