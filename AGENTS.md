@@ -26,13 +26,14 @@ paper-ui/
     │   ├── scripts/            # build-types.mjs — entry 마다 d.ts 하나
     │   └── src/
     │       ├── index.ts        # entry `.` — 컴포넌트 · hook · Provider ("use client")
+    │       ├── inventory.ts    # 이름 · 분류 · 순서의 정본 — import 가 없고 inventory.test 가 export 와 대조
     │       ├── tokens/         # 값의 유일한 정의 위치 · public.ts = entry `/tokens` · layers.css.ts = cascade layer
     │       ├── styles/         # theme.css.ts (raw 값 → CSS var) · utility.css.ts · global.css.ts = entry `/styles.css`
     │       ├── resolvers/      # 규칙의 주인 (prop → className)
     │       ├── primitives/     # layout·text·icon building blocks
     │       ├── atoms/
     │       └── provider/
-    ├── app/                    # 사이트 · Playground · 문서 · 데모
+    ├── app/                    # 사이트 · Playground · 문서 · 데모 — vite/paper-docs.ts 가 docs/ 를 서빙
     ├── fixtures/harness/       # @paper-ui/harness — e2e 가 패키지를 소비자처럼 마운트하는 페이지
     ├── eslint-rules/           # lint plugin `paper`
     ├── scripts/                # 레포 검사 (docs-sync · browser-baseline · check-contracts)
@@ -64,6 +65,8 @@ inspector 제외)으로 낸 선언을 `scripts/build-types.mjs` 가 entry 마다
 검사한다. 지원 브라우저 하한은 패키지 package.json 의 `browserslist` 한 곳에 둔다(Chrome·Edge 125 · Firefox 121 ·
 Safari 16.4). Vite build.target · cssTarget 이 거기서 나오고, CSS 기능을 새로 쓰면 `scripts/browser-baseline.mjs`
 표에 행을 더한다 — required 는 하한이 지원해야 하고, enhancement 는 하한에서 움직임만 빠진다.
+
+문서(`docs/`)는 복사 없이 Vite 가 소스에서 곧바로 서빙합니다 — `app/vite/paper-docs.ts` 가 `virtual:paper-docs` 로 목록을, `@docs` alias 가 본문을 줍니다. 모든 문서의 첫 줄은 `# 제목` 이고 그 줄이 사이드바와 페이지의 제목입니다(이 규칙의 주인은 `app/src/docs/parse.ts`). 순서와 라벨은 `app/src/site/site-map.ts` 의 `DOC_GROUPS` 가 정합니다(Vite 플러그인이 Node 에서 읽을 수 있게 정의는 import 없는 `site-core.ts` 에 둡니다). 목록에 없는 문서 · 파일 없는 항목 · 제목 없는 문서는 dev 오버레이와 `vite build` 가 실패로 막고, `docs/` 를 고치면 dev 에서 재시작 없이 다시 불러옵니다.
 
 ---
 
@@ -160,6 +163,8 @@ Foundations → Primitives → Atoms
 | A11y | 4 | `FocusScope · VisuallyHidden · RovingFocus · FormField` |
 | Atoms | 13 | `Button · IconButton · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Spinner · Divider · Link` |
 
+Primitive·Atom 인벤토리의 정본은 `packages/paper-ui/src/inventory.ts`입니다. `inventory.test.ts`가 `.` entry의 실제 export와 1:1로 대조하고, 앱의 사이트 지도(`app/src/site/site-map.ts`)가 Playground 목록(Foundations → Primitives → Atoms)을 거기서 파생합니다. 위 표는 그 목록을 옮긴 것이므로 인벤토리를 바꾸면 표도 함께 고칩니다.
+
 패키지는 Primitive와 Atom만 공개합니다. 제품별 조합은 앱이 소유하고, 여러 제품에서 반복된 뒤에만 공통 API로 승격합니다.
 
 RovingFocus는 등록 항목의 Tab 진입점과 실제 DOM focus 탐색을 관리하며 선택과 분리합니다. ToggleGroup은 toggle button 그룹의 단일·복수 선택이고 다른 위젯의 role을 대체하지 않습니다. Overlay는 Trigger·Content·Close를 연결하며 기본 non-modal dialog, modal opt-in입니다. React Aria가 Portal·배치·중첩 dismissal·배경 inert·스크롤 잠금을 담당합니다. FormField/useField는 기존 Field Atom을 유지하면서 native label·설명·오류 ID를 연결합니다. 합성 도구 mergeProps는 additive handler 병합, composeEventHandlers는 caller preventDefault에 의한 내부 handler 취소, mergeRefs는 같은 DOM ref 연결입니다. 새 공통 상태·입력 관계 API도 Playground와 문서·실제 브라우저 검증을 함께 갱신합니다.
@@ -183,7 +188,7 @@ Primitive 계약의 정본은 [docs/primitives/](docs/primitives/README.md)(Layo
 
 `docs/`의 계약 문장·문단·표 바로 앞에는 렌더되지 않는 표시 `[contract:<area>.<subject>.<slug>]: #`를 한 줄로 둡니다. area는 foundations · primitives · atoms · install · guardrails · app 중 하나입니다. 그 계약을 단언하는 테스트는 제목을 `[<id>]`로 시작하고, 한 테스트가 계약 여럿을 단언하면 id를 이어 씁니다(`[a] [b] 제목`). 새 계약 문장은 같은 변경에서 표시와 테스트를 함께 얻습니다. `scripts/check-contracts.mjs`가 `pnpm test` 안에서 둘을 1:1로 대조합니다 — 같은 id의 표시가 둘이거나, 테스트 없는 표시(skip · todo · fixme · fail 테스트는 세지 않습니다), 표시 없는 테스트 id, 내용 블록이 뒤따르지 않는 표시, 문단·목록·표에 이어 붙어 글자로 보이는 표시는 실패입니다. 표 바로 위의 표시는 GitHub에서 글자로 보이므로 표와 표시 사이에 빈 줄을 둡니다.
 
-테스트 파일은 계층과 시스템 이름을 따릅니다. 단위 테스트는 소스 옆에 `tokens/{color,shape,layout}.test.ts` · `primitives/{layout,content,interaction,a11y}.test.tsx` · `atoms/<Atom>.test.tsx`로, e2e는 `tests/{foundations,primitives,atoms,app,install}/<시스템>.spec.ts`로 둡니다. 테스트 이름에서 Foundations는 Color부터 Motion까지 다섯 시스템만 뜻합니다. e2e 도구(하네스 · 키보드 · 기하 · 콘솔)와 단위 테스트도 함께 쓰는 `dp()`는 `tests/support/`에 있습니다.
+테스트 파일은 계층과 시스템 이름을 따릅니다. 단위 테스트는 소스 옆에 `tokens/{color,shape,layout}.test.ts` · `primitives/{layout,content,interaction,a11y}.test.tsx` · `atoms/<Atom>.test.tsx`로, e2e는 `tests/{foundations,primitives,atoms,app,install}/<시스템>.spec.ts`로 둡니다. 테스트 이름에서 Foundations는 Color부터 Motion까지 다섯 시스템만 뜻합니다. e2e 도구(하네스 · 키보드 · 기하 · 콘솔)와 단위 테스트도 함께 쓰는 `dp()`는 `tests/support/`에 있습니다. 앱의 단위 테스트(`app/src/**/*.test.ts(x)`)는 문서 파서 · 링크 해석 · `docs/` 전체의 링크와 앵커 · 사이트 지도를 지킵니다.
 
 e2e는 자기 서버를 직접 띄웁니다. 앱은 41731, 하네스(`fixtures/harness`, `?case=geometry|theme|layers`)는 41732 포트에서 `--strictPort`로 뜨고 이미 떠 있는 서버를 재사용하지 않으므로, 포트를 다른 서버가 쓰고 있으면 실행이 실패합니다. 포트는 `E2E_APP_PORT` · `E2E_HARNESS_PORT`로 바꿉니다. 하네스는 Vite 내부 경로 없이 패키지를 exports로만 불러옵니다. 프로젝트는 chromium · chromium-dark · chromium-reduced-motion · chromium-forced-colors · firefox · webkit 여섯입니다. firefox · webkit은 `foundations/shape` · `primitives` · `atoms` spec을 돌고, `tests/dist/`는 배포본 전용 설정만 돌립니다 — 이름은 dist여도 산출물이 아니라 소스이므로 git · eslint · check-contracts는 산출물 `dist/`와 달리 이 디렉터리를 읽습니다. Tab은 `tests/support/keyboard.ts`의 `tab()`으로만 누릅니다 — macOS WebKit에서는 Alt+Tab이어야 버튼까지 닿습니다. 한 엔진에서만 나는 실패는 `playwright.config.ts`의 `ENGINE_EXCLUSIONS`에 이유와 다시 켜는 단계를 적어 그 엔진에서만 끕니다.
 

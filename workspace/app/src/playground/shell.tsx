@@ -5,7 +5,7 @@ import { Box, Inline, Stack, Text } from "@studio-baeks/paper-ui";
 import { tokens } from "@studio-baeks/paper-ui/tokens";
 
 import { SiteNav, NAV_HEIGHT } from "../site/chrome";
-import { FOUNDATION_SECTIONS } from "./foundations/sections";
+import { FOUNDATIONS } from "../site/site-map";
 import { COMPONENTS, PRIMITIVE_GROUPS, type CompSpec } from "./registry";
 
 const linkStyle = (active: boolean) => ({
@@ -41,8 +41,8 @@ export const PlaygroundLayout = ({ value, children }: { value: string; children:
         <Stack gap="lg">
           <Link to="/playground" style={linkStyle(value === "all")}>Overview</Link>
           <NavGroup label="Foundations">
-            {FOUNDATION_SECTIONS.map(([slug, label]) => (
-              <Link key={slug} to={`/playground/foundations/${slug}`} aria-current={value === `foundation-${slug}` ? "page" : undefined} style={linkStyle(value === `foundation-${slug}`)}>{label}</Link>
+            {FOUNDATIONS.map(({ id, label }) => (
+              <Link key={id} to={`/playground/foundations/${id}`} aria-current={value === `foundation-${id}` ? "page" : undefined} style={linkStyle(value === `foundation-${id}`)}>{label}</Link>
             ))}
           </NavGroup>
           <NavGroup label="Primitives">

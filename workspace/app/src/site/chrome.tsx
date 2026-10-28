@@ -9,6 +9,7 @@ import { Box, Inline, Text, useTheme, type Theme, type ResolvedTheme } from "@st
 import { tokens } from "@studio-baeks/paper-ui/tokens";
 
 import { Logo } from "./Logo";
+import { SITE_NAV } from "./site-map";
 import "./site.css";
 
 // 테마 토글 — 라이트 ⇄ 다크 둘만 오간다.
@@ -36,13 +37,6 @@ const ThemeToggle = () => {
     </button>
   );
 };
-
-export const SITE_NAV = [
-  { to: "/", label: "홈" },
-  { to: "/demo", label: "데모" },
-  { to: "/playground", label: "플레이그라운드" },
-  { to: "/docs", label: "문서" },
-] as const;
 
 const isActive = (pathname: string, to: string) =>
   to === "/" ? pathname === "/" : pathname.startsWith(to);

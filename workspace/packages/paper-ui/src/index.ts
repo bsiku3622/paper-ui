@@ -47,3 +47,7 @@ export type { PaperProviderProps } from "./provider/PaperProvider";
 
 // Resolver — 앱이 자기 컨트롤 글자를 같은 preset 으로 고를 때
 export { resolveControlTypography } from "./resolvers";
+
+// Inventory — every name above by category and order, as data
+export { INVENTORY, PRIMITIVE_GROUPS } from "./inventory";
+export type { PrimitiveGroup } from "./inventory";
