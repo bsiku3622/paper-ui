@@ -118,7 +118,7 @@ variant 에도 교차한다. mono 는 `.pui-mono` 가 등폭·전용 tracking·�
 Foundations → Primitives → Atoms
 ```
 
-문서(`docs/`)와 Playground 사이드바는 이 순서와 이름을 그대로 씁니다 — Foundations(Color · Typography · Shape · Layout · Motion), Primitives(Layout · Content · Interaction · A11y), Atoms. Foundations의 각 페이지는 그 시스템의 원본 → 역할 → 조합 순서로 같은 보드(`app/src/playground/foundations/kit.tsx`)를 씁니다.
+문서(`docs/`)와 Playground 사이드바는 이 순서와 이름을 그대로 씁니다 — Foundations(Color · Typography · Shape · Layout · Motion), Primitives(Layout · Content · Interaction · A11y), Atoms. Foundations 페이지는 그 시스템의 원본 → 역할 → 조합 순서로 그립니다. Typography·Shape·Layout·Motion은 같은 보드(`app/src/playground/foundations/kit.tsx`)를 쓰고, Color는 예전 형태(팔레트 행렬 + 그룹별 Light·Dark 값 카드)를 그대로 둡니다.
 
 | 레이어 | 수 | |
 |---|---|---|

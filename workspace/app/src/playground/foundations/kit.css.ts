@@ -11,7 +11,6 @@ const spanAll = { gridColumn: "1 / -1", display: "grid", gridTemplateColumns: "s
 
 export const page = style({ width: "100%", maxWidth: tokens.layout.container.content, marginInline: "auto", minWidth: 0 });
 export const section = style({ minWidth: 0 });
-export const aside = style({ flexShrink: 0, whiteSpace: "nowrap" });
 export const board = style({ minWidth: 0, maxWidth: "100%", overflowX: "auto" });
 export const grid = style({ display: "grid", columnGap: tokens.layout.gap.md, alignItems: "center" });
 export const header = style({ ...spanAll, paddingBlock: tokens.shape.inset.sm, borderBottom: line });
@@ -33,11 +32,6 @@ export const row = styleVariants({
 
 // Cells start after the empty edge track; the rest auto-place, leaving the far edge track empty.
 globalStyle([header, row.sm, row.md, row.lg].map((name) => `${name} > :first-child`).join(", "), { gridColumnStart: 2 });
-
-// Bare: no box and no rules. Pulling the board out by one gap cancels the edge-track inset, so the
-// first column lines up with the section heading.
-export const bare = style({ marginInline: `calc(${tokens.layout.gap.md} * -1)` });
-globalStyle([header, group, row.md, row.lg].map((name) => `${bare} ${name}`).join(", "), { borderBottom: 0 });
 
 export const align = styleVariants({
   start: { textAlign: "start", justifySelf: "start" },
