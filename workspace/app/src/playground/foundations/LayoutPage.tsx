@@ -1,14 +1,16 @@
 import { Text, useResolvedTheme } from "@studio-baeks/paper-ui";
-import { tokens, BREAKPOINTS, ELEVATIONS, SPACES, type Elevation } from "@studio-baeks/paper-ui/tokens";
+import { tokens, BREAKPOINTS, ELEVATIONS, SPACES, type Depth, type Elevation } from "@studio-baeks/paper-ui/tokens";
 
 import { LAYOUT_SOURCE } from "../../../../packages/paper-ui/src/tokens/layout";
-import { Board, BoardGroup, BoardRow, Cell, FoundationSection, TokenCell, ValueCell, resolved } from "./kit";
+import { Board, BoardGroup, BoardRow, Cell, FoundationSection, Meter, TokenCell, ValueCell, resolved } from "./kit";
 import * as s from "./foundations.css";
 
 const layout = tokens.layout;
-const percent = (dp: number, max: number) => `${Math.round((dp / max) * 1000) / 10}%`;
 const maxBreakpoint = Math.max(...Object.values(LAYOUT_SOURCE.breakpoint));
 const geometry = (layers: readonly (readonly number[])[]) => layers.map((layer) => layer.join(" ")).join(", ");
+
+// The levels that cast a given depth of shadow, in elevation order; the first one stands for the depth.
+const levelsOf = (depth: Depth) => ELEVATIONS.filter((level) => LAYOUT_SOURCE.elevation[level].depth === depth);
 
 const ELEVATION_USE: Record<Elevation, string> = {
   base: "지면에 붙은 면",
@@ -35,7 +37,7 @@ export const LayoutPage = () => {
           <BoardGroup label="Container">
             <BoardRow>
               <TokenCell name="layout.container.content" note="사이트 본문 격자의 최대 폭" />
-              <div className={s.bar} style={{ width: "100%" }} />
+              <Meter value={LAYOUT_SOURCE.container.content} max={LAYOUT_SOURCE.container.content} />
               <ValueCell>{resolved(layout.container.content)}</ValueCell>
             </BoardRow>
           </BoardGroup>
@@ -43,7 +45,7 @@ export const LayoutPage = () => {
             {BREAKPOINTS.map((name) => (
               <BoardRow key={name}>
                 <TokenCell name={`layout.breakpoint.${name}`} />
-                <div className={s.bar} style={{ width: percent(LAYOUT_SOURCE.breakpoint[name], maxBreakpoint) }} />
+                <Meter value={LAYOUT_SOURCE.breakpoint[name]} max={maxBreakpoint} />
                 <ValueCell>{layout.breakpoint[name]}</ValueCell>
               </BoardRow>
             ))}
@@ -57,11 +59,11 @@ export const LayoutPage = () => {
               </BoardRow>
             ))}
           </BoardGroup>
-          <BoardGroup label={`Shadow geometry — x y blur spread (px), 지금 테마(${theme})의 기하 · 색은 Color의 shadow tint`}>
-            {(["lifted", "floating"] as const).map((depth) => (
+          <BoardGroup label={`Shadow geometry — x y blur spread (px), 지금 테마(${theme})의 기하 · 색은 Color의 shadow colour`}>
+            {(Object.keys(LAYOUT_SOURCE.shadow[theme]) as Depth[]).map((depth) => (
               <BoardRow key={depth}>
-                <TokenCell name={`shadow.${depth}.${theme}`} note={depth === "lifted" ? "raised 층" : "overlay · modal · toast 층"} />
-                <ElevationCard level={depth === "lifted" ? "raised" : "overlay"} />
+                <TokenCell name={`shadow.${depth}.${theme}`} note={`${levelsOf(depth).join(" · ")} 층`} />
+                <ElevationCard level={levelsOf(depth)[0]!} />
                 <ValueCell>{geometry(LAYOUT_SOURCE.shadow[theme][depth])}</ValueCell>
               </BoardRow>
             ))}
@@ -75,7 +77,7 @@ export const LayoutPage = () => {
             {SPACES.map((step) => (
               <BoardRow key={step}>
                 <TokenCell name={`layout.gap.${step}`} note={`= shape.space.${step}`} />
-                <Cell><div className={s.gapSample} style={{ gap: layout.gap[step] }}><span /><span /></div></Cell>
+                <Cell><div className={`${s.gapSample} ${s.gapOf[step]}`}><span /><span /></div></Cell>
                 <ValueCell>{resolved(layout.gap[step])}</ValueCell>
               </BoardRow>
             ))}
@@ -83,7 +85,7 @@ export const LayoutPage = () => {
           <BoardGroup label="Page">
             <BoardRow>
               <TokenCell name="layout.gutter" note="페이지 가장자리와 내용 사이, 모달 scrim의 안쪽 = space.lg" />
-              <Cell><div className={s.gutterFrame} style={{ padding: layout.gutter }}><span /></div></Cell>
+              <Cell><div className={s.gutterFrame}><span /></div></Cell>
               <ValueCell>{resolved(layout.gutter)}</ValueCell>
             </BoardRow>
           </BoardGroup>

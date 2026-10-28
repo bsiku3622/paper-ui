@@ -19,7 +19,7 @@ walkValues(TYPOGRAPHY_VALUES, ["typography"], (path, value) => declarations.set(
 const resolvable = new Map(declarations);
 walkValues(COLOR_VALUES, ["color"], (path, value) => resolvable.set(pathToCssVar(path), value));
 for (const level of ELEVATIONS) {
-  resolvable.set(pathToCssVar(elevationShadowPath(level)), elevationShadow(level, "light", (tint) => tokens.color.shadow[tint]));
+  resolvable.set(pathToCssVar(elevationShadowPath(level)), elevationShadow(level, "light", (depth) => tokens.color.shadow[depth]));
 }
 
 // Resolves a role or recipe to dp at the default 16px root, the way the browser would.

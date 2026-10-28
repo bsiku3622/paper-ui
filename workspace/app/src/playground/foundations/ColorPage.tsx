@@ -1,107 +1,59 @@
 // Color — the palette matrix on a raised panel, then each semantic group as rows of token and
-// value card. Values are the current theme's: switching the theme switches every card.
+// value card, then the accent × variant combinations. Values are the current theme's: switching
+// the theme switches every card. Every row comes from the selection table (color-roles.ts).
 
-import { Box, Inline, Stack, Text, useResolvedTheme } from "@studio-baeks/paper-ui";
-import { tokens, ACCENTS, ACCENT_TONES, type Accent } from "@studio-baeks/paper-ui/tokens";
+import { Badge, Box, Button, Inline, Stack, Text, useResolvedTheme } from "@studio-baeks/paper-ui";
+import { ACCENTS, ACCENT_TONES, VARIANTS } from "@studio-baeks/paper-ui/tokens";
 
-import { COLOR_VALUES, COLOR_VALUES_DARK, STATUS_PALETTE } from "../../../../packages/paper-ui/src/tokens/colors";
-import { ACCENT_STEPS, PALETTE_TOKENS } from "../../../../packages/paper-ui/src/tokens/palette";
-import "./color-page.css";
+import { VARIANT_RECIPE } from "../../../../packages/paper-ui/src/tokens/color-recipes";
+import { ACCENT_PALETTE } from "../../../../packages/paper-ui/src/tokens/colors";
+import { ACCENT_PALETTES, ACCENT_STEPS, PALETTE_TOKENS } from "../../../../packages/paper-ui/src/tokens/palette";
+import { GROUPS, ROLE_NOTES, formatPalettePath, hexAt, rolesOf, selectionAt, type ColorMode } from "./color-roles";
+import { Chip, StepGrid, Swatch } from "./kit";
+import type { ChipRole } from "./kit.css";
+import * as s from "./color-page.css";
 
-type Values = typeof COLOR_VALUES;
-// `pick` reads the role from either theme's values; `live` is the token the chip paints with.
-type ColorRow = { token: string; description: string; pick: (values: Values) => string; live: string };
-const c = tokens.color;
-
-const COLOR_GROUPS: { title: string; description: string; rows: ColorRow[] }[] = [
-  { title: "Background", description: "페이지와 컨테이너 면의 깊이입니다.", rows: [
-    { token: "bg.canvas", description: "기본 페이지 면", pick: (v) => v.bg.canvas, live: c.bg.canvas },
-    { token: "bg.raised", description: "카드와 떠 있는 면", pick: (v) => v.bg.raised, live: c.bg.raised },
-    { token: "bg.sunken", description: "가라앉은 영역", pick: (v) => v.bg.sunken, live: c.bg.sunken },
-  ] },
-  { title: "Control", description: "컨트롤 안쪽에만 쓰는 면입니다.", rows: [
-    { token: "control.track", description: "Switch 트랙, 진행 막대의 홈", pick: (v) => v.control.track, live: c.control.track },
-  ] },
-  { title: "Text", description: "면 위 글자의 위계입니다.", rows: [
-    { token: "ink.primary", description: "본문과 제목", pick: (v) => v.ink.primary, live: c.ink.primary },
-    { token: "ink.secondary", description: "보조 내용", pick: (v) => v.ink.secondary, live: c.ink.secondary },
-    { token: "ink.tertiary", description: "메타 정보와 낮은 강조", pick: (v) => v.ink.tertiary, live: c.ink.tertiary },
-  ] },
-  { title: "Border", description: "구조를 나누는 경계와 강조입니다.", rows: [
-    { token: "border.base", description: "기본 컴포넌트 경계", pick: (v) => v.border.base, live: c.border.base },
-    { token: "border.strong", description: "대비가 높은 경계", pick: (v) => v.border.strong, live: c.border.strong },
-    { token: "border.hover", description: "포인터가 올라온 입력칸의 경계", pick: (v) => v.border.hover, live: c.border.hover },
-  ] },
-  { title: "Interaction", description: "상태 overlay와 키보드 포커스입니다.", rows: [
-    { token: "interaction.bgHover.onSurface", description: "중립 면 위 hover overlay", pick: (v) => v.interaction.bgHover.onSurface, live: c.interaction.bgHover.onSurface },
-    { token: "interaction.bgHover.onPrimarySolid", description: "primary solid 위 hover overlay", pick: (v) => v.interaction.bgHover.onPrimarySolid, live: c.interaction.bgHover.onPrimarySolid },
-    { token: "interaction.bgHover.onAccentSolid", description: "상태색 solid 위 hover overlay", pick: (v) => v.interaction.bgHover.onAccentSolid, live: c.interaction.bgHover.onAccentSolid },
-    { token: "interaction.selected", description: "선택된 항목의 면", pick: (v) => v.interaction.selected, live: c.interaction.selected },
-    { token: "interaction.active", description: "누르는 중인 면", pick: (v) => v.interaction.active, live: c.interaction.active },
-    { token: "interaction.focus", description: "키보드 포커스 표시", pick: (v) => v.interaction.focus, live: c.interaction.focus },
-  ] },
-  { title: "Overlay · Shadow", description: "모달 scrim과 그림자의 색입니다. 그림자의 모양과 층은 Layout의 elevation이 정합니다.", rows: [
-    { token: "overlay.scrim", description: "모달 뒤를 어둡게 누르는 면", pick: (v) => v.overlay.scrim, live: c.overlay.scrim },
-    { token: "shadow.overlay", description: "떠 있는 층(overlay · modal · toast) 그림자의 색", pick: (v) => v.shadow.overlay, live: c.shadow.overlay },
-    { token: "shadow.overlayMinimal", description: "살짝 들린 층(raised) 그림자의 색", pick: (v) => v.shadow.overlayMinimal, live: c.shadow.overlayMinimal },
-  ] },
-];
-
-const FAMILY: Record<Accent, string> = { primary: "neutral", ...STATUS_PALETTE };
-
-const findPaletteToken = (color: string): string => {
-  const visit = (value: unknown, path: string[]): string | undefined => {
-    if (typeof value === "string") return value.toLowerCase() === color.toLowerCase() ? path.join(".") : undefined;
-    if (!value || typeof value !== "object") return undefined;
-    for (const [key, child] of Object.entries(value)) {
-      const match = visit(child, [...path, key]);
-      if (match) return match;
-    }
-    return undefined;
-  };
-  return (visit(PALETTE_TOKENS, []) ?? "palette").replace(/^accent\./, "");
-};
-
-const useTheme = () => {
-  const dark = useResolvedTheme() === "dark";
-  return { dark, values: dark ? (COLOR_VALUES_DARK as Values) : COLOR_VALUES, label: dark ? "Dark value" : "Light value" };
+const useThemeValues = (): { mode: ColorMode; label: string } => {
+  const mode = useResolvedTheme() === "dark" ? "dark" : "light";
+  return { mode, label: mode === "dark" ? "Dark value" : "Light value" };
 };
 
 // A role as it renders now: its chip on the page canvas, the Palette Token it selects and the HEX.
-const ColorValue = ({ live, color, compact = false }: { live: string; color: string; compact?: boolean }) => {
-  const paletteToken = findPaletteToken(color);
+const ColorValue = ({ path, mode, compact = false }: { path: ChipRole; mode: ColorMode; compact?: boolean }) => {
+  const paletteToken = formatPalettePath(selectionAt(mode, path));
+  const hex = hexAt(mode, path);
   return (
-    <Stack className={`foundation-color-value${compact ? " foundation-color-value--compact" : ""}`} surface="canvas" gap="sm" border radius="md" padding="sm" title={`${paletteToken} · ${color.toUpperCase()}`}>
-      <Box className="foundation-color-chip" border radius="sm" style={{ background: live }} />
-      <div className="foundation-color-meta">
+    <Stack className={compact ? `${s.value} ${s.valueCompact}` : s.value} surface="canvas" gap="sm" border radius="md" padding="sm" title={`${paletteToken} · ${hex}`}>
+      <Chip path={path} />
+      <div className={s.meta}>
         <Text as="span" variant="caption" family="mono" ink="base">{paletteToken}</Text>
-        <Text as="span" variant="caption" family="mono" ink="faint">{color.toUpperCase()}</Text>
+        <Text as="span" variant="caption" family="mono" ink="faint">{hex}</Text>
       </div>
     </Stack>
   );
 };
 
 const TokenPill = ({ token }: { token: string }) => (
-  <Box as="code" className="foundation-color-token" surface="sunken" radius="sm" paddingX="sm" paddingY="xs"><Text as="span" variant="caption" family="mono">{token}</Text></Box>
+  <Box as="code" className={s.token} surface="sunken" radius="sm" paddingX="sm" paddingY="xs"><Text as="span" variant="caption" family="mono">{token}</Text></Box>
 );
 
 const SectionHeading = ({ title, description }: { title: string; description: string }) => (
   <Stack gap="xs"><Text variant="heading">{title}</Text><Text variant="body" ink="soft">{description}</Text></Stack>
 );
 
-const ColorGroup = ({ title, description, rows }: { title: string; description: string; rows: ColorRow[] }) => {
-  const { values, label } = useTheme();
+const ColorGroup = ({ title, description, branches }: (typeof GROUPS)[number]) => {
+  const { mode, label } = useThemeValues();
   return (
-    <Stack as="section" className="foundation-color-section" gap="md">
+    <Stack as="section" className={s.section} gap="md">
       <SectionHeading title={title} description={description} />
-      <Inline className="foundation-color-columns" align="center" gap="md"><Text variant="label">Token and description</Text><Text variant="label">{label}</Text></Inline>
-      <Stack className="foundation-color-rows" gap="sm">
-        {rows.map((row) => <div className="foundation-color-row" key={row.token}>
-          <Stack className="foundation-color-copy" gap="sm">
-            <TokenPill token={row.token} />
-            <Text variant="body" ink="soft">{row.description}</Text>
+      <Inline className={s.columns} align="center" gap="md"><Text variant="label">Token and description</Text><Text variant="label">{label}</Text></Inline>
+      <Stack gap="sm">
+        {rolesOf(branches).map((role) => <div className={s.row} key={role}>
+          <Stack className={s.copy} gap="sm">
+            <TokenPill token={role} />
+            <Text variant="body" ink="soft">{ROLE_NOTES[role]}</Text>
           </Stack>
-          <ColorValue live={row.live} color={row.pick(values)} />
+          <ColorValue path={role} mode={mode} />
         </div>)}
       </Stack>
     </Stack>
@@ -110,19 +62,19 @@ const ColorGroup = ({ title, description, rows }: { title: string; description: 
 
 // The five accents share the same tones, so they read best side by side: one row per accent.
 const AccentGroup = () => {
-  const { values } = useTheme();
+  const { mode } = useThemeValues();
   return (
-    <Stack as="section" className="foundation-color-section" gap="md">
+    <Stack as="section" className={s.section} gap="md">
       <SectionHeading title="Accent" description="의미 이름 다섯이 같은 다섯 tone을 공유합니다. solid는 채운 면과 상태 점, wash는 solid 위 글자, ink는 지면 위 색 글자, soft는 옅은 면, subtle은 muted 글자입니다." />
-      <div className="foundation-tone-scroll">
-        <div className="foundation-tone-columns"><Text variant="label">Accent</Text>{ACCENT_TONES.map((tone) => <Text key={tone} variant="label">{tone}</Text>)}</div>
+      <div className={s.toneScroll}>
+        <div className={s.toneColumns}><Text variant="label">Accent</Text>{ACCENT_TONES.map((tone) => <Text key={tone} variant="label">{tone}</Text>)}</div>
         {ACCENTS.map((accent) => (
-          <div className="foundation-tone-row" key={accent}>
-            <Stack className="foundation-color-copy" gap="sm">
+          <div className={s.toneRow} key={accent}>
+            <Stack className={s.copy} gap="sm">
               <TokenPill token={`accent.${accent}`} />
-              <Text variant="body" ink="soft">{FAMILY[accent]}</Text>
+              <Text variant="body" ink="soft">{ACCENT_PALETTE[accent]}</Text>
             </Stack>
-            {ACCENT_TONES.map((tone) => <ColorValue key={tone} live={c.accent[accent][tone]} color={values.accent[accent][tone]} compact />)}
+            {ACCENT_TONES.map((tone) => <ColorValue key={tone} path={`accent.${accent}.${tone}`} mode={mode} compact />)}
           </div>
         ))}
       </div>
@@ -135,28 +87,64 @@ const PaletteMatrix = () => {
   const steps = isDark ? [...ACCENT_STEPS].reverse() : ACCENT_STEPS;
   const rows = [
     { name: "Neutral", values: steps.map((step) => PALETTE_TOKENS.neutral[step]) },
-    ...(["red", "amber", "green", "blue"] as const).map((palette) => ({ name: palette[0]!.toUpperCase() + palette.slice(1), values: steps.map((step) => PALETTE_TOKENS.accent[palette][step]) })),
+    ...[...ACCENT_PALETTES].reverse().map((palette) => ({ name: palette[0]!.toUpperCase() + palette.slice(1), values: steps.map((step) => PALETTE_TOKENS.accent[palette][step]) })),
   ];
   return (
-    <Stack className="foundation-palette-section" gap="md">
+    <Stack gap="md">
       <Inline align="baseline" justify="between" wrap><SectionHeading title="Palette" description="테마와 무관한 원본 ramp 하나입니다. light와 dark의 의미 역할이 모두 여기서 단계를 고릅니다." /><Text variant="caption" family="mono" ink="faint">{isDark ? "950 → 50" : "50 → 950"}</Text></Inline>
-      <Box className="foundation-palette-scroll" surface="raised" border radius="lg" padding="md">
-        <div className="foundation-palette-matrix">
-          <span />{steps.map((step) => <Text key={step} variant="caption" family="mono" ink="faint">{step}</Text>)}
+      <Box className={s.paletteScroll} surface="raised" border radius="lg" padding="md">
+        <StepGrid steps={steps.length} data-testid="palette-matrix">
+          <span className={s.headCell} />{steps.map((step) => <Text key={step} className={s.headCell} variant="caption" family="mono" ink="faint">{step}</Text>)}
           {rows.flatMap((row) => [
-            <Text key={`${row.name}-label`} variant="caption">{row.name}</Text>,
-            ...row.values.map((color, index) => <Box key={`${row.name}-${steps[index]}`} className="foundation-palette-swatch" border radius="sm" title={`${row.name} ${steps[index]} · ${color}`} aria-label={`${row.name} ${steps[index]} ${color}`} style={{ background: color }} />),
+            <Text key={`${row.name}-label`} className={s.rowLabel} variant="caption">{row.name}</Text>,
+            ...row.values.map((color, index) => <Swatch key={`${row.name}-${steps[index]}`} color={color} label={`${row.name} ${steps[index]}`} />),
           ])}
-        </div>
+        </StepGrid>
       </Box>
     </Stack>
   );
 };
 
+// What a variant picks from the five tones, read from the recipe that colours it.
+const recipeCaption = (variant: (typeof VARIANTS)[number]) => {
+  const { face, ink, hover } = VARIANT_RECIPE[variant];
+  return `면 ${face === "none" ? "없음" : face} · 글자 ${ink} · hover ${hover}`;
+};
+
+// Each variant combined with each accent: the real Button and Badge, so the table is the evidence.
+const AccentVariantGroup = () => (
+  <Stack as="section" className={s.section} gap="md">
+    <SectionHeading title="Accent × variant" description="Atom은 accent와 variant 두 축만 말하고, 각 조합이 어떤 tone을 쓰는지는 color profile이 정합니다. 각 칸은 실제 Button과 Badge입니다." />
+    <div className={s.toneScroll}>
+      <div role="table" aria-label="Accent and button variant combinations" data-testid="color-variant-matrix">
+        <div role="row" className={s.toneColumns}>
+          <Text role="columnheader" variant="label">Variant</Text>
+          {ACCENTS.map((accent) => <Text key={accent} role="columnheader" variant="label">{accent}</Text>)}
+        </div>
+        {VARIANTS.map((variant) => (
+          <div role="row" className={s.toneRow} key={variant}>
+            <Stack role="rowheader" className={s.copy} gap="sm">
+              <TokenPill token={variant} />
+              <Text variant="body" ink="soft">{recipeCaption(variant)}</Text>
+            </Stack>
+            {ACCENTS.map((accent) => (
+              <Stack role="cell" key={accent} gap="sm" align="start">
+                <Button size="sm" accent={accent} variant={variant}>{accent}</Button>
+                <Badge accent={accent} variant={variant}>{accent}</Badge>
+              </Stack>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  </Stack>
+);
+
 export const ColorPage = () => (
   <Stack gap="xl">
     <PaletteMatrix />
-    {COLOR_GROUPS.map((group) => <ColorGroup key={group.title} {...group} />)}
+    {GROUPS.map((group) => <ColorGroup key={group.title} {...group} />)}
     <AccentGroup />
+    <AccentVariantGroup />
   </Stack>
 );

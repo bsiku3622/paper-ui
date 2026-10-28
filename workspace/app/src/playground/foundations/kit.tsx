@@ -1,8 +1,9 @@
-// Foundations kit — every system page is built from these pieces, in the order the system is
-// built: its source values, the roles that select from them, then the presets or recipes that
-// combine roles into components.
+// Foundations kit — Typography, Shape, Layout and Motion are drawn with this board, in the order the
+// system is built: its source values, the roles that select from them, then the presets or recipes
+// that combine roles into components. Color keeps its own form (AGENTS.md). The display parts at the
+// end — Swatch, Chip, StepGrid and Meter — are how every page paints a value read from a source.
 
-import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 
 import { Box, Stack, Text } from "@studio-baeks/paper-ui";
 
@@ -99,4 +100,23 @@ export const Computed = ({ value, unit = true }: { value: string; unit?: boolean
 // Several sizes of one role, joined the way the docs write them: "7 · 8 · 10".
 export const Ladder = ({ values }: { values: string[] }) => (
   <>{values.map((value, index) => <span key={value + index}>{index > 0 ? " · " : ""}<Computed value={value} unit={false} /></span>)}</>
+);
+
+// ── Display parts ───────────────────────────────────────────────────────────
+
+// One palette step, painted with its generated colour.
+export const Swatch = ({ color, label }: { color: string; label: string }) => (
+  <Box className={s.swatch} border radius="sm" title={`${label} · ${color}`} aria-label={`${label} ${color}`} style={{ background: color }} />
+);
+
+// A semantic role as it renders now, painted through its token.
+export const Chip = ({ path }: { path: s.ChipRole }) => <Box className={`${s.chipBox} ${s.chip[path]}`} border radius="sm" />;
+
+export const StepGrid = ({ steps, children, ...rest }: { steps: number; children: ReactNode; "data-testid"?: string }) => (
+  <div className={s.stepGrid} style={{ [s.stepsProperty]: steps } as CSSProperties} {...rest}>{children}</div>
+);
+
+// A bar as long as `value` is of `max`.
+export const Meter = ({ value, max }: { value: number; max: number }) => (
+  <div className={s.bar} style={{ width: `${Math.round((value / max) * 1000) / 10}%` }} />
 );

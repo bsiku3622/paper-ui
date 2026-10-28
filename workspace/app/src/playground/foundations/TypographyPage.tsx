@@ -4,18 +4,18 @@ import { Text, resolveControlTypography } from "@studio-baeks/paper-ui";
 import { tokens, CONTROL_SIZES, TEXT_VARIANTS, type ControlSize, type TextVariant } from "@studio-baeks/paper-ui/tokens";
 
 import { Board, BoardGroup, BoardRow, FoundationSection, MatrixCell, TokenCell, ValueCell, px, resolved } from "./kit";
+import { valueAt } from "./paths";
+import { PRESET_NOTES, PRESET_PATHS, SIZE_LEADING, isLadder, type PresetPath } from "./typography-roles";
 import * as s from "./foundations.css";
 
 const SPECIMEN = "Aa 가나다 0123";
-// Each font size is shown on its own paired leading.
-const SIZE_LEADING: Record<string, keyof typeof tokens.typography.palette.leading> = { "12": "16", "13": "16", "14": "20", "16": "24", "20": "28", "24": "32", "32": "40" };
 
 type PaletteGroup = { key: string; label: string; rows: { name: string; value: string; style: CSSProperties; sample?: React.ReactNode }[] };
 const palette = tokens.typography.palette;
 const entries = <T extends Record<string, string>>(values: T) => Object.entries(values) as [string, string][];
 
 const PALETTE_GROUPS: PaletteGroup[] = [
-  { key: "fontSize", label: "Font size", rows: entries(palette.fontSize).map(([name, value]) => ({ name, value, style: { fontSize: value, lineHeight: palette.leading[SIZE_LEADING[name]!] } })) },
+  { key: "fontSize", label: "Font size", rows: entries(palette.fontSize).map(([name, value]) => ({ name, value, style: { fontSize: value, lineHeight: palette.leading[SIZE_LEADING[name as keyof typeof SIZE_LEADING]] } })) },
   { key: "weight", label: "Weight", rows: entries(palette.weight).map(([name, value]) => ({ name, value, style: { fontWeight: value } })) },
   { key: "leading", label: "Leading", rows: entries(palette.leading).map(([name, value]) => ({ name, value, style: { lineHeight: value }, sample: <>한 줄과 다음 줄의 간격을<br />눈으로 확인합니다.</> })) },
   { key: "tracking", label: "Tracking", rows: entries(palette.tracking).map(([name, value]) => ({ name, value, style: { letterSpacing: value }, sample: "TRACKING · 가나다" })) },
@@ -47,12 +47,20 @@ const TEXT_ROLES: Record<TextVariant, string> = {
   label: "짧은 이름",
 };
 
-const CONTROL_PRESETS = [
-  { path: "button.regular", role: "Button · regular", sample: "Continue", token: (size: ControlSize) => tokens.typography.preset.button.regular[size], className: (size: ControlSize) => resolveControlTypography("button", size, "regular") },
-  { path: "button.strong", role: "Button · strong", sample: "Save changes", token: (size: ControlSize) => tokens.typography.preset.button.strong[size], className: (size: ControlSize) => resolveControlTypography("button", size, "strong") },
-  { path: "field", role: "Field · Input / Select", sample: "Search projects", token: (size: ControlSize) => tokens.typography.preset.field[size], className: (size: ControlSize) => resolveControlTypography("field", size) },
-  { path: "textarea", role: "Textarea", sample: "Add a description", token: (size: ControlSize) => tokens.typography.preset.textarea[size], className: (size: ControlSize) => resolveControlTypography("textarea", size) },
-] as const;
+// How each preset is applied to a specimen.
+const PRESET_CLASS: Record<PresetPath, (size: ControlSize) => string> = {
+  "button.regular": (size) => resolveControlTypography("button", size, "regular"),
+  "button.strong": (size) => resolveControlTypography("button", size, "strong"),
+  field: (size) => resolveControlTypography("field", size),
+  textarea: (size) => resolveControlTypography("textarea", size),
+  badge: () => resolveControlTypography("badge"),
+};
+
+type PresetRefs = { size: string; leading: string; weight: string };
+const presetRefs = (path: PresetPath, size?: ControlSize): PresetRefs => {
+  const node = valueAt(tokens.typography.preset, path) as PresetRefs | Record<ControlSize, PresetRefs>;
+  return size ? (node as Record<ControlSize, PresetRefs>)[size] : (node as PresetRefs);
+};
 
 const presetCaption = (spec: { size: string; leading: string; weight: string }) => `${px(spec.size)} / ${px(spec.leading)} · ${resolved(spec.weight)}`;
 
@@ -82,7 +90,7 @@ export const TypographyPage = () => (
     </FoundationSection>
 
     <FoundationSection title="Type scale" description="페이지 제목부터 보조 정보까지, 화면에서 맡은 역할로 크기와 굵기를 고릅니다.">
-      <Board columns={[{ label: "Role" }, { label: "Specimen" }, { label: "Weight", align: "end" }, { label: "Size / leading", align: "end" }]} template={`minmax(${tokens.shape.dimension.width.sm}, auto) minmax(0, 1fr) minmax(${tokens.shape.dimension.width.xs}, auto) minmax(${tokens.shape.dimension.width.sm}, auto)`} minWidth="36rem">
+      <Board columns={[{ label: "Role" }, { label: "Specimen" }, { label: "Weight", align: "end" }, { label: "Size / leading", align: "end" }]} template="minmax(6.75rem, auto) minmax(0, 1fr) minmax(4.5rem, auto) minmax(6.75rem, auto)" minWidth="36rem">
         {TEXT_VARIANTS.map((variant) => (
           <BoardRow key={variant} size="md">
             <TokenCell name={`typography.role.${variant}`} note={TEXT_ROLES[variant]} />
@@ -96,22 +104,22 @@ export const TypographyPage = () => (
 
     <FoundationSection title="Control presets" description="비슷한 컴포넌트는 같은 완성 typography class를 공유합니다. size는 geometry와 함께 선택됩니다.">
       <Board columns={[{ label: "Preset" }, ...CONTROL_SIZES.map((size) => ({ label: size, align: "center" as const }))]} template="minmax(15.5rem, 1.1fr) repeat(3, minmax(10rem, 1fr))" minWidth="50rem">
-        {CONTROL_PRESETS.map((preset) => (
-          <BoardRow key={preset.path} size="lg">
-            <TokenCell name={`typography.preset.${preset.path}`} note={preset.role} />
-            {CONTROL_SIZES.map((size) => (
-              <MatrixCell key={size} caption={presetCaption(preset.token(size))}>
-                <span className={`${preset.className(size)} ${s.presetSample}`}>{preset.sample}</span>
-              </MatrixCell>
-            ))}
+        {PRESET_PATHS.map((path) => (
+          <BoardRow key={path} size="lg">
+            <TokenCell name={`typography.preset.${path}`} note={PRESET_NOTES[path].role} />
+            {isLadder(path)
+              ? CONTROL_SIZES.map((size) => (
+                <MatrixCell key={size} caption={presetCaption(presetRefs(path, size))}>
+                  <span className={`${PRESET_CLASS[path](size)} ${s.presetSample}`}>{PRESET_NOTES[path].sample}</span>
+                </MatrixCell>
+              ))
+              : (
+                <MatrixCell caption={presetCaption(presetRefs(path))}>
+                  <span className={`${PRESET_CLASS[path]("md")} ${s.presetSample}`}>{PRESET_NOTES[path].sample}</span>
+                </MatrixCell>
+              )}
           </BoardRow>
         ))}
-        <BoardRow size="lg">
-          <TokenCell name="typography.preset.badge" note="크기와 무관한 고정 표식" />
-          <MatrixCell caption={presetCaption(tokens.typography.preset.badge)}>
-            <span className={`${resolveControlTypography("badge")} ${s.presetSample}`}>In progress</span>
-          </MatrixCell>
-        </BoardRow>
       </Board>
     </FoundationSection>
   </>

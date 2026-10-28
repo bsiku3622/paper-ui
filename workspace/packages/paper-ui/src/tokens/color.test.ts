@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 
 import { OKLCH_PALETTE, PALETTE_TOKENS } from "./palette";
-import { COLOR_VALUES, COLOR_VALUES_DARK, STATUSES, STATUS_PALETTE } from "./colors";
-import { ACCENT_PALETTES, ACCENT_STEPS, ALPHA_STEPS, PALETTE_STEPS } from "./palette";
+import {
+  ACCENTS, ACCENT_PALETTE, ACCENT_TONES, ACCENT_TONE_STEPS, COLOR_SELECTION, COLOR_VALUES, COLOR_VALUES_DARK, DEPTHS, PRIMARY_TONE_STEPS,
+  STATUSES, STATUS_EXCEPTIONS, STATUS_PALETTE, paletteValue,
+} from "./colors";
+import { ACCENT_IDENTITIES, ACCENT_PALETTES, ACCENT_STEPS, ALPHA_STEPS, NEUTRAL_BASE_STEPS, NEUTRAL_BETWEEN, PALETTE_STEPS } from "./palette";
 
 const leaves = (value: unknown): string[] =>
   typeof value === "string"
@@ -20,6 +23,10 @@ const contrast = (foreground: string, background: string) => {
 };
 
 describe("color systems", () => {
+  it("keeps every palette token and every semantic value as authored", () => {
+    expect({ palette: PALETTE_TOKENS, light: COLOR_VALUES, dark: COLOR_VALUES_DARK }).toMatchSnapshot();
+  });
+
   it("orders the single neutral palette from light to dark", () => {
     const ramp = PALETTE_STEPS.map((step) => OKLCH_PALETTE.neutral[step][0]);
     expect(ramp[0]).toBeGreaterThan(ramp[ramp.length - 1]!);
@@ -44,7 +51,7 @@ describe("color systems", () => {
       for (const name of ACCENT_PALETTES) {
         const ramp = OKLCH_PALETTE.accent[name];
         expect(ramp[step][0]).toBe(reference[step][0]);
-        if (name !== "amber" || (step !== "200" && step !== "300")) {
+        if (!ACCENT_IDENTITIES[name].chromaRatio?.[step]) {
           expect(ramp[step][1] / ramp["600"][1]).toBeCloseTo(reference[step][1] / reference["600"][1], 8);
         }
       }
@@ -53,8 +60,9 @@ describe("color systems", () => {
 
   it("guides pale amber from yellow into orange without hue reversals", () => {
     const amber = OKLCH_PALETTE.accent.amber;
-    expect(amber["150"][2]).toBe(90);
-    expect(amber["400"][2]).toBe(65);
+    const { hue, paleHue } = ACCENT_IDENTITIES.amber;
+    expect(amber["150"][2]).toBe(paleHue!.hue);
+    expect(amber[paleHue!.to][2]).toBe(hue);
     for (let index = 1; index < ACCENT_STEPS.length; index += 1) {
       expect(amber[ACCENT_STEPS[index]!]![2]).toBeLessThanOrEqual(amber[ACCENT_STEPS[index - 1]!]![2]);
     }
@@ -65,6 +73,36 @@ describe("color systems", () => {
     expect(Object.keys(PALETTE_TOKENS.accent)).toEqual(ACCENT_PALETTES);
     for (const step of ALPHA_STEPS) expect(PALETTE_TOKENS[`alpha${step}`]).toBeDefined();
     expect(leaves(PALETTE_TOKENS).every((value) => /^#[\da-f]{6}(?:[\da-f]{2})?$/i.test(value))).toBe(true);
+  });
+
+  it("places each in-between neutral step exactly where the anchors do not reach", () => {
+    expect(Object.keys(NEUTRAL_BETWEEN).sort()).toEqual(PALETTE_STEPS.filter((step) => !(NEUTRAL_BASE_STEPS as readonly string[]).includes(step)).sort());
+  });
+
+  it("derives every semantic value from the selection table", () => {
+    const resolve = (tree: unknown): unknown =>
+      typeof tree === "string" ? paletteValue(tree as Parameters<typeof paletteValue>[0]) : Object.fromEntries(Object.entries(tree as object).map(([key, value]) => [key, resolve(value)]));
+    expect(COLOR_VALUES).toEqual(resolve(COLOR_SELECTION.light));
+    expect(COLOR_VALUES_DARK).toEqual(resolve(COLOR_SELECTION.dark));
+    expect(Object.keys(COLOR_SELECTION.light)).toEqual(["bg", "control", "ink", "border", "accent", "interaction", "overlay", "shadow"]);
+    expect(Object.keys(COLOR_SELECTION.light.interaction).at(-1)).toBe("link");
+  });
+
+  it("selects in both themes the same roles, and every selection resolves to a generated token", () => {
+    const paths = (tree: unknown, prefix = ""): string[] =>
+      typeof tree === "string" ? [prefix.slice(0, -1)] : Object.entries(tree as object).flatMap(([key, value]) => paths(value, `${prefix}${key}.`));
+    expect(paths(COLOR_SELECTION.dark)).toEqual(paths(COLOR_SELECTION.light));
+    const generated = new Set(leaves(PALETTE_TOKENS));
+    const selections = (tree: unknown): string[] => (typeof tree === "string" ? [tree] : Object.values(tree as object).flatMap(selections));
+    for (const path of [...selections(COLOR_SELECTION.light), ...selections(COLOR_SELECTION.dark)]) {
+      expect(generated.has(paletteValue(path as Parameters<typeof paletteValue>[0])), path).toBe(true);
+    }
+  });
+
+  it("names the ramp every accent draws from", () => {
+    expect(Object.keys(ACCENT_PALETTE)).toEqual([...ACCENTS]);
+    expect(ACCENT_PALETTE.primary).toBe("neutral");
+    for (const status of STATUSES) expect(ACCENT_PALETTE[status]).toBe(STATUS_PALETTE[status]);
   });
 
   it("maps every semantic leaf directly to a generated palette token", () => {
@@ -106,20 +144,25 @@ describe("color systems", () => {
     }
   });
 
-  it("maps the five accent roles from their named palette", () => {
-    for (const status of STATUSES) {
-      const palette = STATUS_PALETTE[status];
-      for (const mode of ["light", "dark"] as const) {
-        const dark = mode === "dark";
-        const generated = PALETTE_TOKENS.accent[palette];
-        const accent = mode === "light" ? COLOR_VALUES.accent[status] : COLOR_VALUES_DARK.accent[status];
-        expect(accent).toEqual({
-          solid: generated[!dark && palette === "amber" ? "400" : "600"],
-          wash: !dark && palette === "amber" ? PALETTE_TOKENS.neutral["0"] : generated["50"],
-          ink: generated[dark ? "300" : "700"],
-          soft: generated[dark ? "925" : "150"],
-          subtle: generated[dark ? "400" : "700"],
-        });
+  it("maps the five accent roles from the tone tables and the status exceptions", () => {
+    expect(Object.keys(STATUS_EXCEPTIONS)).toEqual(["warning"]);
+    expect(Object.keys(STATUS_EXCEPTIONS.warning)).toEqual(["light"]);
+    expect(Object.keys(STATUS_EXCEPTIONS.warning.light)).toEqual(["solid", "wash"]);
+    for (const mode of ["light", "dark"] as const) {
+      const index = mode === "light" ? 0 : 1;
+      const values = mode === "light" ? COLOR_VALUES : COLOR_VALUES_DARK;
+      for (const tone of ACCENT_TONES) {
+        expect(values.accent.primary[tone], `primary ${tone}`).toBe(PALETTE_TOKENS.neutral[PRIMARY_TONE_STEPS[tone][index]]);
+      }
+      for (const status of STATUSES) {
+        const generated = PALETTE_TOKENS.accent[STATUS_PALETTE[status]];
+        const exceptions: Partial<Record<(typeof ACCENT_TONES)[number], { accent: keyof typeof generated } | { neutral: keyof typeof PALETTE_TOKENS.neutral }>> =
+          (STATUS_EXCEPTIONS as Record<string, Record<string, object>>)[status]?.[mode] ?? {};
+        for (const tone of ACCENT_TONES) {
+          const exception = exceptions[tone];
+          const expected = !exception ? generated[ACCENT_TONE_STEPS[tone][index]] : "accent" in exception ? generated[exception.accent] : PALETTE_TOKENS.neutral[exception.neutral];
+          expect(values.accent[status][tone], `${status} ${mode} ${tone}`).toBe(expected);
+        }
       }
     }
   });
@@ -135,8 +178,8 @@ describe("color systems", () => {
     }
     for (const [name, accent] of Object.entries(light.accent)) {
       expect(contrast(accent.ink, accent.soft)).toBeGreaterThanOrEqual(4.5);
-      // The explicitly requested white-on-amber light solid is a contrast exception.
-      if (name === "warning") expect(accent.wash).toBe(PALETTE_TOKENS.neutral["0"]);
+      // A status listed in STATUS_EXCEPTIONS (the white-on-amber light solid) is a contrast exception.
+      if (name in STATUS_EXCEPTIONS) expect(accent.wash).toBe(PALETTE_TOKENS.neutral["0"]);
       else expect(contrast(accent.wash, accent.solid)).toBeGreaterThanOrEqual(4.5);
     }
   });
@@ -166,6 +209,20 @@ describe("color systems", () => {
     expect(COLOR_VALUES.interaction.bgHover.onPrimarySolid).toMatch(/^#[\da-f]{8}$/i);
     expect(COLOR_VALUES.interaction.bgHover.onAccentSolid).toMatch(/^#[\da-f]{8}$/i);
     expect(COLOR_VALUES_DARK.overlay.scrim).toMatch(/^#[\da-f]{8}$/i);
-    expect(COLOR_VALUES.shadow.overlay).toMatch(/^#[\da-f]{8}$/i);
+    for (const depth of DEPTHS) expect(COLOR_VALUES.shadow[depth]).toMatch(/^#[\da-f]{8}$/i);
+  });
+
+  it("names the shadow colours by depth", () => {
+    expect(DEPTHS).toEqual(["floating", "lifted"]);
+    expect(COLOR_VALUES.shadow.floating).toBe(COLOR_VALUES.shadow.lifted);
+    expect(COLOR_VALUES_DARK.shadow.floating).not.toBe(COLOR_VALUES_DARK.shadow.lifted);
+  });
+
+  it("gives links their own role, in the colour of the info ink, and keeps it readable everywhere", () => {
+    expect(COLOR_VALUES.interaction.link).toBe(PALETTE_TOKENS.accent.blue["700"]);
+    expect(COLOR_VALUES_DARK.interaction.link).toBe(PALETTE_TOKENS.accent.blue["300"]);
+    for (const values of [COLOR_VALUES, COLOR_VALUES_DARK]) {
+      for (const surface of Object.values(values.bg)) expect(contrast(values.interaction.link, surface)).toBeGreaterThanOrEqual(4.5);
+    }
   });
 });

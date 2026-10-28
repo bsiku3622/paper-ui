@@ -12,7 +12,7 @@ Color → Typography → Shape → Layout → Motion → Primitives → Atoms
 
 | 시스템 | 정하는 것 | 앞 시스템에서 가져오는 것 | 원본 |
 |---|---|---|---|
-| [Color](color.md) | 면·잉크·경계·의미색·상태 overlay | — | `tokens/palette.ts` |
+| [Color](color.md) | 면·잉크·경계·의미색·상태 tint | — | `tokens/palette.ts` |
 | [Typography](typography.md) | 서체·크기·굵기·행간·자간, 글자 역할 | 역할별 기본 잉크(Color) | `tokens/typography.ts` |
 | [Shape](shape.md) | 요소 하나의 곡률·선·포커스 링·크기·안쪽 여백 | 컨트롤 글자 줄(Typography) | `tokens/shape.ts` |
 | [Layout](layout.md) | 형제 간격·페이지 틀·breakpoint·elevation | 길이 scale(Shape), 그림자 색(Color) | `tokens/layout.ts` |
@@ -32,7 +32,7 @@ Shape와 Layout의 경계는 하나의 질문으로 가립니다. **빈 캔버�
 | Layout | `LAYOUT_SOURCE` | `gap` · `gutter` · `container` · `elevation` | Box `elevation` |
 | Motion | duration · easing · loop | `press` · `hover` · `state` · `enter` … | `stateTransition()` |
 
-Playground의 [Foundations](/playground/foundations/color) 페이지가 이 순서 그대로 각 시스템을 보여줍니다. 위에서부터 원본, 역할, 조합 순서입니다.
+Playground의 [Foundations](/playground/foundations/color) 페이지가 이 순서 그대로 각 시스템을 보여줍니다. 위에서부터 원본, 역할, 조합 순서입니다. Color만은 예전 형태(Palette 행렬과 역할별 값 카드)를 유지하고, 맨 아래에 accent × variant 표가 붙어 조합 단을 맡습니다. 모든 페이지의 행은 원본에서 파생하므로, 역할이나 단계를 더하면 페이지가 따라옵니다.
 
 ## 이름 계약
 
@@ -94,10 +94,12 @@ prop이 받는 닫힌 값의 집합을 **축**이라 부릅니다. 축마다 상
 | `ACCENTS` · `Accent` | `tokens/colors.ts` | Button · IconButton · Badge의 `accent`, `tokens.color.accent.<accent>` |
 | `ACCENT_TONES` · `AccentTone` | `tokens/colors.ts` | `tokens.color.accent.<accent>.<tone>` |
 | `VARIANTS` · `Variant` | `tokens/color-recipes.ts` | Button · IconButton · Badge의 `variant` |
+| `SELECTABLE_VARIANTS` · `SelectableVariant` | `tokens/color-recipes.ts` | 선택된 상태를 soft 면으로 알릴 수 있는 variant — `VARIANTS`의 부분집합 |
 | `SURFACES` · `Surface` | `tokens/colors.ts` | Box의 `surface`, `tokens.color.bg.<surface>` |
 | `INK_LEVELS` · `InkLevel` | `tokens/colors.ts` | `tokens.color.ink.<level>` |
 | `BORDER_LEVELS` · `BorderLevel` | `tokens/colors.ts` | `tokens.color.border.<level>` |
 | `DIVIDER_LEVELS` · `DividerLevel` | `tokens/colors.ts` | Divider의 `level` — `BORDER_LEVELS`의 부분집합 |
+| `DEPTHS` · `Depth` | `tokens/colors.ts` | `tokens.color.shadow.<depth>`, Layout elevation이 가진 그림자 깊이 |
 | `TEXT_VARIANTS` · `TextVariant` | `tokens/typography.ts` | Text의 `variant`, 컨트롤의 `fontSize`, `tokens.typography.role.<variant>` |
 | `TEXT_FAMILIES` · `TextFamily` | `tokens/typography.ts` | Text의 `family` |
 | `CONTROL_SIZES` · `ControlSize` | `tokens/typography.ts` | 컨트롤의 `size` |

@@ -40,7 +40,7 @@ Paper UI의 얼굴은 순백의 종이에 검정색 펜으로 그린 그림과 �
 
 #### 원칙 1. 색은 의미가 없으면 쓰지 않는다
 
-Paper UI가 쓰는 색은 blue(`#2563eb`), green(`#15803d`), amber(`#b45309`), red(`#dc2626`) 넷뿐입니다. 이 넷은 모두 의미에 묶여 각각 info, success, warning, error라는 뜻을 집니다. 그래서 화면에 색이 보인다는 것은 곧 그 자리에 어떤 상태·의미가 있다는 뜻입니다. blue는 여기에 더해 focus 링과 링크까지 겸합니다.
+Paper UI가 쓰는 색은 blue(`#2563eb`), green(`#15803d`), amber(`#b45309`), red(`#dc2626`) 넷뿐입니다. 이 넷은 모두 의미에 묶여 각각 info, success, warning, error라는 뜻을 집니다. 그래서 화면에 색이 보인다는 것은 곧 그 자리에 어떤 상태·의미가 있다는 뜻입니다. blue는 여기에 더해 focus 링(`interaction.focus`)과 링크(`interaction.link`)까지 겸합니다.
 
 같은 이유로 Paper UI에는 `primaryColor`가 없습니다. 1차 액션(primary)조차 파랑이 아니라 검정(`primary.solid #26262b`)으로 채웁니다. 파랑 버튼이 매 화면에 등장하면 파랑은 더 이상 포인트가 아니라 배경이 되기 때문입니다. 일꾼은 검정이고, 색은 드물어야 눈에 들어옵니다. 브랜드가 고를 색이 없다는 것이 Paper UI의 주장입니다. 정체성은 색이 아니라 순백·검정·여백에서 나옵니다.
 

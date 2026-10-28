@@ -1,10 +1,13 @@
-// The one board every Foundations page is drawn with: a raised table whose header, groups and
-// rows share the board's column tracks through subgrid. The board adds an empty zero-width track
+// The board Typography, Shape, Layout and Motion are drawn with: a raised table whose header, groups
+// and rows share the board's column tracks through subgrid. The board adds an empty zero-width track
 // at each edge, so the column gap insets the content and rules still run edge to edge — padding
-// on a subgrid row would instead shrink its first and last columns.
-import { globalStyle, style, styleVariants } from "@vanilla-extract/css";
+// on a subgrid row would instead shrink its first and last columns. Color keeps its own form
+// (AGENTS.md); the display parts at the end of the file are shared by every page.
+import { createVar, globalStyle, style, styleVariants } from "@vanilla-extract/css";
 
 import { tokens } from "@studio-baeks/paper-ui/tokens";
+
+import { leafPaths, valueAt, type LeafPaths } from "./paths";
 
 const line = `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`;
 const spanAll = { gridColumn: "1 / -1", display: "grid", gridTemplateColumns: "subgrid", alignItems: "center", minWidth: 0 } as const;
@@ -42,3 +45,30 @@ export const align = styleVariants({
 export const cell = style({ minWidth: 0, overflowWrap: "anywhere" });
 export const value = style({ minWidth: 0, textAlign: "end", justifySelf: "end", overflowWrap: "anywhere" });
 export const matrixCell = style({ minWidth: 0, padding: tokens.shape.inset.sm, borderRadius: tokens.shape.radius.surface.sm, background: tokens.color.bg.canvas });
+
+// ── Display parts ───────────────────────────────────────────────────────────
+// A value read from a source reaches the screen only through these: the inspector never paints
+// with it directly.
+
+export const swatch = style({ width: "100%", aspectRatio: "1" });
+
+// A role's colour, painted through the public token — one class per role path.
+export type ChipRole = LeafPaths<typeof tokens.color>;
+export const chipBox = style({ width: "100%", height: tokens.shape.control.height.sm, boxSizing: "border-box" });
+export const chip = styleVariants(
+  Object.fromEntries(leafPaths(tokens.color).map((path) => [path, valueAt(tokens.color, path) as string])),
+  (background) => ({ background }),
+) as Record<ChipRole, string>;
+
+// A label column and as many equal step columns as the ramp has.
+const steps = createVar();
+export const stepsProperty = steps.slice(4, -1);
+export const stepGrid = style({
+  display: "grid",
+  gridTemplateColumns: `minmax(6rem, 1.2fr) repeat(${steps}, minmax(2.2rem, 1fr))`,
+  gap: tokens.layout.gap.sm,
+  alignItems: "center",
+  minWidth: "44rem",
+});
+
+export const bar = style({ height: tokens.shape.inset.sm, maxWidth: "100%", borderRadius: tokens.shape.radius.full, background: tokens.color.accent.primary.solid });

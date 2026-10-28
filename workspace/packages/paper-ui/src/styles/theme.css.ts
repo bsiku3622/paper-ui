@@ -55,7 +55,7 @@ walkValues(COLOR_VALUES_DARK, ["color"], (path, value) => {
 // 조립된 값을 테마 스코프가 통째로 교체한다.
 for (const [theme, target] of [["light", lightVars], ["dark", darkVars]] as const) {
   for (const level of ELEVATIONS) {
-    target[pathToCssVar(elevationShadowPath(level))] = elevationShadow(level, theme, (tint) => tokens.color.shadow[tint]);
+    target[pathToCssVar(elevationShadowPath(level))] = elevationShadow(level, theme, (depth) => tokens.color.shadow[depth]);
   }
 }
 

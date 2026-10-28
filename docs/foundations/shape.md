@@ -72,7 +72,7 @@ Box의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값이 
 |---|---|---|---|---|
 | `control.height` | 30 | 32 | 36 | 원본 |
 | `control.inset.input` | 7 | 8 | 10 | (높이 − 글자 줄) / 2 — 입력값은 줄상자 사방에 같은 여백 |
-| `control.inset.button` | 10 | 11 | 14 | 입력 inset × 1.4, 1px로 반올림 — 라벨이 상자를 정의하므로 더 넓게 |
+| `control.inset.button` | 10 | 11 | 14 | (높이 − 버튼 글자 줄) / 2 × `buttonInsetRatio` 1.4, 1px로 반올림 — 라벨이 상자를 정의하므로 더 넓게 |
 | `selection.size` | 15 | 16 | 18 | 높이 / 2 |
 | `control.icon` | 16 | 18 | 20 | 높이를 따르는 icon 크기 (caption · body · subheading) |
 | `control.gap` | 8 | 8 | 8 | 아이콘과 라벨 사이, inset sm |

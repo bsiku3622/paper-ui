@@ -94,7 +94,7 @@ type StyleKeys = {
   tracking: keyof typeof TYPOGRAPHY_SOURCE.tracking;
 };
 
-const ROLE_SPEC = {
+export const ROLE_SPEC = {
   display: { size: "32", weight: "bold", leading: "40", tracking: "tight" },
   title: { size: "24", weight: "bold", leading: "32", tracking: "snug" },
   heading: { size: "20", weight: "semibold", leading: "28", tracking: "normal" },
@@ -131,7 +131,7 @@ const TEXTAREA_CONTROL = {
 } as const satisfies Record<ControlSize, StyleKeys>;
 const BADGE_PRESET = { size: "12", weight: "medium", leading: "16", tracking: "normal" } as const satisfies StyleKeys;
 
-const PRESET_SPEC = {
+export const PRESET_SPEC = {
   button: { regular: BUTTON_REGULAR, strong: BUTTON_STRONG },
   field: FIELD_CONTROL,
   textarea: TEXTAREA_CONTROL,
