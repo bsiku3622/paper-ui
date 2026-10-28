@@ -23,17 +23,20 @@ The seven principles behind every visual decision: **[docs/get-started/philosoph
   (`light` · `dark` · `system`).
 - **Core constraints and accessibility checks**, enforced by eslint.
 
-## Layers
+## Structure
 
-| Layer | Count | |
+The system stacks in three tiers, and the docs and the playground are organised the same way.
+
+| Tier | | |
 |---|---|---|
-| Layout | 4 | `Box · Stack · Inline · Grid` |
-| Content | 2 | `Text · Icon` |
-| Interaction | 7 | `Pressable · Hoverable · Toggleable · Draggable · Droppable · ToggleGroup · Overlay` |
-| A11y | 4 | `FocusScope · VisuallyHidden · RovingFocus · FormField` |
+| Foundations | 5 systems | `Color → Typography → Shape → Layout → Motion` — each reads only the ones before it |
+| Primitives | Layout 4 | `Box · Stack · Inline · Grid` |
+| | Content 2 | `Text · Icon` |
+| | Interaction 7 | `Pressable · Hoverable · Toggleable · Draggable · Droppable · ToggleGroup · Overlay` |
+| | A11y 4 | `FocusScope · VisuallyHidden · RovingFocus · FormField` |
 | Atoms | 13 | `Button · IconButton · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Spinner · Divider · Link` |
 
-Product-specific compositions are owned by consuming applications. The package exposes Primitives and Atoms;
+Every Foundations system writes its numbers once, in its source, and exposes roles that select from it: [docs/foundations](docs/foundations/README.md). Product-specific compositions are owned by consuming applications. The package exposes Primitives and Atoms;
 `<Box as="…">` remains the typed route to semantic HTML when an application needs it.
 
 ## Running
@@ -41,7 +44,7 @@ Product-specific compositions are owned by consuming applications. The package e
 ```bash
 cd workspace
 pnpm install
-pnpm dev          # demo — one issue-tracker screen, the system's only real validation
+pnpm dev          # site, playground, docs and the demo screen
 pnpm typecheck
 pnpm lint
 pnpm test         # unit

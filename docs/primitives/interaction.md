@@ -1,53 +1,16 @@
-# Primitives
+# Interaction
 
-Paper UI의 Primitives는 배치·콘텐츠·입력 행동·접근성을 조합하는 기반입니다. Layout·Content·Interaction·A11y 네 분류를 사용하며, 모든 공개 이름은 `@studio-baeks/paper-ui`에서 import합니다.
+Interaction Primitive는 누르기·올려두기·켜고 끄기·끌어 옮기기·선택 그룹·overlay처럼 입력에 반응하는 행동을 제공합니다. 색과 크기는 고르지 않고, 상태를 `data-*` 속성과 children 함수로 노출해 소비자가 스타일을 붙이게 합니다. 입력 정규화와 포커스·overlay·native drag and drop은 React Aria에 위임하고, Paper가 공개 API와 상태 연결을 소유합니다.
 
-| 분류 | 컴포넌트 | Hook |
-| --- | --- | --- |
-| Layout | Box, Stack, Inline, Grid | — |
-| Content | Text, Icon | — |
-| Interaction | Pressable, Hoverable, Toggleable, Draggable, Droppable, ToggleGroup, Overlay | usePress, useHover, useToggle, useDrag, useDrop, useToggleGroup, useOverlay |
-| A11y | FocusScope, VisuallyHidden, RovingFocus, FormField | useFocusRing, useFocusWithin, useRovingFocusItem, useField |
-
-`Draggable.Handle`은 Draggable의 anatomy입니다. ThemeScope·PaperProvider와 테마 hook은 별도의 테마 도구로 유지합니다.
-
-## 공통 적용 계약
-
-Box·Stack·Inline·Grid·Text·Hoverable은 `as`로 렌더 대상을 선택하고 native props와 ref를 같은 요소로 전달합니다. Box는 surface·spacing(padding은 Shape inset, gap은 Layout gap)·radius·elevation·dimension 계약을 갖습니다. Icon도 SVG ref와 native SVG props를 전달하며, 기존 size·ink·viewBox 기본값을 유지합니다.
-
-Pressable·Toggleable·Draggable.Handle은 native button을 렌더링하고 type 기본값은 button입니다. Draggable과 Droppable은 div를 렌더링합니다. 이 요소들은 자신의 className·style·native props·ref를 받으며, 중첩 wrapper를 더하지 않습니다. Hoverable을 기존 Box에 합성하는 예시는 다음과 같습니다.
-
-```tsx
-<Hoverable as={Box} border radius="md" padding="md">
-  {({ isHovered }) => isHovered ? "Hover 중" : "포인터를 올려보세요"}
-</Hoverable>
-```
-
-Hoverable은 button 역할이나 tab stop을 자동으로 추가하지 않습니다. 인터랙션의 의미에 맞는 native 요소와 접근성 이름은 사용하는 컴포넌트가 선택합니다.
-
-입력·포커스·보조 기술을 위한 이벤트 처리는 React Aria에 위임하고, Paper가 공개 API와 상태 연결을 소유합니다. 패키지의 컴포넌트 스타일은 CSS class를 사용합니다. Grid track이나 드래그 좌표처럼 실행 중 결정되는 값은 caller dimension과 같은 runtime style 통로를 사용합니다.
-
-## Layout와 Content
-
-| 컴포넌트 | 계약 |
-| --- | --- |
-| Box | surface·padding·gap·border·radius·elevation(z와 그림자를 함께)·inverse·dimension·overflow props |
-| Stack | Box + 세로 flex, align=start/center/end/stretch |
-| Inline | Box + 가로 flex, align=start/center/end/baseline, justify=start/center/end/between, wrap |
-| Grid | Box + columns/rows, autoFlow, align/justify=start/center/end/stretch, rowGap/columnGap |
-| Text | 기존 variant·family·ink·의미 태그 기본값 유지 |
-| Icon | label/caption/body/subheading 크기(옆에 서는 Text 역할 이름)와 ink, native SVG 속성·ref 전달 |
-
-Grid의 columns 기본값은 1입니다. columns·rows에 양의 정수를 주면 같은 폭의 track을 만들며, CSS track 문자열도 받습니다. gap·rowGap·columnGap은 공통 Space scale을 선택합니다. Style escape는 명시한 track을 덮어쓸 수 있습니다.
-
-두 열 grid를 만드는 예시입니다.
-
-```tsx
-<Grid columns={2} gap="md" align="start">
-  <Box border padding="md">첫 항목</Box>
-  <Box border padding="md">둘째 항목</Box>
-</Grid>
-```
+| 컴포넌트 | Hook | 책임 | 기본값 |
+| --- | --- | --- | --- |
+| Pressable | usePress | onPress lifecycle, disabled, native button props | native button, type=button. pressed/hovered/focus-visible 상태 |
+| Hoverable | useHover | hover lifecycle, disabled, `as` | div, 별도 button 역할·tab stop 없음 |
+| Toggleable | useToggle | selected/defaultSelected/onSelectedChange + Pressable | false, native aria-pressed 및 data-selected |
+| Draggable | useDrag | mode, activation, disabled, move 또는 transfer 옵션 | move / surface. Handle은 별도 입력 대상 |
+| Droppable | useDrop | 허용 작업과 onDrop lifecycle, disabled | keyboard 접근 가능한 div |
+| ToggleGroup | useToggleGroup | selectionMode, selectedValues 계열, selectionRequired, disabled | single / 빈 선택. focus와 선택 분리 |
+| Overlay | useOverlay | open/defaultOpen/onOpenChange, modal | non-modal. Trigger·Content·Close로 Portal·배치·닫기·focus 연결 |
 
 ## Press와 Hover
 
@@ -153,61 +116,6 @@ Droppable·useDrop은 getDropOperation(types, allowedOperations), getDropOperati
 
 Drop item은 text/file/directory 형태를 지원하는 엔진의 데이터를 전달합니다. 허용 형식과 적용할 데이터 변경은 소비자가 결정합니다. Droppable의 children 함수는 isDropTarget을 받고 data-drop-target도 제공됩니다. 키보드 경로는 source에서 Enter로 시작하고, Tab으로 대상 사이를 이동하고, Enter로 놓거나 Escape로 취소합니다. Accessible label과 파일 선택·붙여넣기 같은 제품별 대체 UI는 소비자가 제공합니다.
 
-## Focus와 숨긴 콘텐츠
-
-FocusScope는 contain·restoreFocus·autoFocus를 독립적으로 선택합니다. Contain은 기본으로 켜지지 않습니다. Scope가 해제되면 restoreFocus가 원래 요소로 포커스를 돌려줍니다. 유저가 명시적으로 연 화면에서 초기 포커스를 선택하는 예시는 다음과 같습니다.
-
-```tsx
-<FocusScope contain restoreFocus autoFocus>
-  <Field aria-label="첫 입력" />
-  <Button onClick={close}>닫기</Button>
-</FocusScope>
-```
-
-useFocusRing은 focusProps·isFocused·isFocusVisible을 반환합니다. within 옵션으로 자식의 포커스도 포함합니다. useFocusWithin은 focusWithinProps·isFocusWithin과 focus 진입·이탈·변경 callback을 제공합니다.
-
-VisuallyHidden은 콘텐츠를 시각적으로 숨기고 접근성 트리에 유지합니다. as 기본값은 span이며 isFocusable을 켜면 내부 포커스가 들어올 때 보이게 합니다. Icon button의 이름과 skip link에 사용하는 예시입니다.
-
-```tsx
-<Pressable>
-  <Icon><path d="M12 4v16M4 12h16" /></Icon>
-  <VisuallyHidden>새 항목 추가</VisuallyHidden>
-</Pressable>
-
-<VisuallyHidden isFocusable>
-  <a href="#main-content">본문으로 건너뛰기</a>
-</VisuallyHidden>
-```
-
-동작 예제는 Playground의 Layout·Content·Interaction·A11y 목록에서 확인합니다. 패키지의 입력·포커스 계약은 단위 테스트와 실제 브라우저의 pointer·keyboard·native transfer 경로로 검증합니다.
-
-## 그룹 focus 탐색
-
-RovingFocus는 등록한 항목 중 하나만 Tab 진입점으로 유지합니다. 방향키로 실제 DOM focus를 옮기며 Tab은 그룹 밖으로 나갑니다. FocusScope의 contain과는 다른 동작입니다. Item은 native button이며 as로 다른 요소나 ref를 전달하는 컴포넌트를 지정합니다.
-
-Toolbar의 비활성 항목을 건너뛰고 양 끝에서 순환하는 예시입니다.
-
-```tsx
-<RovingFocus role="toolbar" aria-label="서식" loop>
-  <RovingFocus.Item value="bold">굵게</RovingFocus.Item>
-  <RovingFocus.Item value="italic" disabled>기울임</RovingFocus.Item>
-  <RovingFocus.Item as={Pressable} value="underline">밑줄</RovingFocus.Item>
-</RovingFocus>
-```
-
-| Root 옵션 | 기본값 | 계약 |
-| --- | --- | --- |
-| orientation | horizontal | horizontal / vertical / both |
-| dir | ltr | ltr / rtl; 가로 방향 결정 |
-| loop | false | 끝에서 반대쪽으로 순환 |
-| disabled | false | 그룹 탐색과 기본 Item 비활성화 |
-| currentValue / defaultCurrentValue | 첫 활성 항목 | controlled / uncontrolled Tab 진입점 |
-| onCurrentValueChange | 없음 | focus된 항목의 value 전달 |
-
-Value는 그룹 안에서 고유해야 합니다. Home·End는 첫·마지막 활성 항목으로 이동하고 순서는 현재 DOM을 따릅니다. 현재 항목이 제거되거나 비활성화되면 다음 이웃, 마지막 항목이었다면 이전 이웃으로 이동합니다. 모두 사라지면 root로 옮깁니다. 이미 바깥으로 옮긴 focus는 되돌리지 않습니다. CurrentValue를 외부에서 바꿔도 DOM focus를 강제로 빼앗지 않습니다.
-
-useRovingFocusItem({ value, disabled })은 root 안에서 ref·tabIndex·onFocus·onKeyDown·data-roving-item을 반환합니다. Ref를 실제 focus 대상에 연결하고 외부 ref는 mergeRefs로 병합합니다. 기본 Item과 disabled를 받는 custom component에는 비활성 상태를 전달하며, 일반 div 같은 custom control의 실행 차단은 해당 구현이 담당합니다. 자손 입력에서 발생한 방향키와 수정키 조합은 가로채지 않습니다. 등록하지 않은 자손의 Tab 진입은 바꾸지 않습니다. Aria-activedescendant·typeahead·위젯별 선택 정책은 상위 컴포넌트가 연결합니다.
-
 ## 선택 그룹
 
 ToggleGroup은 Toggleable들의 선택 상태와 RovingFocus를 연결합니다. Item은 aria-pressed를 가진 toggle button입니다. 방향키는 focus만 이동하고 선택은 press로 변경합니다. Radio·Tab·Option의 의미론을 toggle button으로 대체하지 않습니다.
@@ -224,7 +132,7 @@ Controlled 단일 선택 그룹을 만드는 예시입니다.
 
 selectionMode는 single / multiple이며 기본값은 single입니다. selectedValues/defaultSelectedValues는 문자열 배열이고 onSelectedValuesChange는 다음 배열을 받습니다. Single은 최대 하나를 선택합니다. selectionRequired는 사용자가 마지막 선택을 해제하는 것을 막으며 초기 항목을 자동 선택하지는 않습니다. 선택 항목 자체를 제거하면 빈 선택도 허용합니다.
 
-Root disabled는 전체 입력과 변경을 막고 Item disabled는 해당 버튼만 막습니다. Disabled는 기존 선택을 지우지 않습니다. 제거된 value는 정리하며 controlled 상태에서는 변경을 요청합니다. 중복 value를 사용하지 않습니다. Root의 orientation·dir·loop·currentValue 계약은 RovingFocus와 같습니다.
+Root disabled는 전체 입력과 변경을 막고 Item disabled는 해당 버튼만 막습니다. Disabled는 기존 선택을 지우지 않습니다. 제거된 value는 정리하며 controlled 상태에서는 변경을 요청합니다. 중복 value를 사용하지 않습니다. Root의 orientation·dir·loop·currentValue 계약은 [RovingFocus](a11y.md#그룹-focus-탐색)와 같습니다.
 
 useToggleGroup은 같은 상태 옵션과 선택적인 values 목록을 받고 selectedValues·isSelected(value)·setSelected(value, boolean)·toggle(value)을 반환합니다. Values를 제공하면 없는 key를 정리합니다. Hook 자체는 DOM·role·focus를 만들지 않습니다.
 
@@ -265,25 +173,7 @@ Content role은 dialog / alertdialog이며 기본값은 dialog입니다. aria-la
 
 초기 focus는 initialFocusRef, 첫 내부 대상, 대상이 없는 경우 Content 순서입니다. 제목에 명시적으로 이동하려면 tabIndex=-1을 제공해주세요. AutoFocus=false이면 자동 이동을 하지 않습니다. Portal에서도 Paper의 해석된 theme를 유지합니다. 임의의 지역 CSS 상속이 필요하면 portalContainer를 지정합니다.
 
-Modal은 React Aria의 focus containment·배경 inert·스크롤 잠금을 사용합니다. 중첩 Overlay는 안쪽부터 Escape를 처리하고 각 이전 대상을 복원합니다. 중첩 깊이는 Layout z tier에서 파생한 CSS 변수로 반영합니다. 마지막 모달 해제 시 배경과 스크롤을 복원합니다. Dismissable과 Escape는 독립적입니다. 모두 끄면 명시적인 닫기 수단을 제공해야 합니다. 호출 버튼 제거 후의 제품별 목적지, 라우팅과 exit 애니메이션은 소비자가 결정합니다.
-
-## 입력과 설명의 관계
-
-FormField는 label·입력·설명·오류의 ID를 연결합니다. 기존 Field Atom의 input group 계약은 유지합니다. Children 함수의 controlProps를 native label을 받을 수 있는 실제 입력에 전달합니다.
-
-오류를 입력창의 접근성 설명에 연결하는 예시입니다.
-
-```tsx
-<FormField label="이메일" description="연락받을 주소" required
-  invalid={invalid} error="이메일 형식을 확인해주세요.">
-  {({ controlProps }) => <Field {...controlProps} type="email"
-    status={invalid ? "error" : "default"} />}
-</FormField>
-```
-
-FormField는 div에 label·children·description·error를 렌더링합니다. ClassName·style·ref는 wrapper를 가리키며 id 옵션은 입력 ID를 정합니다. 생략하면 useId로 고유 값을 만듭니다. ControlProps는 id·disabled·required·aria-invalid·aria-describedby를 연결합니다. Description은 존재할 때만, error는 invalid이며 존재할 때만 설명 ID에 포함합니다. 외부 aria-describedby도 중복 없이 유지합니다. 오류 해제 시 메시지와 참조를 함께 제거합니다.
-
-useField는 같은 FieldOptions와 controlProps·labelProps·descriptionProps·errorProps를 반환하며 DOM을 만들지 않습니다. 직접 사용할 때 선언한 description/error를 해당 ID로 렌더링해주세요. 시각적 status·validation·값 저장·제출·오류 요약 이동·비동기 알림은 소비자가 결정합니다.
+Modal은 React Aria의 focus containment·배경 inert·스크롤 잠금을 사용합니다. 중첩 Overlay는 안쪽부터 Escape를 처리하고 각 이전 대상을 복원합니다. 중첩 깊이는 Layout의 elevation 층(overlay·modal)에서 파생한 z로 반영합니다 — 깊이마다 한 tier씩 올라갑니다. 마지막 모달 해제 시 배경과 스크롤을 복원합니다. Dismissable과 Escape는 독립적입니다. 모두 끄면 명시적인 닫기 수단을 제공해야 합니다. 호출 버튼 제거 후의 제품별 목적지, 라우팅과 exit 애니메이션은 소비자가 결정합니다.
 
 ## 이벤트와 ref 합성
 
