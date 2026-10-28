@@ -13,7 +13,7 @@ import {
   Link, Select, Stack, Text, Textarea, Switch, Radio, Spinner,
   type BoxDimension,
 } from "@studio-baeks/paper-ui";
-import type { Surface, Accent, Variant, Ink, StatusName, TextVariant, Elevation, IconSize } from "@studio-baeks/paper-ui/tokens";
+import type { Surface, Accent, Variant, Ink, Status, DividerLevel, Orientation, TextVariant, Elevation, IconSize } from "@studio-baeks/paper-ui/tokens";
 
 // ── 컨트롤 ───────────────────────────────────────────────────────────────────
 export type Control =
@@ -342,7 +342,7 @@ export const COMPONENTS: CompSpec[] = [
           showPasswordToggle={b(st.showPasswordToggle)}
           defaultValue={b(st.clearable) ? "지울 값" : undefined}
           align={s(st.align) as "start" | "center" | "end"}
-          status={s(st.status) as "default" | StatusName}
+          status={s(st.status) === "default" ? undefined : (s(st.status) as Status)}
           size={s(st.size) === "default" ? undefined : s(st.size) as "sm" | "md" | "lg"}
           fontSize={st.fontSize === "default" ? undefined : (s(st.fontSize) as TextVariant)}
           shape={s(st.shape) === "default" ? undefined : s(st.shape) as "rounded" | "pill"}
@@ -446,30 +446,30 @@ export const COMPONENTS: CompSpec[] = [
     slug: "divider",
     name: "Divider",
     group: "Atoms",
-    blurb: "아주 옅은 괘선. axis 로 가로·세로, weight 로 굵기. 선이 꼭 필요한 자리에만.",
+    blurb: "아주 옅은 괘선. orientation 으로 가로·세로, level 로 선의 진하기. 선이 꼭 필요한 자리에만.",
     controls: [
-      { kind: "enum", prop: "axis", label: "axis", options: ["horizontal", "vertical"], def: "horizontal" },
-      { kind: "enum", prop: "weight", label: "weight", options: ["base", "strong"], def: "base" },
+      { kind: "enum", prop: "orientation", label: "orientation", options: ["horizontal", "vertical"], def: "horizontal" },
+      { kind: "enum", prop: "level", label: "level", options: ["base", "strong"], def: "base" },
     ],
     render: (st) => {
-      const weight = s(st.weight) as "base" | "strong";
-      return s(st.axis) === "vertical" ? (
+      const level = s(st.level) as DividerLevel;
+      return (s(st.orientation) as Orientation) === "vertical" ? (
         <Inline gap="md" align="center" style={{ height: "3rem" }}>
           <Text variant="body" as="span">왼</Text>
-          <Divider axis="vertical" weight={weight} />
+          <Divider orientation="vertical" level={level} />
           <Text variant="body" as="span">오</Text>
         </Inline>
       ) : (
         <Box style={{ width: "18rem" }}>
           <Stack gap="md">
             <Text variant="body" as="span">위</Text>
-            <Divider weight={weight} />
+            <Divider level={level} />
             <Text variant="body" as="span">아래</Text>
           </Stack>
         </Box>
       );
     },
-    code: (st) => `<Divider${AE("axis", s(st.axis), "horizontal")}${AE("weight", s(st.weight), "base")} />`,
+    code: (st) => `<Divider${AE("orientation", s(st.orientation), "horizontal")}${AE("level", s(st.level), "base")} />`,
   },
   {
     slug: "textarea",
@@ -485,7 +485,7 @@ export const COMPONENTS: CompSpec[] = [
     ],
     render: (st) => (
       <Box style={{ width: "18rem" }}>
-        <Textarea placeholder={s(st.placeholder)} status={s(st.status) as "default" | StatusName} size={s(st.size) as "sm" | "md" | "lg"} fontSize={st.fontSize === "default" ? undefined : (s(st.fontSize) as TextVariant)} disabled={b(st.disabled)} rows={3} />
+        <Textarea placeholder={s(st.placeholder)} status={s(st.status) === "default" ? undefined : (s(st.status) as Status)} size={s(st.size) as "sm" | "md" | "lg"} fontSize={st.fontSize === "default" ? undefined : (s(st.fontSize) as TextVariant)} disabled={b(st.disabled)} rows={3} />
       </Box>
     ),
     code: (st) =>

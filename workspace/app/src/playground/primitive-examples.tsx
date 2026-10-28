@@ -130,7 +130,7 @@ export function FormFieldExample({ disabled = false, required = true }: { disabl
   return <Stack gap="md" width="full">
     <FormField label="이메일" description="연락받을 이메일을 입력해주세요." error="이메일 형식을 확인해주세요."
       invalid={invalid} required={required} disabled={disabled} className={styles.formField}>
-      {({ controlProps }) => <Field {...controlProps} type="email" status={invalid ? "error" : "default"} />}
+      {({ controlProps }) => <Field {...controlProps} type="email" status={invalid ? "error" : undefined} />}
     </FormField>
     <Button onClick={() => setInvalid((value) => !value)}>{invalid ? "오류 해제" : "오류 표시"}</Button>
   </Stack>;

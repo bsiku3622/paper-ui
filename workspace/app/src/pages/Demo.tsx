@@ -52,7 +52,7 @@ export const Demo = () => {
 
   return <Box className={s.app}>
     <Box as="header" className={s.topbar}>
-      <Inline className={s.brand}><Box className={s.brandMark}><Glyph name="layers"/></Box><Text variant="subheading">fieldnote</Text><Divider axis="vertical"/><Text variant="body" ink="soft">내 작업 공간</Text></Inline>
+      <Inline className={s.brand}><Box className={s.brandMark}><Glyph name="layers"/></Box><Text variant="subheading">fieldnote</Text><Divider orientation="vertical"/><Text variant="body" ink="soft">내 작업 공간</Text></Inline>
       <Inline gap="sm" className={s.topActions}><Field className={s.search} aria-label="전체 검색" placeholder="작업 검색..." leading={<Glyph name="search"/>} value={query} onChange={(event) => setQuery(event.target.value)}/><Button variant="soft" shape="pill" aria-label="계정 메뉴">재</Button></Inline>
     </Box>
     <Box className={s.layout}>

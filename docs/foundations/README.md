@@ -47,7 +47,7 @@ dp·em·색    CSS 값       var() 참조                  숫자 없는 완성�
 
 | 시스템 | 파일 |
 |---|---|
-| Color | `tokens/palette.ts` · `tokens/colors.ts` · `styles/color-profile.ts` |
+| Color | `tokens/palette.ts` · `tokens/colors.ts` · `tokens/color-recipes.ts` |
 | Typography | `tokens/typography.ts` · `styles/typography.css.ts` |
 | Shape | `tokens/shape.ts` · `tokens/shape-recipes.ts` |
 | Layout | `tokens/layout.ts` · `primitives/Box.css.ts` |
@@ -81,6 +81,38 @@ dp·em·색    CSS 값       var() 참조                  숫자 없는 완성�
 - **Typography**는 Palette를 굽고, 글자 역할과 control preset은 Palette 변수를 조합한 class입니다.
 - **Shape·Layout**은 원본만 굽습니다. 역할은 원본 변수의 별칭이거나 쓰이는 요소에서 계산되는 `calc()` 식이라, 하위 트리에서 원본 하나를 덮으면 그 위의 역할이 그 자리에서 모두 다시 계산됩니다. 그림자는 테마마다 색이 달라 조립된 값을 테마 스코프가 교체합니다.
 - **Motion**은 변수로 굽지 않습니다. duration·easing·변위는 한 변수로 줄여 쓰기 어려워, stylesheet가 빌드 때 transition 문자열로 조립합니다.
+
+## 공개 어휘
+
+prop이 받는 닫힌 값의 집합을 **축**이라 부릅니다. 축마다 상수 하나와 타입 하나가 짝으로 공개되고, 앱은 목록을 손으로 다시 적지 않고 이 짝을 씁니다. 모든 짝은 `@studio-baeks/paper-ui/tokens`에서 나오며, 각 짝은 자기 시스템 파일에 한 번만 정의되고 `tokens/vocabulary.ts`가 모아 다시 내보냅니다.
+
+[contract:foundations.vocabulary.one-pair-per-axis]: #
+
+| 짝 (상수 · 타입) | 정의 위치 | 쓰는 prop · tokens 경로 |
+|---|---|---|
+| `STATUSES` · `Status` | `tokens/colors.ts` | Field · Textarea의 `status` |
+| `ACCENTS` · `Accent` | `tokens/colors.ts` | Button · IconButton · Badge의 `accent`, `tokens.color.accent.<accent>` |
+| `ACCENT_TONES` · `AccentTone` | `tokens/colors.ts` | `tokens.color.accent.<accent>.<tone>` |
+| `VARIANTS` · `Variant` | `tokens/color-recipes.ts` | Button · IconButton · Badge의 `variant` |
+| `SURFACES` · `Surface` | `tokens/colors.ts` | Box의 `surface`, `tokens.color.bg.<surface>` |
+| `INK_LEVELS` · `InkLevel` | `tokens/colors.ts` | `tokens.color.ink.<level>` |
+| `BORDER_LEVELS` · `BorderLevel` | `tokens/colors.ts` | `tokens.color.border.<level>` |
+| `DIVIDER_LEVELS` · `DividerLevel` | `tokens/colors.ts` | Divider의 `level` — `BORDER_LEVELS`의 부분집합 |
+| `TEXT_VARIANTS` · `TextVariant` | `tokens/typography.ts` | Text의 `variant`, 컨트롤의 `fontSize`, `tokens.typography.role.<variant>` |
+| `TEXT_FAMILIES` · `TextFamily` | `tokens/typography.ts` | Text의 `family` |
+| `CONTROL_SIZES` · `ControlSize` | `tokens/typography.ts` | 컨트롤의 `size` |
+| `CONTROL_PRESETS` · `ControlPreset` | `tokens/typography.ts` | `tokens.typography.preset.<preset>` |
+| `SPACES` · `Space` | `tokens/shape.ts` | Box의 `padding` · `gap`, `tokens.shape.inset.<space>`, `tokens.layout.gap.<space>` |
+| `DIMENSIONS` · `Dimension` | `tokens/shape.ts` | Box의 `width` · `height` 이름 값, `tokens.shape.dimension` |
+| `MEASURES` · `Measure` | `tokens/shape.ts` | `tokens.shape.measure.<measure>` |
+| `ICON_SIZES` · `IconSize` | `tokens/shape.ts` | Icon의 `size`, IconButton의 `iconSize` — `TEXT_VARIANTS`의 부분집합 |
+| `CONTROL_SHAPES` · `ControlShape` | `tokens/shape.ts` | Button · Badge · Field · Select의 `shape` |
+| `ELEVATIONS` · `Elevation` | `tokens/layout.ts` | Box의 `elevation`, `tokens.layout.elevation.<elevation>` |
+| `BREAKPOINTS` · `Breakpoint` | `tokens/layout.ts` | `tokens.layout.breakpoint.<breakpoint>` |
+| `CONTAINERS` · `Container` | `tokens/layout.ts` | `tokens.layout.container.<container>` |
+| `ORIENTATIONS` · `Orientation` | `tokens/layout.ts` | Divider의 `orientation`, RovingFocus의 `orientation`(`both` 추가) |
+
+새 축은 원본 tree에서 파생하거나 `satisfies`로 양방향 묶고 `vocabulary.ts`에 상수·타입 짝으로 공개합니다. 원본 tree에서 파생한 축은 단계를 더하면 상수와 타입이 함께 늘고, `satisfies`로 묶은 축은 한쪽만 늘면 타입 검사가 막습니다. 글자·아이콘의 잉크 `Ink`만은 아직 상수 없이 타입으로만 같은 entry에서 나옵니다.
 
 ## 앱에서 쓰기
 

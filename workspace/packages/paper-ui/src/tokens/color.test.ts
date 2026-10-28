@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { OKLCH_PALETTE, PALETTE_TOKENS } from "./palette";
-import { COLOR_VALUES, COLOR_VALUES_DARK, STATUS, STATUS_PALETTE } from "./colors";
+import { COLOR_VALUES, COLOR_VALUES_DARK, STATUSES, STATUS_PALETTE } from "./colors";
 import { ACCENT_PALETTES, ACCENT_STEPS, ALPHA_STEPS, PALETTE_STEPS } from "./palette";
 
 const leaves = (value: unknown): string[] =>
@@ -107,7 +107,7 @@ describe("color systems", () => {
   });
 
   it("maps the five accent roles from their named palette", () => {
-    for (const status of STATUS) {
+    for (const status of STATUSES) {
       const palette = STATUS_PALETTE[status];
       for (const mode of ["light", "dark"] as const) {
         const dark = mode === "dark";

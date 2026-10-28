@@ -4,21 +4,11 @@
 // 색 해석이 컴포넌트마다 흩어지면 둘이 조용히 달라진다.
 
 import { joinClass } from "../internal/joinClass";
-import type { StatusName, Space } from "../tokens";
-import { resolveSurface, type Surface } from "./color";
+import { STATUSES, type Status, type Space, type Surface } from "../tokens";
+import { resolveSurface } from "./color";
 export { resolveControlTypography } from "./typography";
 // 면(surface) · accent × variant는 별도 파일에.
-export {
-  resolveSurface,
-  resolveAccent,
-  SURFACES,
-  ACCENTS,
-  VARIANTS,
-  INTERACTIVE,
-  type Surface,
-  type Accent,
-  type Variant,
-} from "./color";
+export { resolveSurface, resolveAccent, INTERACTIVE } from "./color";
 
 // ───── ink — 마크(Text · Icon)가 소유하는 색 ──────────────────────────────────
 //
@@ -41,8 +31,7 @@ export { NEUTRAL_INKS };
 // ⚠ 어휘가 닫혀 있다는 원칙과 어긋나지 않는다 — 임의 색을 여는 게 아니라 "내 색을 내가
 // 정하지 않는다" 는 한 낱말을 더하는 것이다.
 const INHERIT_INK = "inherit" as const;
-const STATUS_INKS = ["info", "success", "warning", "error"] as const;
-export const INKS = [...NEUTRAL_INKS, ...STATUS_INKS, INHERIT_INK] as const;
+export const INKS = [...NEUTRAL_INKS, ...STATUSES, INHERIT_INK] as const;
 export type Ink = (typeof INKS)[number];
 
 export const resolveInk = (i: Ink | undefined): string =>
@@ -60,13 +49,12 @@ export const resolveInk = (i: Ink | undefined): string =>
 //   solid — 글자/아이콘만 그 색 · wash — 옅은 면 + 괘선 · dot — 작은 채운 점
 
 export const TONES = ["solid", "wash", "dot"] as const;
-export type Tone = (typeof TONES)[number];
 
-export const resolveTone = (accent: string | undefined, tone: Tone = "solid"): string =>
+export const resolveTone = (accent: string | undefined, tone: (typeof TONES)[number] = "solid"): string =>
   accent ? `pui-${accent}-${tone}` : "";
 
 // status → accent tone. (info·success·warning·error 전부 색을 가짐.)
-export const resolveStatus = (status: StatusName | undefined, tone: Tone = "solid"): string =>
+export const resolveStatus = (status: Status | undefined, tone: (typeof TONES)[number] = "solid"): string =>
   status ? resolveTone(status, tone) : "";
 
 // ───── space — 간격 ────────────────────────────────────────────────────────────

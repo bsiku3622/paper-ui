@@ -19,13 +19,19 @@ export const INVENTORY = {
     },
   },
   atoms: ["Button", "IconButton", "Field", "Textarea", "Select", "Checkbox", "Switch", "Radio", "Label", "Badge", "Spinner", "Divider", "Link"],
-  anatomy: { Select: ["SelectOption", "SelectGroup"] },
+  anatomy: { Select: ["Option", "Group"] },
   utilities: {
     Composition: ["mergeProps", "mergeRefs", "composeEventHandlers"],
     Theme: ["PaperProvider", "ThemeScope", "useTheme", "useResolvedTheme"],
     Typography: ["resolveControlTypography"],
   },
   classes: [],
-  foundations: ["tokens", "stateTransition", "SPACE_KEYS", "DIMENSION_KEYS", "CONTROL_SIZES", "ICON_SIZES", "ELEVATIONS"],
+  foundations: [
+    "tokens", "stateTransition",
+    "STATUSES", "ACCENTS", "ACCENT_TONES", "VARIANTS", "SURFACES", "INK_LEVELS", "BORDER_LEVELS", "DIVIDER_LEVELS",
+    "TEXT_VARIANTS", "TEXT_FAMILIES", "CONTROL_SIZES", "CONTROL_PRESETS",
+    "SPACES", "DIMENSIONS", "MEASURES", "ICON_SIZES", "CONTROL_SHAPES",
+    "ELEVATIONS", "BREAKPOINTS", "CONTAINERS", "ORIENTATIONS",
+  ],
   polymorphic: ["Box", "Stack", "Inline", "Grid", "Text", "Hoverable", "RovingFocus.Item", "Button"],
 } as const;

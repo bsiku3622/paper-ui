@@ -2,9 +2,9 @@
 // value card. Values are the current theme's: switching the theme switches every card.
 
 import { Box, Inline, Stack, Text, useResolvedTheme } from "@studio-baeks/paper-ui";
-import { tokens } from "@studio-baeks/paper-ui/tokens";
+import { tokens, ACCENTS, ACCENT_TONES, type Accent } from "@studio-baeks/paper-ui/tokens";
 
-import { COLOR_VALUES, COLOR_VALUES_DARK } from "../../../../packages/paper-ui/src/tokens/colors";
+import { COLOR_VALUES, COLOR_VALUES_DARK, STATUS_PALETTE } from "../../../../packages/paper-ui/src/tokens/colors";
 import { ACCENT_STEPS, PALETTE_TOKENS } from "../../../../packages/paper-ui/src/tokens/palette";
 import "./color-page.css";
 
@@ -47,9 +47,7 @@ const COLOR_GROUPS: { title: string; description: string; rows: ColorRow[] }[] =
   ] },
 ];
 
-const ACCENTS = ["primary", "info", "success", "warning", "error"] as const;
-const LADDER = ["solid", "wash", "ink", "soft", "subtle"] as const;
-const FAMILY: Record<(typeof ACCENTS)[number], string> = { primary: "neutral", info: "blue", success: "green", warning: "amber", error: "red" };
+const FAMILY: Record<Accent, string> = { primary: "neutral", ...STATUS_PALETTE };
 
 const findPaletteToken = (color: string): string => {
   const visit = (value: unknown, path: string[]): string | undefined => {
@@ -110,21 +108,21 @@ const ColorGroup = ({ title, description, rows }: { title: string; description: 
   );
 };
 
-// The five accents share one ladder, so they read best side by side: one row per accent.
+// The five accents share the same tones, so they read best side by side: one row per accent.
 const AccentGroup = () => {
   const { values } = useTheme();
   return (
     <Stack as="section" className="foundation-color-section" gap="md">
       <SectionHeading title="Accent" description="의미 이름 다섯이 같은 다섯 tone을 공유합니다. solid는 채운 면과 상태 점, wash는 solid 위 글자, ink는 지면 위 색 글자, soft는 옅은 면, subtle은 muted 글자입니다." />
       <div className="foundation-tone-scroll">
-        <div className="foundation-tone-columns"><Text variant="label">Accent</Text>{LADDER.map((tone) => <Text key={tone} variant="label">{tone}</Text>)}</div>
+        <div className="foundation-tone-columns"><Text variant="label">Accent</Text>{ACCENT_TONES.map((tone) => <Text key={tone} variant="label">{tone}</Text>)}</div>
         {ACCENTS.map((accent) => (
           <div className="foundation-tone-row" key={accent}>
             <Stack className="foundation-color-copy" gap="sm">
               <TokenPill token={`accent.${accent}`} />
               <Text variant="body" ink="soft">{FAMILY[accent]}</Text>
             </Stack>
-            {LADDER.map((tone) => <ColorValue key={tone} live={c.accent[accent][tone]} color={values.accent[accent][tone]} compact />)}
+            {ACCENT_TONES.map((tone) => <ColorValue key={tone} live={c.accent[accent][tone]} color={values.accent[accent][tone]} compact />)}
           </div>
         ))}
       </div>

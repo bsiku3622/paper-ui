@@ -1,5 +1,5 @@
 import { tokens, stateTransition, CONTROL_SIZES, TEXT_VARIANTS, type ControlSize, type TextVariant } from "../tokens";
-import { outlinedControlProfile, outlinedControlHover } from "../styles/color-profile";
+import { outlinedControlProfile, outlinedControlHover } from "../tokens/color-recipes";
 import { controlGeometry, focusRing, geometry } from "../internal/shape";
 import { layered } from "../tokens/layers.css";
 

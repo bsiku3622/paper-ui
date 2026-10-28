@@ -22,6 +22,7 @@ import {
   Text,
   Textarea,
 } from "@studio-baeks/paper-ui";
+import { ACCENTS, STATUSES, SURFACES, TEXT_VARIANTS, VARIANTS } from "@studio-baeks/paper-ui/tokens";
 
 import { PlaygroundLayout, ReferenceHeading } from "../playground/shell";
 
@@ -44,17 +45,11 @@ const Spec = ({ label, testid, children }: { label: string; testid?: string; chi
   </Stack>
 );
 
-const TEXT_VARIANTS = ["display", "title", "heading", "subheading", "body", "caption", "label"] as const;
 // family=mono 표본 — 해당 variant 행 바로 밑에 같은 크기 mono 로 깔아 sans 와 비교시킨다.
 const MONO_DEMO: Partial<Record<(typeof TEXT_VARIANTS)[number], string>> = {
   title: "paper-ui",
   body: 'const paper = "ui"; // 0123',
 };
-const PAPERS = ["canvas", "raised", "sunken"] as const;
-const ACCENTS = ["info", "success", "warning", "error"] as const;
-const STATUSES = ["info", "success", "warning", "error"] as const;
-const COLOR_ACCENTS = ["primary", ...ACCENTS] as const;
-const BUTTON_VARIANTS = ["solid", "soft", "hairline", "ghost", "muted"] as const;
 
 export const Playground = () => {
   const [checked, setChecked] = useState(true);
@@ -100,7 +95,7 @@ export const Playground = () => {
 
         <Section id="sec-color" title="Color">
           <Spec label="surface — 면 깊이 3 단 (Box 의 구조 축, 색 아님)">
-            {PAPERS.map((s) => (
+            {SURFACES.map((s) => (
               <Box key={s} surface={s} border radius="md" padding="lg" data-testid={`swatch-paper-${s}`}
                 style={{ minWidth: "5rem" }}>
                 <Text variant="caption" as="span">{s}</Text>
@@ -108,12 +103,12 @@ export const Playground = () => {
             ))}
           </Spec>
           <Spec label="accent — 작게 얹는 색 (dot=채운 점, ink=글자, wash=옅은 면)">
-            {ACCENTS.map((a) => (
+            {STATUSES.map((a) => (
               <Inline key={a} gap="sm" align="center">
                 <Box className={`pui-${a}-dot`} radius="full" data-testid={`dot-${a}`}
                   style={{ width: "1rem", height: "1rem" }} />
                 <Text variant="body" as="span" ink={a} data-testid={`ink-${a}`}>{a}</Text>
-                <Badge accent={STATUSES[ACCENTS.indexOf(a)]}>{STATUSES[ACCENTS.indexOf(a)]}</Badge>
+                <Badge accent={a}>{a}</Badge>
               </Inline>
             ))}
           </Spec>
@@ -122,12 +117,12 @@ export const Playground = () => {
               Accent × variant · 각 칸은 실제 accent와 variant 조합입니다.
             </Text>
             <Box surface="raised" border radius="md" padding="md" style={{ maxWidth: "100%", overflowX: "auto" }}>
-              <Box role="table" data-testid="color-variant-matrix" aria-label="Accent and button variant combinations" gap="sm" style={{ display: "grid", gridTemplateColumns: `repeat(${COLOR_ACCENTS.length + 1}, max-content)`, alignItems: "center", width: "max-content" }}>
+              <Box role="table" data-testid="color-variant-matrix" aria-label="Accent and button variant combinations" gap="sm" style={{ display: "grid", gridTemplateColumns: `repeat(${ACCENTS.length + 1}, max-content)`, alignItems: "center", width: "max-content" }}>
                 <Text variant="caption">Variant</Text>
-                {COLOR_ACCENTS.map((accent) => <Text key={accent} variant="caption">{accent}</Text>)}
-                {BUTTON_VARIANTS.flatMap((variant) => [
+                {ACCENTS.map((accent) => <Text key={accent} variant="caption">{accent}</Text>)}
+                {VARIANTS.flatMap((variant) => [
                   <Text key={`${variant}-label`} variant="caption" family="mono">{variant}</Text>,
-                  ...COLOR_ACCENTS.map((accent) => <Button key={`${accent}-${variant}`} size="sm" accent={accent} variant={variant}>{accent}</Button>),
+                  ...ACCENTS.map((accent) => <Button key={`${accent}-${variant}`} size="sm" accent={accent} variant={variant}>{accent}</Button>),
                 ])}
               </Box>
             </Box>
@@ -369,10 +364,10 @@ export const Playground = () => {
             <Badge accent="info" dot shape="pill">진행</Badge>
           </Spec>
           {/* Divider 는 세로로 세워 표본으로 보인다. 가로 한 줄을 그으면 섹션을 가르는
-              선처럼 읽혀, 예제 화면이 줄무늬가 된다 — 두 축은 상세 페이지에서 전환한다. */}
+              선처럼 읽혀, 예제 화면이 줄무늬가 된다 — orientation 과 level 은 상세 페이지에서 전환한다. */}
           <Spec label="Divider · Link · Icon">
             <Link href="#/" data-testid="link">링크</Link>
-            <Divider axis="vertical" />
+            <Divider orientation="vertical" />
             <Icon aria-label="정보" data-testid="icon">
               <circle cx="12" cy="12" r="9" />
               <path d="M12 11v5M12 8h.01" />

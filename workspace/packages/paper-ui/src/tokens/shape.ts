@@ -11,23 +11,20 @@
 // re-derives every role built on it. Shape may read Typography (control text sets the insets);
 // Layout builds on the space scale here, and Shape never reads Layout.
 
-import { buildVarTree, em, lengths, px, rem } from "./helpers";
-import { CONTROL_SIZES, type ControlSize, TYPOGRAPHY } from "./typography";
+import { buildVarTree, em, keys, lengths, px, rem } from "./helpers";
+import { CONTROL_SIZES, type ControlSize, type TextVariant, TYPOGRAPHY } from "./typography";
 
-export const SPACE_KEYS = ["xs", "sm", "md", "lg", "xl", "2xl", "3xl"] as const;
-export type Space = (typeof SPACE_KEYS)[number];
-// Named element sizes (Box width·height·measure) have their own five steps.
-export const DIMENSION_KEYS = ["xs", "sm", "md", "lg", "xl"] as const;
-export type Dimension = (typeof DIMENSION_KEYS)[number];
-// Icon artboards are named after the Text role they stand beside.
-export const ICON_SIZES = ["label", "caption", "body", "subheading"] as const;
-export type IconSize = (typeof ICON_SIZES)[number];
-// The artboard an icon takes inside a control of each size.
-export const CONTROL_ICON = { sm: "caption", md: "body", lg: "subheading" } as const satisfies Record<ControlSize, IconSize>;
+export const CONTROL_SHAPES = ["rounded", "pill"] as const;
+export type ControlShape = (typeof CONTROL_SHAPES)[number];
 
 // One typed size map; recipes choose a role instead of patching arbitrary CSS keys.
 export const controlSizes = <T>(recipe: (size: ControlSize) => T): Record<ControlSize, T> =>
   Object.fromEntries(CONTROL_SIZES.map((size) => [size, recipe(size)])) as Record<ControlSize, T>;
+
+// Named element sizes (Box width·height) have their own five steps; the width map names them.
+const DIMENSION_WIDTH = { xs: 72, sm: 108, md: 160, lg: 240, xl: 360 } as const;
+export const DIMENSIONS = keys(DIMENSION_WIDTH);
+export type Dimension = keyof typeof DIMENSION_WIDTH;
 
 export const SHAPE_SOURCE = {
   // The one length scale. Shape insets (inside an element) and Layout gaps (between elements)
@@ -44,10 +41,11 @@ export const SHAPE_SOURCE = {
     // A button's label defines its box, so it sits wider than a typed value.
     buttonInsetRatio: 1.4,
   },
-  icon: { label: 14, caption: 16, body: 18, subheading: 20 },
+  // Icon artboards are named after the Text role they stand beside.
+  icon: { label: 14, caption: 16, body: 18, subheading: 20 } satisfies Partial<Record<TextVariant, number>>,
   dimension: {
-    width: { xs: 72, sm: 108, md: 160, lg: 240, xl: 360 },
-    height: { xs: 64, sm: 96, md: 144, lg: 216, xl: 320 },
+    width: DIMENSION_WIDTH,
+    height: { xs: 64, sm: 96, md: 144, lg: 216, xl: 320 } satisfies Record<Dimension, number>,
   },
   // Reading widths of a text block.
   measure: { xs: 448, sm: 512, md: 608, lg: 672, xl: 736 },
@@ -61,6 +59,16 @@ export const SHAPE_SOURCE = {
     inline: { dot: 0.5, spinner: 1 },
   },
 } as const;
+
+export const SPACES = keys(SHAPE_SOURCE.space);
+export type Space = keyof typeof SHAPE_SOURCE.space;
+export const MEASURES = keys(SHAPE_SOURCE.measure);
+export type Measure = keyof typeof SHAPE_SOURCE.measure;
+export const ICON_SIZES = keys(SHAPE_SOURCE.icon);
+export type IconSize = keyof typeof SHAPE_SOURCE.icon;
+// Control icons follow the control height (30 → 16, 32 → 18, 36 → 20), not the text beside them:
+// control text is a preset (13 · 13 · 14) that no Text role matches.
+export const CONTROL_ICON = { sm: "caption", md: "body", lg: "subheading" } as const satisfies Record<ControlSize, IconSize>;
 
 const s = SHAPE_SOURCE;
 

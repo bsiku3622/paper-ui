@@ -10,7 +10,7 @@
 // Distances select from the Shape space scale, so a gap and an inset of the same step are the
 // same length. Elevation shadows take their tint from Color when the theme is emitted.
 
-import { buildVarTree, lengths, pathToVarRef, px } from "./helpers";
+import { buildVarTree, keys, lengths, pathToVarRef, px } from "./helpers";
 import { SPACE } from "./shape";
 
 export const ELEVATIONS = ["base", "raised", "sticky", "overlay", "modal", "toast"] as const;
@@ -37,6 +37,15 @@ export const LAYOUT_SOURCE = {
     dark: { lifted: [[0, 1, 2, 0]], floating: [[0, 8, 22, -5], [0, 3, 7, -2]] },
   } satisfies Record<"light" | "dark", Record<Depth, readonly ShadowLayer[]>>,
 } as const;
+
+export const BREAKPOINTS = keys(LAYOUT_SOURCE.breakpoint);
+export type Breakpoint = keyof typeof LAYOUT_SOURCE.breakpoint;
+export const CONTAINERS = keys(LAYOUT_SOURCE.container);
+export type Container = keyof typeof LAYOUT_SOURCE.container;
+
+// The two directions a line or a list can run.
+export const ORIENTATIONS = ["horizontal", "vertical"] as const;
+export type Orientation = (typeof ORIENTATIONS)[number];
 
 // The Color shadow tint each depth is drawn with.
 export const SHADOW_TINT = { lifted: "overlayMinimal", floating: "overlay" } as const satisfies Record<Depth, string>;

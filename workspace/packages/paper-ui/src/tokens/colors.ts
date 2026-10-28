@@ -3,30 +3,27 @@
 // Every semantic leaf selects a generated palette token. No semantic value contains a raw color,
 // performs color math, or reads another semantic branch.
 
-import { buildVarTree } from "./helpers";
+import { buildVarTree, keys } from "./helpers";
 import { PALETTE_TOKENS, type PaletteToken } from "./palette";
 import type { AccentPalette, ColorMode } from "./palette";
 
-export const STATUS = ["info", "success", "warning", "error"] as const;
-export type StatusName = (typeof STATUS)[number];
+export const STATUSES = ["info", "success", "warning", "error"] as const;
+export type Status = (typeof STATUSES)[number];
 
-export const ACCENTS = ["primary", ...STATUS] as const;
-export type AccentName = (typeof ACCENTS)[number];
+export const ACCENTS = ["primary", ...STATUSES] as const;
+export type Accent = (typeof ACCENTS)[number];
 
-export const STATUS_PALETTE: Record<StatusName, AccentPalette> = {
+// The five tones every accent shares, one palette token each.
+export const ACCENT_TONES = ["solid", "wash", "ink", "soft", "subtle"] as const;
+export type AccentTone = (typeof ACCENT_TONES)[number];
+export type AccentToken = Record<AccentTone, PaletteToken>;
+
+export const STATUS_PALETTE = {
   info: "blue",
   success: "green",
   warning: "amber",
   error: "red",
-};
-
-export type AccentToken = {
-  solid: PaletteToken;
-  wash: PaletteToken;
-  ink: PaletteToken;
-  soft: PaletteToken;
-  subtle: PaletteToken;
-};
+} satisfies Record<Status, AccentPalette>;
 
 const colorTokens = (mode: ColorMode) => {
   const { neutral, accent } = PALETTE_TOKENS;
@@ -46,7 +43,7 @@ const colorTokens = (mode: ColorMode) => {
     subtle: accent[palette][isDark ? "400" : "700"],
   });
 
-  const accents: Record<AccentName, AccentToken> = {
+  const accents: Record<Accent, AccentToken> = {
     primary,
     info: accentToken(STATUS_PALETTE.info),
     success: accentToken(STATUS_PALETTE.success),
@@ -59,8 +56,8 @@ const colorTokens = (mode: ColorMode) => {
   return {
     // Dark surfaces use a narrow range: the page and inset cells recede, while panels lift gently.
     bg: {
-      raised: neutral[isDark ? "925" : "0"],
       canvas: neutral[isDark ? "950" : "50"],
+      raised: neutral[isDark ? "925" : "0"],
       sunken: neutral[isDark ? "950" : "100"],
     },
     control: { track: neutral[isDark ? "800" : "200"] },
@@ -96,6 +93,16 @@ const colorTokens = (mode: ColorMode) => {
 };
 
 export const COLOR_VALUES = colorTokens("light");
+
+// Each axis lists the keys of the tree that authors it.
+export const SURFACES = keys(COLOR_VALUES.bg);
+export type Surface = keyof typeof COLOR_VALUES.bg;
+export const INK_LEVELS = keys(COLOR_VALUES.ink);
+export type InkLevel = keyof typeof COLOR_VALUES.ink;
+export const BORDER_LEVELS = keys(COLOR_VALUES.border);
+export type BorderLevel = keyof typeof COLOR_VALUES.border;
+export const DIVIDER_LEVELS = ["base", "strong"] as const satisfies readonly BorderLevel[];
+export type DividerLevel = (typeof DIVIDER_LEVELS)[number];
 
 type SameShapeStrings<T> = {
   [K in keyof T]: T[K] extends string ? string : SameShapeStrings<T[K]>;

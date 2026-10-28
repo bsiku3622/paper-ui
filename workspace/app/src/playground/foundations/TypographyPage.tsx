@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 
 import { Text, resolveControlTypography } from "@studio-baeks/paper-ui";
-import { tokens, CONTROL_SIZES, type ControlSize, type TextVariant } from "@studio-baeks/paper-ui/tokens";
+import { tokens, CONTROL_SIZES, TEXT_VARIANTS, type ControlSize, type TextVariant } from "@studio-baeks/paper-ui/tokens";
 
 import { Board, BoardGroup, BoardRow, FoundationSection, MatrixCell, TokenCell, ValueCell, px, resolved } from "./kit";
 import * as s from "./foundations.css";
@@ -46,7 +46,6 @@ const TEXT_ROLES: Record<TextVariant, string> = {
   caption: "보조 정보",
   label: "짧은 이름",
 };
-const TEXT_VARIANTS = Object.keys(tokens.typography.role) as TextVariant[];
 
 const CONTROL_PRESETS = [
   { path: "button.regular", role: "Button · regular", sample: "Continue", token: (size: ControlSize) => tokens.typography.preset.button.regular[size], className: (size: ControlSize) => resolveControlTypography("button", size, "regular") },

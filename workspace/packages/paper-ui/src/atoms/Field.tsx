@@ -1,6 +1,6 @@
 // Field — 한 줄 입력. input group 이다: 래퍼가 면·테두리·포커스링·상태를 지고, 안쪽
 // input 이 값을 담으며, 양옆에 어도먼트(아이콘·$·단위)와 액션(clear·비밀번호 보기)이 앉는다.
-//   status   default · info · success · warning · error (테두리 색). error 는 aria-invalid 도.
+//   status   info · success · warning · error (테두리 색, 생략하면 중립). error 는 aria-invalid 도.
 //   shape    rounded · pill — Button·Badge 와 같은 어휘. 검색창이 이 어휘의 본진이다.
 //   numeric  포맷 축 — 숫자 글리프만 등폭(tabular-nums). 정렬은 안 건드린다.
 //   align    정렬 축 — start · center · end. numeric 과 직교 (우측정렬 숫자열은 numeric + align="end").
@@ -23,19 +23,19 @@ import {
 
 import { joinClass } from "../internal/joinClass";
 import { resolveControlTypography } from "../resolvers";
-import type { StatusName, ControlSize, TextVariant } from "../tokens";
+import type { Status, ControlShape, ControlSize, TextVariant } from "../tokens";
 import { Icon } from "../primitives";
 import { fieldWrap, fieldInput, fieldSize, fieldFontSize, fieldStatus, fieldSurface, fieldNumeric, fieldAlign, fieldAdornment, fieldAction, fieldPill } from "./Field.css";
 
 export type FieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "size" | "prefix"> & {
-  status?: "default" | StatusName;
+  status?: Status;
   // 크기 3 단 (sm·md·lg). Button 과 같은 사다리 — 나란히 두면 높이가 맞는다.
   size?: ControlSize;
   // 면의 깊이 — raised 가 기본, sunken 은 canvas 안에서 살짝 눌린 검색·필터 입력에 적합.
   surface?: "raised" | "sunken";
   fontSize?: TextVariant;
   // 실루엣 — Button·Badge 와 같은 어휘. pill 은 알약(검색창 결).
-  shape?: "rounded" | "pill";
+  shape?: ControlShape;
   numeric?: boolean;
   align?: "start" | "center" | "end";
   leading?: ReactNode;
@@ -70,7 +70,7 @@ const EyeOffIcon = (
 
 export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
   {
-    status = "default",
+    status,
     size = "md",
     surface = "raised",
     fontSize,
@@ -135,10 +135,10 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
     // 진짜 컨트롤은 input 이라 role·키보드를 붙이는 게 오히려 틀리다.
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions -- 여백 클릭만 안쪽 input 으로 넘긴다
     <div
-      className={joinClass(fieldWrap, fieldSurface[surface], fieldSize[size], resolveControlTypography("field", size), fontSize && fieldFontSize[fontSize], shape === "pill" && fieldPill, status !== "default" && fieldStatus[status], className)}
+      className={joinClass(fieldWrap, fieldSurface[surface], fieldSize[size], resolveControlTypography("field", size), fontSize && fieldFontSize[fontSize], shape === "pill" && fieldPill, status && fieldStatus[status], className)}
       style={style}
       data-testid={testid}
-      data-pui-status={status}
+      data-status={status}
       // text input은 브라우저가 pointer click 뒤에도 :focus-visible로 판단할 수 있다.
       // React state 반영보다 먼저 DOM attribute를 세워 default focus보다 앞서 ring을 막는다.
       onPointerDownCapture={(event) => { event.currentTarget.dataset.puiPointerFocus = "true"; }}

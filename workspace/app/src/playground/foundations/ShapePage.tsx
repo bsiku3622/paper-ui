@@ -1,5 +1,5 @@
 import { Badge, Button, Checkbox, Field, Icon, Radio, Select, Spinner, Switch, Textarea } from "@studio-baeks/paper-ui";
-import { tokens, CONTROL_SIZES, DIMENSION_KEYS, ICON_SIZES, SPACE_KEYS, type ControlSize } from "@studio-baeks/paper-ui/tokens";
+import { tokens, CONTROL_SIZES, DIMENSIONS, ICON_SIZES, MEASURES, SPACES, type ControlSize } from "@studio-baeks/paper-ui/tokens";
 
 import { SHAPE_SOURCE } from "../../../../packages/paper-ui/src/tokens/shape";
 import { SHAPE_RECIPES } from "../../../../packages/paper-ui/src/tokens/shape-recipes";
@@ -23,7 +23,7 @@ const n = (dp: number, unit = "dp") => `${dp} ${unit}`;
 const ShapeSource = () => (
   <Board columns={SOURCE_COLUMNS} template={SOURCE_TEMPLATE} minWidth="36rem">
     <BoardGroup label="Space — inset과 gap이 함께 고르는 길이">
-      {SPACE_KEYS.map((step) => (
+      {SPACES.map((step) => (
         <BoardRow key={step}>
           <TokenCell name={`shape.space.${step}`} />
           <Bar width={shape.inset[step]} />
@@ -85,14 +85,14 @@ const ShapeSource = () => (
       ))}
     </BoardGroup>
     <BoardGroup label="Dimension · Measure — 막대는 각 단계의 가장 큰 값 대비 길이">
-      {(["width", "height"] as const).flatMap((axis) => DIMENSION_KEYS.map((step) => (
+      {(["width", "height"] as const).flatMap((axis) => DIMENSIONS.map((step) => (
         <BoardRow key={`${axis}-${step}`}>
           <TokenCell name={`shape.dimension.${axis}.${step}`} />
           <Bar width={percent(SHAPE_SOURCE.dimension[axis][step], maxOf(SHAPE_SOURCE.dimension[axis]))} />
           <ValueCell>{resolved(shape.dimension[axis][step])}</ValueCell>
         </BoardRow>
       )))}
-      {DIMENSION_KEYS.map((step) => (
+      {MEASURES.map((step) => (
         <BoardRow key={`measure-${step}`}>
           <TokenCell name={`shape.measure.${step}`} />
           <Bar width={percent(SHAPE_SOURCE.measure[step], maxOf(SHAPE_SOURCE.measure))} />
@@ -128,7 +128,7 @@ const ShapeRoles = () => (
   <Board columns={ROLE_COLUMNS} template={ROLE_TEMPLATE} minWidth="36rem">
     <BoardGroup label="Alias — 원본 변수를 그대로 가리킵니다">
       {([
-        ["shape.inset.xs ~ 3xl", "= shape.space 같은 단계", SPACE_KEYS.map((step) => shape.inset[step])],
+        ["shape.inset.xs ~ 3xl", "= shape.space 같은 단계", SPACES.map((step) => shape.inset[step])],
         ["shape.radius.*", "= shape.radius 원본", [shape.radius.control, shape.radius.selection, shape.radius.surface.sm, shape.radius.surface.md, shape.radius.surface.lg]],
         ["shape.control.height", "= 원본 사다리", sizes(shape.control.height)],
         ["shape.control.icon", "= icon caption · body · subheading", sizes(shape.control.icon)],

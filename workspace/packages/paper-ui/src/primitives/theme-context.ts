@@ -25,6 +25,6 @@ export type ThemeControl = {
 export const ThemeControlContext = createContext<ThemeControl | null>(null);
 export const useTheme = (): ThemeControl => {
   const control = useContext(ThemeControlContext);
-  if (!control) throw new Error("useTheme 는 <PaperProvider> 안에서만 쓸 수 있습니다.");
+  if (!control) throw new Error("useTheme must be used inside <PaperProvider>.");
   return control;
 };

@@ -1,11 +1,12 @@
 import { createContext, forwardRef, useCallback, useContext, useLayoutEffect, useRef, useState, type ComponentPropsWithoutRef, type ElementType, type HTMLAttributes, type KeyboardEvent, type ReactElement, type Ref } from "react";
 import { composeEventHandlers, mergeRefs } from "../composition";
+import type { Orientation } from "../../tokens";
 
 type Entry = { value: string; element: HTMLElement; disabled: boolean };
 const sortEntries = (entries: Entry[]) => entries.filter((entry) => !entry.disabled && entry.element.isConnected)
   .sort((a, b) => a.element === b.element ? 0 : a.element.compareDocumentPosition(b.element) & 2 ? 1 : -1);
 export type RovingFocusProps = HTMLAttributes<HTMLDivElement> & {
-  orientation?: "horizontal" | "vertical" | "both";
+  orientation?: Orientation | "both";
   dir?: "ltr" | "rtl";
   loop?: boolean;
   disabled?: boolean;

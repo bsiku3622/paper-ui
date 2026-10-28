@@ -14,8 +14,7 @@ const functions: readonly string[] = [
   ...Object.values(INVENTORY.utilities).flat(),
   ...INVENTORY.classes,
 ];
-// The values '.' lists: Select's option and group are still exported on their own.
-const listed: readonly string[] = [...components, ...functions, ...Object.values(INVENTORY.anatomy).flat()];
+const listed: readonly string[] = [...components, ...functions];
 
 describe("INVENTORY", () => {
   it("lists exactly the value exports of '.'", () => {
@@ -40,6 +39,16 @@ describe("INVENTORY", () => {
       const value = exported[name];
       const isForwardRef = typeof value === "object" && value !== null && (value as { $$typeof?: symbol }).$$typeof === Symbol.for("react.forward_ref");
       expect(typeof value === "function" || isForwardRef, name).toBe(true);
+    }
+  });
+
+  it("lists the compound statics of an atom without exporting them on their own", () => {
+    for (const [name, parts] of Object.entries(INVENTORY.anatomy)) {
+      const compound = exported[name] as unknown as Record<string, unknown>;
+      for (const part of parts) {
+        expect(typeof compound[part], `${name}.${part}`).toBe("function");
+        expect(exported[`${name}${part}`], `${name}${part}`).toBeUndefined();
+      }
     }
   });
 

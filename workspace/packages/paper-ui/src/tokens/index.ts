@@ -30,20 +30,15 @@ export const tokens = {
 // L2 semantic VALUES는 여기와 theme.css.ts만 조립한다. palette.ts가 OKLCH source를 보유하고
 // L1 color-ladder.ts의 순수 생성 함수로 coordinates/HEX를 완성한다. 소비처는 이 barrel만 사용한다.
 
-export { ACCENTS, STATUS, STATUS_PALETTE } from "./colors";
-export type { AccentName, AccentToken, StatusName } from "./colors";
+export * from "./vocabulary";
 
-export { SPACE_KEYS, DIMENSION_KEYS, ICON_SIZES, CONTROL_ICON } from "./shape";
-export type { Space, Dimension, IconSize } from "./shape";
+export { STATUS_PALETTE } from "./colors";
+export type { AccentToken } from "./colors";
 
-export { CONTROL_SIZES, TEXT_VARIANTS } from "./typography";
-export type { ControlSize, TextVariant } from "./typography";
+export { CONTROL_ICON } from "./shape";
 
 export { MOTION_VALUES, DURATION, EASING, MOTION, stateTransition } from "./motion";
 export type { MotionDuration, MotionEasing, MotionRole } from "./motion";
-
-export { ELEVATIONS } from "./layout";
-export type { Elevation } from "./layout";
 
 export { kebab, pathToCssVar, pathToVarRef, walkValues, buildVarTree } from "./helpers";
 

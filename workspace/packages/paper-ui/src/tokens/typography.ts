@@ -19,7 +19,7 @@
 //   mono 는 family 축이다 — 어느 크기에도 얹을 수 있고, 코드·토큰 같은 기술적
 //   자리에만 쓴다. 숫자를 무조건 등폭으로 두지 않는다 (표의 숫자 열은 sans + tabular-nums).
 
-import { buildVarTree, em, lengths, mapValues } from "./helpers";
+import { buildVarTree, em, keys, lengths, mapValues } from "./helpers";
 
 // ───── Typography Source — 원본 수치 ─────────────────────────────────────────
 //
@@ -75,21 +75,8 @@ export const TYPOGRAPHY_VALUES = {
 
 const palette = buildVarTree(TYPOGRAPHY_VALUES, ["typography"]).palette;
 
-// ───── variant — 역할별 텍스트 스타일 ───────────────────────────────────────
-//
-// display·title·heading·subheading은 제목 계층, body·caption·label은 사용 역할이다. 서체(mono)는
-// 위계가 아니라 family 축이라 여기 없다 — 어느 variant 에도 얹는다.
-
-export const TEXT_VARIANTS = [
-  "display",
-  "title",
-  "heading",
-  "subheading",
-  "body",
-  "caption",
-  "label",
-] as const;
-export type TextVariant = (typeof TEXT_VARIANTS)[number];
+export const TEXT_FAMILIES = keys(TYPOGRAPHY_SOURCE.family);
+export type TextFamily = keyof typeof TYPOGRAPHY_SOURCE.family;
 
 // ───── Control size — 컨트롤 크기 축 ───────────────────────────────────────
 //
@@ -115,7 +102,12 @@ const ROLE_SPEC = {
   body: { size: "14", weight: "medium", leading: "20", tracking: "normal" },
   caption: { size: "13", weight: "regular", leading: "16", tracking: "normal" },
   label: { size: "12", weight: "semibold", leading: "16", tracking: "wide" },
-} as const satisfies Record<TextVariant, StyleKeys>;
+} as const satisfies Record<string, StyleKeys>;
+
+// display·title·heading·subheading은 제목 계층, body·caption·label은 사용 역할이다. 서체(mono)는
+// 위계가 아니라 family 축이라 여기 없다 — 어느 variant 에도 얹는다.
+export const TEXT_VARIANTS = keys(ROLE_SPEC);
+export type TextVariant = keyof typeof ROLE_SPEC;
 
 const BUTTON_REGULAR = {
   sm: { size: "13", weight: "medium", leading: "16", tracking: "normal" },
@@ -145,6 +137,9 @@ const PRESET_SPEC = {
   textarea: TEXTAREA_CONTROL,
   badge: BADGE_PRESET,
 } as const;
+
+export const CONTROL_PRESETS = keys(PRESET_SPEC);
+export type ControlPreset = keyof typeof PRESET_SPEC;
 
 // ───── typography — Palette var 를 조합한 역할과 preset ─────────────────────
 

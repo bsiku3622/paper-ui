@@ -14,7 +14,7 @@ import { resolveBoxClass, type BoxLike } from "../resolvers";
 import { joinClass } from "../internal/joinClass";
 import { boxRadius, boxElevation, boxBorder } from "./Box.css";
 import { ResolvedThemeContext, useResolvedTheme } from "./theme-context";
-import { DIMENSION_KEYS, tokens, type Dimension, type Elevation } from "../tokens";
+import { DIMENSIONS, tokens, type Dimension, type Elevation } from "../tokens";
 
 // named size는 Shape sizing(dimension)으로 해석한다. Primitive인 Box는 앱 고유 layout도 담아야
 // 하므로 CSS 길이 escape hatch를 함께 둔다. `full`과 `fit`은 자주 쓰는 의도를 이름으로 남긴다.
@@ -36,7 +36,7 @@ const resolveDimension = (value: BoxDimension | undefined, axis: "width" | "heig
   if (value === undefined) return undefined;
   if (value === "full") return "100%";
   if (value === "fit") return "fit-content";
-  if ((DIMENSION_KEYS as readonly string[]).includes(String(value))) {
+  if ((DIMENSIONS as readonly string[]).includes(String(value))) {
     return axis === "width"
       ? tokens.shape.dimension.width[value as Dimension]
       : tokens.shape.dimension.height[value as Dimension];

@@ -32,7 +32,7 @@ neutral Form의 `border.hover`는 `border.base`·`border.strong`보다 진하고
 
 `soft`·`ghost`·`muted`와 solid의 hover는 배경을 직접 바꾸지 않고 `tokens.color.interaction.bgHover`를 `backgroundImage` overlay로 겹칩니다. 그래서 raised·canvas·sunken 어느 면 위에서도 같은 방향으로 읽힙니다. `hairline`은 면 대신 경계를 `border.hover`로 올립니다.
 
-이 규칙은 `styles/color-profile.ts`가 정의하고 `styles/color.css.ts`가 `ACCENTS × VARIANTS` 전체에 방출합니다. 표시 전용 컴포넌트는 `.pui-interactive`를 받지 않으므로 Badge처럼 hover가 의미 없는 곳에 상태색이 번지지 않습니다.
+이 규칙은 `tokens/color-recipes.ts`가 정의하고 `styles/color.css.ts`가 `ACCENTS × VARIANTS` 전체에 방출합니다. 표시 전용 컴포넌트는 `.pui-interactive`를 받지 않으므로 Badge처럼 hover가 의미 없는 곳에 상태색이 번지지 않습니다.
 
 ## Focus와 transition
 
