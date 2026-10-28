@@ -2,9 +2,8 @@
 // value is a Shape role, a SHAPE_SOURCE anatomy value, or a formula over them. Formulas stay
 // strings and are evaluated on the consuming element, like the roles they read.
 
-import { pathToVarRef } from "./helpers";
 import { ANATOMY, SHAPE, SPACE, controlSizes } from "./shape";
-import { CONTROL_SPEC } from "./text";
+import { TYPOGRAPHY } from "./typography";
 
 const { control, selection, stroke, radius } = SHAPE;
 
@@ -49,7 +48,7 @@ export const SHAPE_RECIPES = {
   textarea: {
     minHeight: SHAPE.dimension.height.sm,
     paddingBlock: controlSizes((size) => {
-      const line = pathToVarRef(["text", "palette", "leading", CONTROL_SPEC.textarea[size].leading]);
+      const line = TYPOGRAPHY.preset.textarea[size].leading;
       return `calc((${control.height[size]} - ${line}) / 2 - ${stroke.border})`;
     }),
   },

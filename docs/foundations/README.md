@@ -13,7 +13,7 @@ Color → Typography → Shape → Layout → Motion → Primitives → Atoms
 | 시스템 | 정하는 것 | 앞 시스템에서 가져오는 것 | 원본 |
 |---|---|---|---|
 | [Color](color.md) | 면·잉크·경계·의미색·상태 overlay | — | `tokens/palette.ts` |
-| [Typography](typography.md) | 서체·크기·굵기·행간·자간, 글자 역할 | 역할별 기본 잉크(Color) | `tokens/text.ts` |
+| [Typography](typography.md) | 서체·크기·굵기·행간·자간, 글자 역할 | 역할별 기본 잉크(Color) | `tokens/typography.ts` |
 | [Shape](shape.md) | 요소 하나의 곡률·선·포커스 링·크기·안쪽 여백 | 컨트롤 글자 줄(Typography) | `tokens/shape.ts` |
 | [Layout](layout.md) | 형제 간격·페이지 틀·breakpoint·elevation | 길이 scale(Shape), 그림자 색(Color) | `tokens/layout.ts` |
 | [Motion](motion.md) | 전이 시간·곡선·상황별 움직임 | 위 네 시스템이 바뀌는 방식 | `tokens/motion.ts` |
@@ -33,6 +33,34 @@ Shape와 Layout의 경계는 하나의 질문으로 가립니다. **빈 캔버�
 | Motion | duration · easing · loop | `press` · `hover` · `state` · `enter` … | `stateTransition()` |
 
 Playground의 [Foundations](/playground/foundations/color) 페이지가 이 순서 그대로 각 시스템을 보여줍니다. 위에서부터 원본, 역할, 조합 순서입니다.
+
+## 이름 계약
+
+원본에서 화면까지 이름은 같은 자리에서 나오도록 짜여 있습니다. 사람이 적는 값은 `SOURCE`, 그 값을 CSS 값으로 바꾼 트리는 `VALUES`, 앱이 고르는 변수 참조 객체는 `tokens.<system>`, 역할을 묶은 완성형은 `<system>-recipes.ts`에 둡니다. 시스템마다 세 단계가 놓인 파일은 아래 표와 같습니다. 조합이 아직 `<system>-recipes.ts`로 나뉘지 않은 시스템은 지금 그 조합이 있는 파일을 적었습니다.
+
+```text
+SOURCE  →  VALUES  →  역할 (tokens.<system>)  →  조합 (<system>-recipes.ts)
+dp·em·색    CSS 값       var() 참조                  숫자 없는 완성형
+```
+
+`VALUES`의 prefix는 인자로 줍니다. `buildVarTree(TYPOGRAPHY_VALUES, ["typography"])`는 `--pui-typography-palette-*` 이름을 만들고, 같은 트리를 `walkValues()`로 걸어 `:root` 변수를 굽습니다. 그래서 같은 트리 한 벌에서 CSS 이름과 TS 경로가 나옵니다.
+
+| 시스템 | 파일 |
+|---|---|
+| Color | `tokens/palette.ts` · `tokens/colors.ts` · `styles/color-profile.ts` |
+| Typography | `tokens/typography.ts` · `styles/typography.css.ts` |
+| Shape | `tokens/shape.ts` · `tokens/shape-recipes.ts` |
+| Layout | `tokens/layout.ts` · `primitives/Box.css.ts` |
+| Motion | `tokens/motion.ts` |
+
+네 군데는 시스템마다 일부러 다르게 짜여 있습니다. 모양을 억지로 맞추면 쓰임이 틀어지므로, 다른 점과 까닭을 한 표에 모아 둡니다.
+
+| 시스템 | 다른 점 | 까닭 |
+|---|---|---|
+| Color | 역할을 light·dark 두 벌로 굽습니다. | 테마가 바뀌면 같은 이름의 변수 값만 바뀌어, 소비처가 테마를 분기하지 않습니다. |
+| Motion | 변수를 굽지 않습니다. | duration·easing·변위는 한 변수로 줄여 쓰기 어려워, stylesheet가 빌드 때 transition 문자열로 조립합니다. |
+| Typography | Palette를 공개합니다. | 글자 안의 강조는 굵기(`weight`)와 장식(밑줄 `underlineOffset`)을 Palette에서 직접 읽습니다. |
+| Motion | duration을 값으로 공개합니다. | 속성마다 자기 duration을 골라 transition을 따로 적습니다. |
 
 ## 값이 화면까지 가는 길
 

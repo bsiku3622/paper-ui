@@ -14,7 +14,7 @@ const linkStyle = (active: boolean) => ({
   color: active ? tokens.color.ink.primary : tokens.color.ink.secondary,
   background: active ? tokens.color.interaction.selected : "transparent",
   textDecoration: "none",
-  fontSize: tokens.text.style.body.size,
+  fontSize: tokens.typography.role.body.size,
 });
 
 const NavGroup = ({ label, children }: { label: string; children: ReactNode }) => (

@@ -36,5 +36,5 @@ export const textareaSize = styleVariants(
 );
 
 export const textareaFontSize = styleVariants(
-  Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.text.style[variant].size }])) as Record<TextVariant, { fontSize: string }>,
+  Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.typography.role[variant].size }])) as Record<TextVariant, { fontSize: string }>,
 );

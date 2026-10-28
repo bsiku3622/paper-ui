@@ -2,7 +2,7 @@
 
 Typography는 서체·크기·굵기·행간·자간을 정하는 시스템입니다. 컴포넌트는 크기를 숫자로 고르지 않고 **역할**로 고릅니다 — 페이지 제목인지, 본문인지, 짧은 이름인지. Color 다음 층이라, 역할마다 기본 잉크를 Color에서 가져옵니다.
 
-Typography도 세 단계입니다. 원본 수치인 **Typography Palette**, 그것을 조합한 **글자 역할**, 반복되는 컨트롤 글자를 묶은 **Control preset**입니다. 역할과 preset은 Palette의 변수를 조합할 뿐, 숫자를 새로 쓰지 않습니다.
+Typography도 세 단계입니다. 원본 수치인 **Typography Palette**, 그것을 조합한 **글자 역할**, 반복되는 컨트롤 글자를 묶은 **Control preset**입니다. 역할과 preset은 Palette의 변수를 조합할 뿐, 숫자를 새로 쓰지 않습니다. 토큰 경로는 Palette가 `tokens.typography.palette`, 역할이 `tokens.typography.role`, preset이 `tokens.typography.preset`입니다.
 
 ## Typography Palette — 원본
 
@@ -16,7 +16,7 @@ Typography도 세 단계입니다. 원본 수치인 **Typography Palette**, 그�
 | `decoration` | `underlineOffset` 0.2em |
 | `monoSizeScale` | 0.95 |
 
-크기와 행간은 실제 px 값을 이름으로 씁니다(`tokens.text.palette.fontSize.14`). 서로 다른 단계 이름을 억지로 짝짓지 않기 위해서입니다. 450은 작은 sans 글자가 Retina에서 힘이 빠지지 않도록 둔 입력값용 보정이고, 650은 채워진 버튼처럼 강조가 필요한 라벨에 씁니다. 밑줄 offset은 글자의 장식이라 글자 크기(em)를 따릅니다.
+크기와 행간은 실제 px 값을 이름으로 씁니다(`tokens.typography.palette.fontSize.14`). 서로 다른 단계 이름을 억지로 짝짓지 않기 위해서입니다. 450은 작은 sans 글자가 Retina에서 힘이 빠지지 않도록 둔 입력값용 보정이고, 650은 채워진 버튼처럼 강조가 필요한 라벨에 씁니다. 밑줄 offset은 글자의 장식이라 글자 크기(em)를 따릅니다.
 
 ## 서체
 

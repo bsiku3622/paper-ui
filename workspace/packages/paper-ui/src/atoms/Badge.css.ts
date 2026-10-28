@@ -59,5 +59,5 @@ export const badgeSize = styleVariants(
 );
 
 export const badgeFontSize = styleVariants(
-  Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.text.style[variant].size }])) as Record<TextVariant, { fontSize: string }>,
+  Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.typography.role[variant].size }])) as Record<TextVariant, { fontSize: string }>,
 );

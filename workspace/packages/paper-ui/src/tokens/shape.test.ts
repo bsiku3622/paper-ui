@@ -3,32 +3,42 @@ import { describe, expect, it } from "vitest";
 import { dp as resolveDp } from "../../../../tests/support/dp";
 import { tokens } from "./index";
 import { walkValues, pathToCssVar } from "./helpers";
-import { SHAPE_SOURCE, SHAPE_VALUES, CONTROL_SIZES } from "./shape";
+import { SHAPE_SOURCE, SHAPE_VALUES } from "./shape";
 import { SHAPE_RECIPES } from "./shape-recipes";
-import { LAYOUT_VALUES } from "./layout";
-import { TEXT_VALUES } from "./text";
+import { COLOR_VALUES } from "./colors";
+import { ELEVATIONS, LAYOUT_VALUES, elevationShadow, elevationShadowPath } from "./layout";
+import { CONTROL_SIZES, TYPOGRAPHY_VALUES } from "./typography";
 
 // Everything theme.css.ts emits as a theme-invariant variable.
 const declarations = new Map<string, string>();
 walkValues(SHAPE_VALUES, ["shape"], (path, value) => declarations.set(pathToCssVar(path), value));
 walkValues(LAYOUT_VALUES, ["layout"], (path, value) => declarations.set(pathToCssVar(path), value));
-walkValues(TEXT_VALUES, [], (path, value) => declarations.set(pathToCssVar(path), value));
+walkValues(TYPOGRAPHY_VALUES, ["typography"], (path, value) => declarations.set(pathToCssVar(path), value));
+
+// Layout's elevation shadows are built from the light colours, so those names resolve as well.
+const resolvable = new Map(declarations);
+walkValues(COLOR_VALUES, ["color"], (path, value) => resolvable.set(pathToCssVar(path), value));
+for (const level of ELEVATIONS) {
+  resolvable.set(pathToCssVar(elevationShadowPath(level)), elevationShadow(level, "light", (tint) => tokens.color.shadow[tint]));
+}
 
 // Resolves a role or recipe to dp at the default 16px root, the way the browser would.
-const dp = (expression: string) => resolveDp(expression, declarations);
+const dp = (expression: string) => resolveDp(expression, resolvable);
 const bySize = (role: Record<string, string>) => CONTROL_SIZES.map((size) => dp(role[size]!));
 
 describe("Shape is source → role → recipe", () => {
   it("emits only source values; every role and recipe resolves to them without a cycle", () => {
-    for (const name of declarations.keys()) expect(name, name).toMatch(/^--pui-(shape|layout|text)-/);
+    for (const name of declarations.keys()) expect(name, name).toMatch(/^--pui-(shape|layout|typography)-/);
     const resolve = (value: string, ancestors: string[] = []) => {
       for (const [, name] of value.matchAll(/var\((--pui-[\w-]+)\)/g)) {
-        expect(declarations.has(name!), `missing ${name}`).toBe(true);
+        expect(resolvable.has(name!), `missing ${name}`).toBe(true);
         expect(ancestors, `cycle at ${name}`).not.toContain(name);
-        resolve(declarations.get(name!)!, [...ancestors, name!]);
+        resolve(resolvable.get(name!)!, [...ancestors, name!]);
       }
     };
     walkValues(tokens.shape, [], (_path, value) => resolve(value));
+    walkValues(tokens.typography, [], (_path, value) => resolve(value));
+    walkValues(tokens.layout, [], (_path, value) => resolve(value));
     walkValues(SHAPE_RECIPES, [], (_path, value) => resolve(value));
     // Roles have no variables of their own.
     expect([...declarations.keys()].some((name) => /^--pui-shape-(inset|selection)-/.test(name))).toBe(false);

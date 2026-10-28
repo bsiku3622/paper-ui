@@ -24,7 +24,7 @@ export const work = style({ marginTop: tokens.layout.gap.xl, minWidth: 0 });
 export const toolbar = style({ gap: tokens.layout.gap.sm, flexWrap: "wrap" });
 export const taskList = style({ background: tokens.color.bg.raised, minWidth: 0 });
 export const taskTable = style({ width: "100%", borderCollapse: "collapse", textAlign: "left", whiteSpace: "nowrap" });
-globalStyle(`${taskTable} th`, { height: tokens.shape.control.height.lg, padding: `0 ${tokens.shape.inset.md}`, color: tokens.color.ink.tertiary, fontSize: tokens.text.style.body.size, fontWeight: tokens.text.palette.weight.medium, borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` });
+globalStyle(`${taskTable} th`, { height: tokens.shape.control.height.lg, padding: `0 ${tokens.shape.inset.md}`, color: tokens.color.ink.tertiary, fontSize: tokens.typography.role.body.size, fontWeight: tokens.typography.palette.weight.medium, borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` });
 globalStyle(`${taskTable} td`, { height: 60, padding: `${tokens.shape.inset.sm} ${tokens.shape.inset.md}`, borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` });
 globalStyle(`${taskTable} tbody tr:last-child td`, { borderBottom: 0 });
 globalStyle(`${taskTable} tbody tr:hover`, { background: tokens.color.interaction.bgHover.onSurface });

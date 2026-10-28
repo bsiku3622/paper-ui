@@ -50,7 +50,7 @@ export const selectRoot = style({
 
 export const selectSize = styleVariants(controlGeometry.select);
 export const selectFontSize = styleVariants(
-  Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.text.style[variant].size }])) as Record<TextVariant, { fontSize: string }>,
+  Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.typography.role[variant].size }])) as Record<TextVariant, { fontSize: string }>,
 );
 export const selectPill = style({ borderRadius: tokens.shape.radius.full });
 

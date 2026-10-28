@@ -17,7 +17,7 @@ export const radiusSample = style({ width: shape.dimension.width.xs, height: sha
 export const strokeLine = style({ width: shape.dimension.width.sm, background: color.ink.primary });
 export const focusBox = style({ width: shape.control.height.md, height: shape.control.height.sm, borderRadius: shape.radius.control, border: line, outline: `${shape.focus.width} solid ${color.interaction.focus}`, outlineOffset: shape.focus.offset });
 export const controlBox = style({ width: shape.dimension.width.sm, borderRadius: shape.radius.control, border: line, background: color.bg.sunken });
-export const rule = style({ fontFamily: tokens.text.palette.family.mono, fontSize: tokens.text.style.caption.size, color: color.ink.secondary });
+export const rule = style({ fontFamily: tokens.typography.palette.family.mono, fontSize: tokens.typography.role.caption.size, color: color.ink.secondary });
 export const recipeSample = style({ display: "flex", alignItems: "center", minHeight: shape.control.height.lg, minWidth: 0 });
 
 // Layout

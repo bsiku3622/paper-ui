@@ -7,7 +7,7 @@ const { styleVariants } = layered("utilities");
 
 type Preset = { size: string; weight: string; leading: string; tracking: string };
 const rule = (preset: Preset): StyleRule => ({
-  fontFamily: tokens.text.palette.family.sans,
+  fontFamily: tokens.typography.palette.family.sans,
   fontSize: preset.size,
   fontWeight: preset.weight,
   lineHeight: preset.leading,
@@ -15,7 +15,7 @@ const rule = (preset: Preset): StyleRule => ({
 });
 
 // Text 역할의 순수 타이포그래피만 빌려 쓴다. Text primitive와 달리 ink·margin은 건드리지 않는다.
-const textRules = Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, rule(tokens.text.style[variant])])) as Record<TextVariant, StyleRule>;
+const textRules = Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, rule(tokens.typography.role[variant])])) as Record<TextVariant, StyleRule>;
 export const textTypography = styleVariants(textRules);
 
 const uniqueRules: Record<string, StyleRule> = {};
@@ -35,11 +35,11 @@ const addPreset = (name: string, preset: Preset) => {
 const addSizeLadder = (key: string, presets: Record<ControlSize, Preset>) => {
   for (const size of CONTROL_SIZES) addPreset(`${key}${cap(size)}`, presets[size]);
 };
-addSizeLadder("buttonRegular", tokens.text.control.button.regular);
-addSizeLadder("buttonStrong", tokens.text.control.button.strong);
-addSizeLadder("field", tokens.text.control.field);
-addSizeLadder("textarea", tokens.text.control.textarea);
-addPreset("badge", tokens.text.control.badge);
+addSizeLadder("buttonRegular", tokens.typography.preset.button.regular);
+addSizeLadder("buttonStrong", tokens.typography.preset.button.strong);
+addSizeLadder("field", tokens.typography.preset.field);
+addSizeLadder("textarea", tokens.typography.preset.textarea);
+addPreset("badge", tokens.typography.preset.badge);
 
 const classes = styleVariants(uniqueRules);
 const classFor = (name: string) => (classes as Record<string, string>)[aliases[name] ?? name] ?? "";

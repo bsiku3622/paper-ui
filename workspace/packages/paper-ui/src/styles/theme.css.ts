@@ -6,7 +6,7 @@
 import { COLOR_VALUES, COLOR_VALUES_DARK } from "../tokens/colors";
 import { SHAPE_VALUES } from "../tokens/shape";
 import { ELEVATIONS, LAYOUT_VALUES, elevationShadow, elevationShadowPath } from "../tokens/layout";
-import { TEXT_VALUES, TEXT_CONTENT, TEXT_VARIANTS } from "../tokens/text";
+import { TYPOGRAPHY_VALUES, TEXT_INK, TEXT_VARIANTS } from "../tokens/typography";
 import { walkValues, pathToCssVar } from "../tokens/helpers";
 import { tokens } from "../tokens";
 import { focusRing } from "../internal/shape";
@@ -26,11 +26,11 @@ const base = layered("base");
 // (나열하면 축이 늘 때 조용히 누락되고, var 가 없으면 그 속성은 에러 없이
 //  초기값으로 떨어져 토큰 축 하나가 죽은 채 살아있는 것처럼 읽힌다.)
 //
-// 색만 테마에 따라 갈린다 — shape·layout·text 는 테마 불변이라 :root 한 번만 굽고,
+// 색만 테마에 따라 갈린다 — shape·layout·typography 는 테마 불변이라 :root 한 번만 굽고,
 // 색은 light/dark 두 세트를 나눠 담아 스코프 셀렉터로 교체한다. var 이름은 동일해
 // 소비처는 그대로고, 스코프(html[data-theme] 이나 subtree ThemeScope)만 바뀌면
 // 값이 바뀐다.
-const baseVars: Record<string, string> = {}; // shape · layout · text (테마 불변)
+const baseVars: Record<string, string> = {}; // shape · layout · typography (테마 불변)
 const lightVars: Record<string, string> = {};
 const darkVars: Record<string, string> = {};
 
@@ -42,7 +42,7 @@ walkValues(SHAPE_VALUES, ["shape"], (path, value) => {
 walkValues(LAYOUT_VALUES, ["layout"], (path, value) => {
   baseVars[pathToCssVar(path)] = value;
 });
-walkValues(TEXT_VALUES, [], (path, value) => {
+walkValues(TYPOGRAPHY_VALUES, ["typography"], (path, value) => {
   baseVars[pathToCssVar(path)] = value;
 });
 walkValues(COLOR_VALUES, ["color"], (path, value) => {
@@ -75,10 +75,10 @@ reset.globalStyle("body", { margin: 0 });
 base.globalStyle("body", {
   background: tokens.color.bg.canvas,
   color: tokens.color.ink.primary,
-  fontFamily: tokens.text.palette.family.sans,
-  fontSize: tokens.text.style.body.size,
-  lineHeight: tokens.text.style.body.leading,
-  letterSpacing: tokens.text.style.body.tracking,
+  fontFamily: tokens.typography.palette.family.sans,
+  fontSize: tokens.typography.role.body.size,
+  lineHeight: tokens.typography.role.body.leading,
+  letterSpacing: tokens.typography.role.body.tracking,
   WebkitFontSmoothing: "antialiased",
   MozOsxFontSmoothing: "grayscale",
 });
@@ -97,20 +97,20 @@ base.globalStyle(":focus-visible", {
 // ╰──────────────────────────────────────────────────────────────────────────╯
 
 for (const v of TEXT_VARIANTS) {
-  const spec = tokens.text.style[v];
+  const spec = tokens.typography.role[v];
   base.globalStyle(`.pui-text-${v}`, {
     // size · leading · tracking 은 :root var 를 참조 — 값은 Pass 1 한 곳에서만.
-    fontFamily: tokens.text.palette.family.sans,
+    fontFamily: tokens.typography.palette.family.sans,
     fontSize: spec.size,
     fontWeight: spec.weight,
     lineHeight: spec.leading,
     letterSpacing: spec.tracking,
-    color: tokens.color.ink[TEXT_CONTENT[v]],
+    color: tokens.color.ink[TEXT_INK[v]],
     margin: 0,
   });
   // mono 일 때만 — variant px 를 MONO_SCALE 로 줄인다. 두 클래스라 .pui-text-* 를 이긴다.
   base.globalStyle(`.pui-text-${v}.pui-mono`, {
-    fontSize: `calc(${tokens.text.style[v].size} * ${tokens.text.palette.monoSizeScale})`,
+    fontSize: `calc(${tokens.typography.role[v].size} * ${tokens.typography.palette.monoSizeScale})`,
   });
 }
 
@@ -121,8 +121,8 @@ for (const v of TEXT_VARIANTS) {
 // 요소당 하나라 영어·한글을 한 런에서 따로 못 준다 — 코드·토큰(영어) 기준 단일값.
 // loop 뒤에 와서 같은 특정도의 .pui-text-* 를 순서로 이긴다.
 base.globalStyle(".pui-mono", {
-  fontFamily: tokens.text.palette.family.mono,
-  letterSpacing: tokens.text.palette.tracking.mono,
+  fontFamily: tokens.typography.palette.family.mono,
+  letterSpacing: tokens.typography.palette.tracking.mono,
 });
 
 // ╭──────────────────────────────────────────────────────────────────────────╮

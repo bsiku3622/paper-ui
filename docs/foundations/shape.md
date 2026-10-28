@@ -33,7 +33,7 @@ SHAPE_RECIPES   컴포넌트 anatomy: 역할과 원본 anatomy를 조합한 식 
 
 이 한 줄로 그 영역의 md 버튼 높이는 40, 입력 inset은 12, 버튼 inset은 17, 체크박스는 20, 스위치 트랙은 40×22가 됩니다. 역할 변수를 따로 구웠다면 `:root`에서 이미 계산이 끝나 이 재정의를 따라가지 못합니다.
 
-패키지 안에서는 숫자를 원본 파일(`shape.ts` · `layout.ts` · `text.ts` · `motion.ts`와 색 원본)에만 씁니다. recipe와 stylesheet에는 숫자가 없고, eslint `paper/source-numbers`가 패키지 전체에서 이를 막습니다.
+패키지 안에서는 숫자를 원본 파일(`shape.ts` · `layout.ts` · `typography.ts` · `motion.ts`와 색 원본)에만 씁니다. recipe와 stylesheet에는 숫자가 없고, eslint `paper/source-numbers`가 패키지 전체에서 이를 막습니다.
 
 ## 길이 scale — inset
 
@@ -106,7 +106,7 @@ Box의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값이 
 | Spinner | 지름은 `control.icon`, 링은 `stroke.emphasis`입니다. 버튼 안 스피너는 라벨 글자(1em)를 따릅니다. |
 | Badge | 높이 20 · 22 · 24와 inset 6 · 8 · 10은 규칙으로 나오지 않아 원본 anatomy에 둡니다. 점은 글자의 0.5em, 점과 글자 사이는 inset xs입니다. |
 
-링크 밑줄 offset은 글자의 장식이라 Typography(`text.palette.decoration.underlineOffset`)가 소유합니다.
+링크 밑줄 offset은 글자의 장식이라 Typography(`typography.palette.decoration.underlineOffset`)가 소유합니다.
 
 ## 앱에서
 

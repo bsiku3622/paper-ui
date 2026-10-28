@@ -11,16 +11,14 @@
 // re-derives every role built on it. Shape may read Typography (control text sets the insets);
 // Layout builds on the space scale here, and Shape never reads Layout.
 
-import { buildVarTree, lengths, pathToVarRef, px, rem } from "./helpers";
-import { CONTROL_SPEC } from "./text";
+import { buildVarTree, em, lengths, px, rem } from "./helpers";
+import { CONTROL_SIZES, type ControlSize, TYPOGRAPHY } from "./typography";
 
 export const SPACE_KEYS = ["xs", "sm", "md", "lg", "xl", "2xl", "3xl"] as const;
 export type Space = (typeof SPACE_KEYS)[number];
 // Named element sizes (Box width·height·measure) have their own five steps.
 export const DIMENSION_KEYS = ["xs", "sm", "md", "lg", "xl"] as const;
 export type Dimension = (typeof DIMENSION_KEYS)[number];
-export const CONTROL_SIZES = ["sm", "md", "lg"] as const;
-export type ControlSize = (typeof CONTROL_SIZES)[number];
 // Icon artboards are named after the Text role they stand beside.
 export const ICON_SIZES = ["label", "caption", "body", "subheading"] as const;
 export type IconSize = (typeof ICON_SIZES)[number];
@@ -42,7 +40,7 @@ export const SHAPE_SOURCE = {
   stroke: { border: 1, emphasis: 2, icon: 1.75 },
   focus: { width: 2, offset: 2 },
   control: {
-    height: { sm: 30, md: 32, lg: 36 },
+    height: { sm: 30, md: 32, lg: 36 } satisfies Record<ControlSize, number>,
     // A button's label defines its box, so it sits wider than a typed value.
     buttonInsetRatio: 1.4,
   },
@@ -55,14 +53,16 @@ export const SHAPE_SOURCE = {
   measure: { xs: 448, sm: 512, md: 608, lg: 672, xl: 736 },
   // Component anatomy that no rule derives. Emitted, but reachable only through shape recipes.
   anatomy: {
-    badge: { height: { sm: 20, md: 22, lg: 24 }, inset: { sm: 6, md: 8, lg: 10 } },
+    badge: {
+      height: { sm: 20, md: 22, lg: 24 } satisfies Record<ControlSize, number>,
+      inset: { sm: 6, md: 8, lg: 10 } satisfies Record<ControlSize, number>,
+    },
     // Marks sized against the text they sit in (em).
     inline: { dot: 0.5, spinner: 1 },
   },
 } as const;
 
 const s = SHAPE_SOURCE;
-const em = (ratio: number) => `${ratio}em`;
 
 // Lengths scale with the root font; strokes, the focus ring and the pill corner stay in px.
 export const SHAPE_VALUES = {
@@ -87,13 +87,12 @@ const source = buildVarTree(SHAPE_VALUES, ["shape"]);
 export const SPACE = source.space;
 export const ANATOMY = source.anatomy;
 
-const leading = (key: string) => pathToVarRef(["text", "palette", "leading", key]);
 const height = source.control.height;
 
 // A typed value gets the same room on every side of its line box.
-const inputInset = controlSizes((size) => `calc((${height[size]} - ${leading(CONTROL_SPEC.field[size].leading)}) / 2)`);
+const inputInset = controlSizes((size) => `calc((${height[size]} - ${TYPOGRAPHY.preset.field[size].leading}) / 2)`);
 const buttonInset = controlSizes((size) =>
-  `round(nearest, calc((${height[size]} - ${leading(CONTROL_SPEC.button.regular[size].leading)}) / 2 * ${source.control.buttonInsetRatio}), 1px)`);
+  `round(nearest, calc((${height[size]} - ${TYPOGRAPHY.preset.button.regular[size].leading}) / 2 * ${source.control.buttonInsetRatio}), 1px)`);
 // Selection marks are half a control tall, so a switch track spans one control height.
 const selection = controlSizes((size) => `calc(${height[size]} / 2)`);
 
