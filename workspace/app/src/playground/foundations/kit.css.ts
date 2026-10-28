@@ -34,6 +34,11 @@ export const row = styleVariants({
 // Cells start after the empty edge track; the rest auto-place, leaving the far edge track empty.
 globalStyle([header, row.sm, row.md, row.lg].map((name) => `${name} > :first-child`).join(", "), { gridColumnStart: 2 });
 
+// Bare: no box and no rules. Pulling the board out by one gap cancels the edge-track inset, so the
+// first column lines up with the section heading.
+export const bare = style({ marginInline: `calc(${tokens.layout.gap.md} * -1)` });
+globalStyle([header, group, row.md, row.lg].map((name) => `${bare} ${name}`).join(", "), { borderBottom: 0 });
+
 export const align = styleVariants({
   start: { textAlign: "start", justifySelf: "start" },
   center: { textAlign: "center", justifySelf: "center" },
