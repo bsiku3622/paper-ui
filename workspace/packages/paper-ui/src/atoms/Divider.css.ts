@@ -1,6 +1,7 @@
-import { style, styleVariants } from "@vanilla-extract/css";
-
 import { tokens } from "../tokens";
+import { layered } from "../tokens/layers.css";
+
+const { style, styleVariants } = layered("components");
 
 export const dividerRoot = style({
   border: "none",

@@ -1,8 +1,9 @@
-import { style, styleVariants } from "@vanilla-extract/css";
-
 import { tokens, stateTransition, TEXT_VARIANTS, type TextVariant } from "../tokens";
 import { outlinedControlProfile, outlinedControlHover } from "../styles/color-profile";
 import { controlGeometry, focusRing, geometry } from "../internal/shape";
+import { layered } from "../tokens/layers.css";
+
+const { style, styleVariants } = layered("components");
 
 // Field 와 같은 결의 여러 줄 입력. 높이만 자라고, 세로로만 resize.
 // 크기(padding·fontSize)는 size 축(textareaSize)이 정한다 — 컨트롤 높이·글자 사다리를

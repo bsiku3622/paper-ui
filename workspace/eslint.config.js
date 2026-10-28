@@ -160,4 +160,14 @@ export default [
     rules: { "paper/source-numbers": ["error", { scope: "spacing" }] },
   },
 
+  // ── 규칙 5 — 패키지 CSS 는 cascade layer 안에 ──────────────────────────────
+  // 패키지 규칙은 모두 pui.* layer 에 들어가 layer 밖의 앱 CSS 가 로드 순서와 무관하게 이긴다.
+  // layer 이름과 wrapper 를 정의하는 tokens/layers.css.ts 만 vanilla-extract 의 규칙 API 를 직접 부른다.
+  {
+    files: ["packages/paper-ui/src/**/*.css.ts"],
+    ignores: ["packages/paper-ui/src/tokens/layers.css.ts"],
+    plugins: { paper },
+    rules: { "paper/layered-styles": "error" },
+  },
+
 ];

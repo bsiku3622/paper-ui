@@ -1,5 +1,8 @@
-import { createVar, fallbackVar, style } from "@vanilla-extract/css";
+import { createVar, fallbackVar } from "@vanilla-extract/css";
 import { tokens } from "../../tokens";
+import { layered } from "../../tokens/layers.css";
+
+const { style } = layered("components");
 
 export const layerDepth = createVar();
 const { overlay, modal } = tokens.layout.elevation;

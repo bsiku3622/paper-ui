@@ -23,9 +23,10 @@ paper-ui/
 ├── docs/                       # get-started · foundations · primitives · atoms
 └── workspace/
     ├── packages/paper-ui/      # @studio-baeks/paper-ui — 단일 npm 패키지
+    │   ├── scripts/            # build-types.mjs — entry 마다 d.ts 하나
     │   └── src/
     │       ├── index.ts        # entry `.` — 컴포넌트 · hook · Provider ("use client")
-    │       ├── tokens/         # 값의 유일한 정의 위치 · public.ts = entry `/tokens`
+    │       ├── tokens/         # 값의 유일한 정의 위치 · public.ts = entry `/tokens` · layers.css.ts = cascade layer
     │       ├── styles/         # theme.css.ts (raw 값 → CSS var) · utility.css.ts · global.css.ts = entry `/styles.css`
     │       ├── resolvers/      # 규칙의 주인 (prop → className)
     │       ├── primitives/     # layout·text·icon building blocks
@@ -33,7 +34,7 @@ paper-ui/
     │       └── provider/
     ├── app/                    # 사이트 · Playground · 문서 · 데모
     ├── eslint-rules/           # lint plugin `paper`
-    ├── scripts/                # 레포 검사 (docs-sync.test.mjs)
+    ├── scripts/                # 레포 검사 (docs-sync · browser-baseline)
     └── tests/                  # Playwright e2e
 ```
 
@@ -47,6 +48,21 @@ prop 타입, `"use client"`), `/tokens`(React · CSS 없는 값과 어휘), `/st
 import 하지 않는다. 앱은 패키지를 이 exports 로만 쓰고(Foundations inspector 의 원본 import 만 예외),
 workspace 에서는 `paper-ui-source` export 조건(Vite `resolve.conditions` · tsconfig `customConditions`)이
 같은 exports 를 소스로 푼다.
+
+패키지 CSS 는 모두 cascade layer `pui` 안에 든다 — `pui.reset < pui.theme < pui.base < pui.utilities <
+pui.components`, 뒤의 레이어가 특정도와 무관하게 이긴다. 레이어 이름과 `layered(name)` wrapper 는
+`tokens/layers.css.ts` 하나가 정의하고, global.css.ts 가 그것을 맨 먼저 import 해 dist/paper-ui.css 는 레이어
+선언으로 시작한다. 파일마다 갈 레이어가 정해져 있다: theme.css.ts 의 변수는 theme, box-sizing 과 body margin 은
+reset, body 의 면·글자와 포커스 링 · Text 역할 class · reduced motion 은 base, utility.css · typography.css 는
+utilities, color.css 와 primitives · atoms 는 components. `@keyframes` 만 레이어 밖에 선다. 앱 CSS 는 레이어 밖에
+두므로 앱 className 이 로드 순서와 무관하게 패키지를 이긴다.
+
+배포본은 ESM 전용이고 peer 는 react · react-dom `^18.2.0 || ^19.0.0` 이다. 타입은 `tsconfig.build.json`(테스트 ·
+inspector 제외)으로 낸 선언을 `scripts/build-types.mjs` 가 entry 마다 한 파일(dist/index.d.ts · dist/tokens.d.ts)로
+묶는다. `pnpm --filter @studio-baeks/paper-ui check:package` 가 publint(--strict)와 attw(esm-only)로 배포 형태를
+검사한다. 지원 브라우저 하한은 패키지 package.json 의 `browserslist` 한 곳에 둔다(Chrome·Edge 125 · Firefox 121 ·
+Safari 16.4). Vite build.target · cssTarget 이 거기서 나오고, CSS 기능을 새로 쓰면 `scripts/browser-baseline.mjs`
+표에 행을 더한다 — required 는 하한이 지원해야 하고, enhancement 는 하한에서 움직임만 빠진다.
 
 ---
 
@@ -127,7 +143,7 @@ variant 에도 교차한다. mono 는 `.pui-mono` 가 등폭·전용 tracking·�
 
 ---
 
-## 레이어 · 빌드 규칙
+## 계층 · 빌드 규칙
 
 ```
 Foundations → Primitives → Atoms
@@ -135,7 +151,7 @@ Foundations → Primitives → Atoms
 
 문서(`docs/`)와 Playground 사이드바는 이 순서와 이름을 그대로 씁니다 — Foundations(Color · Typography · Shape · Layout · Motion), Primitives(Layout · Content · Interaction · A11y), Atoms. Foundations 페이지는 그 시스템의 원본 → 역할 → 조합 순서로 그립니다. Typography·Shape·Layout·Motion은 같은 보드(`app/src/playground/foundations/kit.tsx`)를 쓰고, Color는 예전 형태(팔레트 행렬 + 그룹별 값 카드)를 바탕으로 하되, 다른 페이지처럼 지금 테마의 값만 보여줍니다.
 
-| 레이어 | 수 | |
+| 계층 | 수 | |
 |---|---|---|
 | Layout | 4 | `Box · Stack · Inline · Grid` |
 | Content | 2 | `Text · Icon` |
@@ -153,9 +169,10 @@ Primitive 계약의 정본은 [docs/primitives/](docs/primitives/README.md)(Layo
 2. **원본 import 격리** (`no-restricted-imports`) — palette·ladder·shape·layout 원본과 semantic VALUES는 consumer에서 import 금지. Playground Foundations inspector만 원본을 보여주기 위한 예외입니다.
 3. **inline style 로 토큰 주입 금지** (`paper/inline-token`) — package 스타일은 `.css.ts` className 으로만 토큰을 적용합니다.
 4. **길이는 token source에만** (`paper/source-numbers`) — 패키지는 예외 없이 원본 파일(shape·layout·text·motion·색)에만 숫자를 씁니다. 앱은 간격·형태·깊이(padding·margin·gap·offset·radius·선·그림자·z)를 역할로 고르고, 그 화면에만 있는 치수(폭·높이·그리드 트랙)만 직접 씁니다. 0·100%·정렬·회전 같은 구조적 CSS는 컴포넌트가 소유합니다.
-5. **규칙은 주석으로 끄지 않음** (`paper/no-rule-disable`) — paper 규칙은 `eslint-disable` 주석으로 끄지 않고, 예외는 `eslint.config.js`에만 선언합니다. 다른 규칙을 끄는 주석은 `-- 이유`를 답니다. 쓰이지 않는 disable 주석도 오류입니다.
+5. **패키지 CSS는 레이어 안에** (`paper/layered-styles`) — 패키지 `.css.ts`는 vanilla-extract의 규칙 API(`style` · `styleVariants` · `globalStyle` · `globalLayer` …)를 직접 import하지 않고 `tokens/layers.css.ts`의 `layered(name)`으로 규칙을 만듭니다. 레이어를 정의하는 layers.css.ts만 예외이고, `keyframes` · `createVar` · `fallbackVar` · `createGlobalVar`는 그대로 씁니다.
+6. **규칙은 주석으로 끄지 않음** (`paper/no-rule-disable`) — paper 규칙은 `eslint-disable` 주석으로 끄지 않고, 예외는 `eslint.config.js`에만 선언합니다. 다른 규칙을 끄는 주석은 `-- 이유`를 답니다. 쓰이지 않는 disable 주석도 오류입니다.
 
-다섯 규칙은 eslint가 막고 build·prepublish·CI가 그 검사를 돌립니다.
+여섯 규칙은 eslint가 막고 build·prepublish·CI가 그 검사를 돌립니다.
 
 **접근성도 빌드가 지킵니다.** `eslint-plugin-jsx-a11y`(recommended)를 `polymorphicPropName:"as"`로 설정해 `<Box as="button">` 같은 polymorphic 요소까지 검사합니다. 유효한 role·aria, 대체텍스트, 양수 tabindex 금지 등을 lint하며, 폼 아톰은 `label-has-associated-control`의 `controlComponents`에 등록합니다. 상호작용별 runtime 계약은 실제 제품 구현과 검토가 책임집니다.
 
@@ -165,6 +182,8 @@ Primitive 계약의 정본은 [docs/primitives/](docs/primitives/README.md)(Layo
 
 - [ ] `pnpm verify` 가 통과했는가 — check(lint · typecheck · 단위 테스트) → build(패키지 → 앱) → e2e. CI 와 배포 전 검사(`prepublishOnly`)가 같은 명령을 돌린다
 - [ ] 작업 중에는 `pnpm check` 로 빠르게 확인하고, Foundations · Primitives · Atoms 를 바꿨다면 `pnpm test:e2e` 도 함께 돌렸는가
+- [ ] 패키지 package.json · entry · 빌드를 바꿨다면 `pnpm --filter @studio-baeks/paper-ui check:package` 도 돌렸는가
+- [ ] CSS 기능을 새로 썼다면 `scripts/browser-baseline.mjs` 표에 그 행을 더했는가
 - [ ] 색을 추가했다면 — 정말 *의미* 가 있는가. 장식이면 넣지 않는다
 - [ ] 큰 면을 색으로 채우지 않았는가 (면은 검정 primary만)
 - [ ] Primitive·Atom API를 수정했다면 — app의 실제 사용 예와 문서를 갱신했는가

@@ -3,10 +3,11 @@
 // resolver 는 이름만 만들고(`pui-info-wash`), 그 이름이 무엇인지는 여기서 굳는다.
 // 두 자리가 같은 토큰 트리를 돌기 때문에 조합이 빠질 수 없다.
 
-import { globalStyle } from "@vanilla-extract/css";
-
 import { tokens, STATUS, SPACE_KEYS } from "../tokens";
+import { layered } from "../tokens/layers.css";
 import { NEUTRAL_INKS, SURFACES } from "../resolvers";
+
+const { globalStyle } = layered("utilities");
 
 // ───── surface — 면 (Box 전용 구조 축) ──────────────────────────────────────
 //

@@ -51,7 +51,7 @@ Button에는 `as`가 있습니다(`<Button as={Link} to="/docs">`). raw 태그�
 | Select | 안쪽 select | 보이는 span wrapper |
 | Textarea · Checkbox · Radio · Switch · Badge | 각 native element | 같은 element |
 
-Field와 Select는 wrapper가 면·테두리·포커스 링을 갖고, label 연결·폼 제출·value·disabled·ref는 native 요소에 남습니다. Select 화살표는 포커스를 받거나 클릭을 가로채지 않습니다. Label · Spinner · Divider · Link는 별도의 ref 전달 계약을 두지 않습니다.
+className으로 넘긴 앱 class는 패키지 CSS가 든 레이어 밖에 있어, 로드 순서와 무관하게 Atom의 상태 규칙까지 이깁니다([우선순위](../get-started/install.md#우선순위)). Field와 Select는 wrapper가 면·테두리·포커스 링을 갖고, label 연결·폼 제출·value·disabled·ref는 native 요소에 남습니다. Select 화살표는 포커스를 받거나 클릭을 가로채지 않습니다. Label · Spinner · Divider · Link는 별도의 ref 전달 계약을 두지 않습니다.
 
 ## 상태와 접근성
 

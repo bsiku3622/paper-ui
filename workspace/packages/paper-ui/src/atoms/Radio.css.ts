@@ -1,8 +1,9 @@
-import { style, styleVariants } from "@vanilla-extract/css";
-
 import { focusRing, geometry } from "../internal/shape";
 
 import { tokens, stateTransition, CONTROL_SIZES, type ControlSize } from "../tokens";
+import { layered } from "../tokens/layers.css";
+
+const { style, styleVariants } = layered("components");
 
 // 하나만 고르는 원. 고르면 가운데 검정 점(색이 아니라 primary).
 // 크기(변·점)는 size 축(radioSize)이 정한다 — Checkbox 와 같은 변 사다리, 점은 변의 절반.

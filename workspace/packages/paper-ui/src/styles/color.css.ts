@@ -6,10 +6,11 @@
 // hover 는 .pui-interactive 가 함께 있을 때만 문다 — 눌리는 것(Button)만 gate 를 붙이고,
 // 표시용(Badge)에는 안 붙여 hover 색이 뜨지 않는다.
 
-import { globalStyle } from "@vanilla-extract/css";
-
+import { layered } from "../tokens/layers.css";
 import { ACCENTS, VARIANTS, INTERACTIVE } from "../resolvers/color";
 import { accentProfile, type ColorSpec } from "./color-profile";
+
+const { globalStyle } = layered("components");
 
 const emit = (cls: string, spec: ColorSpec): void => {
   globalStyle(cls, {
