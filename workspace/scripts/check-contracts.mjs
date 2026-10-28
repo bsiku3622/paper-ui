@@ -74,7 +74,7 @@ export const parseMarkers = (path, text) => {
 
 // The contract ids that test titles in one file claim, each with whether its test asserts the contract (a
 // skipped, todo, fixme or failing one does not). Bracketed words that are not contract ids — say a title
-// that opens with "[data-theme]" — are not claims.
+// that opens with "[data-pui-theme]" — are not claims.
 export const parseTestIds = (path, text) => {
   const ids = [];
   const errors = [];

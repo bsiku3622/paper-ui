@@ -2,10 +2,11 @@
 // Token it selects in a theme. Rows come from walking the selection table, so a role added there
 // shows up here and ROLE_NOTES makes its missing note a type error.
 
+import type { ColorMode } from "@studio-baeks/paper-ui/tokens";
+
 import { COLOR_SELECTION, paletteValue, type PalettePath } from "../../../../packages/paper-ui/src/tokens/colors";
 import { leafPaths, valueAt, type LeafPaths } from "./paths";
 
-export type ColorMode = keyof typeof COLOR_SELECTION;
 type Selection = (typeof COLOR_SELECTION)["light"];
 type Branch = Exclude<keyof Selection, "accent">;
 export type RolePath = LeafPaths<Omit<Selection, "accent">>;

@@ -6,7 +6,7 @@ Layout은 Shape 위에 섭니다. 거리는 Shape의 길이 scale에서 고르�
 
 ## 원본 → 역할
 
-Layout의 숫자는 `tokens/layout.ts`의 `LAYOUT_SOURCE`에만 있습니다. container와 z는 `--pui-layout-*` 변수로 한 번 emit하고, 그림자는 테마마다 색이 바뀌므로 테마 스코프가 조립된 값을 통째로 교체합니다.
+Layout의 숫자는 `tokens/layout.ts`의 `LAYOUT_SOURCE`에만 있습니다. container와 z는 `--pui-layout-*` 변수로 한 번 emit합니다. 그림자의 기하는 모드마다 달라서 모드별 원본 변수(`--pui-layout-shadow-<depth>-<i>`)로 굽고, 그림자 자체는 변수로 굽지 않고 쓰이는 요소에서 조립합니다([테마 스코프](color.md)).
 
 | 역할 | 값 | 비고 |
 |---|---|---|
@@ -33,7 +33,7 @@ Stack · Inline · Grid의 `gap`, Grid의 `rowGap` · `columnGap`, Box의 `gap`�
 
 tier 사이를 10씩 띄워, 같은 tier 안에서 조금 올리고 내려도 다음 tier를 넘지 않습니다. 중첩된 Overlay는 깊이마다 한 tier(`modal − overlay`)씩 올라갑니다.
 
-그림자 깊이는 lifted와 floating 둘뿐입니다. 기하는 테마별로 Layout이 갖고(다크는 더 조이고 음의 spread를 씁니다), 그림자 색(shadow colour)은 Color의 `shadow.lifted` · `shadow.floating`이 칠합니다.
+그림자 깊이는 lifted와 floating 둘뿐입니다. 기하는 모드별로 Layout이 갖고(다크는 더 조이고 음의 spread를 씁니다), 그림자 색(shadow colour)은 Color의 `shadow.lifted` · `shadow.floating`이 칠합니다. 그림자는 층마다 그림자 깊이의 레이어 기하 변수와 그림자 색 변수를 쓰이는 요소에서 이어 붙인 값이라, 테마 스코프가 기하나 색 어느 쪽을 바꿔도 그 아래의 그림자가 따라옵니다. 스코프 요소 자신이 드리우는 그림자는 바깥 지면의 모드로 그려집니다.
 
 Box는 `elevation` prop으로 층을 고릅니다. z와 그림자가 함께 붙습니다.
 

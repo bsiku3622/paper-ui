@@ -36,6 +36,8 @@ export const SHAPE_SOURCE = {
   // border · emphasis are CSS px; icon is SVG user units on the 24-unit artboard.
   stroke: { border: 1, emphasis: 2, icon: 1.75 },
   focus: { width: 2, offset: 2 },
+  // The smallest area a press may land on (WCAG 2.5.8). CSS px: a hit area does not follow the root font.
+  target: { min: 24 },
   control: {
     height: { sm: 30, md: 32, lg: 36 } satisfies Record<ControlSize, number>,
     // A button's label defines its box, so it sits wider than a typed value.
@@ -78,6 +80,7 @@ export const SHAPE_VALUES = {
   radius: { control: rem(s.radius.control), selection: rem(s.radius.selection), surface: lengths(s.radius.surface), full: px(s.radius.full) },
   stroke: { border: px(s.stroke.border), emphasis: px(s.stroke.emphasis), icon: String(s.stroke.icon) },
   focus: lengths(s.focus, px),
+  target: lengths(s.target, px),
   control: { height: lengths(s.control.height), buttonInsetRatio: String(s.control.buttonInsetRatio) },
   icon: lengths(s.icon),
   dimension: { width: lengths(s.dimension.width), height: lengths(s.dimension.height) },
@@ -109,6 +112,7 @@ export const SHAPE = {
   radius: source.radius,
   stroke: source.stroke,
   focus: source.focus,
+  target: source.target,
   control: {
     height,
     inset: { input: inputInset, button: buttonInset },

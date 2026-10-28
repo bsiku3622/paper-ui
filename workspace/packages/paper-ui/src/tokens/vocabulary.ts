@@ -5,6 +5,9 @@
 export { STATUSES, ACCENTS, ACCENT_TONES, SURFACES, INK_LEVELS, BORDER_LEVELS, DIVIDER_LEVELS, DEPTHS } from "./colors";
 export type { Status, Accent, AccentTone, Surface, InkLevel, BorderLevel, DividerLevel, Depth } from "./colors";
 
+export { COLOR_MODES, THEME_PREFERENCES, BOX_THEMES } from "./color-modes";
+export type { ColorMode, ThemePreference, BoxTheme } from "./color-modes";
+
 export { VARIANTS, SELECTABLE_VARIANTS } from "./color-recipes";
 export type { Variant, SelectableVariant } from "./color-recipes";
 

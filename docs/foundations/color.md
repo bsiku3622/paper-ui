@@ -42,6 +42,7 @@ Palette Token은 내부 이름입니다. 컴포넌트와 앱은 import하지 않
 | Interaction | `interaction.<state>` | `bgHover.onSurface` · `bgHover.onPrimarySolid` · `bgHover.onAccentSolid` · `selected` · `active` · `focus` · `link` |
 | Overlay | `overlay.<role>` | `scrim` |
 | Shadow | `shadow.<depth>` | `floating` · `lifted` |
+| Opacity | `opacity.<role>` | `disabled` · `subdued` |
 
 각 역할이 고르는 단계는 다음과 같습니다.
 
@@ -62,11 +63,41 @@ Palette Token은 내부 이름입니다. 컴포넌트와 앱은 import하지 않
 | `overlay.scrim` | alpha30.neutral.950 | alpha60.neutral.950 |
 | `shadow.floating` · `lifted` | alpha10.neutral.950 · alpha10.neutral.950 | alpha60.neutral.950 · alpha45.neutral.950 |
 
+[contract:foundations.color.surface-ladder]: #
+면은 앞에서 뒤로 `raised` > `canvas` > `sunken` 순서로 물러납니다. 라이트는 세 단계가 모두 다르고, 다크는 두 단계입니다 — 페이지(`canvas`)가 이미 가장 깊은 단계라 `sunken`이 같은 neutral.950을 씁니다. 그래서 다크에서 canvas 위의 sunken 면은 면 색이 아니라 경계로 구분하고, raised 위에서는 두 모드 모두 물러나 보입니다. 이 순서는 `SURFACE_ORDER`에 선언되어 있고, 두 모드에서 명도가 앞에서 뒤로 줄어드는지와 모든 잉크가 모든 면 위에서 4.5:1 이상인지를 단위 테스트가 지킵니다.
+
 `control.track`은 Switch 트랙과 진행 막대의 홈처럼 컨트롤 안에 박힌 면입니다. `bg` 밖에 따로 둔 이유는 컨트롤의 세부가 일반 페이지 면으로 번지지 않게 하기 위해서입니다. 포커스 링의 색은 `interaction.focus`가 갖고, 두께와 offset은 [Shape](shape.md)이, 그림자의 기하는 [Layout](layout.md)의 elevation이 갖습니다.
 
 그림자의 색은 층 이름이 아니라 깊이로 부릅니다. `floating`은 팝오버·대화상자·알림처럼 떠 있는 층의 그림자 색이고, `lifted`는 살짝 들린 층의 그림자 색입니다. 라이트에서는 두 값이 같고 다크에서만 갈립니다(60 대 45). 이 시스템에서 "overlay"는 떠 있는 층(Overlay · elevation `overlay` · `overlay.scrim`)만 가리키고, 면 위에 얹는 상태 wash는 tint라고 부릅니다.
 
+`opacity`는 팔레트 단계가 아니라 alpha 단계 하나를 값으로 씁니다. `disabled`는 alpha 50(0.5), `subdued`는 alpha 70(0.7)이고 어떤 테마에서도 같습니다. 선택표 밖에 있어서 위 표와 Playground Color에는 나오지 않습니다.
+
 링크의 색은 `interaction.link`입니다. 지금은 `accent.info.ink`와 같은 blue.700 · blue.300을 고르지만 뜻이 다른 역할입니다. info는 상태를 알리고 link는 눌러서 이동할 수 있다는 표시라, 상태색을 바꿔도 링크가 따라 움직이지 않습니다. 링크는 모든 면 위에서 4.5:1 이상입니다.
+
+## 테마 스코프
+
+테마는 색 역할 전체와 Layout의 그림자 기하를 한 묶음(**모드**)으로 고르는 일입니다. 모드는 light · dark 둘이고, `<html>`이나 요소에 건 `data-pui-theme` 속성이 정합니다.
+
+[contract:foundations.theme.system-fallback]: #
+`<html>`에 속성이 없으면 OS의 `prefers-color-scheme`이 모드를 정합니다. `:root`는 light이고, OS가 dark이면서 속성이 없을 때만 `:root:not([data-pui-theme])`가 dark 묶음을 덮습니다. 속성이 있으면 OS와 무관하게 그 값이 이깁니다. 스타일시트와 엔진(`readRootMode`)이 같은 규칙을 씁니다.
+
+[contract:foundations.theme.scope-roles]: #
+스코프 안에서는 세 가지가 달라집니다. 스코프 요소 자신이 그 모드의 고유 역할(면·잉크·경계·accent …)과 `color-scheme`을 갖습니다. 상속되는 글자색 `ink.primary`를 스코프마다 다시 선언하므로, 스코프 안의 글자는 바깥 모드가 아니라 스코프의 모드를 따릅니다(특정도가 0이라 class가 정한 색은 그대로 이깁니다). 그리고 지면 역할은 스코프의 자식부터 그 모드로 바뀝니다.
+
+지면 역할은 요소 바깥, 그 요소가 서 있는 지면에 그려지는 값입니다 — 포커스 링 색(`interaction.focus`), 그림자 색(`shadow.*`), 그림자 기하(`--pui-layout-shadow-<depth>-<i>`). 그래서 어두운 스코프 요소가 드리우는 그림자와 포커스 링은 바깥 지면의 모드로 그려지고, 그 안의 자식이 드리우는 것은 스코프의 모드로 그려집니다. 그림자는 변수 하나로 구워 두지 않고 쓰이는 요소에서 기하 변수와 그림자 색을 이어 붙이므로([Layout](layout.md)), 스코프가 어느 쪽을 바꿔도 따라옵니다.
+
+## 대비 모드
+
+`prefers-contrast: more`에서는 조용한 역할 넷만 한 단 올립니다. 경계는 모든 면 위에서 3:1 이상, `ink.tertiary`는 4.5:1 이상이 되고 나머지 역할은 그대로입니다. 올린 값은 `COLOR_CONTRAST_MORE`에 모드별로 적혀 있고, 기본 묶음 뒤에 같은 스코프 선택자로 굽기 때문에 우선순위가 기본 묶음과 같습니다.
+
+[contract:foundations.color.contrast-more]: #
+
+| 역할 | Light | Dark |
+|---|---|---|
+| `border.base` · `strong` · `hover` | neutral.600 · 650 · 700 | neutral.600 · 500 · 400 |
+| `ink.tertiary` | neutral.700 | neutral.400 |
+
+forced-colors의 값은 OS가 정하므로, `SYSTEM_COLORS`가 그 시스템 색 이름(`Canvas` · `CanvasText` · `ButtonFace` · `ButtonText` · `Highlight` · `HighlightText` · `GrayText` · `LinkText`)만 적어 둡니다.
 
 ## Accent
 

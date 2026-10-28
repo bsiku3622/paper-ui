@@ -67,7 +67,7 @@ paper-ui는 Chrome·Edge 125, Firefox 121, Safari 16.4(iOS 포함) 이상을 지
 
 ## 첫 화면
 
-Provider로 감싸고 컴포넌트를 배치합니다. Provider는 DOM wrapper를 만들지 않아 레이아웃에 영향을 주지 않습니다 — 테마는 `<html data-theme>`으로 전역에 겁니다.
+Provider로 감싸고 컴포넌트를 배치합니다. Provider는 DOM wrapper를 만들지 않아 레이아웃에 영향을 주지 않습니다 — 테마는 `<html data-pui-theme>`으로 전역에 겁니다.
 
 ```tsx
 import { PaperProvider, Stack, Text, Button } from "@studio-baeks/paper-ui";

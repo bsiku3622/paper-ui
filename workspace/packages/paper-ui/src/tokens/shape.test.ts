@@ -1,26 +1,22 @@
 import { describe, expect, it } from "vitest";
 
 import { dp as resolveDp } from "../../../../tests/support/dp";
-import { tokens } from "./index";
-import { walkValues, pathToCssVar } from "./helpers";
+import { SOURCE_VARIABLES, tokens } from "./index";
+import { walkValues } from "./helpers";
+import { COLOR_MODES } from "./color-modes";
+import { DEPTHS } from "./colors";
+import { LAYOUT_MODE_VALUES, LAYOUT_SOURCE, castShadow } from "./layout";
 import { SHAPE_SOURCE, SHAPE_VALUES } from "./shape";
-import { SHAPE_RECIPES } from "./shape-recipes";
-import { COLOR_VALUES } from "./colors";
-import { ELEVATIONS, LAYOUT_VALUES, elevationShadow, elevationShadowPath } from "./layout";
-import { CONTROL_SIZES, TYPOGRAPHY_VALUES } from "./typography";
+import { SHAPE_RECIPES, targetReach } from "./shape-recipes";
+import { CONTROL_SIZES } from "./typography";
+import { themeVariables } from "./variables";
 
-// Everything theme.css.ts emits as a theme-invariant variable.
-const declarations = new Map<string, string>();
-walkValues(SHAPE_VALUES, ["shape"], (path, value) => declarations.set(pathToCssVar(path), value));
-walkValues(LAYOUT_VALUES, ["layout"], (path, value) => declarations.set(pathToCssVar(path), value));
-walkValues(TYPOGRAPHY_VALUES, ["typography"], (path, value) => declarations.set(pathToCssVar(path), value));
+// Everything the stylesheet emits as a source variable: the same in every mode.
+const { source, invariant, modes } = themeVariables();
+const declarations = new Map(Object.entries(source));
 
-// Layout's elevation shadows are built from the light colours, so those names resolve as well.
-const resolvable = new Map(declarations);
-walkValues(COLOR_VALUES, ["color"], (path, value) => resolvable.set(pathToCssVar(path), value));
-for (const level of ELEVATIONS) {
-  resolvable.set(pathToCssVar(elevationShadowPath(level)), elevationShadow(level, "light", (depth) => tokens.color.shadow[depth]));
-}
+// Roles read colours and shadow geometry as well; the light mode stands for the names every mode has.
+const resolvable = new Map([...declarations, ...Object.entries(invariant), ...Object.entries(modes.light.own), ...Object.entries(modes.light.ground)]);
 
 // Resolves a role or recipe to dp at the default 16px root, the way the browser would.
 const dp = (expression: string) => resolveDp(expression, resolvable);
@@ -42,6 +38,13 @@ describe("Shape is source → role → recipe", () => {
     walkValues(SHAPE_RECIPES, [], (_path, value) => resolve(value));
     // Roles have no variables of their own.
     expect([...declarations.keys()].some((name) => /^--pui-shape-(inset|selection)-/.test(name))).toBe(false);
+  });
+
+  it("lists the source variables once, and no mode changes any of them", () => {
+    expect(new Set(SOURCE_VARIABLES).size).toBe(SOURCE_VARIABLES.length);
+    expect(SOURCE_VARIABLES).toContain("--pui-shape-target-min");
+    const perMode = new Set(COLOR_MODES.flatMap((mode) => [...Object.keys(modes[mode].own), ...Object.keys(modes[mode].ground)]));
+    expect(SOURCE_VARIABLES.filter((name) => perMode.has(name))).toEqual([]);
   });
 
   it("writes no number into a recipe", () => {
@@ -76,5 +79,53 @@ describe("Shape is source → role → recipe", () => {
     expect(SHAPE_RECIPES.select.arrowInset).toBe(tokens.shape.control.inset.input);
     expect(bySize(SHAPE_RECIPES.select.paddingEnd)).toEqual([31, 34, 38]);
     expect(SHAPE_RECIPES.spinner.size).toBe(tokens.shape.control.icon);
+  });
+
+  it("[foundations.shape.target-reach] sets the minimum target in CSS px and reaches only as far as a mark falls short", () => {
+    expect(SHAPE_VALUES.target.min).toBe("24px");
+    expect(declarations.get("--pui-shape-target-min")).toBe("24px");
+    expect(tokens.shape.target.min).toBe("var(--pui-shape-target-min)");
+    expect(bySize(SHAPE_RECIPES.target.selection)).toEqual([-4.5, -4, -3]);
+    expect(bySize(SHAPE_RECIPES.target.switchBlock)).toEqual([-3.5, -3, -2]);
+    expect(bySize(SHAPE_RECIPES.target.action)).toEqual([-4, -3, -2]);
+    // A mark that already is a minimum target, or larger, reaches nowhere.
+    expect(dp(targetReach("30px"))).toBe(0);
+    expect(dp(targetReach(tokens.shape.target.min))).toBe(0);
+    expect(dp(targetReach("100px"))).toBe(0);
+    for (const reach of Object.values(SHAPE_RECIPES.target).flatMap((role) => bySize(role))) expect(reach).toBeLessThanOrEqual(0);
+  });
+});
+
+describe("Layout shadow is geometry per mode, assembled where it is cast", () => {
+  it("keeps one geometry set per mode, with the same layers in every mode", () => {
+    expect(Object.keys(LAYOUT_MODE_VALUES)).toEqual([...COLOR_MODES]);
+    expect(Object.keys(LAYOUT_SOURCE.shadow)).toEqual([...COLOR_MODES]);
+    for (const depth of DEPTHS) {
+      const counts = COLOR_MODES.map((mode) => Object.keys(LAYOUT_MODE_VALUES[mode].shadow[depth]).length);
+      expect(new Set(counts).size, depth).toBe(1);
+      expect(counts[0], depth).toBe(LAYOUT_SOURCE.shadow.light[depth].length);
+    }
+    expect(LAYOUT_MODE_VALUES.light.shadow.floating["0"]).toBe("0px 8px 24px 0px");
+    expect(LAYOUT_MODE_VALUES.dark.shadow.floating["0"]).toBe("0px 8px 22px -5px");
+  });
+
+  it("emits the geometry as ground variables of each mode and nothing else of Layout per mode", () => {
+    for (const mode of COLOR_MODES) {
+      const layoutNames = Object.keys(modes[mode].ground).filter((name) => name.startsWith("--pui-layout-"));
+      expect(layoutNames, mode).toEqual(["--pui-layout-shadow-lifted-0", "--pui-layout-shadow-floating-0", "--pui-layout-shadow-floating-1"]);
+      expect(Object.keys(modes[mode].own).some((name) => name.startsWith("--pui-layout-")), mode).toBe(false);
+    }
+  });
+
+  it("assembles a cast from the geometry variables and the shadow colour of its depth, with no role variable", () => {
+    const floating = castShadow("floating");
+    expect([...floating.matchAll(/var\((--pui-[\w-]+)\)/g)].map(([, name]) => name)).toEqual([
+      "--pui-layout-shadow-floating-0", "--pui-color-shadow-floating", "--pui-layout-shadow-floating-1", "--pui-color-shadow-floating",
+    ]);
+    expect(castShadow("lifted")).toBe("var(--pui-layout-shadow-lifted-0) var(--pui-color-shadow-lifted)");
+    expect(tokens.layout.elevation.overlay.shadow).toBe(floating);
+    expect(tokens.layout.elevation.raised.shadow).toBe(castShadow("lifted"));
+    expect(tokens.layout.elevation.base.shadow).toBe("none");
+    expect([...declarations.keys(), ...Object.keys(invariant)].some((name) => /elevation-[\w-]*shadow/.test(name))).toBe(false);
   });
 });

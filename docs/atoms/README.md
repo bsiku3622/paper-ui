@@ -26,7 +26,7 @@ Atom은 같은 축 몇 개로 말합니다. 축의 값은 모두 Foundations에�
 | --- | --- | --- |
 | Button | as · accent · variant · size · fontSize · shape · loading · fullWidth | button / primary / solid / md / rounded, type=button. solid는 strong preset, 나머지는 regular. loading은 spinner·aria-busy·disabled |
 | IconButton | Button의 축에서 children·fontSize 제외 · iconSize · 필수 aria-label · 단일 children | iconSize=body. 정사각형. children이 Icon이면 iconSize를 전달 |
-| Field | status · size · surface=raised/sunken · fontSize · shape · numeric · align · leading / trailing · clearable · showPasswordToggle · onClear | default / md / raised / rounded, type=text. wrapper가 면·높이·상태·포커스를 소유 |
+| Field | status · size · surface=raised/sunken(다크에서 sunken은 canvas와 같은 단계) · fontSize · shape · numeric · align · leading / trailing · clearable · showPasswordToggle · onClear | default / md / raised / rounded, type=text. wrapper가 면·높이·상태·포커스를 소유 |
 | Textarea | status · size · fontSize · native textarea props | default / md. 한 줄 높이 = 같은 size Field, 최소 높이 96, 세로 resize. pill 없음 |
 | Select | size · fontSize · shape · children · native select props | md / rounded. native select와 Option·Group. 화살표는 trailing Icon |
 | Checkbox | size · indeterminate · native input props | md. 상자 = 컨트롤 높이의 절반, 체크는 그 절반 |

@@ -3,12 +3,12 @@
 // the theme switches every card. Every row comes from the selection table (color-roles.ts).
 
 import { Badge, Box, Button, Inline, Stack, Text, useResolvedTheme } from "@studio-baeks/paper-ui";
-import { ACCENTS, ACCENT_TONES, VARIANTS } from "@studio-baeks/paper-ui/tokens";
+import { ACCENTS, ACCENT_TONES, VARIANTS, type ColorMode } from "@studio-baeks/paper-ui/tokens";
 
 import { VARIANT_RECIPE } from "../../../../packages/paper-ui/src/tokens/color-recipes";
 import { ACCENT_PALETTE } from "../../../../packages/paper-ui/src/tokens/colors";
 import { ACCENT_PALETTES, ACCENT_STEPS, PALETTE_TOKENS } from "../../../../packages/paper-ui/src/tokens/palette";
-import { GROUPS, ROLE_NOTES, formatPalettePath, hexAt, rolesOf, selectionAt, type ColorMode } from "./color-roles";
+import { GROUPS, ROLE_NOTES, formatPalettePath, hexAt, rolesOf, selectionAt } from "./color-roles";
 import { Chip, StepGrid, Swatch } from "./kit";
 import type { ChipRole } from "./kit.css";
 import * as s from "./color-page.css";

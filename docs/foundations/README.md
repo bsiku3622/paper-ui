@@ -47,7 +47,7 @@ dp·em·색    CSS 값       var() 참조                  숫자 없는 완성�
 
 | 시스템 | 파일 |
 |---|---|
-| Color | `tokens/palette.ts` · `tokens/colors.ts` · `tokens/color-recipes.ts` |
+| Color | `tokens/palette.ts` · `tokens/colors.ts` · `tokens/color-modes.ts` · `tokens/color-recipes.ts` |
 | Typography | `tokens/typography.ts` · `styles/typography.css.ts` |
 | Shape | `tokens/shape.ts` · `tokens/shape-recipes.ts` |
 | Layout | `tokens/layout.ts` · `primitives/Box.css.ts` |
@@ -64,12 +64,12 @@ dp·em·색    CSS 값       var() 참조                  숫자 없는 완성�
 
 ## 값이 화면까지 가는 길
 
-`tokens` 객체의 leaf는 값이 아니라 CSS 변수 참조입니다. `tokens.color.bg.raised`는 `#ffffff`가 아니라 `"var(--pui-color-bg-raised)"`이고, 실제 값은 `styles/theme.css.ts`가 `:root`와 테마 스코프에 한 번 굽습니다. 테마가 바뀌면 변수 값만 바뀌므로 소비처는 테마를 분기하지 않습니다.
+`tokens` 객체의 leaf는 값이 아니라 CSS 변수 참조입니다. `tokens.color.bg.raised`는 `#ffffff`가 아니라 `"var(--pui-color-bg-raised)"`이고, 실제 값은 `tokens/variables.css.ts`가 `:root`와 테마 스코프에 한 번 굽습니다. 테마가 바뀌면 변수 값만 바뀌므로 소비처는 테마를 분기하지 않습니다.
 
 ```text
 원본 values tree
    │  walkValues() / buildVarTree() — 같은 tree, 같은 이름 규칙
-   ├──► styles/theme.css.ts   :root { --pui-color-ink-primary: … }
+   ├──► tokens/variables.css.ts   :root { --pui-color-ink-primary: … }
    └──► tokens 객체            tokens.color.ink.primary = "var(--pui-color-ink-primary)"
 ```
 
@@ -77,9 +77,9 @@ dp·em·색    CSS 값       var() 참조                  숫자 없는 완성�
 
 시스템마다 굽는 범위는 다릅니다.
 
-- **Color**는 의미 역할 전체를 light·dark 두 벌로 굽고, 테마 스코프(`[data-theme]`)가 통째로 교체합니다.
+- **Color**는 의미 역할 전체를 light·dark 두 벌로 굽습니다. `<html>`에 속성이 없으면 OS 설정이 모드를 정하고, 테마 스코프(`[data-pui-theme]`)는 자기 요소에 그 모드의 고유 역할을 겁니다. 포커스 링 색과 그림자 색처럼 지면에 그려지는 역할은 스코프의 자식부터 바뀝니다. opacity는 테마와 무관한 값으로 한 번만 굽습니다.
 - **Typography**는 Palette를 굽고, 글자 역할과 control preset은 Palette 변수를 조합한 class입니다.
-- **Shape·Layout**은 원본만 굽습니다. 역할은 원본 변수의 별칭이거나 쓰이는 요소에서 계산되는 `calc()` 식이라, 하위 트리에서 원본 하나를 덮으면 그 위의 역할이 그 자리에서 모두 다시 계산됩니다. 그림자는 테마마다 색이 달라 조립된 값을 테마 스코프가 교체합니다.
+- **Shape·Layout**은 원본만 굽습니다. 역할은 원본 변수의 별칭이거나 쓰이는 요소에서 계산되는 `calc()` 식이라, 하위 트리에서 원본 하나를 덮으면 그 위의 역할이 그 자리에서 모두 다시 계산됩니다. 그림자의 기하는 모드마다 달라 모드별 원본 변수로 굽고, 그림자 값은 쓰이는 요소에서 기하 변수와 그림자 색을 이어 붙여 조립합니다.
 - **Motion**은 변수로 굽지 않습니다. duration·easing·변위는 한 변수로 줄여 쓰기 어려워, stylesheet가 빌드 때 transition 문자열로 조립합니다.
 
 ## 공개 어휘
@@ -100,6 +100,9 @@ prop이 받는 닫힌 값의 집합을 **축**이라 부릅니다. 축마다 상
 | `BORDER_LEVELS` · `BorderLevel` | `tokens/colors.ts` | `tokens.color.border.<level>` |
 | `DIVIDER_LEVELS` · `DividerLevel` | `tokens/colors.ts` | Divider의 `level` — `BORDER_LEVELS`의 부분집합 |
 | `DEPTHS` · `Depth` | `tokens/colors.ts` | `tokens.color.shadow.<depth>`, Layout elevation이 가진 그림자 깊이 |
+| `COLOR_MODES` · `ColorMode` | `tokens/color-modes.ts` | 색 역할 한 벌과 그림자 기하를 묶는 모드 — light · dark |
+| `THEME_PREFERENCES` · `ThemePreference` | `tokens/color-modes.ts` | 사용자가 고르는 테마 — 모드 둘과 `system` |
+| `BOX_THEMES` · `BoxTheme` | `tokens/color-modes.ts` | 하위 트리에 거는 테마 — 모드 둘과 주변의 반대인 `inverse` |
 | `TEXT_VARIANTS` · `TextVariant` | `tokens/typography.ts` | Text의 `variant`, 컨트롤의 `fontSize`, `tokens.typography.role.<variant>` |
 | `TEXT_FAMILIES` · `TextFamily` | `tokens/typography.ts` | Text의 `family` |
 | `CONTROL_SIZES` · `ControlSize` | `tokens/typography.ts` | 컨트롤의 `size` |

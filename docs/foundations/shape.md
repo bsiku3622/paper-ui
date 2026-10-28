@@ -90,6 +90,19 @@ Box의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값이 
 
 아이콘 artboard의 이름은 Text 역할 이름의 부분집합이라 타입으로 묶여 있고, 그 역할의 글자 옆에 놓는 크기를 뜻합니다. 컨트롤 안의 아이콘은 이 이름이 아니라 `control.icon`을 따릅니다. `dimension`은 Box의 `width="md"` 같은 이름 있는 크기이고, `measure`는 글 덩어리의 읽기 폭입니다.
 
+## Target
+
+[contract:foundations.shape.target-reach]: #
+누를 수 있는 최소 크기는 `target.min` 24px(CSS px)입니다. 시각 크기가 더 작은 표식은 보이지 않는 hit area를 `targetReach`로 넓힙니다. `targetReach(visual)`은 `(min(visual, target.min) − target.min) / 2`라서 표식이 24px에 못 미치는 만큼의 절반이고, 이미 24px 이상이면 0입니다. 값은 hit area가 표식 밖으로 뻗는 거리를 음수 inset으로 적은 것입니다.
+
+| 대상 | 식 | sm | md | lg |
+|---|---|---|---|---|
+| `target.selection` | targetReach(`selection.size`) | −4.5 | −4 | −3 |
+| `target.switchBlock` | targetReach(Switch 트랙 높이) | −3.5 | −3 | −2 |
+| `target.action` | targetReach(`control.icon`) | −4 | −3 | −2 |
+
+coarse pointer에서 더 키우지 않습니다 — 촘촘한 목록에서 hit area가 겹치면 탭이 엉뚱한 곳으로 가기 때문이고, 행 단위 hit area는 앱이 정합니다.
+
 ## Recipe — 컴포넌트 anatomy
 
 `SHAPE_RECIPES`에는 숫자가 없습니다. 모든 값이 역할이거나, 원본의 anatomy 값이거나, 그 둘 위의 식입니다.

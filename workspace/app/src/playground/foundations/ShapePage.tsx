@@ -5,6 +5,7 @@ import { SHAPE_SOURCE } from "../../../../packages/paper-ui/src/tokens/shape";
 import { SHAPE_RECIPES } from "../../../../packages/paper-ui/src/tokens/shape-recipes";
 import { Board, BoardGroup, BoardRow, Cell, Computed, FoundationSection, Ladder, MatrixCell, Meter, TokenCell, ValueCell, resolved } from "./kit";
 import { leafPaths, valueAt } from "./paths";
+import { TARGET_NOTES } from "./shape-roles";
 import * as s from "./foundations.css";
 
 const shape = tokens.shape;
@@ -60,6 +61,15 @@ const ShapeSource = () => (
           <TokenCell name={`shape.focus.${name}`} />
           <Cell><div className={s.focusBox} /></Cell>
           <ValueCell>{resolved(shape.focus[name])}</ValueCell>
+        </BoardRow>
+      ))}
+    </BoardGroup>
+    <BoardGroup label="Target — px라 root 크기를 따라 커지지 않습니다">
+      {leafPaths(SHAPE_SOURCE.target).map((name) => (
+        <BoardRow key={name}>
+          <TokenCell name={`shape.target.${name}`} note={TARGET_NOTES[name]} />
+          <Cell><div className={s.targetBox} /></Cell>
+          <ValueCell>{resolved(shape.target[name])}</ValueCell>
         </BoardRow>
       ))}
     </BoardGroup>
@@ -135,6 +145,7 @@ const ShapeRoles = () => (
         ["shape.control.height", "= 원본 사다리", sizes(shape.control.height)],
         ["shape.control.icon", "= icon caption · body · subheading", sizes(shape.control.icon)],
         ["shape.control.gap", "= shape.space.sm", [shape.control.gap]],
+        ["shape.target.min", "= shape.target 원본", [shape.target.min]],
       ] as const).map(([name, rule, values]) => (
         <BoardRow key={name}>
           <TokenCell name={name} />
@@ -148,6 +159,7 @@ const ShapeRoles = () => (
         ["shape.control.inset.input", "(control.height − 컨트롤 글자 줄) / 2", sizes(shape.control.inset.input), "입력값 줄상자 사방에 같은 여백"],
         ["shape.control.inset.button", `round(nearest, (control.height − 버튼 글자 줄) / 2 × ${SHAPE_SOURCE.control.buttonInsetRatio}, 1px)`, sizes(shape.control.inset.button), "라벨이 상자를 정의하므로 더 넓게"],
         ["shape.selection.size", "control.height / 2", sizes(shape.selection.size), "그래서 스위치 트랙 폭 = 컨트롤 높이"],
+        ["targetReach(shape.selection.size)", "(min(표식, target.min) − target.min) / 2", sizes(r.target.selection), "최소 크기에 못 미치는 표식 밖으로 hit area가 뻗는 거리 — Switch 트랙과 Field 액션도 같은 식"],
       ] as const).map(([name, rule, values, note]) => (
         <BoardRow key={name}>
           <TokenCell name={name} note={note} />

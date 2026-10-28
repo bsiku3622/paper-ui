@@ -12,6 +12,11 @@ const half = controlSizes((size) => `calc(${selection.size[size]} / 2)`);
 // The track showing around a switch thumb reads as an emphasis stroke.
 const rim = stroke.emphasis;
 const thumb = controlSizes((size) => `calc(${selection.size[size]} - ${rim})`);
+const trackHeight = controlSizes((size) => `calc(${selection.size[size]} + ${rim})`);
+
+// How far a hit area reaches past a mark of this size, on each side, to be a minimum target: half the
+// shortfall, so it is never positive and a mark that already is one reaches nowhere.
+export const targetReach = (visual: string) => `calc((min(${visual}, ${SHAPE.target.min}) - ${SHAPE.target.min}) / 2)`;
 
 export const SHAPE_RECIPES = {
   button: { spinner: ANATOMY.inline.spinner },
@@ -31,7 +36,7 @@ export const SHAPE_RECIPES = {
   // Track = one control wide and the thumb plus a rim tall, so the thumb travels its own width.
   switch: {
     width: control.height,
-    height: controlSizes((size) => `calc(${selection.size[size]} + ${rim})`),
+    height: trackHeight,
     thumb,
     inset: rim,
     travel: thumb,
@@ -53,4 +58,10 @@ export const SHAPE_RECIPES = {
     }),
   },
   spinner: { size: control.icon, stroke: stroke.emphasis },
+  // Marks smaller than a minimum target reach past their edge; each is the inset of its hit area.
+  target: {
+    selection: controlSizes((size) => targetReach(selection.size[size])),
+    switchBlock: controlSizes((size) => targetReach(trackHeight[size])),
+    action: controlSizes((size) => targetReach(control.icon[size])),
+  },
 } as const;

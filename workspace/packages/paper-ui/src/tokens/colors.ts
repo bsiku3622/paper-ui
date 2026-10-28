@@ -3,9 +3,10 @@
 // Every semantic leaf selects a generated palette token. No semantic value contains a raw color,
 // performs color math, or reads another semantic branch.
 
-import { buildVarTree, keys } from "./helpers";
-import { PALETTE_TOKENS, type PaletteToken } from "./palette";
-import type { AccentPalette, AccentStep, AlphaStep, ColorMode, PaletteStep } from "./palette";
+import type { ColorMode } from "./color-modes";
+import { buildVarTree, keys, mapValues } from "./helpers";
+import { ALPHA_OPACITY, PALETTE_TOKENS, type PaletteToken } from "./palette";
+import type { AccentPalette, AccentStep, AlphaStep, PaletteStep } from "./palette";
 
 export const STATUSES = ["info", "success", "warning", "error"] as const;
 export type Status = (typeof STATUSES)[number];
@@ -93,7 +94,9 @@ const statusSelection = (status: Status, mode: ColorMode): Record<AccentTone, Pa
 const selection = (mode: ColorMode) => {
   const pick = (light: PalettePath, dark: PalettePath): PalettePath => (mode === "dark" ? dark : light);
   return {
-    // Dark surfaces use a narrow range: the page and inset cells recede, while panels lift gently.
+    // Light has three steps; dark has two — the page (canvas) is already the deepest step, so sunken
+    // shares neutral.950. A sunken surface on canvas is told apart by its border; on raised it
+    // recedes in both modes.
     bg: {
       canvas: pick("neutral.50", "neutral.950"),
       raised: pick("neutral.0", "neutral.925"),
@@ -165,4 +168,53 @@ type SameShapeStrings<T> = {
 
 export const COLOR_VALUES_DARK = mapLeaves(COLOR_SELECTION.dark, paletteValue) satisfies SameShapeStrings<typeof COLOR_VALUES>;
 
+// Each mode with its values — the emitter walks this, one set of variables per mode.
+export const COLOR_VALUES_BY_MODE = { light: COLOR_VALUES, dark: COLOR_VALUES_DARK } satisfies Record<ColorMode, SameShapeStrings<typeof COLOR_VALUES>>;
+
 export const COLOR = buildVarTree(COLOR_VALUES, ["color"]);
+
+// Front to back, the order surfaces recede in. Dark folds sunken into canvas, but the order holds.
+export const SURFACE_ORDER = ["raised", "canvas", "sunken"] as const satisfies readonly Surface[];
+
+// ───── Ground roles ──────────────────────────────────────────────────────────
+// Roles painted outside their element, on the ground it stands on — a theme scope changes them from
+// its children down. A path is relative to the Color tree.
+
+export const GROUND_ROLES = [["interaction", "focus"], ["shadow"]] as const;
+export const isGroundRole = (path: readonly string[]): boolean =>
+  (GROUND_ROLES as readonly (readonly string[])[]).some((role) => role.every((key, index) => path[index] === key));
+
+// ───── Beyond the selection table ────────────────────────────────────────────
+// Roles that are not a palette token per mode, so COLOR_VALUES leaves them out and the Color page
+// does not show them.
+
+// Opacity is a state's strength, the same in every mode: an alpha step of the palette.
+export const OPACITY_ROLES = { disabled: "50", subdued: "70" } as const satisfies Record<string, AlphaStep>;
+export const OPACITY_VALUES = mapValues(OPACITY_ROLES, (step) => String(ALPHA_OPACITY[step]));
+
+// The forced-colors palette. The OS owns the values; the names are what a component may ask for.
+export const SYSTEM_COLORS = {
+  canvas: "Canvas",
+  canvasText: "CanvasText",
+  buttonFace: "ButtonFace",
+  buttonText: "ButtonText",
+  highlight: "Highlight",
+  highlightText: "HighlightText",
+  grayText: "GrayText",
+  linkText: "LinkText",
+} as const;
+
+type DeepPartial<T> = { [K in keyof T]?: T[K] extends string ? string : DeepPartial<T[K]> };
+
+// prefers-contrast: more lifts the quiet roles one step: borders to 3:1 and tertiary ink to 4.5:1 on
+// every surface of the mode. The lift replaces a role's value inside the same scope that holds it.
+export const COLOR_CONTRAST_MORE = {
+  light: {
+    border: { base: paletteValue("neutral.600"), strong: paletteValue("neutral.650"), hover: paletteValue("neutral.700") },
+    ink: { tertiary: paletteValue("neutral.700") },
+  },
+  dark: {
+    border: { base: paletteValue("neutral.600"), strong: paletteValue("neutral.500"), hover: paletteValue("neutral.400") },
+    ink: { tertiary: paletteValue("neutral.400") },
+  },
+} satisfies Record<ColorMode, DeepPartial<SameShapeStrings<typeof COLOR_VALUES>>>;

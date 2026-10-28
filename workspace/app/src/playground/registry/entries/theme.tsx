@@ -1,7 +1,7 @@
 import { Box, Button, Inline, Stack, Text, ThemeScope, useResolvedTheme, useTheme, type Theme, type ThemeScopeProps } from "@studio-baeks/paper-ui";
 
 import { named } from "../jsx";
-import { defineSpec, enumControl, pending, pick } from "../schema";
+import { defineSpec, enumControl, pick, vocab } from "../schema";
 
 const PREFERENCES = ["light", "dark", "system"] as const satisfies readonly Theme[];
 
@@ -15,7 +15,7 @@ export default defineSpec({
   name: "Theme",
   blurb: "ThemeScope는 하위 트리 하나에 테마를 겁니다. useTheme은 사용자의 선택과 적용된 값을 읽고 바꾸고, useResolvedTheme은 가장 가까운 scope가 정한 값을 읽습니다.",
   controls: [
-    enumControl<ThemeScopeProps, "theme">("theme", pending(["light", "dark", "inverse"] as const, "S09", "BOX_THEMES"), { target: "ThemeScope", initial: "inverse", required: true }),
+    enumControl<ThemeScopeProps, "theme">("theme", vocab("BOX_THEMES"), { target: "ThemeScope", initial: "inverse", required: true }),
   ],
   defaults: {},
   parts: {

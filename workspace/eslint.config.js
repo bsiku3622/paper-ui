@@ -94,7 +94,7 @@ export default [
   // inspector만 source layer를 그대로 보여주는 자리라 아래에서 따로 연다.
   {
     files: [
-      "packages/paper-ui/src/{primitives,atoms,provider,resolvers}/**/*.{ts,tsx}",
+      "packages/paper-ui/src/{primitives,atoms,provider,resolvers,theme}/**/*.{ts,tsx}",
       "app/src/**/*.{ts,tsx}",
     ],
     rules: {

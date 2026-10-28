@@ -1,7 +1,7 @@
 import { describe, expect, expectTypeOf, it } from "vitest";
 
 import { accentProfile } from "./color-recipes";
-import { COLOR_VALUES, COLOR_VALUES_DARK, STATUS_PALETTE } from "./colors";
+import { COLOR_SELECTION, COLOR_VALUES, COLOR_VALUES_DARK, STATUS_PALETTE } from "./colors";
 import { LAYOUT_SOURCE } from "./layout";
 import * as publicEntry from "./public";
 import { SHAPE_SOURCE } from "./shape";
@@ -14,9 +14,9 @@ const keysOf = (tree: object): string[] => Object.keys(tree);
 describe("vocabulary", () => {
   it("[foundations.vocabulary.one-pair-per-axis] exports every constant once and nothing else", () => {
     expect(constants.map(([name]) => name).sort()).toEqual([
-      "ACCENTS", "ACCENT_TONES", "BORDER_LEVELS", "BREAKPOINTS", "CONTAINERS", "CONTROL_PRESETS", "CONTROL_SHAPES", "CONTROL_SIZES",
-      "DEPTHS", "DIMENSIONS", "DIVIDER_LEVELS", "ELEVATIONS", "ICON_SIZES", "INK_LEVELS", "MEASURES", "ORIENTATIONS", "SELECTABLE_VARIANTS",
-      "SPACES", "STATUSES", "SURFACES", "TEXT_FAMILIES", "TEXT_VARIANTS", "VARIANTS",
+      "ACCENTS", "ACCENT_TONES", "BORDER_LEVELS", "BOX_THEMES", "BREAKPOINTS", "COLOR_MODES", "CONTAINERS", "CONTROL_PRESETS", "CONTROL_SHAPES",
+      "CONTROL_SIZES", "DEPTHS", "DIMENSIONS", "DIVIDER_LEVELS", "ELEVATIONS", "ICON_SIZES", "INK_LEVELS", "MEASURES", "ORIENTATIONS",
+      "SELECTABLE_VARIANTS", "SPACES", "STATUSES", "SURFACES", "TEXT_FAMILIES", "TEXT_VARIANTS", "THEME_PREFERENCES", "VARIANTS",
     ]);
   });
 
@@ -41,6 +41,12 @@ describe("vocabulary", () => {
     for (const values of [COLOR_VALUES, COLOR_VALUES_DARK]) {
       for (const accent of vocabulary.ACCENTS) expect(vocabulary.ACCENT_TONES, accent).toEqual(keysOf(values.accent[accent]));
     }
+  });
+
+  it("[foundations.vocabulary.one-pair-per-axis] derives the mode axes from the modes the selection table has", () => {
+    expect(vocabulary.COLOR_MODES).toEqual(keysOf(COLOR_SELECTION));
+    expect(vocabulary.THEME_PREFERENCES).toEqual([...vocabulary.COLOR_MODES, "system"]);
+    expect(vocabulary.BOX_THEMES).toEqual([...vocabulary.COLOR_MODES, "inverse"]);
   });
 
   it("orders the surfaces as the Color docs do", () => {
@@ -91,6 +97,9 @@ describe("vocabulary", () => {
     expectTypeOf<vocabulary.Variant>().toEqualTypeOf<(typeof vocabulary.VARIANTS)[number]>();
     expectTypeOf<vocabulary.SelectableVariant>().toEqualTypeOf<(typeof vocabulary.SELECTABLE_VARIANTS)[number]>();
     expectTypeOf<vocabulary.Depth>().toEqualTypeOf<(typeof vocabulary.DEPTHS)[number]>();
+    expectTypeOf<vocabulary.ColorMode>().toEqualTypeOf<(typeof vocabulary.COLOR_MODES)[number]>();
+    expectTypeOf<vocabulary.ThemePreference>().toEqualTypeOf<(typeof vocabulary.THEME_PREFERENCES)[number]>();
+    expectTypeOf<vocabulary.BoxTheme>().toEqualTypeOf<(typeof vocabulary.BOX_THEMES)[number]>();
     expectTypeOf<vocabulary.Surface>().toEqualTypeOf<(typeof vocabulary.SURFACES)[number]>();
     expectTypeOf<vocabulary.InkLevel>().toEqualTypeOf<(typeof vocabulary.INK_LEVELS)[number]>();
     expectTypeOf<vocabulary.BorderLevel>().toEqualTypeOf<(typeof vocabulary.BORDER_LEVELS)[number]>();
@@ -118,5 +127,8 @@ describe("vocabulary", () => {
     expectTypeOf<vocabulary.Space>().toEqualTypeOf<"xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl">();
     expectTypeOf<vocabulary.DividerLevel>().toEqualTypeOf<"base" | "strong">();
     expectTypeOf<vocabulary.Orientation>().toEqualTypeOf<"horizontal" | "vertical">();
+    expectTypeOf<vocabulary.ColorMode>().toEqualTypeOf<"light" | "dark">();
+    expectTypeOf<vocabulary.ThemePreference>().toEqualTypeOf<"light" | "dark" | "system">();
+    expectTypeOf<vocabulary.BoxTheme>().toEqualTypeOf<"light" | "dark" | "inverse">();
   });
 });

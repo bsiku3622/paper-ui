@@ -1,4 +1,4 @@
-// Resolves a CSS length — var() references, calc(), round(nearest, …), rem and px — to dp at the default
+// Resolves a CSS length — var() references, calc(), min(), round(nearest, …), rem and px — to dp at the default
 // 16px root, the way the browser would. `declarations` maps each variable to its declared value, and every
 // var() must be declared there. The vitest token tests and the Playwright specs share it.
 export const dp = (expression: string, declarations: ReadonlyMap<string, string>): number => {
@@ -10,6 +10,7 @@ export const dp = (expression: string, declarations: ReadonlyMap<string, string>
   const js = substituted
     .replace(/round\(nearest,/g, "Math.round(")
     .replace(/calc\(/g, "(")
+    .replace(/(?<![\w.])min\(/g, "Math.min(")
     .replace(/(-?\d*\.?\d+)rem\b/g, (_match, n: string) => String(Number(n) * 16))
     .replace(/(-?\d*\.?\d+)px\b/g, "$1");
   return Number(Function(`return ${js}`)());

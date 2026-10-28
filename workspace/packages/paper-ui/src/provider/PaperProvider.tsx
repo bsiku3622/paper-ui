@@ -4,13 +4,14 @@
 // 여백에서 나온다. Provider 가 고르는 단 하나는 *테마* 다: light · dark · system.
 // system 은 OS 설정(prefers-color-scheme)을 따라가고, 사용자가 토글하면 그 선택이 이긴다.
 //
-// DOM wrapper 를 만들지 않는다 — 테마는 <html data-theme> 로 전역 스코프하고(레이아웃
+// DOM wrapper 를 만들지 않는다 — 테마는 <html data-pui-theme> 로 전역 스코프하고(레이아웃
 // 영향 0), React 쪽엔 해석된 테마를 context 로 흘린다. 부분 화면 반전은 <ThemeScope>·
 // <Box inverse> 가 같은 엔진으로 처리한다.
 
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 
-import { isStylesheetLoaded } from "../tokens";
+import { COLOR_MODE_QUERY, THEME_ATTRIBUTE, isStylesheetLoaded } from "../tokens";
+import { resolvePreference } from "../theme/engine";
 import {
   ResolvedThemeContext,
   ThemeControlContext,
@@ -22,10 +23,9 @@ import {
 const STORAGE_KEY = "paper-theme";
 
 const prefersDark = () =>
-  typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  typeof window !== "undefined" && window.matchMedia(COLOR_MODE_QUERY).matches;
 
-const resolve = (theme: Theme): ResolvedTheme =>
-  theme === "system" ? (prefersDark() ? "dark" : "light") : theme;
+const resolve = (theme: Theme): ResolvedTheme => resolvePreference(theme, prefersDark());
 
 const readStored = (): Theme | null => {
   if (typeof window === "undefined") return null;
@@ -60,15 +60,15 @@ export const PaperProvider = ({ defaultTheme = "system", children }: PaperProvid
   useEffect(() => {
     setResolved(resolve(theme));
     if (theme !== "system" || typeof window === "undefined") return;
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const mq = window.matchMedia(COLOR_MODE_QUERY);
     const onChange = () => setResolved(mq.matches ? "dark" : "light");
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
   }, [theme]);
 
-  // 해석된 테마를 <html data-theme> 로 반영 — 전역 색 스코프 교체.
+  // 해석된 테마를 <html data-pui-theme> 로 반영 — 전역 색 스코프 교체.
   useEffect(() => {
-    document.documentElement.dataset.theme = resolved;
+    document.documentElement.setAttribute(THEME_ATTRIBUTE, resolved);
   }, [resolved]);
 
   const setTheme = useCallback((next: Theme) => {
