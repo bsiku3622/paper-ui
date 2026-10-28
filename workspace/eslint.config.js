@@ -73,14 +73,13 @@ export default [
   },
 
   // ── 규칙 2 — VALUES(raw) import 격리 ────────────────────────────────────
-  // L0 palette·L1 ladder·L2 raw VALUES는 theme.css.ts/token assembly만 본다. Palette
-  // foundations viewer만 source layer를 그대로 보여주는 inspector라 예외다.
+  // L0 palette·L1 ladder·L2 raw VALUES는 theme.css.ts/token assembly만 본다. Foundations
+  // inspector만 source layer를 그대로 보여주는 자리라 아래에서 따로 연다.
   {
     files: [
       "packages/paper-ui/src/{primitives,atoms,provider,resolvers}/**/*.{ts,tsx}",
       "app/src/**/*.{ts,tsx}",
     ],
-    ignores: ["app/src/playground/Palette.tsx"],
     rules: {
       "no-restricted-imports": [
         "error",
@@ -98,10 +97,10 @@ export default [
     },
   },
 
-  // Foundations token inspector may read the two source modules it displays.
-  // Keep ladder/shape and other raw-token imports restricted in this file.
+  // The Foundations inspector shows each system's source as authored, so it may read those
+  // source modules — to display them, never to style with them. The ladder stays closed.
   {
-    files: ["app/src/playground/Tokens.tsx"],
+    files: ["app/src/playground/foundations/*.tsx"],
     rules: {
       "no-restricted-imports": [
         "error",
@@ -109,10 +108,9 @@ export default [
           patterns: [rawBarrelRestriction, {
             group: [
               ...rawSourcePatterns,
-              "!../../../packages/paper-ui/src/tokens/colors",
-              "!../../../packages/paper-ui/src/tokens/palette",
+              ...["colors", "palette", "shape", "shape-recipes", "layout"].map((name) => `!../../../../packages/paper-ui/src/tokens/${name}`),
             ],
-            message: "규칙 2 — inspector에서 허용한 colors·palette 외의 raw VALUES는 직접 import하지 않는다.",
+            message: "규칙 2 — inspector에서 허용한 source(colors·palette·shape·shape-recipes·layout) 외의 raw VALUES는 직접 import하지 않는다.",
           }],
         },
       ],

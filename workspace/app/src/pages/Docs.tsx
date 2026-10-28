@@ -19,7 +19,7 @@ type Group = { group: string; label: string; docs: Doc[] };
 const base = import.meta.env.BASE_URL;
 
 export const Docs = () => {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
   const [groups, setGroups] = useState<Group[]>([]);
   const [content, setContent] = useState<string | null>(null);
 
@@ -47,6 +47,11 @@ export const Docs = () => {
     });
     return () => { cancelled = true; };
   }, [activeFile]);
+
+  // 문서는 늦게 도착하므로, 앵커로 들어오면 본문이 그려진 뒤 그 제목까지 내려간다.
+  useEffect(() => {
+    if (content && hash) document.getElementById(decodeURIComponent(hash.slice(1)))?.scrollIntoView();
+  }, [content, hash]);
 
   return (
     <Stack>
@@ -83,15 +88,19 @@ export const Docs = () => {
                 rehypePlugins={[rehypeSlug]}
                 components={{
                   a: ({ href = "", children }) => {
-                    // 내부 .md 링크 → docs 슬러그로, /경로 → 라우터로, 그 외 → 새 탭
-                    if (href.endsWith(".md") || href.startsWith("./") || href.startsWith("../")) {
-                      const segs = [...slug.split("/").slice(0, -1)];
-                      for (const s of href.replace(/\.md$/, "").split("/")) {
+                    // 내부 .md 링크 → docs 슬러그로, /경로 → 라우터로, #앵커 → 같은 문서, 그 외 → 새 탭.
+                    // 상대 경로는 문서 파일이 있는 폴더 기준이다 — 그룹 README의 slug는 폴더 이름이라
+                    // slug로 풀면 한 단계 위가 된다.
+                    if (href.startsWith("#")) return <a href={href}>{children}</a>;
+                    const [path = "", hash] = href.split("#");
+                    if (path.endsWith(".md") || path.startsWith("./") || path.startsWith("../")) {
+                      const segs = (activeFile ?? "").split("/").slice(0, -1);
+                      for (const s of path.replace(/\.md$/, "").split("/")) {
                         if (s === "." || s === "") continue;
                         if (s === "..") segs.pop(); else segs.push(s);
                       }
-                      let s = segs.join("/").replace(/(^|\/)README$/, "");
-                      return <Link to={`/docs/${s}`}>{children}</Link>;
+                      const target = segs.join("/").replace(/(^|\/)README$/, "");
+                      return <Link to={`/docs/${target}${hash ? `#${hash}` : ""}`}>{children}</Link>;
                     }
                     if (href.startsWith("/")) return <Link to={href}>{children}</Link>;
                     return <a href={href} target="_blank" rel="noreferrer">{children}</a>;
