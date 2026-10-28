@@ -27,7 +27,7 @@ export const Foundations = () => {
   const { id, label, summary } = FOUNDATIONS.find((foundation) => foundation.id === slug) ?? FOUNDATIONS[0];
   const Page = PAGES[id];
   return (
-    <PlaygroundLayout value={`foundation-${id}`}>
+    <PlaygroundLayout value={`foundations/${id}`}>
       <Stack className={s.page} gap="xl">
         <ReferenceHeading group="Foundations" name={label} description={`${summary} 실제 tokens.*에서 값을 읽으며 현재 테마에 따라 갱신됩니다.`} />
         <Page />

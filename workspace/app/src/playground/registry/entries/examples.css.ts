@@ -14,3 +14,6 @@ export const roving = style({ display: "flex", flexWrap: "wrap", gap: tokens.lay
 globalStyle(`${roving}[data-orientation="vertical"]`, { flexDirection: "column", alignItems: "flex-start" });
 export const overlayContent = style({ width: 340, maxWidth: "100%", padding: tokens.shape.inset.lg, border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`, borderRadius: tokens.shape.radius.surface.md, background: tokens.color.bg.raised, color: tokens.color.ink.primary, boxShadow: tokens.layout.elevation.overlay.shadow });
 export const formField = style({ display: "grid", gap: tokens.layout.gap.sm });
+// Width of a control's stage: the field-like controls need a column to fill.
+export const narrow = style({ width: "12rem" });
+export const wide = style({ width: "18rem" });

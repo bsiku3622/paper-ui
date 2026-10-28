@@ -1,22 +1,22 @@
 // ComponentDetail — 컴포넌트 하나를 만져보는 상세 페이지 (/playground/:slug).
 //
 // 왼쪽 위에 살아 있는 preview, 그 아래 그 상태 그대로의 코드, 오른쪽에 prop 토글.
-// 토글을 만지면 preview 와 코드가 같은 state 를 보고 함께 바뀐다 — 화면과 코드가
-// 어긋날 수 없다. 전수 레퍼런스(/playground)와 사이드바를 공유한다.
+// 코드는 preview 가 그리는 subject 를 그대로 찍어 낸 것이라 둘이 어긋날 수 없고, 코드를 고치면
+// 같은 문법으로 읽혀 토글이 따라온다. 전수 레퍼런스(/playground)와 사이드바를 공유한다.
 //
 // 상태(useState)는 slug 로 keyed 된 DetailView 가 든다 — slug 가 바뀌면 remount 돼
-// 그 컴포넌트의 기본값으로 새로 시작한다. (안 그러면 앞 컴포넌트의 값이 남아
-// variant="" · children=undefined 같은 유령이 샌다.)
+// 그 컴포넌트의 첫 화면으로 새로 시작한다.
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 
-import { Box, Button, Field, Icon, IconButton, Inline, Select, Stack, Switch, Text } from "@studio-baeks/paper-ui";
+import { Box, Button, Field, Icon, IconButton, Inline, Select, Stack, Switch, Text, ToggleGroup } from "@studio-baeks/paper-ui";
 import { tokens, type Surface } from "@studio-baeks/paper-ui/tokens";
 
 import { PlaygroundLayout, ReferenceHeading } from "./shell";
 import { NAV_HEIGHT } from "../site/chrome";
-import { bySlug, defaultState, type CompSpec, type Control, type State } from "./registry";
+import { codeOf, entryBySlug, initialState, normalized, stateFromCode, type Control, type State } from "./registry";
+import type { Entry } from "./registry";
 import "./detail.css";
 
 const PREVIEW_SURFACES = ["raised", "canvas", "sunken"] as const satisfies readonly Surface[];
@@ -46,7 +46,11 @@ const readPreviewBackground = (): PreviewBackground => {
 //
 // 텍스트도 Box as="input" 을 손으로 꾸미지 않고 Field 를 쓴다. "값이 곧장 preview 로
 // 흐르는 편집 필드라서" 안 썼다고 적혀 있었는데, Field 는 controlled 입력을 그대로 받는다.
-const ControlRow = ({ control, value, onChange }: { control: Control; value: string | boolean | undefined; onChange: (v: string | boolean) => void }) => {
+//
+// enum 의 첫 항목은 "prop 을 주지 않음" 이고, 그때 컴포넌트가 쓰는 값을 괄호에 적는다.
+const OMITTED = "__pui_default__";
+
+const ControlRow = ({ control, value, defaults, onChange }: { control: Control; value: string | boolean | undefined; defaults: Readonly<Record<string, unknown>>; onChange: (v: string | boolean | undefined) => void }) => {
   if (control.kind === "bool") {
     return (
       <Inline as="label" justify="between" align="center" gap="sm">
@@ -61,10 +65,10 @@ const ControlRow = ({ control, value, onChange }: { control: Control; value: str
       {control.kind === "enum" ? (
         <Select
           aria-label={control.label}
-          value={value === undefined || String(value) === control.def ? "__pui_default__" : String(value)}
-          onChange={(e) => onChange(e.currentTarget.value === "__pui_default__" ? control.def : e.currentTarget.value)}
+          value={value === undefined ? OMITTED : String(value)}
+          onChange={(e) => onChange(e.currentTarget.value === OMITTED ? undefined : e.currentTarget.value)}
         >
-          <Select.Option value="__pui_default__">{`default (${control.def})`}</Select.Option>
+          {control.required ? null : <Select.Option value={OMITTED}>{`default (${String(defaults[control.prop] ?? "none")})`}</Select.Option>}
           {control.options.map((option) => <Select.Option key={option} value={option}>{control.labels?.[option] ?? option}</Select.Option>)}
         </Select>
       ) : (
@@ -77,34 +81,6 @@ const ControlRow = ({ control, value, onChange }: { control: Control; value: str
     </Stack>
   );
 };
-
-// Read the generated JSX opening tag without executing arbitrary JavaScript.
-const parseCodeState = (code: string, spec: CompSpec, previous: State): State | null => {
-  const tag = new RegExp(`<${spec.name}\\b([\\s\\S]*?)(?:\\/>|>)`).exec(code)?.[1];
-  if (tag === undefined) return null;
-  const next = { ...previous };
-  const hookValue = /useState\(\s*"([^"]*)"\s*\)/.exec(code)?.[1];
-  for (const control of spec.controls) {
-    if (control.kind === "bool") {
-      next[control.prop] = new RegExp(`(?:^|\\s)${control.prop}(?:\\s|$)`).test(tag);
-      continue;
-    }
-    const match = new RegExp(`${control.prop}\\s*=\\s*"([^"]*)"`).exec(tag);
-    if (match) next[control.prop] = match[1] ?? "";
-    else if (control.kind === "enum") next[control.prop] = hookValue ?? control.def;
-  }
-  const childrenProp = spec.controls.find((control) => control.prop === "children");
-  if (childrenProp) {
-    const children = new RegExp(`<${spec.name}\\b[\\s\\S]*?>([^<]*)<\\/${spec.name}>`).exec(code)?.[1];
-    if (children !== undefined && children.trim()) next.children = children.trim();
-  }
-  return next;
-};
-
-const expandCodePlaceholders = (code: string) => code
-  .replaceAll("<Box>…</Box>", "<Box surface=\"sunken\" radius=\"sm\" padding=\"sm\"><Text variant=\"caption\">내용</Text></Box>")
-  .replaceAll("\n  …\n", "\n  <Text variant=\"caption\">A · B · C</Text>\n")
-  .replaceAll("<Icon>…</Icon>", "<Icon><path d=\"M12 5v14M5 12h14\" /></Icon>");
 
 const CodeBlock = ({ code, onChange, error }: { code: string; onChange: (code: string) => void; error?: string }) => {
   const [copied, setCopied] = useState(false);
@@ -139,61 +115,70 @@ const CodeBlock = ({ code, onChange, error }: { code: string; onChange: (code: s
   );
 };
 
-// 상태를 든 몸통. slug 마다 remount(key) 돼 defaultState 로 새로 시작한다.
-const DetailView = ({ spec }: { spec: CompSpec }) => {
-  const [state, setState] = useState<State>(() => defaultState(spec));
+// 상태를 든 몸통. slug 마다 remount(key) 돼 첫 화면으로 새로 시작한다.
+const DetailView = ({ entry }: { entry: Entry }) => {
+  const { useHarness, Stage } = entry;
+  const harness = useHarness();
+  const [state, setState] = useState<State>(() => normalized(entry, initialState(entry)));
   const [previewBackground, setPreviewBackground] = useState<PreviewBackground>(readPreviewBackground);
   const [draft, setDraft] = useState<string>();
   const [codeError, setCodeError] = useState<string>();
-  const preview = useMemo(() => spec.render(state), [spec, state]);
-  const generatedCode = useMemo(() => expandCodePlaceholders(spec.code(state)), [spec, state]);
-  const code = draft ?? generatedCode;
+  const subject = entry.subject(state, harness);
+  const code = draft ?? codeOf(entry, state, harness);
   const selectPreviewBackground = (background: PreviewBackground) => {
     setPreviewBackground(background);
     try { window.localStorage.setItem(PREVIEW_SURFACE_KEY, background); } catch { /* Keep the current page usable when storage is unavailable. */ }
   };
-  const set = (prop: string) => (v: string | boolean) => {
-    setState((s) => ({ ...s, [prop]: v }));
+  const set = (key: string) => (v: string | boolean | undefined) => {
+    setState((current) => normalized(entry, { ...current, [key]: v }));
     setDraft(undefined);
     setCodeError(undefined);
   };
   const editCode = (nextCode: string) => {
     setDraft(nextCode);
-    const parsed = parseCodeState(nextCode, spec, state);
-    if (!parsed) {
-      setCodeError(`${spec.name} JSX를 읽을 수 없습니다.`);
+    const parsed = stateFromCode(entry, nextCode, state);
+    if ("error" in parsed) {
+      setCodeError(parsed.error);
       return;
     }
-    setState(parsed);
+    setState(parsed.state);
     setCodeError(undefined);
   };
 
   return (
     <Stack gap="xl" style={{ maxWidth: "52rem" }}>
-      <ReferenceHeading group={spec.group === "Atoms" ? "Atoms" : `Primitives / ${spec.group}`} name={spec.name} description={spec.blurb} />
+      <ReferenceHeading group={entry.part === "atoms" ? "Atoms" : `Primitives / ${entry.group}`} name={entry.name} description={entry.blurb} />
 
       <div className="detail-body">
         {/* preview + code */}
         <Stack gap="md" style={{ minWidth: 0 }}>
           <div className="preview-frame">
-            <Box surface={previewBackground === "track" ? undefined : previewBackground} className={`preview-stage${spec.preview === "flush" ? " preview-stage--flush" : ""}${previewBackground === "track" ? " preview-stage--track" : ""}`} data-preview-background={previewBackground}>{preview}</Box>
-            <div className="preview-surface-switcher" role="group" aria-label="미리보기 배경">
+            <Box surface={previewBackground === "track" ? undefined : previewBackground} className={`preview-stage${entry.preview === "flush" ? " preview-stage--flush" : ""}${previewBackground === "track" ? " preview-stage--track" : ""}`} data-preview-background={previewBackground}>
+              {Stage ? <Stage subject={subject} state={state} harness={harness} /> : subject}
+            </Box>
+            <ToggleGroup
+              className="preview-surface-switcher"
+              aria-label="미리보기 배경"
+              selectionRequired
+              selectedValues={[previewBackground]}
+              onSelectedValuesChange={(values) => {
+                const next = PREVIEW_BACKGROUNDS.find((background) => background === values[0]);
+                if (next) selectPreviewBackground(next);
+              }}
+            >
               {PREVIEW_BACKGROUNDS.map((background) => (
-                <Box
-                  as="button"
-                  type="button"
+                <ToggleGroup.Item
                   key={background}
-                  surface={background === "track" ? undefined : background}
-                  className={`preview-surface-button${background === "track" ? " preview-surface-button--track" : ""}`}
+                  value={background}
+                  className="preview-surface-button"
+                  data-bg={background}
                   aria-label={`${background} background`}
-                  aria-pressed={previewBackground === background}
                   title={`${background} background`}
-                  onClick={() => selectPreviewBackground(background)}
                 >
                   {previewBackground === background ? <Icon size="caption"><path d="m5 12 4 4L19 6" /></Icon> : null}
-                </Box>
+                </ToggleGroup.Item>
               ))}
-            </div>
+            </ToggleGroup>
           </div>
           <Stack gap="xs">
             <Text variant="label">코드</Text>
@@ -207,18 +192,18 @@ const DetailView = ({ spec }: { spec: CompSpec }) => {
             <Inline justify="between" align="center">
               <Text variant="label">Props</Text>
               {/* 손으로 꾸민 raw <button> 이었다 — muted 변형이 바로 그 자리다. */}
-              {spec.controls.length > 0 && (
-                <Button variant="muted" size="sm" onClick={() => { setState(defaultState(spec)); setDraft(undefined); setCodeError(undefined); }}>
+              {entry.controls.length > 0 && (
+                <Button variant="muted" size="sm" onClick={() => { setState(normalized(entry, initialState(entry))); setDraft(undefined); setCodeError(undefined); }}>
                   초기화
                 </Button>
               )}
             </Inline>
-            {spec.controls.length === 0 ? (
+            {entry.controls.length === 0 ? (
               <Text variant="caption" ink="soft">토글할 prop 이 없는 컴포넌트입니다. 위 미리보기가 기본 형태입니다.</Text>
             ) : (
               <Stack gap="md">
-                {spec.controls.map((c) => (
-                  <ControlRow key={c.prop} control={c} value={state[c.prop]} onChange={set(c.prop)} />
+                {entry.controls.map((c) => (
+                  <ControlRow key={c.key} control={c} value={state[c.key]} defaults={entry.defaults} onChange={set(c.key)} />
                 ))}
               </Stack>
             )}
@@ -231,12 +216,12 @@ const DetailView = ({ spec }: { spec: CompSpec }) => {
 
 export const ComponentDetail = () => {
   const { slug = "" } = useParams();
-  const spec = bySlug(slug);
-  if (!spec) return <Navigate to="/playground" replace />;
+  const entry = entryBySlug(slug);
+  if (!entry) return <Navigate to="/playground" replace />;
   return (
-    <PlaygroundLayout value={spec.slug}>
+    <PlaygroundLayout value={entry.slug}>
       {/* key=slug — 컴포넌트가 바뀌면 상태를 새로 시작 */}
-      <DetailView spec={spec} key={spec.slug} />
+      <DetailView entry={entry} key={entry.slug} />
     </PlaygroundLayout>
   );
 };
