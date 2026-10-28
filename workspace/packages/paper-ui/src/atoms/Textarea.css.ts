@@ -1,5 +1,5 @@
 import { tokens, stateTransition, TEXT_VARIANTS, type TextVariant } from "../tokens";
-import { outlinedControlProfile, outlinedControlHover } from "../styles/color-profile";
+import { outlinedControlProfile, outlinedControlHover } from "../tokens/color-recipes";
 import { controlGeometry, focusRing, geometry } from "../internal/shape";
 import { layered } from "../tokens/layers.css";
 
@@ -20,7 +20,7 @@ export const textareaRoot = style({
   transition: stateTransition("border-color", "box-shadow", "background"),
   selectors: {
     "&::placeholder": { color: tokens.color.ink.tertiary },
-    '&[data-pui-status="default"]:hover:not(:disabled)': {
+    '&:not([data-status]):hover:not(:disabled)': {
       ...outlinedControlHover,
     },
     // keyboard focus만 바깥 ring으로 알린다. 클릭은 caret과 edge만 남긴다.

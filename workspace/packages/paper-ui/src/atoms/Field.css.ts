@@ -1,7 +1,7 @@
-import { tokens, STATUS, stateTransition } from "../tokens";
-import type { StatusName, TextVariant } from "../tokens";
+import { tokens, STATUSES, stateTransition } from "../tokens";
+import type { Status, TextVariant } from "../tokens";
 import { TEXT_VARIANTS } from "../tokens";
-import { outlinedControlProfile, outlinedControlHover } from "../styles/color-profile";
+import { outlinedControlProfile, outlinedControlHover } from "../tokens/color-recipes";
 import { controlGeometry, focusRing } from "../internal/shape";
 import { layered } from "../tokens/layers.css";
 
@@ -23,7 +23,7 @@ export const fieldWrap = style({
   transition: stateTransition("border-color", "background"),
   selectors: {
     // neutral hover는 배경을 흔들지 않고 전용 border.hover 선으로 형태를 가볍게 세운다.
-    '&[data-pui-status="default"]:hover:has(input:enabled)': {
+    '&:not([data-status]):hover:has(input:enabled)': {
       ...outlinedControlHover,
     },
     // keyboard focus — 안쪽 input 이 :focus-visible일 때만 래퍼 *바깥* 에 파란 링.
@@ -86,11 +86,11 @@ export const fieldFontSize = styleVariants(
 // status — semantic Form은 accent ink 선으로 상태를 분명히 표시한다.
 export const fieldStatus = styleVariants(
   Object.fromEntries(
-    STATUS.map((s) => {
+    STATUSES.map((s) => {
       const accent = tokens.color.accent[s];
       return [s, { borderColor: accent.ink }];
     }),
-  ) as Record<StatusName, { borderColor: string }>,
+  ) as Record<Status, { borderColor: string }>,
 );
 
 // 어도먼트 — leading/trailing 슬롯(아이콘·$·단위). 흐린 잉크, 축소 안 됨.

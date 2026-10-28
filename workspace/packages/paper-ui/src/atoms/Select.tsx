@@ -10,7 +10,7 @@ import {
 
 import { joinClass } from "../internal/joinClass";
 import { resolveControlTypography } from "../resolvers";
-import { CONTROL_ICON, type ControlSize, type TextVariant } from "../tokens";
+import { CONTROL_ICON, type ControlShape, type ControlSize, type TextVariant } from "../tokens";
 import { Icon } from "../primitives/Icon";
 import { selectRoot, selectSize, selectFontSize, selectPill, selectWrap, selectArrow, selectArrowSize } from "./Select.css";
 
@@ -19,7 +19,7 @@ export type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "classNa
   children: ReactNode;
   size?: ControlSize;
   fontSize?: TextVariant;
-  shape?: "rounded" | "pill";
+  shape?: ControlShape;
   className?: string;
 };
 
@@ -52,15 +52,13 @@ const SelectRoot = forwardRef<HTMLSelectElement, SelectProps>(function SelectRoo
 export type SelectOptionProps = Omit<OptionHTMLAttributes<HTMLOptionElement>, "children"> & {
   children: string | number;
 };
-export const SelectOption = ({ children, ...rest }: SelectOptionProps) => <option {...rest}>{children}</option>;
 
 export type SelectGroupProps = Omit<OptgroupHTMLAttributes<HTMLOptGroupElement>, "children"> & {
   label: string;
   children: ReactNode;
 };
-export const SelectGroup = ({ children, ...rest }: SelectGroupProps) => <optgroup {...rest}>{children}</optgroup>;
 
 export const Select = Object.assign(SelectRoot, {
-  Option: SelectOption,
-  Group: SelectGroup,
+  Option: ({ children, ...rest }: SelectOptionProps) => <option {...rest}>{children}</option>,
+  Group: ({ children, ...rest }: SelectGroupProps) => <optgroup {...rest}>{children}</optgroup>,
 });

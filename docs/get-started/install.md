@@ -15,7 +15,7 @@ paper-ui는 React 18.2 이상 또는 React 19를 peer dependency로 받습니다
 | entry | 담는 것 |
 |---|---|
 | `@studio-baeks/paper-ui` | 컴포넌트, hook, `PaperProvider`와 그 prop 타입. 클라이언트에서 도는 코드라 `"use client"` 경계를 선언합니다. |
-| `@studio-baeks/paper-ui/tokens` | `tokens`, 어휘 상수(`CONTROL_SIZES` · `SPACE_KEYS` …)와 어휘 타입(`Space` · `Accent` · `Variant` …). React와 CSS를 import하지 않는 값입니다. |
+| `@studio-baeks/paper-ui/tokens` | `tokens`, 어휘 상수(`CONTROL_SIZES` · `SPACES` …)와 어휘 타입(`Space` · `Accent` · `Variant` …). 축마다 상수와 타입이 한 짝이고, 목록은 [공개 어휘](../foundations/README.md#공개-어휘)에 있습니다. React와 CSS를 import하지 않는 값입니다. |
 | `@studio-baeks/paper-ui/styles.css` | 전역 스타일시트 하나. CSS 변수, 유틸리티 클래스, 컴포넌트 스타일이 모두 여기에 들어 있습니다. |
 
 ## 스타일 불러오기

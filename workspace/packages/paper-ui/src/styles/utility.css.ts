@@ -3,9 +3,9 @@
 // resolver 는 이름만 만들고(`pui-info-wash`), 그 이름이 무엇인지는 여기서 굳는다.
 // 두 자리가 같은 토큰 트리를 돌기 때문에 조합이 빠질 수 없다.
 
-import { tokens, STATUS, SPACE_KEYS } from "../tokens";
+import { tokens, STATUSES, SPACES, SURFACES } from "../tokens";
 import { layered } from "../tokens/layers.css";
-import { NEUTRAL_INKS, SURFACES } from "../resolvers";
+import { NEUTRAL_INKS } from "../resolvers";
 
 const { globalStyle } = layered("utilities");
 
@@ -14,14 +14,8 @@ const { globalStyle } = layered("utilities");
 // 깊이 사다리: raised — canvas — sunken. 색이 아니라 지면이다.
 // 카드 테두리는 별도(Box 의 border prop). hover 는 면이 아니라 앱의 interaction 이 맡는다.
 
-const SURFACE_TOKEN = {
-  canvas: tokens.color.bg.canvas,
-  raised: tokens.color.bg.raised,
-  sunken: tokens.color.bg.sunken,
-} as const;
-
 for (const s of SURFACES) {
-  globalStyle(`.pui-surface-${s}`, { background: SURFACE_TOKEN[s] });
+  globalStyle(`.pui-surface-${s}`, { background: tokens.color.bg[s] });
 }
 
 // ───── ink — 잉크 농도 ─────────────────────────────────────────────────────
@@ -46,7 +40,7 @@ globalStyle(".pui-ink-inherit", { color: "inherit" });
 // wash = 옅은 면 + 같은 색 괘선 + 그 색 글자.
 // dot  = 작은 채운 점 (배경/글자에 solid).
 
-for (const status of STATUS) {
+for (const status of STATUSES) {
   const t = tokens.color.accent[status];
   globalStyle(`.pui-${status}-solid`, { color: t.ink });
   globalStyle(`.pui-${status}-wash`, {
@@ -59,7 +53,7 @@ for (const status of STATUS) {
 
 // ───── space — 안쪽 여백은 Shape inset, 형제 사이는 Layout gap ─────────────
 
-for (const s of SPACE_KEYS) {
+for (const s of SPACES) {
   globalStyle(`.pui-p-${s}`, { padding: tokens.shape.inset[s] });
   globalStyle(`.pui-px-${s}`, { paddingInline: tokens.shape.inset[s] });
   globalStyle(`.pui-py-${s}`, { paddingBlock: tokens.shape.inset[s] });

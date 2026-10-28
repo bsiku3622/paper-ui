@@ -74,10 +74,10 @@ Box의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값이 
 | `control.inset.input` | 7 | 8 | 10 | (높이 − 글자 줄) / 2 — 입력값은 줄상자 사방에 같은 여백 |
 | `control.inset.button` | 10 | 11 | 14 | 입력 inset × 1.4, 1px로 반올림 — 라벨이 상자를 정의하므로 더 넓게 |
 | `selection.size` | 15 | 16 | 18 | 높이 / 2 |
-| `control.icon` | 16 | 18 | 20 | icon caption · body · subheading |
+| `control.icon` | 16 | 18 | 20 | 높이를 따르는 icon 크기 (caption · body · subheading) |
 | `control.gap` | 8 | 8 | 8 | 아이콘과 라벨 사이, inset sm |
 
-같은 size의 Button · Field · Select는 같은 높이를 고르고, 글자는 Typography의 control preset에서 따로 고릅니다. 각 컨트롤은 `internal/shape.ts`의 `controlGeometry`에서 자기 역할을 고르며, stylesheet가 자기만의 크기 사다리를 만들지 않습니다.
+컨트롤 안의 아이콘은 옆 글자가 아니라 컨트롤 높이를 따라 30 → 16, 32 → 18, 36 → 20으로 커집니다. 컨트롤 글자는 control preset(13 · 13 · 14)이라 어느 Text 역할과도 같지 않기 때문입니다. 같은 size의 Button · Field · Select는 같은 높이를 고르고, 글자는 Typography의 control preset에서 따로 고릅니다. 각 컨트롤은 `internal/shape.ts`의 `controlGeometry`에서 자기 역할을 고르며, stylesheet가 자기만의 크기 사다리를 만들지 않습니다.
 
 ## Sizing
 
@@ -88,7 +88,7 @@ Box의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값이 
 | `dimension.height` | xs ~ xl | 64 · 96 · 144 · 216 · 320 |
 | `measure` | xs ~ xl | 448 · 512 · 608 · 672 · 736 (28 ~ 46rem) |
 
-아이콘 artboard는 옆에 서는 Text 역할의 이름을 씁니다. `dimension`은 Box의 `width="md"` 같은 이름 있는 크기이고, `measure`는 글 덩어리의 읽기 폭입니다.
+아이콘 artboard의 이름은 Text 역할 이름의 부분집합이라 타입으로 묶여 있고, 그 역할의 글자 옆에 놓는 크기를 뜻합니다. 컨트롤 안의 아이콘은 이 이름이 아니라 `control.icon`을 따릅니다. `dimension`은 Box의 `width="md"` 같은 이름 있는 크기이고, `measure`는 글 덩어리의 읽기 폭입니다.
 
 ## Recipe — 컴포넌트 anatomy
 

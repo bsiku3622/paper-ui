@@ -16,8 +16,6 @@ export {
   Divider,
   Link,
   Select,
-  SelectOption,
-  SelectGroup,
   Textarea,
   Switch,
   Radio,

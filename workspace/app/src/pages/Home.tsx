@@ -12,13 +12,13 @@ import {
   Stack,
   Text,
 } from "@studio-baeks/paper-ui";
-import { tokens, type StatusName } from "@studio-baeks/paper-ui/tokens";
+import { tokens, type Status } from "@studio-baeks/paper-ui/tokens";
 
 import { SiteNav } from "../site/chrome";
 import { Logo } from "../site/Logo";
 import "../site/home.css";
 
-type Issue = { id: string; key: string; title: string; who: string; status: StatusName; label: string };
+type Issue = { id: string; key: string; title: string; who: string; status: Status; label: string };
 
 const ISSUES: Issue[] = [
   { id: "1", key: "STU-142", title: "토큰 트리를 두 번 걷는 emit 파이프라인", who: "재원", status: "info", label: "진행" },

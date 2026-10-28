@@ -11,9 +11,12 @@ Atom은 같은 축 몇 개로 말합니다. 축의 값은 모두 Foundations에�
 | `size` | sm · md · lg, 기본 md | Shape control 사다리 — 높이 30 · 32 · 36 |
 | `accent` | primary · info · success · warning · error | Color accent |
 | `variant` | solid · soft · hairline · ghost · muted | Color [accent × variant](../foundations/color.md#accent--variant) |
-| `status` (입력) | default · info · success · warning · error | Color accent `ink` 경계 |
+| `status` (입력) | info · success · warning · error, 생략하면 중립 | Color accent `ink` 경계 |
 | `shape` | rounded · pill, 기본 rounded | Shape `radius.control` · `radius.full` |
 | `fontSize` | Text 역할 이름 | Typography — 글자 크기만 바꾸는 탈출구 |
+
+[contract:atoms.field.neutral-status]: #
+축마다 중립값은 이름이 아니라 기본값이나 생략입니다. `accent`의 중립은 `primary`, Divider `level`의 중립은 `base`이고, 입력의 `status`는 생략하면 중립이라 `default`라는 값이 없습니다. Field와 Textarea는 `status`를 줬을 때만 `data-status`를 그리고, `status="error"`는 `aria-invalid`도 설정합니다.
 
 `size`는 geometry를 고르고, 글자는 Typography의 [Control preset](../foundations/typography.md#control-preset)에서 따로 고릅니다. 같은 size의 Button · Field · Select는 같은 높이에 서고 글자 높이도 맞습니다. `fontSize`로 글자를 바꿔도 geometry는 고른 size를 따릅니다.
 
@@ -32,10 +35,13 @@ Atom은 같은 축 몇 개로 말합니다. 축의 값은 모두 Foundations에�
 | Label | children · native label props | label typography. htmlFor 또는 내부 control로 연결 |
 | Badge | accent · variant · size · fontSize · dot · shape | primary / soft / md / rounded. 표시용이라 hover 없음. 높이 20 · 22 · 24, 글자 12 고정 |
 | Spinner | size · label | md, label="불러오는 중", role=status. 지름 16 · 18 · 20 |
-| Divider | axis=horizontal/vertical · weight=base/strong | horizontal / base. hr + aria-orientation. weight는 선의 색, 두께는 border stroke |
+| Divider | orientation=horizontal/vertical · level=base/strong | horizontal / base. hr + aria-orientation. level은 선의 색(`border.base` · `border.strong`), 두께는 border stroke |
 | Link | children · native anchor props | a, info ink, hover 때 밑줄. 라우팅은 href 또는 앱의 조합 |
 
-Select.Option과 Select.Group은 Select의 anatomy라 따로 세지 않습니다. 각 Atom의 치수가 어디서 나오는지는 [Shape](../foundations/shape.md#recipe--컴포넌트-anatomy)의 recipe 표에 있습니다.
+Select.Option과 Select.Group은 Select의 anatomy라 따로 세지 않습니다. 이 둘은 `Select.Option` · `Select.Group` 하나의 경로로만 쓰고, 따로 export하지 않습니다. 각 Atom의 치수가 어디서 나오는지는 [Shape](../foundations/shape.md#recipe--컴포넌트-anatomy)의 recipe 표에 있습니다.
+
+[contract:atoms.divider.orientation-level]: #
+Divider의 `orientation`은 선의 방향을 고르고 `aria-orientation`으로 그대로 전달됩니다. `level`은 선의 색을 고릅니다.
 
 ## `as` — 같은 자리의 역할을 바꾸는 축
 

@@ -79,7 +79,7 @@ light `warning`은 의도된 예외입니다. `solid`가 amber.400, `wash`가 �
 
 ## Accent × variant
 
-Atom은 색을 직접 고르지 않고 `accent`와 `variant` 두 축을 말합니다. 이 조합이 어떤 tone을 쓰는지는 `styles/color-profile.ts`가 한 곳에서 정합니다.
+Atom은 색을 직접 고르지 않고 `accent`와 `variant` 두 축을 말합니다. 이 조합이 어떤 tone을 쓰는지는 `tokens/color-recipes.ts`가 한 곳에서 정합니다.
 
 | variant | 면 | 글자 | hover |
 |---|---|---|---|

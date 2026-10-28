@@ -27,7 +27,7 @@ paper-ui/
     │   └── src/
     │       ├── index.ts        # entry `.` — 컴포넌트 · hook · Provider ("use client")
     │       ├── inventory.ts    # 이름 · 분류 · 순서의 정본 — import 가 없고 inventory.test 가 export 와 대조
-    │       ├── tokens/         # 값의 유일한 정의 위치 — SOURCE → VALUES → 역할, *-recipes = 조합 · public.ts = entry `/tokens` · layers.css.ts = cascade layer
+    │       ├── tokens/         # 값의 유일한 정의 위치 — SOURCE → VALUES → 역할, *-recipes = 조합 · vocabulary.ts = 어휘 짝 · public.ts = entry `/tokens` · layers.css.ts = cascade layer
     │       ├── styles/         # theme.css.ts (raw 값 → CSS var) · utility.css.ts · global.css.ts = entry `/styles.css`
     │       ├── resolvers/      # 규칙의 주인 (prop → className)
     │       ├── primitives/     # layout·text·icon building blocks
@@ -92,7 +92,7 @@ semantic color는 surface·ink·border·accent·interaction·overlay·shadow 역
 | Control | `control.<role>` | track |
 | Border | `border.<level>` | base · strong · hover |
 | Ink | `ink.<level>` | primary · secondary · tertiary |
-| Accent | `accent.<name>.<ladder>` | primary · info · success · warning · error × solid · wash · ink · soft · subtle |
+| Accent | `accent.<name>.<tone>` | primary · info · success · warning · error × solid · wash · ink · soft · subtle |
 | Interaction | `interaction.<state>` | bgHover (onSurface·onPrimarySolid·onAccentSolid) · selected · active · focus |
 | Overlay | `overlay.<role>` | scrim |
 | Shadow | `shadow.<role>` | overlay · overlayMinimal |
@@ -110,10 +110,10 @@ focus ring 색은 `interaction.focus`에 둡니다. focus는 상호작용 상태
 - 숫자는 `SHAPE_SOURCE`(tokens/shape.ts)·`LAYOUT_SOURCE`(tokens/layout.ts)에 dp로 한 번만 씁니다. **원본만 CSS 변수로 굽고**, 역할은 원본 변수의 별칭이거나 소비 요소에서 계산되는 calc() 식입니다. 역할에 변수를 따로 만들지 않습니다 — 하위 트리에서 원본 하나를 덮으면 그 위의 역할·recipe가 모두 다시 계산되어야 합니다.
 - 길이 scale은 하나입니다: `xs4 · sm8 · md12 · lg16 · xl24 · 2xl32 · 3xl48`. 안쪽 여백은 `tokens.shape.inset`, 형제 사이·margin·위치 offset은 `tokens.layout.gap`으로 고릅니다. 둘은 같은 단계면 같은 길이입니다.
 - radius는 날만 죽이고 가족마다 한 값입니다: `control` 4 · `selection` 3 · `surface` sm4/md6/lg8 · `full` 999px. Box radius는 surface를 선택합니다.
-- control은 높이 30/32/36만 원본입니다. input inset = (높이 − 컨트롤 글자 줄)/2 = 7/8/10, button inset = input × 1.4 반올림 = 10/11/14, selection = 높이/2 = 15/16/18, `control.icon` 16/18/20, `control.gap` 8. `internal/shape.ts`의 `controlGeometry`에서 역할을 고르고 stylesheet가 자기 사다리를 만들지 않습니다.
+- control은 높이 30/32/36만 원본입니다. input inset = (높이 − 컨트롤 글자 줄)/2 = 7/8/10, button inset = input × 1.4 반올림 = 10/11/14, selection = 높이/2 = 15/16/18, `control.icon` 16/18/20(옆 글자가 아니라 컨트롤 높이를 따릅니다), `control.gap` 8. `internal/shape.ts`의 `controlGeometry`에서 역할을 고르고 stylesheet가 자기 사다리를 만들지 않습니다.
 - recipe(`tokens/shape-recipes.ts`)에는 숫자가 없습니다. Switch 트랙 폭 = 컨트롤 높이, 테 = `stroke.emphasis`, 손잡이는 자기 폭만큼 이동. Textarea 한 줄 = 같은 size Field 높이(block 여백 4/5/7). Select 화살표는 `control.icon` 크기 Icon, 입력 inset 자리, 값은 `control.gap` 앞에서 멈춤. Checkbox mark·Radio dot = 선택 상자의 절반(크기별 보정 없음). Badge 높이 20/22/24·inset 6/8/10만 원본 anatomy입니다.
 - 선(`stroke.border` 1 · `emphasis` 2)과 포커스 링(`focus.width`·`offset` 2)은 px, `stroke.icon` 1.75는 SVG 단위입니다. 모든 포커스 링은 `focusRing` 하나를 씁니다(색은 `interaction.focus`).
-- Icon 크기 이름은 옆에 서는 Text 역할입니다: label 14 · caption 16 · body 18 · subheading 20. Box의 named dimension(`dimension.width/height` xs~xl)과 읽기 폭(`measure`)도 Shape sizing입니다.
+- Icon 크기 이름은 Text 역할 이름의 부분집합이고 타입으로 묶여 있습니다: label 14 · caption 16 · body 18 · subheading 20. Box의 named dimension(`dimension.width/height` xs~xl)과 읽기 폭(`measure`)도 Shape sizing입니다.
 - elevation은 `base 0 · raised 10 · sticky 20 · overlay 30 · modal 40 · toast 50` 여섯 층이고, **층 하나가 z와 그림자를 함께 정합니다.** 그림자 깊이는 lifted(raised)·floating(overlay·modal·toast) 둘뿐, base·sticky는 그림자가 없습니다. 기하는 Layout, 색은 Color의 shadow tint입니다. Box는 `elevation` prop으로 고릅니다.
 - breakpoint(480/768/1024/1280)는 미디어 쿼리가 변수를 못 읽어 값입니다. `color.control.track`은 Switch 트랙과 진행 막대 홈에 씁니다.
 - Select는 native select와 장식 Icon을 wrapper 안에 둡니다. ref와 폼 속성은 native select, className/style은 보이는 wrapper에 전달합니다. 화살표는 semantic ink를 사용합니다.
@@ -165,7 +165,7 @@ Foundations → Primitives → Atoms
 
 Primitive·Atom 인벤토리의 정본은 `packages/paper-ui/src/inventory.ts`입니다. `inventory.test.ts`가 `.` entry의 실제 export와 1:1로 대조하고, 앱의 사이트 지도(`app/src/site/site-map.ts`)가 Playground 목록(Foundations → Primitives → Atoms)을 거기서 파생합니다. 위 표는 그 목록을 옮긴 것이므로 인벤토리를 바꾸면 표도 함께 고칩니다.
 
-패키지는 Primitive와 Atom만 공개합니다. 제품별 조합은 앱이 소유하고, 여러 제품에서 반복된 뒤에만 공통 API로 승격합니다.
+패키지는 세 가지를 공개합니다 — 컴포넌트·hook(Primitive와 Atom, `.` entry), `tokens`와 역할 규칙(`/tokens`), 어휘 짝(축마다 상수 하나와 타입 하나, `/tokens`). 어휘 짝은 각자 자기 시스템 파일에 한 번 정의되고 `tokens/vocabulary.ts`가 모아 내보냅니다. 새 축은 원본 tree에서 파생하거나 `satisfies`로 양방향 묶어 그 파일에 더합니다. 제품별 조합은 앱이 소유하고, 여러 제품에서 반복된 뒤에만 공통 API로 승격합니다.
 
 RovingFocus는 등록 항목의 Tab 진입점과 실제 DOM focus 탐색을 관리하며 선택과 분리합니다. ToggleGroup은 toggle button 그룹의 단일·복수 선택이고 다른 위젯의 role을 대체하지 않습니다. Overlay는 Trigger·Content·Close를 연결하며 기본 non-modal dialog, modal opt-in입니다. React Aria가 Portal·배치·중첩 dismissal·배경 inert·스크롤 잠금을 담당합니다. FormField/useField는 기존 Field Atom을 유지하면서 native label·설명·오류 ID를 연결합니다. 합성 도구 mergeProps는 additive handler 병합, composeEventHandlers는 caller preventDefault에 의한 내부 handler 취소, mergeRefs는 같은 DOM ref 연결입니다. 새 공통 상태·입력 관계 API도 Playground와 문서·실제 브라우저 검증을 함께 갱신합니다.
 
@@ -203,5 +203,6 @@ e2e는 자기 서버를 직접 띄웁니다. 앱은 41731, 하네스(`fixtures/h
 - [ ] 색을 추가했다면 — 정말 *의미* 가 있는가. 장식이면 넣지 않는다
 - [ ] 큰 면을 색으로 채우지 않았는가 (면은 검정 primary만)
 - [ ] Primitive·Atom API를 수정했다면 — app의 실제 사용 예와 문서를 갱신했는가
+- [ ] prop이 받는 닫힌 값의 집합(축)을 더하거나 바꿨다면 — 원본 tree에서 파생하거나 `satisfies`로 묶고 `tokens/vocabulary.ts`에 상수·타입 짝으로 공개했는가
 - [ ] 문서에 계약 문장을 더했다면 — 같은 변경에서 `[contract:…]: #` 표시와 그 id로 시작하는 테스트를 더했는가
 - [ ] 데모(`app/`)가 여전히 서는가

@@ -6,7 +6,7 @@ export { Badge, type BadgeProps } from "./Badge";
 export { Checkbox, type CheckboxProps } from "./Checkbox";
 export { Divider, type DividerProps } from "./Divider";
 export { Link, type LinkProps } from "./Link";
-export { Select, SelectOption, SelectGroup, type SelectProps, type SelectOptionProps, type SelectGroupProps } from "./Select";
+export { Select, type SelectProps, type SelectOptionProps, type SelectGroupProps } from "./Select";
 export { Textarea, type TextareaProps } from "./Textarea";
 export { Switch, type SwitchProps } from "./Switch";
 export { Radio, type RadioProps } from "./Radio";

@@ -13,12 +13,12 @@ import { forwardRef, type TextareaHTMLAttributes } from "react";
 
 import { joinClass } from "../internal/joinClass";
 import { resolveControlTypography } from "../resolvers";
-import type { ControlSize, StatusName, TextVariant } from "../tokens";
+import type { ControlSize, Status, TextVariant } from "../tokens";
 import { fieldStatus } from "./Field.css";
 import { textareaRoot, textareaSize, textareaFontSize } from "./Textarea.css";
 
 export type TextareaProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "className"> & {
-  status?: "default" | StatusName;
+  status?: Status;
   // 크기 3 단 (sm·md·lg). Button·Field·Select 와 같은 여백·글자 사다리.
   size?: ControlSize;
   fontSize?: TextVariant;
@@ -26,14 +26,14 @@ export type TextareaProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "c
 };
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function Textarea(
-  { status = "default", size = "md", fontSize, className, onPointerDown, onBlur, ...rest },
+  { status, size = "md", fontSize, className, onPointerDown, onBlur, ...rest },
   ref,
 ) {
   return (
     <textarea
       ref={ref}
       aria-invalid={status === "error" || undefined}
-      data-pui-status={status}
+      data-status={status}
       onPointerDown={(event) => {
         event.currentTarget.dataset.puiPointerFocus = "true";
         onPointerDown?.(event);
@@ -42,7 +42,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
         delete event.currentTarget.dataset.puiPointerFocus;
         onBlur?.(event);
       }}
-      className={joinClass(textareaRoot, textareaSize[size], resolveControlTypography("textarea", size), fontSize && textareaFontSize[fontSize], status !== "default" && fieldStatus[status], className)}
+      className={joinClass(textareaRoot, textareaSize[size], resolveControlTypography("textarea", size), fontSize && textareaFontSize[fontSize], status && fieldStatus[status], className)}
       {...rest}
     />
   );

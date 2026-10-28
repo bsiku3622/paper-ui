@@ -1,7 +1,17 @@
 // Accent profile — accent × variant가 다섯 semantic tone을 어떻게 조합하는지 정의한다.
 
-import { tokens } from "../tokens";
-import { type Accent, type Variant } from "../resolvers/color";
+import { COLOR, type Accent } from "./colors";
+
+// `solid`은 pigment 자체, wash·soft는 각각 가벼운 면이다. `muted`는 Ghost형 투명 면에
+// 선택된 accent의 subtle tone을 전경으로 쓰는 보조 variant다.
+export const VARIANTS = [
+  "solid",
+  "soft",
+  "hairline",
+  "ghost",
+  "muted",
+] as const;
+export type Variant = (typeof VARIANTS)[number];
 
 export type ColorSpec = {
   background: string;
@@ -15,13 +25,13 @@ export type ColorSpec = {
 
 // Paperdown-style outlined surface shared by hairline and form controls.
 export const outlinedControlProfile = {
-  background: tokens.color.bg.raised,
-  color: tokens.color.ink.primary,
-  borderColor: tokens.color.border.base,
+  background: COLOR.bg.raised,
+  color: COLOR.ink.primary,
+  borderColor: COLOR.border.base,
 };
-export const outlinedControlHover = { borderColor: tokens.color.border.hover };
+export const outlinedControlHover = { borderColor: COLOR.border.hover };
 
-type AccentTones = typeof tokens.color.accent.primary;
+type AccentTones = typeof COLOR.accent.primary;
 
 const variantProfile = (t: AccentTones, primary: boolean): Record<Variant, ColorSpec> => ({
   solid: {
@@ -31,14 +41,14 @@ const variantProfile = (t: AccentTones, primary: boolean): Record<Variant, Color
     // primary의 검정 면은 가벼워져야 hover가 읽힌다. semantic solid는 진한 pigment 위를
     // 살짝 어둡게 해 같은 방식으로 한 단계 반응한다.
     hoverOverlay: primary
-      ? tokens.color.interaction.bgHover.onPrimarySolid
-      : tokens.color.interaction.bgHover.onAccentSolid,
+      ? COLOR.interaction.bgHover.onPrimarySolid
+      : COLOR.interaction.bgHover.onAccentSolid,
   },
   soft: {
     background: t.soft,
     color: t.ink,
     borderColor: "transparent",
-    hoverOverlay: tokens.color.interaction.bgHover.onSurface,
+    hoverOverlay: COLOR.interaction.bgHover.onSurface,
   },
   hairline: {
     ...outlinedControlProfile,
@@ -49,15 +59,15 @@ const variantProfile = (t: AccentTones, primary: boolean): Record<Variant, Color
     background: "transparent",
     color: t.ink,
     borderColor: "transparent",
-    hoverOverlay: tokens.color.interaction.bgHover.onSurface,
+    hoverOverlay: COLOR.interaction.bgHover.onSurface,
   },
   muted: {
     background: "transparent",
     color: t.subtle,
     borderColor: "transparent",
-    hoverOverlay: tokens.color.interaction.bgHover.onSurface,
+    hoverOverlay: COLOR.interaction.bgHover.onSurface,
   },
 });
 
 export const accentProfile = (accent: Accent, variant: Variant): ColorSpec =>
-  variantProfile(tokens.color.accent[accent], accent === "primary")[variant];
+  variantProfile(COLOR.accent[accent], accent === "primary")[variant];

@@ -24,8 +24,8 @@ import {
 } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import { resolveAccent, resolveControlTypography, INTERACTIVE, type Accent, type Variant } from "../resolvers";
-import type { ControlSize, TextVariant } from "../tokens";
+import { resolveAccent, resolveControlTypography, INTERACTIVE } from "../resolvers";
+import type { Accent, ControlShape, ControlSize, TextVariant, Variant } from "../tokens";
 import {
   buttonRoot,
   buttonSize,
@@ -51,7 +51,7 @@ type ButtonOwn<As extends ElementType> = {
   fontSize?: TextVariant;
   // 실루엣 — rounded 는 시스템 곡선(radius.control), pill 은 알약(높이의 절반).
   // 값이 둘뿐인 건 의도다 — 고르는 건 *알약이냐 아니냐* 지 곡선의 크기가 아니다.
-  shape?: "rounded" | "pill";
+  shape?: ControlShape;
   // 진행 중 — 스피너를 얹고 aria-busy 를 세우며 클릭을 막는다(busy 는 다시 눌릴 수 없다).
   loading?: boolean;
   // 가로 꽉 — 폼·모바일.

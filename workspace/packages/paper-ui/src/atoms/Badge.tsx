@@ -11,8 +11,8 @@
 import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import { resolveAccent, resolveControlTypography, type Accent, type Variant } from "../resolvers";
-import type { ControlSize, TextVariant } from "../tokens";
+import { resolveAccent, resolveControlTypography } from "../resolvers";
+import type { Accent, ControlShape, ControlSize, TextVariant, Variant } from "../tokens";
 import { badgeRoot, badgeSize, badgeDot, badgePill, badgeFontSize } from "./Badge.css";
 
 export type BadgeProps = Omit<HTMLAttributes<HTMLSpanElement>, "className"> & {
@@ -27,7 +27,7 @@ export type BadgeProps = Omit<HTMLAttributes<HTMLSpanElement>, "className"> & {
   dot?: boolean;
   // 실루엣 — rounded 는 시스템 곡선(radius.control), pill 은 알약(높이의 절반).
   // Button 과 같은 어휘라 나란히 서는 두 알약이 같은 곡선을 갖는다.
-  shape?: "rounded" | "pill";
+  shape?: ControlShape;
   children?: ReactNode;
   className?: string;
 };

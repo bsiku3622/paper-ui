@@ -1,11 +1,25 @@
 import { describe, expect, it } from "vitest";
 
-import { tokens } from "../tokens";
-import { accentProfile } from "./color-profile";
+import { ACCENTS } from "./colors";
+import { VARIANTS, accentProfile } from "./color-recipes";
+import { tokens } from "./index";
+
+describe("accent profile", () => {
+  it("gives every accent × variant a background, a color and a border", () => {
+    for (const accent of ACCENTS) {
+      for (const variant of VARIANTS) {
+        const profile = accentProfile(accent, variant);
+        expect(profile.background, `${accent} ${variant}`).toEqual(expect.any(String));
+        expect(profile.color, `${accent} ${variant}`).toEqual(expect.any(String));
+        expect(profile.borderColor, `${accent} ${variant}`).toEqual(expect.any(String));
+      }
+    }
+  });
+});
 
 describe("muted color profile", () => {
   it("keeps the ghost surface and uses the selected accent's subtle tone", () => {
-    for (const accent of ["primary", "info", "success", "warning", "error"] as const) {
+    for (const accent of ACCENTS) {
       const profile = accentProfile(accent, "muted");
 
       expect(profile.background).toBe("transparent");
@@ -17,7 +31,7 @@ describe("muted color profile", () => {
   });
 
   it("uses the shared form surface and neutral border for every hairline accent", () => {
-    for (const accent of ["primary", "info", "success", "warning", "error"] as const) {
+    for (const accent of ACCENTS) {
       const profile = accentProfile(accent, "hairline");
       expect(profile.background).toBe(tokens.color.bg.raised);
       expect(profile.borderColor).toBe(tokens.color.border.base);

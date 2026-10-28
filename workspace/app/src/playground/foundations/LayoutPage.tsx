@@ -1,5 +1,5 @@
 import { Text, useResolvedTheme } from "@studio-baeks/paper-ui";
-import { tokens, ELEVATIONS, SPACE_KEYS, type Elevation } from "@studio-baeks/paper-ui/tokens";
+import { tokens, BREAKPOINTS, ELEVATIONS, SPACES, type Elevation } from "@studio-baeks/paper-ui/tokens";
 
 import { LAYOUT_SOURCE } from "../../../../packages/paper-ui/src/tokens/layout";
 import { Board, BoardGroup, BoardRow, Cell, FoundationSection, TokenCell, ValueCell, resolved } from "./kit";
@@ -7,7 +7,6 @@ import * as s from "./foundations.css";
 
 const layout = tokens.layout;
 const percent = (dp: number, max: number) => `${Math.round((dp / max) * 1000) / 10}%`;
-const BREAKPOINTS = Object.keys(LAYOUT_SOURCE.breakpoint) as (keyof typeof LAYOUT_SOURCE.breakpoint)[];
 const maxBreakpoint = Math.max(...Object.values(LAYOUT_SOURCE.breakpoint));
 const geometry = (layers: readonly (readonly number[])[]) => layers.map((layer) => layer.join(" ")).join(", ");
 
@@ -73,7 +72,7 @@ export const LayoutPage = () => {
       <FoundationSection title="Layout roles" description="형제 사이와 페이지 가장자리의 거리입니다. gap은 Shape inset과 같은 scale이라 같은 단계는 같은 길이입니다.">
         <Board columns={[{ label: "Role" }, { label: "Specimen" }, { label: "Value", align: "end" }]} template="minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr)" minWidth="36rem">
           <BoardGroup label="Gap — Stack·Inline·Grid의 gap, margin, 위치 offset">
-            {SPACE_KEYS.map((step) => (
+            {SPACES.map((step) => (
               <BoardRow key={step}>
                 <TokenCell name={`layout.gap.${step}`} note={`= shape.space.${step}`} />
                 <Cell><div className={s.gapSample} style={{ gap: layout.gap[step] }}><span /><span /></div></Cell>

@@ -83,6 +83,7 @@ and nothing else.
 |---|---|
 | Primitives | `Box · Stack · Inline · Text` |
 | Atoms | `Button · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Icon · Spinner · Divider · Link` |
+| `/tokens` | `tokens`, and the vocabulary: one constant and one type for each axis (`ACCENTS` · `Accent`, `VARIANTS` · `Variant`, `SPACES` · `Space` …) |
 
 The package stops at primitives and atoms. Product-specific compositions belong
 to the consuming app, where their structure and lifecycle can follow the product.
@@ -99,7 +100,7 @@ Primary actions are black rather than blue — a blue button on every screen sto
 being a point.
 
 Shape is the system's call, not the caller's. What you choose is meaning:
-`size`, `status`, `color`. Where a shape prop does exist it takes a closed
+`size`, `status`, `accent`. Where a shape prop does exist it takes a closed
 vocabulary — `shape="pill"`, not `radius={10}`.
 
 Six rules hold the rest together, and eslint enforces them rather than the
