@@ -33,7 +33,8 @@ paper-ui/
 ```
 
 pnpm 명령은 `workspace/` 에서 실행한다. `core`/`web` 분리는 일부러 없다 — 존재하지
-않는 두 번째 medium 을 위한 자리는 만들지 않는다.
+않는 두 번째 medium 을 위한 자리는 만들지 않는다. 작업 로그(`logs.md`)는 이 기계에만
+둔다 — `.gitignore`에 있고 추적하지 않는다.
 
 ---
 
