@@ -11,9 +11,9 @@ import { GridExample, PressExample, HoverExample, ToggleExample, DragExample, Dr
 import {
   Badge, Box, Button, Checkbox, Divider, Field, Icon, IconButton, Inline, Label,
   Link, Select, Stack, Text, Textarea, Switch, Radio, Spinner,
-  type BoxDimension, type Surface, type Accent, type Variant, type Ink,
-  type StatusName, type TextVariant, type Elevation, type IconSize,
+  type BoxDimension,
 } from "@studio-baeks/paper-ui";
+import type { Surface, Accent, Variant, Ink, StatusName, TextVariant, Elevation, IconSize } from "@studio-baeks/paper-ui/tokens";
 
 // ── 컨트롤 ───────────────────────────────────────────────────────────────────
 export type Control =

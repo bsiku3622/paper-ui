@@ -22,22 +22,41 @@
   ],
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "paper-ui-source": "./src/index.ts",
+      "default": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
     },
-    "./styles.css": "./dist/paper-ui.css"
+    "./tokens": {
+      "paper-ui-source": "./src/tokens/public.ts",
+      "default": {
+        "types": "./dist/tokens/public.d.ts",
+        "default": "./dist/tokens.js"
+      }
+    },
+    "./styles.css": {
+      "paper-ui-source": "./src/styles/global.css.ts",
+      "default": "./dist/paper-ui.css"
+    }
   },
   "sideEffects": [
     "**/*.css",
     "**/*.css.ts"
   ],
   "files": [
-    "dist"
+    "dist",
+    "src",
+    "!src/**/*.test.ts",
+    "!src/**/*.test.tsx",
+    "!src/tokens/inspect"
   ],
   "scripts": {
-    "build": "vite build && tsc -p tsconfig.json --declaration --emitDeclarationOnly --outDir dist --noEmit false",
+    "build": "eslint src --max-warnings 0 && tsc --noEmit && vite build && tsc -p tsconfig.json --declaration --emitDeclarationOnly --outDir dist --noEmit false",
     "typecheck": "tsc --noEmit",
-    "test": "vitest --run"
+    "test": "vitest --run",
+    "prepack": "pnpm run build",
+    "prepublishOnly": "pnpm -w run verify"
   },
   "dependencies": {
     "@react-aria/dnd": "^3.12.1",
@@ -46,8 +65,7 @@
     "@react-aria/overlays": "^3.32.1",
     "@react-aria/utils": "^3.34.1",
     "@react-aria/visually-hidden": "^3.9.1",
-    "@react-stately/overlays": "^3.7.1",
-    "@vanilla-extract/css": "^1.16.0"
+    "@react-stately/overlays": "^3.7.1"
   },
   "peerDependencies": {
     "react": ">=18",
@@ -57,6 +75,7 @@
     "@testing-library/react": "^16.3.2",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@vanilla-extract/css": "^1.16.0",
     "@vanilla-extract/vite-plugin": "^5.2.2",
     "jsdom": "^29.1.1",
     "react": "^19.0.0",

@@ -1,8 +1,6 @@
 // paper-ui exports layout primitives and individual controls.
-
-import "./styles/theme.css";
-import "./styles/utility.css";
-import "./styles/color.css";
+// Values and vocabulary come from "@studio-baeks/paper-ui/tokens"; styles load only through
+// "@studio-baeks/paper-ui/styles.css".
 
 // Layout, Content, Interaction, and A11y primitives.
 export * from "./primitives";
@@ -47,10 +45,5 @@ export type {
 export { PaperProvider } from "./provider/PaperProvider";
 export type { PaperProviderProps } from "./provider/PaperProvider";
 
-// Tokens — 앱이 시스템 값에 닿는 유일한 통로
-export { tokens, stateTransition, SPACE_KEYS, DIMENSION_KEYS, CONTROL_SIZES, ICON_SIZES, ELEVATIONS } from "./tokens";
-export type { AccentName, StatusName, TextVariant, Space, ControlSize, Elevation } from "./tokens";
-
-// Resolver 타입 — 앱이 자기 컴포넌트를 이 어휘로 만들 때
+// Resolver — 앱이 자기 컨트롤 글자를 같은 preset 으로 고를 때
 export { resolveControlTypography } from "./resolvers";
-export type { Surface, Accent, Variant, Ink, Tone } from "./resolvers";

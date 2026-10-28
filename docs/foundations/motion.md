@@ -35,7 +35,7 @@ stylesheet는 `stateTransition()`으로 상태 전이 문자열을 조립합니�
 
 ```ts
 import { style } from "@vanilla-extract/css";
-import { stateTransition, tokens } from "@studio-baeks/paper-ui";
+import { stateTransition, tokens } from "@studio-baeks/paper-ui/tokens";
 
 export const row = style({
   transition: stateTransition("background", "border-color"),

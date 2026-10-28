@@ -1,6 +1,6 @@
 # Overview
 
-Primitive는 Foundations의 값을 화면 구조로 옮기는 첫 컴포넌트입니다. 면과 배치, 글자와 아이콘, 입력 행동, 접근성 관계를 의견 없이 제공하고, Atom과 앱 화면은 이 위에서 조합합니다. 모든 공개 이름은 `@studio-baeks/paper-ui`에서 import합니다.
+Primitive는 Foundations의 값을 화면 구조로 옮기는 첫 컴포넌트입니다. 면과 배치, 글자와 아이콘, 입력 행동, 접근성 관계를 의견 없이 제공하고, Atom과 앱 화면은 이 위에서 조합합니다. 컴포넌트와 hook은 `@studio-baeks/paper-ui`에서, Foundations 값과 어휘(`tokens` · `Space` · `ControlSize` …)는 `@studio-baeks/paper-ui/tokens`에서 import합니다.
 
 | 분류 | 컴포넌트 | Hook | 문서 |
 | --- | --- | --- | --- |

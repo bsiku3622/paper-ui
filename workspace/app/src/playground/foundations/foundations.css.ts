@@ -2,7 +2,7 @@
 // each specimen only arranges the token it shows.
 import { globalStyle, keyframes, style } from "@vanilla-extract/css";
 
-import { tokens } from "@studio-baeks/paper-ui";
+import { tokens } from "@studio-baeks/paper-ui/tokens";
 
 const { shape, layout, color, motion } = tokens;
 const line = `${shape.stroke.border} solid ${color.border.base}`;

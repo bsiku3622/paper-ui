@@ -14,13 +14,24 @@ React 18 or newer, as a peer dependency.
 
 ## Getting started
 
-Import the stylesheet once at your entry point. That single line puts every CSS
-variable — colour, size, type — on `:root` and emits the utility classes the
-components reference.
+The package has three entries, and every name comes from exactly one of them:
+
+| Entry | Holds |
+|---|---|
+| `@studio-baeks/paper-ui` | Components, hooks, `PaperProvider` and their prop types. A client entry (`"use client"`). |
+| `@studio-baeks/paper-ui/tokens` | `tokens` and the vocabulary constants and types. No React and no CSS, so server components and `.css.ts` stylesheets can import it. |
+| `@studio-baeks/paper-ui/styles.css` | The one stylesheet. |
+
+Import the stylesheet once at your entry point. It is the only way styles load:
+neither the components nor `PaperProvider` import CSS. That single line puts every
+CSS variable — colour, size, type — on `:root` and brings in the utility classes
+and the component styles.
 
 ```ts
 import "@studio-baeks/paper-ui/styles.css";
 ```
+
+If the stylesheet is missing, `PaperProvider` warns once in development.
 
 Then wrap the app. `PaperProvider` renders no DOM wrapper, so it cannot affect
 your layout; the theme goes on `<html data-theme>`.
@@ -73,10 +84,11 @@ Shape is the system's call, not the caller's. What you choose is meaning:
 `size`, `status`, `color`. Where a shape prop does exist it takes a closed
 vocabulary — `shape="pill"`, not `radius={10}`.
 
-Four absolute rules hold the rest together, and eslint enforces them rather than
-the documentation: no raw hex outside the token files, value modules isolated
-behind the theme, no token reads through inline styles, and no raw HTML above
-the Primitive layer.
+Five rules hold the rest together, and eslint enforces them rather than the
+documentation: no raw colour outside the token sources, source modules isolated
+behind the token barrel, no token reads through inline styles, no length outside
+the token sources, and no `eslint-disable` comment that switches a `paper/*` rule
+off. The package build, prepublish and CI run those checks.
 
 ## Documentation
 

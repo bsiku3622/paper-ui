@@ -1,5 +1,5 @@
 import { style, globalStyle } from "@vanilla-extract/css";
-import { tokens } from "@studio-baeks/paper-ui";
+import { tokens } from "@studio-baeks/paper-ui/tokens";
 
 export const app = style({ minHeight: "100vh", background: tokens.color.bg.canvas, color: tokens.color.ink.primary });
 export const topbar = style({ height: 58, display: "flex", alignItems: "center", justifyContent: "space-between", padding: `0 ${tokens.shape.inset.xl}`, borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`, background: tokens.color.bg.raised });

@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 
-import { Text, tokens, resolveControlTypography, CONTROL_SIZES, type ControlSize, type TextVariant } from "@studio-baeks/paper-ui";
+import { Text, resolveControlTypography } from "@studio-baeks/paper-ui";
+import { tokens, CONTROL_SIZES, type ControlSize, type TextVariant } from "@studio-baeks/paper-ui/tokens";
 
 import { Board, BoardGroup, BoardRow, FoundationSection, MatrixCell, TokenCell, ValueCell, px, resolved } from "./kit";
 import * as s from "./foundations.css";

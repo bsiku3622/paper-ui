@@ -1,5 +1,5 @@
 import { globalStyle, style } from "@vanilla-extract/css";
-import { tokens } from "@studio-baeks/paper-ui";
+import { tokens } from "@studio-baeks/paper-ui/tokens";
 
 export const control = style({ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: tokens.layout.gap.sm, padding: tokens.shape.inset.sm, minHeight: tokens.shape.control.height.md, border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`, borderRadius: tokens.shape.radius.control, background: tokens.color.bg.raised, color: tokens.color.ink.primary, cursor: "pointer" });
 globalStyle(`${control}[data-hovered], ${control}[data-selected]`, { background: tokens.color.bg.sunken });

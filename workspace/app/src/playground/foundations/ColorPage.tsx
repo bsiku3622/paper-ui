@@ -1,7 +1,8 @@
 // Color — the palette matrix on a raised panel, then each semantic group as rows of token and
 // value card. Values are the current theme's: switching the theme switches every card.
 
-import { Box, Inline, Stack, Text, tokens, useResolvedTheme } from "@studio-baeks/paper-ui";
+import { Box, Inline, Stack, Text, useResolvedTheme } from "@studio-baeks/paper-ui";
+import { tokens } from "@studio-baeks/paper-ui/tokens";
 
 import { COLOR_VALUES, COLOR_VALUES_DARK } from "../../../../packages/paper-ui/src/tokens/colors";
 import { ACCENT_STEPS, PALETTE_TOKENS } from "../../../../packages/paper-ui/src/tokens/palette";

@@ -131,7 +131,7 @@ const Content = forwardRef<HTMLDivElement, OverlayContentProps>(function Overlay
   const { state, modal } = useContextValue();
   if (!state.isOpen) return null;
   // Entering an explicitly opened overlay requires intentional focus placement.
-  /* eslint-disable jsx-a11y/no-autofocus */
+  /* eslint-disable jsx-a11y/no-autofocus -- focus enters an overlay the user just opened */
   return <AriaOverlay portalContainer={portalContainer} disableFocusManagement>
     <FocusScope contain={modal} restoreFocus={restoreFocus}>
       <Panel {...props} autoFocus={autoFocus} forwardedRef={ref} />

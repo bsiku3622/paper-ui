@@ -11,7 +11,8 @@
 import { useMemo, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 
-import { Box, Button, Field, Icon, IconButton, Inline, Select, Stack, Switch, Text, tokens, type Surface } from "@studio-baeks/paper-ui";
+import { Box, Button, Field, Icon, IconButton, Inline, Select, Stack, Switch, Text } from "@studio-baeks/paper-ui";
+import { tokens, type Surface } from "@studio-baeks/paper-ui/tokens";
 
 import { PlaygroundLayout, ReferenceHeading } from "./shell";
 import { NAV_HEIGHT } from "../site/chrome";

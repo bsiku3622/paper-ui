@@ -2,7 +2,7 @@ import tseslint from "@typescript-eslint/eslint-plugin";
 import tsparser from "@typescript-eslint/parser";
 import reactHooks from "eslint-plugin-react-hooks";
 import jsxA11y from "eslint-plugin-jsx-a11y";
-import tokenBoundaries from "./eslint-rules/token-boundaries.js";
+import paper from "./eslint-rules/paper.js";
 
 const rawSourcePatterns = ["palette", "color-ladder", "colors", "shape", "shape-recipes", "layout"]
   .flatMap((name) => ["", ".ts", ".js"].map((extension) => `**/tokens/${name}${extension}`));
@@ -16,11 +16,23 @@ const rawBarrelRestriction = {
 // 규칙을 적어두고 리뷰어의 기억력에 맡기면 3 개월 뒤에 안 지켜져 있다.
 
 export default [
-  // 빌드 산출물은 린트하지 않는다 — 번들에 섞인 eslint-disable 주석이 dist 에선 미등록
-  // 규칙("unknown rule")으로 걸린다. src 만 본다.
-  { ignores: ["**/dist/**", "**/public/docs/**"] },
+  // 워크스페이스 전체(패키지 · 앱 · fixture · 테스트 · 스크립트 · eslint-rules · 설정 파일)를 본다.
+  // 산출물은 린트하지 않는다 — 번들에 섞인 eslint-disable 주석이 dist 에선 미등록 규칙("unknown rule")으로 걸린다.
+  { ignores: ["**/dist/**", "**/.types/**", "**/node_modules/**", "**/test-results/**", "**/playwright-report/**", "app/public/docs/**"] },
+  // 쓰이지 않는 disable 주석도 오류다 — 이유가 사라진 주석이 남아 다음 위반을 가리지 않게.
+  { linterOptions: { reportUnusedDisableDirectives: "error" } },
+
+  // ── 규칙은 주석으로 끄지 않는다 ─────────────────────────────────────────────
+  // paper 규칙의 예외는 이 파일에만 선언한다. 다른 규칙을 끄는 주석은 `-- 이유`를 단다.
   {
-    files: ["packages/*/src/**/*.{ts,tsx}", "app/src/**/*.{ts,tsx}"],
+    files: ["**/*.{js,mjs,cjs,ts,tsx}"],
+    plugins: { paper },
+    rules: { "paper/no-rule-disable": "error" },
+  },
+
+  // TypeScript 는 어디서든(테스트 · fixture · 스크립트 · 설정 포함) 같은 parser 와 recommended 규칙으로 읽는다.
+  {
+    files: ["**/*.{ts,tsx}"],
     languageOptions: {
       parser: tsparser,
       parserOptions: {
@@ -29,9 +41,13 @@ export default [
         ecmaFeatures: { jsx: true },
       },
     },
-    plugins: { "@typescript-eslint": tseslint, "react-hooks": reactHooks },
+    plugins: { "@typescript-eslint": tseslint },
+    rules: { ...tseslint.configs.recommended.rules },
+  },
+  {
+    files: ["packages/*/src/**/*.{ts,tsx}", "app/src/**/*.{ts,tsx}"],
+    plugins: { "react-hooks": reactHooks },
     rules: {
-      ...tseslint.configs.recommended.rules,
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "error",
     },
@@ -68,8 +84,8 @@ export default [
       "packages/paper-ui/src/tokens/color-ladder.ts",
       "**/*.test.{ts,tsx}",
     ],
-    plugins: { "token-boundaries": tokenBoundaries },
-    rules: { "token-boundaries/no-raw-color": "error" },
+    plugins: { paper },
+    rules: { "paper/raw-color": "error" },
   },
 
   // ── 규칙 2 — VALUES(raw) import 격리 ────────────────────────────────────
@@ -121,8 +137,8 @@ export default [
   {
     files: ["packages/paper-ui/src/**/*.tsx"],
     ignores: ["**/*.test.tsx"],
-    plugins: { "token-boundaries": tokenBoundaries },
-    rules: { "token-boundaries/no-inline-tokens": "error" },
+    plugins: { paper },
+    rules: { "paper/inline-token": "error" },
   },
 
   // ── 규칙 4 — 길이는 token source에만 ─────────────────────────────────────
@@ -135,13 +151,13 @@ export default [
       "packages/paper-ui/src/tokens/{shape,layout,text,motion,palette,color-ladder,colors}.ts",
       "**/*.test.{ts,tsx}",
     ],
-    plugins: { "token-boundaries": tokenBoundaries },
-    rules: { "token-boundaries/no-raw-geometry": ["error", { scope: "all" }] },
+    plugins: { paper },
+    rules: { "paper/source-numbers": ["error", { scope: "all" }] },
   },
   {
     files: ["app/src/**/*.{ts,tsx}"],
-    plugins: { "token-boundaries": tokenBoundaries },
-    rules: { "token-boundaries/no-raw-geometry": ["error", { scope: "spacing" }] },
+    plugins: { paper },
+    rules: { "paper/source-numbers": ["error", { scope: "spacing" }] },
   },
 
 ];
