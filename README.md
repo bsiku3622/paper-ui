@@ -36,6 +36,8 @@ The system stacks in three tiers, and the docs and the playground are organised 
 | | A11y 4 | `FocusScope · VisuallyHidden · RovingFocus · FormField` |
 | Atoms | 13 | `Button · IconButton · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Spinner · Divider · Link` |
 
+The theme is one attribute, `<html data-pui-theme>`, and one store per document. `PaperProvider` keeps the user's choice under `storageKey` (`pui-theme` by default), `themeBootScript` from `@studio-baeks/paper-ui/theme-boot` applies it before the first paint, and a subtree takes its own mode through `<Box theme="light | dark | inverse">`.
+
 Every Foundations system writes its numbers once, in its source, and exposes roles that select from it: [docs/foundations](docs/foundations/README.md). Product-specific compositions are owned by consuming applications. The package exposes three kinds of names: components and hooks (Primitives and Atoms), `tokens` with its role
 rules, and the vocabulary, one constant and one type for each axis (`Accent`, `Variant`, `Surface`, `Space` …).
 `<Box as="…">` remains the typed route to semantic HTML when an application needs it.

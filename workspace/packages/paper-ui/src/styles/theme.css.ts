@@ -4,7 +4,7 @@
 // component · resolver · app 은 tokens var() 만 본다.
 
 import { TEXT_INK, TEXT_VARIANTS } from "../tokens/typography";
-import { THEME_ATTRIBUTE, tokens } from "../tokens";
+import { THEME_ATTRIBUTE, THEME_SWAP_ATTRIBUTE, tokens } from "../tokens";
 import { focusRing } from "../internal/shape";
 import { layered } from "../tokens/layers.css";
 
@@ -32,9 +32,17 @@ base.globalStyle("body", {
 
 reset.globalStyle("*", { boxSizing: "border-box" });
 
-// 상속되는 글자색은 스코프마다 다시 선언한다 — ThemeScope · Box inverse · Overlay portal 안의 글자가 페이지의
+// 상속되는 글자색은 스코프마다 다시 선언한다 — Box theme · Overlay portal 안의 글자가 페이지의
 // 모드가 아니라 스코프 자신의 모드 잉크를 받는다. 특정도 0이라 class 가 정한 색은 그대로 이긴다.
 base.globalStyle(`:where([${THEME_ATTRIBUTE}])`, { color: tokens.color.ink.primary });
+
+// 모드가 바뀌는 동안 <html> 이 swap 속성을 달고, 그 사이 모든 전이는 Motion 의 theme 역할(즉시)로 끝난다.
+// 컨트롤이 페이지보다 늦게 따라 바뀌지 않는다. !important 라 컴포넌트의 transition 보다 앞선다.
+const swapping = `:root[${THEME_SWAP_ATTRIBUTE}]`;
+base.globalStyle(`${swapping} *, ${swapping} *::before, ${swapping} *::after`, {
+  transitionDuration: `${tokens.motion.role.theme.duration} !important`,
+  transitionDelay: `${tokens.motion.duration.instant} !important`,
+});
 
 // 포커스는 interaction.focus로 통일 (Apple · Atlassian 시그니처). 색이 가장 작게,
 // 가장 자주 등장하는 포인트 자리.

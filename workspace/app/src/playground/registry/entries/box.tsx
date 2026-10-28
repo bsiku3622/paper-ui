@@ -8,11 +8,11 @@ const overflows = () => pending(["visible", "hidden", "auto"] as const, "S13", "
 
 export default defineSpec({
   name: "Box",
-  blurb: "구조 패널입니다. surface·border·radius·elevation과 padding을 얹고, width·height·min/max·overflow로 box model을 정합니다. 이름 있는 크기는 Shape sizing token이고, 실제 CSS 길이는 화면 고유 layout을 위한 통로입니다. elevation은 z와 그림자를 함께 정합니다. 색과 flex·position 책임은 열지 않습니다.",
+  blurb: "구조 패널입니다. surface·border·radius·elevation·theme과 padding을 얹고, width·height·min/max·overflow로 box model을 정합니다. 이름 있는 크기는 Shape sizing token이고, 실제 CSS 길이는 화면 고유 layout을 위한 통로입니다. elevation은 z와 그림자를 함께 정합니다. 색과 flex·position 책임은 열지 않습니다.",
   controls: [
     enumControl<BoxProps, "surface">("surface", vocab("SURFACES"), { initial: "raised" }),
     boolControl<BoxProps, "border">("border"),
-    boolControl<BoxProps, "inverse">("inverse"),
+    enumControl<BoxProps, "theme">("theme", vocab("BOX_THEMES")),
     enumControl<BoxProps, "elevation">("elevation", subset("ELEVATIONS", ["raised", "sticky", "overlay", "modal", "toast"], "base is the ground, so omitting the prop is how a Box stays on it")),
     enumControl<BoxProps, "radius">("radius", pending(["sm", "md", "lg", "full"] as const, "S13", "BOX_RADII"), { initial: "md" }),
     enumControl<BoxProps, "padding">("padding", vocab("SPACES")),
@@ -34,7 +34,7 @@ export default defineSpec({
     <Box
       surface={pick<NonNullable<BoxProps["surface"]>>(state, "surface")}
       border={flag(state, "border")}
-      inverse={flag(state, "inverse")}
+      theme={pick<NonNullable<BoxProps["theme"]>>(state, "theme")}
       elevation={pick<NonNullable<BoxProps["elevation"]>>(state, "elevation")}
       radius={pick<NonNullable<BoxProps["radius"]>>(state, "radius")}
       padding={pick<NonNullable<BoxProps["padding"]>>(state, "padding")}

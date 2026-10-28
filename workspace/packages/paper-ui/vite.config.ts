@@ -37,7 +37,7 @@ export default defineConfig({
     cssTarget: target,
     lib: {
       // styles carries the global stylesheet into dist/paper-ui.css only; its JS is not exported.
-      entry: { styles: "src/styles/global.css.ts", index: "src/index.ts", tokens: "src/tokens/public.ts" },
+      entry: { styles: "src/styles/global.css.ts", index: "src/index.ts", tokens: "src/tokens/public.ts", "theme-boot": "src/theme/boot.ts" },
       formats: ["es"],
       fileName: (_, name) => `${name}.js`,
       cssFileName: "paper-ui",

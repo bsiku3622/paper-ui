@@ -1,8 +1,9 @@
 // build-types.mjs — one bundled declaration file per entry, at the boundary the JS bundle uses.
 //
 // tsc emits the declarations of src (tests and the token inspector excluded, tsconfig.build.json) into
-// .types; rollup-plugin-dts folds each entry into a single file in dist; .types is removed. The root entry
-// keeps the tokens entry external and imports it as ./tokens.js, the way dist/index.js reaches it.
+// .types; rollup-plugin-dts folds each entry (index, tokens, theme-boot) into a single file in dist; .types
+// is removed. The root entry keeps the tokens entry external and imports it as ./tokens.js, the way
+// dist/index.js reaches it.
 
 import { execFileSync } from "node:child_process";
 import { rmSync } from "node:fs";
@@ -26,6 +27,7 @@ execFileSync(process.execPath, [createRequire(import.meta.url).resolve("typescri
 try {
   await bundle(".types/index.d.ts", "dist/index.d.ts", { [tokensEntry]: "./tokens.js" });
   await bundle(".types/tokens/public.d.ts", "dist/tokens.d.ts");
+  await bundle(".types/theme/boot.d.ts", "dist/theme-boot.d.ts");
 } finally {
   rmSync(types, { recursive: true, force: true });
 }

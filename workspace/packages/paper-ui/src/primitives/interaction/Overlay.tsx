@@ -4,9 +4,8 @@ import { useOverlayTriggerState } from "@react-stately/overlays";
 import { FocusScope, useFocusManager } from "@react-aria/focus";
 import { mergeProps, mergeRefs } from "../composition";
 import { joinClass } from "../../internal/joinClass";
-import { THEME_ATTRIBUTE } from "../../tokens";
+import { usePortalScope } from "../../theme/scope";
 import { Pressable, type PressableProps } from "./Pressable";
-import { useResolvedTheme } from "../theme-context";
 import * as styles from "./Overlay.css";
 
 export type OverlayOptions = {
@@ -115,18 +114,18 @@ function useInitialFocus(ref: RefObject<HTMLDivElement | null>, initial: RefObje
   }, [ref, initial, autoFocus, manager]);
 }
 function ModalPanel({ context: { state, depth }, surfaceRef: ref, forwardedRef, behavior, initialFocusRef, autoFocus, underlayClassName, domProps }: SurfaceProps) {
-  const theme = useResolvedTheme();
+  const scope = usePortalScope();
   const { modalProps, underlayProps } = useModalOverlay(behavior, { ...state, point: null, setPoint: () => {} }, ref);
   useInitialFocus(ref, initialFocusRef, autoFocus);
-  return <div {...underlayProps} {...{ [THEME_ATTRIBUTE]: theme }} className={joinClass(styles.backdrop, underlayClassName)} style={{ [styles.layerDepth]: depth }}>
+  return <div {...underlayProps} {...scope} className={joinClass(styles.backdrop, underlayClassName)} style={{ [styles.layerDepth]: depth }}>
     <div {...mergeProps(domProps, modalProps)} ref={mergeRefs(ref, forwardedRef)} aria-modal="true" />
   </div>;
 }
 function NonModalPanel({ context: { state }, surfaceRef: ref, forwardedRef, behavior, initialFocusRef, autoFocus, domProps }: SurfaceProps) {
-  const theme = useResolvedTheme();
+  const scope = usePortalScope();
   const { overlayProps } = useAriaOverlay({ ...behavior, isOpen: state.isOpen, onClose: state.close }, ref);
   useInitialFocus(ref, initialFocusRef, autoFocus);
-  return <div {...mergeProps(domProps, overlayProps)} {...{ [THEME_ATTRIBUTE]: theme }} ref={mergeRefs(ref, forwardedRef)} />;
+  return <div {...mergeProps(domProps, overlayProps)} {...scope} ref={mergeRefs(ref, forwardedRef)} />;
 }
 const Content = forwardRef<HTMLDivElement, OverlayContentProps>(function OverlayContent({ portalContainer, restoreFocus = true, autoFocus = true, ...props }, ref) {
   const { state, modal } = useContextValue();

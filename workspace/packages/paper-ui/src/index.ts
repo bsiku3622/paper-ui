@@ -39,9 +39,9 @@ export type {
   SpinnerProps,
 } from "./atoms";
 
-// Provider
-export { PaperProvider } from "./provider/PaperProvider";
-export type { PaperProviderProps } from "./provider/PaperProvider";
+// Theme — the Provider and the hooks; the boot script is the entry "theme-boot"
+export { PaperProvider, useTheme, useResolvedTheme } from "./theme";
+export type { PaperProviderProps, ThemeControl } from "./theme";
 
 // Resolver — 앱이 자기 컨트롤 글자를 같은 preset 으로 고를 때
 export { resolveControlTypography } from "./resolvers";

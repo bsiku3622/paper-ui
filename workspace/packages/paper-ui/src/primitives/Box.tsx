@@ -13,9 +13,8 @@ import { forwardRef, type ComponentPropsWithRef, type ComponentPropsWithoutRef, 
 import { resolveBoxClass, type BoxLike } from "../resolvers";
 import { joinClass } from "../internal/joinClass";
 import { boxRadius, boxElevation, boxBorder } from "./Box.css";
-import { ResolvedThemeContext, useResolvedTheme } from "./theme-context";
-import { DIMENSIONS, THEME_ATTRIBUTE, tokens, type Dimension, type Elevation } from "../tokens";
-import { invertMode } from "../theme/engine";
+import { useThemeScope } from "../theme/scope";
+import { DIMENSIONS, tokens, type BoxTheme, type Dimension, type Elevation } from "../tokens";
 
 // named size는 Shape sizing(dimension)으로 해석한다. Primitive인 Box는 앱 고유 layout도 담아야
 // 하므로 CSS 길이 escape hatch를 함께 둔다. `full`과 `fit`은 자주 쓰는 의도를 이름으로 남긴다.
@@ -54,9 +53,10 @@ type OwnProps<As extends ElementType> = BoxLike & BoxLayoutProps & {
   radius?: "sm" | "md" | "lg" | "full";
   // 높이 — 쌓임 순서(z)와 그림자를 한 번에 정한다. 그림자는 떠 있는 층만 갖는다.
   elevation?: Exclude<Elevation, "base">;
-  // 이 면을 주변의 반대 테마로 — 라이트 위 어두운 판, 다크 위 밝은 판. ThemeScope
-  // inverse 와 같은 엔진을 이 Box 자신에 건다(별도 DOM 노드 없이).
-  inverse?: boolean;
+  // 이 면의 테마 — light · dark 는 고정, inverse 는 주변의 반대(라이트 위 어두운 판, 다크 위 밝은 판).
+  // 테마가 있는 Box 는 면을 따로 주지 않아도 그 테마의 canvas 를 깐다. 안쪽 글자는 이 테마의 잉크를 받고,
+  // 이 Box 자신의 포커스 링과 그림자는 바깥 지면의 모드를 따른다.
+  theme?: BoxTheme;
   children?: ReactNode;
   className?: string;
 };
@@ -78,7 +78,7 @@ const BoxImpl = forwardRef<HTMLDivElement, Omit<BoxProps, "as" | "ref"> & { as?:
   border,
   radius,
   elevation,
-  inverse,
+  theme,
   width,
   minWidth,
   maxWidth,
@@ -94,10 +94,7 @@ const BoxImpl = forwardRef<HTMLDivElement, Omit<BoxProps, "as" | "ref"> & { as?:
   ...rest
 }, ref) {
   const Tag = (as ?? "div") as ElementType;
-  const ambient = useResolvedTheme();
-  // inverse 면 이 Box 자신에 반대 테마를 심는다 — 테마 속성으로 색 var 를 갈고,
-  // 자식들이 기준 삼도록 context 도 덮는다(중첩 inverse 가 이 스코프를 본다).
-  const scoped = inverse ? invertMode(ambient) : undefined;
+  const scope = useThemeScope(theme);
 
   // styling prop 은 클래스로, 나머지는 DOM 으로. 한 객체에서 갈라낸다.
   const style: Record<string, unknown> = {};
@@ -106,6 +103,7 @@ const BoxImpl = forwardRef<HTMLDivElement, Omit<BoxProps, "as" | "ref"> & { as?:
     if ((OWN_KEYS as readonly string[]).includes(k)) style[k] = v;
     else dom[k] = v;
   }
+  if (theme !== undefined) style.surface ??= "canvas";
 
   const node = (
     <Tag
@@ -117,7 +115,7 @@ const BoxImpl = forwardRef<HTMLDivElement, Omit<BoxProps, "as" | "ref"> & { as?:
         elevation && boxElevation[elevation],
         className,
       )}
-      {...{ [THEME_ATTRIBUTE]: scoped }}
+      {...scope.attributes}
       style={{
         width: resolveDimension(width, "width"),
         minWidth: resolveDimension(minWidth, "width"),
@@ -136,11 +134,7 @@ const BoxImpl = forwardRef<HTMLDivElement, Omit<BoxProps, "as" | "ref"> & { as?:
     </Tag>
   );
 
-  return scoped ? (
-    <ResolvedThemeContext.Provider value={scoped}>{node}</ResolvedThemeContext.Provider>
-  ) : (
-    node
-  );
+  return scope.provide(node);
 });
 
 export const Box = BoxImpl as <As extends ElementType = "div">(props: BoxProps<As>) => ReactElement;

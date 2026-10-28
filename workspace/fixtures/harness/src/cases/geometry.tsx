@@ -1,7 +1,7 @@
 import { Badge, Box, Button, Checkbox, Field, Icon, IconButton, Radio, Select, Switch, Textarea } from "@studio-baeks/paper-ui";
 
 import { SELECT_OPTIONS } from "./options.js";
-import { ThemeCase } from "./theme.js";
+import { ThemeBoxes } from "./theme.js";
 
 const SIZES = ["sm", "md", "lg"] as const;
 
@@ -27,7 +27,7 @@ export const GeometryCase = () => (
         </div>
       ))}
       <Box radius="sm" data-testid="surface-corner">Surface</Box>
-      <ThemeCase />
+      <ThemeBoxes />
     </form>
   </div>
 );

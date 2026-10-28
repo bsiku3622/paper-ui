@@ -16,6 +16,7 @@ paper-ui는 React 18.2 이상 또는 React 19를 peer dependency로 받습니다
 |---|---|
 | `@studio-baeks/paper-ui` | 컴포넌트, hook, `PaperProvider`와 그 prop 타입. 클라이언트에서 도는 코드라 `"use client"` 경계를 선언합니다. |
 | `@studio-baeks/paper-ui/tokens` | `tokens`, 어휘 상수(`CONTROL_SIZES` · `SPACES` …)와 어휘 타입(`Space` · `Accent` · `Variant` …). 축마다 상수와 타입이 한 짝이고, 목록은 [공개 어휘](../foundations/README.md#공개-어휘)에 있습니다. React와 CSS를 import하지 않는 값입니다. |
+| `@studio-baeks/paper-ui/theme-boot` | 첫 화면 전에 테마를 적용하는 `themeBootScript`와 `THEME_STORAGE_KEY` · `THEME_ATTRIBUTE`. React와 CSS를 import하지 않으므로 빌드 도구와 서버가 단독으로 불러옵니다. [Theming](theming.md)에서 씁니다. |
 | `@studio-baeks/paper-ui/styles.css` | 전역 스타일시트 하나. CSS 변수, 유틸리티 클래스, 컴포넌트 스타일이 모두 여기에 들어 있습니다. |
 
 ## 스타일 불러오기
@@ -56,7 +57,7 @@ pui.reset < pui.theme < pui.base < pui.utilities < pui.components
 
 paper-ui는 브라우저에서 렌더하는 앱(CSR)과 서버에서 HTML을 먼저 그리는 앱(SSR · RSC)을 모두 대상으로 합니다. 환경마다 달라지는 것은 어느 entry에서 무엇을 가져오느냐입니다.
 
-- **CSR** — 세 entry를 위 표대로 씁니다.
+- **CSR** — 네 entry를 위 표대로 씁니다.
 - **SSR** — 서버가 컴포넌트를 HTML로 그리고 브라우저가 그 위에 이어 붙습니다. 스타일시트는 서버가 내려 주는 문서의 `<head>`에 들어 있어야 첫 화면부터 스타일이 섭니다.
 - **RSC** — 루트 entry는 `"use client"` 경계입니다. 서버 컴포넌트는 `tokens`와 어휘를 `@studio-baeks/paper-ui/tokens`에서 import합니다. 루트 entry의 컴포넌트는 클라이언트 컴포넌트로 렌더되므로, 서버 컴포넌트가 넘기는 prop은 직렬화할 수 있는 값이어야 하고 hook은 클라이언트 컴포넌트 안에서만 부릅니다.
 
@@ -82,7 +83,7 @@ export const App = () => (
 );
 ```
 
-`PaperProvider`가 고르는 설정은 하나뿐입니다 — 테마입니다. `defaultTheme`으로 `light`·`dark`·`system`(기본) 중 하나를 주고, `system`이면 OS 설정(`prefers-color-scheme`)을 따라갑니다. 사용자가 고른 값은 localStorage에 남아 다음 방문에 이깁니다.
+`PaperProvider`가 고르는 설정은 하나뿐입니다 — 테마입니다. `defaultTheme`으로 `light`·`dark`·`system`(기본) 중 하나를 주고, `system`이면 OS 설정(`prefers-color-scheme`)을 따라갑니다. 사용자가 고른 값은 localStorage의 `storageKey`(기본 `pui-theme`)에 남아 다음 방문에 이깁니다. 첫 화면 전에 적용하는 부팅 스크립트와 저장 규칙은 [Theming](theming.md)에 있습니다.
 
 브랜드 색을 고르는 설정은 없습니다. 이 시스템엔 `primaryColor`가 없습니다 — 정체성이 색이 아니라 순백·검정·여백에서 나오기 때문입니다. 자세한 이유는 [원칙](philosophy.md)에 있습니다.
 
@@ -91,19 +92,19 @@ export const App = () => (
 토글 UI를 직접 만들 때는 `useTheme`을 씁니다. `theme`은 사용자의 선택(`system` 포함), `resolved`는 실제로 적용된 `light`/`dark`입니다.
 
 ```tsx
-import { useTheme } from "@studio-baeks/paper-ui";
+import { Button, useTheme } from "@studio-baeks/paper-ui";
 
 const ThemeToggle = () => {
   const { resolved, setTheme } = useTheme();
   return (
-    <Button variant="quiet" onClick={() => setTheme(resolved === "dark" ? "light" : "dark")}>
+    <Button variant="ghost" onClick={() => setTheme(resolved === "dark" ? "light" : "dark")}>
       {resolved === "dark" ? "라이트" : "다크"}
     </Button>
   );
 };
 ```
 
-화면 일부만 반대 테마로 뒤집으려면 `<ThemeScope>`나 `<Box inverse>`를 씁니다 — 같은 엔진입니다.
+화면 일부만 다른 모드로 두려면 `<Box theme="inverse">`처럼 Box의 `theme`을 씁니다 — 같은 엔진입니다.
 
 ## 폰트
 

@@ -60,6 +60,8 @@ export const MOTION = {
   state: { duration: DURATION.base, easing: EASING.standard },
   enter: { duration: DURATION.moderate, easing: EASING.overshoot, offset: "6px", scale: "0.99" },
   exit: { duration: DURATION.fast, easing: EASING.accelerate },
+  // 테마 전환 — 모드가 바뀌는 프레임에 모든 전이를 즉시 끝낸다 (theme/engine.ts 의 holdTransitions).
+  theme: { duration: DURATION.instant, easing: EASING.linear },
 } as const satisfies Record<string, MotionRole>;
 
 // ───── VALUES — motion 은 var 로 굽지 않는다. tokens.motion 이 값을 직접 든다 ─
