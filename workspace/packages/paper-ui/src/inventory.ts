@@ -22,7 +22,7 @@ export const INVENTORY = {
   anatomy: { Select: ["Option", "Group"] },
   utilities: {
     Composition: ["mergeProps", "mergeRefs", "composeEventHandlers"],
-    Theme: ["PaperProvider", "ThemeScope", "useTheme", "useResolvedTheme"],
+    Theme: ["PaperProvider", "useTheme", "useResolvedTheme"],
     Typography: ["resolveControlTypography"],
   },
   classes: [],

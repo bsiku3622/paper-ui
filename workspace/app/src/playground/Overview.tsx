@@ -132,7 +132,7 @@ export const Overview = () => {
             <Box surface="sunken" padding="md" radius="md">
               <Text variant="caption" as="span">sunken</Text>
             </Box>
-            <Box inverse surface="canvas" border padding="md" radius="md">
+            <Box theme="inverse" surface="canvas" border padding="md" radius="md">
               <Text variant="caption" as="span">inverse</Text>
             </Box>
           </Spec>

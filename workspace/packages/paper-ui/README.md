@@ -17,12 +17,13 @@ under TypeScript `moduleResolution` `bundler`, `node16` or `nodenext`.
 
 ## Getting started
 
-The package has three entries, and every name comes from exactly one of them:
+The package has four entries, and every name comes from exactly one of them:
 
 | Entry | Holds |
 |---|---|
 | `@studio-baeks/paper-ui` | Components, hooks, `PaperProvider` and their prop types. A client entry (`"use client"`). |
 | `@studio-baeks/paper-ui/tokens` | `tokens` and the vocabulary constants and types. No React and no CSS, so server components and `.css.ts` stylesheets can import it. |
+| `@studio-baeks/paper-ui/theme-boot` | `themeBootScript`, `THEME_STORAGE_KEY` and `THEME_ATTRIBUTE`: the script that applies the theme before first paint. No React and no CSS. |
 | `@studio-baeks/paper-ui/styles.css` | The one stylesheet. |
 
 Import the stylesheet once at your entry point. It is the only way styles load:
@@ -61,10 +62,27 @@ export const App = () => (
 
 The provider takes exactly one setting: the theme. Pass `defaultTheme` as
 `light`, `dark`, or `system` (the default, which follows
-`prefers-color-scheme`). A choice the user makes is kept in localStorage and
-wins on the next visit. For a toggle of your own, `useTheme()` returns the
-user's own choice (`theme`, which may be `system`) alongside the `resolved`
-value that is actually applied.
+`prefers-color-scheme`). A choice the user makes is kept in localStorage under
+`storageKey` (`pui-theme` by default; `null` stores nothing) and wins on the
+next visit. For a toggle of your own, `useTheme()` returns the user's own choice
+(`theme`, which may be `system`) alongside the `resolved` value that is actually
+applied. `<html data-pui-theme>` is the one truth for the mode: any theme manager
+may write it, and `useResolvedTheme()` reads it with or without a provider.
+
+To apply the stored or OS theme before the first paint, put the boot script first
+in `<head>` with the same options the provider gets. With Vite:
+
+```ts
+import { themeBootScript } from "@studio-baeks/paper-ui/theme-boot";
+
+// vite.config.ts → plugins
+{
+  name: "theme-boot",
+  transformIndexHtml: () => [{ tag: "script", children: themeBootScript(), injectTo: "head-prepend" }],
+}
+```
+
+A subtree takes its own mode through `<Box theme="light | dark | inverse">`.
 
 There is no `primaryColor`. A brand has no colour to pick here — the identity is
 white, black, and whitespace.

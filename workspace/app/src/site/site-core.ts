@@ -17,7 +17,7 @@ export type FoundationId = (typeof FOUNDATIONS)[number]["id"];
 export type DocGroup = { id: string; label: string; ko: string; docs: readonly string[] };
 export const DOC_GROUPS: readonly DocGroup[] = [
   { id: "", label: "", ko: "", docs: ["README"] },
-  { id: "get-started", label: "Getting Started", ko: "시작하기", docs: ["philosophy", "install"] },
+  { id: "get-started", label: "Getting Started", ko: "시작하기", docs: ["philosophy", "install", "theming"] },
   { id: "foundations", label: "Foundations", ko: "Foundations", docs: ["README", ...FOUNDATIONS.map(({ id }) => id)] },
   { id: "primitives", label: "Primitives", ko: "Primitives", docs: ["README", "layout", "content", "interaction", "a11y"] },
   { id: "atoms", label: "Atoms", ko: "Atoms", docs: ["README", "states"] },

@@ -101,8 +101,8 @@ prop이 받는 닫힌 값의 집합을 **축**이라 부릅니다. 축마다 상
 | `DIVIDER_LEVELS` · `DividerLevel` | `tokens/colors.ts` | Divider의 `level` — `BORDER_LEVELS`의 부분집합 |
 | `DEPTHS` · `Depth` | `tokens/colors.ts` | `tokens.color.shadow.<depth>`, Layout elevation이 가진 그림자 깊이 |
 | `COLOR_MODES` · `ColorMode` | `tokens/color-modes.ts` | 색 역할 한 벌과 그림자 기하를 묶는 모드 — light · dark |
-| `THEME_PREFERENCES` · `ThemePreference` | `tokens/color-modes.ts` | 사용자가 고르는 테마 — 모드 둘과 `system` |
-| `BOX_THEMES` · `BoxTheme` | `tokens/color-modes.ts` | 하위 트리에 거는 테마 — 모드 둘과 주변의 반대인 `inverse` |
+| `THEME_PREFERENCES` · `ThemePreference` | `tokens/color-modes.ts` | 사용자가 고르는 테마 — 모드 둘과 `system`. `PaperProvider`의 `defaultTheme`, `useTheme().theme` |
+| `BOX_THEMES` · `BoxTheme` | `tokens/color-modes.ts` | Box · Stack · Inline · Grid의 `theme` — 모드 둘과 주변의 반대인 `inverse` |
 | `TEXT_VARIANTS` · `TextVariant` | `tokens/typography.ts` | Text의 `variant`, 컨트롤의 `fontSize`, `tokens.typography.role.<variant>` |
 | `TEXT_FAMILIES` · `TextFamily` | `tokens/typography.ts` | Text의 `family` |
 | `CONTROL_SIZES` · `ControlSize` | `tokens/typography.ts` | 컨트롤의 `size` |

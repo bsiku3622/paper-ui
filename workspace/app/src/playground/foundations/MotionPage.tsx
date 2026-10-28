@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Button, Switch, Text } from "@studio-baeks/paper-ui";
+import { Box, Button, Inline, Switch, Text } from "@studio-baeks/paper-ui";
 import { tokens } from "@studio-baeks/paper-ui/tokens";
 
 import { Board, BoardGroup, BoardRow, Cell, FoundationSection, TokenCell, ValueCell } from "./kit";
@@ -41,6 +41,22 @@ const Presence = ({ mode }: { mode: "enter" | "exit" }) => {
   );
 };
 
+// A Box that swaps between the ambient theme and its inverse: the Switch inside changes in the same frame.
+const ThemeSwap = () => {
+  const [inverse, setInverse] = useState(false);
+  return (
+    <div className={s.themeSwap}>
+      <Button size="sm" variant="hairline" onClick={() => setInverse((value) => !value)}>전환</Button>
+      <Box theme={inverse ? "inverse" : undefined} surface="canvas" border radius="md" padding="sm">
+        <Inline gap="sm">
+          <Switch size="sm" defaultChecked aria-label="테마 전환 예시" />
+          <Text variant="caption">{inverse ? "inverse" : "ambient"}</Text>
+        </Inline>
+      </Box>
+    </div>
+  );
+};
+
 const HoverSample = () => (
   <div className={s.hoverSample} style={{ transition: `background-color ${motion.role.hover.duration} ${motion.role.hover.easing}` }}>
     <Text variant="caption" ink="soft">포인터를 올려 보세요</Text>
@@ -54,6 +70,7 @@ const ROLES: { name: RoleName; note: string; specimen: React.ReactNode }[] = [
   { name: "state", note: "켜짐·선택 같은 상태 전이", specimen: <Switch size="sm" defaultChecked aria-label="상태 전이 예시" /> },
   { name: "enter", note: "떠오르는 overlay — 살짝 튀어 안착", specimen: <Presence mode="enter" /> },
   { name: "exit", note: "사라질 때는 짧게 가속", specimen: <Presence mode="exit" /> },
+  { name: "theme", note: "테마 전환 — 컨트롤도 페이지와 같은 프레임에 바뀜", specimen: <ThemeSwap /> },
 ];
 
 export const MotionPage = () => (

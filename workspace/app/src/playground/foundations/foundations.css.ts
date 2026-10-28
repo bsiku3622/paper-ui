@@ -77,4 +77,5 @@ export const spin = style({ display: "inline-block", width: shape.control.icon.m
 export const pulse = style({ display: "inline-block", width: dot, height: dot, borderRadius: shape.radius.full, background: color.accent.info.solid, animationName: fade, animationTimingFunction: motion.easing.standard, animationIterationCount: "infinite" });
 export const hoverSample = style({ padding: `${shape.inset.sm} ${shape.inset.md}`, borderRadius: shape.radius.control, border: line, background: color.bg.raised, selectors: { "&:hover": { backgroundColor: color.bg.sunken } } });
 export const presence = style({ display: "flex", alignItems: "center", gap: layout.gap.md });
+export const themeSwap = style({ display: "flex", alignItems: "center", gap: layout.gap.md });
 export const presenceCard = style({ padding: `${shape.inset.sm} ${shape.inset.md}`, borderRadius: shape.radius.surface.md, border: line, background: color.bg.raised, boxShadow: layout.elevation.overlay.shadow });

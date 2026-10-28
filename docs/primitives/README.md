@@ -8,8 +8,9 @@ Primitive는 Foundations의 값을 화면 구조로 옮기는 첫 컴포넌트�
 | Content | Text · Icon | — | [Content](content.md) |
 | Interaction | Pressable · Hoverable · Toggleable · Draggable · Droppable · ToggleGroup · Overlay | usePress · useHover · useToggle · useDrag · useDrop · useToggleGroup · useOverlay | [Interaction](interaction.md) |
 | A11y | FocusScope · VisuallyHidden · RovingFocus · FormField | useFocusRing · useFocusWithin · useRovingFocusItem · useField | [A11y](a11y.md) |
+| 합성 도구 (분류 밖) | — | mergeProps · mergeRefs · composeEventHandlers | [Interaction](interaction.md#이벤트와-ref-합성) |
 
-`Draggable.Handle`은 Draggable의 anatomy라 따로 세지 않고, `mergeProps` · `mergeRefs` · `composeEventHandlers`는 컴포넌트가 아닌 합성 도구입니다. 합계 17개입니다.
+`Draggable.Handle`은 Draggable의 anatomy라 따로 세지 않고, 합성 도구는 컴포넌트가 아니라서 위 네 분류 밖에 따로 둡니다. 합계 17개입니다.
 
 ## 공통 계약
 
@@ -29,7 +30,7 @@ Hoverable은 button 역할이나 Tab 정지를 자동으로 붙이지 않습니�
 
 ## 테마 도구
 
-`PaperProvider`는 앱 전체의 테마(light · dark · system)를 `<html data-pui-theme>`에 걸고, 고른 테마를 저장합니다. `<html>`에 속성이 없으면 OS 설정이 모드를 정합니다. `ThemeScope`는 하위 트리 하나에 테마를 겁니다. `theme="inverse"`는 주변의 반대라, 밝은 화면 위의 어두운 판이나 어두운 화면 위의 밝은 판을 만듭니다. ThemeScope는 `display: contents`라 배치에 영향이 없고, Portal로 그려지는 Overlay도 열린 자리의 테마를 유지합니다. Box의 `inverse`는 같은 일을 별도 노드 없이 그 Box 자신에 합니다.
+하위 트리 하나의 테마는 Box의 `theme` 축이 정합니다. `light` · `dark`는 고정이고 `inverse`는 주변의 반대라, 밝은 화면 위의 어두운 판이나 어두운 화면 위의 밝은 판을 만듭니다. 별도 노드 없이 그 Box 자신에 걸리고, 판(canvas)이 늘 깔리며, Portal로 그려지는 Overlay도 열린 자리의 테마를 유지합니다([Layout](layout.md)). 앱 전체의 테마는 `PaperProvider`가 `<html data-pui-theme>`에 걸어 저장하고, `useTheme` · `useResolvedTheme`이 그것을 읽습니다. 저장과 부팅 스크립트, hook의 규칙은 [Theming](../get-started/theming.md)에 있습니다.
 
 ## 패키지가 멈추는 곳
 

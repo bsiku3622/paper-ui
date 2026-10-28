@@ -36,6 +36,13 @@
         "default": "./dist/tokens.js"
       }
     },
+    "./theme-boot": {
+      "paper-ui-source": "./src/theme/boot.ts",
+      "default": {
+        "types": "./dist/theme-boot.d.ts",
+        "default": "./dist/theme-boot.js"
+      }
+    },
     "./styles.css": {
       "paper-ui-source": "./src/styles/global.css.ts",
       "default": "./dist/paper-ui.css"

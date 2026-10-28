@@ -68,7 +68,7 @@ export const resolveSpace = (
 //
 // Box 는 구조 패널이다: 어떤 면(surface 깊이)에, 어떤 간격(padding·gap)을 두는가.
 // 색(잉크)·상태 같은 마크 축은 Box 에 없다 — 잉크색은 Button·Badge·Alert, 글자는 Text.
-// 카드 테두리(border)·모서리(radius)·그림자(shadow)·반전(inverse)은 Box.tsx 가 직접 붙인다.
+// 카드 테두리(border)·모서리(radius)·그림자(shadow)·테마(theme)는 Box.tsx 가 직접 붙인다.
 
 export type BoxLike = {
   // 라이트는 세 단계, 다크는 두 단계다 — canvas 가 이미 가장 깊어 sunken 이 같은 neutral.950 을 쓴다.

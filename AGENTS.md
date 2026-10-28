@@ -30,10 +30,9 @@ paper-ui/
     │       ├── tokens/         # 값의 유일한 정의 위치 — SOURCE → VALUES → 역할, *-recipes = 조합 · vocabulary.ts = 어휘 짝 · color-modes.ts = 모드 어휘 · variables.ts · variables.css.ts = 모든 CSS 변수의 배출 · public.ts = entry `/tokens` · layers.css.ts = cascade layer
     │       ├── styles/         # theme.css.ts (문서 바탕 · 스코프 잉크) · utility.css.ts · global.css.ts = entry `/styles.css`
     │       ├── resolvers/      # 규칙의 주인 (prop → className)
-    │       ├── theme/          # 테마 엔진 — engine.ts (React · CSS 없음)
+    │       ├── theme/          # 테마 — engine.ts (React · CSS 없음) · store.ts = 문서당 저장소 · PaperProvider · context · scope · boot.ts = entry `/theme-boot`
     │       ├── primitives/     # layout·text·icon building blocks
-    │       ├── atoms/
-    │       └── provider/
+    │       └── atoms/
     ├── app/                    # 사이트 · Playground · 문서 · 데모 — vite/paper-docs.ts 가 docs/ 를 서빙
     ├── fixtures/harness/       # @paper-ui/harness — e2e 가 패키지를 소비자처럼 마운트하는 페이지
     ├── eslint-rules/           # lint plugin `paper`
@@ -45,8 +44,9 @@ pnpm 명령은 `workspace/` 에서 실행한다. `core`/`web` 분리는 일부�
 않는 두 번째 medium 을 위한 자리는 만들지 않는다. 작업 로그(`logs.md`)는 이 기계에만
 둔다 — `.gitignore`에 있고 추적하지 않는다.
 
-패키지 entry 는 셋이고, 이름 하나는 한 entry 에서만 나간다 — `.`(컴포넌트 · hook · Provider ·
-prop 타입, `"use client"`), `/tokens`(React · CSS 없는 값과 어휘), `/styles.css`(전역 스타일시트).
+패키지 entry 는 넷이고, 이름 하나는 한 entry 에서만 나간다 — `.`(컴포넌트 · hook · Provider ·
+prop 타입, `"use client"`), `/tokens`(React · CSS 없는 값과 어휘), `/theme-boot`(React · CSS 없는 부팅 스크립트 —
+`themeBootScript` · `THEME_STORAGE_KEY` · `THEME_ATTRIBUTE`), `/styles.css`(전역 스타일시트).
 스타일이 들어오는 길은 `/styles.css` 하나다 — index.ts · Provider · 컴포넌트 stylesheet 는 전역 CSS 를
 import 하지 않는다. 앱은 패키지를 이 exports 로만 쓰고(Foundations inspector 의 원본 import 만 예외),
 workspace 에서는 `paper-ui-source` export 조건(Vite `resolve.conditions` · tsconfig `customConditions`)이
@@ -104,6 +104,13 @@ Accent status는 palette와 분리합니다: info→blue, success→green, warni
 focus ring 색은 `interaction.focus`에, 링크 색은 `interaction.link`에 둡니다. focus는 상호작용 상태이고 링크는 눌러서 이동한다는 표시이며, 둘 다 색은 Palette Token에서 옵니다. 링크는 info 상태색과 같은 blue.700/300을 고르지만 뜻이 다른 별도 역할입니다. 링 두께·offset은 색이 아닌 geometry이므로 `shape.focus.width`와 `shape.focus.offset`에 둡니다. Scrim은 `overlay.scrim`, 그림자 색(shadow colour)은 깊이로 이름 붙인 `shadow.floating`과 `shadow.lifted`에 두고, 거리·blur·spread는 shape geometry로 둡니다. "overlay"는 떠 있는 층(Overlay · elevation `overlay` · `overlay.scrim`)만 가리키고, 면 위의 상태 wash는 tint입니다. Semantic Form hover glow는 사용하지 않습니다.
 
 **테마**는 모드(light · dark) 한 벌 — 색 역할 전체와 Layout의 그림자 기하 — 을 고르는 일이고, `<html>`이나 요소의 `data-pui-theme` 속성이 정합니다. `<html>`에 속성이 없으면 OS(`prefers-color-scheme`)가 정하고, 스타일시트와 엔진(`readRootMode`)이 같은 규칙을 씁니다. 스코프는 자기 요소에 그 모드의 고유 역할을 걸고 상속 잉크(`ink.primary`)를 다시 선언하며, 지면 역할(`GROUND_ROLES`: 포커스 링 색 · 그림자 색 · 그림자 기하)은 스코프의 자식부터 바뀝니다. `prefers-contrast: more`는 `COLOR_CONTRAST_MORE`(경계 셋과 `ink.tertiary`)를 같은 스코프에서 한 단 올립니다. 면 사다리는 라이트가 raised > canvas > sunken, 다크는 sunken = canvas입니다(`SURFACE_ORDER`).
+
+하위 트리의 테마는 Box · Stack · Inline · Grid의 `theme`(light · dark · inverse) 축입니다. 테마가 있는 Box는 면을 주지 않아도 그 모드의 canvas를 깔고, 안쪽 글자·Icon·Pressable·Overlay 내용은 그 모드의 잉크를 받으며, 자기 포커스 링과 그림자는 바깥 지면의 모드를 따릅니다. 테마 속성을 `<html>` 아래에서 쓰는 길은 `theme/scope.ts`(Box의 `useThemeScope`, Overlay 포털 루트의 `usePortalScope`) 하나뿐입니다. 테마 엔진(`src/theme/`)은 이렇게 나뉩니다.
+
+- `engine.ts` — 순수 규칙(`resolvePreference` · `resolveBoxTheme` · `invertMode`), `<html>` 읽기(`readRootMode` · `subscribeRootMode`), 전환 동안의 `holdTransitions`, 부팅 스크립트(`bootTheme` · `themeBootScript`)와 저장 키 `THEME_STORAGE_KEY`(`pui-theme`). React도 CSS도 없습니다.
+- `store.ts` — 문서당 하나의 저장소(`getThemeStore`). 선택(light · dark · system)을 들고 `<html>`에 모드를 쓰며, 쓰기마다 전환을 즉시로 묶습니다. `<html>` 속성이 정본이라 밖에서 쓴 값은 읽을 뿐 되돌리지 않습니다. Provider가 몇 개든 이 저장소 하나에 붙고, 마지막 Provider가 사라지면 붙기 전의 속성으로 돌아갑니다.
+- `context.ts` · `PaperProvider.tsx` — Provider는 저장소를 React에 묶을 뿐 자기 상태도 DOM wrapper도 CSS import도 없습니다. `useResolvedTheme`은 Box 테마 → Provider → `<html>`/OS 순으로 읽어 Provider 없이도 참이고, `useTheme`은 Provider 안에서만 씁니다.
+- `boot.ts` — entry `/theme-boot`. 앱은 `<head>` 맨 앞에 `themeBootScript`를 넣어 첫 화면 전에 모드를 정하고, 같은 옵션을 Provider에 넘깁니다(`app/src/theme.ts`).
 
 색을 바꾸면 [docs/foundations/color.md](docs/foundations/color.md)와 Playground Foundations › Color를 함께 확인합니다. API 경로와 source 규칙을 동시에 갱신합니다.
 
@@ -165,6 +172,7 @@ Foundations → Primitives → Atoms
 | Content | 2 | `Text · Icon` |
 | Interaction | 7 | `Pressable · Hoverable · Toggleable · Draggable · Droppable · ToggleGroup · Overlay` |
 | A11y | 4 | `FocusScope · VisuallyHidden · RovingFocus · FormField` |
+| Provider | 3 | `PaperProvider · useTheme · useResolvedTheme` — 테마 엔진의 entry이고 문서당 저장소 하나에 붙습니다. 첫 화면 전에 모드를 정하는 `themeBootScript`는 `/theme-boot`에서 나갑니다 |
 | Atoms | 13 | `Button · IconButton · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Spinner · Divider · Link` |
 
 Primitive·Atom 인벤토리의 정본은 `packages/paper-ui/src/inventory.ts`입니다. `inventory.test.ts`가 `.` entry의 실제 export와 1:1로 대조하고, 앱의 사이트 지도(`app/src/site/site-map.ts`)가 Playground 목록(Foundations → Primitives → Atoms)을 거기서 파생합니다. 위 표는 그 목록을 옮긴 것이므로 인벤토리를 바꾸면 표도 함께 고칩니다.
@@ -194,7 +202,7 @@ Primitive 계약의 정본은 [docs/primitives/](docs/primitives/README.md)(Layo
 
 `docs/`의 계약 문장·문단·표 바로 앞에는 렌더되지 않는 표시 `[contract:<area>.<subject>.<slug>]: #`를 한 줄로 둡니다. area는 foundations · primitives · atoms · install · guardrails · app 중 하나입니다. 그 계약을 단언하는 테스트는 제목을 `[<id>]`로 시작하고, 한 테스트가 계약 여럿을 단언하면 id를 이어 씁니다(`[a] [b] 제목`). 새 계약 문장은 같은 변경에서 표시와 테스트를 함께 얻습니다. `scripts/check-contracts.mjs`가 `pnpm test` 안에서 둘을 1:1로 대조합니다 — 같은 id의 표시가 둘이거나, 테스트 없는 표시(skip · todo · fixme · fail 테스트는 세지 않습니다), 표시 없는 테스트 id, 내용 블록이 뒤따르지 않는 표시, 문단·목록·표에 이어 붙어 글자로 보이는 표시는 실패입니다. 표 바로 위의 표시는 GitHub에서 글자로 보이므로 표와 표시 사이에 빈 줄을 둡니다.
 
-테스트 파일은 계층과 시스템 이름을 따릅니다. 단위 테스트는 소스 옆에 `tokens/{color,shape,layout}.test.ts` · `theme/engine.test.ts` · `primitives/{layout,content,interaction,a11y}.test.tsx` · `atoms/<Atom>.test.tsx`로, e2e는 `tests/{foundations,primitives,atoms,app,install}/<시스템>.spec.ts`로 둡니다. 테스트 이름에서 Foundations는 Color부터 Motion까지 다섯 시스템만 뜻합니다. e2e 도구(하네스 · 키보드 · 기하 · 콘솔 · 계산된 스타일 probe `style.ts`)와 단위 테스트도 함께 쓰는 `dp()`는 `tests/support/`에 있습니다. 앱의 단위 테스트(`app/src/**/*.test.ts(x)`)는 문서 파서 · 링크 해석 · `docs/` 전체의 링크와 앵커 · 사이트 지도 · Playground registry와 JSX 문법에 더해, Foundations inspector(`playground/foundations/inspector.test.ts`: 역할 설명 `ROLE_NOTES`의 누락 없음 · 두 테마의 Palette 경로 이름 · 타이포 preset 범위)를 지킵니다.
+테스트 파일은 계층과 시스템 이름을 따릅니다. 단위 테스트는 소스 옆에 `tokens/{color,shape,layout}.test.ts` · `theme/{engine,store}.test.ts` · `theme/provider.test.tsx` · `primitives/{layout,content,theme,interaction,a11y}.test.tsx` · `atoms/<Atom>.test.tsx`로, e2e는 `tests/{foundations,primitives,atoms,app,install}/<시스템>.spec.ts`로 둡니다. 테스트 이름에서 Foundations는 Color부터 Motion까지 다섯 시스템만 뜻합니다. e2e 도구(하네스 · 키보드 · 기하 · 콘솔 · 계산된 스타일 probe `style.ts`)와 단위 테스트도 함께 쓰는 `dp()`는 `tests/support/`에 있습니다. 앱의 단위 테스트(`app/src/**/*.test.ts(x)`)는 문서 파서 · 링크 해석 · `docs/` 전체의 링크와 앵커 · 사이트 지도 · Playground registry와 JSX 문법에 더해, Foundations inspector(`playground/foundations/inspector.test.ts`: 역할 설명 `ROLE_NOTES`의 누락 없음 · 두 테마의 Palette 경로 이름 · 타이포 preset 범위)를 지킵니다.
 
 e2e는 자기 서버를 직접 띄웁니다. 앱은 41731, 하네스(`fixtures/harness`, `?case=geometry|theme|layers`)는 41732 포트에서 `--strictPort`로 뜨고 이미 떠 있는 서버를 재사용하지 않으므로, 포트를 다른 서버가 쓰고 있으면 실행이 실패합니다. 포트는 `E2E_APP_PORT` · `E2E_HARNESS_PORT`로 바꿉니다. 하네스는 Vite 내부 경로 없이 패키지를 exports로만 불러옵니다. 프로젝트는 chromium · chromium-dark · chromium-reduced-motion · chromium-forced-colors · firefox · webkit 여섯입니다. firefox · webkit은 `foundations/shape` · `primitives` · `atoms` spec을 돌고, `tests/dist/`는 배포본 전용 설정만 돌립니다 — 이름은 dist여도 산출물이 아니라 소스이므로 git · eslint · check-contracts는 산출물 `dist/`와 달리 이 디렉터리를 읽습니다. Tab은 `tests/support/keyboard.ts`의 `tab()`으로만 누릅니다 — macOS WebKit에서는 Alt+Tab이어야 버튼까지 닿습니다. 한 엔진에서만 나는 실패는 `playwright.config.ts`의 `ENGINE_EXCLUSIONS`에 이유와 다시 켜는 단계를 적어 그 엔진에서만 끕니다.
 

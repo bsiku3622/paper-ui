@@ -6,6 +6,7 @@ import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
 
 import { DOC_GROUPS } from "./src/site/site-core";
 import { paperDocs } from "./vite/paper-docs";
+import { themeBoot } from "./vite/theme-boot";
 
 const workspace = fileURLToPath(new URL("..", import.meta.url));
 const docs = fileURLToPath(new URL("../../docs", import.meta.url));
@@ -16,7 +17,7 @@ const docs = fileURLToPath(new URL("../../docs", import.meta.url));
 // src/styles/global.css.ts 로 풀린다. 앱 stylesheet(.css.ts)는 "@studio-baeks/paper-ui/tokens" 를 읽는다.
 // 문서는 레포 루트의 docs/ 에서 곧바로 읽는다 — paperDocs 가 목록을, "@docs" 가 본문을 준다.
 export default defineConfig({
-  plugins: [react(), vanillaExtractPlugin(), paperDocs({ dir: docs, groups: DOC_GROUPS })],
+  plugins: [react(), vanillaExtractPlugin(), paperDocs({ dir: docs, groups: DOC_GROUPS }), themeBoot()],
   resolve: {
     alias: { "@docs": docs },
     conditions: ["paper-ui-source", ...defaultClientConditions],

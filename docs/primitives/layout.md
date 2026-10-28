@@ -4,7 +4,7 @@ Layout Primitive는 면 하나와, 그 면이 자식을 늘어놓는 방식을 �
 
 | 컴포넌트 | 공개 축 | 기본값 |
 | --- | --- | --- |
-| Box | `as` · surface · padding / paddingX / paddingY · gap · border · radius · elevation · inverse · width / minWidth / maxWidth · height / minHeight / maxHeight · overflow / overflowX / overflowY | div. 면·여백·모서리·높이는 모두 opt-in |
+| Box | `as` · surface · padding / paddingX / paddingY · gap · border · radius · elevation · theme · width / minWidth / maxWidth · height / minHeight / maxHeight · overflow / overflowX / overflowY | div. 면·여백·모서리·높이는 모두 opt-in |
 | Stack | Box 전체 + `align` start / center / end / stretch | 세로 flex. align을 주지 않으면 CSS stretch |
 | Inline | Box 전체 + `align` start / center / end / baseline · `justify` start / center / end / between · `wrap` | 가로 flex, align=center, nowrap |
 | Grid | Box 전체 + columns / rows · autoFlow · align / justify · rowGap / columnGap | columns=1, align·justify=stretch |
@@ -22,7 +22,10 @@ Box는 "무엇이든 되는 div"가 아니라 지면 위의 칸입니다. 어떤
 | `gap` | xs ~ 3xl | Layout `gap.*` |
 | `elevation` | raised · sticky · overlay · modal · toast | Layout `elevation.*` — z와 그림자를 함께 |
 | `width` · `height` 계열 | xs ~ xl · full · fit · min-content · max-content · CSS 길이 · number | 이름은 Shape `dimension.*` |
-| `inverse` | boolean | 이 면만 주변의 반대 테마 |
+| `theme` | light · dark · inverse | Color 모드 — 이 면과 안쪽만 그 모드. `inverse`는 주변 모드의 반대 |
+
+[contract:primitives.box.theme]: #
+`theme`을 준 Box는 자기 요소에 그 모드의 고유 역할을 걸고 안쪽을 그 모드로 읽게 합니다. `light` · `dark`는 주변과 무관하게 그 모드이고 `inverse`는 주변 모드의 반대라, 안쪽에 또 `inverse`를 두면 다시 뒤집힙니다. `surface`를 주지 않아도 그 모드의 `canvas`를 깔아 판이 늘 있고, 안쪽 글자 · Icon · Pressable과 Overlay가 여는 층의 내용은 그 모드의 잉크를 받습니다. Box 자신의 포커스 링과 그림자는 서 있는 바깥 지면의 모드로 그려집니다. Stack · Inline · Grid도 같은 prop을 받고, 앱 전체의 테마는 [Theming](../get-started/theming.md)이 정합니다.
 
 여백과 곡률은 이름으로 짝을 맞추면 자연스럽습니다. 카드는 `padding="md" radius="md"`, 패널은 `padding="lg" radius="lg"`처럼 씁니다. `elevation`은 그림자만이 아니라 쌓임 순서도 바꾸므로, 실제로 겹쳐 떠 있는 면에만 줍니다. 크기 이름(xs ~ xl)은 Shape의 이름 있는 크기이고, 그 화면에만 있는 치수는 CSS 길이로 직접 줍니다.
 

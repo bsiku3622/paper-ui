@@ -2,7 +2,8 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { INVENTORY, PRIMITIVE_GROUPS } from "../../packages/paper-ui/src/inventory";
 import { FOUNDATIONS } from "../../app/src/site/site-core";
-import { ICON_SIZES, SPACES } from "../../packages/paper-ui/src/tokens/vocabulary";
+import { COLOR_VALUES_BY_MODE } from "../../packages/paper-ui/src/tokens/colors";
+import { BOX_THEMES, ICON_SIZES, SPACES } from "../../packages/paper-ui/src/tokens/vocabulary";
 import { pageErrors } from "../support/console";
 import { openPlayground } from "../support/harness";
 
@@ -76,10 +77,12 @@ test("the knobs that props already had now have controls", async ({ page }) => {
   await expect(control(page, "orientation")).toBeVisible();
   await expect(control(page, "level")).toBeVisible();
   await openPlayground(page, "box", "Box");
-  for (const axis of ["surface", "elevation", "radius", "padding", "paddingX", "paddingY", "gap", "width", "minWidth", "maxWidth", "height", "minHeight", "maxHeight", "overflow", "overflowX", "overflowY"]) {
+  for (const axis of ["surface", "theme", "elevation", "radius", "padding", "paddingX", "paddingY", "gap", "width", "minWidth", "maxWidth", "height", "minHeight", "maxHeight", "overflow", "overflowX", "overflowY"]) {
     await expect(control(page, axis), axis).toBeVisible();
   }
-  for (const flag of ["border", "inverse"]) await expect(page.getByRole("switch", { name: flag, exact: true })).toBeVisible();
+  await expect(page.getByRole("switch", { name: "border", exact: true })).toBeVisible();
+  await expect(page.getByRole("switch", { name: "inverse", exact: true })).toHaveCount(0);
+  expect(await optionsOf(control(page, "theme"))).toEqual(["__pui_default__", ...BOX_THEMES]);
   expect(await optionsOf(control(page, "surface"))).not.toContain("none");
 });
 
@@ -130,6 +133,27 @@ test("the Theme page shows the hooks: the scope's resolved theme and the page's 
   await expect(page.getByText(/^useTheme\(\): theme=.*, resolved=light$/)).toBeVisible();
   await page.getByRole("combobox", { name: "theme", exact: true }).selectOption("light");
   await expect(page.getByText("useResolvedTheme(): light", { exact: true })).toBeVisible();
-  await expect(page.locator(".code-block pre")).toContainText('<ThemeScope theme="light">');
+  await expect(page.locator(".code-block pre")).toContainText('<Box theme="light"');
   await expect(page.locator(".code-block pre")).toContainText("const resolved = useResolvedTheme();");
+});
+
+test("a Box theme prints in the code, and a themed Box without a surface paints the theme's canvas", async ({ page }) => {
+  await openPlayground(page, "box", "Box");
+  await control(page, "theme").selectOption("dark");
+  await expect(page.locator(".code-block pre")).toContainText('theme="dark"');
+  await control(page, "surface").selectOption("__pui_default__");
+  const box = page.getByText("surface=none", { exact: true }).locator("..");
+  await expect(box).toHaveAttribute("data-pui-theme", "dark");
+  const [r, g, b] = [1, 3, 5].map((at) => parseInt(COLOR_VALUES_BY_MODE.dark.bg.canvas.slice(at, at + 2), 16));
+  await expect(box).toHaveCSS("background-color", `rgb(${r}, ${g}, ${b})`);
+});
+
+test("the Motion page lists the theme role as instant, with a Box that swaps theme", async ({ page }) => {
+  await openPlayground(page, "foundations/motion", "Motion");
+  const row = page.getByText("motion.role.theme", { exact: true }).locator("xpath=ancestor::div[2]");
+  await expect(row).toContainText("0ms");
+  await expect(row).toContainText("linear");
+  await expect(row.locator("[data-pui-theme]")).toHaveCount(0);
+  await row.getByRole("button", { name: "전환" }).click();
+  await expect(row.locator("[data-pui-theme]")).toHaveCount(1);
 });

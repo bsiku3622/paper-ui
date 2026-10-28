@@ -14,7 +14,7 @@ Atoms         Button · Field · Select · Checkbox · Badge …
 
 ## 지도
 
-- **시작하기** — [원칙](get-started/philosophy.md) · [설치](get-started/install.md)
+- **시작하기** — [원칙](get-started/philosophy.md) · [설치](get-started/install.md) · [Theming](get-started/theming.md)
 - **Foundations** — [Overview](foundations/README.md) · [Color](foundations/color.md) · [Typography](foundations/typography.md) · [Shape](foundations/shape.md) · [Layout](foundations/layout.md) · [Motion](foundations/motion.md)
 - **Primitives** — [Overview](primitives/README.md) · [Layout](primitives/layout.md) · [Content](primitives/content.md) · [Interaction](primitives/interaction.md) · [A11y](primitives/a11y.md)
 - **Atoms** — [Overview](atoms/README.md) · [States](atoms/states.md)

@@ -26,6 +26,7 @@ Motion은 위 네 시스템의 값이 시간에 따라 어떻게 바뀌는지를
 | `state` | base | standard | — | background·color·border 상태 전이, 스위치 손잡이 |
 | `enter` | moderate | overshoot | 6px · scale 0.99 | 떠오르는 overlay |
 | `exit` | fast | accelerate | — | 사라지는 overlay |
+| `theme` | instant | linear | — | 테마 전환 — 모드가 바뀌는 프레임에 모든 전이가 즉시 끝남 |
 
 ## 다른 시스템과 다른 점
 

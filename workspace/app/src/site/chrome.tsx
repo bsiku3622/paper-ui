@@ -5,8 +5,8 @@
 
 import { Link, useLocation } from "react-router-dom";
 
-import { Box, Inline, Text, useTheme, type Theme, type ResolvedTheme } from "@studio-baeks/paper-ui";
-import { tokens } from "@studio-baeks/paper-ui/tokens";
+import { Box, Inline, Text, useTheme } from "@studio-baeks/paper-ui";
+import { tokens, type ColorMode } from "@studio-baeks/paper-ui/tokens";
 
 import { Logo } from "./Logo";
 import { SITE_NAV } from "./site-map";
@@ -19,12 +19,12 @@ import "./site.css";
 // 않는다** — 3단 순환이면 어느 방향으로 가든 매번 중간에 한 번 더 눌러야 하고, 그 중간
 // 상태가 지금 화면과 같은 색이면 눌러도 아무 일이 안 일어난 것처럼 보인다. 그래서
 // **해석된 테마(resolved)의 반대로 곧장 간다.**
-const THEME_GLYPH: Record<ResolvedTheme, string> = { light: "☀", dark: "☾" };
-const THEME_LABEL: Record<ResolvedTheme, string> = { light: "라이트", dark: "다크" };
+const THEME_GLYPH: Record<ColorMode, string> = { light: "☀", dark: "☾" };
+const THEME_LABEL: Record<ColorMode, string> = { light: "라이트", dark: "다크" };
 
 const ThemeToggle = () => {
   const { resolved, setTheme } = useTheme();
-  const next: Theme = resolved === "dark" ? "light" : "dark";
+  const next: ColorMode = resolved === "dark" ? "light" : "dark";
   return (
     <button
       type="button"

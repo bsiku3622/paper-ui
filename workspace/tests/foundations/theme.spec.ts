@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
-import { THEME_ATTRIBUTE, tokens } from "../../packages/paper-ui/src/tokens";
+import { THEME_ATTRIBUTE, THEME_STORAGE_KEY } from "../../packages/paper-ui/src/theme/boot";
+import { THEME_SWAP_ATTRIBUTE, tokens } from "../../packages/paper-ui/src/tokens";
 import { COLOR_CONTRAST_MORE, COLOR_VALUES_BY_MODE } from "../../packages/paper-ui/src/tokens/colors";
 import { LAYOUT_MODE_VALUES } from "../../packages/paper-ui/src/tokens/layout";
 import { openHarness } from "../support/harness";
@@ -69,7 +70,7 @@ test("[foundations.theme.scope-roles] a scope re-declares ink, takes its own rol
   expect(await variable(page, "#nested-child", "--pui-color-interaction-focus")).toBe(light.interaction.focus);
 });
 
-test("[foundations.theme.scope-roles] a Box scope casts its shadow on the ground it stands on, and the Box inside casts in the scope's mode", async ({ page }) => {
+test("[foundations.theme.scope-roles] a Box theme casts its shadow and draws its focus ring on the ground it stands on, and the Box inside casts in its own mode", async ({ page }) => {
   await mount(page, "light");
   const card = page.getByTestId("inverse-card");
   const inside = page.getByTestId("inverse-card-child");
@@ -80,6 +81,66 @@ test("[foundations.theme.scope-roles] a Box scope casts its shadow on the ground
   expect(await shadow(card)).toContain("24px 0px");
   expect(await shadow(inside)).toContain("22px -5px");
   expect(await shadow(inside)).not.toBe(await shadow(card));
+  // The shadow colour is the ground's: a child of <body> reads light, a child of the card reads dark.
+  const tint = (parent: typeof card) => parent.evaluate((element) => {
+    const probe = document.createElement("span");
+    probe.style.color = "var(--pui-color-shadow-floating)";
+    element.append(probe);
+    const color = getComputedStyle(probe).color;
+    probe.remove();
+    return color;
+  });
+  const lightTint = await tint(page.locator("body"));
+  const darkTint = await tint(card);
+  expect(lightTint).not.toBe(darkTint);
+  expect(await shadow(card)).toContain(lightTint);
+  expect(await shadow(inside)).toContain(darkTint);
+  // The ring is the ground's as well: the card's own outline reads the light focus colour.
+  await card.focus();
+  await expect(card).toBeFocused();
+  await expect(card).toHaveCSS("outline-color", rgb(light.interaction.focus));
+});
+
+test("[primitives.box.theme] raw text, an Icon, a Pressable and Overlay content inside an inverse Box take the inverse ink", async ({ page }) => {
+  await mount(page, "light");
+  const ink = rgb(dark.ink.primary);
+  const scope = page.getByTestId("ink-scope");
+  await expect(scope).toHaveAttribute(THEME_ATTRIBUTE, "dark");
+  await expect(scope).toHaveCSS("color", ink);
+  await expect(page.getByTestId("ink-raw")).toHaveCSS("color", ink);
+  await expect(page.getByTestId("ink-icon")).toHaveCSS("color", ink);
+  await expect(page.getByTestId("ink-pressable")).toHaveCSS("color", ink);
+  // The page around it keeps its own ink.
+  await expect(page.locator("body")).toHaveCSS("color", rgb(light.ink.primary));
+  // The Overlay's portal root re-establishes the opener's mode, so content outside the Box reads it too.
+  await page.getByTestId("ink-trigger").click();
+  const panel = page.getByRole("dialog", { name: "Ink panel" });
+  await expect(panel).toHaveAttribute(THEME_ATTRIBUTE, "dark");
+  await expect(page.getByTestId("ink-overlay-raw")).toHaveCSS("color", ink);
+  await expect(page.getByTestId("ink-overlay-close")).toHaveCSS("color", ink);
+});
+
+test("[primitives.box.theme] an inverse Box paints the opposite canvas, and follows the OS live", async ({ page }) => {
+  await mount(page, "light");
+  const scope = page.getByTestId("ink-scope");
+  await expect(scope).toHaveCSS("background-color", rgb(dark.bg.canvas));
+  await page.emulateMedia({ colorScheme: "dark" });
+  await expect(scope).toHaveAttribute(THEME_ATTRIBUTE, "light");
+  await expect(scope).toHaveCSS("background-color", rgb(light.bg.canvas));
+  await expect(page.getByTestId("ink-raw")).toHaveCSS("color", rgb(light.ink.primary));
+});
+
+test("[foundations.theme.swap-instant] while <html> carries the swap attribute every transition ends at once", async ({ page }) => {
+  await mount(page, "light");
+  const select = page.getByLabel("dark-select", { exact: true }).locator("..");
+  const duration = () => select.evaluate((element) => getComputedStyle(element).transitionDuration);
+  const delay = () => select.evaluate((element) => getComputedStyle(element).transitionDelay);
+  expect(await duration()).not.toBe("0s");
+  await page.evaluate((name) => document.documentElement.setAttribute(name, ""), THEME_SWAP_ATTRIBUTE);
+  expect(await duration()).toBe("0s");
+  expect(await delay()).toBe("0s");
+  await page.evaluate((name) => document.documentElement.removeAttribute(name), THEME_SWAP_ATTRIBUTE);
+  expect(await duration()).not.toBe("0s");
 });
 
 test("[foundations.color.contrast-more] prefers-contrast: more lifts the quiet roles in the mode in force, scopes included", async ({ page }) => {
@@ -104,7 +165,7 @@ test("[foundations.color.contrast-more] prefers-contrast: more lifts the quiet r
 // The site: the Provider writes the attribute from the stored choice, and the GNB toggle flips it.
 const openSite = async (page: Page, stored: "light" | "dark", colorScheme: "light" | "dark", path = "/") => {
   await page.emulateMedia({ colorScheme });
-  await page.addInitScript((value) => window.localStorage.setItem("paper-theme", value), stored);
+  await page.addInitScript(([key, value]) => window.localStorage.setItem(key!, value!), [THEME_STORAGE_KEY, stored]);
   await page.goto(path);
 };
 
@@ -129,4 +190,48 @@ test("the sunken preview background says it is the canvas where the mode folds t
   await expect(sunken).toHaveAttribute("title", "sunken background");
   await page.getByRole("button", { name: "다크 테마로 전환" }).click();
   await expect(sunken).toHaveAttribute("title", "다크에서는 canvas와 같은 단계");
+});
+
+test("[foundations.theme.swap-instant] a toggle leaves no CSS transition running on Buttons and Switches", async ({ page }) => {
+  await openSite(page, "light", "light", "/playground/switch");
+  const toggle = page.getByRole("button", { name: "다크 테마로 전환" });
+  const control = page.getByRole("switch").first();
+  await expect(control).toBeVisible();
+  // The controls do transition when nothing holds them, or the check below would pass for nothing.
+  expect(await control.evaluate((element) => getComputedStyle(element).transitionDuration)).not.toBe("0s");
+  const running = await toggle.evaluate(async (button) => {
+    (button as HTMLButtonElement).click();
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    return document.getAnimations().filter((animation) => animation instanceof CSSTransition).length;
+  });
+  expect(running).toBe(0);
+  await expect(page.locator("html")).toHaveAttribute(THEME_ATTRIBUTE, "dark");
+  await expect(page.locator("html")).not.toHaveAttribute(THEME_SWAP_ATTRIBUTE);
+  expect(await page.evaluate(() => document.getAnimations().filter((animation) => animation instanceof CSSTransition).length)).toBe(0);
+});
+
+// Without the app's JavaScript: only the boot script in <head> has run.
+const bootOnly = async (page: Page, colorScheme: "light" | "dark", stored?: string) => {
+  await page.emulateMedia({ colorScheme });
+  await page.route("**/src/main.tsx", (route) => route.abort());
+  if (stored !== undefined) await page.addInitScript(([key, value]) => window.localStorage.setItem(key!, value!), [THEME_STORAGE_KEY, stored]);
+  await page.goto("/");
+};
+
+test("[foundations.theme.boot-before-paint] the attribute is on <html> before any app JavaScript runs, from the OS", async ({ page }) => {
+  await bootOnly(page, "dark");
+  await expect(page.locator("#root")).toBeEmpty();
+  await expect(page.locator("html")).toHaveAttribute(THEME_ATTRIBUTE, "dark");
+});
+
+test("[foundations.theme.boot-before-paint] a stored light beats a dark OS", async ({ page }) => {
+  await bootOnly(page, "dark", "light");
+  await expect(page.locator("#root")).toBeEmpty();
+  await expect(page.locator("html")).toHaveAttribute(THEME_ATTRIBUTE, "light");
+});
+
+test("[foundations.theme.boot-before-paint] a stored dark beats a light OS", async ({ page }) => {
+  await bootOnly(page, "light", "dark");
+  await expect(page.locator("#root")).toBeEmpty();
+  await expect(page.locator("html")).toHaveAttribute(THEME_ATTRIBUTE, "dark");
 });
