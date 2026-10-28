@@ -2,7 +2,7 @@
 
 import { globalStyle } from "@vanilla-extract/css";
 
-import { tokens } from "@studio-baeks/paper-ui";
+import { tokens } from "@studio-baeks/paper-ui/tokens";
 
 const BP = tokens.layout.breakpoint;
 

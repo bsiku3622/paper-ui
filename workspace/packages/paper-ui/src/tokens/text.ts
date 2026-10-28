@@ -29,7 +29,7 @@ export const FONT = {
   // Pretendard 옆에서 크기·무게가 맞는다. 라틴·숫자는 여기서 그린다. 한글은 이들에
   // 글리프가 없어 뒤의 CJK mono(D2Coding)로 떨어진다 — 한글도 등폭이 된다.
   // (Pretendard 는 proportional 이라 mono 스택에서 뺐다 — 넣으면 한글이 sans 로 샌다.
-  //  소비 앱은 D2Coding 같은 한글 mono 를 로드해야 한다 — 앱 index.html 참고.)
+  //  소비 앱은 D2Coding 같은 한글 mono 를 로드해야 한다 — docs/get-started/install.md 폰트 참고.)
   mono: "ui-monospace, SFMono-Regular, Menlo, Consolas, 'D2Coding', monospace",
 } as const;
 

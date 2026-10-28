@@ -32,7 +32,7 @@ SHAPE_RECIPES   컴포넌트 anatomy: 역할과 원본 anatomy를 조합한 식 
 
 이 한 줄로 그 영역의 md 버튼 높이는 40, 입력 inset은 12, 버튼 inset은 17, 체크박스는 20, 스위치 트랙은 40×22가 됩니다. 역할 변수를 따로 구웠다면 `:root`에서 이미 계산이 끝나 이 재정의를 따라가지 못합니다.
 
-패키지 안에서는 숫자를 원본 파일(`shape.ts` · `layout.ts` · `text.ts` · `motion.ts`와 색 원본)에만 씁니다. recipe와 stylesheet에는 숫자가 없고, eslint `no-raw-geometry`가 패키지 전체에서 이를 막습니다.
+패키지 안에서는 숫자를 원본 파일(`shape.ts` · `layout.ts` · `text.ts` · `motion.ts`와 색 원본)에만 씁니다. recipe와 stylesheet에는 숫자가 없고, eslint `paper/source-numbers`가 패키지 전체에서 이를 막습니다.
 
 ## 길이 scale — inset
 
@@ -105,4 +105,4 @@ Box의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값이 
 
 ## 앱에서
 
-앱은 간격·형태·깊이를 역할로 고릅니다. 안쪽 여백은 `tokens.shape.inset`, 형제 사이·margin·위치 offset은 `tokens.layout.gap`, 선은 `tokens.shape.stroke`, 그림자와 z는 `tokens.layout.elevation`입니다. 사이드바 폭이나 그리드 트랙처럼 그 화면에만 있는 치수는 앱이 직접 씁니다. eslint `no-raw-geometry`의 앱 범위가 이 경계를 지킵니다.
+앱은 간격·형태·깊이를 역할로 고릅니다. 안쪽 여백은 `tokens.shape.inset`, 형제 사이·margin·위치 offset은 `tokens.layout.gap`, 선은 `tokens.shape.stroke`, 그림자와 z는 `tokens.layout.elevation`입니다. 사이드바 폭이나 그리드 트랙처럼 그 화면에만 있는 치수는 앱이 직접 씁니다. eslint `paper/source-numbers`의 앱 범위가 이 경계를 지킵니다.

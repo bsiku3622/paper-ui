@@ -11,9 +11,8 @@ import {
   Inline,
   Stack,
   Text,
-  tokens,
-  type StatusName,
 } from "@studio-baeks/paper-ui";
+import { tokens, type StatusName } from "@studio-baeks/paper-ui/tokens";
 
 import { SiteNav } from "../site/chrome";
 import { Logo } from "../site/Logo";

@@ -7,7 +7,7 @@
 
 import { globalStyle } from "@vanilla-extract/css";
 
-import { tokens, stateTransition } from "@studio-baeks/paper-ui";
+import { tokens, stateTransition } from "@studio-baeks/paper-ui/tokens";
 
 const BP = tokens.layout.breakpoint;
 

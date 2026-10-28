@@ -1,6 +1,7 @@
 import { useState } from "react";
 
-import { Button, Switch, Text, tokens } from "@studio-baeks/paper-ui";
+import { Button, Switch, Text } from "@studio-baeks/paper-ui";
+import { tokens } from "@studio-baeks/paper-ui/tokens";
 
 import { Board, BoardGroup, BoardRow, Cell, FoundationSection, TokenCell, ValueCell } from "./kit";
 import * as s from "./foundations.css";

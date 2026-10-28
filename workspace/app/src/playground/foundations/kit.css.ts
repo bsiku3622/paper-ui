@@ -4,7 +4,7 @@
 // on a subgrid row would instead shrink its first and last columns.
 import { globalStyle, style, styleVariants } from "@vanilla-extract/css";
 
-import { tokens } from "@studio-baeks/paper-ui";
+import { tokens } from "@studio-baeks/paper-ui/tokens";
 
 const line = `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`;
 const spanAll = { gridColumn: "1 / -1", display: "grid", gridTemplateColumns: "subgrid", alignItems: "center", minWidth: 0 } as const;

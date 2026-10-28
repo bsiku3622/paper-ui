@@ -133,7 +133,7 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
   return (
     // 래퍼는 위젯이 아니라 여백 클릭을 안쪽 input 으로 넘기는 표현용 컨테이너다 —
     // 진짜 컨트롤은 input 이라 role·키보드를 붙이는 게 오히려 틀리다.
-    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions -- 여백 클릭만 안쪽 input 으로 넘긴다
     <div
       className={joinClass(fieldWrap, fieldSurface[surface], fieldSize[size], resolveControlTypography("field", size), fontSize && fieldFontSize[fontSize], shape === "pill" && fieldPill, status !== "default" && fieldStatus[status], className)}
       style={style}

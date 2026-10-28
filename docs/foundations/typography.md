@@ -27,7 +27,7 @@ Typography도 세 단계입니다. 원본 수치인 **Typography Palette**, 그�
 
 Pretendard를 맨 앞에 둡니다. 라틴과 한글을 한 몸으로 그려, 섞인 문장도 굵기와 리듬이 갈라지지 않습니다. `-apple-system`을 앞에 두면 라틴만 San Francisco로, 한글은 Apple SD Gothic Neo로 갈라져 같은 굵기에서도 한글이 얇아 보입니다.
 
-mono는 위계가 아니라 **family 축**입니다. `<Text family="mono">`로 어느 역할에도 얹고, 기술적인 자리에만 씁니다. 표의 숫자 열은 mono로 바꾸지 않고 sans에 `tabular-nums`만 줍니다. mono는 같은 px에서 sans보다 크게 읽혀 크기에 `monoSizeScale`(0.95)을 곱하고, 역할별 자간 대신 `tracking.mono`(−0.04em) 하나를 씁니다 — SF Mono와 D2Coding은 글자 폭이 넓어 UI에서 벌어져 보이기 때문입니다. 한글 mono를 쓰려면 앱이 D2Coding을 불러와야 합니다.
+mono는 위계가 아니라 **family 축**입니다. `<Text family="mono">`로 어느 역할에도 얹고, 기술적인 자리에만 씁니다. 표의 숫자 열은 mono로 바꾸지 않고 sans에 `tabular-nums`만 줍니다. mono는 같은 px에서 sans보다 크게 읽혀 크기에 `monoSizeScale`(0.95)을 곱하고, 역할별 자간 대신 `tracking.mono`(−0.04em) 하나를 씁니다 — SF Mono와 D2Coding은 글자 폭이 넓어 UI에서 벌어져 보이기 때문입니다. 한글 mono를 쓰려면 앱이 D2Coding을 불러와야 합니다 — 버전을 고정한 스니펫은 [설치 › 폰트](../get-started/install.md#폰트)에 있습니다.
 
 ## 글자 역할
 

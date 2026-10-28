@@ -1,4 +1,5 @@
-import { Badge, Button, Checkbox, Field, Icon, Radio, Select, Spinner, Switch, Textarea, tokens, CONTROL_SIZES, DIMENSION_KEYS, ICON_SIZES, SPACE_KEYS, type ControlSize } from "@studio-baeks/paper-ui";
+import { Badge, Button, Checkbox, Field, Icon, Radio, Select, Spinner, Switch, Textarea } from "@studio-baeks/paper-ui";
+import { tokens, CONTROL_SIZES, DIMENSION_KEYS, ICON_SIZES, SPACE_KEYS, type ControlSize } from "@studio-baeks/paper-ui/tokens";
 
 import { SHAPE_SOURCE } from "../../../../packages/paper-ui/src/tokens/shape";
 import { SHAPE_RECIPES } from "../../../../packages/paper-ui/src/tokens/shape-recipes";

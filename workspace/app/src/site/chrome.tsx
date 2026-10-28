@@ -5,7 +5,8 @@
 
 import { Link, useLocation } from "react-router-dom";
 
-import { Box, Inline, Text, tokens, useTheme, type Theme, type ResolvedTheme } from "@studio-baeks/paper-ui";
+import { Box, Inline, Text, useTheme, type Theme, type ResolvedTheme } from "@studio-baeks/paper-ui";
+import { tokens } from "@studio-baeks/paper-ui/tokens";
 
 import { Logo } from "./Logo";
 import "./site.css";

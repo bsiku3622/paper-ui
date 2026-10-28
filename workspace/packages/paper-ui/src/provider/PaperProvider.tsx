@@ -1,4 +1,4 @@
-// PaperProvider — 스타일을 보장하고, 테마를 관장하고, 앱을 감싼다.
+// PaperProvider — 테마를 관장하고 앱을 감싼다. 스타일은 앱이 styles.css 를 한 번 import 해 들인다.
 //
 // 색·크기 같은 브랜드 선택은 여전히 없다 — primaryColor 가 없고, 정체성은 순백·검정·
 // 여백에서 나온다. Provider 가 고르는 단 하나는 *테마* 다: light · dark · system.
@@ -10,10 +10,7 @@
 
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 
-import "../styles/theme.css";
-import "../styles/utility.css";
-import "../styles/color.css";
-
+import { isStylesheetLoaded } from "../tokens";
 import {
   ResolvedThemeContext,
   ThemeControlContext,
@@ -40,6 +37,9 @@ const readStored = (): Theme | null => {
   }
 };
 
+// styles.css 를 빠뜨린 앱은 경고 없이 스타일 없는 화면을 본다 — 개발 중 한 번만 알린다.
+let stylesheetWarned = false;
+
 export type PaperProviderProps = {
   // 초기 테마. 기본 system(OS 따라감). 저장된 선택이 있으면 그게 이긴다.
   defaultTheme?: Theme;
@@ -49,6 +49,12 @@ export type PaperProviderProps = {
 export const PaperProvider = ({ defaultTheme = "system", children }: PaperProviderProps) => {
   const [theme, setThemeState] = useState<Theme>(() => readStored() ?? defaultTheme);
   const [resolved, setResolved] = useState<ResolvedTheme>(() => resolve(theme));
+
+  useEffect(() => {
+    if (process.env.NODE_ENV === "production" || stylesheetWarned || isStylesheetLoaded(document.documentElement)) return;
+    stylesheetWarned = true;
+    console.warn('[paper-ui] The stylesheet is not loaded. Import "@studio-baeks/paper-ui/styles.css" once at the app entry.');
+  }, []);
 
   // theme(또는 system 일 때 OS 설정) 변화 → resolved 재계산. system 이면 matchMedia 구독.
   useEffect(() => {

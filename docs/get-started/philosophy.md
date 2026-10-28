@@ -108,7 +108,7 @@ Paper UI는 강조가 필요할 때 요소를 띄우지 않고 반대로 가라�
 
 #### 원칙 6. 빌드가 규칙을 지킨다
 
-앞의 약속은 문서만으로 지켜지지 않습니다. lint는 raw color와 token source import, package 스타일에서의 inline token 주입을 막습니다. `eslint-plugin-jsx-a11y`는 유효하지 않은 role·aria, 대체텍스트 누락, 양수 tabindex 같은 정적 접근성 문제를 검사합니다. 런타임 동작은 제품 구현과 검토가 책임집니다.
+앞의 약속은 문서만으로 지켜지지 않습니다. lint는 raw color와 token source import, package 스타일에서의 inline token 주입을 막습니다. paper-ui가 직접 정의한 lint 규칙(`paper/*`)은 `eslint-disable` 주석으로도 끌 수 없습니다. `eslint-plugin-jsx-a11y`는 유효하지 않은 role·aria, 대체텍스트 누락, 양수 tabindex 같은 정적 접근성 문제를 검사합니다. 이 검사들은 누군가 기억해서 돌리는 것이 아닙니다. 패키지 build는 lint와 typecheck를 통과해야 번들을 만들고, 배포 전 검사와 CI는 단위 테스트와 브라우저 테스트까지 같은 순서로 돌립니다. 런타임 동작은 제품 구현과 검토가 책임집니다.
 
 Paper UI는 값을 한 곳에서만 정의합니다. 색·크기·시간은 `tokens/`에 정본이 있고, 같은 트리를 걷는 헬퍼가 CSS 변수와 TS 참조 객체를 만듭니다. Playground는 Palette와 Foundations를 보여주고, 이슈 트래커 데모는 primitives와 atoms를 실제 앱 조합 안에서 살펴보는 자리입니다.
 

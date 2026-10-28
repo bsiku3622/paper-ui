@@ -9,7 +9,7 @@
 // 실제 값은 styles/theme.css.ts 가 :root 에 emit 한다. 두 자리 모두 아래 VALUES
 // 트리를 같은 helper 로 걷기 때문에 이름이 어긋날 수 없다.
 
-import { buildVarTree, pathToVarRef } from "./helpers";
+import { buildVarTree, pathToCssVar, pathToVarRef } from "./helpers";
 import { COLOR_VALUES } from "./colors";
 import { SHAPE } from "./shape";
 import { CONTROL_SPEC, TEXT_SPEC, TEXT_VALUES } from "./text";
@@ -71,3 +71,7 @@ export { ELEVATIONS } from "./layout";
 export type { Elevation } from "./layout";
 
 export { kebab, pathToCssVar, pathToVarRef, walkValues, buildVarTree } from "./helpers";
+
+// styles.css 가 깔렸는가 — Shape 원본 변수는 테마와 무관하게 :root 에 늘 굽힌다(styles/theme.css.ts).
+export const isStylesheetLoaded = (root: Element): boolean =>
+  getComputedStyle(root).getPropertyValue(pathToCssVar(["shape", "stroke", "border"])).trim() !== "";

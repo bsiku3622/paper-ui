@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 
-import { Box, Inline, Stack, Text, tokens } from "@studio-baeks/paper-ui";
+import { Box, Inline, Stack, Text } from "@studio-baeks/paper-ui";
+import { tokens } from "@studio-baeks/paper-ui/tokens";
 
 import { SiteNav, NAV_HEIGHT } from "../site/chrome";
 import { FOUNDATION_SECTIONS } from "./foundations/sections";

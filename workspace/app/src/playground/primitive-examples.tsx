@@ -55,7 +55,7 @@ export function FocusExample() {
   return <Stack gap="md" width="full" align="start">
     <Pressable className={styles.control} onPress={() => setOpen(true)} disabled={open}>Focus scope 열기</Pressable>
     {/* Opened by an explicit user action; focus enters the new scope and is restored on close. */}
-    {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
+    {/* eslint-disable-next-line jsx-a11y/no-autofocus -- FocusScope 예제는 열리자마자 첫 입력에 포커스를 보여 줍니다 */}
     {open && <FocusScope contain restoreFocus autoFocus>
       <Stack role="group" aria-label="포커스 범위" gap="sm" padding="md" border radius="md" width="full">
         <Field aria-label="첫 입력" placeholder="자동 포커스" />

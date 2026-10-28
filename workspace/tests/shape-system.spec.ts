@@ -12,9 +12,9 @@ const mount = async (page: Page) => {
   await page.goto("/playground");
   await expect(page.getByRole("heading", { name: "Playground", exact: true })).toBeVisible();
   await page.evaluate(async ({ entry, modules }) => {
-    const react = await import(modules["react.js"]);
+    const react = await import(modules["react.js"]!);
     const h = (react.default ?? react).createElement;
-    const dom = await import(modules["react-dom_client.js"]);
+    const dom = await import(modules["react-dom_client.js"]!);
     const { createRoot } = dom.default ?? dom;
     const ui = await import(entry);
     document.getElementById("root")!.style.display = "none";
@@ -107,7 +107,7 @@ test("one source override in a subtree re-derives every role built on it", async
   expect((await metrics(page, "[data-testid=surface-corner]")).radius).toBe(3);
   // Focus width changes do not alter the switch rim or checkbox mark thickness.
   expect((await metrics(page, "[aria-label=switch-md]", "::after")).inset).toBe(2);
-  await page.locator("#shape-fixture").evaluate((element) => { element.dir = "rtl"; });
+  await page.locator("#shape-fixture").evaluate((element: HTMLElement) => { element.dir = "rtl"; });
   await expect.poll(async () => (await metrics(page, "[aria-label=switch-md]", "::after")).transform).toBe("matrix(1, 0, 0, 1, -18, -9)");
 });
 

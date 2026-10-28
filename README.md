@@ -45,6 +45,8 @@ Every Foundations system writes its numbers once, in its source, and exposes rol
 cd workspace
 pnpm install
 pnpm dev          # site, playground, docs and the demo screen
+pnpm check        # lint, typecheck and unit tests: the fast loop while working
+pnpm verify       # check, then the package and app builds, then e2e: what CI and prepublish run
 pnpm typecheck
 pnpm lint
 pnpm test         # unit

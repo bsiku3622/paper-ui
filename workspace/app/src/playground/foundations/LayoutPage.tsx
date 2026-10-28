@@ -1,4 +1,5 @@
-import { Text, tokens, useResolvedTheme, ELEVATIONS, SPACE_KEYS, type Elevation } from "@studio-baeks/paper-ui";
+import { Text, useResolvedTheme } from "@studio-baeks/paper-ui";
+import { tokens, ELEVATIONS, SPACE_KEYS, type Elevation } from "@studio-baeks/paper-ui/tokens";
 
 import { LAYOUT_SOURCE } from "../../../../packages/paper-ui/src/tokens/layout";
 import { Board, BoardGroup, BoardRow, Cell, FoundationSection, TokenCell, ValueCell, resolved } from "./kit";

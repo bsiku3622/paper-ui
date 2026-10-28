@@ -19,22 +19,34 @@ paper-ui — 복잡한 웹앱을 위한, 순백과 검정의 디자인 시스템
 
 ```
 paper-ui/
+├── .github/workflows/ci.yml    # push · pull request 마다 pnpm verify
 ├── docs/                       # get-started · foundations · primitives · atoms
 └── workspace/
     ├── packages/paper-ui/      # @studio-baeks/paper-ui — 단일 npm 패키지
     │   └── src/
-    │       ├── tokens/         # 값의 유일한 정의 위치
-    │       ├── styles/         # theme.css.ts (raw 값 → CSS var) · utility.css.ts
+    │       ├── index.ts        # entry `.` — 컴포넌트 · hook · Provider ("use client")
+    │       ├── tokens/         # 값의 유일한 정의 위치 · public.ts = entry `/tokens`
+    │       ├── styles/         # theme.css.ts (raw 값 → CSS var) · utility.css.ts · global.css.ts = entry `/styles.css`
     │       ├── resolvers/      # 규칙의 주인 (prop → className)
     │       ├── primitives/     # layout·text·icon building blocks
     │       ├── atoms/
     │       └── provider/
-    └── app/                    # 사이트 · Playground · 문서 · 데모
+    ├── app/                    # 사이트 · Playground · 문서 · 데모
+    ├── eslint-rules/           # lint plugin `paper`
+    ├── scripts/                # 레포 검사 (docs-sync.test.mjs)
+    └── tests/                  # Playwright e2e
 ```
 
 pnpm 명령은 `workspace/` 에서 실행한다. `core`/`web` 분리는 일부러 없다 — 존재하지
 않는 두 번째 medium 을 위한 자리는 만들지 않는다. 작업 로그(`logs.md`)는 이 기계에만
 둔다 — `.gitignore`에 있고 추적하지 않는다.
+
+패키지 entry 는 셋이고, 이름 하나는 한 entry 에서만 나간다 — `.`(컴포넌트 · hook · Provider ·
+prop 타입, `"use client"`), `/tokens`(React · CSS 없는 값과 어휘), `/styles.css`(전역 스타일시트).
+스타일이 들어오는 길은 `/styles.css` 하나다 — index.ts · Provider · 컴포넌트 stylesheet 는 전역 CSS 를
+import 하지 않는다. 앱은 패키지를 이 exports 로만 쓰고(Foundations inspector 의 원본 import 만 예외),
+workspace 에서는 `paper-ui-source` export 조건(Vite `resolve.conditions` · tsconfig `customConditions`)이
+같은 exports 를 소스로 푼다.
 
 ---
 
@@ -109,6 +121,8 @@ variant 에도 교차한다. mono 는 `.pui-mono` 가 등폭·전용 tracking·�
 - **서체** — Pretendard 를 맨 앞에(라틴·한글을 한 몸으로 그려 굵기가 균형), `-apple-system`
   은 fallback. `family="mono"` 는 코드·토큰·식별자 같은 기술적 자리에만 — 숫자를 무조건
   등폭으로 두지 않는다. 데이터 표의 숫자 열은 sans 그대로 `tabular-nums` 로 자리만 맞춘다.
+  폰트 스니펫(Pretendard · D2Coding, 버전 고정)의 정본은 [install.md](docs/get-started/install.md#폰트) 이고,
+  `app/index.html` 은 그 두 줄을 그대로 쓴다 — `scripts/docs-sync.test.mjs` 가 둘을 대조한다.
 - **label 은 sentence-case semibold** — mono·uppercase 아님.
 
 ---
@@ -135,12 +149,13 @@ RovingFocus는 등록 항목의 Tab 진입점과 실제 DOM focus 탐색을 관�
 
 Primitive 계약의 정본은 [docs/primitives/](docs/primitives/README.md)(Layout · Content · Interaction · A11y)이고, Atom은 [docs/atoms/](docs/atoms/README.md)입니다. 기존 Layout·Content props를 유지하고 native ref를 전달합니다. Interaction은 컴포넌트와 usePress/useHover/useToggle/useDrag/useDrop을 함께 제공하고, FocusScope·VisuallyHidden·focus hook은 A11y에 둡니다. press는 일시적 입력, toggle은 유지되는 boolean 선택입니다. Draggable은 move/transfer 모드를 구분하며 Handle은 부모 전체 박스를 조작합니다. handle activation에서는 pointer·keyboard 모두 손잡이에서만 시작합니다. Move 좌표·Grid track은 runtime 값이므로 inline style을 사용하지만 semantic 토큰은 기존 class 경로를 유지합니다. 저수준 입력·포커스·native transfer 처리는 React Aria를 재사용합니다. 기존 Atom을 자동으로 새 행동 컴포넌트로 교체하지 않습니다.
 
-1. **raw 색값 금지** — surface hex는 `tokens/palette.ts`, accent hex·OKLCH는 `tokens/color-ladder.ts`에만. 소비처는 `tokens.color.X`로만 참조.
-2. **원본 import 격리** — palette·ladder·shape·layout 원본과 semantic VALUES는 consumer에서 import 금지. Playground Foundations inspector만 원본을 보여주기 위한 예외입니다.
-3. **inline style 로 토큰 주입 금지** — package 스타일은 `.css.ts` className 으로만 토큰을 적용합니다.
-4. **길이는 token source에만** — 패키지는 예외 없이 원본 파일(shape·layout·text·motion·색)에만 숫자를 씁니다. 앱은 간격·형태·깊이(padding·margin·gap·offset·radius·선·그림자·z)를 역할로 고르고, 그 화면에만 있는 치수(폭·높이·그리드 트랙)만 직접 씁니다. 0·100%·정렬·회전 같은 구조적 CSS는 컴포넌트가 소유합니다.
+1. **raw 색값 금지** (`paper/raw-color`) — surface hex는 `tokens/palette.ts`, accent hex·OKLCH는 `tokens/color-ladder.ts`에만. 소비처는 `tokens.color.X`로만 참조.
+2. **원본 import 격리** (`no-restricted-imports`) — palette·ladder·shape·layout 원본과 semantic VALUES는 consumer에서 import 금지. Playground Foundations inspector만 원본을 보여주기 위한 예외입니다.
+3. **inline style 로 토큰 주입 금지** (`paper/inline-token`) — package 스타일은 `.css.ts` className 으로만 토큰을 적용합니다.
+4. **길이는 token source에만** (`paper/source-numbers`) — 패키지는 예외 없이 원본 파일(shape·layout·text·motion·색)에만 숫자를 씁니다. 앱은 간격·형태·깊이(padding·margin·gap·offset·radius·선·그림자·z)를 역할로 고르고, 그 화면에만 있는 치수(폭·높이·그리드 트랙)만 직접 씁니다. 0·100%·정렬·회전 같은 구조적 CSS는 컴포넌트가 소유합니다.
+5. **규칙은 주석으로 끄지 않음** (`paper/no-rule-disable`) — paper 규칙은 `eslint-disable` 주석으로 끄지 않고, 예외는 `eslint.config.js`에만 선언합니다. 다른 규칙을 끄는 주석은 `-- 이유`를 답니다. 쓰이지 않는 disable 주석도 오류입니다.
 
-네 규칙은 **eslint 가** 막습니다 (문서가 아니라 빌드가).
+다섯 규칙은 eslint가 막고 build·prepublish·CI가 그 검사를 돌립니다.
 
 **접근성도 빌드가 지킵니다.** `eslint-plugin-jsx-a11y`(recommended)를 `polymorphicPropName:"as"`로 설정해 `<Box as="button">` 같은 polymorphic 요소까지 검사합니다. 유효한 role·aria, 대체텍스트, 양수 tabindex 금지 등을 lint하며, 폼 아톰은 `label-has-associated-control`의 `controlComponents`에 등록합니다. 상호작용별 runtime 계약은 실제 제품 구현과 검토가 책임집니다.
 
@@ -148,7 +163,8 @@ Primitive 계약의 정본은 [docs/primitives/](docs/primitives/README.md)(Layo
 
 ## 작업 완료 전 체크
 
-- [ ] `pnpm -r typecheck` · `pnpm lint` 통과했는가
+- [ ] `pnpm verify` 가 통과했는가 — check(lint · typecheck · 단위 테스트) → build(패키지 → 앱) → e2e. CI 와 배포 전 검사(`prepublishOnly`)가 같은 명령을 돌린다
+- [ ] 작업 중에는 `pnpm check` 로 빠르게 확인하고, Foundations · Primitives · Atoms 를 바꿨다면 `pnpm test:e2e` 도 함께 돌렸는가
 - [ ] 색을 추가했다면 — 정말 *의미* 가 있는가. 장식이면 넣지 않는다
 - [ ] 큰 면을 색으로 채우지 않았는가 (면은 검정 primary만)
 - [ ] Primitive·Atom API를 수정했다면 — app의 실제 사용 예와 문서를 갱신했는가

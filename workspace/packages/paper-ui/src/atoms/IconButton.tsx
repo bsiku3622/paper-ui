@@ -3,7 +3,7 @@
 
 import { cloneElement, forwardRef, type ReactElement } from "react";
 
-import type { IconSize } from "../primitives";
+import type { IconSize } from "../tokens";
 import { joinClass } from "../internal/joinClass";
 import { Button, type ButtonProps } from "./Button";
 import { Icon, type IconProps } from "../primitives";

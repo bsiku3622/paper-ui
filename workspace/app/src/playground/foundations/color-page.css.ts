@@ -1,7 +1,7 @@
 // The Color page's own layout. Surface, ink, border, radius and spacing come from Paper UI.
 import { globalStyle } from "@vanilla-extract/css";
 
-import { tokens } from "@studio-baeks/paper-ui";
+import { tokens } from "@studio-baeks/paper-ui/tokens";
 
 // One value per row now that the page shows the current theme only.
 const ROW = "minmax(0, 1fr) minmax(14rem, 18rem)";

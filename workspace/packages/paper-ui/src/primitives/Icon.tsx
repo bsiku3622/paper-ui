@@ -11,8 +11,6 @@ import { resolveInk, type Ink } from "../resolvers";
 import type { IconSize } from "../tokens";
 import { iconRoot, iconSize } from "./Icon.css";
 
-export { ICON_SIZES, type IconSize } from "../tokens";
-
 export type IconProps = Omit<SVGProps<SVGSVGElement>, "size"> & {
   // typography ladder와 같은 이름을 쓰는 아이콘 아트보드 크기.
   size?: IconSize;
