@@ -54,7 +54,7 @@ const PaletteMatrix = ({ dark }: { dark: boolean }) => {
   // Dark reads from its own end of the ramp, the way its semantic roles pick steps.
   const steps = dark ? [...ACCENT_STEPS].reverse() : [...ACCENT_STEPS];
   return (
-    <Board columns={[{ label: "Ramp" }, ...steps.map((step) => ({ label: step, align: "center" as const }))]} template={`minmax(6.5rem, 1.2fr) repeat(${steps.length}, minmax(2.25rem, 1fr))`} minWidth="44rem">
+    <Board columns={[{ label: "Ramp" }, ...steps.map((step) => ({ label: step, align: "center" as const }))]} template={`minmax(6.5rem, 1.2fr) repeat(${steps.length}, minmax(2.25rem, 1fr))`} minWidth="44rem" bare>
       <BoardGroup>
         {RAMPS.map((ramp) => (
           <BoardRow key={ramp.name}>
@@ -89,7 +89,7 @@ const PaletteMatrix = ({ dark }: { dark: boolean }) => {
 };
 
 const AlphaMatrix = () => (
-  <Board columns={[{ label: "Alpha" }, ...ALPHA_STEPS.map((step) => ({ label: step, align: "center" as const }))]} template={`minmax(6.5rem, 1.2fr) repeat(${ALPHA_STEPS.length}, minmax(1.5rem, 1fr))`} minWidth="44rem">
+  <Board columns={[{ label: "Alpha" }, ...ALPHA_STEPS.map((step) => ({ label: step, align: "center" as const }))]} template={`minmax(6.5rem, 1.2fr) repeat(${ALPHA_STEPS.length}, minmax(1.5rem, 1fr))`} minWidth="44rem" bare>
     <BoardGroup>
       {(["0", "950"] as const).map((end) => (
         <BoardRow key={end}>
@@ -176,8 +176,10 @@ export const ColorPage = () => {
         description="모든 색의 원본입니다. 테마와 무관한 OKLCH ramp 하나에서 HEX Palette Token을 만들고, light·dark 의미 역할이 이 ramp에서 단계를 고릅니다. 칩에 포인터를 올리면 HEX와 OKLCH 좌표가 보입니다."
         aside={<Text variant="caption" family="mono" ink="faint">{dark ? "950 → 50" : "50 → 950"}</Text>}
       >
-        <PaletteMatrix dark={dark} />
-        <AlphaMatrix />
+        <Stack gap="xl">
+          <PaletteMatrix dark={dark} />
+          <AlphaMatrix />
+        </Stack>
       </FoundationSection>
 
       <FoundationSection title="Semantic roles" description={`화면이 쓰는 색 이름입니다. 각 역할은 테마마다 Palette Token 하나를 고르고, 다른 역할을 참조하거나 색을 계산하지 않습니다. 지금 테마(${theme})의 값이며, 테마를 바꾸면 함께 바뀝니다.`}>

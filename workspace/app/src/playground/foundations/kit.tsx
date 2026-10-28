@@ -25,17 +25,20 @@ export const FoundationSection = ({ title, description, aside, children }: { tit
   </Stack>
 );
 
-// `template` is the board's column tracks; header, groups and rows inherit them.
-export const Board = ({ columns, template, minWidth, children }: { columns: Column[]; template: string; minWidth?: string; children: ReactNode }) => (
-  <Box className={s.board} surface="raised" border radius="lg" padding="md">
+// `template` is the board's column tracks; header, groups and rows inherit them. A `bare` board
+// drops the raised box and its rules and sits straight on the page, flush with the heading —
+// for specimens that are the content themselves, like the palette ramp.
+export const Board = ({ columns, template, minWidth, bare = false, children }: { columns: Column[]; template: string; minWidth?: string; bare?: boolean; children: ReactNode }) => {
+  const grid = (
     <div className={s.grid} style={{ gridTemplateColumns: `0 ${template} 0`, minWidth }}>
       <div className={s.header}>
         {columns.map((column) => <Text key={column.label} className={s.align[column.align ?? "start"]} variant="label" ink="base">{column.label}</Text>)}
       </div>
       {children}
     </div>
-  </Box>
-);
+  );
+  return bare ? <div className={`${s.board} ${s.bare}`}>{grid}</div> : <Box className={s.board} surface="raised" border radius="lg" padding="md">{grid}</Box>;
+};
 
 export const BoardGroup = ({ label, children }: { label?: string; children: ReactNode }) => (
   <div className={s.group}>
