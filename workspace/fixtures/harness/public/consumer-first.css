@@ -1,0 +1,11 @@
+/* An app stylesheet that loads before the package and declares no layer. Unlayered rules beat every
+   pui.* rule whatever the load order and specificity, so these classes win over the component styles. */
+
+.consumer-button {
+  padding-inline: 23px;
+}
+
+/* No :hover here: the class still beats the package's hover border, which is a state rule. */
+.consumer-field {
+  border-color: rgb(255, 0, 128);
+}

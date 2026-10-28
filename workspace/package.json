@@ -8,7 +8,7 @@
     "build": "pnpm --filter @studio-baeks/paper-ui build && pnpm --filter @paper-ui/app build",
     "typecheck": "pnpm -r typecheck && tsc -p tests/tsconfig.json",
     "lint": "eslint . --max-warnings 0",
-    "test": "node --test eslint-rules/*.test.js scripts/*.test.mjs && pnpm -r test",
+    "test": "node scripts/check-contracts.mjs && node --test eslint-rules/*.test.js scripts/*.test.mjs && pnpm -r test",
     "test:e2e": "playwright test",
     "check": "pnpm lint && pnpm typecheck && pnpm test",
     "verify": "pnpm check && pnpm build && pnpm test:e2e"

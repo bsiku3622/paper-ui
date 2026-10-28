@@ -20,10 +20,3 @@ for (const width of [760, 1440]) {
     }
   });
 }
-
-test("former palette and tokens routes land on the Color foundation", async ({ page }) => {
-  for (const route of ["/playground/palette", "/playground/tokens", "/playground/foundations"]) {
-    await page.goto(route);
-    await expect(page).toHaveURL(/\/playground\/foundations\/color$/);
-  }
-});

@@ -14,10 +14,12 @@ Interaction Primitive는 누르기·올려두기·켜고 끄기·끌어 옮기�
 
 ## Press와 Hover
 
+[contract:primitives.pressable.input-paths]: #
 Pressable은 onPress·onPressStart·onPressEnd·onPressUp·onPressChange와 disabled를 받습니다. usePress는 같은 옵션과 선택적인 ref를 받아 pressProps·isPressed를 반환합니다. Press 이벤트는 마우스·터치·키보드·보조 기술의 입력을 공통 계약으로 전달합니다. Bare button은 Paper의 색·크기·variant를 선택하지 않습니다.
 
 Pressable의 children 함수는 isPressed·isHovered·isFocused·isFocusVisible·isDisabled를 받습니다. 상태는 data-pressed·data-hovered·data-focused·data-focus-visible에도 반영합니다. 소비 앱은 data 속성에 연결된 class 스타일을 작성합니다.
 
+[contract:primitives.hoverable.input-paths]: #
 Hoverable·useHover는 disabled·onHoverStart·onHoverEnd·onHoverChange를 받습니다. Hook은 hoverProps·isHovered, 컴포넌트의 children 함수는 isHovered·isDisabled를 제공합니다. Touch의 모의 mouse 이벤트를 걸러내며 hover를 유일한 조작 경로로 사용하지 않습니다.
 
 직접 구현한 button에 press 행동을 연결하는 예시입니다.
@@ -33,6 +35,7 @@ Hook에는 native button의 의미론과 attribute 기본값이 포함되지 않
 
 ## Toggle
 
+[contract:primitives.toggleable.input-paths]: #
 Toggleable은 유지되는 boolean 선택 상태를 native toggle button에 연결합니다. selected가 있으면 controlled, defaultSelected를 주면 uncontrolled이며 기본값은 false입니다. 변경 요청은 onSelectedChange(boolean)로 전달합니다. Disabled일 때 입력과 상태 변경을 막습니다.
 
 useToggle은 ToggleOptions를 받아 toggleProps·isSelected·isPressed·setSelected(boolean)·toggle()을 반환합니다. isSelected는 유지되는 선택이고 isPressed는 누르는 동안의 상태입니다. 컴포넌트 children 함수에는 Pressable 상태와 isSelected를 함께 전달합니다. aria-pressed와 data-selected는 선택 상태를 따릅니다.
@@ -56,6 +59,7 @@ Draggable·useDrag는 mode로 두 계약을 명시합니다.
 | move, 기본값 | x/y 좌표 이동 | 없음 |
 | transfer | 데이터 drag and drop | getItems() |
 
+[contract:primitives.draggable.input-paths]: #
 두 모드는 disabled와 activation=surface/handle을 공유합니다. Activation 기본값은 surface입니다. handle을 선택하면 포인터와 키보드 입력 모두 손잡이에서만 시작합니다. 손잡이를 쓰는 panel 예시는 다음과 같습니다.
 
 ```tsx
@@ -114,6 +118,7 @@ Droppable·useDrop은 getDropOperation(types, allowedOperations), getDropOperati
 </Droppable>
 ```
 
+[contract:primitives.droppable.input-paths]: #
 Drop item은 text/file/directory 형태를 지원하는 엔진의 데이터를 전달합니다. 허용 형식과 적용할 데이터 변경은 소비자가 결정합니다. Droppable의 children 함수는 isDropTarget을 받고 data-drop-target도 제공됩니다. 키보드 경로는 source에서 Enter로 시작하고, Tab으로 대상 사이를 이동하고, Enter로 놓거나 Escape로 취소합니다. Accessible label과 파일 선택·붙여넣기 같은 제품별 대체 UI는 소비자가 제공합니다.
 
 ## 선택 그룹
@@ -130,6 +135,8 @@ Controlled 단일 선택 그룹을 만드는 예시입니다.
 </ToggleGroup>
 ```
 
+[contract:primitives.toggle-group.single]: #
+[contract:primitives.toggle-group.multiple]: #
 selectionMode는 single / multiple이며 기본값은 single입니다. selectedValues/defaultSelectedValues는 문자열 배열이고 onSelectedValuesChange는 다음 배열을 받습니다. Single은 최대 하나를 선택합니다. selectionRequired는 사용자가 마지막 선택을 해제하는 것을 막으며 초기 항목을 자동 선택하지는 않습니다. 선택 항목 자체를 제거하면 빈 선택도 허용합니다.
 
 Root disabled는 전체 입력과 변경을 막고 Item disabled는 해당 버튼만 막습니다. Disabled는 기존 선택을 지우지 않습니다. 제거된 value는 정리하며 controlled 상태에서는 변경을 요청합니다. 중복 value를 사용하지 않습니다. Root의 orientation·dir·loop·currentValue 계약은 [RovingFocus](a11y.md#그룹-focus-탐색)와 같습니다.
@@ -138,6 +145,7 @@ useToggleGroup은 같은 상태 옵션과 선택적인 values 목록을 받고 s
 
 ## Overlay
 
+[contract:primitives.overlay.portal]: #
 Overlay는 열린 상태와 Trigger·Content·Close를 연결합니다. Root는 DOM wrapper를 만들지 않고 Content가 열릴 때 Portal과 focus 범위를 mount합니다. 기본값은 non-modal dialog overlay입니다. Content의 면·여백·테두리는 className으로 지정합니다. 앱이 넘긴 class는 로드 순서가 아니라 레이어로 패키지 스타일을 이깁니다([우선순위](../get-started/install.md#우선순위)).
 
 명시적으로 연 모달에 이름과 닫기 버튼을 제공하는 예시입니다.
@@ -173,6 +181,9 @@ Content role은 dialog / alertdialog이며 기본값은 dialog입니다. aria-la
 
 초기 focus는 initialFocusRef, 첫 내부 대상, 대상이 없는 경우 Content 순서입니다. 제목에 명시적으로 이동하려면 tabIndex=-1을 제공해주세요. AutoFocus=false이면 자동 이동을 하지 않습니다. Portal에서도 Paper의 해석된 theme를 유지합니다. 임의의 지역 CSS 상속이 필요하면 portalContainer를 지정합니다.
 
+[contract:primitives.overlay.nesting]: #
+[contract:primitives.overlay.focus-restore]: #
+[contract:primitives.overlay.dismiss]: #
 Modal은 React Aria의 focus containment·배경 inert·스크롤 잠금을 사용합니다. 중첩 Overlay는 안쪽부터 Escape를 처리하고 각 이전 대상을 복원합니다. 중첩 깊이는 Layout의 elevation 층(overlay·modal)에서 파생한 z로 반영합니다 — 깊이마다 한 tier씩 올라갑니다. 마지막 모달 해제 시 배경과 스크롤을 복원합니다. Dismissable과 Escape는 독립적입니다. 모두 끄면 명시적인 닫기 수단을 제공해야 합니다. 호출 버튼 제거 후의 제품별 목적지, 라우팅과 exit 애니메이션은 소비자가 결정합니다.
 
 ## 이벤트와 ref 합성
