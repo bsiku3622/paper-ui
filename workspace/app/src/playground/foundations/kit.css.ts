@@ -11,6 +11,7 @@ const spanAll = { gridColumn: "1 / -1", display: "grid", gridTemplateColumns: "s
 
 export const page = style({ width: "100%", maxWidth: tokens.layout.container.content, marginInline: "auto", minWidth: 0 });
 export const section = style({ minWidth: 0 });
+export const aside = style({ flexShrink: 0, whiteSpace: "nowrap" });
 export const board = style({ minWidth: 0, maxWidth: "100%", overflowX: "auto" });
 export const grid = style({ display: "grid", columnGap: tokens.layout.gap.md, alignItems: "center" });
 export const header = style({ ...spanAll, paddingBlock: tokens.shape.inset.sm, borderBottom: line });

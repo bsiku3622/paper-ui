@@ -11,15 +11,11 @@ const line = `${shape.stroke.border} solid ${color.border.base}`;
 export const specimen = style({ margin: 0, minWidth: 0, overflowWrap: "anywhere" });
 export const presetSample = style({ display: "block", overflowWrap: "anywhere" });
 
-// Color
-export const stage = style({ display: "flex", alignItems: "center", justifyContent: "center", padding: shape.inset.sm, borderRadius: shape.radius.surface.sm, background: color.bg.canvas, border: line });
-export const swatch = style({ width: "100%", height: shape.control.height.sm, borderRadius: shape.radius.surface.sm, border: `${shape.stroke.border} solid transparent` });
-export const track = style({ width: shape.control.height.md, height: shape.selection.size.md, borderRadius: shape.radius.full });
-export const inkSample = style({ margin: 0 });
-export const focusSample = style({ outlineStyle: "solid", outlineWidth: shape.focus.width, outlineOffset: shape.focus.offset });
-export const paletteChip = style({ width: "100%", aspectRatio: "1", borderRadius: shape.radius.surface.sm, border: line });
-export const split = style({ display: "grid", gridTemplateColumns: "1fr 1fr", height: shape.control.height.sm, overflow: "hidden", borderRadius: shape.radius.surface.sm, border: line });
-export const half = style({ height: "100%" });
+// Color — square chips for the ramp, and value cards: a role's live color on the page canvas.
+export const chip = style({ width: "100%", aspectRatio: "1", borderRadius: shape.radius.surface.md, border: line });
+export const chipInline = style({ width: shape.control.height.lg, flexShrink: 0 });
+export const valueCard = style({ display: "grid", gap: layout.gap.xs, minWidth: 0, padding: shape.inset.sm, borderRadius: shape.radius.surface.md, border: line, background: color.bg.canvas });
+export const valueChip = style({ height: shape.control.height.sm, borderRadius: shape.radius.surface.sm, border: line });
 
 // Shape
 export const bar = style({ height: shape.inset.sm, maxWidth: "100%", borderRadius: shape.radius.full, background: color.accent.primary.solid });
