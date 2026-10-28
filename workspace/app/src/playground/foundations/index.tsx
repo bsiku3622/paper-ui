@@ -5,16 +5,16 @@ import { useParams } from "react-router-dom";
 
 import { Stack } from "@studio-baeks/paper-ui";
 
+import { FOUNDATIONS, type FoundationId } from "../../site/site-map";
 import { PlaygroundLayout, ReferenceHeading } from "../shell";
 import { ColorPage } from "./ColorPage";
 import { LayoutPage } from "./LayoutPage";
 import { MotionPage } from "./MotionPage";
-import { FOUNDATION_SECTIONS, type FoundationSlug } from "./sections";
 import { ShapePage } from "./ShapePage";
 import { TypographyPage } from "./TypographyPage";
 import * as s from "./kit.css";
 
-const PAGES: Record<FoundationSlug, () => React.ReactElement> = {
+const PAGES: Record<FoundationId, () => React.ReactElement> = {
   color: ColorPage,
   typography: TypographyPage,
   shape: ShapePage,
@@ -24,12 +24,12 @@ const PAGES: Record<FoundationSlug, () => React.ReactElement> = {
 
 export const Foundations = () => {
   const { section: slug } = useParams<{ section: string }>();
-  const [id, name, description] = FOUNDATION_SECTIONS.find(([key]) => key === slug) ?? FOUNDATION_SECTIONS[0];
+  const { id, label, summary } = FOUNDATIONS.find((foundation) => foundation.id === slug) ?? FOUNDATIONS[0];
   const Page = PAGES[id];
   return (
     <PlaygroundLayout value={`foundation-${id}`}>
       <Stack className={s.page} gap="xl">
-        <ReferenceHeading group="Foundations" name={name} description={`${description} 실제 tokens.*에서 값을 읽으며 현재 테마에 따라 갱신됩니다.`} />
+        <ReferenceHeading group="Foundations" name={label} description={`${summary} 실제 tokens.*에서 값을 읽으며 현재 테마에 따라 갱신됩니다.`} />
         <Page />
       </Stack>
     </PlaygroundLayout>

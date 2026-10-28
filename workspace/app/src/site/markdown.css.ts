@@ -6,11 +6,12 @@ import { globalStyle } from "@vanilla-extract/css";
 import { tokens } from "@studio-baeks/paper-ui/tokens";
 
 globalStyle(".md", {
-  maxWidth: tokens.shape.measure.lg,
   color: tokens.color.ink.primary,
   fontSize: tokens.text.style.body.size,
   lineHeight: tokens.text.style.body.leading,
 });
+// 읽기 폭은 블록마다 건다 — 표 wrapper 는 칼럼 폭까지 열려 있어야 표가 읽기 폭을 넘어도 잘리지 않고, 칼럼이 좁을 때만 스크롤한다.
+globalStyle(".md > *", { maxWidth: tokens.shape.measure.lg });
 globalStyle(".md > *:first-child", { marginTop: 0 });
 
 // 제목 h1–h4 — text variant 토큰과 정렬.
@@ -76,7 +77,8 @@ globalStyle(".md blockquote", {
   color: tokens.color.ink.secondary,
 });
 
-globalStyle(".md table", { width: "100%", borderCollapse: "collapse", margin: `0 0 ${tokens.layout.gap.lg}`, fontSize: tokens.text.style.body.size });
+globalStyle(".md > .md-table", { maxWidth: "none", overflowX: "auto", margin: `0 0 ${tokens.layout.gap.lg}` });
+globalStyle(".md table", { width: `min(100%, ${tokens.shape.measure.lg})`, borderCollapse: "collapse", fontSize: tokens.text.style.body.size });
 globalStyle(".md th", {
   textAlign: "left",
   fontWeight: tokens.text.palette.weight.semibold,
