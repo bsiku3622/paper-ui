@@ -4,19 +4,23 @@
 
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 
-import { Box, Stack, Text } from "@studio-baeks/paper-ui";
+import { Box, Inline, Stack, Text } from "@studio-baeks/paper-ui";
 
 import * as s from "./kit.css";
 
 type Align = keyof typeof s.align;
 export type Column = { label: string; align?: Align };
 
-export const FoundationSection = ({ title, description, children }: { title: string; description: string; children: ReactNode }) => (
+// `aside` sits at the far end of the heading row — a reading hint such as a scale direction.
+export const FoundationSection = ({ title, description, aside, children }: { title: string; description: string; aside?: ReactNode; children: ReactNode }) => (
   <Stack as="section" className={s.section} gap="md">
-    <Stack gap="xs">
-      <Text as="h2" variant="heading">{title}</Text>
-      <Text variant="body" ink="soft">{description}</Text>
-    </Stack>
+    <Inline justify="between" align="end" gap="md">
+      <Stack gap="xs">
+        <Text as="h2" variant="heading">{title}</Text>
+        <Text variant="body" ink="soft">{description}</Text>
+      </Stack>
+      {aside ? <div className={s.aside}>{aside}</div> : null}
+    </Inline>
     {children}
   </Stack>
 );
@@ -52,8 +56,9 @@ export const TokenCell = ({ name, note }: { name: string; note?: ReactNode }) =>
 );
 
 // Without `align` a cell fills its track; with it, the cell sits at that edge of the track.
-export const Cell = ({ align, children }: { align?: Align; children: ReactNode }) => (
-  <div className={align ? `${s.cell} ${s.align[align]}` : s.cell}>{children}</div>
+// `span` lets one cell cover several tracks, for a row that does not follow the column headers.
+export const Cell = ({ align, span, children }: { align?: Align; span?: number; children: ReactNode }) => (
+  <div className={align ? `${s.cell} ${s.align[align]}` : s.cell} style={span ? { gridColumn: `span ${span}` } : undefined}>{children}</div>
 );
 
 export const ValueCell = ({ children, title }: { children: ReactNode; title?: string }) => (

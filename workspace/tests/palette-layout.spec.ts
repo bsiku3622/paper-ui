@@ -1,19 +1,20 @@
 import { expect, test } from "@playwright/test";
 
-// The palette is the Color source: one chip per generated step, all the same size, one row per ramp.
+// The palette is the Color source: every ramp on the shared 14 steps with no holes, neutral's own
+// two steps below the matrix, and the alpha ramps.
 for (const width of [760, 1440]) {
   test(`color palette chips stay one size and one row per ramp at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto("/playground/foundations/color");
     const section = page.locator("section", { has: page.getByRole("heading", { name: "Color Palette", exact: true }) });
     const chips = section.getByRole("img");
-    // neutral 16 steps + 4 accent ramps × 14 steps + 2 alpha ramps × 19 steps
-    await expect(chips).toHaveCount(16 + 4 * 14 + 2 * 19);
+    // 5 ramps × 14 shared steps + neutral 0 · 875 + 2 alpha ramps × 19 steps
+    await expect(chips).toHaveCount(5 * 14 + 2 + 2 * 19);
     const rects = await chips.evaluateAll((elements) => elements.map((element) => {
       const rect = element.getBoundingClientRect();
       return { family: (element.getAttribute("aria-label") ?? "").split(" ").slice(0, -2).join(" "), width: rect.width, top: rect.top };
     }));
-    const ramp = rects.slice(0, 16 + 4 * 14);
+    const ramp = rects.slice(0, 5 * 14);
     const widths = ramp.map((rect) => rect.width);
     // The first and last steps are as wide as the middle ones.
     expect(Math.max(...widths) - Math.min(...widths)).toBeLessThan(0.5);
