@@ -3,16 +3,18 @@
 //
 // Same direction as Shape:
 //
-//   LAYOUT_SOURCE   authored dp numbers
-//   LAYOUT_VALUES   emitted once as --pui-layout-* (styles/theme.css.ts)
-//   LAYOUT          public roles
+//   LAYOUT_SOURCE        authored dp numbers
+//   LAYOUT_VALUES        emitted once as --pui-layout-* (tokens/variables.ts)
+//   LAYOUT_MODE_VALUES   the shadow geometry, emitted once per mode as --pui-layout-shadow-*
+//   LAYOUT               public roles
 //
 // Distances select from the Shape space scale, so a gap and an inset of the same step are the
-// same length. Elevation shadows take their shadow colour from Color when the theme is emitted.
+// same length. A shadow is assembled where it is cast, from its geometry here and its shadow
+// colour from Color.
 
-import type { Depth } from "./colors";
+import { COLOR_MODES, type ColorMode } from "./color-modes";
+import { COLOR, type Depth } from "./colors";
 import { buildVarTree, keys, lengths, pathToVarRef, px } from "./helpers";
-import type { ColorMode } from "./palette";
 import { SPACE } from "./shape";
 
 export const ELEVATIONS = ["base", "raised", "sticky", "overlay", "modal", "toast"] as const;
@@ -32,11 +34,11 @@ export const LAYOUT_SOURCE = {
     modal: { z: 40, depth: "floating" },
     toast: { z: 50, depth: "floating" },
   } satisfies Record<Elevation, { z: number; depth: Depth | null }>,
-  // Shadow geometry per theme. Dark surfaces need tighter, negatively spread layers.
+  // Shadow geometry per mode. Dark surfaces need tighter, negatively spread layers.
   shadow: {
     light: { lifted: [[0, 1, 3, 0]], floating: [[0, 8, 24, 0], [0, 2, 6, 0]] },
     dark: { lifted: [[0, 1, 2, 0]], floating: [[0, 8, 22, -5], [0, 3, 7, -2]] },
-  } satisfies Record<ColorMode, Record<Depth, readonly ShadowLayer[]>>,
+  } satisfies Record<ColorMode, { lifted: readonly [ShadowLayer]; floating: readonly [ShadowLayer, ShadowLayer] }>,
 } as const;
 
 export const BREAKPOINTS = keys(LAYOUT_SOURCE.breakpoint);
@@ -53,13 +55,23 @@ export const LAYOUT_VALUES = {
   elevation: Object.fromEntries(ELEVATIONS.map((level) => [level, { z: String(LAYOUT_SOURCE.elevation[level].z) }])) as Record<Elevation, { z: string }>,
 } as const;
 
-// Shadows change with the theme, so theme.css.ts emits them per theme under this path.
-export const elevationShadowPath = (level: Elevation) => ["layout", "elevation", level, "shadow"] as const;
-export const elevationShadow = (level: Elevation, theme: ColorMode, shadowColor: (depth: Depth) => string): string => {
-  const depth = LAYOUT_SOURCE.elevation[level].depth;
-  if (!depth) return "none";
-  return LAYOUT_SOURCE.shadow[theme][depth].map((layer) => `${layer.map(px).join(" ")} ${shadowColor(depth)}`).join(", ");
-};
+// One length list per layer, such as "0px 8px 24px 0px". Emitted per mode: the geometry is the part of a
+// shadow that a mode changes.
+type Geometry<Layers extends readonly ShadowLayer[]> = { [Index in Extract<keyof Layers, `${number}`>]: string };
+const geometry = <const Layers extends readonly ShadowLayer[]>(layers: Layers) =>
+  Object.fromEntries(layers.map((layer, index) => [String(index), layer.map(px).join(" ")])) as Geometry<Layers>;
+
+export const LAYOUT_MODE_VALUES = Object.fromEntries(COLOR_MODES.map((mode) => [mode, {
+  shadow: { lifted: geometry(LAYOUT_SOURCE.shadow[mode].lifted), floating: geometry(LAYOUT_SOURCE.shadow[mode].floating) },
+}])) as Record<ColorMode, { shadow: { lifted: Geometry<readonly [ShadowLayer]>; floating: Geometry<readonly [ShadowLayer, ShadowLayer]> } }>;
+
+// A depth's shadow, assembled on the element that casts it: each layer's geometry beside the shadow
+// colour, both read where the element stands. No variable holds the result, so a scope that swaps the
+// mode swaps the shadow with it.
+export const castShadow = (depth: Depth): string =>
+  Object.keys(LAYOUT_MODE_VALUES.light.shadow[depth])
+    .map((layer) => `${pathToVarRef(["layout", "shadow", depth, layer])} ${COLOR.shadow[depth]}`)
+    .join(", ");
 
 const source = buildVarTree(LAYOUT_VALUES, ["layout"]);
 
@@ -70,8 +82,8 @@ export const LAYOUT = {
   container: source.container,
   // Media queries cannot read variables, so breakpoints are values.
   breakpoint: lengths(LAYOUT_SOURCE.breakpoint, px),
-  elevation: Object.fromEntries(ELEVATIONS.map((level) => [level, {
-    z: source.elevation[level].z,
-    shadow: pathToVarRef(elevationShadowPath(level)),
-  }])) as Record<Elevation, { z: string; shadow: string }>,
+  elevation: Object.fromEntries(ELEVATIONS.map((level) => {
+    const { depth } = LAYOUT_SOURCE.elevation[level];
+    return [level, { z: source.elevation[level].z, shadow: depth ? castShadow(depth) : "none" }];
+  })) as Record<Elevation, { z: string; shadow: string }>,
 } as const;

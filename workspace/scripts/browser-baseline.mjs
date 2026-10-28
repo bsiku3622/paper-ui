@@ -56,6 +56,8 @@ export const FEATURES = [
   { name: "color-scheme", pattern: /(?<![\w-])color-scheme\s*:/, kind: "required", since: since("81", "81", "96", "13", "13") },
   { name: "forced-colors", pattern: /\(\s*forced-colors\s*:/, kind: "required", since: since("89", "79", "89", "16", "16") },
   { name: "prefers-reduced-motion", pattern: /\(\s*prefers-reduced-motion\s*:/, kind: "required", since: since("74", "79", "63", "10.1", "10.3") },
+  { name: "prefers-color-scheme", pattern: /\(\s*prefers-color-scheme\s*:/, kind: "required", since: since("76", "79", "67", "12.1", "13") },
+  { name: "prefers-contrast", pattern: /\(\s*prefers-contrast\s*:/, kind: "required", since: since("96", "96", "101", "14.1", "14.5") },
 ];
 
 // Every feature the stylesheet uses, and the engines at the floor that lack it.

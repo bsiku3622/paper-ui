@@ -11,7 +11,9 @@ const { globalStyle } = layered("utilities");
 
 // ───── surface — 면 (Box 전용 구조 축) ──────────────────────────────────────
 //
-// 깊이 사다리: raised — canvas — sunken. 색이 아니라 지면이다.
+// 깊이 사다리(앞에서 뒤로): raised — canvas — sunken. 색이 아니라 지면이다. 라이트는 세 단계, 다크는 두 단계다 —
+// 페이지(canvas)가 이미 가장 깊은 단계라 sunken 이 같은 neutral.950 을 쓴다. canvas 위의 sunken 은 border 로 구분되고,
+// raised 위에서는 두 모드 모두 물러나 보인다.
 // 카드 테두리는 별도(Box 의 border prop). hover 는 면이 아니라 앱의 interaction 이 맡는다.
 
 for (const s of SURFACES) {

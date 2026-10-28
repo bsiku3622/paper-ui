@@ -25,13 +25,15 @@ test("[install.browsers.baseline] the declared floor supports every required CSS
     "}:root{color-scheme:light}",
     "@media (prefers-reduced-motion: reduce){*{transition-duration:0s}}",
     "@media (forced-colors: active){.e{border-color:CanvasText}}",
+    "@media (prefers-color-scheme: dark){:root:not([data-pui-theme]){color-scheme:dark}}",
+    "@media (prefers-contrast: more){:root{--pui-color-border-base:#000}}",
   ].join("");
   const result = checkStylesheet(css, floor);
   assert.deepEqual(result.used, FEATURES.map(({ name }) => name));
   assert.deepEqual(result.failures, []);
 
-  // Look-alikes are not features: the color-scheme media query, an inset shadow, translate() and a round cap.
-  assert.deepEqual(checkStylesheet("@media (prefers-color-scheme: dark){.a{box-shadow:inset 0 0 0 1px;transform:translateY(1px);stroke-linecap:round}}", floor).used, []);
+  // Look-alikes are not features: the color-scheme property inside its media query's name, an inset shadow, translate() and a round cap.
+  assert.deepEqual(checkStylesheet("@media (prefers-color-scheme: dark){.a{box-shadow:inset 0 0 0 1px;transform:translateY(1px);stroke-linecap:round}}", floor).used, ["prefers-color-scheme"]);
 
   // A floor below a required feature fails the check.
   assert.deepEqual(checkStylesheet(".a:has(b){}", { ...floor, firefox: "120" }).failures, [{ name: ":has()", missing: ["firefox"] }]);

@@ -12,13 +12,14 @@ const runtime = [...Object.keys(pkg.dependencies), ...Object.keys(pkg.peerDepend
 const target = buildTargets(pkg.browserslist);
 
 // dist/paper-ui.css opens with the layer statement of tokens/layers.css.ts, then keeps the order in which
-// global.css.ts brings in the global styles (theme → typography → utility → color), with the component styles
-// after them. Rollup runs entries sorted by module id, so src/index.ts would run first and pull typography.css
+// global.css.ts brings in the global styles (variables → theme → typography → utility → color), with the component
+// styles after them. Rollup runs entries sorted by module id, so src/index.ts would run first and pull typography.css
 // ahead of theme.css. The styles entry is therefore wrapped in a virtual module whose "\0" id sorts first, and
-// the layer module and src/styles share one chunk, whose CSS keeps that execution order.
+// the layer module, the variables module and src/styles share one chunk, whose CSS keeps that execution order.
 const STYLES_ENTRY = "\0paper-ui-styles";
 const globalStylesheet = fileURLToPath(new URL("src/styles/global.css.ts", import.meta.url));
 const layerModule = fileURLToPath(new URL("src/tokens/layers.css.ts", import.meta.url));
+const variablesModule = fileURLToPath(new URL("src/tokens/variables.css.ts", import.meta.url));
 const stylesDir = fileURLToPath(new URL("src/styles/", import.meta.url));
 
 const stylesEntryFirst = (): Plugin => ({
@@ -46,7 +47,7 @@ export default defineConfig({
       output: {
         banner: (chunk) => (chunk.isEntry && chunk.name === "index" ? '"use client";' : ""),
         chunkFileNames: "chunks/[name]-[hash].js",
-        manualChunks: (id) => (id.startsWith(stylesDir) || id.startsWith(layerModule) ? "global" : undefined),
+        manualChunks: (id) => (id.startsWith(stylesDir) || id.startsWith(layerModule) || id.startsWith(variablesModule) ? "global" : undefined),
       },
     },
   },

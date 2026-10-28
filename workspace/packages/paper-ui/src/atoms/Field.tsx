@@ -31,7 +31,8 @@ export type FieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className"
   status?: Status;
   // 크기 3 단 (sm·md·lg). Button 과 같은 사다리 — 나란히 두면 높이가 맞는다.
   size?: ControlSize;
-  // 면의 깊이 — raised 가 기본, sunken 은 canvas 안에서 살짝 눌린 검색·필터 입력에 적합.
+  // 면의 깊이 — raised 가 기본, sunken 은 canvas 안에서 살짝 눌린 검색·필터 입력에 적합하다. 다크에서는
+  // sunken 이 canvas 와 같은 단계라 canvas 위에서는 border 가 구분하고, raised 위에서는 두 모드 모두 물러나 보인다.
   surface?: "raised" | "sunken";
   fontSize?: TextVariant;
   // 실루엣 — Button·Badge 와 같은 어휘. pill 은 알약(검색창 결).

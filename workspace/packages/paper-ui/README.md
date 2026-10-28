@@ -44,7 +44,7 @@ and disabled too. Put element resets in a layer declared before `pui` — `@laye
 in a stylesheet that loads before this one — or they will override the components as well.
 
 Then wrap the app. `PaperProvider` renders no DOM wrapper, so it cannot affect
-your layout; the theme goes on `<html data-theme>`.
+your layout; the theme goes on `<html data-pui-theme>`.
 
 ```tsx
 import { PaperProvider, Stack, Text, Button } from "@studio-baeks/paper-ui";

@@ -15,7 +15,7 @@ Box는 "무엇이든 되는 div"가 아니라 지면 위의 칸입니다. 어떤
 
 | prop | 값 | 출처 |
 | --- | --- | --- |
-| `surface` | canvas · raised · sunken | Color `bg.*` |
+| `surface` | canvas · raised · sunken | Color `bg.*` — 다크에서 sunken = canvas라, canvas 위에서는 border와 함께 |
 | `border` | boolean | Color `border.base`, Shape `stroke.border` |
 | `radius` | sm · md · lg · full | Shape `radius.surface.*` · `radius.full` |
 | `padding` · `paddingX` · `paddingY` | xs · sm · md · lg · xl · 2xl · 3xl | Shape `inset.*` |

@@ -27,6 +27,7 @@ export const radiusSample = styleVariants(
 const strokeBase = style({ width: shape.dimension.width.sm, background: color.ink.primary });
 export const strokeLine = styleVariants({ border: shape.stroke.border, emphasis: shape.stroke.emphasis }, (height) => [strokeBase, { height }]);
 export const focusBox = style({ width: shape.control.height.md, height: shape.control.height.sm, borderRadius: shape.radius.control, border: line, outline: `${shape.focus.width} solid ${color.interaction.focus}`, outlineOffset: shape.focus.offset });
+export const targetBox = style({ width: shape.target.min, height: shape.target.min, borderRadius: shape.radius.control, border: line, background: color.bg.sunken });
 const controlBase = style({ width: shape.dimension.width.sm, borderRadius: shape.radius.control, border: line, background: color.bg.sunken });
 export const controlBox = variantsOf(CONTROL_SIZES, (size) => [controlBase, { height: shape.control.height[size] }]);
 export const rule = style({ fontFamily: tokens.typography.palette.family.mono, fontSize: tokens.typography.role.caption.size, color: color.ink.secondary, wordBreak: "keep-all" });

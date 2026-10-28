@@ -71,6 +71,8 @@ export const resolveSpace = (
 // 카드 테두리(border)·모서리(radius)·그림자(shadow)·반전(inverse)은 Box.tsx 가 직접 붙인다.
 
 export type BoxLike = {
+  // 라이트는 세 단계, 다크는 두 단계다 — canvas 가 이미 가장 깊어 sunken 이 같은 neutral.950 을 쓴다.
+  // canvas 위의 sunken 은 border 로 구분되고, raised 위에서는 두 모드 모두 물러나 보인다.
   surface?: Surface;
   padding?: Space;
   paddingX?: Space;

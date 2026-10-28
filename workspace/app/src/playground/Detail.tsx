@@ -7,10 +7,10 @@
 // 상태(useState)는 slug 로 keyed 된 DetailView 가 든다 — slug 가 바뀌면 remount 돼
 // 그 컴포넌트의 첫 화면으로 새로 시작한다.
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 
-import { Box, Button, Field, Icon, IconButton, Inline, Select, Stack, Switch, Text, ToggleGroup } from "@studio-baeks/paper-ui";
+import { Box, Button, Field, Icon, IconButton, Inline, Select, Stack, Switch, Text, ToggleGroup, useResolvedTheme } from "@studio-baeks/paper-ui";
 import { tokens, type Surface } from "@studio-baeks/paper-ui/tokens";
 
 import { PlaygroundLayout, ReferenceHeading } from "./shell";
@@ -23,6 +23,9 @@ const PREVIEW_SURFACES = ["raised", "canvas", "sunken"] as const satisfies reado
 const PREVIEW_BACKGROUNDS = [...PREVIEW_SURFACES, "track"] as const;
 type PreviewBackground = (typeof PREVIEW_BACKGROUNDS)[number];
 const PREVIEW_SURFACE_KEY = "paper-ui-preview-surface";
+// In dark the sunken surface is the canvas (the surface ladder); the button for sunken says so.
+const FOLDED = { surface: "sunken", into: "canvas" } as const satisfies Record<string, Surface>;
+const FOLDED_TITLE = "다크에서는 canvas와 같은 단계";
 
 const readPreviewBackground = (): PreviewBackground => {
   try {
@@ -35,6 +38,22 @@ const readPreviewBackground = (): PreviewBackground => {
   } catch {
     return "raised";
   }
+};
+
+// 두 면이 지금 테마에서 같은 색으로 칠해지는가 — 숨은 표본 둘이 칠한 색을 비교한다. Provider 가 테마를
+// 문서에 쓰는 일은 자기 effect 에서 하므로, 색은 그 뒤 다음 프레임에 읽는다.
+const useFoldedSurfaces = () => {
+  const theme = useResolvedTheme();
+  const probes = useRef<HTMLDivElement>(null);
+  const [folded, setFolded] = useState(false);
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      const [front, back] = Array.from(probes.current?.children ?? [], (probe) => getComputedStyle(probe).backgroundColor);
+      setFolded(front !== undefined && front === back);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [theme]);
+  return { probes, folded };
 };
 
 // prop 토글 한 줄.
@@ -123,6 +142,7 @@ const DetailView = ({ entry }: { entry: Entry }) => {
   const [previewBackground, setPreviewBackground] = useState<PreviewBackground>(readPreviewBackground);
   const [draft, setDraft] = useState<string>();
   const [codeError, setCodeError] = useState<string>();
+  const { probes, folded } = useFoldedSurfaces();
   const subject = entry.subject(state, harness);
   const code = draft ?? codeOf(entry, state, harness);
   const selectPreviewBackground = (background: PreviewBackground) => {
@@ -153,6 +173,9 @@ const DetailView = ({ entry }: { entry: Entry }) => {
         {/* preview + code */}
         <Stack gap="md" style={{ minWidth: 0 }}>
           <div className="preview-frame">
+            <div ref={probes} hidden>
+              {[FOLDED.surface, FOLDED.into].map((surface) => <Box key={surface} surface={surface} />)}
+            </div>
             <Box surface={previewBackground === "track" ? undefined : previewBackground} className={`preview-stage${entry.preview === "flush" ? " preview-stage--flush" : ""}${previewBackground === "track" ? " preview-stage--track" : ""}`} data-preview-background={previewBackground}>
               {Stage ? <Stage subject={subject} state={state} harness={harness} /> : subject}
             </Box>
@@ -173,7 +196,7 @@ const DetailView = ({ entry }: { entry: Entry }) => {
                   className="preview-surface-button"
                   data-bg={background}
                   aria-label={`${background} background`}
-                  title={`${background} background`}
+                  title={background === FOLDED.surface && folded ? FOLDED_TITLE : `${background} background`}
                 >
                   {previewBackground === background ? <Icon size="caption"><path d="m5 12 4 4L19 6" /></Icon> : null}
                 </ToggleGroup.Item>

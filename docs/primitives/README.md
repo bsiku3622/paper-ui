@@ -29,7 +29,7 @@ Hoverable은 button 역할이나 Tab 정지를 자동으로 붙이지 않습니�
 
 ## 테마 도구
 
-`PaperProvider`는 앱 전체의 테마(light · dark · system)를 `<html data-theme>`에 걸고, 고른 테마를 저장합니다. `ThemeScope`는 하위 트리 하나에 테마를 겁니다. `theme="inverse"`는 주변의 반대라, 밝은 화면 위의 어두운 판이나 어두운 화면 위의 밝은 판을 만듭니다. ThemeScope는 `display: contents`라 배치에 영향이 없고, Portal로 그려지는 Overlay도 열린 자리의 테마를 유지합니다. Box의 `inverse`는 같은 일을 별도 노드 없이 그 Box 자신에 합니다.
+`PaperProvider`는 앱 전체의 테마(light · dark · system)를 `<html data-pui-theme>`에 걸고, 고른 테마를 저장합니다. `<html>`에 속성이 없으면 OS 설정이 모드를 정합니다. `ThemeScope`는 하위 트리 하나에 테마를 겁니다. `theme="inverse"`는 주변의 반대라, 밝은 화면 위의 어두운 판이나 어두운 화면 위의 밝은 판을 만듭니다. ThemeScope는 `display: contents`라 배치에 영향이 없고, Portal로 그려지는 Overlay도 열린 자리의 테마를 유지합니다. Box의 `inverse`는 같은 일을 별도 노드 없이 그 Box 자신에 합니다.
 
 ## 패키지가 멈추는 곳
 

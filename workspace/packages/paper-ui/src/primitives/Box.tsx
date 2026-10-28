@@ -14,7 +14,8 @@ import { resolveBoxClass, type BoxLike } from "../resolvers";
 import { joinClass } from "../internal/joinClass";
 import { boxRadius, boxElevation, boxBorder } from "./Box.css";
 import { ResolvedThemeContext, useResolvedTheme } from "./theme-context";
-import { DIMENSIONS, tokens, type Dimension, type Elevation } from "../tokens";
+import { DIMENSIONS, THEME_ATTRIBUTE, tokens, type Dimension, type Elevation } from "../tokens";
+import { invertMode } from "../theme/engine";
 
 // named size는 Shape sizing(dimension)으로 해석한다. Primitive인 Box는 앱 고유 layout도 담아야
 // 하므로 CSS 길이 escape hatch를 함께 둔다. `full`과 `fit`은 자주 쓰는 의도를 이름으로 남긴다.
@@ -94,9 +95,9 @@ const BoxImpl = forwardRef<HTMLDivElement, Omit<BoxProps, "as" | "ref"> & { as?:
 }, ref) {
   const Tag = (as ?? "div") as ElementType;
   const ambient = useResolvedTheme();
-  // inverse 면 이 Box 자신에 반대 테마를 심는다 — data-theme 로 색 var 를 갈고,
+  // inverse 면 이 Box 자신에 반대 테마를 심는다 — 테마 속성으로 색 var 를 갈고,
   // 자식들이 기준 삼도록 context 도 덮는다(중첩 inverse 가 이 스코프를 본다).
-  const scoped = inverse ? (ambient === "dark" ? "light" : "dark") : undefined;
+  const scoped = inverse ? invertMode(ambient) : undefined;
 
   // styling prop 은 클래스로, 나머지는 DOM 으로. 한 객체에서 갈라낸다.
   const style: Record<string, unknown> = {};
@@ -116,7 +117,7 @@ const BoxImpl = forwardRef<HTMLDivElement, Omit<BoxProps, "as" | "ref"> & { as?:
         elevation && boxElevation[elevation],
         className,
       )}
-      data-theme={scoped}
+      {...{ [THEME_ATTRIBUTE]: scoped }}
       style={{
         width: resolveDimension(width, "width"),
         minWidth: resolveDimension(minWidth, "width"),

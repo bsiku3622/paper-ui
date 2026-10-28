@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { tokens } from "./index";
-import { ELEVATIONS, elevationShadow } from "./layout";
+import { ELEVATIONS, castShadow } from "./layout";
 
 describe("Layout builds on Shape", () => {
   it("shares one length scale between inset and gap", () => {
@@ -10,17 +10,9 @@ describe("Layout builds on Shape", () => {
   });
 
   it("lets one elevation decide both stacking and shadow", () => {
-    for (const level of ELEVATIONS) {
-      expect(tokens.layout.elevation[level].z).toMatch(/^var\(--pui-layout-elevation-/);
-      expect(tokens.layout.elevation[level].shadow).toMatch(/^var\(--pui-layout-elevation-/);
-    }
-    const shadowColor = (depth: string) => `color(${depth})`;
-    for (const theme of ["light", "dark"] as const) {
-      expect(elevationShadow("base", theme, shadowColor)).toBe("none");
-      expect(elevationShadow("sticky", theme, shadowColor)).toBe("none");
-      expect(elevationShadow("raised", theme, shadowColor)).toContain("color(lifted)");
-      expect(elevationShadow("overlay", theme, shadowColor)).toContain("color(floating)");
-      expect(elevationShadow("modal", theme, shadowColor)).toBe(elevationShadow("overlay", theme, shadowColor));
-    }
+    for (const level of ELEVATIONS) expect(tokens.layout.elevation[level].z).toMatch(/^var\(--pui-layout-elevation-/);
+    for (const level of ["base", "sticky"] as const) expect(tokens.layout.elevation[level].shadow, level).toBe("none");
+    expect(tokens.layout.elevation.raised.shadow).toBe(castShadow("lifted"));
+    for (const level of ["overlay", "modal", "toast"] as const) expect(tokens.layout.elevation[level].shadow, level).toBe(castShadow("floating"));
   });
 });

@@ -40,7 +40,7 @@ test("[guardrails.contracts.one-to-one] a marker and a test with the same id pas
     assert.deepEqual(errorsOf([doc(`${before}[contract:atoms.sample.case]: #\nThe contract sentence.\n`)], [spec("[atoms.sample.case] works")]), [], before);
   }
   // Several tests may share an id, and a title that opens with another bracketed word claims nothing.
-  assert.deepEqual(errorsOf([doc(sentence("atoms.sample.case"))], [spec("[atoms.sample.case] one"), spec("[atoms.sample.case] two"), spec("[data-theme] holds")]), []);
+  assert.deepEqual(errorsOf([doc(sentence("atoms.sample.case"))], [spec("[atoms.sample.case] one"), spec("[atoms.sample.case] two"), spec("[data-pui-theme] holds")]), []);
 });
 
 test("[guardrails.contracts.one-to-one] a duplicate doc id fails", () => {

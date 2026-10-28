@@ -52,11 +52,14 @@ export const matrixCell = style({ minWidth: 0, padding: tokens.shape.inset.sm, b
 
 export const swatch = style({ width: "100%", aspectRatio: "1" });
 
-// A role's colour, painted through the public token — one class per role path.
-export type ChipRole = LeafPaths<typeof tokens.color>;
+// A role's colour, painted through the public token — one class per role path. Opacity is a strength,
+// not a colour, so it has no chip.
+type ColorRoles = Omit<typeof tokens.color, "opacity">;
+const roles = Object.fromEntries(Object.entries(tokens.color).filter(([branch]) => branch !== "opacity")) as ColorRoles;
+export type ChipRole = LeafPaths<ColorRoles>;
 export const chipBox = style({ width: "100%", height: tokens.shape.control.height.sm, boxSizing: "border-box" });
 export const chip = styleVariants(
-  Object.fromEntries(leafPaths(tokens.color).map((path) => [path, valueAt(tokens.color, path) as string])),
+  Object.fromEntries(leafPaths(roles).map((path) => [path, valueAt(roles, path) as string])),
   (background) => ({ background }),
 ) as Record<ChipRole, string>;
 

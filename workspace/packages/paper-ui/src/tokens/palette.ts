@@ -8,8 +8,6 @@ import { completeOklchRamp, interpolateOklch, toPaletteToken, withAlpha } from "
 import type { PaletteToken } from "./color-ladder";
 export type { PaletteToken } from "./color-ladder";
 
-export type ColorMode = "light" | "dark";
-
 export const PALETTE_STEPS = ["0", "50", "100", "150", "200", "300", "400", "500", "600", "650", "700", "800", "875", "900", "925", "950"] as const;
 export type PaletteStep = (typeof PALETTE_STEPS)[number];
 export const ACCENT_STEPS = ["50", "100", "150", "200", "300", "400", "500", "600", "650", "700", "800", "900", "925", "950"] as const;

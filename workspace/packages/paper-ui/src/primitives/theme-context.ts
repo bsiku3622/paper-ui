@@ -1,6 +1,6 @@
 // theme-context — 테마 엔진의 두 context.
 //
-// 다크모드와 inverse 는 같은 엔진이다: [data-theme] 스코프가 색 var 세트를 갈아끼우고,
+// 다크모드와 inverse 는 같은 엔진이다: 테마 속성(THEME_ATTRIBUTE) 스코프가 색 var 세트를 갈아끼우고,
 // React 쪽은 "지금 해석된 테마가 무엇인가" 를 context 로 들고 다닌다. 두 층으로 나눈다:
 //   ResolvedTheme — subtree 마다 덮어써진다 (ThemeScope · Box inverse 가 자기 반대를 심음).
 //   ThemeControl  — 전역 단일 (PaperProvider 만 제공). 토글 UI 가 setTheme 로 쓴다.

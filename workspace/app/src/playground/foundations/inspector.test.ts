@@ -2,9 +2,11 @@ import { describe, expect, it } from "vitest";
 
 import { COLOR_SELECTION } from "../../../../packages/paper-ui/src/tokens/colors";
 import { PALETTE_TOKENS } from "../../../../packages/paper-ui/src/tokens/palette";
+import { SHAPE_SOURCE } from "../../../../packages/paper-ui/src/tokens/shape";
 import { TYPOGRAPHY_SOURCE } from "../../../../packages/paper-ui/src/tokens/typography";
 import { GROUPS, ROLE_NOTES, formatPalettePath, hexAt, rolesOf, selectionAt } from "./color-roles";
 import { leafPaths } from "./paths";
+import { TARGET_NOTES } from "./shape-roles";
 import { PRESET_NOTES, PRESET_PATHS, SIZE_LEADING } from "./typography-roles";
 
 const NON_ACCENT = Object.fromEntries(Object.entries(COLOR_SELECTION.light).filter(([branch]) => branch !== "accent")) as Omit<typeof COLOR_SELECTION.light, "accent">;
@@ -57,5 +59,12 @@ describe("Typography inspector", () => {
   it("lists every preset once and notes each", () => {
     expect(PRESET_PATHS).toEqual(["button.regular", "button.strong", "field", "textarea", "badge"]);
     expect(Object.keys(PRESET_NOTES).sort()).toEqual([...PRESET_PATHS].sort());
+  });
+});
+
+describe("Shape inspector", () => {
+  it("notes every target value the source has, and only those", () => {
+    expect(Object.keys(TARGET_NOTES)).toEqual(Object.keys(SHAPE_SOURCE.target));
+    for (const [name, note] of Object.entries(TARGET_NOTES)) expect(note.length, name).toBeGreaterThan(0);
   });
 });

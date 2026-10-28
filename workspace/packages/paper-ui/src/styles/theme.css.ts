@@ -1,74 +1,21 @@
-// theme.css.ts — 토큰 값을 CSS 로 굽는 유일한 자리.
+// theme.css.ts — 문서 바탕(body · 포커스 링 · Text 역할 class · reduced motion).
 //
-// 여기와 tokens/index.ts가 L2 semantic VALUES를 CSS variable로 emit한다. OKLCH source와
-// generated HEX는 각 private layer에 격리하고, component·resolver·app은 tokens var()만 본다.
+// 변수는 tokens/variables.css.ts 가 굽는다. 여기는 그 변수를 읽어 문서에 얹는 규칙만 둔다.
+// component · resolver · app 은 tokens var() 만 본다.
 
-import { COLOR_VALUES, COLOR_VALUES_DARK } from "../tokens/colors";
-import { SHAPE_VALUES } from "../tokens/shape";
-import { ELEVATIONS, LAYOUT_VALUES, elevationShadow, elevationShadowPath } from "../tokens/layout";
-import { TYPOGRAPHY_VALUES, TEXT_INK, TEXT_VARIANTS } from "../tokens/typography";
-import { walkValues, pathToCssVar } from "../tokens/helpers";
-import { tokens } from "../tokens";
+import { TEXT_INK, TEXT_VARIANTS } from "../tokens/typography";
+import { THEME_ATTRIBUTE, tokens } from "../tokens";
 import { focusRing } from "../internal/shape";
 import { layered } from "../tokens/layers.css";
 
-// 변수는 pui.theme, 문서 바탕(body · 포커스 링 · reduced motion)과 Text 역할 class 는 pui.base,
-// box-sizing 과 body margin 은 맨 앞의 pui.reset 에 든다. Text 역할이 base 에 있어서, 같은 요소에
-// 붙는 ink class(pui.utilities)가 출력 순서와 무관하게 역할의 기본 잉크를 이긴다.
+// 문서 바탕(body · 포커스 링 · reduced motion)과 Text 역할 class 는 pui.base, box-sizing 과 body margin 은
+// 맨 앞의 pui.reset 에 든다. Text 역할이 base 에 있어서, 같은 요소에 붙는 ink class(pui.utilities)가
+// 출력 순서와 무관하게 역할의 기본 잉크를 이긴다.
 const reset = layered("reset");
 const base = layered("base");
 
 // ╭──────────────────────────────────────────────────────────────────────────╮
-// │ Pass 1 — :root vars                                                      │
-// ╰──────────────────────────────────────────────────────────────────────────╯
-
-// 축 목록을 손으로 나열하지 않는다 — 트리를 통째로 걷는다.
-// (나열하면 축이 늘 때 조용히 누락되고, var 가 없으면 그 속성은 에러 없이
-//  초기값으로 떨어져 토큰 축 하나가 죽은 채 살아있는 것처럼 읽힌다.)
-//
-// 색만 테마에 따라 갈린다 — shape·layout·typography 는 테마 불변이라 :root 한 번만 굽고,
-// 색은 light/dark 두 세트를 나눠 담아 스코프 셀렉터로 교체한다. var 이름은 동일해
-// 소비처는 그대로고, 스코프(html[data-theme] 이나 subtree ThemeScope)만 바뀌면
-// 값이 바뀐다.
-const baseVars: Record<string, string> = {}; // shape · layout · typography (테마 불변)
-const lightVars: Record<string, string> = {};
-const darkVars: Record<string, string> = {};
-
-// Shape·Layout은 원본(source)만 변수로 굽는다. 역할은 그 변수의 별칭이거나 소비 요소에서
-// 계산되는 calc() 라 따로 굽지 않는다 (tokens/shape.ts).
-walkValues(SHAPE_VALUES, ["shape"], (path, value) => {
-  baseVars[pathToCssVar(path)] = value;
-});
-walkValues(LAYOUT_VALUES, ["layout"], (path, value) => {
-  baseVars[pathToCssVar(path)] = value;
-});
-walkValues(TYPOGRAPHY_VALUES, ["typography"], (path, value) => {
-  baseVars[pathToCssVar(path)] = value;
-});
-walkValues(COLOR_VALUES, ["color"], (path, value) => {
-  lightVars[pathToCssVar(path)] = value;
-});
-walkValues(COLOR_VALUES_DARK, ["color"], (path, value) => {
-  darkVars[pathToCssVar(path)] = value;
-});
-// Elevation shadow — geometry는 Layout, 색은 Color의 shadow tint. 테마마다 둘 다 바뀌므로
-// 조립된 값을 테마 스코프가 통째로 교체한다.
-for (const [theme, target] of [["light", lightVars], ["dark", darkVars]] as const) {
-  for (const level of ELEVATIONS) {
-    target[pathToCssVar(elevationShadowPath(level))] = elevationShadow(level, theme, (depth) => tokens.color.shadow[depth]);
-  }
-}
-
-// :root — 테마 불변 축 + light 색(기본값). Provider 없이도 라이트로 바로 선다.
-layered("theme").globalStyle(":root", { colorScheme: "light", vars: { ...baseVars, ...lightVars } });
-
-// 테마 스코프 — 색 세트만 교체한다. :root[...] 를 겹쳐 root 레벨(html)에서 특정도로
-// 확실히 이기고, 뒤 홑 [data-theme] 셀렉터가 중첩 div(ThemeScope · Box inverse)를 잡는다.
-layered("theme").globalStyle(':root[data-theme="light"], [data-theme="light"]', { colorScheme: "light", vars: lightVars });
-layered("theme").globalStyle(':root[data-theme="dark"], [data-theme="dark"]', { colorScheme: "dark", vars: darkVars });
-
-// ╭──────────────────────────────────────────────────────────────────────────╮
-// │ Pass 2 — 캔버스 (body)                                                   │
+// │ Pass 1 — 캔버스 (body)                                                   │
 // ╰──────────────────────────────────────────────────────────────────────────╯
 
 reset.globalStyle("body", { margin: 0 });
@@ -85,6 +32,10 @@ base.globalStyle("body", {
 
 reset.globalStyle("*", { boxSizing: "border-box" });
 
+// 상속되는 글자색은 스코프마다 다시 선언한다 — ThemeScope · Box inverse · Overlay portal 안의 글자가 페이지의
+// 모드가 아니라 스코프 자신의 모드 잉크를 받는다. 특정도 0이라 class 가 정한 색은 그대로 이긴다.
+base.globalStyle(`:where([${THEME_ATTRIBUTE}])`, { color: tokens.color.ink.primary });
+
 // 포커스는 interaction.focus로 통일 (Apple · Atlassian 시그니처). 색이 가장 작게,
 // 가장 자주 등장하는 포인트 자리.
 base.globalStyle(":focus-visible", {
@@ -93,13 +44,13 @@ base.globalStyle(":focus-visible", {
 });
 
 // ╭──────────────────────────────────────────────────────────────────────────╮
-// │ Pass 3 — text variant classes                                            │
+// │ Pass 2 — text variant classes                                            │
 // ╰──────────────────────────────────────────────────────────────────────────╯
 
 for (const v of TEXT_VARIANTS) {
   const spec = tokens.typography.role[v];
   base.globalStyle(`.pui-text-${v}`, {
-    // size · leading · tracking 은 :root var 를 참조 — 값은 Pass 1 한 곳에서만.
+    // size · leading · tracking 은 :root var 를 참조 — 값은 tokens/variables.css.ts 한 곳에서만.
     fontFamily: tokens.typography.palette.family.sans,
     fontSize: spec.size,
     fontWeight: spec.weight,
@@ -126,7 +77,7 @@ base.globalStyle(".pui-mono", {
 });
 
 // ╭──────────────────────────────────────────────────────────────────────────╮
-// │ Pass 4 — reduced motion                                                  │
+// │ Pass 3 — reduced motion                                                  │
 // ╰──────────────────────────────────────────────────────────────────────────╯
 
 base.globalStyle("*", {

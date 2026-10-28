@@ -85,16 +85,17 @@ export const resolved = (ref: string): string => {
 // Just the px part of a resolved length ("0.75rem · 12px" → "12px").
 export const px = (ref: string): string => resolved(ref).match(/(-?[\d.]+px)$/)?.[1] ?? resolved(ref);
 
-// Formula roles are calc()/round() expressions; a hidden probe lets the browser evaluate them.
+// Formula roles are calc()/round() expressions; a hidden probe lets the browser evaluate them. A margin
+// carries the value, since a width cannot be negative and an inset can.
 export const Computed = ({ value, unit = true }: { value: string; unit?: boolean }) => {
   const probe = useRef<HTMLSpanElement>(null);
-  const [width, setWidth] = useState("");
+  const [length, setLength] = useState("");
   useLayoutEffect(() => {
     if (!probe.current) return;
-    const n = Math.round(parseFloat(getComputedStyle(probe.current).width) * 100) / 100;
-    setWidth(unit ? `${n}px` : String(n));
+    const n = Math.round(parseFloat(getComputedStyle(probe.current).marginLeft) * 100) / 100;
+    setLength(unit ? `${n}px` : String(n));
   }, [value, unit]);
-  return <>{width}<span ref={probe} aria-hidden style={{ position: "absolute", visibility: "hidden", width: value }} /></>;
+  return <>{length}<span ref={probe} aria-hidden style={{ position: "absolute", visibility: "hidden", marginLeft: value }} /></>;
 };
 
 // Several sizes of one role, joined the way the docs write them: "7 · 8 · 10".
