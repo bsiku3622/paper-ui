@@ -32,7 +32,7 @@ Shape와 Layout의 경계는 하나의 질문으로 가립니다. **빈 캔버�
 | Layout | `LAYOUT_SOURCE` | `gap` · `gutter` · `container` · `elevation` | Box `elevation` |
 | Motion | duration · easing · loop | `press` · `hover` · `state` · `enter` … | `stateTransition()` |
 
-Playground의 [Foundations](/playground/foundations/color) 페이지가 이 순서 그대로 각 시스템을 보여줍니다. 위에서부터 원본 표, 역할 표, 조합 표 순서입니다.
+Playground의 [Foundations](/playground/foundations/color) 페이지가 이 순서 그대로 각 시스템을 보여줍니다. 위에서부터 원본, 역할, 조합 순서입니다.
 
 ## 값이 화면까지 가는 길
 

@@ -4,41 +4,34 @@
 
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 
-import { Box, Inline, Stack, Text } from "@studio-baeks/paper-ui";
+import { Box, Stack, Text } from "@studio-baeks/paper-ui";
 
 import * as s from "./kit.css";
 
 type Align = keyof typeof s.align;
 export type Column = { label: string; align?: Align };
 
-// `aside` sits at the far end of the heading row — a reading hint such as a scale direction.
-export const FoundationSection = ({ title, description, aside, children }: { title: string; description: string; aside?: ReactNode; children: ReactNode }) => (
+export const FoundationSection = ({ title, description, children }: { title: string; description: string; children: ReactNode }) => (
   <Stack as="section" className={s.section} gap="md">
-    <Inline justify="between" align="end" gap="md">
-      <Stack gap="xs">
-        <Text as="h2" variant="heading">{title}</Text>
-        <Text variant="body" ink="soft">{description}</Text>
-      </Stack>
-      {aside ? <div className={s.aside}>{aside}</div> : null}
-    </Inline>
+    <Stack gap="xs">
+      <Text as="h2" variant="heading">{title}</Text>
+      <Text variant="body" ink="soft">{description}</Text>
+    </Stack>
     {children}
   </Stack>
 );
 
-// `template` is the board's column tracks; header, groups and rows inherit them. A `bare` board
-// drops the raised box and its rules and sits straight on the page, flush with the heading —
-// for specimens that are the content themselves, like the palette ramp.
-export const Board = ({ columns, template, minWidth, bare = false, children }: { columns: Column[]; template: string; minWidth?: string; bare?: boolean; children: ReactNode }) => {
-  const grid = (
+// `template` is the board's column tracks; header, groups and rows inherit them.
+export const Board = ({ columns, template, minWidth, children }: { columns: Column[]; template: string; minWidth?: string; children: ReactNode }) => (
+  <Box className={s.board} surface="raised" border radius="lg" padding="md">
     <div className={s.grid} style={{ gridTemplateColumns: `0 ${template} 0`, minWidth }}>
       <div className={s.header}>
         {columns.map((column) => <Text key={column.label} className={s.align[column.align ?? "start"]} variant="label" ink="base">{column.label}</Text>)}
       </div>
       {children}
     </div>
-  );
-  return bare ? <div className={`${s.board} ${s.bare}`}>{grid}</div> : <Box className={s.board} surface="raised" border radius="lg" padding="md">{grid}</Box>;
-};
+  </Box>
+);
 
 export const BoardGroup = ({ label, children }: { label?: string; children: ReactNode }) => (
   <div className={s.group}>
@@ -59,9 +52,8 @@ export const TokenCell = ({ name, note }: { name: string; note?: ReactNode }) =>
 );
 
 // Without `align` a cell fills its track; with it, the cell sits at that edge of the track.
-// `span` lets one cell cover several tracks, for a row that does not follow the column headers.
-export const Cell = ({ align, span, children }: { align?: Align; span?: number; children: ReactNode }) => (
-  <div className={align ? `${s.cell} ${s.align[align]}` : s.cell} style={span ? { gridColumn: `span ${span}` } : undefined}>{children}</div>
+export const Cell = ({ align, children }: { align?: Align; children: ReactNode }) => (
+  <div className={align ? `${s.cell} ${s.align[align]}` : s.cell}>{children}</div>
 );
 
 export const ValueCell = ({ children, title }: { children: ReactNode; title?: string }) => (

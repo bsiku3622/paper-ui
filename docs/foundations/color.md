@@ -26,7 +26,7 @@ Palette는 테마와 무관합니다. 테마를 바꿔도 ramp는 그대로이�
 
 `650`·`875`·`925` 같은 중간 단계는 앞뒤 기준점 사이를 보간해 만듭니다. `925`는 다크의 raised 면처럼 950 바로 위에 떠야 하는 자리를 위해 있습니다. amber는 밝은 단계(90°)에서 노랑을 유지하다가 400부터 주황(65°)으로 넘어가고, 200·300의 chroma를 완만하게 올려 채도가 갑자기 튀지 않게 했습니다.
 
-Palette Token은 내부 이름입니다. 컴포넌트와 앱은 import하지 않고, 의미 역할만 고릅니다. 원본 좌표와 생성된 HEX는 Playground [Color](/playground/foundations/color)의 Color Palette 표에서 확인합니다.
+Palette Token은 내부 이름입니다. 컴포넌트와 앱은 import하지 않고, 의미 역할만 고릅니다. 생성된 단계는 Playground [Color](/playground/foundations/color)의 Palette 행렬에서 확인합니다. 칩에 포인터를 올리면 단계와 HEX가 보입니다.
 
 ## 의미 역할
 
