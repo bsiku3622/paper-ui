@@ -36,7 +36,7 @@ Atom은 같은 축 몇 개로 말합니다. 축의 값은 모두 Foundations에�
 | Badge | accent · variant · size · fontSize · dot · shape | primary / soft / md / rounded. 표시용이라 hover 없음. 높이 20 · 22 · 24, 글자 12 고정 |
 | Spinner | size · label | md, label="불러오는 중", role=status. 지름 16 · 18 · 20 |
 | Divider | orientation=horizontal/vertical · level=base/strong | horizontal / base. hr + aria-orientation. level은 선의 색(`border.base` · `border.strong`), 두께는 border stroke |
-| Link | children · native anchor props | a, info ink, hover 때 밑줄. 라우팅은 href 또는 앱의 조합 |
+| Link | children · native anchor props | a, `interaction.link` 잉크, hover 때 밑줄. 라우팅은 href 또는 앱의 조합 |
 
 Select.Option과 Select.Group은 Select의 anatomy라 따로 세지 않습니다. 이 둘은 `Select.Option` · `Select.Group` 하나의 경로로만 쓰고, 따로 export하지 않습니다. 각 Atom의 치수가 어디서 나오는지는 [Shape](../foundations/shape.md#recipe--컴포넌트-anatomy)의 recipe 표에 있습니다.
 

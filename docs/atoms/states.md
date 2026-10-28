@@ -17,20 +17,20 @@ Atom이 hover·focus·selected·disabled에 어떻게 반응하는지 정합니�
 
 | 대상 | resting | hover | focus | 비고 |
 |---|---|---|---|---|
-| `Button`·interactive `Badge` 등 shared accent 컴포넌트 | `accent × variant` | variant profile의 overlay 또는 hover color/background | keyboard ring | `.pui-interactive`가 있을 때만 적용 |
-| primary `solid` | `accent.primary.solid` | `interaction.bgHover.onPrimarySolid` overlay | keyboard ring | 검정 면은 더 어두워질 수 없어 한 단계 밝힘 |
+| `Button`·interactive `Badge` 등 shared accent 컴포넌트 | `accent × variant` | variant profile의 tint 또는 hover color/background | keyboard ring | `.pui-interactive`가 있을 때만 적용 |
+| primary `solid` | `accent.primary.solid` | `interaction.bgHover.onPrimarySolid` tint | keyboard ring | 검정 면은 더 어두워질 수 없어 한 단계 밝힘 |
 | neutral `Field`·`Select`·`Textarea` | `border.base` | `border.hover` | keyboard ring | 배경은 바꾸지 않음 |
 | pointer-focused neutral Form | `border.base` | `border.hover` | ring 없음 | 클릭한 입력은 경계를 바꾸지 않음 |
 | semantic Form (`info`·`success`·`warning`·`error`) | 해당 accent `ink` 경계 | 같은 경계 유지 | keyboard ring | 상태색 경계로 의미를 계속 표시 |
-| 선택 가능한 행·항목 | base 면 | `interaction.bgHover.onSurface` overlay | keyboard ring 또는 selected state | selected 면이 hover보다 우선 |
-| Link | 본문 잉크 | underline/색 변화 | keyboard ring | 면을 만들지 않음 |
+| 선택 가능한 행·항목 | base 면 | `interaction.bgHover.onSurface` tint | keyboard ring 또는 selected state | selected 면이 hover보다 우선 |
+| Link | `interaction.link` 잉크 | underline | keyboard ring | 면을 만들지 않음 |
 | Badge·상태 점·정적 표시 | 그대로 | 없음 | 해당 없음 | 정보 표식에 hover를 추가하지 않음 |
 
 neutral Form의 `border.hover`는 `border.base`·`border.strong`보다 진하고 잉크보다 옅은 전용 경계 역할로, 입력 상자의 존재만 잠깐 강조합니다. semantic Form은 처음부터 의미 색을 쓰므로 같은 선을 한 번 더 올리지 않고 hover에서도 같은 경계를 유지합니다.
 
-## Overlay와 색 profile
+## Tint와 색 profile
 
-`soft`·`ghost`·`muted`와 solid의 hover는 배경을 직접 바꾸지 않고 `tokens.color.interaction.bgHover`를 `backgroundImage` overlay로 겹칩니다. 그래서 raised·canvas·sunken 어느 면 위에서도 같은 방향으로 읽힙니다. `hairline`은 면 대신 경계를 `border.hover`로 올립니다.
+`soft`·`ghost`·`muted`와 solid의 hover는 배경을 직접 바꾸지 않고 `tokens.color.interaction.bgHover`를 `backgroundImage` tint로 겹칩니다. 그래서 raised·canvas·sunken 어느 면 위에서도 같은 방향으로 읽힙니다. `hairline`은 면 대신 경계를 `border.hover`로 올립니다.
 
 이 규칙은 `tokens/color-recipes.ts`가 정의하고 `styles/color.css.ts`가 `ACCENTS × VARIANTS` 전체에 방출합니다. 표시 전용 컴포넌트는 `.pui-interactive`를 받지 않으므로 Badge처럼 hover가 의미 없는 곳에 상태색이 번지지 않습니다.
 
@@ -41,7 +41,7 @@ focus ring은 패키지 전체가 하나의 스타일(`focusRing`)을 씁니다 
 새 컴포넌트는 다음 질문에 답한 뒤 hover를 추가합니다.
 
 - 이것은 사용자가 눌러 상태를 바꾸는 interactive control인가?
-- 면을 바꾸는가, 선을 바꾸는가, 아니면 overlay만 얹는가?
+- 면을 바꾸는가, 선을 바꾸는가, 아니면 tint만 얹는가?
 - selected/semantic 상태가 hover보다 우선해야 하는가?
 - 정적 표식에 hover를 넣어 정보 위계를 흐리게 만들고 있지는 않은가?
 

@@ -3,12 +3,12 @@ import { tokens, CONTROL_SIZES, DIMENSIONS, ICON_SIZES, MEASURES, SPACES, type C
 
 import { SHAPE_SOURCE } from "../../../../packages/paper-ui/src/tokens/shape";
 import { SHAPE_RECIPES } from "../../../../packages/paper-ui/src/tokens/shape-recipes";
-import { Board, BoardGroup, BoardRow, Cell, Computed, FoundationSection, Ladder, MatrixCell, TokenCell, ValueCell, resolved } from "./kit";
+import { Board, BoardGroup, BoardRow, Cell, Computed, FoundationSection, Ladder, MatrixCell, Meter, TokenCell, ValueCell, resolved } from "./kit";
+import { leafPaths, valueAt } from "./paths";
 import * as s from "./foundations.css";
 
 const shape = tokens.shape;
 const r = SHAPE_RECIPES;
-const percent = (dp: number, max: number) => `${Math.round((dp / max) * 1000) / 10}%`;
 const maxOf = (scale: Record<string, number>) => Math.max(...Object.values(scale));
 const Plus = () => <Icon size="caption"><path d="M12 5v14M5 12h14" /></Icon>;
 
@@ -17,8 +17,15 @@ const SOURCE_TEMPLATE = "minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr)";
 const ROLE_COLUMNS = [{ label: "Role" }, { label: "Rule" }, { label: "Value", align: "end" as const }];
 const ROLE_TEMPLATE = "minmax(0, 1fr) minmax(0, 1.2fr) minmax(11rem, auto)";
 
-const Bar = ({ width }: { width: string }) => <div className={s.bar} style={{ width }} />;
 const n = (dp: number, unit = "dp") => `${dp} ${unit}`;
+
+// What each stroke is drawn as; the icon stroke is SVG units, not a line.
+const STROKE_NOTES: Record<keyof typeof SHAPE_SOURCE.stroke, string | undefined> = { border: undefined, emphasis: undefined, icon: "24 artboard의 SVG 단위" };
+const STROKE_SPECIMEN: Record<keyof typeof SHAPE_SOURCE.stroke, React.ReactNode> = {
+  border: <div className={s.strokeLine.border} />,
+  emphasis: <div className={s.strokeLine.emphasis} />,
+  icon: <Cell><Icon size="body"><circle cx="12" cy="12" r="8" /><path d="M8 12h8" /></Icon></Cell>,
+};
 
 const ShapeSource = () => (
   <Board columns={SOURCE_COLUMNS} template={SOURCE_TEMPLATE} minWidth="36rem">
@@ -26,34 +33,29 @@ const ShapeSource = () => (
       {SPACES.map((step) => (
         <BoardRow key={step}>
           <TokenCell name={`shape.space.${step}`} />
-          <Bar width={shape.inset[step]} />
+          <div className={s.spaceBar[step]} />
           <ValueCell>{resolved(shape.inset[step])}</ValueCell>
         </BoardRow>
       ))}
     </BoardGroup>
     <BoardGroup label="Radius">
-      {([["control", shape.radius.control], ["selection", shape.radius.selection], ["surface.sm", shape.radius.surface.sm], ["surface.md", shape.radius.surface.md], ["surface.lg", shape.radius.surface.lg], ["full", shape.radius.full]] as const).map(([name, ref]) => (
+      {leafPaths(SHAPE_SOURCE.radius).map((name) => (
         <BoardRow key={name}>
           <TokenCell name={`shape.radius.${name}`} />
-          <div className={s.radiusSample} style={{ borderRadius: ref }} />
-          <ValueCell>{resolved(ref)}</ValueCell>
+          <div className={s.radiusSample[name]} />
+          <ValueCell>{resolved(valueAt(shape.radius, name) as string)}</ValueCell>
         </BoardRow>
       ))}
     </BoardGroup>
     <BoardGroup label="Stroke · Focus — px라 root 크기를 따라 커지지 않습니다">
-      {(["border", "emphasis"] as const).map((name) => (
+      {leafPaths(SHAPE_SOURCE.stroke).map((name) => (
         <BoardRow key={name}>
-          <TokenCell name={`shape.stroke.${name}`} />
-          <div className={s.strokeLine} style={{ height: shape.stroke[name] }} />
+          <TokenCell name={`shape.stroke.${name}`} note={STROKE_NOTES[name]} />
+          {STROKE_SPECIMEN[name]}
           <ValueCell>{resolved(shape.stroke[name])}</ValueCell>
         </BoardRow>
       ))}
-      <BoardRow>
-        <TokenCell name="shape.stroke.icon" note="24 artboard의 SVG 단위" />
-        <Cell><Icon size="body"><circle cx="12" cy="12" r="8" /><path d="M8 12h8" /></Icon></Cell>
-        <ValueCell>{resolved(shape.stroke.icon)}</ValueCell>
-      </BoardRow>
-      {(["width", "offset"] as const).map((name) => (
+      {leafPaths(SHAPE_SOURCE.focus).map((name) => (
         <BoardRow key={name}>
           <TokenCell name={`shape.focus.${name}`} />
           <Cell><div className={s.focusBox} /></Cell>
@@ -65,12 +67,12 @@ const ShapeSource = () => (
       {CONTROL_SIZES.map((size) => (
         <BoardRow key={size}>
           <TokenCell name={`shape.control.height.${size}`} />
-          <div className={s.controlBox} style={{ height: shape.control.height[size] }} />
+          <div className={s.controlBox[size]} />
           <ValueCell>{resolved(shape.control.height[size])}</ValueCell>
         </BoardRow>
       ))}
       <BoardRow>
-        <TokenCell name="shape.control.buttonInsetRatio" note="버튼 inset = 입력 inset × 이 값" />
+        <TokenCell name="shape.control.buttonInsetRatio" note="버튼 inset = (높이 − 버튼 글자 줄)/2 × 이 값" />
         <Cell><Button size="md" variant="hairline">Button</Button></Cell>
         <ValueCell>{SHAPE_SOURCE.control.buttonInsetRatio}</ValueCell>
       </BoardRow>
@@ -88,14 +90,14 @@ const ShapeSource = () => (
       {(["width", "height"] as const).flatMap((axis) => DIMENSIONS.map((step) => (
         <BoardRow key={`${axis}-${step}`}>
           <TokenCell name={`shape.dimension.${axis}.${step}`} />
-          <Bar width={percent(SHAPE_SOURCE.dimension[axis][step], maxOf(SHAPE_SOURCE.dimension[axis]))} />
+          <Meter value={SHAPE_SOURCE.dimension[axis][step]} max={maxOf(SHAPE_SOURCE.dimension[axis])} />
           <ValueCell>{resolved(shape.dimension[axis][step])}</ValueCell>
         </BoardRow>
       )))}
       {MEASURES.map((step) => (
         <BoardRow key={`measure-${step}`}>
           <TokenCell name={`shape.measure.${step}`} />
-          <Bar width={percent(SHAPE_SOURCE.measure[step], maxOf(SHAPE_SOURCE.measure))} />
+          <Meter value={SHAPE_SOURCE.measure[step]} max={maxOf(SHAPE_SOURCE.measure)} />
           <ValueCell>{resolved(shape.measure[step])}</ValueCell>
         </BoardRow>
       ))}
@@ -129,7 +131,7 @@ const ShapeRoles = () => (
     <BoardGroup label="Alias — 원본 변수를 그대로 가리킵니다">
       {([
         ["shape.inset.xs ~ 3xl", "= shape.space 같은 단계", SPACES.map((step) => shape.inset[step])],
-        ["shape.radius.*", "= shape.radius 원본", [shape.radius.control, shape.radius.selection, shape.radius.surface.sm, shape.radius.surface.md, shape.radius.surface.lg]],
+        ["shape.radius.*", "= shape.radius 원본", leafPaths(SHAPE_SOURCE.radius).map((name) => valueAt(shape.radius, name) as string)],
         ["shape.control.height", "= 원본 사다리", sizes(shape.control.height)],
         ["shape.control.icon", "= icon caption · body · subheading", sizes(shape.control.icon)],
         ["shape.control.gap", "= shape.space.sm", [shape.control.gap]],
@@ -144,7 +146,7 @@ const ShapeRoles = () => (
     <BoardGroup label="Formula — 쓰이는 요소에서 계산되어, 원본을 덮으면 따라 바뀝니다">
       {([
         ["shape.control.inset.input", "(control.height − 컨트롤 글자 줄) / 2", sizes(shape.control.inset.input), "입력값 줄상자 사방에 같은 여백"],
-        ["shape.control.inset.button", "round(input inset × 1.4, 1px)", sizes(shape.control.inset.button), "라벨이 상자를 정의하므로 더 넓게"],
+        ["shape.control.inset.button", `round(nearest, (control.height − 버튼 글자 줄) / 2 × ${SHAPE_SOURCE.control.buttonInsetRatio}, 1px)`, sizes(shape.control.inset.button), "라벨이 상자를 정의하므로 더 넓게"],
         ["shape.selection.size", "control.height / 2", sizes(shape.selection.size), "그래서 스위치 트랙 폭 = 컨트롤 높이"],
       ] as const).map(([name, rule, values, note]) => (
         <BoardRow key={name}>

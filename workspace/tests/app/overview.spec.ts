@@ -1,43 +1,17 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
-import { accentProfile } from "../../packages/paper-ui/src/tokens/color-recipes";
 import { SHAPE_SOURCE } from "../../packages/paper-ui/src/tokens/shape";
-import { tokens, ACCENTS, CONTROL_SIZES, STATUSES, SURFACES, TEXT_VARIANTS, VARIANTS, type ControlSize, type TextVariant } from "../../packages/paper-ui/src/tokens";
+import { tokens, CONTROL_SIZES, STATUSES, SURFACES, TEXT_VARIANTS, VARIANTS, type ControlSize, type TextVariant } from "../../packages/paper-ui/src/tokens";
 import { pageErrors } from "../support/console";
+import { expectStyle, profile, type Style } from "../support/style";
 
 // The Overview is the index of specimens: every kept testid is bound here to the computed value its
 // specimen has to show. Expected values come from the token references and the recipes, which a probe
 // element placed beside the specimen resolves to the same computed value the specimen's own rule yields.
-type Style = Record<string, string>;
-
-const expectStyle = async (target: Locator, expected: Style) => {
-  const keys = Object.keys(expected);
-  // Controls transition between states, so a value read right after a click can still be on its way.
-  await expect
-    .poll(
-      () =>
-        target.evaluate((element, expected) => {
-          const probe = document.createElement("span");
-          element.parentElement!.append(probe);
-          Object.assign(probe.style, expected);
-          const own = getComputedStyle(element) as unknown as Record<string, string>;
-          const reference = getComputedStyle(probe) as unknown as Record<string, string>;
-          const result = Object.keys(expected).map((key) => ({ key, own: own[key], reference: reference[key] })).filter((row) => row.own !== row.reference);
-          probe.remove();
-          return result;
-        }, expected),
-      { message: JSON.stringify(keys) },
-    )
-    .toEqual([]);
-};
 
 const role = (variant: TextVariant) => {
   const spec = tokens.typography.role[variant];
   return { fontSize: spec.size, fontWeight: spec.weight, lineHeight: spec.leading, letterSpacing: spec.tracking };
-};
-const profile = (accent: (typeof ACCENTS)[number], variant: (typeof VARIANTS)[number]): Style => {
-  const spec = accentProfile(accent, variant);
-  return { backgroundColor: spec.background, color: spec.color, borderTopColor: spec.borderColor };
 };
 const radius = (value: string): Style => ({ borderTopLeftRadius: value, borderTopRightRadius: value, borderBottomLeftRadius: value, borderBottomRightRadius: value });
 const height = (size: ControlSize): Style => ({ height: tokens.shape.control.height[size] });
@@ -73,19 +47,12 @@ test("the Type scale shows each text role as its role", async ({ page }) => {
   await expectStyle(page.getByTestId("text-mono"), { fontWeight, lineHeight, fontFamily: tokens.typography.palette.family.mono });
 });
 
-test("the Color section shows each surface, each accent's solid and ink, and the accent × variant table", async ({ page }) => {
+test("the Color section shows each surface and each accent's solid and ink", async ({ page }) => {
   await open(page);
   for (const surface of SURFACES) await expectStyle(page.getByTestId(`swatch-paper-${surface}`), { backgroundColor: tokens.color.bg[surface] });
   for (const accent of STATUSES) {
     await expectStyle(page.getByTestId(`dot-${accent}`), { backgroundColor: tokens.color.accent[accent].solid, ...radius(tokens.shape.radius.full) });
     await expectStyle(page.getByTestId(`ink-${accent}`), { color: tokens.color.accent[accent].ink });
-  }
-  const matrix = page.getByTestId("color-variant-matrix");
-  expect(await matrix.evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(" ").length)).toBe(ACCENTS.length + 1);
-  const buttons = matrix.getByRole("button");
-  await expect(buttons).toHaveCount(ACCENTS.length * VARIANTS.length);
-  for (const [index, variant] of VARIANTS.entries()) {
-    for (const [column, accent] of ACCENTS.entries()) await expectStyle(buttons.nth(index * ACCENTS.length + column), profile(accent, variant));
   }
 });
 
@@ -242,9 +209,9 @@ test("the Badge section shows each status in the soft recipe, the sizes by heigh
   await expectStyle(page.getByTestId("badge-shape-pill"), radius(tokens.shape.radius.full));
 });
 
-test("the Link is the info ink and the Icon the body artboard", async ({ page }) => {
+test("the Link takes the link role and the Icon the body artboard", async ({ page }) => {
   await open(page);
-  await expectStyle(page.getByTestId("link"), { color: tokens.color.accent.info.ink });
+  await expectStyle(page.getByTestId("link"), { color: tokens.color.interaction.link });
   await expectStyle(page.getByTestId("icon"), { width: tokens.shape.icon.size.body, height: tokens.shape.icon.size.body });
 });
 
@@ -267,7 +234,6 @@ test("every testid on the Overview is one the tests above bind to a value", asyn
     ...TEXT_VARIANTS.map((variant) => `text-${variant}`), "text-mono",
     ...SURFACES.map((surface) => `swatch-paper-${surface}`),
     ...STATUSES.flatMap((status) => [`dot-${status}`, `ink-${status}`, `badge-${status}`]),
-    "color-variant-matrix",
     "box-border", "spec-layout-radius", "radius-small", "radius-card", "radius-large",
     "spec-button-variants", ...VARIANTS.map((variant) => `btn-${variant}`), "btn-danger", "btn-soft-success", "btn-soft-warning",
     "spec-button-sizes", ...CONTROL_SIZES.flatMap((size) => [`btn-${size}`, `spec-size-${size}`, `badge-${size}`]),

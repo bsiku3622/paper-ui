@@ -33,7 +33,7 @@ Stack · Inline · Grid의 `gap`, Grid의 `rowGap` · `columnGap`, Box의 `gap`�
 
 tier 사이를 10씩 띄워, 같은 tier 안에서 조금 올리고 내려도 다음 tier를 넘지 않습니다. 중첩된 Overlay는 깊이마다 한 tier(`modal − overlay`)씩 올라갑니다.
 
-그림자 깊이는 lifted와 floating 둘뿐입니다. 기하는 테마별로 Layout이 갖고(다크는 더 조이고 음의 spread를 씁니다), 색은 Color의 `shadow.overlayMinimal` · `shadow.overlay`가 칠합니다.
+그림자 깊이는 lifted와 floating 둘뿐입니다. 기하는 테마별로 Layout이 갖고(다크는 더 조이고 음의 spread를 씁니다), 그림자 색(shadow colour)은 Color의 `shadow.lifted` · `shadow.floating`이 칠합니다.
 
 Box는 `elevation` prop으로 층을 고릅니다. z와 그림자가 함께 붙습니다.
 

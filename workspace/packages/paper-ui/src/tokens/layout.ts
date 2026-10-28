@@ -8,14 +8,15 @@
 //   LAYOUT          public roles
 //
 // Distances select from the Shape space scale, so a gap and an inset of the same step are the
-// same length. Elevation shadows take their tint from Color when the theme is emitted.
+// same length. Elevation shadows take their shadow colour from Color when the theme is emitted.
 
+import type { Depth } from "./colors";
 import { buildVarTree, keys, lengths, pathToVarRef, px } from "./helpers";
+import type { ColorMode } from "./palette";
 import { SPACE } from "./shape";
 
 export const ELEVATIONS = ["base", "raised", "sticky", "overlay", "modal", "toast"] as const;
 export type Elevation = (typeof ELEVATIONS)[number];
-type Depth = "lifted" | "floating";
 type ShadowLayer = readonly [x: number, y: number, blur: number, spread: number];
 
 export const LAYOUT_SOURCE = {
@@ -35,7 +36,7 @@ export const LAYOUT_SOURCE = {
   shadow: {
     light: { lifted: [[0, 1, 3, 0]], floating: [[0, 8, 24, 0], [0, 2, 6, 0]] },
     dark: { lifted: [[0, 1, 2, 0]], floating: [[0, 8, 22, -5], [0, 3, 7, -2]] },
-  } satisfies Record<"light" | "dark", Record<Depth, readonly ShadowLayer[]>>,
+  } satisfies Record<ColorMode, Record<Depth, readonly ShadowLayer[]>>,
 } as const;
 
 export const BREAKPOINTS = keys(LAYOUT_SOURCE.breakpoint);
@@ -47,9 +48,6 @@ export type Container = keyof typeof LAYOUT_SOURCE.container;
 export const ORIENTATIONS = ["horizontal", "vertical"] as const;
 export type Orientation = (typeof ORIENTATIONS)[number];
 
-// The Color shadow tint each depth is drawn with.
-export const SHADOW_TINT = { lifted: "overlayMinimal", floating: "overlay" } as const satisfies Record<Depth, string>;
-
 export const LAYOUT_VALUES = {
   container: lengths(LAYOUT_SOURCE.container),
   elevation: Object.fromEntries(ELEVATIONS.map((level) => [level, { z: String(LAYOUT_SOURCE.elevation[level].z) }])) as Record<Elevation, { z: string }>,
@@ -57,10 +55,10 @@ export const LAYOUT_VALUES = {
 
 // Shadows change with the theme, so theme.css.ts emits them per theme under this path.
 export const elevationShadowPath = (level: Elevation) => ["layout", "elevation", level, "shadow"] as const;
-export const elevationShadow = (level: Elevation, theme: "light" | "dark", tint: (name: (typeof SHADOW_TINT)[Depth]) => string): string => {
+export const elevationShadow = (level: Elevation, theme: ColorMode, shadowColor: (depth: Depth) => string): string => {
   const depth = LAYOUT_SOURCE.elevation[level].depth;
   if (!depth) return "none";
-  return LAYOUT_SOURCE.shadow[theme][depth].map((layer) => `${layer.map(px).join(" ")} ${tint(SHADOW_TINT[depth])}`).join(", ");
+  return LAYOUT_SOURCE.shadow[theme][depth].map((layer) => `${layer.map(px).join(" ")} ${shadowColor(depth)}`).join(", ");
 };
 
 const source = buildVarTree(LAYOUT_VALUES, ["layout"]);

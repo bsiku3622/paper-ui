@@ -14,12 +14,13 @@ describe("Layout builds on Shape", () => {
       expect(tokens.layout.elevation[level].z).toMatch(/^var\(--pui-layout-elevation-/);
       expect(tokens.layout.elevation[level].shadow).toMatch(/^var\(--pui-layout-elevation-/);
     }
-    const tint = (name: string) => `tint(${name})`;
+    const shadowColor = (depth: string) => `color(${depth})`;
     for (const theme of ["light", "dark"] as const) {
-      expect(elevationShadow("base", theme, tint)).toBe("none");
-      expect(elevationShadow("sticky", theme, tint)).toBe("none");
-      expect(elevationShadow("raised", theme, tint)).toContain("tint(overlayMinimal)");
-      expect(elevationShadow("modal", theme, tint)).toBe(elevationShadow("overlay", theme, tint));
+      expect(elevationShadow("base", theme, shadowColor)).toBe("none");
+      expect(elevationShadow("sticky", theme, shadowColor)).toBe("none");
+      expect(elevationShadow("raised", theme, shadowColor)).toContain("color(lifted)");
+      expect(elevationShadow("overlay", theme, shadowColor)).toContain("color(floating)");
+      expect(elevationShadow("modal", theme, shadowColor)).toBe(elevationShadow("overlay", theme, shadowColor));
     }
   });
 });

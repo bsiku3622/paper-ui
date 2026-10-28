@@ -75,14 +75,14 @@ Safari 16.4). Vite build.target · cssTarget 이 거기서 나오고, CSS 기능
 색은 한 방향으로 흐릅니다.
 
 ```
-OKLCH Palette source → HEX Palette Token generation → semantic systems → real use
-     palette.ts              color-ladder.ts           colors.ts       CSS vars / UI
+OKLCH Palette source → HEX Palette Token generation → semantic selection table → real use
+     palette.ts              color-ladder.ts           colors.ts (COLOR_SELECTION)   CSS vars / UI
 ```
 
-- palette.ts만 OKLCH neutral·accent anchor와 `alpha05`~`alpha95` opacity scale을 소유합니다. color-ladder.ts의 순수 함수를 호출해 완성된 coordinates와 HEX Palette Token을 조립해 export합니다. Palette 값은 테마와 무관하며, semantic layer가 light/dark 역할에 맞는 step을 선택합니다.
+- palette.ts만 OKLCH neutral·accent anchor와 `alpha05`~`alpha95` opacity scale을 소유합니다. color-ladder.ts의 순수 함수를 호출해 완성된 coordinates와 HEX Palette Token을 조립해 export합니다. Palette 값은 테마와 무관하며, semantic layer가 light/dark 역할에 맞는 step을 선택합니다. accent hue·chroma와 amber의 옅은 끝 보정은 `ACCENT_IDENTITIES`, 중립의 중간 단계는 `NEUTRAL_BETWEEN` 데이터입니다.
 - color-ladder.ts는 palette.ts를 import하지 않는 순수 계산 모듈입니다. 입력받은 좌표·단계에 대해 보간·gamut-map·HEX 인코딩을 수행하며 semantic role 이름을 두지 않습니다.
-- colors.ts의 semantic leaf는 생성된 Palette Token만 선택합니다. 다른 semantic leaf, 직접 입력한 HEX, color math를 참조하지 않습니다.
-- theme.css.ts는 semantic tree를 CSS variable로 내보냅니다. Package consumers는 tokens.color var 참조만 씁니다. Playground Foundations inspector(`app/src/playground/foundations/*.tsx`)만 원본을 그대로 보여주기 위해 colors·palette·shape·shape-recipes·layout 원본 모듈을 읽습니다 — 표시용이지 스타일용이 아닙니다. 다른 raw-token import 제한은 유지합니다.
+- colors.ts의 `COLOR_SELECTION`이 테마별로 역할마다 Palette 경로 하나를 고르는 유일한 표이고, `COLOR_VALUES`(_DARK)는 그 표에서 파생합니다. semantic leaf는 생성된 Palette Token만 선택하며 다른 semantic leaf, 직접 입력한 HEX, color math를 참조하지 않습니다. 상태색의 tone은 `ACCENT_TONE_STEPS`·`PRIMARY_TONE_STEPS`가 고르고, 표를 벗어나는 예외(light warning)는 pigment 이름이 아니라 status 이름으로 `STATUS_EXCEPTIONS`에 적습니다.
+- theme.css.ts는 semantic tree를 CSS variable로 내보냅니다. Package consumers는 tokens.color var 참조만 씁니다. Playground Foundations inspector(`app/src/playground/foundations/*.ts(x)`, 스타일시트 `*.css.ts` 제외)만 원본을 그대로 보여주기 위해 colors·palette·color-recipes·typography·shape·shape-recipes·layout 원본 모듈을 읽습니다 — 표시용이지 스타일용이 아닙니다. 원본에서 읽은 값은 글자로 찍거나 kit의 표시 부품(Swatch · Chip · StepGrid · Meter)을 거쳐서만 화면에 닿고, 클래스와 컴포넌트 prop은 `/tokens` 어휘나 손으로 적은 표본 지도에서 옵니다. 다른 raw-token import 제한은 유지합니다.
 
 semantic color는 surface·ink·border·accent·interaction·overlay·shadow 역할로 나뉩니다.
 
@@ -93,13 +93,13 @@ semantic color는 surface·ink·border·accent·interaction·overlay·shadow 역
 | Border | `border.<level>` | base · strong · hover |
 | Ink | `ink.<level>` | primary · secondary · tertiary |
 | Accent | `accent.<name>.<tone>` | primary · info · success · warning · error × solid · wash · ink · soft · subtle |
-| Interaction | `interaction.<state>` | bgHover (onSurface·onPrimarySolid·onAccentSolid) · selected · active · focus |
+| Interaction | `interaction.<state>` | bgHover (onSurface·onPrimarySolid·onAccentSolid) · selected · active · focus · link |
 | Overlay | `overlay.<role>` | scrim |
-| Shadow | `shadow.<role>` | overlay · overlayMinimal |
+| Shadow | `shadow.<depth>` | floating · lifted |
 
 Accent status는 palette와 분리합니다: info→blue, success→green, warning→amber, error→red. Accent는 같은 다섯 role을 공유합니다. `solid`는 채움, `wash`는 채움 위 글자, `ink`는 soft·hairline·ghost와 의미색 글자, `soft`는 soft surface, `subtle`은 muted foreground에 씁니다.
 
-focus ring 색은 `interaction.focus`에 둡니다. focus는 상호작용 상태이고 색도 Palette Token에서 오기 때문입니다. 링 두께·offset은 색이 아닌 geometry이므로 `shape.focus.width`와 `shape.focus.offset`에 둡니다. Scrim은 `overlay.scrim`, shadow tint는 `shadow.overlay`와 `shadow.overlayMinimal`에 두고, 거리·blur·spread는 shape geometry로 둡니다. Semantic Form hover glow는 사용하지 않습니다.
+focus ring 색은 `interaction.focus`에, 링크 색은 `interaction.link`에 둡니다. focus는 상호작용 상태이고 링크는 눌러서 이동한다는 표시이며, 둘 다 색은 Palette Token에서 옵니다. 링크는 info 상태색과 같은 blue.700/300을 고르지만 뜻이 다른 별도 역할입니다. 링 두께·offset은 색이 아닌 geometry이므로 `shape.focus.width`와 `shape.focus.offset`에 둡니다. Scrim은 `overlay.scrim`, 그림자 색(shadow colour)은 깊이로 이름 붙인 `shadow.floating`과 `shadow.lifted`에 두고, 거리·blur·spread는 shape geometry로 둡니다. "overlay"는 떠 있는 층(Overlay · elevation `overlay` · `overlay.scrim`)만 가리키고, 면 위의 상태 wash는 tint입니다. Semantic Form hover glow는 사용하지 않습니다.
 
 색을 바꾸면 [docs/foundations/color.md](docs/foundations/color.md)와 Playground Foundations › Color를 함께 확인합니다. API 경로와 source 규칙을 동시에 갱신합니다.
 
@@ -114,7 +114,7 @@ focus ring 색은 `interaction.focus`에 둡니다. focus는 상호작용 상태
 - recipe(`tokens/shape-recipes.ts`)에는 숫자가 없습니다. Switch 트랙 폭 = 컨트롤 높이, 테 = `stroke.emphasis`, 손잡이는 자기 폭만큼 이동. Textarea 한 줄 = 같은 size Field 높이(block 여백 4/5/7). Select 화살표는 `control.icon` 크기 Icon, 입력 inset 자리, 값은 `control.gap` 앞에서 멈춤. Checkbox mark·Radio dot = 선택 상자의 절반(크기별 보정 없음). Badge 높이 20/22/24·inset 6/8/10만 원본 anatomy입니다.
 - 선(`stroke.border` 1 · `emphasis` 2)과 포커스 링(`focus.width`·`offset` 2)은 px, `stroke.icon` 1.75는 SVG 단위입니다. 모든 포커스 링은 `focusRing` 하나를 씁니다(색은 `interaction.focus`).
 - Icon 크기 이름은 Text 역할 이름의 부분집합이고 타입으로 묶여 있습니다: label 14 · caption 16 · body 18 · subheading 20. Box의 named dimension(`dimension.width/height` xs~xl)과 읽기 폭(`measure`)도 Shape sizing입니다.
-- elevation은 `base 0 · raised 10 · sticky 20 · overlay 30 · modal 40 · toast 50` 여섯 층이고, **층 하나가 z와 그림자를 함께 정합니다.** 그림자 깊이는 lifted(raised)·floating(overlay·modal·toast) 둘뿐, base·sticky는 그림자가 없습니다. 기하는 Layout, 색은 Color의 shadow tint입니다. Box는 `elevation` prop으로 고릅니다.
+- elevation은 `base 0 · raised 10 · sticky 20 · overlay 30 · modal 40 · toast 50` 여섯 층이고, **층 하나가 z와 그림자를 함께 정합니다.** 그림자 깊이는 lifted(raised)·floating(overlay·modal·toast) 둘뿐, base·sticky는 그림자가 없습니다. 기하는 Layout, 색은 Color의 shadow colour입니다. Box는 `elevation` prop으로 고릅니다.
 - breakpoint(480/768/1024/1280)는 미디어 쿼리가 변수를 못 읽어 값입니다. `color.control.track`은 Switch 트랙과 진행 막대 홈에 씁니다.
 - Select는 native select와 장식 Icon을 wrapper 안에 둡니다. ref와 폼 속성은 native select, className/style은 보이는 wrapper에 전달합니다. 화살표는 semantic ink를 사용합니다.
 
@@ -153,7 +153,7 @@ variant 에도 교차한다. mono 는 `.pui-mono` 가 등폭·전용 tracking·�
 Foundations → Primitives → Atoms
 ```
 
-문서(`docs/`)와 Playground 사이드바는 이 순서와 이름을 그대로 씁니다 — Foundations(Color · Typography · Shape · Layout · Motion), Primitives(Layout · Content · Interaction · A11y), Atoms. Foundations 페이지는 그 시스템의 원본 → 역할 → 조합 순서로 그립니다. Typography·Shape·Layout·Motion은 같은 보드(`app/src/playground/foundations/kit.tsx`)를 쓰고, Color는 예전 형태(팔레트 행렬 + 그룹별 값 카드)를 바탕으로 하되, 다른 페이지처럼 지금 테마의 값만 보여줍니다.
+문서(`docs/`)와 Playground 사이드바는 이 순서와 이름을 그대로 씁니다 — Foundations(Color · Typography · Shape · Layout · Motion), Primitives(Layout · Content · Interaction · A11y), Atoms. Foundations 페이지는 그 시스템의 원본 → 역할 → 조합 순서로 그립니다. Typography·Shape·Layout·Motion은 같은 보드(`app/src/playground/foundations/kit.tsx`)를 쓰고, Color는 예전 형태(팔레트 행렬 + 그룹별 값 카드)를 바탕으로 하되, 다른 페이지처럼 지금 테마의 값만 보여주고, 맨 아래에 accent × variant 조합 절(실제 Button·Badge 5 × 5)이 붙습니다. 모든 inspector 행은 원본(선택표 · 역할 spec · SOURCE)에서 파생합니다.
 
 | 계층 | 수 | |
 |---|---|---|
@@ -190,7 +190,7 @@ Primitive 계약의 정본은 [docs/primitives/](docs/primitives/README.md)(Layo
 
 `docs/`의 계약 문장·문단·표 바로 앞에는 렌더되지 않는 표시 `[contract:<area>.<subject>.<slug>]: #`를 한 줄로 둡니다. area는 foundations · primitives · atoms · install · guardrails · app 중 하나입니다. 그 계약을 단언하는 테스트는 제목을 `[<id>]`로 시작하고, 한 테스트가 계약 여럿을 단언하면 id를 이어 씁니다(`[a] [b] 제목`). 새 계약 문장은 같은 변경에서 표시와 테스트를 함께 얻습니다. `scripts/check-contracts.mjs`가 `pnpm test` 안에서 둘을 1:1로 대조합니다 — 같은 id의 표시가 둘이거나, 테스트 없는 표시(skip · todo · fixme · fail 테스트는 세지 않습니다), 표시 없는 테스트 id, 내용 블록이 뒤따르지 않는 표시, 문단·목록·표에 이어 붙어 글자로 보이는 표시는 실패입니다. 표 바로 위의 표시는 GitHub에서 글자로 보이므로 표와 표시 사이에 빈 줄을 둡니다.
 
-테스트 파일은 계층과 시스템 이름을 따릅니다. 단위 테스트는 소스 옆에 `tokens/{color,shape,layout}.test.ts` · `primitives/{layout,content,interaction,a11y}.test.tsx` · `atoms/<Atom>.test.tsx`로, e2e는 `tests/{foundations,primitives,atoms,app,install}/<시스템>.spec.ts`로 둡니다. 테스트 이름에서 Foundations는 Color부터 Motion까지 다섯 시스템만 뜻합니다. e2e 도구(하네스 · 키보드 · 기하 · 콘솔)와 단위 테스트도 함께 쓰는 `dp()`는 `tests/support/`에 있습니다. 앱의 단위 테스트(`app/src/**/*.test.ts(x)`)는 문서 파서 · 링크 해석 · `docs/` 전체의 링크와 앵커 · 사이트 지도 · Playground registry와 JSX 문법을 지킵니다.
+테스트 파일은 계층과 시스템 이름을 따릅니다. 단위 테스트는 소스 옆에 `tokens/{color,shape,layout}.test.ts` · `primitives/{layout,content,interaction,a11y}.test.tsx` · `atoms/<Atom>.test.tsx`로, e2e는 `tests/{foundations,primitives,atoms,app,install}/<시스템>.spec.ts`로 둡니다. 테스트 이름에서 Foundations는 Color부터 Motion까지 다섯 시스템만 뜻합니다. e2e 도구(하네스 · 키보드 · 기하 · 콘솔 · 계산된 스타일 probe `style.ts`)와 단위 테스트도 함께 쓰는 `dp()`는 `tests/support/`에 있습니다. 앱의 단위 테스트(`app/src/**/*.test.ts(x)`)는 문서 파서 · 링크 해석 · `docs/` 전체의 링크와 앵커 · 사이트 지도 · Playground registry와 JSX 문법에 더해, Foundations inspector(`playground/foundations/inspector.test.ts`: 역할 설명 `ROLE_NOTES`의 누락 없음 · 두 테마의 Palette 경로 이름 · 타이포 preset 범위)를 지킵니다.
 
 e2e는 자기 서버를 직접 띄웁니다. 앱은 41731, 하네스(`fixtures/harness`, `?case=geometry|theme|layers`)는 41732 포트에서 `--strictPort`로 뜨고 이미 떠 있는 서버를 재사용하지 않으므로, 포트를 다른 서버가 쓰고 있으면 실행이 실패합니다. 포트는 `E2E_APP_PORT` · `E2E_HARNESS_PORT`로 바꿉니다. 하네스는 Vite 내부 경로 없이 패키지를 exports로만 불러옵니다. 프로젝트는 chromium · chromium-dark · chromium-reduced-motion · chromium-forced-colors · firefox · webkit 여섯입니다. firefox · webkit은 `foundations/shape` · `primitives` · `atoms` spec을 돌고, `tests/dist/`는 배포본 전용 설정만 돌립니다 — 이름은 dist여도 산출물이 아니라 소스이므로 git · eslint · check-contracts는 산출물 `dist/`와 달리 이 디렉터리를 읽습니다. Tab은 `tests/support/keyboard.ts`의 `tab()`으로만 누릅니다 — macOS WebKit에서는 Alt+Tab이어야 버튼까지 닿습니다. 한 엔진에서만 나는 실패는 `playwright.config.ts`의 `ENGINE_EXCLUSIONS`에 이유와 다시 켜는 단계를 적어 그 엔진에서만 끕니다.
 

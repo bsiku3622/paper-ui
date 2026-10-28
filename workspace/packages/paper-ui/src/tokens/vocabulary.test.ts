@@ -15,8 +15,8 @@ describe("vocabulary", () => {
   it("[foundations.vocabulary.one-pair-per-axis] exports every constant once and nothing else", () => {
     expect(constants.map(([name]) => name).sort()).toEqual([
       "ACCENTS", "ACCENT_TONES", "BORDER_LEVELS", "BREAKPOINTS", "CONTAINERS", "CONTROL_PRESETS", "CONTROL_SHAPES", "CONTROL_SIZES",
-      "DIMENSIONS", "DIVIDER_LEVELS", "ELEVATIONS", "ICON_SIZES", "INK_LEVELS", "MEASURES", "ORIENTATIONS", "SPACES", "STATUSES",
-      "SURFACES", "TEXT_FAMILIES", "TEXT_VARIANTS", "VARIANTS",
+      "DEPTHS", "DIMENSIONS", "DIVIDER_LEVELS", "ELEVATIONS", "ICON_SIZES", "INK_LEVELS", "MEASURES", "ORIENTATIONS", "SELECTABLE_VARIANTS",
+      "SPACES", "STATUSES", "SURFACES", "TEXT_FAMILIES", "TEXT_VARIANTS", "VARIANTS",
     ]);
   });
 
@@ -37,6 +37,7 @@ describe("vocabulary", () => {
     expect(vocabulary.BORDER_LEVELS).toEqual(keysOf(COLOR_VALUES.border));
     expect(vocabulary.ACCENTS).toEqual(keysOf(COLOR_VALUES.accent));
     expect(vocabulary.STATUSES).toEqual(keysOf(STATUS_PALETTE));
+    expect(vocabulary.DEPTHS).toEqual(keysOf(COLOR_VALUES.shadow));
     for (const values of [COLOR_VALUES, COLOR_VALUES_DARK]) {
       for (const accent of vocabulary.ACCENTS) expect(vocabulary.ACCENT_TONES, accent).toEqual(keysOf(values.accent[accent]));
     }
@@ -48,6 +49,10 @@ describe("vocabulary", () => {
 
   it("keeps the divider levels inside the border levels", () => {
     for (const level of vocabulary.DIVIDER_LEVELS) expect(vocabulary.BORDER_LEVELS).toContain(level);
+  });
+
+  it("keeps the selectable variants inside the variants", () => {
+    for (const variant of vocabulary.SELECTABLE_VARIANTS) expect(vocabulary.VARIANTS).toContain(variant);
   });
 
   it("gives every accent × variant a profile", () => {
@@ -84,6 +89,8 @@ describe("vocabulary", () => {
     expectTypeOf<vocabulary.Accent>().toEqualTypeOf<(typeof vocabulary.ACCENTS)[number]>();
     expectTypeOf<vocabulary.AccentTone>().toEqualTypeOf<(typeof vocabulary.ACCENT_TONES)[number]>();
     expectTypeOf<vocabulary.Variant>().toEqualTypeOf<(typeof vocabulary.VARIANTS)[number]>();
+    expectTypeOf<vocabulary.SelectableVariant>().toEqualTypeOf<(typeof vocabulary.SELECTABLE_VARIANTS)[number]>();
+    expectTypeOf<vocabulary.Depth>().toEqualTypeOf<(typeof vocabulary.DEPTHS)[number]>();
     expectTypeOf<vocabulary.Surface>().toEqualTypeOf<(typeof vocabulary.SURFACES)[number]>();
     expectTypeOf<vocabulary.InkLevel>().toEqualTypeOf<(typeof vocabulary.INK_LEVELS)[number]>();
     expectTypeOf<vocabulary.BorderLevel>().toEqualTypeOf<(typeof vocabulary.BORDER_LEVELS)[number]>();

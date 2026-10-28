@@ -20,10 +20,10 @@ const emit = (cls: string, spec: ColorSpec): void => {
     borderColor: spec.borderColor,
   });
   globalStyle(`.${INTERACTIVE}${cls}:hover:not(:disabled)`, {
-    // 중립: base 색은 두고 오버레이 레이어(backgroundImage)만 얹는다 — 어느 면 위든
+    // 중립: base 색은 두고 tint 레이어(backgroundImage)만 얹는다 — 어느 면 위든
     // 합성돼 어두워진다. 색·검정 solid: 배경을 교체(hoverBackground).
-    ...(spec.hoverOverlay
-      ? { backgroundImage: `linear-gradient(0deg, ${spec.hoverOverlay}, ${spec.hoverOverlay})` }
+    ...(spec.hoverTint
+      ? { backgroundImage: `linear-gradient(0deg, ${spec.hoverTint}, ${spec.hoverTint})` }
       : spec.hoverBackground
         ? { background: spec.hoverBackground }
         : {}),

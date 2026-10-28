@@ -50,35 +50,50 @@ const ACCENT_CURVE: Record<AccentStep, readonly [lightness: number, chromaRatio:
   "800": [0.400, 0.75], "900": [0.330, 0.55], "925": [0.295, 0.475],
   "950": [0.260, 0.40],
 };
-const ACCENT_IDENTITIES: Record<AccentPalette, readonly [hue: number, chroma: number]> = {
-  blue: [263, 0.215], green: [153, 0.155], amber: [65, 0.240], red: [25, 0.215],
+// Each pigment is a hue and a chroma ceiling. Two refinements are data too: a pale end that starts at
+// another hue and eases into the pigment's own between two steps, and steps whose chroma ratio
+// replaces the shared curve's.
+type AccentIdentity = {
+  hue: number;
+  chroma: number;
+  paleHue?: { hue: number; from: AccentStep; to: AccentStep };
+  chromaRatio?: Partial<Record<AccentStep, number>>;
+};
+export const ACCENT_IDENTITIES: Record<AccentPalette, AccentIdentity> = {
+  blue: { hue: 263, chroma: 0.215 },
+  green: { hue: 153, chroma: 0.155 },
+  // Pale amber starts yellow, then transitions into its orange pigment by 400. Its chroma eases into
+  // the vivid middle range instead of jumping from pale 200 to 300.
+  amber: { hue: 65, chroma: 0.24, paleHue: { hue: 90, from: "200", to: "400" }, chromaRatio: { "200": 0.44, "300": 0.55 } },
+  red: { hue: 25, chroma: 0.215 },
 };
 
+// The neutral steps that sit between two authored anchors: [from, to, how far toward `to`].
+export const NEUTRAL_BETWEEN = {
+  "150": ["100", "200", 0.5],
+  "650": ["600", "700", 0.5],
+  "875": ["800", "900", 0.75],
+  "925": ["900", "950", 0.5],
+} as const satisfies Record<Exclude<PaletteStep, NeutralBaseStep>, readonly [NeutralBaseStep, NeutralBaseStep, number]>;
+
 const neutralBaseRamp = completeOklchRamp(NEUTRAL_BASE_STEPS, NEUTRAL_ANCHORS);
-const neutral: Record<PaletteStep, Oklch> = Object.fromEntries(PALETTE_STEPS.map((step) => [
-  step,
-  step === "150"
-    ? interpolateOklch(neutralBaseRamp["100"], neutralBaseRamp["200"], 0.5)
-    : step === "650"
-      ? interpolateOklch(neutralBaseRamp["600"], neutralBaseRamp["700"], 0.5)
-      : step === "875"
-      ? interpolateOklch(neutralBaseRamp["800"], neutralBaseRamp["900"], 0.75)
-      : step === "925"
-      ? interpolateOklch(neutralBaseRamp["900"], neutralBaseRamp["950"], 0.5)
-      : neutralBaseRamp[step as Exclude<PaletteStep, "150" | "650" | "875" | "925">],
-])) as Record<PaletteStep, Oklch>;
+const neutral: Record<PaletteStep, Oklch> = Object.fromEntries(PALETTE_STEPS.map((step) => {
+  if (!(step in NEUTRAL_BETWEEN)) return [step, neutralBaseRamp[step as NeutralBaseStep]];
+  const [from, to, weight] = NEUTRAL_BETWEEN[step as keyof typeof NEUTRAL_BETWEEN];
+  return [step, interpolateOklch(neutralBaseRamp[from], neutralBaseRamp[to], weight)];
+})) as Record<PaletteStep, Oklch>;
+
+const clamp01 = (value: number) => Math.max(0, Math.min(1, value));
 
 const accent = Object.fromEntries(ACCENT_PALETTES.map((name) => [
   name,
   Object.fromEntries(ACCENT_STEPS.map((step) => {
-    const [lightness, ratio] = ACCENT_CURVE[step];
-    const [hue, chroma] = ACCENT_IDENTITIES[name];
-    // Pale amber starts yellow, then transitions into its orange pigment by 400.
-    const rampHue = name === "amber" ? 90 - (90 - hue) * Math.max(0, Math.min(1, (Number(step) - 200) / 200)) : hue;
-    // Ease amber into its vivid middle range instead of jumping from pale 200 to 300.
-    const rampRatio = name === "amber" && step === "200" ? 0.44
-      : name === "amber" && step === "300" ? 0.55 : ratio;
-    return [step, [lightness, chroma * rampRatio, rampHue] as Oklch];
+    const [lightness, curveRatio] = ACCENT_CURVE[step];
+    const { hue, chroma, paleHue, chromaRatio } = ACCENT_IDENTITIES[name];
+    const rampHue = paleHue
+      ? paleHue.hue - (paleHue.hue - hue) * clamp01((Number(step) - Number(paleHue.from)) / (Number(paleHue.to) - Number(paleHue.from)))
+      : hue;
+    return [step, [lightness, chroma * (chromaRatio?.[step] ?? curveRatio), rampHue] as Oklch];
   })) as Record<AccentStep, Oklch>,
 ])) as Record<AccentPalette, Record<AccentStep, Oklch>>;
 
