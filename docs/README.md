@@ -18,7 +18,9 @@ Atoms         Button · Field · Select · Checkbox · Badge …
 - **Foundations** — [Overview](foundations/README.md) · [Color](foundations/color.md) · [Typography](foundations/typography.md) · [Shape](foundations/shape.md) · [Layout](foundations/layout.md) · [Motion](foundations/motion.md)
 - **Primitives** — [Overview](primitives/README.md) · [Layout](primitives/layout.md) · [Content](primitives/content.md) · [Interaction](primitives/interaction.md) · [A11y](primitives/a11y.md)
 - **Atoms** — [Overview](atoms/README.md) · [States](atoms/states.md)
-- **Playground** — [Foundations](/playground/foundations/color) · [Primitives](/playground/box) · [Atoms](/playground/button)
+- **Playground** — [Overview](/playground) · [Foundations](/playground/foundations/color) · [Primitives](/playground/box) · [Atoms](/playground/button)
+
+Playground의 [Overview](/playground)는 표본의 파생 색인입니다. 목록은 어휘에서 오고 캡션의 수치는 토큰에서 읽습니다. 컴포넌트 페이지의 코드는 화면에 그려진 그대로를 찍은 것입니다.
 
 시스템을 **쓰려는** 사람은 [설치](get-started/install.md)에서 시작해 [원칙](get-started/philosophy.md)으로 이 시스템이 왜 이렇게 생겼는지를 잡습니다. 시스템을 **이해하려는** 사람은 [Foundations Overview](foundations/README.md)에서 값이 원본에서 화면까지 흐르는 방식을 따라갑니다.
 

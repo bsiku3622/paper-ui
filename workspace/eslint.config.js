@@ -134,6 +134,26 @@ export default [
     },
   },
 
+  // The registry's schema and printer bind select options to the vocabulary by constant name and name
+  // components by what the package exports, so they (and the test that checks them) read those two
+  // entries as namespaces. They export no raw source value; the raw source files stay closed, and the
+  // entries stay under the barrel restriction above.
+  {
+    files: ["app/src/playground/registry/{schema,jsx}.ts", "app/src/playground/registry/registry.test.tsx"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [{
+            group: rawSourcePatterns,
+            message:
+              "규칙 2 — palette·ladder·raw VALUES는 소비처에서 import하지 않는다. tokens 배럴의 semantic var 참조를 쓰라.",
+          }],
+        },
+      ],
+    },
+  },
+
   // ── 규칙 3 — inline style 로 토큰 주입 금지 ─────────────────────────────
   {
     files: ["packages/paper-ui/src/**/*.tsx"],

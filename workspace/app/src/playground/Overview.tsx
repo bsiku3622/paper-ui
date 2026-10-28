@@ -1,6 +1,8 @@
-// Playground overview for tokens, primitives, and atoms.
+// Playground overview — the index of specimens. Each section is a handful of live components next to
+// the facts they show, and every list in it comes from the vocabulary; a number in a caption is read
+// from the tokens the specimen is built on, or the caption names the role instead.
 
-import { Fragment, useState } from "react";
+import { Fragment, useState, type ReactNode } from "react";
 
 import {
   Badge,
@@ -22,21 +24,22 @@ import {
   Text,
   Textarea,
 } from "@studio-baeks/paper-ui";
-import { ACCENTS, STATUSES, SURFACES, TEXT_VARIANTS, VARIANTS } from "@studio-baeks/paper-ui/tokens";
+import { ACCENTS, CONTROL_SIZES, STATUSES, SURFACES, TEXT_VARIANTS, VARIANTS, tokens, type ControlSize } from "@studio-baeks/paper-ui/tokens";
 
-import { PlaygroundLayout, ReferenceHeading } from "../playground/shell";
+import { Computed, px } from "./foundations/kit";
+import { PlaygroundLayout, ReferenceHeading } from "./shell";
 
 // ── 배치 헬퍼 (paper 프리미티브로만 조립) ──────────────────────────────────
 
-const Section = ({ id, title, children }: { id: string; title: string; children: React.ReactNode }) => (
+const Section = ({ id, title, children }: { id: string; title: string; children: ReactNode }) => (
   <Stack as="section" gap="lg" id={id}>
-    <Text variant="label">{title}</Text>
+    <Text as="h2" variant="label">{title}</Text>
     <Stack gap="md">{children}</Stack>
   </Stack>
 );
 
 // 한 표본 = 캡션 + 내용. testid 로 테스트가 집어낸다.
-const Spec = ({ label, testid, children }: { label: string; testid?: string; children: React.ReactNode }) => (
+const Spec = ({ label, testid, children }: { label: ReactNode; testid?: string; children: ReactNode }) => (
   <Stack gap="sm" data-testid={testid}>
     <Text variant="caption">{label}</Text>
     <Inline gap="md" wrap align="center">
@@ -51,11 +54,14 @@ const MONO_DEMO: Partial<Record<(typeof TEXT_VARIANTS)[number], string>> = {
   body: 'const paper = "ui"; // 0123',
 };
 
-export const Playground = () => {
+// What each rung of the control ladder is called beside its measured height.
+const SIZE_NAMES: Record<ControlSize, string> = { sm: "compact", md: "default", lg: "roomy" };
+
+export const Overview = () => {
   const [checked, setChecked] = useState(true);
 
   return (
-    <PlaygroundLayout value="all">
+    <PlaygroundLayout value="overview">
       <Stack gap="xl" style={{ maxWidth: "48rem" }}>
         <ReferenceHeading
           group="REFERENCE"
@@ -94,7 +100,7 @@ export const Playground = () => {
         </Section>
 
         <Section id="sec-color" title="Color">
-          <Spec label="surface — 면 깊이 3 단 (Box 의 구조 축, 색 아님)">
+          <Spec label="surface — 면의 깊이 (Box 의 구조 축, 색 아님)">
             {SURFACES.map((s) => (
               <Box key={s} surface={s} border radius="md" padding="lg" data-testid={`swatch-paper-${s}`}
                 style={{ minWidth: "5rem" }}>
@@ -145,39 +151,29 @@ export const Playground = () => {
               <Text variant="caption" as="span">inverse</Text>
             </Box>
           </Spec>
-          <Spec label="radius — 작은 면 4 · 카드 6 · 큰 면 8" testid="spec-layout-radius">
-            <Box surface="raised" border radius="sm" padding="md" data-testid="radius-small"><Text variant="caption">4px · small</Text></Box>
-            <Box surface="raised" border radius="md" padding="md" data-testid="radius-card"><Text variant="caption">6px · card</Text></Box>
-            <Box surface="raised" border radius="lg" padding="md" data-testid="radius-large"><Text variant="caption">8px · large</Text></Box>
+          <Spec label={`radius — 작은 면 ${px(tokens.shape.radius.surface.sm)} · 카드 ${px(tokens.shape.radius.surface.md)} · 큰 면 ${px(tokens.shape.radius.surface.lg)}`} testid="spec-layout-radius">
+            <Box surface="raised" border radius="sm" padding="md" data-testid="radius-small"><Text variant="caption">{px(tokens.shape.radius.surface.sm)} · small</Text></Box>
+            <Box surface="raised" border radius="md" padding="md" data-testid="radius-card"><Text variant="caption">{px(tokens.shape.radius.surface.md)} · card</Text></Box>
+            <Box surface="raised" border radius="lg" padding="md" data-testid="radius-large"><Text variant="caption">{px(tokens.shape.radius.surface.lg)} · large</Text></Box>
           </Spec>
         </Section>
 
         {/* ── Atoms ─────────────────────────────────────────── */}
         <Section id="sec-button" title="Button">
           <Spec label="variant — 시각 무게" testid="spec-button-variants">
-            <Button variant="solid" data-testid="btn-solid">solid</Button>
-            <Button variant="soft" data-testid="btn-soft">soft</Button>
-            <Button variant="hairline" data-testid="btn-hairline">hairline</Button>
-            <Button variant="ghost" data-testid="btn-ghost">ghost</Button>
-            <Button variant="muted" data-testid="btn-muted">muted</Button>
+            {VARIANTS.map((variant) => <Button key={variant} variant={variant} data-testid={`btn-${variant}`}>{variant}</Button>)}
           </Spec>
-          <Spec label="color — 의미 색 (variant 와 직교)">
+          <Spec label="accent — 의미 색 (variant 와 직교)">
             <Button accent="error" data-testid="btn-danger">삭제</Button>
             <Button variant="soft" accent="success" data-testid="btn-soft-success">완료</Button>
             <Button variant="soft" accent="warning" data-testid="btn-soft-warning">주의</Button>
             <Button variant="ghost" accent="error">지우기</Button>
           </Spec>
           <Spec label="solid — 선명한 채움과 밝은 글자 · primary는 무채색 반전">
-            <Button accent="primary">primary</Button>
-            <Button accent="info">info</Button>
-            <Button accent="success">success</Button>
-            <Button accent="warning">warning</Button>
-            <Button accent="error">error</Button>
+            {ACCENTS.map((accent) => <Button key={accent} accent={accent}>{accent}</Button>)}
           </Spec>
-          <Spec label="size — 크기 3 단 sm·md·lg (fontSize 는 14 고정, lg 만 semibold)" testid="spec-button-sizes">
-            <Button size="sm" data-testid="btn-sm">sm</Button>
-            <Button size="md" data-testid="btn-md">md</Button>
-            <Button size="lg" data-testid="btn-lg">lg</Button>
+          <Spec label={`size — 컨트롤 사다리 ${CONTROL_SIZES.join(" · ")}`} testid="spec-button-sizes">
+            {CONTROL_SIZES.map((size) => <Button key={size} size={size} data-testid={`btn-${size}`}>{size}</Button>)}
           </Spec>
           <Spec label="state">
             <Button disabled data-testid="btn-disabled">disabled</Button>
@@ -259,25 +255,24 @@ export const Playground = () => {
             </Box>
           </Spec>
           {/* size 정렬 — Field·Select·Button 이 같은 사다리라 나란히 두면 높이가 맞는다 */}
-          <Spec label="size sm — compact 30px" testid="spec-size-sm">
-            <Box style={{ width: "10rem" }}><Field size="sm" defaultValue="11.25" trailing="pt" aria-label="field sm" /></Box>
-            <Box style={{ width: "9rem" }}><Select size="sm" aria-label="select sm"><Select.Option value="a">본명조</Select.Option></Select></Box>
-            <Button size="sm">Button</Button>
-          </Spec>
-          <Spec label="size md — default 32px · radius 4px" testid="spec-size-md">
-            <Box style={{ width: "10rem" }}><Field size="md" placeholder="Field" aria-label="field md" /></Box>
-            <Box style={{ width: "9rem" }}><Select size="md"><Select.Option value="a">Select</Select.Option></Select></Box>
-            <Button size="md">Button</Button>
-          </Spec>
-          <Spec label="size lg — roomy 36px" testid="spec-size-lg">
-            <Box style={{ width: "10rem" }}><Field size="lg" placeholder="Field" aria-label="field lg" /></Box>
-            <Box style={{ width: "9rem" }}><Select size="lg"><Select.Option value="a">Select</Select.Option></Select></Box>
-            <Button size="lg">Button</Button>
-          </Spec>
+          {CONTROL_SIZES.map((size) => (
+            <Spec key={size} label={`size ${size} — ${SIZE_NAMES[size]} ${px(tokens.shape.control.height[size])}${size === "md" ? ` · radius ${px(tokens.shape.radius.control)}` : ""}`} testid={`spec-size-${size}`}>
+              <Box style={{ width: "10rem" }}>
+                {size === "sm" ? <Field size={size} defaultValue="11.25" trailing="pt" aria-label={`field ${size}`} /> : <Field size={size} placeholder="Field" aria-label={`field ${size}`} />}
+              </Box>
+              <Box style={{ width: "9rem" }}>
+                <Select size={size} aria-label={`select ${size}`}><Select.Option value="a">{size === "sm" ? "본명조" : "Select"}</Select.Option></Select>
+              </Box>
+              <Button size={size}>Button</Button>
+            </Spec>
+          ))}
           {/* 공통 base — 넷이 같은 컨트롤 여백을 쓰는가. 높이가 아니라 *글자 시작점* 을 본다:
               Textarea 는 줄 수만큼 자라 높이로는 줄을 못 세우고, Select 는 화살표 때문에
               오른쪽만 넓다. 왼쪽 여백 하나가 넷을 한 세로선에 세운다. */}
-          <Spec label="base — radius 4 · 라벨 padding 11 · 값 padding 8" testid="spec-control-base">
+          <Spec
+            label={<>base — radius {px(tokens.shape.radius.control)} · 라벨 padding <Computed value={tokens.shape.control.inset.button.md} /> · 값 padding <Computed value={tokens.shape.control.inset.input.md} /></>}
+            testid="spec-control-base"
+          >
             <Button variant="hairline" size="md" data-testid="base-button">hairline</Button>
             <Box style={{ width: "9rem" }}><Field size="md" placeholder="Field" aria-label="field base" data-testid="base-field" /></Box>
             <Box style={{ width: "9rem" }}><Select size="md" data-testid="base-select"><Select.Option value="a">Select</Select.Option></Select></Box>
@@ -352,10 +347,8 @@ export const Playground = () => {
           </Spec>
           {/* 배지도 컨트롤과 같은 규칙 — 높이만 움직이고 글자는 12 로 고정이다. 예전엔
               11·12·14 로 높이를 따라가서, 작은 배지의 글자가 가독성 하한 아래로 떨어졌다. */}
-          <Spec label="Badge — size (높이 20·22·24, 글자는 12 고정)" testid="spec-badge-size">
-            <Badge size="sm" accent="info" data-testid="badge-sm">sm</Badge>
-            <Badge size="md" accent="info" data-testid="badge-md">md</Badge>
-            <Badge size="lg" accent="info" data-testid="badge-lg">lg</Badge>
+          <Spec label="Badge — size (높이만 움직이고 글자는 고정)" testid="spec-badge-size">
+            {CONTROL_SIZES.map((size) => <Badge key={size} size={size} accent="info" data-testid={`badge-${size}`}>{size}</Badge>)}
           </Spec>
           <Spec label="Badge — shape (Button 과 같은 어휘라 나란히 서면 곡선이 맞는다)" testid="spec-badge-shape">
             <Badge accent="success" data-testid="badge-shape-default">완료</Badge>

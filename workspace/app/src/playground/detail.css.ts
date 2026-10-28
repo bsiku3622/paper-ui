@@ -2,7 +2,7 @@
 
 import { globalStyle } from "@vanilla-extract/css";
 
-import { tokens } from "@studio-baeks/paper-ui/tokens";
+import { SURFACES, tokens } from "@studio-baeks/paper-ui/tokens";
 
 const BP = tokens.layout.breakpoint;
 
@@ -49,7 +49,8 @@ globalStyle(".preview-surface-button", {
   color: tokens.color.ink.primary,
   cursor: "pointer",
 });
-globalStyle(".preview-surface-button--track", { background: tokens.color.control.track });
+for (const surface of SURFACES) globalStyle(`.preview-surface-button[data-bg="${surface}"]`, { background: tokens.color.bg[surface] });
+globalStyle('.preview-surface-button[data-bg="track"]', { background: tokens.color.control.track });
 globalStyle('.preview-surface-button[aria-pressed="true"]', { borderColor: tokens.color.border.strong });
 globalStyle(".preview-surface-button:hover", { borderColor: tokens.color.border.hover });
 globalStyle(".preview-surface-button:focus-visible", {
@@ -57,8 +58,8 @@ globalStyle(".preview-surface-button:focus-visible", {
   outlineOffset: tokens.shape.focus.offset,
 });
 
-// Table처럼 자체 면과 외곽 형상이 사용성의 일부인 컴포넌트는 showcase용 Card에
-// 다시 가두지 않는다. 실제 페이지에 놓였을 때의 직각 silhouette를 그대로 평가한다.
+// 자체 면과 외곽 형상이 사용성의 일부인 미리보기(지금은 Draggable의 무대)는 카드에
+// 다시 가두지 않고 실제 페이지에 놓였을 때의 직각 silhouette를 그대로 평가한다.
 globalStyle(".preview-stage--flush", {
   justifyContent: "stretch",
   minHeight: "auto",

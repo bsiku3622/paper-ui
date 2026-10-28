@@ -165,6 +165,8 @@ Foundations → Primitives → Atoms
 
 Primitive·Atom 인벤토리의 정본은 `packages/paper-ui/src/inventory.ts`입니다. `inventory.test.ts`가 `.` entry의 실제 export와 1:1로 대조하고, 앱의 사이트 지도(`app/src/site/site-map.ts`)가 Playground 목록(Foundations → Primitives → Atoms)을 거기서 파생합니다. 위 표는 그 목록을 옮긴 것이므로 인벤토리를 바꾸면 표도 함께 고칩니다.
 
+Playground는 같은 계층을 파생해서 보여줍니다. 사이드바와 상세 페이지의 순서·이름·slug는 사이트 지도의 `PLAYGROUND_NAV`(인벤토리에서 파생)가 정하고, 항목마다 `app/src/playground/registry/entries/<slug>.tsx` 하나가 `Spec`을 맡습니다 — 만질 수 있는 prop(controls), 컴포넌트 자신의 기본값(defaults), 그리고 화면에 그려지면서 코드로도 찍히는 subject. 코드 패널은 손으로 쓴 문자열이 아니라 그 subject를 `printJsx`로 찍은 것이라 미리보기와 어긋날 수 없고, 코드를 고치면 같은 문법(`registry/jsx.ts`)으로 읽혀 컨트롤이 따라옵니다. select의 선택지는 `/tokens` 어휘 상수에서 오며, 부분집합(`subset`)·컴포넌트 지역 union(`local`)·열린 prop의 표본(`sample`)·아직 상수가 없는 목록(`pending`)은 사유나 대체할 단계를 달아 표시합니다. `registry.test.tsx`가 사이트 지도와의 일치, 코드 왕복, 기본값(prop을 생략한 렌더와 같은지), 어휘 일치를 지킵니다. Primitive·Atom의 API를 바꾸면 같은 변경에서 그 항목도 고칩니다. Overview(`/playground`, `app/src/playground/Overview.tsx`)는 표본의 파생 색인입니다 — 목록은 어휘에서 오고, 캡션의 수치는 토큰에서 읽거나 역할 이름으로 적습니다. Type scale과 Color 절은 소유자가 정한 형태로 남아 있고, 모든 표본 testid는 `tests/app/overview.spec.ts`가 계산값에 묶습니다.
+
 패키지는 세 가지를 공개합니다 — 컴포넌트·hook(Primitive와 Atom, `.` entry), `tokens`와 역할 규칙(`/tokens`), 어휘 짝(축마다 상수 하나와 타입 하나, `/tokens`). 어휘 짝은 각자 자기 시스템 파일에 한 번 정의되고 `tokens/vocabulary.ts`가 모아 내보냅니다. 새 축은 원본 tree에서 파생하거나 `satisfies`로 양방향 묶어 그 파일에 더합니다. 제품별 조합은 앱이 소유하고, 여러 제품에서 반복된 뒤에만 공통 API로 승격합니다.
 
 RovingFocus는 등록 항목의 Tab 진입점과 실제 DOM focus 탐색을 관리하며 선택과 분리합니다. ToggleGroup은 toggle button 그룹의 단일·복수 선택이고 다른 위젯의 role을 대체하지 않습니다. Overlay는 Trigger·Content·Close를 연결하며 기본 non-modal dialog, modal opt-in입니다. React Aria가 Portal·배치·중첩 dismissal·배경 inert·스크롤 잠금을 담당합니다. FormField/useField는 기존 Field Atom을 유지하면서 native label·설명·오류 ID를 연결합니다. 합성 도구 mergeProps는 additive handler 병합, composeEventHandlers는 caller preventDefault에 의한 내부 handler 취소, mergeRefs는 같은 DOM ref 연결입니다. 새 공통 상태·입력 관계 API도 Playground와 문서·실제 브라우저 검증을 함께 갱신합니다.
@@ -188,7 +190,7 @@ Primitive 계약의 정본은 [docs/primitives/](docs/primitives/README.md)(Layo
 
 `docs/`의 계약 문장·문단·표 바로 앞에는 렌더되지 않는 표시 `[contract:<area>.<subject>.<slug>]: #`를 한 줄로 둡니다. area는 foundations · primitives · atoms · install · guardrails · app 중 하나입니다. 그 계약을 단언하는 테스트는 제목을 `[<id>]`로 시작하고, 한 테스트가 계약 여럿을 단언하면 id를 이어 씁니다(`[a] [b] 제목`). 새 계약 문장은 같은 변경에서 표시와 테스트를 함께 얻습니다. `scripts/check-contracts.mjs`가 `pnpm test` 안에서 둘을 1:1로 대조합니다 — 같은 id의 표시가 둘이거나, 테스트 없는 표시(skip · todo · fixme · fail 테스트는 세지 않습니다), 표시 없는 테스트 id, 내용 블록이 뒤따르지 않는 표시, 문단·목록·표에 이어 붙어 글자로 보이는 표시는 실패입니다. 표 바로 위의 표시는 GitHub에서 글자로 보이므로 표와 표시 사이에 빈 줄을 둡니다.
 
-테스트 파일은 계층과 시스템 이름을 따릅니다. 단위 테스트는 소스 옆에 `tokens/{color,shape,layout}.test.ts` · `primitives/{layout,content,interaction,a11y}.test.tsx` · `atoms/<Atom>.test.tsx`로, e2e는 `tests/{foundations,primitives,atoms,app,install}/<시스템>.spec.ts`로 둡니다. 테스트 이름에서 Foundations는 Color부터 Motion까지 다섯 시스템만 뜻합니다. e2e 도구(하네스 · 키보드 · 기하 · 콘솔)와 단위 테스트도 함께 쓰는 `dp()`는 `tests/support/`에 있습니다. 앱의 단위 테스트(`app/src/**/*.test.ts(x)`)는 문서 파서 · 링크 해석 · `docs/` 전체의 링크와 앵커 · 사이트 지도를 지킵니다.
+테스트 파일은 계층과 시스템 이름을 따릅니다. 단위 테스트는 소스 옆에 `tokens/{color,shape,layout}.test.ts` · `primitives/{layout,content,interaction,a11y}.test.tsx` · `atoms/<Atom>.test.tsx`로, e2e는 `tests/{foundations,primitives,atoms,app,install}/<시스템>.spec.ts`로 둡니다. 테스트 이름에서 Foundations는 Color부터 Motion까지 다섯 시스템만 뜻합니다. e2e 도구(하네스 · 키보드 · 기하 · 콘솔)와 단위 테스트도 함께 쓰는 `dp()`는 `tests/support/`에 있습니다. 앱의 단위 테스트(`app/src/**/*.test.ts(x)`)는 문서 파서 · 링크 해석 · `docs/` 전체의 링크와 앵커 · 사이트 지도 · Playground registry와 JSX 문법을 지킵니다.
 
 e2e는 자기 서버를 직접 띄웁니다. 앱은 41731, 하네스(`fixtures/harness`, `?case=geometry|theme|layers`)는 41732 포트에서 `--strictPort`로 뜨고 이미 떠 있는 서버를 재사용하지 않으므로, 포트를 다른 서버가 쓰고 있으면 실행이 실패합니다. 포트는 `E2E_APP_PORT` · `E2E_HARNESS_PORT`로 바꿉니다. 하네스는 Vite 내부 경로 없이 패키지를 exports로만 불러옵니다. 프로젝트는 chromium · chromium-dark · chromium-reduced-motion · chromium-forced-colors · firefox · webkit 여섯입니다. firefox · webkit은 `foundations/shape` · `primitives` · `atoms` spec을 돌고, `tests/dist/`는 배포본 전용 설정만 돌립니다 — 이름은 dist여도 산출물이 아니라 소스이므로 git · eslint · check-contracts는 산출물 `dist/`와 달리 이 디렉터리를 읽습니다. Tab은 `tests/support/keyboard.ts`의 `tab()`으로만 누릅니다 — macOS WebKit에서는 Alt+Tab이어야 버튼까지 닿습니다. 한 엔진에서만 나는 실패는 `playwright.config.ts`의 `ENGINE_EXCLUSIONS`에 이유와 다시 켜는 단계를 적어 그 엔진에서만 끕니다.
 
@@ -202,7 +204,7 @@ e2e는 자기 서버를 직접 띄웁니다. 앱은 41731, 하네스(`fixtures/h
 - [ ] CSS 기능을 새로 썼다면 `scripts/browser-baseline.mjs` 표에 그 행을 더했는가
 - [ ] 색을 추가했다면 — 정말 *의미* 가 있는가. 장식이면 넣지 않는다
 - [ ] 큰 면을 색으로 채우지 않았는가 (면은 검정 primary만)
-- [ ] Primitive·Atom API를 수정했다면 — app의 실제 사용 예와 문서를 갱신했는가
+- [ ] Primitive·Atom API를 수정했다면 — app의 실제 사용 예와 문서, 그리고 Playground 항목(`app/src/playground/registry/entries/`)을 갱신했는가
 - [ ] prop이 받는 닫힌 값의 집합(축)을 더하거나 바꿨다면 — 원본 tree에서 파생하거나 `satisfies`로 묶고 `tokens/vocabulary.ts`에 상수·타입 짝으로 공개했는가
 - [ ] 문서에 계약 문장을 더했다면 — 같은 변경에서 `[contract:…]: #` 표시와 그 id로 시작하는 테스트를 더했는가
 - [ ] 데모(`app/`)가 여전히 서는가

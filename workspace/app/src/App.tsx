@@ -13,7 +13,7 @@ import { Box, Text } from "@studio-baeks/paper-ui";
 
 const Home = lazy(() => import("./pages/Home").then((m) => ({ default: m.Home })));
 const Demo = lazy(() => import("./pages/Demo").then((m) => ({ default: m.Demo })));
-const Playground = lazy(() => import("./pages/Playground").then((m) => ({ default: m.Playground })));
+const Overview = lazy(() => import("./playground/Overview").then((m) => ({ default: m.Overview })));
 const ComponentDetail = lazy(() => import("./playground/Detail").then((m) => ({ default: m.ComponentDetail })));
 const FoundationsPage = lazy(() => import("./playground/foundations").then((m) => ({ default: m.Foundations })));
 const Docs = lazy(() => import("./pages/Docs").then((m) => ({ default: m.Docs })));
@@ -29,12 +29,13 @@ export const App = () => (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/demo" element={<Demo />} />
-      <Route path="/playground" element={<Playground />} />
+      <Route path="/playground" element={<Overview />} />
       <Route path="/playground/foundations" element={<Navigate to="/playground/foundations/color" replace />} />
       <Route path="/playground/foundations/:section" element={<FoundationsPage />} />
-      {/* Former routes: the palette is now the Color source, tokens the Foundations pages. */}
+      {/* Former routes: the palette is now the Color source, tokens the Foundations pages, and a slug is the component name in kebab case. */}
       <Route path="/playground/palette" element={<Navigate to="/playground/foundations/color" replace />} />
       <Route path="/playground/tokens" element={<Navigate to="/playground/foundations/color" replace />} />
+      <Route path="/playground/iconbutton" element={<Navigate to="/playground/icon-button" replace />} />
       <Route path="/playground/:slug" element={<ComponentDetail />} />
       <Route path="/docs/*" element={<Docs />} />
       <Route path="*" element={<Navigate to="/" replace />} />
