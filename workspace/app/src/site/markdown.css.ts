@@ -7,8 +7,8 @@ import { tokens } from "@studio-baeks/paper-ui/tokens";
 
 globalStyle(".md", {
   color: tokens.color.ink.primary,
-  fontSize: tokens.text.style.body.size,
-  lineHeight: tokens.text.style.body.leading,
+  fontSize: tokens.typography.role.body.size,
+  lineHeight: tokens.typography.role.body.leading,
 });
 // 읽기 폭은 블록마다 건다 — 표 wrapper 는 칼럼 폭까지 열려 있어야 표가 읽기 폭을 넘어도 잘리지 않고, 칼럼이 좁을 때만 스크롤한다.
 globalStyle(".md > *", { maxWidth: tokens.shape.measure.lg });
@@ -16,45 +16,45 @@ globalStyle(".md > *:first-child", { marginTop: 0 });
 
 // 제목 h1–h4 — text variant 토큰과 정렬.
 globalStyle(".md h1", {
-  fontSize: tokens.text.style.title.size,
-  fontWeight: tokens.text.palette.weight.bold,
-  lineHeight: tokens.text.style.title.leading,
-  letterSpacing: tokens.text.style.title.tracking,
+  fontSize: tokens.typography.role.title.size,
+  fontWeight: tokens.typography.palette.weight.bold,
+  lineHeight: tokens.typography.role.title.leading,
+  letterSpacing: tokens.typography.role.title.tracking,
   margin: `0 0 ${tokens.layout.gap.sm}`,
 });
 globalStyle(".md h2", {
-  fontSize: tokens.text.style.heading.size,
-  fontWeight: tokens.text.palette.weight.semibold,
-  lineHeight: tokens.text.style.heading.leading,
-  letterSpacing: tokens.text.style.heading.tracking,
+  fontSize: tokens.typography.role.heading.size,
+  fontWeight: tokens.typography.palette.weight.semibold,
+  lineHeight: tokens.typography.role.heading.leading,
+  letterSpacing: tokens.typography.role.heading.tracking,
   margin: `${tokens.layout.gap.xl} 0 ${tokens.layout.gap.md}`,
   paddingTop: tokens.shape.inset.xl,
   borderTop: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`,
 });
 globalStyle(".md h3", {
-  fontSize: tokens.text.style.subheading.size,
-  fontWeight: tokens.text.palette.weight.semibold,
-  lineHeight: tokens.text.style.subheading.leading,
-  letterSpacing: tokens.text.style.subheading.tracking,
+  fontSize: tokens.typography.role.subheading.size,
+  fontWeight: tokens.typography.palette.weight.semibold,
+  lineHeight: tokens.typography.role.subheading.leading,
+  letterSpacing: tokens.typography.role.subheading.tracking,
   margin: `${tokens.layout.gap.lg} 0 ${tokens.layout.gap.sm}`,
 });
 globalStyle(".md h4", {
-  fontSize: tokens.text.style.subheading.size,
-  fontWeight: tokens.text.palette.weight.semibold,
-  lineHeight: tokens.text.style.subheading.leading,
-  letterSpacing: tokens.text.style.subheading.tracking,
+  fontSize: tokens.typography.role.subheading.size,
+  fontWeight: tokens.typography.palette.weight.semibold,
+  lineHeight: tokens.typography.role.subheading.leading,
+  letterSpacing: tokens.typography.role.subheading.tracking,
   margin: `${tokens.layout.gap.md} 0 ${tokens.layout.gap.sm}`,
 });
 
 globalStyle(".md p", { margin: `0 0 ${tokens.layout.gap.lg}` });
 globalStyle(".md a", { color: tokens.color.accent.info.ink, textDecoration: "none" });
-globalStyle(".md a:hover", { textDecoration: "underline", textUnderlineOffset: tokens.text.palette.decoration.underlineOffset });
+globalStyle(".md a:hover", { textDecoration: "underline", textUnderlineOffset: tokens.typography.palette.decoration.underlineOffset });
 globalStyle(".md ul, .md ol", { margin: `0 0 ${tokens.layout.gap.lg}`, paddingLeft: tokens.shape.inset.xl });
 globalStyle(".md li", { margin: `${tokens.layout.gap.xs} 0` });
-globalStyle(".md strong", { fontWeight: tokens.text.palette.weight.semibold });
+globalStyle(".md strong", { fontWeight: tokens.typography.palette.weight.semibold });
 
 globalStyle(".md code", {
-  fontFamily: tokens.text.palette.family.mono,
+  fontFamily: tokens.typography.palette.family.mono,
   fontSize: "0.85em", // em 상대 — 본문 글자에 비례
   background: tokens.color.bg.sunken,
   paddingInline: tokens.shape.inset.xs,
@@ -68,7 +68,7 @@ globalStyle(".md pre", {
   overflow: "auto",
   margin: `0 0 ${tokens.layout.gap.lg}`,
 });
-globalStyle(".md pre code", { background: "none", padding: 0, fontSize: tokens.text.style.caption.size, lineHeight: tokens.text.style.body.leading });
+globalStyle(".md pre code", { background: "none", padding: 0, fontSize: tokens.typography.role.caption.size, lineHeight: tokens.typography.role.body.leading });
 
 globalStyle(".md blockquote", {
   margin: `0 0 ${tokens.layout.gap.lg}`,
@@ -78,10 +78,10 @@ globalStyle(".md blockquote", {
 });
 
 globalStyle(".md > .md-table", { maxWidth: "none", overflowX: "auto", margin: `0 0 ${tokens.layout.gap.lg}` });
-globalStyle(".md table", { width: `min(100%, ${tokens.shape.measure.lg})`, borderCollapse: "collapse", fontSize: tokens.text.style.body.size });
+globalStyle(".md table", { width: `min(100%, ${tokens.shape.measure.lg})`, borderCollapse: "collapse", fontSize: tokens.typography.role.body.size });
 globalStyle(".md th", {
   textAlign: "left",
-  fontWeight: tokens.text.palette.weight.semibold,
+  fontWeight: tokens.typography.palette.weight.semibold,
   padding: `${tokens.shape.inset.sm} ${tokens.shape.inset.md}`,
   background: tokens.color.bg.sunken,
   borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.strong}`,

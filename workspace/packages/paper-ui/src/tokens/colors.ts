@@ -3,6 +3,7 @@
 // Every semantic leaf selects a generated palette token. No semantic value contains a raw color,
 // performs color math, or reads another semantic branch.
 
+import { buildVarTree } from "./helpers";
 import { PALETTE_TOKENS, type PaletteToken } from "./palette";
 import type { AccentPalette, ColorMode } from "./palette";
 
@@ -101,3 +102,5 @@ type SameShapeStrings<T> = {
 };
 
 export const COLOR_VALUES_DARK = colorTokens("dark") satisfies SameShapeStrings<typeof COLOR_VALUES>;
+
+export const COLOR = buildVarTree(COLOR_VALUES, ["color"]);

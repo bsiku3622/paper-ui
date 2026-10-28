@@ -27,7 +27,7 @@ paper-ui/
     │   └── src/
     │       ├── index.ts        # entry `.` — 컴포넌트 · hook · Provider ("use client")
     │       ├── inventory.ts    # 이름 · 분류 · 순서의 정본 — import 가 없고 inventory.test 가 export 와 대조
-    │       ├── tokens/         # 값의 유일한 정의 위치 · public.ts = entry `/tokens` · layers.css.ts = cascade layer
+    │       ├── tokens/         # 값의 유일한 정의 위치 — SOURCE → VALUES → 역할, *-recipes = 조합 · public.ts = entry `/tokens` · layers.css.ts = cascade layer
     │       ├── styles/         # theme.css.ts (raw 값 → CSS var) · utility.css.ts · global.css.ts = entry `/styles.css`
     │       ├── resolvers/      # 규칙의 주인 (prop → className)
     │       ├── primitives/     # layout·text·icon building blocks
@@ -124,7 +124,7 @@ focus ring 색은 `interaction.focus`에 둡니다. focus는 상호작용 상태
 
 ## 글자
 
-Typography는 원본 수치인 **Palette**, 이를 조합한 **Text 스타일**, 실제 반복되는 완성 스타일만 담는 **Control preset**으로 나뉜다. 각 스타일은 Palette의 size · weight · leading · tracking을 참조하므로 컴포넌트가 `"0.875rem"` 같은 raw 값을 박지 않는다. 정본은 [docs/foundations/typography.md](docs/foundations/typography.md)다. Text variant는 제목 위계와 텍스트 역할을 조합한다:
+Typography는 원본 수치인 **Palette**, 이를 조합한 **글자 역할**, 실제 반복되는 완성 스타일만 담는 **Control preset**으로 나뉜다. 각 스타일은 Palette의 size · weight · leading · tracking을 참조하므로 컴포넌트가 `"0.875rem"` 같은 raw 값을 박지 않는다. 정본은 [docs/foundations/typography.md](docs/foundations/typography.md)다. Text variant는 제목 위계와 텍스트 역할을 조합한다:
 
 `display 32 · title 24 · heading 20 · subheading 16 · body 14 · caption 13 · label 12`, 컨트롤 글자는 preset으로 `13 · 13 · 14`.
 
@@ -132,12 +132,12 @@ Typography는 원본 수치인 **Palette**, 이를 조합한 **Text 스타일**,
 variant 에도 교차한다. mono 는 `.pui-mono` 가 등폭·전용 tracking·크기 배율을 적용한다.
 
 - **body 14px** anchor — 복잡한 웹앱의 표준 밀도. 자주 쓰지 않는 16px 본문과 body size variant는
-  두지 않는다. 조작 문구는 컴포넌트 간 중복을 제거한 `text.control` preset, 보조 정보는 `caption`, 짧은 이름은 `label`로 나눈다.
+  두지 않는다. 조작 문구는 컴포넌트 간 중복을 제거한 `typography.preset`, 보조 정보는 `caption`, 짧은 이름은 `label`로 나눈다.
 - **제목 위계** — `display` 는 큰 제목, `title`은 페이지 제목, `heading`과 `subheading`은 섹션 제목용이다. HTML 태그는 `as`로 별도 지정한다.
 - **leading은 px 고정값** — Text: `display 32/40 · title 24/32 · heading 20/28 · subheading 16/24 · body 14/20 · caption 13/16 · label 12/16`. Control: `sm 13/16 · md 13/16 · lg 14/16`.
 - **weight 는 variant 와 직교한 별도 축** — `regular 400 · normal 450 · medium 500 ·
   semibold 600 · strong 650 · bold 700`. display·title 700, heading·subheading·label 600,
-  body 500, caption 400. 버튼은 medium(solid는 strong 650), 입력값은 normal 450이다(`tokens.text.palette.weight.*`).
+  body 500, caption 400. 버튼은 medium(solid는 strong 650), 입력값은 normal 450이다(`tokens.typography.palette.weight.*`).
 - **서체** — Pretendard 를 맨 앞에(라틴·한글을 한 몸으로 그려 굵기가 균형), `-apple-system`
   은 fallback. `family="mono"` 는 코드·토큰·식별자 같은 기술적 자리에만 — 숫자를 무조건
   등폭으로 두지 않는다. 데이터 표의 숫자 열은 sans 그대로 `tabular-nums` 로 자리만 맞춘다.
@@ -174,7 +174,7 @@ Primitive 계약의 정본은 [docs/primitives/](docs/primitives/README.md)(Layo
 1. **raw 색값 금지** (`paper/raw-color`) — surface hex는 `tokens/palette.ts`, accent hex·OKLCH는 `tokens/color-ladder.ts`에만. 소비처는 `tokens.color.X`로만 참조.
 2. **원본 import 격리** (`no-restricted-imports`) — palette·ladder·shape·layout 원본과 semantic VALUES는 consumer에서 import 금지. Playground Foundations inspector만 원본을 보여주기 위한 예외입니다.
 3. **inline style 로 토큰 주입 금지** (`paper/inline-token`) — package 스타일은 `.css.ts` className 으로만 토큰을 적용합니다.
-4. **길이는 token source에만** (`paper/source-numbers`) — 패키지는 예외 없이 원본 파일(shape·layout·text·motion·색)에만 숫자를 씁니다. 앱은 간격·형태·깊이(padding·margin·gap·offset·radius·선·그림자·z)를 역할로 고르고, 그 화면에만 있는 치수(폭·높이·그리드 트랙)만 직접 씁니다. 0·100%·정렬·회전 같은 구조적 CSS는 컴포넌트가 소유합니다.
+4. **길이는 token source에만** (`paper/source-numbers`) — 패키지는 예외 없이 원본 파일(shape·layout·typography·motion·색)에만 숫자를 씁니다. 앱은 간격·형태·깊이(padding·margin·gap·offset·radius·선·그림자·z)를 역할로 고르고, 그 화면에만 있는 치수(폭·높이·그리드 트랙)만 직접 씁니다. 0·100%·정렬·회전 같은 구조적 CSS는 컴포넌트가 소유합니다.
 5. **패키지 CSS는 레이어 안에** (`paper/layered-styles`) — 패키지 `.css.ts`는 vanilla-extract의 규칙 API(`style` · `styleVariants` · `globalStyle` · `globalLayer` …)를 직접 import하지 않고 `tokens/layers.css.ts`의 `layered(name)`으로 규칙을 만듭니다. 레이어를 정의하는 layers.css.ts만 예외이고, `keyframes` · `createVar` · `fallbackVar` · `createGlobalVar`는 그대로 씁니다.
 6. **규칙은 주석으로 끄지 않음** (`paper/no-rule-disable`) — paper 규칙은 `eslint-disable` 주석으로 끄지 않고, 예외는 `eslint.config.js`에만 선언합니다. 다른 규칙을 끄는 주석은 `-- 이유`를 답니다. 쓰이지 않는 disable 주석도 오류입니다.
 

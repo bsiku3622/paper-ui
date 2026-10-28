@@ -9,6 +9,6 @@ export const linkRoot = style({
   textDecoration: "none",
   cursor: "pointer",
   selectors: {
-    "&:hover": { textDecoration: "underline", textUnderlineOffset: tokens.text.palette.decoration.underlineOffset },
+    "&:hover": { textDecoration: "underline", textUnderlineOffset: tokens.typography.palette.decoration.underlineOffset },
   },
 });

@@ -68,7 +68,7 @@ export const buttonSize = styleVariants(
 
 export const buttonFontSize = styleVariants(
   Object.fromEntries(
-    TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.text.style[variant].size }]),
+    TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.typography.role[variant].size }]),
   ) as Record<TextVariant, { fontSize: string }>,
 );
 

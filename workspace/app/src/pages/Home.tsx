@@ -63,7 +63,7 @@ const AppMockup = () => {
         <aside className="home-mockup-side">
           <Inline gap="sm" align="center" style={{ paddingInline: tokens.shape.inset.sm }}>
             <Box style={{ width: "1.5rem", height: "1.5rem", borderRadius: tokens.shape.radius.control, background: tokens.color.ink.primary, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Text variant="caption" as="span" style={{ color: tokens.color.bg.canvas, fontWeight: tokens.text.palette.weight.bold }}>S</Text>
+              <Text variant="caption" as="span" style={{ color: tokens.color.bg.canvas, fontWeight: tokens.typography.palette.weight.bold }}>S</Text>
             </Box>
             <Text variant="subheading" as="span">Studio</Text>
           </Inline>
@@ -167,7 +167,7 @@ export const Home = () => (
         <Inline gap="sm" align="center" wrap style={{ paddingBlock: tokens.shape.inset.xl }}>
           <Text variant="caption" ink="soft">갤러리가 아니라 실제 화면(이슈 트래커)으로 검증합니다.</Text>
           <Link to="/demo" style={{ textDecoration: "none" }}>
-            <Text variant="caption" as="span" className="pui-info-ink" style={{ fontWeight: tokens.text.palette.weight.medium }}>데모 열기 →</Text>
+            <Text variant="caption" as="span" className="pui-info-ink" style={{ fontWeight: tokens.typography.palette.weight.medium }}>데모 열기 →</Text>
           </Link>
         </Inline>
 

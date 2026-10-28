@@ -125,9 +125,9 @@ export default [
           patterns: [rawBarrelRestriction, {
             group: [
               ...rawSourcePatterns,
-              ...["colors", "palette", "shape", "shape-recipes", "layout"].map((name) => `!../../../../packages/paper-ui/src/tokens/${name}`),
+              ...["colors", "palette", "shape", "shape-recipes", "layout", "typography"].map((name) => `!../../../../packages/paper-ui/src/tokens/${name}`),
             ],
-            message: "규칙 2 — inspector에서 허용한 source(colors·palette·shape·shape-recipes·layout) 외의 raw VALUES는 직접 import하지 않는다.",
+            message: "규칙 2 — inspector에서 허용한 source(colors·palette·shape·shape-recipes·layout·typography) 외의 raw VALUES는 직접 import하지 않는다.",
           }],
         },
       ],
@@ -149,7 +149,7 @@ export default [
   {
     files: ["packages/paper-ui/src/**/*.{ts,tsx}"],
     ignores: [
-      "packages/paper-ui/src/tokens/{shape,layout,text,motion,palette,color-ladder,colors}.ts",
+      "packages/paper-ui/src/tokens/{shape,layout,typography,motion,palette,color-ladder,colors}.ts",
       "**/*.test.{ts,tsx}",
     ],
     plugins: { paper },

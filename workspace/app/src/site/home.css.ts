@@ -20,11 +20,11 @@ globalStyle(".home-hero", {
 
 globalStyle(".home-headline", {
   margin: 0,
-  fontFamily: tokens.text.palette.family.sans,
+  fontFamily: tokens.typography.palette.family.sans,
   fontSize: "clamp(2.25rem, 6vw, 3.75rem)",
   lineHeight: 1.04,
   letterSpacing: "-0.035em",
-  fontWeight: tokens.text.palette.weight.bold,
+  fontWeight: tokens.typography.palette.weight.bold,
   color: tokens.color.ink.primary,
 });
 
@@ -106,7 +106,7 @@ globalStyle(".home-navitem", {
   height: tokens.shape.control.height.sm,
   paddingInline: tokens.shape.inset.sm,
   borderRadius: tokens.shape.radius.control,
-  fontSize: tokens.text.style.body.size,
+  fontSize: tokens.typography.role.body.size,
   color: tokens.color.ink.secondary,
 });
 
@@ -124,7 +124,7 @@ globalStyle(".home-filterhead", {
 globalStyle(".home-navitem[data-active='true']", {
   background: tokens.color.interaction.selected,
   color: tokens.color.ink.primary,
-  fontWeight: tokens.text.palette.weight.medium,
+  fontWeight: tokens.typography.palette.weight.medium,
 });
 
 // 하단 요약 한 줄 — 카드 나열이 아니라 인라인 사실들.

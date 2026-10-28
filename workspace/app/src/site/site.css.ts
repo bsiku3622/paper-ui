@@ -46,7 +46,7 @@ globalStyle(".gnb-theme", {
   background: tokens.color.bg.raised,
   color: tokens.color.ink.secondary,
   cursor: "pointer",
-  fontSize: tokens.text.style.body.size,
+  fontSize: tokens.typography.role.body.size,
   lineHeight: 1,
   transition: stateTransition("background", "color"),
 });

@@ -61,7 +61,7 @@ export const fieldInput = style({
   // control line-height(1)까지 물려받으면 브라우저 caret와 한글 fallback glyph가
   // 한 줄 상자에 눌려 위아래가 잘릴 수 있다. 입력 잉크에는 본문 행간을 주고 래퍼 안에서
   // 중앙 정렬해 caret 높이만 확보한다.
-  lineHeight: tokens.text.style.body.leading,
+  lineHeight: tokens.typography.role.body.leading,
   letterSpacing: "inherit",
   color: "inherit",
   padding: 0,
@@ -80,7 +80,7 @@ export const fieldSize = styleVariants(
 );
 
 export const fieldFontSize = styleVariants(
-  Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.text.style[variant].size }])) as Record<TextVariant, { fontSize: string }>,
+  Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.typography.role[variant].size }])) as Record<TextVariant, { fontSize: string }>,
 );
 
 // status — semantic Form은 accent ink 선으로 상태를 분명히 표시한다.
