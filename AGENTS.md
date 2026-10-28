@@ -19,7 +19,7 @@ paper-ui — 복잡한 웹앱을 위한, 순백과 검정의 디자인 시스템
 
 ```
 paper-ui/
-├── docs/
+├── docs/                       # get-started · foundations · primitives · atoms
 └── workspace/
     ├── packages/paper-ui/      # @studio-baeks/paper-ui — 단일 npm 패키지
     │   └── src/
@@ -29,7 +29,7 @@ paper-ui/
     │       ├── primitives/     # layout·text·icon building blocks
     │       ├── atoms/
     │       └── provider/
-    └── app/                    # 데모 — 이슈 트래커 화면 하나
+    └── app/                    # 사이트 · Playground · 문서 · 데모
 ```
 
 pnpm 명령은 `workspace/` 에서 실행한다. `core`/`web` 분리는 일부러 없다 — 존재하지
@@ -49,7 +49,7 @@ OKLCH Palette source → HEX Palette Token generation → semantic systems → r
 - palette.ts만 OKLCH neutral·accent anchor와 `alpha05`~`alpha95` opacity scale을 소유합니다. color-ladder.ts의 순수 함수를 호출해 완성된 coordinates와 HEX Palette Token을 조립해 export합니다. Palette 값은 테마와 무관하며, semantic layer가 light/dark 역할에 맞는 step을 선택합니다.
 - color-ladder.ts는 palette.ts를 import하지 않는 순수 계산 모듈입니다. 입력받은 좌표·단계에 대해 보간·gamut-map·HEX 인코딩을 수행하며 semantic role 이름을 두지 않습니다.
 - colors.ts의 semantic leaf는 생성된 Palette Token만 선택합니다. 다른 semantic leaf, 직접 입력한 HEX, color math를 참조하지 않습니다.
-- theme.css.ts는 semantic tree를 CSS variable로 내보냅니다. Package consumers는 tokens.color var 참조만 씁니다. /playground/palette는 source와 생성 결과를 확인하는 예외입니다. Foundations의 Tokens.tsx inspector도 색상 비교표를 위해 colors·palette 두 source 모듈을 정확한 경로로 읽습니다. 다른 raw-token import 제한은 유지합니다.
+- theme.css.ts는 semantic tree를 CSS variable로 내보냅니다. Package consumers는 tokens.color var 참조만 씁니다. Playground Foundations inspector(`app/src/playground/foundations/*.tsx`)만 원본을 그대로 보여주기 위해 colors·palette·shape·shape-recipes·layout 원본 모듈을 읽습니다 — 표시용이지 스타일용이 아닙니다. 다른 raw-token import 제한은 유지합니다.
 
 semantic color는 surface·ink·border·accent·interaction·overlay·shadow 역할로 나뉩니다.
 
@@ -68,7 +68,7 @@ Accent status는 palette와 분리합니다: info→blue, success→green, warni
 
 focus ring 색은 `interaction.focus`에 둡니다. focus는 상호작용 상태이고 색도 Palette Token에서 오기 때문입니다. 링 두께·offset은 색이 아닌 geometry이므로 `shape.focus.width`와 `shape.focus.offset`에 둡니다. Scrim은 `overlay.scrim`, shadow tint는 `shadow.overlay`와 `shadow.overlayMinimal`에 두고, 거리·blur·spread는 shape geometry로 둡니다. Semantic Form hover glow는 사용하지 않습니다.
 
-색을 바꾸면 docs/foundations/color-architecture.md와 Palette·Tokens Playground를 함께 확인합니다. API 경로와 source 규칙을 동시에 갱신합니다.
+색을 바꾸면 [docs/foundations/color.md](docs/foundations/color.md)와 Playground Foundations › Color를 함께 확인합니다. API 경로와 source 규칙을 동시에 갱신합니다.
 
 ## 형태 — Shape와 Layout
 
@@ -91,9 +91,9 @@ focus ring 색은 `interaction.focus`에 둡니다. focus는 상호작용 상태
 
 ## 글자
 
-Typography는 원본 수치인 **Palette**, 이를 조합한 **Text 스타일**, 실제 반복되는 완성 스타일만 담는 **Control preset**으로 나뉜다. 각 스타일은 Palette의 size · weight · leading · tracking을 참조하므로 컴포넌트가 `"0.875rem"` 같은 raw 값을 박지 않는다. Text variant는 제목 위계와 텍스트 역할을 조합한다:
+Typography는 원본 수치인 **Palette**, 이를 조합한 **Text 스타일**, 실제 반복되는 완성 스타일만 담는 **Control preset**으로 나뉜다. 각 스타일은 Palette의 size · weight · leading · tracking을 참조하므로 컴포넌트가 `"0.875rem"` 같은 raw 값을 박지 않는다. 정본은 [docs/foundations/typography.md](docs/foundations/typography.md)다. Text variant는 제목 위계와 텍스트 역할을 조합한다:
 
-`display 32 · title 28 · heading 20 · subheading 16 · body 14 · control 13 · caption 12 · label 12`.
+`display 32 · title 24 · heading 20 · subheading 16 · body 14 · caption 13 · label 12`, 컨트롤 글자는 preset으로 `13 · 13 · 14`.
 
 서체는 위계가 아니라 **family 축**이다 — `Text` 의 `family`(sans 기본 · mono)가 어느
 variant 에도 교차한다. mono 는 `.pui-mono` 가 등폭·전용 tracking·크기 배율을 적용한다.
@@ -103,8 +103,8 @@ variant 에도 교차한다. mono 는 `.pui-mono` 가 등폭·전용 tracking·�
 - **제목 위계** — `display` 는 큰 제목, `title`은 페이지 제목, `heading`과 `subheading`은 섹션 제목용이다. HTML 태그는 `as`로 별도 지정한다.
 - **leading은 px 고정값** — Text: `display 32/40 · title 24/32 · heading 20/28 · subheading 16/24 · body 14/20 · caption 13/16 · label 12/16`. Control: `sm 13/16 · md 13/16 · lg 14/16`.
 - **weight 는 variant 와 직교한 별도 축** — `regular 400 · normal 450 · medium 500 ·
-  semibold 600 · strong 650 · bold 700`. Body·caption은 regular, control은 medium, label은
-  semibold를 기본으로 쓴다(`tokens.text.palette.weight.*`).
+  semibold 600 · strong 650 · bold 700`. display·title 700, heading·subheading·label 600,
+  body 500, caption 400. 버튼은 medium(solid는 strong 650), 입력값은 normal 450이다(`tokens.text.palette.weight.*`).
 - **서체** — Pretendard 를 맨 앞에(라틴·한글을 한 몸으로 그려 굵기가 균형), `-apple-system`
   은 fallback. `family="mono"` 는 코드·토큰·식별자 같은 기술적 자리에만 — 숫자를 무조건
   등폭으로 두지 않는다. 데이터 표의 숫자 열은 sans 그대로 `tabular-nums` 로 자리만 맞춘다.
@@ -115,8 +115,10 @@ variant 에도 교차한다. mono 는 `.pui-mono` 가 등폭·전용 tracking·�
 ## 레이어 · 빌드 규칙
 
 ```
-Tokens → Primitives → Atoms
+Foundations → Primitives → Atoms
 ```
+
+문서(`docs/`)와 Playground 사이드바는 이 순서와 이름을 그대로 씁니다 — Foundations(Color · Typography · Shape · Layout · Motion), Primitives(Layout · Content · Interaction · A11y), Atoms. Foundations의 각 페이지는 그 시스템의 원본 → 역할 → 조합 순서로 같은 보드(`app/src/playground/foundations/kit.tsx`)를 씁니다.
 
 | 레이어 | 수 | |
 |---|---|---|
@@ -130,10 +132,10 @@ Tokens → Primitives → Atoms
 
 RovingFocus는 등록 항목의 Tab 진입점과 실제 DOM focus 탐색을 관리하며 선택과 분리합니다. ToggleGroup은 toggle button 그룹의 단일·복수 선택이고 다른 위젯의 role을 대체하지 않습니다. Overlay는 Trigger·Content·Close를 연결하며 기본 non-modal dialog, modal opt-in입니다. React Aria가 Portal·배치·중첩 dismissal·배경 inert·스크롤 잠금을 담당합니다. FormField/useField는 기존 Field Atom을 유지하면서 native label·설명·오류 ID를 연결합니다. 합성 도구 mergeProps는 additive handler 병합, composeEventHandlers는 caller preventDefault에 의한 내부 handler 취소, mergeRefs는 같은 DOM ref 연결입니다. 새 공통 상태·입력 관계 API도 Playground와 문서·실제 브라우저 검증을 함께 갱신합니다.
 
-Primitive 계약의 정본은 [docs/components/primitives.md](docs/components/primitives.md)입니다. 기존 Layout·Content props를 유지하고 native ref를 전달합니다. Interaction은 컴포넌트와 usePress/useHover/useToggle/useDrag/useDrop을 함께 제공하고, FocusScope·VisuallyHidden·focus hook은 A11y에 둡니다. press는 일시적 입력, toggle은 유지되는 boolean 선택입니다. Draggable은 move/transfer 모드를 구분하며 Handle은 부모 전체 박스를 조작합니다. handle activation에서는 pointer·keyboard 모두 손잡이에서만 시작합니다. Move 좌표·Grid track은 runtime 값이므로 inline style을 사용하지만 semantic 토큰은 기존 class 경로를 유지합니다. 저수준 입력·포커스·native transfer 처리는 React Aria를 재사용합니다. 기존 Atom을 자동으로 새 행동 컴포넌트로 교체하지 않습니다.
+Primitive 계약의 정본은 [docs/primitives/](docs/primitives/README.md)(Layout · Content · Interaction · A11y)이고, Atom은 [docs/atoms/](docs/atoms/README.md)입니다. 기존 Layout·Content props를 유지하고 native ref를 전달합니다. Interaction은 컴포넌트와 usePress/useHover/useToggle/useDrag/useDrop을 함께 제공하고, FocusScope·VisuallyHidden·focus hook은 A11y에 둡니다. press는 일시적 입력, toggle은 유지되는 boolean 선택입니다. Draggable은 move/transfer 모드를 구분하며 Handle은 부모 전체 박스를 조작합니다. handle activation에서는 pointer·keyboard 모두 손잡이에서만 시작합니다. Move 좌표·Grid track은 runtime 값이므로 inline style을 사용하지만 semantic 토큰은 기존 class 경로를 유지합니다. 저수준 입력·포커스·native transfer 처리는 React Aria를 재사용합니다. 기존 Atom을 자동으로 새 행동 컴포넌트로 교체하지 않습니다.
 
 1. **raw 색값 금지** — surface hex는 `tokens/palette.ts`, accent hex·OKLCH는 `tokens/color-ladder.ts`에만. 소비처는 `tokens.color.X`로만 참조.
-2. **color layer import 격리** — palette·ladder·semantic VALUES는 consumer에서 import 금지. `/playground/palette` Foundations inspector만 허용된 source 예외입니다.
+2. **원본 import 격리** — palette·ladder·shape·layout 원본과 semantic VALUES는 consumer에서 import 금지. Playground Foundations inspector만 원본을 보여주기 위한 예외입니다.
 3. **inline style 로 토큰 주입 금지** — package 스타일은 `.css.ts` className 으로만 토큰을 적용합니다.
 4. **길이는 token source에만** — 패키지는 예외 없이 원본 파일(shape·layout·text·motion·색)에만 숫자를 씁니다. 앱은 간격·형태·깊이(padding·margin·gap·offset·radius·선·그림자·z)를 역할로 고르고, 그 화면에만 있는 치수(폭·높이·그리드 트랙)만 직접 씁니다. 0·100%·정렬·회전 같은 구조적 CSS는 컴포넌트가 소유합니다.
 
