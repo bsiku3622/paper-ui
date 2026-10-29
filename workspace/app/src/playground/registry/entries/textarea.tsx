@@ -1,6 +1,6 @@
 import { Textarea, type TextareaProps } from "@studio-baeks/paper-ui";
 
-import { boolControl, defineSpec, enumControl, flag, pending, pick, textControl, vocab, words } from "../schema";
+import { boolControl, defineSpec, enumControl, flag, pick, textControl, vocab, words } from "../schema";
 import { wide } from "./examples.css";
 
 export default defineSpec({
@@ -10,7 +10,7 @@ export default defineSpec({
     textControl<TextareaProps, "placeholder">("placeholder", "여러 줄 입력…"),
     enumControl<TextareaProps, "status">("status", vocab("STATUSES")),
     enumControl<TextareaProps, "size">("size", vocab("CONTROL_SIZES")),
-    enumControl<TextareaProps, "fontSize">("fontSize", pending(["label", "caption", "body"] as const, "S12", "CONTROL_FONT_SIZES")),
+    enumControl<TextareaProps, "fontSize">("fontSize", vocab("CONTROL_FONT_SIZES")),
     boolControl<TextareaProps, "disabled">("disabled"),
   ],
   defaults: { size: "md" },

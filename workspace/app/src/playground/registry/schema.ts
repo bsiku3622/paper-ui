@@ -58,6 +58,8 @@ type ControlBase = {
   target?: string;
   // Set when the prop changes behaviour that a closed, static render does not show; says why.
   behaviorOnly?: string;
+  // Set when the omitted prop takes its value from another prop, so naming that value changes nothing; says why.
+  derived?: string;
 };
 
 export type Control = ControlBase &
@@ -67,7 +69,7 @@ export type Control = ControlBase &
     | { kind: "text"; initial: string; bind: "children" | "attribute" }
   );
 
-type Extra = { key?: string; label?: string; target?: string; behaviorOnly?: string };
+type Extra = { key?: string; label?: string; target?: string; behaviorOnly?: string; derived?: string };
 
 const base = (prop: string, extra: Extra): ControlBase => ({
   key: extra.key ?? prop,
@@ -75,6 +77,7 @@ const base = (prop: string, extra: Extra): ControlBase => ({
   label: extra.label ?? extra.key ?? prop,
   ...(extra.target ? { target: extra.target } : {}),
   ...(extra.behaviorOnly ? { behaviorOnly: extra.behaviorOnly } : {}),
+  ...(extra.derived ? { derived: extra.derived } : {}),
 });
 
 // Types the options against the prop: a value the prop does not accept fails typecheck.

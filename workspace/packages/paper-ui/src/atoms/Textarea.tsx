@@ -12,16 +12,16 @@
 import { forwardRef, type TextareaHTMLAttributes } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import { resolveControlTypography } from "../resolvers";
-import type { ControlSize, Status, TextVariant } from "../tokens";
+import { resolveControlFontSize, resolvePreset } from "../resolvers";
+import type { ControlFontSize, ControlSize, Status } from "../tokens";
 import { fieldStatus } from "./Field.css";
-import { textareaRoot, textareaSize, textareaFontSize } from "./Textarea.css";
+import { textareaRoot, textareaSize } from "./Textarea.css";
 
 export type TextareaProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "className"> & {
   status?: Status;
   // 크기 3 단 (sm·md·lg). Button·Field·Select 와 같은 여백·글자 사다리.
   size?: ControlSize;
-  fontSize?: TextVariant;
+  fontSize?: ControlFontSize;
   className?: string;
 };
 
@@ -42,7 +42,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
         delete event.currentTarget.dataset.puiPointerFocus;
         onBlur?.(event);
       }}
-      className={joinClass(textareaRoot, textareaSize[size], resolveControlTypography("textarea", size), fontSize && textareaFontSize[fontSize], status && fieldStatus[status], className)}
+      className={joinClass(textareaRoot, textareaSize[size], resolvePreset("textarea", size), resolveControlFontSize(fontSize), status && fieldStatus[status], className)}
       {...rest}
     />
   );

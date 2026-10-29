@@ -1,7 +1,7 @@
 import { Field, Text, type FieldProps } from "@studio-baeks/paper-ui";
 
 import { glyph } from "../demo";
-import { boolControl, defineSpec, enumControl, flag, local, pending, pick, sample, subset, textControl, vocab, words } from "../schema";
+import { boolControl, defineSpec, enumControl, flag, local, pick, sample, subset, textControl, vocab, words } from "../schema";
 import { wide } from "./examples.css";
 
 export default defineSpec({
@@ -17,7 +17,7 @@ export default defineSpec({
     enumControl<FieldProps, "align">("align", local<FieldProps, "align">()(["start", "center", "end"], "the text alignments an input has")),
     enumControl<FieldProps, "status">("status", vocab("STATUSES")),
     enumControl<FieldProps, "size">("size", vocab("CONTROL_SIZES")),
-    enumControl<FieldProps, "fontSize">("fontSize", pending(["label", "caption", "body"] as const, "S12", "CONTROL_FONT_SIZES")),
+    enumControl<FieldProps, "fontSize">("fontSize", vocab("CONTROL_FONT_SIZES")),
     enumControl<FieldProps, "shape">("shape", vocab("CONTROL_SHAPES")),
     enumControl<FieldProps, "surface">("surface", subset("SURFACES", ["raised", "sunken"], "canvas is the page ground, not a face a field can have")),
     boolControl<FieldProps, "disabled">("disabled"),

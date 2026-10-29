@@ -3,7 +3,7 @@ import type { ElementType } from "react";
 import { Button, type ButtonProps } from "@studio-baeks/paper-ui";
 
 import { stay } from "../demo";
-import { boolControl, defineSpec, enumControl, flag, pending, sample, pick, textControl, vocab, words } from "../schema";
+import { boolControl, defineSpec, enumControl, flag, sample, pick, textControl, vocab, words } from "../schema";
 
 export default defineSpec({
   name: "Button",
@@ -12,7 +12,7 @@ export default defineSpec({
     enumControl<ButtonProps, "accent">("accent", vocab("ACCENTS")),
     enumControl<ButtonProps, "variant">("variant", vocab("VARIANTS")),
     enumControl<ButtonProps, "size">("size", vocab("CONTROL_SIZES")),
-    enumControl<ButtonProps, "fontSize">("fontSize", pending(["label", "caption", "body"] as const, "S12", "CONTROL_FONT_SIZES")),
+    enumControl<ButtonProps, "fontSize">("fontSize", vocab("CONTROL_FONT_SIZES")),
     boolControl<ButtonProps, "loading">("loading"),
     boolControl<ButtonProps, "fullWidth">("fullWidth"),
     enumControl<ButtonProps, "shape">("shape", vocab("CONTROL_SHAPES")),

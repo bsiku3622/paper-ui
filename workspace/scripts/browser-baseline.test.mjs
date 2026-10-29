@@ -26,6 +26,7 @@ test("[install.browsers.baseline] the declared floor supports every required CSS
     "@media (prefers-reduced-motion: reduce){*{transition-duration:0s}}",
     "@media (forced-colors: active){.e{border-color:CanvasText}}",
     "@media (prefers-color-scheme: dark){:root:not([data-pui-theme]){color-scheme:dark}}",
+    ".f{overflow-wrap:anywhere}:root{--pui-typography-palette-font-size-hero:clamp(2.25rem, 6vw, 3.75rem)}",
     "@media (prefers-contrast: more){:root{--pui-color-border-base:#000}}",
   ].join("");
   const result = checkStylesheet(css, floor);

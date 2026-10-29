@@ -103,7 +103,7 @@ const height = source.control.height;
 // A typed value gets the same room on every side of its line box.
 const inputInset = controlSizes((size) => `calc((${height[size]} - ${TYPOGRAPHY.preset.field[size].leading}) / 2)`);
 const buttonInset = controlSizes((size) =>
-  `round(nearest, calc((${height[size]} - ${TYPOGRAPHY.preset.button.regular[size].leading}) / 2 * ${source.control.buttonInsetRatio}), 1px)`);
+  `round(nearest, calc((${height[size]} - ${TYPOGRAPHY.preset.button.medium[size].leading}) / 2 * ${source.control.buttonInsetRatio}), 1px)`);
 // Selection marks are half a control tall, so a switch track spans one control height.
 const selection = controlSizes((size) => `calc(${height[size]} / 2)`);
 

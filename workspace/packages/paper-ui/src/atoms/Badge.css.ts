@@ -1,6 +1,6 @@
 import { geometry } from "../internal/shape";
 
-import { tokens, CONTROL_SIZES, TEXT_VARIANTS, type ControlSize, type TextVariant } from "../tokens";
+import { tokens, CONTROL_SIZES, type ControlSize } from "../tokens";
 import { layered } from "../tokens/layers.css";
 
 const { style, styleVariants } = layered("components");
@@ -15,7 +15,6 @@ export const badgeRoot = style({
   borderRadius: tokens.shape.radius.control,
   borderWidth: tokens.shape.stroke.border,
   borderStyle: "solid",
-  whiteSpace: "nowrap",
 });
 
 // 알약 — 모서리를 높이의 절반까지. 배지는 낱말 하나를 담는 라벨이라 알약이 자연스러운
@@ -56,8 +55,4 @@ export const badgeSize = styleVariants(
       },
     ]),
   ) as Record<ControlSize, { height: string; paddingInline: string }>,
-);
-
-export const badgeFontSize = styleVariants(
-  Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.typography.role[variant].size }])) as Record<TextVariant, { fontSize: string }>,
 );

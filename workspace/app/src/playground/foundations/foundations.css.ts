@@ -2,9 +2,10 @@
 // each specimen only arranges the token it shows.
 import { globalStyle, keyframes, style, styleVariants, type ComplexStyleRule } from "@vanilla-extract/css";
 
-import { CONTROL_SIZES, SPACES, tokens } from "@studio-baeks/paper-ui/tokens";
+import { CONTROL_SIZES, SPACES, codeRule, presetRule, tokens, type ControlSize } from "@studio-baeks/paper-ui/tokens";
 
 import { bar } from "./kit.css";
+import type { PresetPath } from "./typography-roles";
 
 const { shape, layout, color, motion } = tokens;
 const line = `${shape.stroke.border} solid ${color.border.base}`;
@@ -14,8 +15,21 @@ const variantsOf = <K extends string>(keys: readonly K[], rule: (key: K) => Comp
   styleVariants(Object.fromEntries(keys.map((key) => [key, rule(key)])) as Record<K, ComplexStyleRule>) as Record<K, string>;
 
 // Typography
-export const specimen = style({ margin: 0, minWidth: 0, overflowWrap: "anywhere" });
-export const presetSample = style({ display: "block", overflowWrap: "anywhere" });
+export const specimen = style({ margin: 0, minWidth: 0 });
+export const presetSample = style({ display: "block" });
+// A control preset as a sample is the preset's own declaration, one class per size.
+const PRESET_RULES: Record<PresetPath, (size: ControlSize) => ComplexStyleRule> = {
+  "button.medium": (size) => presetRule("button", size, "medium"),
+  "button.strong": (size) => presetRule("button", size, "strong"),
+  field: (size) => presetRule("field", size),
+  textarea: (size) => presetRule("textarea", size),
+  badge: () => presetRule("badge"),
+};
+// Code pieces at the two scales Palette gives them, sitting in a sentence, and the block that has its own size and line.
+export const codeSample = { inline: style(codeRule("inline")), compact: style(codeRule("compact")), block: style(codeRule("block")) };
+export const presetFont = Object.fromEntries(
+  Object.entries(PRESET_RULES).map(([path, rule]) => [path, variantsOf(CONTROL_SIZES, rule)]),
+) as Record<PresetPath, Record<ControlSize, string>>;
 
 // Shape
 export const spaceBar = variantsOf(SPACES, (step) => [bar, { width: shape.inset[step] }]);
@@ -30,7 +44,7 @@ export const focusBox = style({ width: shape.control.height.md, height: shape.co
 export const targetBox = style({ width: shape.target.min, height: shape.target.min, borderRadius: shape.radius.control, border: line, background: color.bg.sunken });
 const controlBase = style({ width: shape.dimension.width.sm, borderRadius: shape.radius.control, border: line, background: color.bg.sunken });
 export const controlBox = variantsOf(CONTROL_SIZES, (size) => [controlBase, { height: shape.control.height[size] }]);
-export const rule = style({ fontFamily: tokens.typography.palette.family.mono, fontSize: tokens.typography.role.caption.size, color: color.ink.secondary, wordBreak: "keep-all" });
+export const rule = style({ fontFamily: tokens.typography.palette.family.mono, fontSize: tokens.typography.role.caption.size, color: color.ink.secondary });
 export const recipeSample = style({ display: "flex", alignItems: "center", minHeight: shape.control.height.lg, minWidth: 0 });
 
 // Layout

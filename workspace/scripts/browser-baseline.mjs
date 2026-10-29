@@ -57,6 +57,8 @@ export const FEATURES = [
   { name: "forced-colors", pattern: /\(\s*forced-colors\s*:/, kind: "required", since: since("89", "79", "89", "16", "16") },
   { name: "prefers-reduced-motion", pattern: /\(\s*prefers-reduced-motion\s*:/, kind: "required", since: since("74", "79", "63", "10.1", "10.3") },
   { name: "prefers-color-scheme", pattern: /\(\s*prefers-color-scheme\s*:/, kind: "required", since: since("76", "79", "67", "12.1", "13") },
+  { name: "overflow-wrap: anywhere", pattern: /overflow-wrap\s*:\s*anywhere\b/, kind: "required", since: since("80", "80", "65", "15.4", "15.4") },
+  { name: "clamp()", pattern: /(?<![\w-])clamp\(/, kind: "required", since: since("79", "79", "75", "13.1", "13.4") },
   { name: "prefers-contrast", pattern: /\(\s*prefers-contrast\s*:/, kind: "required", since: since("96", "96", "101", "14.1", "14.5") },
 ];
 

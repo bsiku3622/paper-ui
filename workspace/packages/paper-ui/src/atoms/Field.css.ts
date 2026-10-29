@@ -1,6 +1,5 @@
-import { tokens, STATUSES, stateTransition } from "../tokens";
-import type { Status, TextVariant } from "../tokens";
-import { TEXT_VARIANTS } from "../tokens";
+import { tokens, CONTROL_SIZES, STATUSES, stateTransition } from "../tokens";
+import type { ControlSize, Status } from "../tokens";
 import { outlinedControlProfile, outlinedControlHover } from "../tokens/color-recipes";
 import { controlGeometry, focusRing } from "../internal/shape";
 import { layered } from "../tokens/layers.css";
@@ -52,10 +51,9 @@ export const fieldInput = style({
   background: "transparent",
   outline: "none",
   font: "inherit",
-  // control line-height(1)까지 물려받으면 브라우저 caret와 한글 fallback glyph가
-  // 한 줄 상자에 눌려 위아래가 잘릴 수 있다. 입력 잉크에는 본문 행간을 주고 래퍼 안에서
+  // control line-height(16)까지 물려받으면 브라우저 caret와 한글 fallback glyph가
+  // 한 줄 상자에 눌려 위아래가 잘릴 수 있다. 입력 줄상자는 fieldInputLeading 이 따로 주고 래퍼 안에서
   // 중앙 정렬해 caret 높이만 확보한다.
-  lineHeight: tokens.typography.role.body.leading,
   letterSpacing: "inherit",
   color: "inherit",
   padding: 0,
@@ -73,8 +71,9 @@ export const fieldSize = styleVariants(
   controlGeometry.field,
 );
 
-export const fieldFontSize = styleVariants(
-  Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.typography.role[variant].size }])) as Record<TextVariant, { fontSize: string }>,
+// 입력값이 앉는 줄상자. preset 의 글자 줄(16)은 Shape 의 안쪽 여백이 읽는 값이라, caret 의 높이는 따로 둔다.
+export const fieldInputLeading = styleVariants(
+  Object.fromEntries(CONTROL_SIZES.map((size) => [size, { lineHeight: tokens.typography.preset.field[size].inputLeading }])) as Record<ControlSize, { lineHeight: string }>,
 );
 
 // status — semantic Form은 accent ink 선으로 상태를 분명히 표시한다.
@@ -113,11 +112,6 @@ export const fieldAction = style({
     "&:hover": { color: tokens.color.ink.primary },
     "&:focus-visible": { ...focusRing, borderRadius: tokens.shape.radius.control },
   },
-});
-
-// 수치 표기 — sans 그대로 숫자 글리프만 등폭(tabular-nums). 정렬은 안 건드린다 — align 이 따로. (input 에.)
-export const fieldNumeric = style({
-  fontVariantNumeric: "tabular-nums",
 });
 
 // 정렬 축 — numeric 과 직교. 논리값(start·center·end)이라 RTL 도 따라간다. 우측정렬 숫자열 = numeric + end.

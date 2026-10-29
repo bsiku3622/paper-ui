@@ -13,7 +13,7 @@ Atom은 같은 축 몇 개로 말합니다. 축의 값은 모두 Foundations에�
 | `variant` | solid · soft · hairline · ghost · muted | Color [accent × variant](../foundations/color.md#accent--variant) |
 | `status` (입력) | info · success · warning · error, 생략하면 중립 | Color accent `ink` 경계 |
 | `shape` | rounded · pill, 기본 rounded | Shape `radius.control` · `radius.full` |
-| `fontSize` | Text 역할 이름 | Typography — 글자 크기만 바꾸는 탈출구 |
+| `fontSize` | `label` · `caption` · `body` (`CONTROL_FONT_SIZES`) | Typography — 글자 크기만 바꾸는 탈출구. 컨트롤 상자가 담을 수 있는 역할만 받음 |
 
 [contract:atoms.field.neutral-status]: #
 축마다 중립값은 이름이 아니라 기본값이나 생략입니다. `accent`의 중립은 `primary`, Divider `level`의 중립은 `base`이고, 입력의 `status`는 생략하면 중립이라 `default`라는 값이 없습니다. Field와 Textarea는 `status`를 줬을 때만 `data-status`를 그리고, `status="error"`는 `aria-invalid`도 설정합니다.
@@ -24,7 +24,7 @@ Atom은 같은 축 몇 개로 말합니다. 축의 값은 모두 Foundations에�
 
 | Atom | 고유 축 | 기본값·동작 |
 | --- | --- | --- |
-| Button | as · accent · variant · size · fontSize · shape · loading · fullWidth | button / primary / solid / md / rounded, type=button. solid는 strong preset, 나머지는 regular. loading은 spinner·aria-busy·disabled |
+| Button | as · accent · variant · size · fontSize · shape · loading · fullWidth | button / primary / solid / md / rounded, type=button. solid는 strong preset, 나머지는 medium. loading은 spinner·aria-busy·disabled |
 | IconButton | Button의 축에서 children·fontSize 제외 · iconSize · 필수 aria-label · 단일 children | iconSize=body. 정사각형. children이 Icon이면 iconSize를 전달 |
 | Field | status · size · surface=raised/sunken(다크에서 sunken은 canvas와 같은 단계) · fontSize · shape · numeric · align · leading / trailing · clearable · showPasswordToggle · onClear | default / md / raised / rounded, type=text. wrapper가 면·높이·상태·포커스를 소유 |
 | Textarea | status · size · fontSize · native textarea props | default / md. 한 줄 높이 = 같은 size Field, 최소 높이 96, 세로 resize. pill 없음 |

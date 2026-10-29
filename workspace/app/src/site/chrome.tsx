@@ -10,7 +10,7 @@ import { tokens, type ColorMode } from "@studio-baeks/paper-ui/tokens";
 
 import { Logo } from "./Logo";
 import { SITE_NAV } from "./site-map";
-import "./site.css";
+import * as s from "./site.css";
 
 // 테마 토글 — 라이트 ⇄ 다크 둘만 오간다.
 //
@@ -41,7 +41,7 @@ const ThemeToggle = () => {
 const isActive = (pathname: string, to: string) =>
   to === "/" ? pathname === "/" : pathname.startsWith(to);
 
-export const NAV_HEIGHT = "52px";
+export const NAV_HEIGHT = s.NAV_HEIGHT;
 
 // 브랜드 — 손글씨 로고. 홈으로 가는 통로.
 const Brand = ({ height = 26 }: { height?: number }) => (
@@ -55,16 +55,16 @@ export const SiteNav = () => {
   const { pathname } = useLocation();
   const active = SITE_NAV.find((n) => isActive(pathname, n.to))?.to;
   return (
-    <Box as="header" style={{ position: "sticky", top: 0, zIndex: tokens.layout.elevation.sticky.z, height: NAV_HEIGHT, background: tokens.color.bg.canvas, borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
-      <Inline align="center" gap="lg" style={{ maxWidth: tokens.layout.container.content, height: "100%", paddingInline: tokens.shape.inset.lg, marginInline: "auto" }}>
+    <Box as="header" className={s.gnb}>
+      <Inline className={s.gnbRow}>
         <Brand />
-        <Box as="nav" aria-label="주요 메뉴" style={{ display: "flex", alignItems: "center", gap: tokens.layout.gap.sm, flex: 1 }}>
+        <Box as="nav" aria-label="주요 메뉴" className={s.gnbLinks}>
           {SITE_NAV.map((n) => <Link key={n.to} to={n.to} aria-current={active === n.to ? "page" : undefined} style={{ color: active === n.to ? tokens.color.ink.primary : tokens.color.ink.secondary, textDecoration: "none", padding: `${tokens.shape.inset.xs} ${tokens.shape.inset.sm}` }}>{n.label}</Link>)}
         </Box>
-        <Inline gap="sm" align="center">
+        <Inline gap="sm" align="center" className={s.gnbTools}>
           <ThemeToggle />
           <Box surface="sunken" radius="full" paddingX="sm" paddingY="xs" style={{ border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
-            <Text variant="caption" as="span" ink="secondary" style={{ fontVariantNumeric: "tabular-nums" }}>v0.1.0</Text>
+            <Text variant="caption" as="span" ink="secondary" numeric>v0.1.0</Text>
           </Box>
         </Inline>
       </Inline>

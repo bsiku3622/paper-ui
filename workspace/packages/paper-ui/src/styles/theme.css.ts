@@ -6,6 +6,7 @@
 import { THEME_ATTRIBUTE, THEME_SWAP_ATTRIBUTE, tokens } from "../tokens";
 import { focusRing } from "../internal/shape";
 import { layered } from "../tokens/layers.css";
+import { typographyRule } from "../tokens/typography-recipes";
 
 // 문서 바탕(body · 포커스 링 · reduced motion)은 pui.base, box-sizing 과 body margin 은
 // 맨 앞의 pui.reset 에 든다.
@@ -20,10 +21,8 @@ reset.globalStyle("body", { margin: 0 });
 base.globalStyle("body", {
   background: tokens.color.bg.canvas,
   color: tokens.color.ink.primary,
-  fontFamily: tokens.typography.palette.family.sans,
-  fontSize: tokens.typography.role.body.size,
-  lineHeight: tokens.typography.role.body.leading,
-  letterSpacing: tokens.typography.role.body.tracking,
+  // 문서의 기본 글자는 body 역할 전체다 — 굵기와 줄바꿈까지, Text 밖의 글자도 같은 글자를 받는다.
+  ...typographyRule("body"),
   WebkitFontSmoothing: "antialiased",
   MozOsxFontSmoothing: "grayscale",
 });

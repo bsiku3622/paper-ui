@@ -24,16 +24,15 @@ import {
 } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import { resolveAccent, resolveControlTypography } from "../resolvers";
+import { resolveAccent, resolveControlFontSize, resolvePreset } from "../resolvers";
 import { interactiveClass } from "../styles/color.css";
-import type { Accent, ControlShape, ControlSize, TextVariant, Variant } from "../tokens";
+import type { Accent, ControlFontSize, ControlShape, ControlSize, Variant } from "../tokens";
 import {
   buttonRoot,
   buttonSize,
   buttonSpinner,
   buttonFull,
   buttonPill,
-  buttonFontSize,
 } from "./Button.css";
 
 type ButtonOwn<As extends ElementType> = {
@@ -49,7 +48,7 @@ type ButtonOwn<As extends ElementType> = {
   // 크기 3 단 (sm·md·lg). md가 Demo 기준 anchor며 Field·Select와 같은 높이 사다리를 쓴다.
   size?: ControlSize;
   // 컨트롤 실루엣은 유지하고 라벨만 조정하는 통로. 기본값은 size 사다리를 따른다.
-  fontSize?: TextVariant;
+  fontSize?: ControlFontSize;
   // 실루엣 — rounded 는 시스템 곡선(radius.control), pill 은 알약(높이의 절반).
   // 값이 둘뿐인 건 의도다 — 고르는 건 *알약이냐 아니냐* 지 곡선의 크기가 아니다.
   shape?: ControlShape;
@@ -106,8 +105,8 @@ const ButtonImpl = forwardRef<HTMLElement, ButtonImplProps>(function Button(
         interactiveClass,
         buttonRoot,
         buttonSize[size],
-        resolveControlTypography("button", size, variant === "solid" ? "strong" : "regular"),
-        fontSize && buttonFontSize[fontSize],
+        resolvePreset("button", size, variant === "solid" ? "strong" : "medium"),
+        resolveControlFontSize(fontSize),
         resolveAccent(accent, variant),
         fullWidth && buttonFull,
         shape === "pill" && buttonPill,

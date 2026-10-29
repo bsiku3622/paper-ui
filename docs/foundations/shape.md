@@ -66,12 +66,12 @@ Box의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값이 
 ## Control
 
 [contract:foundations.shape.control-geometry]: #
-컨트롤에서 원본은 높이 하나입니다. 나머지는 높이와 컨트롤 글자 줄(Typography의 control preset, 행간 16)에서 계산합니다.
+컨트롤에서 원본은 높이 하나입니다. 나머지는 높이와 컨트롤 글자 줄(Typography의 control preset이 읽는 글자 한 줄, 행간 16)에서 계산합니다. 입력값이 앉는 줄상자 `inputLeading` 20은 이 식의 입력이 아니라 caret 높이를 위한 값이라, 글자 줄 안쪽에서 중앙에 앉습니다.
 
 | 역할 | sm | md | lg | 식 |
 |---|---|---|---|---|
 | `control.height` | 30 | 32 | 36 | 원본 |
-| `control.inset.input` | 7 | 8 | 10 | (높이 − 글자 줄) / 2 — 입력값은 줄상자 사방에 같은 여백 |
+| `control.inset.input` | 7 | 8 | 10 | (높이 − preset 글자 줄) / 2 — 입력값은 글자 줄 사방에 같은 여백 |
 | `control.inset.button` | 10 | 11 | 14 | (높이 − 버튼 글자 줄) / 2 × `buttonInsetRatio` 1.4, 1px로 반올림 — 라벨이 상자를 정의하므로 더 넓게 |
 | `selection.size` | 15 | 16 | 18 | 높이 / 2 |
 | `control.icon` | 16 | 18 | 20 | 높이를 따르는 icon 크기 (caption · body · subheading) |

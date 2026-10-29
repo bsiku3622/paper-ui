@@ -108,7 +108,7 @@ const ThemeToggle = () => {
 
 ## 폰트
 
-시스템은 서체를 번들하지 않습니다. sans는 Pretendard를 맨 앞에 둡니다 — 라틴과 한글을 한 몸으로 그려 굵기가 균형을 잃지 않기 때문이고, `-apple-system`은 그 뒤 fallback입니다. mono는 OS의 등폭 서체(SF Mono·Cascadia)를 먼저 쓰고 한글은 D2Coding으로 떨어집니다. Pretendard와 한글 mono를 쓰려면 앱에서 아래 두 스타일시트를 직접 불러오세요.
+서체는 Typography 계약의 일부입니다. 시스템은 서체 파일을 번들하지 않지만, 굵기 사다리(400 · 450 · 500 · 600 · 650 · 700)는 Pretendard Variable이 있다고 전제하고 세워져 있습니다. sans는 Pretendard를 맨 앞에 둡니다 — 라틴과 한글을 한 몸으로 그려 굵기가 균형을 잃지 않기 때문이고, `-apple-system`은 그 뒤 fallback입니다. mono는 OS의 등폭 서체(SF Mono·Cascadia)를 먼저 쓰고 한글은 D2Coding으로 떨어집니다. 앱에서 아래 두 스타일시트를 직접 불러오세요.
 
 [contract:install.fonts.snippet-matches-app]: #
 아래 두 줄은 Pretendard(v1.3.9)와 D2Coding을 불러옵니다. 두 스타일시트 주소는 모두 버전을 고정합니다. D2Coding 저장소에는 release tag가 없어서 커밋으로 고정하고, 그 스타일시트가 가리키는 글꼴 파일은 저장소의 기본 브랜치를 따릅니다.
@@ -118,4 +118,10 @@ const ThemeToggle = () => {
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fonts-archive/D2Coding@5ac6fc6fada70f1d8a8561cec826722574c51a6e/D2Coding.css" />
 ```
 
-폰트를 안 불러와도 시스템 폰트로 정상 동작합니다. 서체는 권장이지 필수가 아닙니다. 표의 숫자 열은 mono가 아니라 sans에 `tabular-nums`로 자리만 맞춥니다 — 등폭은 코드·토큰 같은 기술적인 자리에만 씁니다.
+[contract:install.fonts.stylesheets]: #
+두 주소는 패키지가 `FONT_STYLESHEETS`(`@studio-baeks/paper-ui/tokens`)로 공개하는 값과 같습니다. 이 사이트도 페이지에 정확히 이 두 스타일시트만 불러옵니다.
+
+[contract:install.fonts.geometry-without-font]: #
+서체를 불러오지 않으면 굵기 사다리가 접힙니다. Windows(Segoe UI·맑은 고딕)에서는 450·500이 400으로, 600·650이 700으로 접히고, Android(Roboto)에서는 450이 500으로, 600·650이 700으로 접힙니다. macOS는 대부분의 단계를 유지합니다. 행간이 px 고정값이라 접혀도 컨트롤의 높이와 안쪽 여백은 그대로이고, 글자의 굵기 차이만 줄어듭니다. 한글 mono는 D2Coding이 없으면 시스템 CJK 글꼴로 떨어집니다.
+
+표의 숫자 열은 mono가 아니라 sans에 `tabular-nums`로 자리만 맞춥니다 — 등폭은 코드·토큰 같은 기술적인 자리에만 씁니다.

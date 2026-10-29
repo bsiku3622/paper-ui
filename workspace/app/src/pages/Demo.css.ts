@@ -2,11 +2,14 @@ import { style, globalStyle } from "@vanilla-extract/css";
 import { tokens } from "@studio-baeks/paper-ui/tokens";
 
 export const app = style({ minHeight: "100vh", background: tokens.color.bg.canvas, color: tokens.color.ink.primary });
+const compact = `screen and (max-width: ${tokens.layout.breakpoint.sm})`;
 export const topbar = style({ height: 58, display: "flex", alignItems: "center", justifyContent: "space-between", padding: `0 ${tokens.shape.inset.xl}`, borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`, background: tokens.color.bg.raised });
 export const brand = style({ gap: tokens.layout.gap.sm });
 export const brandMark = style({ width: tokens.shape.control.height.sm, height: tokens.shape.control.height.sm, display: "grid", placeItems: "center", borderRadius: tokens.shape.radius.control, background: tokens.color.ink.primary, color: tokens.color.bg.raised });
-export const topActions = style({ gap: tokens.layout.gap.sm });
-export const search = style({ width: 245 });
+export const topActions = style({ gap: tokens.layout.gap.sm, "@media": { [compact]: { flex: "1 1 auto", minWidth: 0, justifyContent: "flex-end" } } });
+export const search = style({ width: 245, "@media": { [compact]: { width: "auto", flex: "1 1 auto", minWidth: 0 } } });
+// The workspace name and the divider before it give way to the search on a narrow topbar.
+export const workspaceLabel = style({ "@media": { [compact]: { display: "none" } } });
 export const filterSearch = style({ width: 190 });
 export const layout = style({ display: "grid", gridTemplateColumns: "218px minmax(0,1fr) 260px", gap: tokens.layout.gap.xl, maxWidth: 1540, margin: "0 auto", padding: tokens.shape.inset.xl, alignItems: "start", "@media": { "(max-width: 1180px)": { gridTemplateColumns: "190px minmax(0,1fr)" }, "(max-width: 900px)": { gridTemplateColumns: "1fr", padding: tokens.shape.inset.lg } } });
 export const sidebar = style({ position: "sticky", top: tokens.shape.inset.xl, display: "flex", flexDirection: "column", gap: tokens.layout.gap.xl, padding: `${tokens.shape.inset.sm} ${tokens.shape.inset.xs}`, "@media": { "(max-width: 900px)": { position: "static", display: "none" } } });
@@ -36,6 +39,5 @@ export const agenda = style({ marginTop: tokens.layout.gap.md });
 export const agendaItem = style({ alignItems: "start", gap: tokens.layout.gap.md, paddingTop: tokens.shape.inset.sm, borderTop: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` });
 export const activity = style({ display: "flex", flexDirection: "column", gap: tokens.layout.gap.md });
 export const milestoneProgress = style({ height: 6, overflow: "hidden", borderRadius: tokens.shape.radius.full, background: tokens.color.control.track });
-export const milestoneNote = style({ wordBreak: "keep-all" });
 export const milestoneFill = style({ display: "block", height: "100%", borderRadius: tokens.shape.radius.full, background: tokens.color.accent.warning.solid });
 export const toast = style({ position: "fixed", left: "50%", bottom: tokens.layout.gap.xl, transform: "translateX(-50%)", display: "flex", alignItems: "center", gap: tokens.layout.gap.sm, padding: `${tokens.shape.inset.sm} ${tokens.shape.inset.md}`, border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`, borderRadius: tokens.shape.radius.surface.md, background: tokens.color.bg.raised, boxShadow: tokens.layout.elevation.toast.shadow, zIndex: tokens.layout.elevation.toast.z });

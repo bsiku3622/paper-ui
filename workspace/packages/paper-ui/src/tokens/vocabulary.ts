@@ -11,8 +11,8 @@ export type { ColorMode, ThemePreference, BoxTheme } from "./color-modes";
 export { VARIANTS, SELECTABLE_VARIANTS } from "./color-recipes";
 export type { Variant, SelectableVariant } from "./color-recipes";
 
-export { TEXT_VARIANTS, TEXT_FAMILIES, CONTROL_SIZES, CONTROL_PRESETS } from "./typography";
-export type { TextVariant, TextFamily, ControlSize, ControlPreset } from "./typography";
+export { TEXT_VARIANTS, TEXT_FAMILIES, CONTROL_SIZES, CONTROL_FONT_SIZES, CONTROL_PRESETS, EMPHASES } from "./typography";
+export type { TextVariant, TextFamily, ControlSize, ControlFontSize, ControlPreset, Emphasis } from "./typography";
 
 export { SPACES, DIMENSIONS, MEASURES, ICON_SIZES, CONTROL_SHAPES } from "./shape";
 export type { Space, Dimension, Measure, IconSize, ControlShape } from "./shape";

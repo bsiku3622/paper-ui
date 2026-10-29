@@ -7,7 +7,7 @@ import { TYPOGRAPHY_SOURCE } from "../../../../packages/paper-ui/src/tokens/typo
 import { GROUPS, ROLE_NOTES, formatPalettePath, hexAt, rolesOf, selectionAt } from "./color-roles";
 import { leafPaths } from "./paths";
 import { TARGET_NOTES } from "./shape-roles";
-import { PRESET_NOTES, PRESET_PATHS, SIZE_LEADING } from "./typography-roles";
+import { CODE_SCALE_NOTES, PRESET_NOTES, PRESET_PATHS, SIZE_LEADING } from "./typography-roles";
 
 const NON_ACCENT = Object.fromEntries(Object.entries(COLOR_SELECTION.light).filter(([branch]) => branch !== "accent")) as Omit<typeof COLOR_SELECTION.light, "accent">;
 const THEMES = ["light", "dark"] as const;
@@ -50,14 +50,19 @@ describe("Color inspector", () => {
 });
 
 describe("Typography inspector", () => {
-  it("pairs every font size with a leading", () => {
+  it("pairs every font size with a leading, the fluid step with its own", () => {
     for (const size of Object.keys(TYPOGRAPHY_SOURCE.fontSize)) {
       expect(Object.keys(TYPOGRAPHY_SOURCE.leading), size).toContain(SIZE_LEADING[size as keyof typeof SIZE_LEADING]);
     }
+    for (const size of Object.keys(TYPOGRAPHY_SOURCE.fluid)) expect(SIZE_LEADING[size as keyof typeof SIZE_LEADING], size).toBe(size);
+  });
+
+  it("notes every code scale the source has", () => {
+    expect(Object.keys(CODE_SCALE_NOTES)).toEqual(Object.keys(TYPOGRAPHY_SOURCE.codeScale));
   });
 
   it("lists every preset once and notes each", () => {
-    expect(PRESET_PATHS).toEqual(["button.regular", "button.strong", "field", "textarea", "badge"]);
+    expect(PRESET_PATHS).toEqual(["button.medium", "button.strong", "field", "textarea", "badge"]);
     expect(Object.keys(PRESET_NOTES).sort()).toEqual([...PRESET_PATHS].sort());
   });
 });
