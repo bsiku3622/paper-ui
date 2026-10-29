@@ -122,8 +122,11 @@ and nothing else.
 The package stops at primitives and atoms. Product-specific compositions belong
 to the consuming app, where their structure and lifecycle can follow the product.
 Atoms render their own semantic elements; primitives provide layout and text.
-`Box` also exposes typed dimension and overflow props; named `xs`–`xl` values resolve
-to layout tokens, while CSS lengths remain available for application-specific layout.
+`Box` also exposes typed dimension and overflow props; a named size (`md`, `measure.md`,
+`container.content`, `full`) and an overflow keyword become classes, so a consumer's
+className can override them, and only a CSS length that is not a name goes inline.
+Stack, Inline and Grid, not Box, take the `gap` family and share one `align` / `justify`
+vocabulary.
 
 ## How it decides
 

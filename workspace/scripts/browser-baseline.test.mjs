@@ -28,6 +28,8 @@ test("[install.browsers.baseline] the declared floor supports every required CSS
     "@media (prefers-color-scheme: dark){:root:not([data-pui-theme]){color-scheme:dark}}",
     ".f{overflow-wrap:anywhere}:root{--pui-typography-palette-font-size-hero:clamp(2.25rem, 6vw, 3.75rem)}",
     "@media (prefers-contrast: more){:root{--pui-color-border-base:#000}}",
+    ".g{overflow-x:clip}",
+    ".h{min-width:fit-content}.i{height:max-content}",
   ].join("");
   const result = checkStylesheet(css, floor);
   assert.deepEqual(result.used, FEATURES.map(({ name }) => name));
@@ -35,6 +37,10 @@ test("[install.browsers.baseline] the declared floor supports every required CSS
 
   // Look-alikes are not features: the color-scheme property inside its media query's name, an inset shadow, translate() and a round cap.
   assert.deepEqual(checkStylesheet("@media (prefers-color-scheme: dark){.a{box-shadow:inset 0 0 0 1px;transform:translateY(1px);stroke-linecap:round}}", floor).used, ["prefers-color-scheme"]);
+  // Hidden overflow and the clip margin are not the clip keyword.
+  assert.deepEqual(checkStylesheet(".a{overflow:hidden;overflow-clip-margin:2px}", floor).used, []);
+  // Grid track sizing takes the same words but is not a box size.
+  assert.deepEqual(checkStylesheet(".a{grid-template-columns:min-content 1fr;grid-auto-rows:max-content}", floor).used, []);
 
   // A floor below a required feature fails the check.
   assert.deepEqual(checkStylesheet(".a:has(b){}", { ...floor, firefox: "120" }).failures, [{ name: ":has()", missing: ["firefox"] }]);

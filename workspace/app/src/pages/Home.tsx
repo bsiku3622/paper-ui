@@ -134,7 +134,7 @@ export const Home = () => (
     <SiteNav />
 
     <Box paddingX="xl">
-      <Box style={{ maxWidth: tokens.layout.container.content, marginInline: "auto", width: "100%" }}>
+      <Box data-testid="home-column" maxWidth="container.content" width="full" style={{ marginInline: "auto" }}>
         {/* ── Hero ─────────────────────────────────────────────── */}
         <div className="home-hero">
           <Inline gap="sm" align="center" style={{ marginBottom: tokens.layout.gap.lg }}>

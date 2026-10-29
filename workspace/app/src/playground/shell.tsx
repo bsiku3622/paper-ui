@@ -39,7 +39,7 @@ const SectionLinks = ({ section, value }: { section: PlaygroundSection; value: s
 export const PlaygroundLayout = ({ value, children }: { value: string; children: ReactNode }) => (
   <Stack>
     <SiteNav />
-    <Box style={{ display: "grid", gridTemplateColumns: `${tokens.shape.dimension.width.lg} 1fr`, maxWidth: tokens.layout.container.content, marginInline: "auto", width: "100%" }}>
+    <Box maxWidth="container.content" width="full" style={{ display: "grid", gridTemplateColumns: `${tokens.shape.dimension.width.lg} 1fr`, marginInline: "auto" }}>
       <Box as="nav" aria-label="플레이그라운드" style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, maxHeight: `calc(100dvh - ${NAV_HEIGHT})`, overflowY: "auto", top: NAV_HEIGHT, position: "sticky", alignSelf: "start", padding: tokens.shape.inset.lg, borderRight: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
         {/* Foundations → Primitives → Atoms: the order the system is built in, as the site map lists it. */}
         <Stack gap="lg">

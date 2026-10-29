@@ -8,10 +8,11 @@ import { createRoot } from "react-dom/client";
 import { CASE_NAMES, type CaseName } from "./case-names.js";
 import { GeometryCase } from "./cases/geometry.js";
 import { LayersCase } from "./cases/layers.js";
+import { LayoutCase } from "./cases/layout.js";
 import { ThemeCase } from "./cases/theme.js";
 import { TypographyCase } from "./cases/typography.js";
 
-const CASES: Record<CaseName, ComponentType> = { geometry: GeometryCase, theme: ThemeCase, layers: LayersCase, typography: TypographyCase };
+const CASES: Record<CaseName, ComponentType> = { geometry: GeometryCase, theme: ThemeCase, layers: LayersCase, layout: LayoutCase, typography: TypographyCase };
 
 const isCase = (name: string | null): name is CaseName => CASE_NAMES.some((known) => known === name);
 

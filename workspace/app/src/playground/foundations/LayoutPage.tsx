@@ -2,7 +2,7 @@ import { Text, useResolvedTheme } from "@studio-baeks/paper-ui";
 import { tokens, BREAKPOINTS, ELEVATIONS, SPACES, type Depth, type Elevation } from "@studio-baeks/paper-ui/tokens";
 
 import { LAYOUT_SOURCE } from "../../../../packages/paper-ui/src/tokens/layout";
-import { Board, BoardGroup, BoardRow, Cell, FoundationSection, Meter, TokenCell, ValueCell, resolved } from "./kit";
+import { Board, BoardGroup, BoardRow, Cell, FoundationSection, Meter, TokenCell, ValueCell, mediaValue, resolved } from "./kit";
 import * as s from "./foundations.css";
 
 const layout = tokens.layout;
@@ -46,7 +46,7 @@ export const LayoutPage = () => {
               <BoardRow key={name}>
                 <TokenCell name={`layout.breakpoint.${name}`} />
                 <Meter value={LAYOUT_SOURCE.breakpoint[name]} max={maxBreakpoint} />
-                <ValueCell>{layout.breakpoint[name]}</ValueCell>
+                <ValueCell>{mediaValue(layout.breakpoint[name])}</ValueCell>
               </BoardRow>
             ))}
           </BoardGroup>

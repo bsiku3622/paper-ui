@@ -7,7 +7,7 @@ import { spaceClass } from "../styles/space.css";
 import { controlFontSizeClass, presetClass, textMonoClass, textNumericClass, textRoleClass } from "../styles/typography.css";
 import { ACCENTS, CONTROL_FONT_SIZES, CONTROL_PRESETS, CONTROL_SIZES, INKS, SPACES, SURFACES, TEXT_VARIANTS, VARIANTS } from "../tokens";
 import { TEXT_INK } from "../tokens/typography";
-import { BOX_STYLE, BOX_STYLE_KEYS, resolveAccent, resolveBoxClass, resolveControlFontSize, resolveInk, resolvePreset, resolveSpace, resolveSurface, resolveText } from "./index";
+import { BOX_STYLE, BOX_STYLE_KEYS, resolveAccent, resolveBoxClass, resolveControlFontSize, resolveGap, resolveInk, resolvePreset, resolveSpace, resolveSurface, resolveText } from "./index";
 
 const distinct = (classes: readonly string[]) => new Set(classes).size === classes.length && classes.every(Boolean);
 
@@ -106,11 +106,19 @@ describe("resolveSpace", () => {
   });
 });
 
+describe("resolveGap", () => {
+  it("joins the gap family from one map and gives a class only to the names it was given", () => {
+    expect(resolveGap({ gap: "md", rowGap: "lg", columnGap: "xs" })).toBe([spaceClass.gap.md, spaceClass.rowGap.lg, spaceClass.columnGap.xs].join(" "));
+    expect(resolveGap({ columnGap: "sm" })).toBe(spaceClass.columnGap.sm);
+    expect(resolveGap({})).toBe("");
+  });
+});
+
 describe("resolveBoxClass", () => {
   it("joins the surface and the space classes in BOX_STYLE_KEYS order — Box has no ink", () => {
-    expect(BOX_STYLE_KEYS).toEqual(["surface", "padding", "paddingX", "paddingY", "gap"]);
-    expect(resolveBoxClass({ gap: "sm", padding: "md", surface: "sunken" })).toBe(
-      [surfaceClass.sunken, spaceClass.padding.md, spaceClass.gap.sm].join(" "),
+    expect(BOX_STYLE_KEYS).toEqual(["surface", "padding", "paddingX", "paddingY"]);
+    expect(resolveBoxClass({ paddingX: "sm", padding: "md", surface: "sunken" })).toBe(
+      [surfaceClass.sunken, spaceClass.padding.md, spaceClass.paddingX.sm].join(" "),
     );
     expect(resolveBoxClass({ paddingX: "lg", paddingY: "xs" })).toBe([spaceClass.paddingX.lg, spaceClass.paddingY.xs].join(" "));
   });

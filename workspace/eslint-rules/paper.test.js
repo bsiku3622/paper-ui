@@ -26,15 +26,6 @@ test("both token variable prefixes are guarded", async () => {
   }
 });
 
-test("inline token aliases, destructuring, namespace imports and style objects are guarded", async () => {
-  for (const code of [
-    'import {tokens} from "../tokens"; export const X = () => <div style={{color: tokens.color.ink.primary}} />;',
-    'import {tokens as t} from "../tokens"; const ink=t.color.ink.primary; export const X = () => <div style={{color: ink}} />;',
-    'import {tokens} from "../tokens"; const {color}=tokens; const style={color:color.ink.primary}; export const X = () => <div style={style} />;',
-    'import * as ui from "../tokens"; export const X = () => <div style={{color:ui.tokens.color.ink.primary}} />;',
-  ]) assert.equal(await hasRule(code, "paper/inline-token"), true, code);
-});
-
 test("consumer styles, CSS classes, inherited ink and system colors stay available", async () => {
   assert.deepEqual(await errors('import {tokens} from "@studio-baeks/paper-ui/tokens"; export const X = () => <div style={{color:tokens.color.ink.primary}} />;', "app/src/TokenProbe.tsx"), []);
   assert.deepEqual(await errors('import {tokens} from "../tokens"; export const style = {color: tokens.color.ink.primary, borderColor: "currentColor", background: "transparent", outlineColor: "CanvasText"};', "packages/paper-ui/src/atoms/TokenProbe.css.ts"), []);

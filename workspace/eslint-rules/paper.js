@@ -1,3 +1,5 @@
+import path from "node:path";
+
 const rawColor = /(?:#|%23)(?:[\da-f]{8}|[\da-f]{6}|[\da-f]{4}|[\da-f]{3})\b|\b(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color|color-mix)\s*\(/i;
 const manualVar = /var\(\s*--(?:pui|paper)-/;
 const colorProperty = /^(?:color|background|backgroundColor|border(?:Top|Right|Bottom|Left|Inline|Block|InlineStart|InlineEnd)?(?:Color)?|outline(?:Color)?|boxShadow|textShadow|fill|stroke|caretColor|accentColor|textDecorationColor)$/;
@@ -26,36 +28,83 @@ const rawColorRule = {
   },
 };
 
+// A package .ts/.tsx file never hands a token to `style`: a token is applied by a `.css.ts` className. The rule
+// reports a JSX `style` attribute, or an object property keyed `style`, whose value reaches a binding imported
+// from the token layer (src/tokens), the stylesheets (src/styles), the internals (src/internal) or the package
+// itself. "Reaches" follows what the value is made of: a declarator's initialiser and destructuring, a variable's
+// later assignments, member chains, a call's callee and arguments, the bodies of the functions it holds, and
+// conditional, logical, binary, template, spread and TypeScript-wrapper nodes. No call is opaque and no name is
+// listed. The declared runtime modules (the `runtime` option, each with its reason) are untracked: what they
+// compute is a value of the moment — an anchored position, an Aria press style, a carried source variable.
+const TRACKED_DIRECTORIES = ["tokens", "styles", "internal"];
+const PACKAGE_IMPORT = /^@studio-baeks\/paper-ui/;
+const SOURCE_ROOT = /^(.*[\\/]packages[\\/]paper-ui[\\/]src)[\\/]/;
+const TYPE_WRAPPERS = new Set(["TSAsExpression", "TSSatisfiesExpression", "TSNonNullExpression", "TSTypeAssertion", "TSInstantiationExpression"]);
+
+const modulePath = (entry) => entry.replace(/\/\*\*$/, "").replace(/(?:\.css)?\.tsx?$/, "");
+
 const inlineTokenRule = {
-  meta: { type: "problem", schema: [], messages: { inline: "Package 토큰은 inline style 대신 .css.ts className으로 적용하세요." } },
+  meta: {
+    type: "problem",
+    schema: [{ type: "object", properties: { runtime: { type: "object", additionalProperties: { type: "string", minLength: 1 } } }, additionalProperties: false }],
+    messages: { inline: "Package 토큰은 inline style 대신 .css.ts className으로 적용하세요." },
+  },
   create(context) {
     const source = context.sourceCode;
-    const containsToken = (node, seen = new Set()) => {
+    const root = SOURCE_ROOT.exec(context.filename)?.[1];
+    const runtime = Object.keys(context.options[0]?.runtime ?? {}).map(modulePath);
+
+    const isTracked = (specifier) => {
+      if (PACKAGE_IMPORT.test(specifier)) return true;
+      if (!root || !specifier.startsWith(".")) return false;
+      const inside = path.relative(root, path.resolve(path.dirname(context.filename), specifier)).split(path.sep).join("/");
+      if (inside.startsWith("..") || !TRACKED_DIRECTORIES.includes(inside.split("/")[0])) return false;
+      return !runtime.some((module) => inside === module || inside.startsWith(`${module}/`));
+    };
+
+    const reaches = (node, seen = new Set()) => {
       if (!node || seen.has(node)) return false;
       seen.add(node);
-      if (node.type === "Identifier") {
-        let scope = source.getScope(node);
-        while (scope && !scope.set.has(node.name)) scope = scope.upper;
-        const variable = scope?.set.get(node.name);
-        return variable?.defs.some((def) => {
-          if (def.type === "ImportBinding") return ["tokens", "geometry"].includes(def.node.imported?.name)
-            || (def.node.type === "ImportNamespaceSpecifier" && /(?:tokens|internal\/shape|@studio-baeks\/paper-ui)$/.test(def.parent.source.value));
-          return def.type === "Variable" && containsToken(def.node.init, seen);
-        }) ?? false;
-      }
-      if (node.type === "MemberExpression") return containsToken(node.object, seen);
-      // Calls are intentionally opaque: Box's dimension resolver is a public layout escape.
-      if (node.type === "CallExpression") return false;
+      if (node.type === "Identifier") return identifierReaches(node, seen);
+      if (TYPE_WRAPPERS.has(node.type)) return reaches(node.expression, seen);
+      if (node.type.startsWith("TS")) return false;
       return (source.visitorKeys[node.type] ?? []).some((key) => {
+        if (((key === "key" && node.type === "Property") || (key === "property" && node.type === "MemberExpression")) && !node.computed) return false;
         const children = node[key];
-        return Array.isArray(children) ? children.some((child) => containsToken(child, seen)) : containsToken(children, seen);
+        return Array.isArray(children) ? children.some((child) => reaches(child, seen)) : reaches(children, seen);
       });
     };
-    return { JSXAttribute(node) {
-      if (node.name.name === "style" && node.value?.type === "JSXExpressionContainer" && containsToken(node.value.expression)) {
-        context.report({ node, messageId: "inline" });
-      }
-    } };
+
+    const identifierReaches = (identifier, seen) => {
+      let scope = source.getScope(identifier);
+      while (scope && !scope.set.has(identifier.name)) scope = scope.upper;
+      const variable = scope?.set.get(identifier.name);
+      if (!variable) return false;
+      const defined = variable.defs.some((def) => {
+        if (def.type === "ImportBinding") return def.parent.importKind !== "type" && def.node.importKind !== "type" && isTracked(def.parent.source.value);
+        if (def.type === "Variable") return reaches(def.node.init, seen);
+        if (def.type === "FunctionName") return reaches(def.node.body, seen);
+        return false;
+      });
+      if (defined) return true;
+      // Later assignments: `value = tokens.x` and `value.color = tokens.x`.
+      return variable.references.some((reference) => {
+        if (reference.writeExpr) return reaches(reference.writeExpr, seen);
+        const member = reference.identifier.parent;
+        const assignment = member?.type === "MemberExpression" ? member.parent : undefined;
+        return assignment?.type === "AssignmentExpression" && assignment.left === member && reaches(assignment.right, seen);
+      });
+    };
+
+    const check = (node, value) => { if (reaches(value)) context.report({ node, messageId: "inline" }); };
+    return {
+      JSXAttribute(node) {
+        if (node.name.name === "style" && node.value?.type === "JSXExpressionContainer") check(node, node.value.expression);
+      },
+      Property(node) {
+        if (node.parent.type === "ObjectExpression" && !node.computed && (node.key.name ?? node.key.value) === "style") check(node, node.value);
+      },
+    };
   },
 };
 

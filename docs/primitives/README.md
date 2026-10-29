@@ -26,7 +26,10 @@ Box · Stack · Inline · Grid · Text · Hoverable은 `as`로 렌더 대상을 
 
 Hoverable은 button 역할이나 Tab 정지를 자동으로 붙이지 않습니다. 행동의 의미에 맞는 native 요소와 접근성 이름은 쓰는 쪽이 고릅니다.
 
-입력·포커스·보조 기술의 이벤트 처리는 React Aria에 위임하고, Paper가 공개 API와 상태 연결을 소유합니다. 패키지 스타일은 CSS class로 적용합니다. Grid track이나 드래그 좌표처럼 실행 중에 정해지는 값만 runtime style을 씁니다.
+[contract:primitives.polymorphic.own-props-win]: #
+`as`로 고른 요소의 native 속성 가운데 Primitive 자신의 prop과 이름이 겹치는 것은 타입에서 빠지고 자신의 prop이 이깁니다. `<Inline as="td" align="start">`의 `align`은 td의 native `align`이 아니라 Inline의 `align`입니다. Text는 `as`를 주지 않아도 variant가 그리는 태그(`label`은 span, `heading`은 h2)의 타입으로 ref를 받습니다.
+
+입력·포커스·보조 기술의 이벤트 처리는 React Aria에 위임하고, Paper가 공개 API와 상태 연결을 소유합니다. 패키지 스타일은 CSS class로 적용하고 토큰을 inline style로 넘기지 않습니다. 실행 중에 정해지는 값만 runtime style을 씁니다: Draggable 이동 좌표, Grid track, Overlay 층 깊이 변수, Overlay 앵커 위치, Overlay 원본 변수 운반, 호출자가 넘긴 style.
 
 ## 테마 도구
 

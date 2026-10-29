@@ -156,11 +156,21 @@ export default [
   },
 
   // ── 규칙 3 — inline style 로 토큰 주입 금지 ─────────────────────────────
+  // 패키지의 .ts/.tsx 는 토큰·internal·styles 에서 온 값을 `style` 로 넘기지 않는다. 아래 모듈은 실행 중에 정해지는
+  // 값(위치·눌림 style·원본 변수 운반)을 만들어 규칙이 따라가지 않는다 — 이유를 함께 적는다.
   {
-    files: ["packages/paper-ui/src/**/*.tsx"],
-    ignores: ["**/*.test.tsx"],
+    files: ["packages/paper-ui/src/**/*.{ts,tsx}"],
+    ignores: ["**/*.test.{ts,tsx}", "**/*.css.ts"],
     plugins: { paper },
-    rules: { "paper/inline-token": "error" },
+    rules: {
+      "paper/inline-token": ["error", {
+        runtime: {
+          "internal/aria/**": "anchored position and Aria press styles",
+          "internal/measure.ts": "measured lengths of the moment",
+          "theme/source-carry.ts": "the Overlay's opener source carry",
+        },
+      }],
+    },
   },
 
   // ── 규칙 4 — 길이는 token source에만 ─────────────────────────────────────

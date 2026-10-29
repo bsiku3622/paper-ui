@@ -18,8 +18,7 @@ export type Source =
   | { kind: "vocabulary"; name: VocabularyName }
   | { kind: "subset"; name: VocabularyName; reason: string }
   | { kind: "local"; reason: string }
-  | { kind: "sample"; reason: string }
-  | { kind: "pending"; stage: string; becomes: string };
+  | { kind: "sample"; reason: string };
 
 export type OptionSet<T extends string = string> = { options: readonly T[]; source: Source };
 
@@ -42,11 +41,6 @@ export const local =
   ): OptionSet<T[number]> => ({ options, source: { kind: "local", reason } });
 // Some values of a prop whose type is open-ended (a track list, any tag, any input type).
 export const sample = <const T extends readonly string[]>(options: T, reason: string): OptionSet<T[number]> => ({ options, source: { kind: "sample", reason } });
-// A hand list until the stage that adds its vocabulary constant; registry.test fails on it from S13.
-export const pending = <const T extends readonly string[]>(options: T, stage: string, becomes: string): OptionSet<T[number]> => ({
-  options,
-  source: { kind: "pending", stage, becomes },
-});
 
 type ControlBase = {
   // The key in the page's state. It is the prop name unless a control binds something else.
@@ -60,6 +54,9 @@ type ControlBase = {
   behaviorOnly?: string;
   // Set when the omitted prop takes its value from another prop, so naming that value changes nothing; says why.
   derived?: string;
+  // The value the component's root already holds when the prop is omitted. The select names it as the default,
+  // but it is not a `defaults` entry: stating it would add a class the root has no need of.
+  rootDefault?: string;
 };
 
 export type Control = ControlBase &
@@ -69,7 +66,7 @@ export type Control = ControlBase &
     | { kind: "text"; initial: string; bind: "children" | "attribute" }
   );
 
-type Extra = { key?: string; label?: string; target?: string; behaviorOnly?: string; derived?: string };
+type Extra = { key?: string; label?: string; target?: string; behaviorOnly?: string; derived?: string; rootDefault?: string };
 
 const base = (prop: string, extra: Extra): ControlBase => ({
   key: extra.key ?? prop,
@@ -78,13 +75,14 @@ const base = (prop: string, extra: Extra): ControlBase => ({
   ...(extra.target ? { target: extra.target } : {}),
   ...(extra.behaviorOnly ? { behaviorOnly: extra.behaviorOnly } : {}),
   ...(extra.derived ? { derived: extra.derived } : {}),
+  ...(extra.rootDefault ? { rootDefault: extra.rootDefault } : {}),
 });
 
 // Types the options against the prop: a value the prop does not accept fails typecheck.
 export const enumControl = <P, K extends keyof P & string>(
   prop: K,
   set: OptionSet<Extract<NonNullable<P[K]>, string>>,
-  extra: Extra & { initial?: Extract<NonNullable<P[K]>, string>; labels?: Partial<Record<Extract<NonNullable<P[K]>, string>, string>>; required?: true } = {},
+  extra: Extra & { initial?: Extract<NonNullable<P[K]>, string>; rootDefault?: Extract<NonNullable<P[K]>, string>; labels?: Partial<Record<Extract<NonNullable<P[K]>, string>, string>>; required?: true } = {},
 ): Control => ({
   ...base(prop, extra),
   kind: "enum",

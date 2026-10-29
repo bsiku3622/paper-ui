@@ -64,6 +64,9 @@ export const SHAPE_SOURCE = {
 
 export const SPACES = keys(SHAPE_SOURCE.space);
 export type Space = keyof typeof SHAPE_SOURCE.space;
+// The corners a Box takes: the surface family, and the pill.
+export const BOX_RADII = [...keys(SHAPE_SOURCE.radius.surface), "full"] as const;
+export type BoxRadius = (typeof BOX_RADII)[number];
 export const MEASURES = keys(SHAPE_SOURCE.measure);
 export type Measure = keyof typeof SHAPE_SOURCE.measure;
 export const ICON_SIZES = keys(SHAPE_SOURCE.icon);

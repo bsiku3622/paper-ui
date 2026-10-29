@@ -88,7 +88,7 @@ Box의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값이 
 | `dimension.height` | xs ~ xl | 64 · 96 · 144 · 216 · 320 |
 | `measure` | xs ~ xl | 448 · 512 · 608 · 672 · 736 (28 ~ 46rem) |
 
-아이콘 artboard의 이름은 Text 역할 이름의 부분집합이라 타입으로 묶여 있고, 그 역할의 글자 옆에 놓는 크기를 뜻합니다. 컨트롤 안의 아이콘은 이 이름이 아니라 `control.icon`을 따릅니다. `dimension`은 Box의 `width="md"` 같은 이름 있는 크기이고, `measure`는 글 덩어리의 읽기 폭입니다.
+아이콘 artboard의 이름은 Text 역할 이름의 부분집합이라 타입으로 묶여 있고, 그 역할의 글자 옆에 놓는 크기를 뜻합니다. 컨트롤 안의 아이콘은 이 이름이 아니라 `control.icon`을 따릅니다. `dimension`은 Box의 `width="md"` 같은 이름 있는 크기이고, `measure`는 글 덩어리의 읽기 폭이라 Box에서는 `maxWidth="measure.md"`로 고릅니다. 이름 있는 크기는 모두 class가 됩니다.
 
 ## Target
 

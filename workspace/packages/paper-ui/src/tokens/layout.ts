@@ -14,7 +14,7 @@
 
 import { COLOR_MODES, type ColorMode } from "./color-modes";
 import { COLOR, type Depth } from "./colors";
-import { buildVarTree, keys, lengths, pathToVarRef, px } from "./helpers";
+import { buildVarTree, keys, lengths, mediaEm, pathToVarRef, px } from "./helpers";
 import { SPACE } from "./shape";
 
 export const ELEVATIONS = ["base", "raised", "sticky", "overlay", "modal", "toast"] as const;
@@ -24,6 +24,9 @@ type ShadowLayer = readonly [x: number, y: number, blur: number, spread: number]
 export const LAYOUT_SOURCE = {
   container: { content: 1152 },
   breakpoint: { sm: 480, md: 768, lg: 1024, xl: 1280 },
+  // A page section opens and closes with a distance that follows the viewport height (vh of it), held
+  // between two steps of the space scale. The one fluid distance; every other gap is fixed.
+  section: { start: { vh: 8, maxRatio: 2 }, end: { vh: 5 } },
   // One elevation decides how a layer stacks and whether it casts a shadow — only what floats
   // has one. Tiers sit 10 apart so a layer can nudge within its tier without crossing the next.
   elevation: {
@@ -45,6 +48,16 @@ export const BREAKPOINTS = keys(LAYOUT_SOURCE.breakpoint);
 export type Breakpoint = keyof typeof LAYOUT_SOURCE.breakpoint;
 export const CONTAINERS = keys(LAYOUT_SOURCE.container);
 export type Container = keyof typeof LAYOUT_SOURCE.container;
+
+// How a container places its children. Align is the cross axis (align-items); Justify distributes along
+// the main axis of a flex line or a grid's tracks (justify-content); a grid's JustifyItem places each item in
+// its own cell (justify-items).
+export const ALIGNS = ["start", "center", "end", "stretch", "baseline"] as const;
+export type Align = (typeof ALIGNS)[number];
+export const JUSTIFIES = ["start", "center", "end", "between"] as const;
+export type Justify = (typeof JUSTIFIES)[number];
+export const JUSTIFY_ITEMS = ["start", "center", "end", "stretch"] as const;
+export type JustifyItem = (typeof JUSTIFY_ITEMS)[number];
 
 // The two directions a line or a list can run.
 export const ORIENTATIONS = ["horizontal", "vertical"] as const;
@@ -74,14 +87,20 @@ export const castShadow = (depth: Depth): string =>
     .join(", ");
 
 const source = buildVarTree(LAYOUT_VALUES, ["layout"]);
+const { section } = LAYOUT_SOURCE;
 
 export const LAYOUT = {
   gap: SPACE,
   // The distance between the page edge and its content.
   gutter: SPACE.lg,
   container: source.container,
-  // Media queries cannot read variables, so breakpoints are values.
-  breakpoint: lengths(LAYOUT_SOURCE.breakpoint, px),
+  // Media queries cannot read variables, so breakpoints are values, in em of the default root font.
+  breakpoint: lengths(LAYOUT_SOURCE.breakpoint, mediaEm),
+  // Formulas over the space scale, evaluated where a section uses them.
+  section: {
+    start: `clamp(${SPACE["3xl"]}, ${section.start.vh}vh, calc(${SPACE["3xl"]} * ${section.start.maxRatio}))`,
+    end: `clamp(${SPACE["2xl"]}, ${section.end.vh}vh, ${SPACE["3xl"]})`,
+  },
   elevation: Object.fromEntries(ELEVATIONS.map((level) => {
     const { depth } = LAYOUT_SOURCE.elevation[level];
     return [level, { z: source.elevation[level].z, shadow: depth ? castShadow(depth) : "none" }];

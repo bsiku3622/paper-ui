@@ -18,6 +18,9 @@ test("[install.layers.app-css-wins] app CSS linked before the package beats its 
   const consumerField = page.getByTestId("consumer-field");
   await consumerField.hover();
   await expect(consumerField).toHaveCSS("border-top-color", "rgb(255, 0, 128)");
+  // A named Box size is a class, so the app's own width replaces it, while the twin keeps the named one.
+  await expect(page.getByTestId("consumer-box")).toHaveCSS("width", "123px");
+  await expect(page.getByTestId("package-box")).not.toHaveCSS("width", "123px");
 });
 
 test("[install.layers.every-rule-layered] every package rule sits in a pui sublayer; only @keyframes and @property stand outside", async ({ page }) => {

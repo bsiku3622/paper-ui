@@ -3,7 +3,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { INVENTORY, PRIMITIVE_GROUPS } from "../../packages/paper-ui/src/inventory";
 import { FOUNDATIONS } from "../../app/src/site/site-core";
 import { COLOR_VALUES_BY_MODE } from "../../packages/paper-ui/src/tokens/colors";
-import { BOX_THEMES, ICON_SIZES, SPACES } from "../../packages/paper-ui/src/tokens/vocabulary";
+import { ALIGNS, BOX_RADII, BOX_THEMES, ICON_SIZES, JUSTIFIES, JUSTIFY_ITEMS, SPACES } from "../../packages/paper-ui/src/tokens/vocabulary";
 import { pageErrors } from "../support/console";
 import { openPlayground } from "../support/harness";
 
@@ -77,13 +77,32 @@ test("the knobs that props already had now have controls", async ({ page }) => {
   await expect(control(page, "orientation")).toBeVisible();
   await expect(control(page, "level")).toBeVisible();
   await openPlayground(page, "box", "Box");
-  for (const axis of ["surface", "theme", "elevation", "radius", "padding", "paddingX", "paddingY", "gap", "width", "minWidth", "maxWidth", "height", "minHeight", "maxHeight", "overflow", "overflowX", "overflowY"]) {
+  for (const axis of ["surface", "theme", "elevation", "radius", "padding", "paddingX", "paddingY", "width", "minWidth", "maxWidth", "height", "minHeight", "maxHeight", "overflow", "overflowX", "overflowY"]) {
     await expect(control(page, axis), axis).toBeVisible();
   }
+  await expect(control(page, "gap"), "Box does not lay children out").toHaveCount(0);
+  expect(await optionsOf(control(page, "radius"))).toEqual(["__pui_default__", ...BOX_RADII]);
+  expect(await optionsOf(control(page, "width"))).toEqual(expect.arrayContaining(["md", "measure.md", "container.content", "fit"]));
+  expect(await optionsOf(control(page, "overflow"))).toEqual(["__pui_default__", "visible", "hidden", "clip", "scroll", "auto"]);
   await expect(page.getByRole("switch", { name: "border", exact: true })).toBeVisible();
   await expect(page.getByRole("switch", { name: "inverse", exact: true })).toHaveCount(0);
   expect(await optionsOf(control(page, "theme"))).toEqual(["__pui_default__", ...BOX_THEMES]);
   expect(await optionsOf(control(page, "surface"))).not.toContain("none");
+});
+
+test("the layout primitives offer one alignment vocabulary, and Grid tells its tracks from its items", async ({ page }) => {
+  await openPlayground(page, "stack", "Stack");
+  expect(await optionsOf(control(page, "justify"))).toEqual(["__pui_default__", ...JUSTIFIES]);
+  await openPlayground(page, "inline", "Inline");
+  expect(await optionsOf(control(page, "align"))).toEqual(["__pui_default__", ...ALIGNS]);
+  expect(await optionsOf(control(page, "rowGap"))).toEqual(["__pui_default__", ...SPACES]);
+  expect(await optionsOf(control(page, "columnGap"))).toEqual(["__pui_default__", ...SPACES]);
+  await openPlayground(page, "grid", "Grid");
+  expect(await optionsOf(control(page, "align"))).toEqual(["__pui_default__", ...ALIGNS]);
+  expect(await optionsOf(control(page, "justify"))).toEqual(["__pui_default__", ...JUSTIFIES]);
+  expect(await optionsOf(control(page, "justifyItems"))).toEqual(["__pui_default__", ...JUSTIFY_ITEMS]);
+  expect(await optionsOf(control(page, "rowGap"))).toEqual(["__pui_default__", ...SPACES]);
+  expect(await optionsOf(control(page, "columnGap"))).toEqual(["__pui_default__", ...SPACES]);
 });
 
 test("a select names the component's real default, and the code prints the subject that is drawn", async ({ page }) => {
@@ -91,6 +110,9 @@ test("a select names the component's real default, and the code prints the subje
   await expect(control(page, "columns").locator("option").first()).toHaveText("default (1)");
   await openPlayground(page, "draggable", "Draggable");
   await expect(control(page, "activation").locator("option").first()).toHaveText("default (surface)");
+  await openPlayground(page, "inline", "Inline");
+  await expect(control(page, "align").locator("option").first()).toHaveText("default (center)");
+  await expect(page.locator(".code-block pre")).not.toContainText("align=");
   await openPlayground(page, "box", "Box");
   await expect(page.locator(".code-block pre")).toContainText('<Box surface="raised" radius="md" width="md">');
   await openPlayground(page, "field", "Field");

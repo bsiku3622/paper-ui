@@ -14,8 +14,8 @@ const keysOf = (tree: object): string[] => Object.keys(tree);
 describe("vocabulary", () => {
   it("[foundations.vocabulary.one-pair-per-axis] exports every constant once and nothing else", () => {
     expect(constants.map(([name]) => name).sort()).toEqual([
-      "ACCENTS", "ACCENT_TONES", "BORDER_LEVELS", "BOX_THEMES", "BREAKPOINTS", "COLOR_MODES", "CONTAINERS", "CONTROL_FONT_SIZES", "CONTROL_PRESETS", "CONTROL_SHAPES",
-      "CONTROL_SIZES", "DEPTHS", "DIMENSIONS", "DIVIDER_LEVELS", "ELEVATIONS", "EMPHASES", "ICON_SIZES", "INKS", "INK_LEVELS", "MEASURES", "ORIENTATIONS",
+      "ACCENTS", "ACCENT_TONES", "ALIGNS", "BORDER_LEVELS", "BOX_RADII", "BOX_THEMES", "BREAKPOINTS", "COLOR_MODES", "CONTAINERS", "CONTROL_FONT_SIZES", "CONTROL_PRESETS", "CONTROL_SHAPES",
+      "CONTROL_SIZES", "DEPTHS", "DIMENSIONS", "DIVIDER_LEVELS", "ELEVATIONS", "EMPHASES", "ICON_SIZES", "INKS", "INK_LEVELS", "JUSTIFIES", "JUSTIFY_ITEMS", "MEASURES", "ORIENTATIONS",
       "SELECTABLE_VARIANTS", "SPACES", "STATUSES", "SURFACES", "TEXT_FAMILIES", "TEXT_VARIANTS", "THEME_PREFERENCES", "VARIANTS",
     ]);
   });
@@ -84,6 +84,7 @@ describe("vocabulary", () => {
     expect(vocabulary.DIMENSIONS).toEqual(keysOf(SHAPE_SOURCE.dimension.height));
     expect(vocabulary.MEASURES).toEqual(keysOf(SHAPE_SOURCE.measure));
     expect(vocabulary.ICON_SIZES).toEqual(keysOf(SHAPE_SOURCE.icon));
+    expect(vocabulary.BOX_RADII).toEqual([...keysOf(SHAPE_SOURCE.radius.surface), "full"]);
     expect(vocabulary.CONTROL_SIZES).toEqual(keysOf(SHAPE_SOURCE.control.height));
     for (const size of vocabulary.ICON_SIZES) expect(vocabulary.TEXT_VARIANTS, size).toContain(size);
   });
@@ -120,9 +121,13 @@ describe("vocabulary", () => {
     expectTypeOf<vocabulary.Measure>().toEqualTypeOf<(typeof vocabulary.MEASURES)[number]>();
     expectTypeOf<vocabulary.IconSize>().toEqualTypeOf<(typeof vocabulary.ICON_SIZES)[number]>();
     expectTypeOf<vocabulary.ControlShape>().toEqualTypeOf<(typeof vocabulary.CONTROL_SHAPES)[number]>();
+    expectTypeOf<vocabulary.BoxRadius>().toEqualTypeOf<(typeof vocabulary.BOX_RADII)[number]>();
     expectTypeOf<vocabulary.Elevation>().toEqualTypeOf<(typeof vocabulary.ELEVATIONS)[number]>();
     expectTypeOf<vocabulary.Breakpoint>().toEqualTypeOf<(typeof vocabulary.BREAKPOINTS)[number]>();
     expectTypeOf<vocabulary.Container>().toEqualTypeOf<(typeof vocabulary.CONTAINERS)[number]>();
+    expectTypeOf<vocabulary.Align>().toEqualTypeOf<(typeof vocabulary.ALIGNS)[number]>();
+    expectTypeOf<vocabulary.Justify>().toEqualTypeOf<(typeof vocabulary.JUSTIFIES)[number]>();
+    expectTypeOf<vocabulary.JustifyItem>().toEqualTypeOf<(typeof vocabulary.JUSTIFY_ITEMS)[number]>();
     expectTypeOf<vocabulary.Orientation>().toEqualTypeOf<(typeof vocabulary.ORIENTATIONS)[number]>();
   });
 
@@ -137,6 +142,10 @@ describe("vocabulary", () => {
     expectTypeOf<vocabulary.TextVariant>().toEqualTypeOf<"hero" | "display" | "title" | "heading" | "subheading" | "body" | "caption" | "label">();
     expectTypeOf<vocabulary.Space>().toEqualTypeOf<"xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl">();
     expectTypeOf<vocabulary.DividerLevel>().toEqualTypeOf<"base" | "strong">();
+    expectTypeOf<vocabulary.BoxRadius>().toEqualTypeOf<"sm" | "md" | "lg" | "full">();
+    expectTypeOf<vocabulary.Align>().toEqualTypeOf<"start" | "center" | "end" | "stretch" | "baseline">();
+    expectTypeOf<vocabulary.Justify>().toEqualTypeOf<"start" | "center" | "end" | "between">();
+    expectTypeOf<vocabulary.JustifyItem>().toEqualTypeOf<"start" | "center" | "end" | "stretch">();
     expectTypeOf<vocabulary.Orientation>().toEqualTypeOf<"horizontal" | "vertical">();
     expectTypeOf<vocabulary.ColorMode>().toEqualTypeOf<"light" | "dark">();
     expectTypeOf<vocabulary.ThemePreference>().toEqualTypeOf<"light" | "dark" | "system">();
