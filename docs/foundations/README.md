@@ -27,7 +27,7 @@ Shape와 Layout의 경계는 하나의 질문으로 가립니다. **빈 캔버�
 | 시스템 | 원본 | 역할 | 조합 |
 |---|---|---|---|
 | Color | OKLCH Palette → HEX Palette Token | `bg` · `ink` · `border` · `accent` · `interaction` … | accent × variant profile |
-| Typography | Typography Palette | `display` ~ `label` 글자 역할 | Control preset |
+| Typography | Typography Palette | `hero` ~ `label` 글자 역할 | Control preset · 코드 · 강조 규칙 |
 | Shape | `SHAPE_SOURCE` | `inset` · `radius` · `control` · `selection` … | Shape recipe |
 | Layout | `LAYOUT_SOURCE` | `gap` · `gutter` · `container` · `elevation` | Box `elevation` |
 | Motion | duration · easing · loop | `press` · `hover` · `state` · `enter` … | `stateTransition()` |
@@ -48,7 +48,7 @@ dp·em·색    CSS 값       var() 참조                  숫자 없는 완성�
 | 시스템 | 파일 |
 |---|---|
 | Color | `tokens/palette.ts` · `tokens/colors.ts` · `tokens/color-modes.ts` · `tokens/color-recipes.ts` |
-| Typography | `tokens/typography.ts` · `styles/typography.css.ts` |
+| Typography | `tokens/typography.ts` · `tokens/typography-recipes.ts` · `styles/typography.css.ts` |
 | Shape | `tokens/shape.ts` · `tokens/shape-recipes.ts` |
 | Layout | `tokens/layout.ts` · `primitives/Box.css.ts` |
 | Motion | `tokens/motion.ts` |
@@ -59,7 +59,7 @@ dp·em·색    CSS 값       var() 참조                  숫자 없는 완성�
 |---|---|---|
 | Color | 역할을 light·dark 두 벌로 굽습니다. | 테마가 바뀌면 같은 이름의 변수 값만 바뀌어, 소비처가 테마를 분기하지 않습니다. |
 | Motion | 변수를 굽지 않습니다. | duration·easing·변위는 한 변수로 줄여 쓰기 어려워, stylesheet가 빌드 때 transition 문자열로 조립합니다. |
-| Typography | Palette를 공개합니다. | 글자 안의 강조는 굵기(`weight`)와 장식(밑줄 `underlineOffset`)을 Palette에서 직접 읽습니다. |
+| Typography | 강조를 규칙으로 공개합니다. | 글자 안의 강조는 `emphasisRule()`이 Palette의 굵기 이름(`regular` · `medium` · `semibold` · `bold`)으로 고르고, 앱은 Palette를 직접 읽지 않습니다. 장식(밑줄 `underlineOffset`)만 Palette에서 읽습니다. |
 | Motion | duration을 값으로 공개합니다. | 속성마다 자기 duration을 골라 transition을 따로 적습니다. |
 
 ## 값이 화면까지 가는 길
@@ -104,10 +104,12 @@ prop이 받는 닫힌 값의 집합을 **축**이라 부릅니다. 축마다 상
 | `COLOR_MODES` · `ColorMode` | `tokens/color-modes.ts` | 색 역할 한 벌과 그림자 기하를 묶는 모드 — light · dark |
 | `THEME_PREFERENCES` · `ThemePreference` | `tokens/color-modes.ts` | 사용자가 고르는 테마 — 모드 둘과 `system`. `PaperProvider`의 `defaultTheme`, `useTheme().theme` |
 | `BOX_THEMES` · `BoxTheme` | `tokens/color-modes.ts` | Box · Stack · Inline · Grid의 `theme` — 모드 둘과 주변의 반대인 `inverse` |
-| `TEXT_VARIANTS` · `TextVariant` | `tokens/typography.ts` | Text의 `variant`, 컨트롤의 `fontSize`, `tokens.typography.role.<variant>` |
+| `TEXT_VARIANTS` · `TextVariant` | `tokens/typography.ts` | Text의 `variant`, `tokens.typography.role.<variant>` |
 | `TEXT_FAMILIES` · `TextFamily` | `tokens/typography.ts` | Text의 `family` |
 | `CONTROL_SIZES` · `ControlSize` | `tokens/typography.ts` | 컨트롤의 `size` |
+| `CONTROL_FONT_SIZES` · `ControlFontSize` | `tokens/typography.ts` | 컨트롤의 `fontSize` — 컨트롤 상자가 담을 수 있는 `TEXT_VARIANTS`의 부분집합 |
 | `CONTROL_PRESETS` · `ControlPreset` | `tokens/typography.ts` | `tokens.typography.preset.<preset>` |
+| `EMPHASES` · `Emphasis` | `tokens/typography.ts` | `emphasisRule()`의 인자 — Palette 굵기 이름의 부분집합 |
 | `SPACES` · `Space` | `tokens/shape.ts` | Box의 `padding` · `gap`, `tokens.shape.inset.<space>`, `tokens.layout.gap.<space>` |
 | `DIMENSIONS` · `Dimension` | `tokens/shape.ts` | Box의 `width` · `height` 이름 값, `tokens.shape.dimension` |
 | `MEASURES` · `Measure` | `tokens/shape.ts` | `tokens.shape.measure.<measure>` |

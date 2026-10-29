@@ -34,7 +34,7 @@ export const row = style({
 });
 
 export const copy = style({ minWidth: 0 });
-export const token = style({ width: "fit-content", maxWidth: "100%", overflowWrap: "anywhere" });
+export const token = style({ width: "fit-content", maxWidth: "100%" });
 export const value = style({ minWidth: 0 });
 // Palette Token and HEX both stay visible; a compact card stacks them.
 export const valueCompact = style({});
@@ -46,7 +46,7 @@ export const meta = style({
   minWidth: 0,
   selectors: { [`${valueCompact} &`]: { flexDirection: "column", gap: 0 } },
 });
-globalStyle(`${meta} > *`, { minWidth: 0, overflowWrap: "anywhere" });
+globalStyle(`${meta} > *`, { minWidth: 0 });
 export const section = style({ minWidth: 0 });
 
 // Accent: one row per accent, a column per tone. The accent × variant table reuses the grid.

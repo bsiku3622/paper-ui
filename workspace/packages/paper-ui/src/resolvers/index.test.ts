@@ -4,9 +4,10 @@ import { describe, it, expect } from "vitest";
 
 import { accentVariantClass, inkClass, interactiveClass, surfaceClass } from "../styles/color.css";
 import { spaceClass } from "../styles/space.css";
-import { textMonoClass, textRoleClass } from "../styles/typography.css";
-import { ACCENTS, INKS, SPACES, SURFACES, TEXT_VARIANTS, VARIANTS } from "../tokens";
-import { BOX_STYLE, BOX_STYLE_KEYS, resolveAccent, resolveBoxClass, resolveInk, resolveSpace, resolveSurface, resolveText } from "./index";
+import { controlFontSizeClass, presetClass, textMonoClass, textNumericClass, textRoleClass } from "../styles/typography.css";
+import { ACCENTS, CONTROL_FONT_SIZES, CONTROL_PRESETS, CONTROL_SIZES, INKS, SPACES, SURFACES, TEXT_VARIANTS, VARIANTS } from "../tokens";
+import { TEXT_INK } from "../tokens/typography";
+import { BOX_STYLE, BOX_STYLE_KEYS, resolveAccent, resolveBoxClass, resolveControlFontSize, resolveInk, resolvePreset, resolveSpace, resolveSurface, resolveText } from "./index";
 
 const distinct = (classes: readonly string[]) => new Set(classes).size === classes.length && classes.every(Boolean);
 
@@ -58,13 +59,41 @@ describe("resolveAccent", () => {
 });
 
 describe("resolveText", () => {
-  it("joins the role, the mono modifier for family mono, and the ink", () => {
+  it("joins the role, the mono modifier for family mono, and the ink — the role's own when none is given", () => {
     for (const variant of TEXT_VARIANTS) {
-      expect(resolveText({ variant }), variant).toBe(textRoleClass[variant]);
-      expect(resolveText({ variant, family: "sans" }), variant).toBe(textRoleClass[variant]);
+      const ink = inkClass[TEXT_INK[variant]];
+      expect(resolveText({ variant }), variant).toBe([textRoleClass[variant], ink].join(" "));
+      expect(resolveText({ variant, family: "sans" }), variant).toBe([textRoleClass[variant], ink].join(" "));
       expect(resolveText({ variant, family: "mono", ink: "error" }), variant).toBe([textRoleClass[variant], textMonoClass[variant], inkClass.error].join(" "));
+      expect(resolveText({ variant, family: "mono" }), variant).toBe([textRoleClass[variant], textMonoClass[variant], ink].join(" "));
     }
-    expect(resolveText({})).toBe(textRoleClass.body);
+    expect(resolveText({})).toBe([textRoleClass.body, inkClass.primary].join(" "));
+  });
+
+  it("adds the numeric class last", () => {
+    expect(resolveText({ variant: "caption", numeric: true })).toBe([textRoleClass.caption, inkClass.secondary, textNumericClass].join(" "));
+    expect(resolveText({ numeric: false })).not.toContain(textNumericClass);
+  });
+});
+
+describe("resolvePreset", () => {
+  it("picks a class for every preset × size × weight", () => {
+    for (const size of CONTROL_SIZES) {
+      expect(resolvePreset("button", size, "medium"), `button ${size} medium`).toBe(presetClass.button.medium[size]);
+      expect(resolvePreset("button", size, "strong"), `button ${size} strong`).toBe(presetClass.button.strong[size]);
+      expect(resolvePreset("field", size), `field ${size}`).toBe(presetClass.field[size]);
+      expect(resolvePreset("textarea", size), `textarea ${size}`).toBe(presetClass.textarea[size]);
+    }
+    expect(resolvePreset("badge")).toBe(presetClass.badge);
+    expect(Object.keys(presetClass)).toEqual([...CONTROL_PRESETS]);
+    for (const preset of Object.values(presetClass)) expect(preset).toBeTruthy();
+  });
+});
+
+describe("resolveControlFontSize", () => {
+  it("picks the font size class of a control font size, and nothing for undefined", () => {
+    for (const fontSize of CONTROL_FONT_SIZES) expect(resolveControlFontSize(fontSize), fontSize).toBe(controlFontSizeClass[fontSize]);
+    expect(resolveControlFontSize(undefined)).toBe("");
   });
 });
 

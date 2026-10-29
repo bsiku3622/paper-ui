@@ -1,84 +1,62 @@
-import type { StyleRule } from "@vanilla-extract/css";
+// typography.css — 글자 축의 이름이 가리키는 class 의 실체. Text 역할 · family=mono · 숫자 표기 · 컨트롤
+// preset · fontSize 탈출구가 각자 지도 하나로 굳는다. 선언은 tokens/typography-recipes.ts 가 만들고
+// 여기는 그것을 class 로 얹을 뿐이다. 전부 pui.utilities 에 있어서 컴포넌트의 geometry 가 이긴다.
 
-import { tokens, CONTROL_SIZES, TEXT_VARIANTS, type ControlSize, type TextVariant } from "../tokens";
-import { TEXT_INK } from "../tokens/typography";
+import { tokens, CONTROL_FONT_SIZES, CONTROL_SIZES, type ControlFontSize, type ControlSize } from "../tokens";
 import { layered } from "../tokens/layers.css";
+import { presetRule, typographyRule } from "../tokens/typography-recipes";
 
-const { styleVariants } = layered("utilities");
-const roles = layered("base");
-
-type Preset = { size: string; weight: string; leading: string; tracking: string };
-const rule = (preset: Preset): StyleRule => ({
-  fontFamily: tokens.typography.palette.family.sans,
-  fontSize: preset.size,
-  fontWeight: preset.weight,
-  lineHeight: preset.leading,
-  letterSpacing: preset.tracking,
-});
-
-// Text 역할의 순수 타이포그래피만 빌려 쓴다. Text primitive와 달리 ink·margin은 건드리지 않는다.
-const textRules = Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, rule(tokens.typography.role[variant])])) as Record<TextVariant, StyleRule>;
-export const textTypography = styleVariants(textRules);
+const { style, styleVariants } = layered("utilities");
 
 // ───── Text 역할 class ───────────────────────────────────────────────────────
 //
-// 역할의 글자와 기본 잉크. pui.base 에 있어서, 같은 요소에 붙는 ink class(pui.utilities)가
-// 출력 순서와 무관하게 역할의 기본 잉크를 이긴다.
-export const textRoleClass = roles.styleVariants(tokens.typography.role, (spec, variant) => ({
-  // size · leading · tracking 은 :root var 를 참조 — 값은 tokens/variables.css.ts 한 곳에서만.
-  fontFamily: tokens.typography.palette.family.sans,
-  fontSize: spec.size,
-  fontWeight: spec.weight,
-  lineHeight: spec.leading,
-  letterSpacing: spec.tracking,
-  color: tokens.color.ink[TEXT_INK[variant]],
-  margin: 0,
-}));
+// 역할의 글자와 줄바꿈. 잉크는 정하지 않는다 — 기본 잉크도 ink class 가 얹는다(resolveText).
+export const textRoleClass = styleVariants(tokens.typography.role, (_, variant) => ({ ...typographyRule(variant), margin: 0 }));
 
 // family=mono — 역할 위에 교차하는 모디파이어. 서체를 등폭으로 바꾸고 mono 전용
 // 자간을 준다. sans 의 per-variant tracking(display -0.03em 등)을 그대로 얹으면 큰
 // 크기 mono 가 짓눌리므로 버리고, 대신 단일 값 -0.04em — SF Mono·D2Coding 은 advance 가
 // 넓어 UI 에서 벌어져 보여 조인다 (균일 적용이라 tabular 정렬은 유지). letter-spacing 은
 // 요소당 하나라 영어·한글을 한 런에서 따로 못 준다 — 코드·토큰(영어) 기준 단일값.
-// 크기는 variant 의 px 를 monoSizeScale 로 줄인다. textRoleClass 뒤에 와서 같은 특정도의 역할 class 를 순서로 이긴다.
-export const textMonoClass = roles.styleVariants(tokens.typography.role, (spec) => ({
-  fontFamily: tokens.typography.palette.family.mono,
-  fontSize: `calc(${spec.size} * ${tokens.typography.palette.monoSizeScale})`,
-  letterSpacing: tokens.typography.palette.tracking.mono,
-}));
+// 크기는 variant 의 px 를 monoSizeScale 로 줄이고, 줄은 어디서든 끊는다.
+// textRoleClass 뒤에 와서 같은 특정도의 역할 class 를 순서로 이긴다.
+export const textMonoClass = styleVariants(tokens.typography.role, (_, variant) => {
+  const { fontFamily, fontSize, letterSpacing, wordBreak, overflowWrap } = typographyRule(variant, { family: "mono" });
+  return { fontFamily, fontSize, letterSpacing, wordBreak, overflowWrap };
+});
 
-const uniqueRules: Record<string, StyleRule> = {};
-const aliases: Record<string, string> = {};
-const canonicalBySignature = new Map<string, string>();
-const cap = (value: string) => `${value[0]?.toUpperCase() ?? ""}${value.slice(1)}`;
-const addPreset = (name: string, preset: Preset) => {
-  const signature = JSON.stringify(preset);
-  let canonical = canonicalBySignature.get(signature);
-  if (!canonical) {
-    canonical = name;
-    uniqueRules[canonical] = rule(preset);
-    canonicalBySignature.set(signature, canonical);
-  }
-  aliases[name] = canonical;
+// 숫자 표기 — sans 그대로 숫자 글리프만 등폭(tabular-nums). 정렬은 안 건드린다.
+export const textNumericClass = style({ fontVariantNumeric: "tabular-nums" });
+
+// ───── 컨트롤 preset class ───────────────────────────────────────────────────
+//
+// tokens.typography.preset 과 같은 모양의 지도. 같은 선언은 class 하나를 나눠 쓴다 — sm 과 md 가 같은
+// Field 글자처럼. preset 이 늘면 이 타입이 여기서 빠진 자리를 걸러낸다.
+type Mirror<T> = { [K in keyof T]: T[K] extends { size: string } ? string : Mirror<T[K]> };
+
+const shared = new Map<string, string>();
+const classOf = (rule: Parameters<typeof style>[0]): string => {
+  const signature = JSON.stringify(rule);
+  const known = shared.get(signature);
+  if (known) return known;
+  const created = style(rule);
+  shared.set(signature, created);
+  return created;
 };
-const addSizeLadder = (key: string, presets: Record<ControlSize, Preset>) => {
-  for (const size of CONTROL_SIZES) addPreset(`${key}${cap(size)}`, presets[size]);
+const bySize = (rule: (size: ControlSize) => Parameters<typeof style>[0]) =>
+  Object.fromEntries(CONTROL_SIZES.map((size) => [size, classOf(rule(size))])) as Record<ControlSize, string>;
+
+export const presetClass: Mirror<typeof tokens.typography.preset> = {
+  button: {
+    medium: bySize((size) => presetRule("button", size, "medium")),
+    strong: bySize((size) => presetRule("button", size, "strong")),
+  },
+  field: bySize((size) => presetRule("field", size)),
+  textarea: bySize((size) => presetRule("textarea", size)),
+  badge: classOf(presetRule("badge")),
 };
-addSizeLadder("buttonRegular", tokens.typography.preset.button.regular);
-addSizeLadder("buttonStrong", tokens.typography.preset.button.strong);
-addSizeLadder("field", tokens.typography.preset.field);
-addSizeLadder("textarea", tokens.typography.preset.textarea);
-addPreset("badge", tokens.typography.preset.badge);
 
-const classes = styleVariants(uniqueRules);
-const classFor = (name: string) => (classes as Record<string, string>)[aliases[name] ?? name] ?? "";
-const sizeClasses = (key: string) => Object.fromEntries(
-  CONTROL_SIZES.map((size) => [size, classFor(`${key}${cap(size)}`)]),
-) as Record<ControlSize, string>;
-
-export const controlTypography = {
-  button: { regular: sizeClasses("buttonRegular"), strong: sizeClasses("buttonStrong") },
-  field: sizeClasses("field"),
-  textarea: sizeClasses("textarea"),
-  badge: classFor("badge"),
-} as const;
+// fontSize 탈출구 — 크기만 바꾼다. 컨트롤 상자가 담을 수 있는 역할만 받고, presetClass 뒤에 와서 같은
+// 특정도의 preset 크기를 순서로 이긴다. 행간은 preset 에 남으므로 상자의 기하는 그대로다.
+const sizes = Object.fromEntries(CONTROL_FONT_SIZES.map((variant) => [variant, tokens.typography.role[variant].size])) as Record<ControlFontSize, string>;
+export const controlFontSizeClass = styleVariants(sizes, (fontSize) => ({ fontSize }));

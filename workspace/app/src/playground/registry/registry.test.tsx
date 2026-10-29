@@ -191,10 +191,9 @@ describe("defaults", () => {
         if (control.kind === "text" || control.behaviorOnly || entry.defaults[control.prop] !== undefined || (control.kind === "enum" && control.required)) continue;
         const omitted = markup(entry.subject({ ...base(entry), [control.key]: control.kind === "bool" ? false : undefined }, harness));
         const values = control.kind === "bool" ? [true] : control.options;
-        for (const value of values) {
-          const state = { ...base(entry), [control.key]: value };
-          expect(markup(entry.subject(state, harness)), `${entry.name}.${control.prop}=${String(value)}`).not.toBe(omitted);
-        }
+        // A derived prop has one option that says what omitting it already means; every other option shows.
+        const unchanged = values.filter((value) => markup(entry.subject({ ...base(entry), [control.key]: value }, harness)) === omitted);
+        expect(unchanged.length, `${entry.name}.${control.prop} leaves ${JSON.stringify(unchanged)} as omitted`).toBe(control.derived ? 1 : 0);
       }
     }
   });

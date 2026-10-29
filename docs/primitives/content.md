@@ -4,7 +4,7 @@ Content Primitive는 화면에 읽히는 것 — 글자와 아이콘 — 을 그
 
 | 컴포넌트 | 공개 축 | 기본값 |
 | --- | --- | --- |
-| Text | `as` · variant · ink · family=sans/mono | variant=body, family=sans. 기본 태그는 display·title=h1, heading=h2, subheading=h3, body·caption=p, label=span |
+| Text | `as` · variant · ink · family=sans/mono · numeric | variant=body, family=sans. 기본 태그는 hero·display·title=h1, heading=h2, subheading=h3, body·caption=p, label=span |
 | Icon | size=label/caption/body/subheading · ink · SVG children · className · aria-label | size=body. artboard 14 / 16 / 18 / 20, viewBox 24, 기본 currentColor |
 
 ## Text
@@ -22,12 +22,18 @@ Content Primitive는 화면에 읽히는 것 — 글자와 아이콘 — 을 그
 
 세 줄의 이름은 `/tokens`의 `INKS`와 같고, Icon의 `ink`도 같은 어휘입니다.
 
-`family="mono"`는 어느 variant에도 얹어 등폭 서체로 바꿉니다. 코드·토큰·식별자에만 쓰고, 숫자 열은 mono 대신 `tabular-nums`로 자리만 맞춥니다.
+`family="mono"`는 어느 variant에도 얹어 등폭 서체로 바꿉니다. 코드·토큰·식별자에만 쓰고, 숫자 열은 mono 대신 `numeric`으로 자리만 맞춥니다.
+
+[contract:primitives.text.numeric]: #
+`numeric`은 숫자 글리프만 등폭(`tabular-nums`)으로 그립니다. 서체와 정렬은 그대로 두므로 표의 숫자 열이나 버전처럼 자리를 맞추는 곳에 씁니다.
+
+줄바꿈은 서체가 정합니다. sans(기본)는 한글을 어절 사이에서만 끊고(`keep-all`), mono는 어디서든 끊습니다(`anywhere`). 정책과 이유는 [Typography › 줄바꿈](../foundations/typography.md#줄바꿈)에 있습니다.
 
 ```tsx
 <Text as="h1" variant="title">웹사이트 리뉴얼</Text>
 <Text variant="caption">마지막 수정 · 오늘 오전 10:42</Text>
 <Text variant="body" family="mono" ink="secondary">WEB-24</Text>
+<Text variant="caption" ink="secondary" numeric>v0.1.0</Text>
 ```
 
 ## Icon

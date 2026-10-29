@@ -2,7 +2,7 @@
 // input 이 값을 담으며, 양옆에 어도먼트(아이콘·$·단위)와 액션(clear·비밀번호 보기)이 앉는다.
 //   status   info · success · warning · error (테두리 색, 생략하면 중립). error 는 aria-invalid 도.
 //   shape    rounded · pill — Button·Badge 와 같은 어휘. 검색창이 이 어휘의 본진이다.
-//   numeric  포맷 축 — 숫자 글리프만 등폭(tabular-nums). 정렬은 안 건드린다.
+//   numeric  포맷 축 — 숫자 글리프만 등폭(tabular-nums). 정렬은 안 건드린다. 래퍼가 달고 input 이 이어받는다.
 //   align    정렬 축 — start · center · end. numeric 과 직교 (우측정렬 숫자열은 numeric + align="end").
 //   leading  왼쪽 어도먼트 (검색 아이콘 · "$" 프리픽스 등)
 //   trailing 오른쪽 어도먼트 (단위 "kg" · 아이콘 등)
@@ -22,10 +22,11 @@ import {
 } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import { resolveControlTypography, resolveSurface } from "../resolvers";
-import type { Status, ControlShape, ControlSize, Surface, TextVariant } from "../tokens";
+import { resolveControlFontSize, resolvePreset, resolveSurface } from "../resolvers";
+import type { Status, ControlFontSize, ControlShape, ControlSize, Surface } from "../tokens";
 import { Icon } from "../primitives";
-import { fieldWrap, fieldInput, fieldSize, fieldFontSize, fieldStatus, fieldNumeric, fieldAlign, fieldAdornment, fieldAction, fieldPill } from "./Field.css";
+import { textNumericClass } from "../styles/typography.css";
+import { fieldWrap, fieldInput, fieldInputLeading, fieldSize, fieldStatus, fieldAlign, fieldAdornment, fieldAction, fieldPill } from "./Field.css";
 
 export type FieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "size" | "prefix"> & {
   status?: Status;
@@ -34,7 +35,7 @@ export type FieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className"
   // 면의 깊이 — raised 가 기본, sunken 은 canvas 안에서 살짝 눌린 검색·필터 입력에 적합하다. 다크에서는
   // sunken 이 canvas 와 같은 단계라 canvas 위에서는 border 가 구분하고, raised 위에서는 두 모드 모두 물러나 보인다.
   surface?: Extract<Surface, "raised" | "sunken">;
-  fontSize?: TextVariant;
+  fontSize?: ControlFontSize;
   // 실루엣 — Button·Badge 와 같은 어휘. pill 은 알약(검색창 결).
   shape?: ControlShape;
   numeric?: boolean;
@@ -136,7 +137,7 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
     // 진짜 컨트롤은 input 이라 role·키보드를 붙이는 게 오히려 틀리다.
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions -- 여백 클릭만 안쪽 input 으로 넘긴다
     <div
-      className={joinClass(fieldWrap, resolveSurface(surface), fieldSize[size], resolveControlTypography("field", size), fontSize && fieldFontSize[fontSize], shape === "pill" && fieldPill, status && fieldStatus[status], className)}
+      className={joinClass(fieldWrap, resolveSurface(surface), fieldSize[size], resolvePreset("field", size), resolveControlFontSize(fontSize), numeric && textNumericClass, shape === "pill" && fieldPill, status && fieldStatus[status], className)}
       style={style}
       data-testid={testid}
       data-status={status}
@@ -164,7 +165,7 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
         onChange={handleChange}
         disabled={disabled}
         aria-invalid={status === "error" || undefined}
-        className={joinClass(fieldInput, numeric && fieldNumeric, align && fieldAlign[align])}
+        className={joinClass(fieldInput, fieldInputLeading[size], align && fieldAlign[align])}
         {...rest}
       />
       {showClear ? (

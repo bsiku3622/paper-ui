@@ -3,7 +3,7 @@
 
 import { globalStyle } from "@vanilla-extract/css";
 
-import { tokens } from "@studio-baeks/paper-ui/tokens";
+import { emphasisRule, tokens } from "@studio-baeks/paper-ui/tokens";
 
 globalStyle(".md", {
   color: tokens.color.ink.primary,
@@ -68,7 +68,8 @@ globalStyle(".md pre", {
   overflow: "auto",
   margin: `0 0 ${tokens.layout.gap.lg}`,
 });
-globalStyle(".md pre code", { background: "none", padding: 0, fontSize: tokens.typography.role.caption.size, lineHeight: tokens.typography.role.body.leading });
+// 코드 블록은 본문 굵기가 아니라 가볍게 — 코드 글자를 굵은 줄로 읽히게 하지 않는다.
+globalStyle(".md pre code", { background: "none", padding: 0, fontSize: tokens.typography.role.caption.size, lineHeight: tokens.typography.role.body.leading, ...emphasisRule("regular") });
 
 globalStyle(".md blockquote", {
   margin: `0 0 ${tokens.layout.gap.lg}`,

@@ -1,20 +1,23 @@
 import { joinClass } from "../internal/joinClass";
-import { controlTypography, textMonoClass, textRoleClass } from "../styles/typography.css";
-import type { ControlSize, Ink, TextFamily, TextVariant } from "../tokens";
+import { controlFontSizeClass, presetClass, textMonoClass, textNumericClass, textRoleClass } from "../styles/typography.css";
+import type { ControlFontSize, ControlSize, Ink, TextFamily, TextVariant } from "../tokens";
+import { TEXT_INK } from "../tokens/typography";
+import type { ButtonWeight } from "../tokens/typography-recipes";
 import { resolveInk } from "./color";
 
-export const resolveText = ({ variant = "body", family = "sans", ink }: { variant?: TextVariant; family?: TextFamily; ink?: Ink }): string =>
-  joinClass(textRoleClass[variant], family === "mono" && textMonoClass[variant], resolveInk(ink));
+type TextOptions = { variant?: TextVariant; family?: TextFamily; ink?: Ink; numeric?: boolean };
 
-export function resolveControlTypography(role: "button", size: ControlSize, emphasis: "regular" | "strong"): string;
-export function resolveControlTypography(role: "field" | "textarea", size: ControlSize): string;
-export function resolveControlTypography(role: "badge"): string;
-export function resolveControlTypography(
-  role: keyof typeof controlTypography,
-  sizeOrState?: ControlSize | "regular" | "active" | "groupLabel",
-  emphasis?: "regular" | "strong",
-): string {
-  if (role === "badge") return controlTypography.badge;
-  if (role === "button") return controlTypography.button[emphasis ?? "regular"][sizeOrState as ControlSize];
-  return controlTypography[role][sizeOrState as ControlSize];
+// 역할 class, mono 모디파이어, 잉크(생략하면 역할의 기본 잉크), 숫자 표기.
+export const resolveText = ({ variant = "body", family = "sans", ink, numeric }: TextOptions): string =>
+  joinClass(textRoleClass[variant], family === "mono" && textMonoClass[variant], resolveInk(ink ?? TEXT_INK[variant]), numeric && textNumericClass);
+
+export function resolvePreset(preset: "button", size: ControlSize, weight: ButtonWeight): string;
+export function resolvePreset(preset: "field" | "textarea", size: ControlSize): string;
+export function resolvePreset(preset: "badge"): string;
+export function resolvePreset(preset: "button" | "field" | "textarea" | "badge", size?: ControlSize, weight?: ButtonWeight): string {
+  if (preset === "badge") return presetClass.badge;
+  if (preset === "button") return presetClass.button[weight!][size!];
+  return presetClass[preset][size!];
 }
+
+export const resolveControlFontSize = (fontSize: ControlFontSize | undefined): string => (fontSize ? controlFontSizeClass[fontSize] : "");

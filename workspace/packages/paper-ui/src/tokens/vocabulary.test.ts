@@ -14,8 +14,8 @@ const keysOf = (tree: object): string[] => Object.keys(tree);
 describe("vocabulary", () => {
   it("[foundations.vocabulary.one-pair-per-axis] exports every constant once and nothing else", () => {
     expect(constants.map(([name]) => name).sort()).toEqual([
-      "ACCENTS", "ACCENT_TONES", "BORDER_LEVELS", "BOX_THEMES", "BREAKPOINTS", "COLOR_MODES", "CONTAINERS", "CONTROL_PRESETS", "CONTROL_SHAPES",
-      "CONTROL_SIZES", "DEPTHS", "DIMENSIONS", "DIVIDER_LEVELS", "ELEVATIONS", "ICON_SIZES", "INKS", "INK_LEVELS", "MEASURES", "ORIENTATIONS",
+      "ACCENTS", "ACCENT_TONES", "BORDER_LEVELS", "BOX_THEMES", "BREAKPOINTS", "COLOR_MODES", "CONTAINERS", "CONTROL_FONT_SIZES", "CONTROL_PRESETS", "CONTROL_SHAPES",
+      "CONTROL_SIZES", "DEPTHS", "DIMENSIONS", "DIVIDER_LEVELS", "ELEVATIONS", "EMPHASES", "ICON_SIZES", "INKS", "INK_LEVELS", "MEASURES", "ORIENTATIONS",
       "SELECTABLE_VARIANTS", "SPACES", "STATUSES", "SURFACES", "TEXT_FAMILIES", "TEXT_VARIANTS", "THEME_PREFERENCES", "VARIANTS",
     ]);
   });
@@ -73,6 +73,9 @@ describe("vocabulary", () => {
     expect(vocabulary.TEXT_FAMILIES).toEqual(keysOf(TYPOGRAPHY_SOURCE.family));
     expect(vocabulary.CONTROL_PRESETS).toEqual(keysOf(TYPOGRAPHY.preset));
     expect(vocabulary.CONTROL_SIZES).toEqual(keysOf(TYPOGRAPHY.preset.field));
+    expect(vocabulary.EMPHASES).toEqual(["regular", "medium", "semibold", "bold"]);
+    for (const emphasis of vocabulary.EMPHASES) expect(keysOf(TYPOGRAPHY_SOURCE.weight), emphasis).toContain(emphasis);
+    for (const fontSize of vocabulary.CONTROL_FONT_SIZES) expect(vocabulary.TEXT_VARIANTS, fontSize).toContain(fontSize);
   });
 
   it("[foundations.vocabulary.one-pair-per-axis] derives the Shape axes from the trees that author them", () => {
@@ -109,7 +112,9 @@ describe("vocabulary", () => {
     expectTypeOf<vocabulary.TextVariant>().toEqualTypeOf<(typeof vocabulary.TEXT_VARIANTS)[number]>();
     expectTypeOf<vocabulary.TextFamily>().toEqualTypeOf<(typeof vocabulary.TEXT_FAMILIES)[number]>();
     expectTypeOf<vocabulary.ControlSize>().toEqualTypeOf<(typeof vocabulary.CONTROL_SIZES)[number]>();
+    expectTypeOf<vocabulary.ControlFontSize>().toEqualTypeOf<(typeof vocabulary.CONTROL_FONT_SIZES)[number]>();
     expectTypeOf<vocabulary.ControlPreset>().toEqualTypeOf<(typeof vocabulary.CONTROL_PRESETS)[number]>();
+    expectTypeOf<vocabulary.Emphasis>().toEqualTypeOf<(typeof vocabulary.EMPHASES)[number]>();
     expectTypeOf<vocabulary.Space>().toEqualTypeOf<(typeof vocabulary.SPACES)[number]>();
     expectTypeOf<vocabulary.Dimension>().toEqualTypeOf<(typeof vocabulary.DIMENSIONS)[number]>();
     expectTypeOf<vocabulary.Measure>().toEqualTypeOf<(typeof vocabulary.MEASURES)[number]>();
@@ -127,6 +132,9 @@ describe("vocabulary", () => {
     expectTypeOf<vocabulary.Surface>().toEqualTypeOf<"canvas" | "raised" | "sunken">();
     expectTypeOf<vocabulary.Ink>().toEqualTypeOf<"primary" | "secondary" | "tertiary" | "info" | "success" | "warning" | "error" | "inherit">();
     expectTypeOf<vocabulary.ControlSize>().toEqualTypeOf<"sm" | "md" | "lg">();
+    expectTypeOf<vocabulary.ControlFontSize>().toEqualTypeOf<"label" | "caption" | "body">();
+    expectTypeOf<vocabulary.Emphasis>().toEqualTypeOf<"regular" | "medium" | "semibold" | "bold">();
+    expectTypeOf<vocabulary.TextVariant>().toEqualTypeOf<"hero" | "display" | "title" | "heading" | "subheading" | "body" | "caption" | "label">();
     expectTypeOf<vocabulary.Space>().toEqualTypeOf<"xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl">();
     expectTypeOf<vocabulary.DividerLevel>().toEqualTypeOf<"base" | "strong">();
     expectTypeOf<vocabulary.Orientation>().toEqualTypeOf<"horizontal" | "vertical">();

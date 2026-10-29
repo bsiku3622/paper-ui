@@ -23,14 +23,14 @@ export const INVENTORY = {
   utilities: {
     Composition: ["mergeProps", "mergeRefs", "composeEventHandlers"],
     Theme: ["PaperProvider", "useTheme", "useResolvedTheme"],
-    Typography: ["resolveControlTypography"],
   },
   classes: [],
   foundations: [
-    "tokens", "stateTransition",
+    "tokens", "stateTransition", "FONT_STYLESHEETS",
+    "typographyRule", "monoRule", "codeRule", "presetRule", "emphasisRule",
     "STATUSES", "ACCENTS", "ACCENT_TONES", "VARIANTS", "SELECTABLE_VARIANTS", "SURFACES", "INK_LEVELS", "INKS", "BORDER_LEVELS", "DIVIDER_LEVELS", "DEPTHS",
     "COLOR_MODES", "THEME_PREFERENCES", "BOX_THEMES", "SYSTEM_COLORS",
-    "TEXT_VARIANTS", "TEXT_FAMILIES", "CONTROL_SIZES", "CONTROL_PRESETS",
+    "TEXT_VARIANTS", "TEXT_FAMILIES", "CONTROL_SIZES", "CONTROL_FONT_SIZES", "CONTROL_PRESETS", "EMPHASES",
     "SPACES", "DIMENSIONS", "MEASURES", "ICON_SIZES", "CONTROL_SHAPES",
     "ELEVATIONS", "BREAKPOINTS", "CONTAINERS", "ORIENTATIONS",
   ],

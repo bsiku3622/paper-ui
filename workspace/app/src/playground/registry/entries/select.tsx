@@ -1,6 +1,6 @@
 import { Select, type SelectProps } from "@studio-baeks/paper-ui";
 
-import { boolControl, defineSpec, enumControl, flag, pending, pick, vocab } from "../schema";
+import { boolControl, defineSpec, enumControl, flag, pick, vocab } from "../schema";
 import { narrow } from "./examples.css";
 
 export default defineSpec({
@@ -8,7 +8,7 @@ export default defineSpec({
   blurb: "native select anatomy를 Select.Option과 Select.Group으로 드러냅니다. Button·Field와 같은 사다리를 쓰고, option 안에는 native 계약에 맞게 텍스트만 둡니다.",
   controls: [
     enumControl<SelectProps, "size">("size", vocab("CONTROL_SIZES")),
-    enumControl<SelectProps, "fontSize">("fontSize", pending(["label", "caption", "body"] as const, "S12", "CONTROL_FONT_SIZES")),
+    enumControl<SelectProps, "fontSize">("fontSize", vocab("CONTROL_FONT_SIZES")),
     enumControl<SelectProps, "shape">("shape", vocab("CONTROL_SHAPES")),
     boolControl<SelectProps, "disabled">("disabled"),
   ],

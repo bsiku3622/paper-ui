@@ -1,9 +1,8 @@
-// Label — 입력의 이름표. label variant(mono·uppercase) 를 그대로 쓴다.
+// Label — 입력의 이름표. Text label 역할을 그대로 쓴다.
 
 import type { LabelHTMLAttributes, ReactNode } from "react";
 
-import { joinClass } from "../internal/joinClass";
-import { resolveText } from "../resolvers";
+import { Text } from "../primitives/Text";
 
 export type LabelProps = Omit<LabelHTMLAttributes<HTMLLabelElement>, "className"> & {
   children?: ReactNode;
@@ -11,7 +10,7 @@ export type LabelProps = Omit<LabelHTMLAttributes<HTMLLabelElement>, "className"
 };
 
 export const Label = ({ children, className, ...rest }: LabelProps) => (
-  <label className={joinClass(resolveText({ variant: "label" }), className)} {...rest}>
+  <Text as="label" variant="label" className={className} {...rest}>
     {children}
-  </label>
+  </Text>
 );

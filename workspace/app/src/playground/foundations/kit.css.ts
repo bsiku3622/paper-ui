@@ -42,8 +42,8 @@ export const align = styleVariants({
   end: { textAlign: "end", justifySelf: "end" },
 });
 
-export const cell = style({ minWidth: 0, overflowWrap: "anywhere" });
-export const value = style({ minWidth: 0, textAlign: "end", justifySelf: "end", overflowWrap: "anywhere" });
+export const cell = style({ minWidth: 0 });
+export const value = style({ minWidth: 0, textAlign: "end", justifySelf: "end" });
 export const matrixCell = style({ minWidth: 0, padding: tokens.shape.inset.sm, borderRadius: tokens.shape.radius.surface.sm, background: tokens.color.bg.canvas });
 
 // ── Display parts ───────────────────────────────────────────────────────────

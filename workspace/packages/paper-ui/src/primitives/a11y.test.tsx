@@ -1,6 +1,7 @@
 import { createRef, useState } from "react";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+import { textRoleClass } from "../styles/typography.css";
 import { Icon, Pressable, RovingFocus, FormField, VisuallyHidden, useFocusWithin } from "./index";
 
 describe("roving focus", () => {
@@ -119,6 +120,21 @@ describe("field relationships", () => {
     render(<><FormField label="First" id="first">{({ controlProps }) => <input {...controlProps} />}</FormField><FormField label="Second">{({ controlProps }) => <input {...controlProps} />}</FormField></>);
     expect(screen.getByLabelText("First").id).toBe("first");
     expect(screen.getByLabelText("Second").id).not.toBe("first");
+  });
+});
+
+describe("field parts", () => {
+  it("[primitives.form-field.parts] draws the label, description and error with Text roles and names each part", () => {
+    render(<FormField label="Email" description="Help" error="Wrong" invalid>{({ controlProps }) => <input {...controlProps} />}</FormField>);
+    const label = screen.getByText("Email");
+    const description = screen.getByText("Help");
+    const error = screen.getByText("Wrong");
+    expect(label.tagName).toBe("LABEL");
+    expect([label, description, error].map((part) => part.getAttribute("data-part"))).toEqual(["label", "description", "error"]);
+    expect(label.classList.contains(textRoleClass.label)).toBe(true);
+    expect(description.classList.contains(textRoleClass.caption)).toBe(true);
+    expect(error.classList.contains(textRoleClass.caption)).toBe(true);
+    expect(error.className).not.toBe(description.className);
   });
 });
 

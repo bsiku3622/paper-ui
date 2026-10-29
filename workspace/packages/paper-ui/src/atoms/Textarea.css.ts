@@ -1,4 +1,4 @@
-import { tokens, stateTransition, TEXT_VARIANTS, type TextVariant } from "../tokens";
+import { tokens, stateTransition } from "../tokens";
 import { outlinedControlProfile, outlinedControlHover } from "../tokens/color-recipes";
 import { controlGeometry, focusRing, geometry } from "../internal/shape";
 import { layered } from "../tokens/layers.css";
@@ -33,8 +33,4 @@ export const textareaRoot = style({
 // Block inset accounts for the textarea preset’s leading and font size.
 export const textareaSize = styleVariants(
   controlGeometry.textarea,
-);
-
-export const textareaFontSize = styleVariants(
-  Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.typography.role[variant].size }])) as Record<TextVariant, { fontSize: string }>,
 );

@@ -1,5 +1,7 @@
 import { forwardRef, useId, type HTMLAttributes, type ReactNode } from "react";
 
+import { Text } from "../Text";
+
 export type FieldOptions = {
   id?: string;
   disabled?: boolean;
@@ -31,9 +33,9 @@ export type FormFieldProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "
 export const FormField = forwardRef<HTMLDivElement, FormFieldProps>(function FormField({ label, children, id, disabled, required, invalid, description, error, "aria-describedby": describedBy, ...props }, ref) {
   const field = useField({ id, disabled, required, invalid, description, error, "aria-describedby": describedBy });
   return <div {...props} ref={ref} data-disabled={disabled || undefined} data-invalid={invalid || undefined} data-required={required || undefined}>
-    <label {...field.labelProps}>{label}</label>
+    <Text as="label" variant="label" data-part="label" {...field.labelProps}>{label}</Text>
     {children(field)}
-    {hasContent(description) && <div {...field.descriptionProps}>{description}</div>}
-    {invalid && hasContent(error) && <div {...field.errorProps}>{error}</div>}
+    {hasContent(description) && <Text variant="caption" data-part="description" {...field.descriptionProps}>{description}</Text>}
+    {invalid && hasContent(error) && <Text variant="caption" ink="error" data-part="error" {...field.errorProps}>{error}</Text>}
   </div>;
 });

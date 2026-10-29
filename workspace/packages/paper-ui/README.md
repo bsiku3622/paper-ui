@@ -86,6 +86,23 @@ A subtree takes its own mode through `<Box theme="light | dark | inverse">`.
 There is no `primaryColor`. A brand has no colour to pick here — the identity is
 white, black, and whitespace.
 
+## Fonts
+
+The weight ladder (400 · 450 · 500 · 600 · 650 · 700) assumes Pretendard Variable, so the
+font is part of the Typography contract rather than an option. The package bundles no font
+files. Load the two stylesheets whose URLs it exports as `FONT_STYLESHEETS` from
+`@studio-baeks/paper-ui/tokens`:
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fonts-archive/D2Coding@5ac6fc6fada70f1d8a8561cec826722574c51a6e/D2Coding.css" />
+```
+
+Without the font the ladder folds onto the weights the system font has: on Windows
+(Segoe UI, Malgun Gothic) 450 and 500 become 400 and 600 and 650 become 700; on Android
+(Roboto) 450 becomes 500 and 600 and 650 become 700; macOS keeps most steps. Line heights are
+fixed, so geometry stays identical. D2Coding supplies Korean monospace glyphs.
+
 ## Browser support
 
 Chrome and Edge 125, Firefox 121 and Safari 16.4 (iOS included) or newer. `round()`,

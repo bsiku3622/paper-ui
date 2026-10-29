@@ -1,6 +1,6 @@
 import { keyframes } from "@vanilla-extract/css";
 
-import { tokens, stateTransition, TEXT_VARIANTS, type TextVariant } from "../tokens";
+import { tokens, stateTransition } from "../tokens";
 import { controlGeometry, geometry } from "../internal/shape";
 import { layered } from "../tokens/layers.css";
 
@@ -18,7 +18,6 @@ export const buttonRoot = style({
   borderWidth: tokens.shape.stroke.border,
   borderStyle: "solid",
   cursor: "pointer",
-  whiteSpace: "nowrap",
   userSelect: "none",
   transition: stateTransition("background", "border-color", "color", "transform"),
   selectors: {
@@ -64,12 +63,6 @@ export const buttonFull = style({ width: "100%" });
 // 같은 높이에 서는 것과 각 역할의 글자 스타일은 별개 축이다.
 export const buttonSize = styleVariants(
   controlGeometry.button,
-);
-
-export const buttonFontSize = styleVariants(
-  Object.fromEntries(
-    TEXT_VARIANTS.map((variant) => [variant, { fontSize: tokens.typography.role[variant].size }]),
-  ) as Record<TextVariant, { fontSize: string }>,
 );
 
 // 아이콘 전용 — 정사각(높이=너비), 좌우 패딩 제거. aria-label 은 필수(호출부 책임).

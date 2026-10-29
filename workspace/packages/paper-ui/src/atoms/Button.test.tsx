@@ -4,9 +4,10 @@
 // 눌린다. 조용히 새는 계약이라 여기서 못 박는다.
 
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, expectTypeOf, it } from "vitest";
 
-import { Button } from "./Button";
+import type { ControlFontSize } from "../tokens";
+import { Button, type ButtonProps } from "./Button";
 
 describe("Button · as", () => {
   it("기본은 <button> 이고 type 이 붙는다", () => {
@@ -47,5 +48,14 @@ describe("Button · as", () => {
     const el = screen.getByRole("button", { name: /저장 중/ });
     expect((el as HTMLButtonElement).disabled).toBe(true);
     expect(el.getAttribute("aria-busy")).toBe("true");
+  });
+});
+
+describe("Button · fontSize", () => {
+  it("takes only the roles a control box can hold", () => {
+    expectTypeOf<ButtonProps["fontSize"]>().toEqualTypeOf<ControlFontSize | undefined>();
+    // @ts-expect-error display does not fit a control box
+    const tooBig = <Button fontSize="display">크게</Button>;
+    expect(tooBig).toBeTruthy();
   });
 });

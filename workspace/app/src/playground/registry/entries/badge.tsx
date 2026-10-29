@@ -1,6 +1,6 @@
 import { Badge, type BadgeProps } from "@studio-baeks/paper-ui";
 
-import { boolControl, defineSpec, enumControl, flag, pending, pick, textControl, vocab, words } from "../schema";
+import { boolControl, defineSpec, enumControl, flag, pick, textControl, vocab, words } from "../schema";
 
 export default defineSpec({
   name: "Badge",
@@ -10,7 +10,7 @@ export default defineSpec({
     enumControl<BadgeProps, "variant">("variant", vocab("VARIANTS")),
     boolControl<BadgeProps, "dot">("dot"),
     enumControl<BadgeProps, "size">("size", vocab("CONTROL_SIZES")),
-    enumControl<BadgeProps, "fontSize">("fontSize", pending(["label", "caption", "body"] as const, "S12", "CONTROL_FONT_SIZES")),
+    enumControl<BadgeProps, "fontSize">("fontSize", vocab("CONTROL_FONT_SIZES")),
     enumControl<BadgeProps, "shape">("shape", vocab("CONTROL_SHAPES")),
     textControl<BadgeProps, "children">("children", "진행"),
   ],

@@ -8,7 +8,7 @@
 
 import { globalStyle } from "@vanilla-extract/css";
 
-import { tokens } from "@studio-baeks/paper-ui/tokens";
+import { emphasisRule, tokens } from "@studio-baeks/paper-ui/tokens";
 
 const BP = tokens.layout.breakpoint;
 
@@ -107,6 +107,8 @@ globalStyle(".home-navitem", {
   paddingInline: tokens.shape.inset.sm,
   borderRadius: tokens.shape.radius.control,
   fontSize: tokens.typography.role.body.size,
+  // 목업 안의 비활성 항목은 본문 굵기가 아니라 가볍게 — 활성 항목이 굵기로 도드라진다.
+  ...emphasisRule("regular"),
   color: tokens.color.ink.secondary,
 });
 
@@ -124,7 +126,7 @@ globalStyle(".home-filterhead", {
 globalStyle(".home-navitem[data-active='true']", {
   background: tokens.color.interaction.selected,
   color: tokens.color.ink.primary,
-  fontWeight: tokens.typography.palette.weight.medium,
+  ...emphasisRule("medium"),
 });
 
 // 하단 요약 한 줄 — 카드 나열이 아니라 인라인 사실들.

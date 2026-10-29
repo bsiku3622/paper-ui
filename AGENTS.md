@@ -27,8 +27,8 @@ paper-ui/
     │   └── src/
     │       ├── index.ts        # entry `.` — 컴포넌트 · hook · Provider ("use client")
     │       ├── inventory.ts    # 이름 · 분류 · 순서의 정본 — import 가 없고 inventory.test 가 export 와 대조
-    │       ├── tokens/         # 값의 유일한 정의 위치 — SOURCE → VALUES → 역할, *-recipes = 조합 · vocabulary.ts = 어휘 짝 · color-modes.ts = 모드 어휘 · variables.ts · variables.css.ts = 모든 CSS 변수의 배출 · public.ts = entry `/tokens` · layers.css.ts = cascade layer
-    │       ├── styles/         # class 의 실체 — color.css.ts (면 · 잉크 · accent × variant) · space.css.ts · theme.css.ts (문서 바탕 · 스코프 잉크) · global.css.ts = entry `/styles.css`. resolvers 를 import 하지 않음
+    │       ├── tokens/         # 값의 유일한 정의 위치 — SOURCE → VALUES → 역할, *-recipes = 조합(typography-recipes = 글자 규칙 함수) · vocabulary.ts = 어휘 짝 · color-modes.ts = 모드 어휘 · variables.ts · variables.css.ts = 모든 CSS 변수의 배출 · public.ts = entry `/tokens` · layers.css.ts = cascade layer
+    │       ├── styles/         # class 의 실체 — color.css.ts (면 · 잉크 · accent × variant) · space.css.ts · typography.css.ts (Text 역할 · mono · 숫자 · control preset · fontSize class) · theme.css.ts (문서 바탕 · 스코프 잉크) · global.css.ts = entry `/styles.css`. resolvers 를 import 하지 않음
     │       ├── resolvers/      # 공유 축 이름 → class (styles/ 의 typed map 인덱싱)
     │       ├── theme/          # 테마 — engine.ts (React · CSS 없음) · store.ts = 문서당 저장소 · PaperProvider · context · scope · boot.ts = entry `/theme-boot`
     │       ├── primitives/     # layout·text·icon building blocks
@@ -56,8 +56,8 @@ workspace 에서는 `paper-ui-source` export 조건(Vite `resolve.conditions` ·
 pui.components`, 뒤의 레이어가 특정도와 무관하게 이긴다. 레이어 이름과 `layered(name)` wrapper 는
 `tokens/layers.css.ts` 하나가 정의하고, global.css.ts 가 그것을 맨 먼저 import 해 dist/paper-ui.css 는 레이어
 선언으로 시작한다. 파일마다 갈 레이어가 정해져 있다: tokens/variables.css.ts 의 변수는 theme, box-sizing 과 body margin 은
-reset, body 의 면·글자와 스코프 잉크 · 포커스 링 · Text 역할 class(typography.css) · reduced motion 은 base, 면 · 잉크 · 간격 지도(color.css 의 surfaceClass · inkClass, space.css)와
-typography.css 의 control preset 은 utilities, accent × variant 지도(color.css 의 accentVariantClass)와 primitives · atoms 는 components. `@keyframes` 와 `@property` 만 레이어 밖에 선다. 앱 CSS 는 레이어 밖에
+reset, body 의 면과 글자(body 역할 전체) · 스코프 잉크 · 포커스 링 · reduced motion 은 base, 면 · 잉크 · 간격 지도(color.css 의 surfaceClass · inkClass, space.css)와
+typography.css 의 class 전부(Text 역할 · mono · 숫자 · control preset · fontSize 탈출구)는 utilities, accent × variant 지도(color.css 의 accentVariantClass)와 primitives · atoms 는 components. `@keyframes` 와 `@property` 만 레이어 밖에 선다. 앱 CSS 는 레이어 밖에
 두므로 앱 className 이 로드 순서와 무관하게 패키지를 이긴다.
 
 배포본은 ESM 전용이고 peer 는 react · react-dom `^18.2.0 || ^19.0.0` 이다. 타입은 `tsconfig.build.json`(테스트 ·
@@ -137,23 +137,27 @@ focus ring 색은 `interaction.focus`에, 링크 색은 `interaction.link`에 �
 
 Typography는 원본 수치인 **Palette**, 이를 조합한 **글자 역할**, 실제 반복되는 완성 스타일만 담는 **Control preset**으로 나뉜다. 각 스타일은 Palette의 size · weight · leading · tracking을 참조하므로 컴포넌트가 `"0.875rem"` 같은 raw 값을 박지 않는다. 정본은 [docs/foundations/typography.md](docs/foundations/typography.md)다. Text variant는 제목 위계와 텍스트 역할을 조합한다:
 
-`display 32 · title 24 · heading 20 · subheading 16 · body 14 · caption 13 · label 12`, 컨트롤 글자는 preset으로 `13 · 13 · 14`.
+`hero 36–60 유동 · display 32 · title 24 · heading 20 · subheading 16 · body 14 · caption 13 · label 12`, 컨트롤 글자는 preset으로 `13 · 13 · 14`.
 
 서체는 위계가 아니라 **family 축**이다 — `Text` 의 `family`(sans 기본 · mono)가 어느
-variant 에도 교차한다. mono 는 `.pui-mono` 가 등폭·전용 tracking·크기 배율을 적용한다.
+variant 에도 교차한다. mono 는 등폭·전용 tracking·크기 배율을 적용하고 어디서든 줄을 끊는다.
 
 - **body 14px** anchor — 복잡한 웹앱의 표준 밀도. 자주 쓰지 않는 16px 본문과 body size variant는
   두지 않는다. 조작 문구는 컴포넌트 간 중복을 제거한 `typography.preset`, 보조 정보는 `caption`, 짧은 이름은 `label`로 나눈다.
-- **제목 위계** — `display` 는 큰 제목, `title`은 페이지 제목, `heading`과 `subheading`은 섹션 제목용이다. HTML 태그는 `as`로 별도 지정한다.
-- **leading은 px 고정값** — Text: `display 32/40 · title 24/32 · heading 20/28 · subheading 16/24 · body 14/20 · caption 13/16 · label 12/16`. Control: `sm 13/16 · md 13/16 · lg 14/16`.
+- **제목 위계** — `hero`는 랜딩 헤드라인, `display` 는 큰 제목, `title`은 페이지 제목, `heading`과 `subheading`은 섹션 제목용이다. HTML 태그는 `as`로 별도 지정한다.
+- **leading은 px 고정값** — Text: `display 32/40 · title 24/32 · heading 20/28 · subheading 16/24 · body 14/20 · caption 13/16 · label 12/16`. Control: `sm 13/16 · md 13/16 · lg 14/16`. **선언된 예외는 `hero` 하나다** — 크기는 뷰포트 폭을 따라 자라는 `clamp(2.25rem, 6vw, 3.75rem)`, 행간은 단위 없는 1.04.
 - **weight 는 variant 와 직교한 별도 축** — `regular 400 · normal 450 · medium 500 ·
-  semibold 600 · strong 650 · bold 700`. display·title 700, heading·subheading·label 600,
-  body 500, caption 400. 버튼은 medium(solid는 strong 650), 입력값은 normal 450이다(`tokens.typography.palette.weight.*`).
-- **서체** — Pretendard 를 맨 앞에(라틴·한글을 한 몸으로 그려 굵기가 균형), `-apple-system`
+  semibold 600 · strong 650 · bold 700`. hero·display·title 700, heading·subheading·label 600,
+  body 500, caption 400. 버튼은 medium(solid는 strong 650), 입력값은 normal 450이다(`tokens.typography.palette.weight.*`). preset의 굵기 이름은 Palette와 같다 — `button.medium`은 500, `button.strong`은 650이다. 앱은 Palette를 직접 읽지 않고 문장 속 강조를 `emphasisRule('regular' | 'medium' | 'semibold' | 'bold')`로 고른다.
+- **역할을 적용하는 단위는 `tokens/typography-recipes.ts` 하나** — 컴포넌트는 `Text`, 앱 stylesheet는 `typographyRule` · `monoRule` · `codeRule`(`inline` · `compact` · `block`) · `presetRule` · `emphasisRule`(`/tokens`)로 같은 선언을 가져온다. body 요소는 body 역할 전체(굵기 500과 줄바꿈 포함)를 받아 Text 밖의 글자도 같은 글자로 그려진다.
+- **줄바꿈은 서체가 정한다** — sans 는 `keep-all` + `break-word`(한글은 어절 사이에서만), mono 는 어디서든 끊는다(`anywhere`). Button · Badge preset은 `white-space: nowrap`까지 담아 한 줄 정책을 소유하고, Field · Textarea는 값이 줄을 정한다. 앱은 단어를 끊는 규칙(`word-break` · `overflow-wrap`)을 따로 두지 않는다.
+- **fontSize 탈출구는 하나** — `label · caption · body`(`CONTROL_FONT_SIZES`)만 받고, 크기만 바꾸며 행간과 geometry는 preset에 남는다. Field 입력값은 preset의 `inputLeading` 20 줄상자에 앉고, Shape의 inset 식은 글자 줄 16을 읽는다. Text는 `numeric`으로 숫자 글리프만 `tabular-nums`로 맞춘다.
+- **서체** — Pretendard Variable 은 필수다. 굵기 사다리 400·450·500·600·650·700 이 그것을 전제하고, 없으면
+  시스템 폰트가 가까운 굵기로 접힌다(기하는 그대로). Pretendard 를 맨 앞에(라틴·한글을 한 몸으로 그려 굵기가 균형), `-apple-system`
   은 fallback. `family="mono"` 는 코드·토큰·식별자 같은 기술적 자리에만 — 숫자를 무조건
   등폭으로 두지 않는다. 데이터 표의 숫자 열은 sans 그대로 `tabular-nums` 로 자리만 맞춘다.
-  폰트 스니펫(Pretendard · D2Coding, 버전 고정)의 정본은 [install.md](docs/get-started/install.md#폰트) 이고,
-  `app/index.html` 은 그 두 줄을 그대로 쓴다 — `scripts/docs-sync.test.mjs` 가 둘을 대조한다.
+  폰트 스타일시트 주소(Pretendard · D2Coding, 버전 고정)의 정본은 `FONT_STYLESHEETS`(`tokens/typography.ts`, `/tokens`)이고,
+  [install.md](docs/get-started/install.md#폰트) 의 스니펫과 `app/index.html` 이 그 두 줄을 그대로 쓴다 — `scripts/docs-sync.test.mjs` 가 둘을 정본과 대조한다.
 - **label 은 sentence-case semibold** — mono·uppercase 아님.
 
 ---
@@ -203,9 +207,9 @@ Primitive 계약의 정본은 [docs/primitives/](docs/primitives/README.md)(Layo
 
 `docs/`의 계약 문장·문단·표 바로 앞에는 렌더되지 않는 표시 `[contract:<area>.<subject>.<slug>]: #`를 한 줄로 둡니다. area는 foundations · primitives · atoms · install · guardrails · app 중 하나입니다. 그 계약을 단언하는 테스트는 제목을 `[<id>]`로 시작하고, 한 테스트가 계약 여럿을 단언하면 id를 이어 씁니다(`[a] [b] 제목`). 새 계약 문장은 같은 변경에서 표시와 테스트를 함께 얻습니다. `scripts/check-contracts.mjs`가 `pnpm test` 안에서 둘을 1:1로 대조합니다 — 같은 id의 표시가 둘이거나, 테스트 없는 표시(skip · todo · fixme · fail 테스트는 세지 않습니다), 표시 없는 테스트 id, 내용 블록이 뒤따르지 않는 표시, 문단·목록·표에 이어 붙어 글자로 보이는 표시는 실패입니다. 표 바로 위의 표시는 GitHub에서 글자로 보이므로 표와 표시 사이에 빈 줄을 둡니다.
 
-테스트 파일은 계층과 시스템 이름을 따릅니다. 단위 테스트는 소스 옆에 `tokens/{color,shape,layout}.test.ts` · `theme/{engine,store}.test.ts` · `theme/provider.test.tsx` · `primitives/{layout,content,theme,interaction,a11y}.test.tsx` · `atoms/<Atom>.test.tsx`로, e2e는 `tests/{foundations,primitives,atoms,app,install}/<시스템>.spec.ts`로 둡니다. 테스트 이름에서 Foundations는 Color부터 Motion까지 다섯 시스템만 뜻합니다. e2e 도구(하네스 · 키보드 · 기하 · 콘솔 · 계산된 스타일 probe `style.ts`)와 단위 테스트도 함께 쓰는 `dp()`는 `tests/support/`에 있습니다. 앱의 단위 테스트(`app/src/**/*.test.ts(x)`)는 문서 파서 · 링크 해석 · `docs/` 전체의 링크와 앵커 · 사이트 지도 · Playground registry와 JSX 문법에 더해, Foundations inspector(`playground/foundations/inspector.test.ts`: 역할 설명 `ROLE_NOTES`의 누락 없음 · 두 테마의 Palette 경로 이름 · 타이포 preset 범위)를 지킵니다.
+테스트 파일은 계층과 시스템 이름을 따릅니다. 단위 테스트는 소스 옆에 `tokens/{color,typography,shape,layout}.test.ts` · `styles/typography.test.ts` · `theme/{engine,store}.test.ts` · `theme/provider.test.tsx` · `primitives/{layout,content,theme,interaction,a11y}.test.tsx` · `atoms/<Atom>.test.tsx`로, e2e는 `tests/{foundations,primitives,atoms,app,install}/<시스템>.spec.ts`로 둡니다. 테스트 이름에서 Foundations는 Color부터 Motion까지 다섯 시스템만 뜻합니다. e2e 도구(하네스 · 키보드 · 기하 · 콘솔 · 계산된 스타일 probe `style.ts`)와 단위 테스트도 함께 쓰는 `dp()`는 `tests/support/`에 있습니다. 앱의 단위 테스트(`app/src/**/*.test.ts(x)`)는 문서 파서 · 링크 해석 · `docs/` 전체의 링크와 앵커 · 사이트 지도 · Playground registry와 JSX 문법에 더해, Foundations inspector(`playground/foundations/inspector.test.ts`: 역할 설명 `ROLE_NOTES`의 누락 없음 · 두 테마의 Palette 경로 이름 · 타이포 preset 범위)를 지킵니다.
 
-e2e는 자기 서버를 직접 띄웁니다. 앱은 41731, 하네스(`fixtures/harness`, `?case=geometry|theme|layers`)는 41732 포트에서 `--strictPort`로 뜨고 이미 떠 있는 서버를 재사용하지 않으므로, 포트를 다른 서버가 쓰고 있으면 실행이 실패합니다. 포트는 `E2E_APP_PORT` · `E2E_HARNESS_PORT`로 바꿉니다. 하네스는 Vite 내부 경로 없이 패키지를 exports로만 불러옵니다. 프로젝트는 chromium · chromium-dark · chromium-reduced-motion · chromium-forced-colors · firefox · webkit 여섯입니다. firefox · webkit은 `foundations/shape` · `primitives` · `atoms` spec을 돌고, `tests/dist/`는 배포본 전용 설정만 돌립니다 — 이름은 dist여도 산출물이 아니라 소스이므로 git · eslint · check-contracts는 산출물 `dist/`와 달리 이 디렉터리를 읽습니다. Tab은 `tests/support/keyboard.ts`의 `tab()`으로만 누릅니다 — macOS WebKit에서는 Alt+Tab이어야 버튼까지 닿습니다. 한 엔진에서만 나는 실패는 `playwright.config.ts`의 `ENGINE_EXCLUSIONS`에 이유와 다시 켜는 단계를 적어 그 엔진에서만 끕니다.
+e2e는 자기 서버를 직접 띄웁니다. 앱은 41731, 하네스(`fixtures/harness`, `?case=geometry|theme|layers|typography`)는 41732 포트에서 `--strictPort`로 뜨고 이미 떠 있는 서버를 재사용하지 않으므로, 포트를 다른 서버가 쓰고 있으면 실행이 실패합니다. 포트는 `E2E_APP_PORT` · `E2E_HARNESS_PORT`로 바꿉니다. 하네스는 Vite 내부 경로 없이 패키지를 exports로만 불러옵니다. 프로젝트는 chromium · chromium-dark · chromium-reduced-motion · chromium-forced-colors · firefox · webkit 여섯입니다. firefox · webkit은 `foundations/shape` · `primitives` · `atoms` spec을 돌고, `tests/dist/`는 배포본 전용 설정만 돌립니다 — 이름은 dist여도 산출물이 아니라 소스이므로 git · eslint · check-contracts는 산출물 `dist/`와 달리 이 디렉터리를 읽습니다. Tab은 `tests/support/keyboard.ts`의 `tab()`으로만 누릅니다 — macOS WebKit에서는 Alt+Tab이어야 버튼까지 닿습니다. 한 엔진에서만 나는 실패는 `playwright.config.ts`의 `ENGINE_EXCLUSIONS`에 이유와 다시 켜는 단계를 적어 그 엔진에서만 끕니다.
 
 ---
 

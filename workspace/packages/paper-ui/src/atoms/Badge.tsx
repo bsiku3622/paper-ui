@@ -11,9 +11,9 @@
 import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import { resolveAccent, resolveControlTypography } from "../resolvers";
-import type { Accent, ControlShape, ControlSize, TextVariant, Variant } from "../tokens";
-import { badgeRoot, badgeSize, badgeDot, badgePill, badgeFontSize } from "./Badge.css";
+import { resolveAccent, resolveControlFontSize, resolvePreset } from "../resolvers";
+import type { Accent, ControlFontSize, ControlShape, ControlSize, Variant } from "../tokens";
+import { badgeRoot, badgeSize, badgeDot, badgePill } from "./Badge.css";
 
 export type BadgeProps = Omit<HTMLAttributes<HTMLSpanElement>, "className"> & {
   // 의미 색 (info·success·warning·error). 안 주면 뉴트럴 회색.
@@ -22,7 +22,7 @@ export type BadgeProps = Omit<HTMLAttributes<HTMLSpanElement>, "className"> & {
   variant?: Variant;
   // 크기 3 단 (sm·md·lg). 배지 높이 사다리(20·22·24).
   size?: ControlSize;
-  fontSize?: TextVariant;
+  fontSize?: ControlFontSize;
   // 앞에 작은 색 점(상태 표시자). 글자색(currentColor)을 따른다.
   dot?: boolean;
   // 실루엣 — rounded 는 시스템 곡선(radius.control), pill 은 알약(높이의 절반).
@@ -42,8 +42,8 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
       className={joinClass(
         badgeRoot,
         badgeSize[size],
-        resolveControlTypography("badge"),
-        fontSize && badgeFontSize[fontSize],
+        resolvePreset("badge"),
+        resolveControlFontSize(fontSize),
         resolveAccent(accent, variant),
         shape === "pill" && badgePill,
         className,

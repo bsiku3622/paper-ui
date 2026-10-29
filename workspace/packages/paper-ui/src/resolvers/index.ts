@@ -8,7 +8,7 @@ import { joinClass } from "../internal/joinClass";
 import { surfaceClass } from "../styles/color.css";
 import { spaceClass } from "../styles/space.css";
 import { keys } from "../tokens/helpers";
-export { resolveControlTypography, resolveText } from "./typography";
+export { resolveControlFontSize, resolvePreset, resolveText } from "./typography";
 export { resolveSurface, resolveInk, resolveAccent } from "./color";
 export { resolveSpace } from "./space";
 

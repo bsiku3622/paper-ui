@@ -9,16 +9,16 @@ import {
 } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import { resolveControlTypography } from "../resolvers";
-import { CONTROL_ICON, type ControlShape, type ControlSize, type TextVariant } from "../tokens";
+import { resolveControlFontSize, resolvePreset } from "../resolvers";
+import { CONTROL_ICON, type ControlFontSize, type ControlShape, type ControlSize } from "../tokens";
 import { Icon } from "../primitives/Icon";
-import { selectRoot, selectSize, selectFontSize, selectPill, selectWrap, selectArrow, selectArrowSize } from "./Select.css";
+import { selectRoot, selectSize, selectPill, selectWrap, selectArrow, selectArrowSize } from "./Select.css";
 
 // className/style target the visible wrapper; ref and native attributes target select.
 export type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "className" | "children" | "size"> & {
   children: ReactNode;
   size?: ControlSize;
-  fontSize?: TextVariant;
+  fontSize?: ControlFontSize;
   shape?: ControlShape;
   className?: string;
 };
@@ -28,7 +28,7 @@ const SelectRoot = forwardRef<HTMLSelectElement, SelectProps>(function SelectRoo
   ref,
 ) {
   return (
-    <span style={style} className={joinClass(selectWrap, selectSize[size], resolveControlTypography("field", size), fontSize && selectFontSize[fontSize], shape === "pill" && selectPill, className)}>
+    <span style={style} className={joinClass(selectWrap, selectSize[size], resolvePreset("field", size), resolveControlFontSize(fontSize), shape === "pill" && selectPill, className)}>
       <select
         ref={ref}
         onPointerDown={(event) => {
