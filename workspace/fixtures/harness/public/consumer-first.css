@@ -9,3 +9,8 @@
 .consumer-field {
   border-color: rgb(255, 0, 128);
 }
+
+/* A named Box size is a class like any other package rule, so the app's width replaces it. */
+.consumer-box {
+  width: 123px;
+}

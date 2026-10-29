@@ -60,6 +60,10 @@ export const FEATURES = [
   { name: "overflow-wrap: anywhere", pattern: /overflow-wrap\s*:\s*anywhere\b/, kind: "required", since: since("80", "80", "65", "15.4", "15.4") },
   { name: "clamp()", pattern: /(?<![\w-])clamp\(/, kind: "required", since: since("79", "79", "75", "13.1", "13.4") },
   { name: "prefers-contrast", pattern: /\(\s*prefers-contrast\s*:/, kind: "required", since: since("96", "96", "101", "14.1", "14.5") },
+  // The overflow keyword Box offers beside hidden: overflow, overflow-x and overflow-y.
+  { name: "overflow: clip", pattern: /(?<![\w-])overflow(?:-[xy])?\s*:\s*clip\b/, kind: "required", since: since("90", "90", "81", "16", "16") },
+  // The named keywords of Box's width and height classes. fit-content waits longest: Firefox ships it unprefixed from 94.
+  { name: "intrinsic sizing keywords", pattern: /(?<![\w-])(?:(?:min|max)-)?(?:width|height)\s*:\s*(?:fit|min|max)-content\b/, kind: "required", since: since("46", "79", "94", "11", "11") },
 ];
 
 // Every feature the stylesheet uses, and the engines at the floor that lack it.

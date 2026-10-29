@@ -110,14 +110,18 @@ prop이 받는 닫힌 값의 집합을 **축**이라 부릅니다. 축마다 상
 | `CONTROL_FONT_SIZES` · `ControlFontSize` | `tokens/typography.ts` | 컨트롤의 `fontSize` — 컨트롤 상자가 담을 수 있는 `TEXT_VARIANTS`의 부분집합 |
 | `CONTROL_PRESETS` · `ControlPreset` | `tokens/typography.ts` | `tokens.typography.preset.<preset>` |
 | `EMPHASES` · `Emphasis` | `tokens/typography.ts` | `emphasisRule()`의 인자 — Palette 굵기 이름의 부분집합 |
-| `SPACES` · `Space` | `tokens/shape.ts` | Box의 `padding` · `gap`, `tokens.shape.inset.<space>`, `tokens.layout.gap.<space>` |
+| `SPACES` · `Space` | `tokens/shape.ts` | Box의 `padding`, Stack · Inline · Grid의 `gap` · `rowGap` · `columnGap`, `tokens.shape.inset.<space>`, `tokens.layout.gap.<space>` |
 | `DIMENSIONS` · `Dimension` | `tokens/shape.ts` | Box의 `width` · `height` 이름 값, `tokens.shape.dimension` |
-| `MEASURES` · `Measure` | `tokens/shape.ts` | `tokens.shape.measure.<measure>` |
+| `MEASURES` · `Measure` | `tokens/shape.ts` | Box의 `measure.<measure>` 폭, `tokens.shape.measure.<measure>` |
 | `ICON_SIZES` · `IconSize` | `tokens/shape.ts` | Icon의 `size`, IconButton의 `iconSize` — `TEXT_VARIANTS`의 부분집합 |
 | `CONTROL_SHAPES` · `ControlShape` | `tokens/shape.ts` | Button · Badge · Field · Select의 `shape` |
+| `BOX_RADII` · `BoxRadius` | `tokens/shape.ts` | Box의 `radius` — `radius.surface`의 단계와 `full` |
 | `ELEVATIONS` · `Elevation` | `tokens/layout.ts` | Box의 `elevation`, `tokens.layout.elevation.<elevation>` |
 | `BREAKPOINTS` · `Breakpoint` | `tokens/layout.ts` | `tokens.layout.breakpoint.<breakpoint>` |
-| `CONTAINERS` · `Container` | `tokens/layout.ts` | `tokens.layout.container.<container>` |
+| `CONTAINERS` · `Container` | `tokens/layout.ts` | Box의 `container.<container>` 폭, `tokens.layout.container.<container>` |
+| `ALIGNS` · `Align` | `tokens/layout.ts` | Stack · Inline · Grid의 `align` (Stack은 `baseline` 제외) |
+| `JUSTIFIES` · `Justify` | `tokens/layout.ts` | Stack · Inline · Grid의 `justify` — 주축 분배 |
+| `JUSTIFY_ITEMS` · `JustifyItem` | `tokens/layout.ts` | Grid의 `justifyItems` — 칸 안의 가로 정렬 |
 | `ORIENTATIONS` · `Orientation` | `tokens/layout.ts` | Divider의 `orientation`, RovingFocus의 `orientation`(`both` 추가) |
 
 새 축은 원본 tree에서 파생하거나 `satisfies`로 양방향 묶고 `vocabulary.ts`에 상수·타입 짝으로 공개합니다. 원본 tree에서 파생한 축은 단계를 더하면 상수와 타입이 함께 늘고, `satisfies`로 묶은 축은 한쪽만 늘면 타입 검사가 막습니다.
@@ -142,7 +146,7 @@ export const panel = style({
 
 예시처럼 stylesheet를 `.css.ts`로 쓰는 앱은 `@vanilla-extract/css`와 번들러 플러그인(예: `@vanilla-extract/vite-plugin`)을 직접 설치합니다. 패키지는 빌드할 때만 vanilla-extract를 쓰고, 배포본은 완성된 CSS(`styles.css`)만 담기 때문입니다.
 
-안쪽 여백은 `tokens.shape.inset`, 형제 사이와 margin·위치 offset은 `tokens.layout.gap`, 그림자와 z는 `tokens.layout.elevation`에서 고릅니다. 미디어 쿼리는 CSS 변수를 읽지 못하므로 `tokens.layout.breakpoint`는 `"768px"` 같은 값입니다. 사이드바 폭이나 그리드 트랙처럼 그 화면에만 있는 치수는 앱이 직접 씁니다.
+안쪽 여백은 `tokens.shape.inset`, 형제 사이와 margin·위치 offset은 `tokens.layout.gap`, 그림자와 z는 `tokens.layout.elevation`에서 고릅니다. 미디어 쿼리는 CSS 변수를 읽지 못하므로 `tokens.layout.breakpoint`는 `"48em"` 같은 값입니다. 사이드바 폭이나 그리드 트랙처럼 그 화면에만 있는 치수는 앱이 직접 씁니다.
 
 ## 규칙은 빌드가 지킨다
 
@@ -152,10 +156,12 @@ export const panel = style({
 [contract:guardrails.no-rule-disable.paper-rules-stay-on]: #
 [contract:guardrails.no-rule-disable.reason-required]: #
 [contract:guardrails.internal-class.no-class-names]: #
+[contract:guardrails.inline-token.no-token-style]: #
+[contract:guardrails.inline-token.declared-runtime]: #
 
 1. **raw 색값 금지** (`paper/raw-color`). OKLCH source는 `palette.ts`, HEX 생성은 `color-ladder.ts`에만 있습니다. 소비처는 `tokens.color`만 참조하고 색을 계산하지 않습니다.
 2. **원본 import 격리** (`no-restricted-imports`). palette·ladder·shape·layout의 원본 모듈은 컴포넌트·resolver·앱이 import하지 않습니다. 원본을 그대로 보여주는 Foundations inspector만 예외입니다.
-3. **패키지의 inline style로 토큰 주입 금지** (`paper/inline-token`). 패키지 스타일은 `.css.ts`의 className으로만 적용합니다.
+3. **패키지의 inline style로 토큰 주입 금지** (`paper/inline-token`). 패키지 스타일은 `.css.ts`의 className으로만 적용합니다. 패키지의 `.ts` · `.tsx`에서 토큰 · `styles` · `internal` · 패키지 자신에서 온 값이 `style`에 닿으면, 변수와 함수 호출을 거쳐도 규칙이 따라가 막습니다. 실행 중에 정해지는 값만 예외이고 그 목록이 전부입니다: Draggable 이동 좌표, Grid track, Overlay 층 깊이 변수, Overlay 앵커 위치, Overlay 원본 변수 운반, 호출자가 넘긴 style.
 4. **길이는 원본에만** (`paper/source-numbers`). 패키지는 원본 파일 밖에서 길이 숫자를 쓰지 않습니다. 앱은 간격·형태·깊이(padding·margin·gap·offset·radius·선·그림자·z)를 역할로 고르고, 화면 고유의 치수만 직접 씁니다.
 5. **패키지 CSS는 레이어 안에** (`paper/layered-styles`). 패키지 stylesheet는 vanilla-extract의 `style` · `styleVariants` · `globalStyle`을 직접 부르지 않고 `tokens/layers.css.ts`의 `layered()`로 규칙을 만듭니다. 그래서 모든 규칙이 cascade layer `pui` 안에 들고, 레이어 밖의 앱 CSS가 로드 순서와 무관하게 이깁니다([우선순위](../get-started/install.md#우선순위)). 레이어를 정의하는 `layers.css.ts`만 예외이고, `keyframes`·`createVar`는 그대로 씁니다.
 6. **규칙은 주석으로 끄지 않음** (`paper/no-rule-disable`). paper 규칙은 `eslint-disable` 주석으로 끌 수 없고, 예외는 `eslint.config.js`에만 선언합니다. 다른 규칙을 끄는 주석은 `--` 뒤에 이유를 적고, 아무것도 가리지 않는 주석은 그 자체로 오류입니다.

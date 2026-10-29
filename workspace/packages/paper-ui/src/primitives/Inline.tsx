@@ -2,35 +2,46 @@
 
 import { forwardRef, type ElementType, type ReactElement } from "react";
 
-import { Box, type BoxProps } from "./Box";
+import { Box, type BoxOwnProps } from "./Box";
 import { joinClass } from "../internal/joinClass";
-import { inlineRoot, inlineAlign, inlineJustify, inlineWrap } from "./Inline.css";
+import { resolveGap, type GapProps } from "../resolvers";
+import type { Align, Justify } from "../tokens";
+import { flexAlign, flexJustify, inlineRoot, inlineWrap } from "./flex.css";
+import type { PolymorphicProps } from "./polymorphic";
 
-export type InlineProps<As extends ElementType = "div"> = BoxProps<As> & {
-  align?: "start" | "center" | "end" | "baseline";
-  justify?: "start" | "center" | "end" | "between";
+// align 은 세로 정렬(기본 center)이고 justify 는 가로 분배다. 기본값은 root 가 갖고, prop 은 줄 때만 class 가 된다.
+type InlineOwnProps = BoxOwnProps & GapProps & {
+  align?: Align;
+  justify?: Justify;
   wrap?: boolean;
 };
 
+export type InlineProps<As extends ElementType = "div"> = PolymorphicProps<InlineOwnProps, As>;
+
 const InlineImpl = forwardRef<HTMLDivElement, Omit<InlineProps, "as" | "ref"> & { as?: ElementType }>(function Inline({
-  align = "center",
+  gap,
+  rowGap,
+  columnGap,
+  align,
   justify,
   wrap,
   className,
   ...rest
 }, ref) {
   return (
-  <Box ref={ref}
-    className={joinClass(
-      inlineRoot,
-      inlineAlign[align],
-      justify && inlineJustify[justify],
-      wrap && inlineWrap,
-      className,
-    )}
-    {...(rest as object)}
-  />
-);
+    <Box
+      ref={ref}
+      className={joinClass(
+        inlineRoot,
+        resolveGap({ gap, rowGap, columnGap }),
+        align && flexAlign[align],
+        justify && flexJustify[justify],
+        wrap && inlineWrap,
+        className,
+      )}
+      {...(rest as object)}
+    />
+  );
 });
 
 export const Inline = InlineImpl as <As extends ElementType = "div">(props: InlineProps<As>) => ReactElement;

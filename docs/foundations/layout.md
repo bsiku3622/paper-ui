@@ -12,11 +12,18 @@ Layout의 숫자는 `tokens/layout.ts`의 `LAYOUT_SOURCE`에만 있습니다. co
 |---|---|---|
 | `layout.gap.xs ~ 3xl` | 4 · 8 · 12 · 16 · 24 · 32 · 48 | Shape inset과 같은 scale |
 | `layout.gutter` | 16 | 페이지 가장자리와 내용 사이, 모달 scrim의 안쪽 |
-| `layout.container.content` | 72rem (1152) | 사이트 본문 격자의 최대 폭 |
-| `layout.breakpoint.sm / md / lg / xl` | 480 · 768 · 1024 · 1280px | 미디어 쿼리가 변수를 못 읽어 값으로 둡니다 |
+| `layout.container.content` | 72rem (1152) | 사이트 본문 격자의 최대 폭. Box에서는 `maxWidth="container.content"`로 고릅니다 |
+| `layout.breakpoint.sm / md / lg / xl` | 30 · 48 · 64 · 80em (480 · 768 · 1024 · 1280px) | 미디어 쿼리가 변수를 못 읽어 값으로 둡니다 |
+| `layout.section.start / end` | clamp(3xl, 8vh, 2 × 3xl) · clamp(2xl, 5vh, 3xl) | 페이지 구획의 위·아래 거리. 뷰포트 높이를 따라 자라는 유동 단계입니다 |
 | `layout.elevation.<level>.z / .shadow` | 아래 표 | 층 하나가 쌓임과 그림자를 함께 정합니다 |
 
-Stack · Inline · Grid의 `gap`, Grid의 `rowGap` · `columnGap`, Box의 `gap`이 gap 단계를 받습니다. 앱 stylesheet에서는 `gap` · `margin` · `top`/`left` 같은 위치 offset에 `tokens.layout.gap`을 씁니다.
+Stack · Inline · Grid의 `gap`, Inline · Grid의 `rowGap` · `columnGap`이 gap 단계를 받습니다. 자식을 늘어놓지 않는 Box에는 gap이 없습니다. 앱 stylesheet에서는 `gap` · `margin` · `top`/`left` 같은 위치 offset에 `tokens.layout.gap`을 씁니다.
+
+[contract:foundations.layout.breakpoint-em]: #
+breakpoint는 em으로 적습니다. 길이는 rem, 미디어 쿼리는 em, 선과 포커스 링은 px로 쓰는 것이 단위 정책이라, 사용자가 브라우저의 기본 글자 크기를 키우면 container · gutter 같은 길이와 breakpoint가 같은 비율로 움직입니다. 미디어 쿼리의 em은 문서의 `html` 글자 크기가 아니라 브라우저의 기본 글자 크기를 기준으로 하고, 기본 크기(16px)에서는 dp를 16으로 나눈 값이라 `30em`은 480px와 같은 자리입니다. 기본 크기가 20px인 브라우저에서는 `48em`이 960px라서 900px 창이 이미 `md`보다 좁은 화면으로 읽힙니다.
+
+[contract:foundations.layout.section-fluid]: #
+section은 고정 gap 사다리의 선언된 유동 예외입니다. `start`는 `clamp(3xl, 8vh, 2 × 3xl)`, `end`는 `clamp(2xl, 5vh, 3xl)`이라 뷰포트가 낮으면 3xl · 2xl에 머물고 높아지면 위 한도까지 자랍니다. 새 변수를 굽지 않고 Space 원본 변수를 쓰는 식이라, 하위 트리에서 Space 원본을 덮으면 section도 다시 계산됩니다. 유동 단계는 Typography의 `hero`와 이 section 둘뿐입니다.
 
 ## Elevation — 쌓임과 그림자는 한 결정이다
 

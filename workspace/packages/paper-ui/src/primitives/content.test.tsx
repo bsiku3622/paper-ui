@@ -1,3 +1,4 @@
+import { createRef } from "react";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
@@ -16,6 +17,14 @@ describe("Text", () => {
       expect(element.classList.contains(textRoleClass[variant]), variant).toBe(true);
       view.unmount();
     }
+  });
+
+  it("[primitives.polymorphic.own-props-win] types the ref by the tag the variant draws, without an `as`", () => {
+    const label = createRef<HTMLSpanElement>();
+    const heading = createRef<HTMLHeadingElement>();
+    render(<><Text variant="label" ref={label}>Label</Text><Text variant="heading" ref={heading}>Heading</Text></>);
+    expect(label.current?.tagName).toBe("SPAN");
+    expect(heading.current?.tagName).toBe("H2");
   });
 
   it("[primitives.text.numeric] sets digits tabular only when numeric is given", () => {

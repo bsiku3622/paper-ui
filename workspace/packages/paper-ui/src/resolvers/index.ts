@@ -10,11 +10,11 @@ import { spaceClass } from "../styles/space.css";
 import { keys } from "../tokens/helpers";
 export { resolveControlFontSize, resolvePreset, resolveText } from "./typography";
 export { resolveSurface, resolveInk, resolveAccent } from "./color";
-export { resolveSpace } from "./space";
+export { resolveGap, resolveSpace, type GapProps } from "./space";
 
 // ───── 합성 (Box) ──────────────────────────────────────────────────────────────
 //
-// Box 는 구조 패널이다: 어떤 면(surface 깊이)에, 어떤 간격(padding·gap)을 두는가.
+// Box 는 구조 패널이다: 어떤 면(surface 깊이)에, 어떤 안쪽 여백(padding)을 두는가. 자식 사이 간격(gap)은 자식을 늘어놓는 Stack·Inline·Grid 가 갖는다.
 // 색(잉크)·상태 같은 마크 축은 Box 에 없다 — 잉크색은 Button·Badge·Alert, 글자는 Text.
 // 카드 테두리(border)·모서리(radius)·그림자(shadow)·테마(theme)는 Box.tsx 가 직접 붙인다.
 // 면 · 여백 축은 이 지도 하나에서 나온다 — prop 의 타입, Box 가 가르는 prop 의 목록, class 가 모두 같은 키를 돈다.
@@ -24,7 +24,6 @@ export const BOX_STYLE = {
   padding: spaceClass.padding,
   paddingX: spaceClass.paddingX,
   paddingY: spaceClass.paddingY,
-  gap: spaceClass.gap,
 } as const;
 
 export type BoxStyleProps = { [K in keyof typeof BOX_STYLE]?: keyof (typeof BOX_STYLE)[K] };

@@ -43,7 +43,7 @@ export const Docs = () => {
   return (
     <Stack>
       <SiteNav />
-      <Box style={{ display: "grid", gridTemplateColumns: `${tokens.shape.dimension.width.lg} 1fr`, maxWidth: tokens.layout.container.content, marginInline: "auto", width: "100%" }}>
+      <Box maxWidth="container.content" width="full" style={{ display: "grid", gridTemplateColumns: `${tokens.shape.dimension.width.lg} 1fr`, marginInline: "auto" }}>
         <Box as="nav" aria-label="문서 목차" style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, top: NAV_HEIGHT, position: "sticky", alignSelf: "start", padding: tokens.shape.inset.lg, borderRight: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
           <Stack gap="lg">
             {DOC_GROUPS.map((group) => (

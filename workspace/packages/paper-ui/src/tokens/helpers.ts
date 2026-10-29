@@ -5,7 +5,8 @@
 // 두 자리가 같은 트리 · 같은 변환 규칙을 쓰므로 이름이 어긋날 수 없다.
 
 // Length units — Shape·Layout·Typography author dp numbers (1dp = 1px at the default 16px root) and
-// turn them into CSS only here. Lengths scale with the root font (rem); edges stay in CSS px.
+// turn them into CSS only here. Lengths scale with the root font (rem), media queries with the browser's
+// default font size (em), and edges stay in CSS px.
 export const rem = (dp: number): string => `${dp / 16}rem`;
 export const px = (dp: number): string => `${dp}px`;
 // A ratio of the element's own font size. Zero stays a bare 0.

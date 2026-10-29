@@ -14,8 +14,8 @@ export type { Variant, SelectableVariant } from "./color-recipes";
 export { TEXT_VARIANTS, TEXT_FAMILIES, CONTROL_SIZES, CONTROL_FONT_SIZES, CONTROL_PRESETS, EMPHASES } from "./typography";
 export type { TextVariant, TextFamily, ControlSize, ControlFontSize, ControlPreset, Emphasis } from "./typography";
 
-export { SPACES, DIMENSIONS, MEASURES, ICON_SIZES, CONTROL_SHAPES } from "./shape";
-export type { Space, Dimension, Measure, IconSize, ControlShape } from "./shape";
+export { SPACES, DIMENSIONS, MEASURES, ICON_SIZES, CONTROL_SHAPES, BOX_RADII } from "./shape";
+export type { Space, Dimension, Measure, IconSize, ControlShape, BoxRadius } from "./shape";
 
-export { ELEVATIONS, BREAKPOINTS, CONTAINERS, ORIENTATIONS } from "./layout";
-export type { Elevation, Breakpoint, Container, Orientation } from "./layout";
+export { ELEVATIONS, BREAKPOINTS, CONTAINERS, ALIGNS, JUSTIFIES, JUSTIFY_ITEMS, ORIENTATIONS } from "./layout";
+export type { Elevation, Breakpoint, Container, Align, Justify, JustifyItem, Orientation } from "./layout";

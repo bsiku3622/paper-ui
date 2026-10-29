@@ -98,15 +98,11 @@ describe("enum options", () => {
     }
   });
 
-  it("explain a component-local list or a sample, and name the stage that replaces a pending one", () => {
+  it("explain a component-local list or a sample", () => {
     for (const { entry, control } of enums) {
       if (control.kind !== "enum") continue;
       const label = `${entry.name}.${control.prop}`;
       if (control.source.kind === "local" || control.source.kind === "sample") expect(control.source.reason, label).not.toBe("");
-      if (control.source.kind === "pending") {
-        expect(control.source.stage, label).toMatch(/^S\d{2}$/);
-        expect(control.source.becomes, label).not.toBe("");
-      }
     }
   });
 
@@ -181,6 +177,16 @@ describe("defaults", () => {
     for (const { entry, control } of enums) {
       const own = entry.defaults[control.prop];
       if (own !== undefined && control.kind === "enum") expect(control.options, `${entry.name}.${control.prop}`).toContain(String(own));
+    }
+  });
+
+  it("let a root default name itself on the select without becoming a stated default", () => {
+    const rooted = enums.filter(({ control }) => control.rootDefault !== undefined);
+    expect(rooted.length).toBeGreaterThan(0);
+    for (const { entry, control } of rooted) {
+      if (control.kind !== "enum") continue;
+      expect(control.options, `${entry.name}.${control.prop}`).toContain(control.rootDefault);
+      expect(entry.defaults[control.prop], `${entry.name}.${control.prop}`).toBeUndefined();
     }
   });
 

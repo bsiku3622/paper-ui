@@ -75,6 +75,13 @@ const remToPx = (value: string) => {
   return match ? `${value} · ${Math.round(Number(match[1]) * 16 * 100) / 100}px` : value;
 };
 
+// A media query reads em of the browser's default font size, so its px is the one at the default 16: "48em · 768px".
+// (An em elsewhere, such as a tracking, is a ratio of its own element's font and has no px of its own.)
+export const mediaValue = (value: string): string => {
+  const match = /^(-?[\d.]+)em$/.exec(value);
+  return match ? `${value} · ${Math.round(Number(match[1]) * 16 * 100) / 100}px` : value;
+};
+
 // What the browser resolved for a token reference, in the current theme.
 export const resolved = (ref: string): string => {
   if (!ref.startsWith("var(")) return remToPx(ref);

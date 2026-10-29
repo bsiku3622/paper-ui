@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { Box, Button, Field, Icon, Overlay, Pressable, Stack, Text } from "@studio-baeks/paper-ui";
+import { Box, Button, Field, Icon, Inline, Overlay, Pressable, Stack, Text } from "@studio-baeks/paper-ui";
 
 import { componentNames, named, parseChildrenText, parseOpeningTag, printJsx, spreadOf } from "./jsx";
 
@@ -23,10 +23,10 @@ describe("printJsx", () => {
   it("leaves out a prop equal to the component's default, but only on the elements the defaults belong to", () => {
     const tree = (
       <Stack gap="md" align="stretch">
-        <Box gap="md" />
+        <Inline gap="md" />
       </Stack>
     );
-    expect(print(tree, { gap: "md" }, ["Stack"])).toBe('<Stack align="stretch">\n  <Box gap="md" />\n</Stack>');
+    expect(print(tree, { gap: "md" }, ["Stack"])).toBe('<Stack align="stretch">\n  <Inline gap="md" />\n</Stack>');
   });
 
   it("keeps false when the default is true", () => {
@@ -58,7 +58,7 @@ describe("printJsx", () => {
   });
 
   it("breaks a long tag into one prop per line", () => {
-    const code = print(<Box surface="raised" border radius="md" padding="lg" paddingX="xl" paddingY="xl" gap="lg" width="240px" minWidth="120px" />);
+    const code = print(<Box surface="raised" border radius="md" padding="lg" paddingX="xl" paddingY="xl" width="240px" minWidth="120px" />);
     expect(code.split("\n")[0]).toBe("<Box");
     expect(parseOpeningTag(code, "Box")?.attrs).toMatchObject({ surface: "raised", border: true, minWidth: "120px" });
   });
