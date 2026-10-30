@@ -4,11 +4,11 @@ import reactHooks from "eslint-plugin-react-hooks";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import paper from "./eslint-rules/paper.js";
 
-const rawSourcePatterns = ["palette", "color-ladder", "colors", "shape", "shape-recipes", "layout"]
+const rawSourcePatterns = ["palette", "color-ladder", "colors", "shape", "shape-recipes", "layout", "motion"]
   .flatMap((name) => ["", ".ts", ".js"].map((extension) => `**/tokens/${name}${extension}`));
 const rawBarrelRestriction = {
   regex: String.raw`(?:^|/)(?:tokens(?:/index(?:\.[tj]s)?)?|@studio-baeks/paper-ui)$`,
-  importNames: ["COLOR_VALUES", "COLOR_VALUES_DARK", "PALETTE", "SHAPE_SOURCE", "SHAPE_VALUES", "SHAPE_RECIPES", "SPACE", "ANATOMY", "LAYOUT_SOURCE", "LAYOUT_VALUES"],
+  importNames: ["COLOR_VALUES", "COLOR_VALUES_DARK", "PALETTE", "SHAPE_SOURCE", "SHAPE_VALUES", "SHAPE_RECIPES", "SPACE", "ANATOMY", "LAYOUT_SOURCE", "LAYOUT_VALUES", "MOTION", "MOTION_LOOPS", "MOTION_REDUCED"],
   message: "Raw source를 barrel로 우회하지 말고 semantic tokens를 사용하세요.",
 };
 
@@ -126,9 +126,9 @@ export default [
           patterns: [rawBarrelRestriction, {
             group: [
               ...rawSourcePatterns,
-              ...["colors", "palette", "color-recipes", "shape", "shape-recipes", "layout", "typography"].map((name) => `!../../../../packages/paper-ui/src/tokens/${name}`),
+              ...["colors", "palette", "color-recipes", "shape", "shape-recipes", "layout", "typography", "motion"].map((name) => `!../../../../packages/paper-ui/src/tokens/${name}`),
             ],
-            message: "규칙 2 — inspector에서 허용한 source(colors·palette·color-recipes·shape·shape-recipes·layout·typography) 외의 raw VALUES는 직접 import하지 않는다.",
+            message: "규칙 2 — inspector에서 허용한 source(colors·palette·color-recipes·shape·shape-recipes·layout·typography·motion) 외의 raw VALUES는 직접 import하지 않는다.",
           }],
         },
       ],

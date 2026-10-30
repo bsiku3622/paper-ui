@@ -1,4 +1,4 @@
-import { tokens, stateTransition, CONTROL_SIZES, type ControlSize } from "../tokens";
+import { tokens, transition, CONTROL_SIZES, type ControlSize } from "../tokens";
 import { outlinedControlProfile, outlinedControlHover } from "../tokens/color-recipes";
 import { controlGeometry, focusRing, geometry } from "../internal/shape";
 import { layered } from "../tokens/layers.css";
@@ -17,7 +17,7 @@ export const selectWrap = style({
   borderWidth: tokens.shape.stroke.border,
   borderStyle: "solid",
   cursor: "pointer",
-  transition: stateTransition("border-color", "background-color"),
+  transition: transition("state", "border-color", "background-color"),
   selectors: {
     '&:has(option[value=""]:checked)': { color: tokens.color.ink.tertiary },
     "&:hover:has(select:enabled)": outlinedControlHover,

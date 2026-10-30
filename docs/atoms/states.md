@@ -36,7 +36,7 @@ neutral Form의 `border.hover`는 `border.base`·`border.strong`보다 진하고
 
 ## Focus와 transition
 
-focus ring은 패키지 전체가 하나의 스타일(`focusRing`)을 씁니다 — 색은 `interaction.focus`, 폭과 offset은 Shape의 `focus.width`·`focus.offset`(2px · 2px)입니다. Form wrapper가 focus의 주인이므로 안쪽 native control은 자기 outline을 끕니다. 상태 전이는 Motion의 `state` 역할(130ms)을 따르고, `prefers-reduced-motion: reduce`에서는 즉시 끝납니다.
+focus ring은 패키지 전체가 하나의 스타일(`focusRing`)을 씁니다 — 색은 `interaction.focus`, 폭과 offset은 Shape의 `focus.width`·`focus.offset`(2px · 2px)입니다. Form wrapper가 focus의 주인이므로 안쪽 native control은 자기 outline을 끕니다. 전이 시간은 Motion의 역할이 정합니다. hover 반응(테두리·글자색)은 `hover`(100ms), 켜진 채 머무는 상태와 면의 전이는 `state`(130ms)이고, 정본은 [Motion](../foundations/motion.md)입니다. `prefers-reduced-motion: reduce`에서는 전이가 즉시 끝납니다.
 
 새 컴포넌트는 다음 질문에 답한 뒤 hover를 추가합니다.
 

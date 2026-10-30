@@ -1,4 +1,4 @@
-import { tokens, stateTransition } from "../tokens";
+import { tokens, transition } from "../tokens";
 import { outlinedControlProfile, outlinedControlHover } from "../tokens/color-recipes";
 import { controlGeometry, focusRing, geometry } from "../internal/shape";
 import { layered } from "../tokens/layers.css";
@@ -17,7 +17,7 @@ export const textareaRoot = style({
   borderWidth: tokens.shape.stroke.border,
   borderStyle: "solid",
   resize: "vertical",
-  transition: stateTransition("border-color", "box-shadow", "background"),
+  transition: transition("state", "border-color", "box-shadow", "background"),
   selectors: {
     "&::placeholder": { color: tokens.color.ink.tertiary },
     '&:not([data-status]):hover:not(:disabled)': {

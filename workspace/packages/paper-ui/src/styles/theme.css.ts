@@ -1,4 +1,4 @@
-// theme.css.ts — 문서 바탕(body · 포커스 링 · reduced motion).
+// theme.css.ts — 문서 바탕(body · 포커스 링).
 //
 // 변수는 tokens/variables.css.ts 가 굽는다. 여기는 그 변수를 읽어 문서에 얹는 규칙만 둔다.
 // component · resolver · app 은 tokens var() 만 본다.
@@ -8,7 +8,7 @@ import { focusRing } from "../internal/shape";
 import { layered } from "../tokens/layers.css";
 import { typographyRule } from "../tokens/typography-recipes";
 
-// 문서 바탕(body · 포커스 링 · reduced motion)은 pui.base, box-sizing 과 body margin 은
+// 문서 바탕(body · 포커스 링)은 pui.base, box-sizing 과 body margin 은
 // 맨 앞의 pui.reset 에 든다.
 const reset = layered("reset");
 const base = layered("base");
@@ -38,7 +38,7 @@ base.globalStyle(`:where([${THEME_ATTRIBUTE}])`, { color: tokens.color.ink.prima
 const swapping = `:root[${THEME_SWAP_ATTRIBUTE}]`;
 base.globalStyle(`${swapping} *, ${swapping} *::before, ${swapping} *::after`, {
   transitionDuration: `${tokens.motion.role.theme.duration} !important`,
-  transitionDelay: `${tokens.motion.duration.instant} !important`,
+  transitionDelay: `${tokens.motion.role.theme.duration} !important`,
 });
 
 // 포커스는 interaction.focus로 통일 (Apple · Atlassian 시그니처). 색이 가장 작게,
@@ -46,17 +46,4 @@ base.globalStyle(`${swapping} *, ${swapping} *::before, ${swapping} *::after`, {
 base.globalStyle(":focus-visible", {
   ...focusRing,
   borderRadius: tokens.shape.radius.control,
-});
-
-// ╭──────────────────────────────────────────────────────────────────────────╮
-// │ Pass 2 — reduced motion                                                  │
-// ╰──────────────────────────────────────────────────────────────────────────╯
-
-base.globalStyle("*", {
-  "@media": {
-    "(prefers-reduced-motion: reduce)": {
-      transitionDuration: `${tokens.motion.duration.reduced} !important`,
-      animationDuration: `${tokens.motion.duration.reduced} !important`,
-    },
-  },
 });

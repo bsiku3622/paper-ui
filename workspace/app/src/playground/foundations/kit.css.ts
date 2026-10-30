@@ -75,3 +75,21 @@ export const stepGrid = style({
 });
 
 export const bar = style({ height: tokens.shape.inset.sm, maxWidth: "100%", borderRadius: tokens.shape.radius.full, background: tokens.color.accent.primary.solid });
+
+// A dot crossing its track while the pointer is over it. The timing is set by the part that draws it.
+const dot = tokens.shape.inset.md;
+export const travelTrack = style({ position: "relative", width: "100%", height: dot, borderRadius: tokens.shape.radius.full, background: tokens.color.control.track });
+export const travelDot = style({
+  position: "absolute",
+  insetBlockStart: 0,
+  insetInlineStart: 0,
+  width: dot,
+  height: dot,
+  borderRadius: tokens.shape.radius.full,
+  background: tokens.color.accent.primary.solid,
+  transitionProperty: "inset-inline-start",
+  selectors: { [`${travelTrack}:hover &`]: { insetInlineStart: `calc(100% - ${dot})` } },
+});
+
+// An easing as its curve on a 64 × 32 plot.
+export const curve = style({ width: tokens.shape.dimension.width.xs, fill: "none", stroke: tokens.color.ink.primary, strokeWidth: tokens.shape.stroke.emphasis, overflow: "visible" });

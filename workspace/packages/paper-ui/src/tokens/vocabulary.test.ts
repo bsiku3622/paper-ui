@@ -3,6 +3,7 @@ import { describe, expect, expectTypeOf, it } from "vitest";
 import { accentProfile } from "./color-recipes";
 import { COLOR_SELECTION, COLOR_VALUES, COLOR_VALUES_DARK, STATUS_PALETTE } from "./colors";
 import { LAYOUT_SOURCE } from "./layout";
+import { MOTION } from "./motion";
 import * as publicEntry from "./public";
 import { SHAPE_SOURCE } from "./shape";
 import { TYPOGRAPHY, TYPOGRAPHY_SOURCE } from "./typography";
@@ -15,7 +16,7 @@ describe("vocabulary", () => {
   it("[foundations.vocabulary.one-pair-per-axis] exports every constant once and nothing else", () => {
     expect(constants.map(([name]) => name).sort()).toEqual([
       "ACCENTS", "ACCENT_TONES", "ALIGNS", "BORDER_LEVELS", "BREAKPOINTS", "COLOR_MODES", "CONTAINERS", "CONTROL_FONT_SIZES", "CONTROL_PRESETS", "CONTROL_SHAPES",
-      "CONTROL_SIZES", "DEPTHS", "DIMENSIONS", "DIVIDER_LEVELS", "ELEVATIONS", "EMPHASES", "ICON_SIZES", "INKS", "INK_LEVELS", "JUSTIFIES", "JUSTIFY_ITEMS", "MEASURES", "ORIENTATIONS",
+      "CONTROL_SIZES", "DEPTHS", "DIMENSIONS", "DIVIDER_LEVELS", "ELEVATIONS", "EMPHASES", "ICON_SIZES", "INKS", "INK_LEVELS", "JUSTIFIES", "JUSTIFY_ITEMS", "MEASURES", "MOTION_ROLES", "ORIENTATIONS",
       "SELECTABLE_VARIANTS", "SPACES", "STATUSES", "SURFACE_FILLS", "SURFACE_RADII", "SURFACE_THEMES", "TEXT_FAMILIES", "TEXT_VARIANTS", "THEME_PREFERENCES", "VARIANTS",
     ]);
   });
@@ -95,6 +96,10 @@ describe("vocabulary", () => {
     expect(vocabulary.CONTAINERS).toEqual(keysOf(LAYOUT_SOURCE.container));
   });
 
+  it("[foundations.vocabulary.one-pair-per-axis] derives the Motion axis from the tree that authors it", () => {
+    expect(vocabulary.MOTION_ROLES).toEqual(keysOf(MOTION));
+  });
+
   it("[foundations.vocabulary.one-pair-per-axis] types each constant and its type as one pair", () => {
     expectTypeOf<vocabulary.Status>().toEqualTypeOf<(typeof vocabulary.STATUSES)[number]>();
     expectTypeOf<vocabulary.Accent>().toEqualTypeOf<(typeof vocabulary.ACCENTS)[number]>();
@@ -129,6 +134,7 @@ describe("vocabulary", () => {
     expectTypeOf<vocabulary.Justify>().toEqualTypeOf<(typeof vocabulary.JUSTIFIES)[number]>();
     expectTypeOf<vocabulary.JustifyItem>().toEqualTypeOf<(typeof vocabulary.JUSTIFY_ITEMS)[number]>();
     expectTypeOf<vocabulary.Orientation>().toEqualTypeOf<(typeof vocabulary.ORIENTATIONS)[number]>();
+    expectTypeOf<vocabulary.MotionRole>().toEqualTypeOf<(typeof vocabulary.MOTION_ROLES)[number]>();
   });
 
   it("closes the axes at the values the components rely on", () => {

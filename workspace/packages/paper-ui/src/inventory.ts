@@ -32,15 +32,16 @@ export const INVENTORY = {
     Composition: ["mergeProps", "mergeRefs", "composeEventHandlers"],
     Theme: ["PaperProvider", "useTheme", "useResolvedTheme"],
   },
-  classes: ["surfaceClass", "paintClass", "elevation"],
+  classes: ["surfaceClass", "paintClass", "elevation", "presence", "loop"],
   foundations: [
-    "tokens", "stateTransition", "FONT_STYLESHEETS",
+    "tokens", "transition", "MOTION_CONSUMERS", "FONT_STYLESHEETS",
     "typographyRule", "monoRule", "codeRule", "presetRule", "emphasisRule",
     "STATUSES", "ACCENTS", "ACCENT_TONES", "VARIANTS", "SELECTABLE_VARIANTS", "SURFACE_FILLS", "INK_LEVELS", "INKS", "BORDER_LEVELS", "DIVIDER_LEVELS", "DEPTHS",
     "COLOR_MODES", "THEME_PREFERENCES", "SURFACE_THEMES", "SYSTEM_COLORS",
     "TEXT_VARIANTS", "TEXT_FAMILIES", "CONTROL_SIZES", "CONTROL_FONT_SIZES", "CONTROL_PRESETS", "EMPHASES",
     "SPACES", "DIMENSIONS", "MEASURES", "ICON_SIZES", "CONTROL_SHAPES", "SURFACE_RADII",
     "ELEVATIONS", "BREAKPOINTS", "CONTAINERS", "ALIGNS", "JUSTIFIES", "JUSTIFY_ITEMS", "ORIENTATIONS",
+    "MOTION_ROLES",
   ],
   polymorphic: ["Box", "Surface", "Paint", "Stack", "Inline", "Grid", "Text", "RovingFocus.Item", "Button"],
 } as const;

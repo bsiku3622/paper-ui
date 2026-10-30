@@ -1,7 +1,7 @@
 // Foundations kit — Typography, Shape, Layout and Motion are drawn with this board, in the order the
 // system is built: its source values, the roles that select from them, then the presets or recipes
 // that combine roles into components. Color keeps its own form (AGENTS.md). The display parts at the
-// end — Swatch, Chip, StepGrid and Meter — are how every page paints a value read from a source.
+// end — Swatch, Chip, StepGrid, Meter, Travel and Curve — are how every page paints a value read from a source.
 
 import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 
@@ -128,3 +128,18 @@ export const StepGrid = ({ steps, children, ...rest }: { steps: number; children
 export const Meter = ({ value, max }: { value: number; max: number }) => (
   <div className={s.bar} style={{ width: `${Math.round((value / max) * 1000) / 10}%` }} />
 );
+
+// A dot that crosses its track while the pointer is over it, with the given timing.
+export const Travel = ({ duration, easing }: { duration: string; easing: string }) => (
+  <div className={s.travelTrack} title="포인터를 올리면 움직입니다">
+    <span className={s.travelDot} style={{ transitionDuration: duration, transitionTimingFunction: easing }} />
+  </div>
+);
+
+// The easing drawn as its curve on a 64 × 32 plot.
+export const Curve = ({ easing }: { easing: string }) => {
+  const points = /cubic-bezier\(([^)]+)\)/.exec(easing)?.[1]?.split(",").map(Number) ?? [0, 0, 1, 1];
+  const [x1 = 0, y1 = 0, x2 = 1, y2 = 1] = points;
+  const d = `M0 32 C ${x1 * 64} ${32 - y1 * 32}, ${x2 * 64} ${32 - y2 * 32}, 64 0`;
+  return <svg className={s.curve} viewBox="-2 -6 68 44" aria-hidden="true"><path d={d} /></svg>;
+};
