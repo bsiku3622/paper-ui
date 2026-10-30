@@ -1,7 +1,6 @@
-import { keyframes } from "@vanilla-extract/css";
-
-import { tokens, stateTransition } from "../tokens";
+import { tokens, transition } from "../tokens";
 import { controlGeometry, geometry } from "../internal/shape";
+import { loop } from "../styles/motion.css";
 import { layered } from "../tokens/layers.css";
 
 const { style, styleVariants } = layered("components");
@@ -19,7 +18,7 @@ export const buttonRoot = style({
   borderStyle: "solid",
   cursor: "pointer",
   userSelect: "none",
-  transition: stateTransition("background", "border-color", "color", "transform"),
+  transition: [transition("hover", "border-color"), transition("state", "background", "color"), transition("press", "transform")].join(", "),
   selectors: {
     // 눌림 — Demo 버튼처럼 1px 내려앉는 촉각 피드백. 색·variant와 무관하다.
     "&:active:not(:disabled)": { transform: `translateY(${tokens.motion.role.press.offset})` },
@@ -37,11 +36,9 @@ export const buttonRoot = style({
 // buttonRoot 뒤에 와서 같은 특정도를 순서로 이긴다.
 export const buttonPill = style({ borderRadius: tokens.shape.radius.full });
 
-const spin = keyframes({ to: { transform: "rotate(360deg)" } });
-
 // 로딩 스피너 — currentColor C-링이라 어느 variant(검정 solid·색·투명) 위에서도 글자색을
 // 따라 보인다. 크기는 em 이라 버튼 글자에 맞춰 스케일된다.
-export const buttonSpinner = style({
+export const buttonSpinner = style([loop.spin, {
   display: "inline-block",
   flexShrink: 0,
   width: geometry.button.spinner,
@@ -51,8 +48,7 @@ export const buttonSpinner = style({
   borderStyle: "solid",
   borderColor: "currentColor",
   borderTopColor: "transparent",
-  animation: `${spin} ${tokens.motion.loop.spin} ${tokens.motion.easing.linear} infinite`,
-});
+}]);
 
 // 가로 꽉 — 폼·모바일. 나란한 형제와 같은 폭.
 export const buttonFull = style({ width: "100%" });

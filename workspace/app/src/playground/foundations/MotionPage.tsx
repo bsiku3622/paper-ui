@@ -1,42 +1,38 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
-import { Button, Inline, Surface, Switch, Text, elevation } from "@studio-baeks/paper-ui";
-import { tokens } from "@studio-baeks/paper-ui/tokens";
+import { Button, Inline, Spinner, Surface, Switch, Text, loop, presence } from "@studio-baeks/paper-ui";
+import { MOTION_CONSUMERS, MOTION_ROLES, tokens, transition, type MotionRole } from "@studio-baeks/paper-ui/tokens";
 
-import { Board, BoardGroup, BoardRow, Cell, FoundationSection, TokenCell, ValueCell } from "./kit";
+import { DURATION, EASING, LOOP, LOOP_REDUCED } from "../../../../packages/paper-ui/src/tokens/motion";
+import { Board, BoardGroup, BoardRow, Cell, Curve, FoundationSection, TokenCell, Travel, ValueCell, px } from "./kit";
+import { LOOP_NOTES, TRANSITION_PROPERTIES, roleNote, roleRange } from "./motion-roles";
 import * as s from "./foundations.css";
 
-const motion = tokens.motion;
-type Easing = keyof typeof motion.easing;
-type RoleName = keyof typeof motion.role;
-const easingName = (value: string) => (Object.entries(motion.easing).find(([, curve]) => curve === value)?.[0] ?? value) as Easing;
+const role = tokens.motion.role;
+const easingName = (value: string) => Object.entries(EASING).find(([, curve]) => curve === value)?.[0] ?? value;
+const timing = (spec: { duration: string; easing: string }) => `${spec.duration} ${easingName(spec.easing)}`;
 
-// A dot that crosses its track while the pointer is over it, with the given timing.
-const Travel = ({ duration, easing }: { duration: string; easing: string }) => (
-  <div className={s.motionTrack} title="포인터를 올리면 움직입니다">
-    <span className={s.motionDot} style={{ transitionDuration: duration, transitionTimingFunction: easing }} />
-  </div>
-);
-
-// The easing drawn as its curve on a 64 × 32 plot.
-const Curve = ({ easing }: { easing: string }) => {
-  const points = /cubic-bezier\(([^)]+)\)/.exec(easing)?.[1]?.split(",").map(Number) ?? [0, 0, 1, 1];
-  const [x1 = 0, y1 = 0, x2 = 1, y2 = 1] = points;
-  const d = `M0 32 C ${x1 * 64} ${32 - y1 * 32}, ${x2 * 64} ${32 - y2 * 32}, 64 0`;
-  return <svg className={s.curve} viewBox="-2 -6 68 44" aria-hidden="true"><path d={d} /></svg>;
-};
-
-// Plays an overlay entering or leaving with the role's timing and displacement.
+// A surface entering or leaving through the presence recipe: data-presence picks the role. The exit specimen
+// starts open, so it plays its enter once on load; the enter specimen waits until it is opened.
+type Phase = "idle" | "entering" | "exiting";
 const Presence = ({ mode }: { mode: "enter" | "exit" }) => {
-  const [shown, setShown] = useState(mode === "exit");
-  const timing = motion.role[shown ? "enter" : "exit"];
-  const hidden = `translateY(${motion.role.enter.offset}) scale(${motion.role.enter.scale})`;
+  const [phase, setPhase] = useState<Phase>(mode === "exit" ? "entering" : "idle");
+  const open = phase === "entering";
   return (
     <div className={s.presence}>
-      <Button size="sm" variant="hairline" onClick={() => setShown((value) => !value)}>{shown ? "닫기" : "열기"}</Button>
-      <div className={`${s.presenceCard} ${elevation.overlay}`} style={{ opacity: shown ? 1 : 0, transform: shown ? "none" : hidden, transition: `opacity ${timing.duration} ${timing.easing}, transform ${timing.duration} ${timing.easing}` }}>
-        <Text variant="caption">{shown ? "떠오른 면" : "사라지는 중"}</Text>
-      </div>
+      <Button size="sm" variant="hairline" onClick={() => setPhase(open ? (mode === "exit" ? "exiting" : "idle") : "entering")}>{open ? "닫기" : "열기"}</Button>
+      <Surface
+        className={phase === "idle" ? `${presence.surface} ${s.presenceIdle}` : presence.surface}
+        data-presence={phase === "idle" ? undefined : phase}
+        fill="raised"
+        border
+        radius="md"
+        paddingX="md"
+        paddingY="sm"
+        elevation="overlay"
+      >
+        <Text variant="caption">{open ? "떠오른 면" : "사라지는 중"}</Text>
+      </Surface>
     </div>
   );
 };
@@ -57,73 +53,102 @@ const ThemeSwap = () => {
   );
 };
 
-const HoverSample = () => (
-  <div className={s.hoverSample} style={{ transition: `background-color ${motion.role.hover.duration} ${motion.role.hover.easing}` }}>
-    <Text variant="caption" ink="secondary">포인터를 올려 보세요</Text>
-  </div>
-);
+const SPECIMENS: Record<MotionRole, ReactNode> = {
+  press: <Button size="sm" variant="hairline">눌러 보기</Button>,
+  hover: <Button size="sm" variant="hairline">포인터를 올려 보세요</Button>,
+  state: <Switch size="sm" defaultChecked aria-label="상태 전이 예시" />,
+  enter: <Presence mode="enter" />,
+  exit: <Presence mode="exit" />,
+  theme: <ThemeSwap />,
+};
 
-const ROLES: { name: RoleName; note: string; specimen: React.ReactNode }[] = [
-  { name: "press", note: "누르는 순간 1px 내려앉음", specimen: <Button size="sm" variant="hairline">눌러 보기</Button> },
-  { name: "hover", note: "면·글자색의 짧은 반응", specimen: <HoverSample /> },
-  { name: "focus", note: "포커스 링 · Tab으로 확인", specimen: <Button size="sm" variant="hairline">Tab으로 포커스</Button> },
-  { name: "state", note: "켜짐·선택 같은 상태 전이", specimen: <Switch size="sm" defaultChecked aria-label="상태 전이 예시" /> },
-  { name: "enter", note: "떠오르는 overlay — 살짝 튀어 안착", specimen: <Presence mode="enter" /> },
-  { name: "exit", note: "사라질 때는 짧게 가속", specimen: <Presence mode="exit" /> },
-  { name: "theme", note: "테마 전환 — 컨트롤도 페이지와 같은 프레임에 바뀜", specimen: <ThemeSwap /> },
-];
+// The roles' presence recipe, as the two timings it joins.
+const PRESENCE_RESULT = `entering → enter ${timing(role.enter)} · exiting → exit ${timing(role.exit)}`;
+const PRESENCE_USERS = [...new Set([...MOTION_CONSUMERS.enter, ...MOTION_CONSUMERS.exit])].join(" · ");
 
 export const MotionPage = () => (
   <>
-    <FoundationSection title="Motion Source" description="시간의 원본입니다. 조용한 밀도의 시스템이라 전이는 짧고 차분합니다(100~200ms). 다른 시스템과 달리 CSS 변수로 굽지 않고, stylesheet가 빌드 때 transition 문자열로 조립합니다.">
+    <FoundationSection title="Motion Source" description={`시간의 원본입니다. 조용한 밀도의 시스템이라 전이는 짧고 차분합니다(${roleRange(MOTION_ROLES.map((name) => role[name].duration))}). 다른 시스템과 달리 CSS 변수로 굽지 않고, stylesheet가 빌드 때 transition 문자열로 조립합니다.`}>
       <Board columns={[{ label: "Token" }, { label: "Specimen" }, { label: "Value", align: "end" }]} template="minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr)" minWidth="36rem">
         <BoardGroup label="Duration — 막대에 포인터를 올리면 그 시간으로 움직입니다">
-          {Object.entries(motion.duration).map(([name, value]) => (
+          {Object.entries(DURATION).map(([name, value]) => (
             <BoardRow key={name}>
               <TokenCell name={`motion.duration.${name}`} note={name === "reduced" ? "prefers-reduced-motion에서 쓰는 최소 양수" : undefined} />
-              <Travel duration={value} easing={motion.easing.standard} />
+              <Travel duration={value} easing={EASING.standard} />
               <ValueCell>{value}</ValueCell>
             </BoardRow>
           ))}
         </BoardGroup>
-        <BoardGroup label="Easing — 곡선과 slow(300ms) 이동">
-          {Object.entries(motion.easing).map(([name, value]) => (
+        <BoardGroup label={`Easing — 곡선과 slow(${DURATION.slow}) 이동`}>
+          {Object.entries(EASING).map(([name, value]) => (
             <BoardRow key={name}>
               <TokenCell name={`motion.easing.${name}`} />
-              <Cell><div className={s.easingSpecimen}><Curve easing={value} /><Travel duration={motion.duration.slow} easing={value} /></div></Cell>
+              <Cell><div className={s.easingSpecimen}><Curve easing={value} /><Travel duration={DURATION.slow} easing={value} /></div></Cell>
               <ValueCell>{value}</ValueCell>
             </BoardRow>
           ))}
         </BoardGroup>
         <BoardGroup label="Loop — 전이와 별도인 반복 주기">
           <BoardRow>
-            <TokenCell name="motion.loop.spin" note="Spinner 회전" />
-            <Cell><span className={s.spin} style={{ animationDuration: motion.loop.spin }} /></Cell>
-            <ValueCell>{motion.loop.spin}</ValueCell>
+            <TokenCell name="motion.loop.spin" note={LOOP_NOTES.spin.note} />
+            <Cell><Spinner size="md" label="회전 반복 예시" /></Cell>
+            <ValueCell>{LOOP.spin.duration}</ValueCell>
           </BoardRow>
           <BoardRow>
-            <TokenCell name="motion.loop.pulse" note="대기 중인 표식" />
-            <Cell><span className={s.pulse} style={{ animationDuration: motion.loop.pulse }} /></Cell>
-            <ValueCell>{motion.loop.pulse}</ValueCell>
+            <TokenCell name="motion.loop.pulse" note={LOOP_NOTES.pulse.note} />
+            <Cell><span className={`${s.pulseDot} ${loop.pulse}`} /></Cell>
+            <ValueCell>{LOOP.pulse.duration}</ValueCell>
           </BoardRow>
         </BoardGroup>
       </Board>
     </FoundationSection>
 
-    <FoundationSection title="Motion roles" description="컴포넌트는 시간과 곡선을 따로 고르지 않고, 지금이 어떤 상황의 움직임인지(role)만 고릅니다. 모든 전이는 reduced-motion 환경에서 즉시 끝납니다.">
+    <FoundationSection title="Motion roles" description="컴포넌트는 시간과 곡선을 따로 고르지 않고, 지금이 어떤 상황의 움직임인지(role)만 고릅니다. reduced-motion에서 전이는 즉시 끝나고, 반복은 회전 대신 맥박으로 바뀝니다.">
       <Board columns={[{ label: "Role" }, { label: "Specimen" }, { label: "Duration", align: "end" }, { label: "Easing", align: "end" }, { label: "Offset", align: "end" }]} template="minmax(0, 1.2fr) minmax(0, 1.3fr) minmax(4rem, auto) minmax(5rem, auto) minmax(5rem, auto)" minWidth="40rem">
-        {ROLES.map((role) => {
-          const spec = motion.role[role.name] as { duration: string; easing: string; offset?: string; scale?: string };
+        {MOTION_ROLES.map((name) => {
+          const spec: { duration: string; easing: string; offset?: string; scale?: string } = role[name];
           return (
-            <BoardRow key={role.name} size="md">
-              <TokenCell name={`motion.role.${role.name}`} note={role.note} />
-              <Cell>{role.specimen}</Cell>
+            <BoardRow key={name} size="md">
+              <TokenCell name={`motion.role.${name}`} note={roleNote(name)} />
+              <Cell>{SPECIMENS[name]}</Cell>
               <ValueCell>{spec.duration}</ValueCell>
               <ValueCell title={spec.easing}>{easingName(spec.easing)}</ValueCell>
-              <ValueCell>{spec.offset ? [spec.offset, spec.scale].filter(Boolean).join(" · ") : "—"}</ValueCell>
+              <ValueCell>{spec.offset ? [px(spec.offset), spec.scale].filter(Boolean).join(" · ") : "—"}</ValueCell>
             </BoardRow>
           );
         })}
+      </Board>
+    </FoundationSection>
+
+    <FoundationSection title="Motion composition" description="역할 위에 얹은 조합입니다. 전이는 transition()이 속성마다 역할의 시간과 곡선을 이어 붙이고, 면의 등장·퇴장은 presence, 반복은 loop class가 겁니다. 쓰는 곳은 MOTION_CONSUMERS가 정합니다.">
+      <Board columns={[{ label: "Composition" }, { label: "Result" }, { label: "Used by", align: "end" }]} template="minmax(0, 1.2fr) minmax(0, 1.8fr) minmax(0, 1.2fr)" minWidth="40rem">
+        <BoardGroup label="transition(role, …속성) — 역할의 시간과 곡선을 속성마다 붙입니다">
+          {(Object.keys(TRANSITION_PROPERTIES) as (keyof typeof TRANSITION_PROPERTIES)[]).map((name) => (
+            <BoardRow key={name}>
+              <TokenCell name={`transition("${name}", …)`} note={TRANSITION_PROPERTIES[name].join(" · ")} />
+              <Cell><Text variant="caption" family="mono" ink="secondary">{transition(name, ...TRANSITION_PROPERTIES[name])}</Text></Cell>
+              <ValueCell>{MOTION_CONSUMERS[name].join(" · ")}</ValueCell>
+            </BoardRow>
+          ))}
+        </BoardGroup>
+        <BoardGroup label="presence — data-presence가 면의 등장과 퇴장에 enter · exit 역할을 겁니다">
+          {(["surface", "scrim"] as const).map((name) => (
+            <BoardRow key={name}>
+              <TokenCell name={`presence.${name}`} note={name === "surface" ? "opacity와 변위" : "opacity만"} />
+              <Cell><Text variant="caption" family="mono" ink="secondary">{PRESENCE_RESULT}</Text></Cell>
+              <ValueCell>{PRESENCE_USERS}</ValueCell>
+            </BoardRow>
+          ))}
+        </BoardGroup>
+        <BoardGroup label="loop — 반복. reduced-motion에서는 정해진 맥박으로 바뀝니다">
+          {(Object.keys(LOOP) as (keyof typeof LOOP)[]).map((name) => (
+            <BoardRow key={name}>
+              <TokenCell name={`loop.${name}`} note={LOOP_NOTES[name].note} />
+              <Cell><Text variant="caption" family="mono" ink="secondary">{`${LOOP[name].duration} ${easingName(LOOP[name].easing)} · reduced → ${LOOP_REDUCED[name]}`}</Text></Cell>
+              <ValueCell>{LOOP_NOTES[name].usedBy}</ValueCell>
+            </BoardRow>
+          ))}
+        </BoardGroup>
       </Board>
     </FoundationSection>
   </>

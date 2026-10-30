@@ -1,6 +1,6 @@
 import { focusRing, geometry } from "../internal/shape";
 
-import { tokens, stateTransition, elevationCast, elevationStack, CONTROL_SIZES, type ControlSize } from "../tokens";
+import { tokens, transition, elevationCast, elevationStack, CONTROL_SIZES, type ControlSize } from "../tokens";
 import { layered } from "../tokens/layers.css";
 
 const { style, styleVariants } = layered("components");
@@ -15,7 +15,7 @@ export const switchRoot = style({
   borderRadius: tokens.shape.radius.full,
   background: tokens.color.control.track,
   cursor: "pointer",
-  transition: stateTransition("background"),
+  transition: transition("state", "background"),
   selectors: {
     // 손잡이의 좌우 여백은 size 축이 (트랙 − 손잡이) / 2 로 준다 — 위아래 여백과 같은
     // 값이라 손잡이가 트랙 안에서 사방 같은 간격으로 앉는다. 예전엔 좌우만 borderWidth
@@ -29,7 +29,7 @@ export const switchRoot = style({
       background: tokens.color.bg.raised,
       ...elevationStack("lifted"),
       ...elevationCast("lifted"),
-      transition: `transform ${tokens.motion.duration.base} ${tokens.motion.easing.standard}`,
+      transition: transition("state", "transform"),
     },
     "&:checked": { background: tokens.color.accent.primary.solid },
     "&:focus-visible": focusRing,

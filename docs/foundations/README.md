@@ -30,7 +30,7 @@ Shape와 Layout의 경계는 하나의 질문으로 가립니다. **빈 캔버�
 | Typography | Typography Palette | `hero` ~ `label` 글자 역할 | Control preset · 코드 · 강조 규칙 |
 | Shape | `SHAPE_SOURCE` | `inset` · `radius` · `control` · `selection` … | Shape recipe |
 | Layout | `LAYOUT_SOURCE` | `gap` · `gutter` · `container` · `breakpoint` · `section` | elevation class · Surface `elevation` |
-| Motion | duration · easing · loop | `press` · `hover` · `state` · `enter` … | `stateTransition()` |
+| Motion | duration · easing · loop | `press` · `hover` · `state` · `enter` · `exit` · `theme` | `transition()` · `presence` · `loop` |
 
 Playground의 [Foundations](/playground/foundations/color) 페이지가 이 순서 그대로 각 시스템을 보여줍니다. 위에서부터 원본, 역할, 조합 순서입니다. Color만은 예전 형태(Palette 행렬과 역할별 값 카드)를 유지하고, 맨 아래에 accent × variant 표가 붙어 조합 단을 맡습니다. 모든 페이지의 행은 원본에서 파생하므로, 역할이나 단계를 더하면 페이지가 따라옵니다.
 
@@ -51,16 +51,16 @@ dp·em·색    CSS 값       var() 참조                  숫자 없는 완성�
 | Typography | `tokens/typography.ts` · `tokens/typography-recipes.ts` · `styles/typography.css.ts` |
 | Shape | `tokens/shape.ts` · `tokens/shape-recipes.ts` |
 | Layout | `tokens/layout.ts` · `primitives/Box.css.ts` · `primitives/paint/Surface.css.ts` |
-| Motion | `tokens/motion.ts` |
+| Motion | `tokens/motion.ts` · `styles/motion.css.ts` |
 
 네 군데는 시스템마다 일부러 다르게 짜여 있습니다. 모양을 억지로 맞추면 쓰임이 틀어지므로, 다른 점과 까닭을 한 표에 모아 둡니다.
 
 | 시스템 | 다른 점 | 까닭 |
 |---|---|---|
 | Color | 역할을 light·dark 두 벌로 굽습니다. | 테마가 바뀌면 같은 이름의 변수 값만 바뀌어, 소비처가 테마를 분기하지 않습니다. |
-| Motion | 변수를 굽지 않습니다. | duration·easing·변위는 한 변수로 줄여 쓰기 어려워, stylesheet가 빌드 때 transition 문자열로 조립합니다. |
+| Motion | 변수를 굽지 않습니다. | duration·easing은 한 변수로 줄여 쓰기 어려워, stylesheet가 빌드 때 transition 문자열로 조립합니다. 변위는 길이라서 Shape·Layout 변수를 가리킵니다. |
 | Typography | 강조를 규칙으로 공개합니다. | 글자 안의 강조는 `emphasisRule()`이 Palette의 굵기 이름(`regular` · `medium` · `semibold` · `bold`)으로 고르고, 앱은 Palette를 직접 읽지 않습니다. 장식(밑줄 `underlineOffset`)만 Palette에서 읽습니다. |
-| Motion | duration을 값으로 공개합니다. | 속성마다 자기 duration을 골라 transition을 따로 적습니다. |
+| Motion | 역할만 공개합니다. | duration·easing·loop는 Motion의 원본이라 `tokens.motion`에 없습니다. 컴포넌트는 역할을 고르고 `transition(role, …속성)`으로 조립해, 속성마다 자기 duration을 따로 고르지 않습니다. |
 
 ## 값이 화면까지 가는 길
 
@@ -80,7 +80,7 @@ dp·em·색    CSS 값       var() 참조                  숫자 없는 완성�
 - **Color**는 의미 역할 전체를 light·dark 두 벌로 굽습니다. `<html>`에 속성이 없으면 OS 설정이 모드를 정하고, 테마 스코프(`[data-pui-theme]`)는 자기 요소에 그 모드의 고유 역할을 겁니다. 포커스 링 색과 그림자 색처럼 지면에 그려지는 역할은 스코프의 자식부터 바뀝니다. opacity는 테마와 무관한 값으로 한 번만 굽습니다.
 - **Typography**는 Palette를 굽고, 글자 역할과 control preset은 Palette 변수를 조합한 class입니다.
 - **Shape·Layout**은 원본만 굽습니다. 역할은 원본 변수의 별칭이거나 쓰이는 요소에서 계산되는 `calc()` 식이라, 하위 트리에서 원본 하나를 덮으면 그 위의 역할이 그 자리에서 모두 다시 계산됩니다. 그림자의 기하는 모드마다 달라 모드별 원본 변수로 굽고, 그림자 값은 쓰이는 요소에서 기하 변수와 그림자 색을 이어 붙여 조립합니다.
-- **Motion**은 변수로 굽지 않습니다. duration·easing·변위는 한 변수로 줄여 쓰기 어려워, stylesheet가 빌드 때 transition 문자열로 조립합니다.
+- **Motion**은 변수로 굽지 않습니다. duration·easing은 한 변수로 줄여 쓰기 어려워, stylesheet가 빌드 때 `transition()`으로 transition 문자열을 조립하고, 변위는 Shape·Layout 변수를 가리킵니다. 등장·퇴장과 반복은 `presence`·`loop` class로 겁니다.
 
 ## 공개 어휘
 
@@ -123,6 +123,7 @@ prop이 받는 닫힌 값의 집합을 **축**이라 부릅니다. 축마다 상
 | `JUSTIFIES` · `Justify` | `tokens/layout.ts` | Stack · Inline · Grid의 `justify` — 주축 분배 |
 | `JUSTIFY_ITEMS` · `JustifyItem` | `tokens/layout.ts` | Grid의 `justifyItems` — 칸 안의 가로 정렬 |
 | `ORIENTATIONS` · `Orientation` | `tokens/layout.ts` | Divider의 `orientation`, RovingFocus의 `orientation`(`both` 추가) |
+| `MOTION_ROLES` · `MotionRole` | `tokens/motion.ts` | `tokens.motion.role.<role>`, `transition()`의 첫 인자 |
 
 새 축은 원본 tree에서 파생하거나 `satisfies`로 양방향 묶고 `vocabulary.ts`에 상수·타입 짝으로 공개합니다. 원본 tree에서 파생한 축은 단계를 더하면 상수와 타입이 함께 늘고, `satisfies`로 묶은 축은 한쪽만 늘면 타입 검사가 막습니다.
 
@@ -133,14 +134,14 @@ prop이 받는 닫힌 값의 집합을 **축**이라 부릅니다. 축마다 상
 ```ts
 import { style } from "@vanilla-extract/css";
 import { elevation } from "@studio-baeks/paper-ui";
-import { tokens } from "@studio-baeks/paper-ui/tokens";
+import { tokens, transition } from "@studio-baeks/paper-ui/tokens";
 
 export const panel = style([elevation.overlay, {
   padding: tokens.shape.inset.lg,
   borderRadius: tokens.shape.radius.surface.lg,
   border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`,
   background: tokens.color.bg.raised,
-  transition: `background-color ${tokens.motion.role.hover.duration} ${tokens.motion.role.hover.easing}`,
+  transition: transition("hover", "background-color"),
 }]);
 ```
 

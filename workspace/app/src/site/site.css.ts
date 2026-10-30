@@ -7,7 +7,7 @@
 
 import { createVar, globalStyle, style } from "@vanilla-extract/css";
 
-import { tokens, stateTransition } from "@studio-baeks/paper-ui/tokens";
+import { tokens, transition } from "@studio-baeks/paper-ui/tokens";
 
 const BP = tokens.layout.breakpoint;
 const narrow = `screen and (max-width: ${BP.md})`;
@@ -95,6 +95,6 @@ globalStyle(".gnb-theme", {
   cursor: "pointer",
   fontSize: tokens.typography.role.body.size,
   lineHeight: 1,
-  transition: stateTransition("background", "color"),
+  transition: transition("hover", "background", "color"),
 });
 globalStyle(".gnb-theme:hover", { background: tokens.color.interaction.bgHover.onSurface, color: tokens.color.ink.primary });

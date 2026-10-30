@@ -40,7 +40,9 @@ export type {
 } from "./atoms";
 
 // Class maps — class names for what a stylesheet cannot reach. elevation is one class per tier: position, z and shadow together.
+// presence is the enter and exit of a surface or a scrim, keyed on data-presence; loop is a repeating animation (spin, pulse).
 export { elevation } from "./styles/elevation.css";
+export { presence, loop } from "./styles/motion.css";
 
 // Theme — the Provider and the hooks; the boot script is the entry "theme-boot"
 export { PaperProvider, useTheme, useResolvedTheme } from "./theme";

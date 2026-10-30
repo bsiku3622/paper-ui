@@ -19,3 +19,6 @@ export type { Space, Dimension, Measure, IconSize, ControlShape, SurfaceRadius }
 
 export { ELEVATIONS, BREAKPOINTS, CONTAINERS, ALIGNS, JUSTIFIES, JUSTIFY_ITEMS, ORIENTATIONS } from "./layout";
 export type { Elevation, Breakpoint, Container, Align, Justify, JustifyItem, Orientation } from "./layout";
+
+export { MOTION_ROLES } from "./motion";
+export type { MotionRole } from "./motion";

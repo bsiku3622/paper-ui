@@ -1,13 +1,13 @@
 // Specimens drawn inside the Foundations boards. Geometry comes from Shape and Layout roles;
 // each specimen only arranges the token it shows.
-import { globalStyle, keyframes, style, styleVariants, type ComplexStyleRule } from "@vanilla-extract/css";
+import { globalStyle, style, styleVariants, type ComplexStyleRule } from "@vanilla-extract/css";
 
 import { CONTROL_SIZES, ELEVATIONS, SPACES, codeRule, presetRule, tokens, type ControlSize } from "@studio-baeks/paper-ui/tokens";
 
 import { bar } from "./kit.css";
 import type { PresetPath } from "./typography-roles";
 
-const { shape, layout, color, motion } = tokens;
+const { shape, layout, color } = tokens;
 const line = `${shape.stroke.border} solid ${color.border.base}`;
 
 // One class per key of a vocabulary or a specimen map.
@@ -71,25 +71,8 @@ globalStyle(`${gutterFrame} > span`, { flex: 1 });
 
 // Motion
 const dot = shape.inset.md;
-export const motionTrack = style({ position: "relative", width: "100%", height: dot, borderRadius: shape.radius.full, background: color.control.track });
-export const motionDot = style({
-  position: "absolute",
-  insetBlockStart: 0,
-  insetInlineStart: 0,
-  width: dot,
-  height: dot,
-  borderRadius: shape.radius.full,
-  background: color.accent.primary.solid,
-  transitionProperty: "inset-inline-start",
-  selectors: { [`${motionTrack}:hover &`]: { insetInlineStart: `calc(100% - ${dot})` } },
-});
 export const easingSpecimen = style({ display: "grid", gridTemplateColumns: `${shape.dimension.width.xs} 1fr`, alignItems: "center", gap: layout.gap.md });
-export const curve = style({ width: shape.dimension.width.xs, fill: "none", stroke: color.ink.primary, strokeWidth: shape.stroke.emphasis, overflow: "visible" });
-const turn = keyframes({ to: { transform: "rotate(360deg)" } });
-const fade = keyframes({ "50%": { opacity: 0.25 } });
-export const spin = style({ display: "inline-block", width: shape.control.icon.md, height: shape.control.icon.md, borderRadius: shape.radius.full, border: `${shape.stroke.emphasis} solid ${color.border.base}`, borderTopColor: color.ink.primary, animationName: turn, animationTimingFunction: motion.easing.linear, animationIterationCount: "infinite" });
-export const pulse = style({ display: "inline-block", width: dot, height: dot, borderRadius: shape.radius.full, background: color.accent.info.solid, animationName: fade, animationTimingFunction: motion.easing.standard, animationIterationCount: "infinite" });
-export const hoverSample = style({ padding: `${shape.inset.sm} ${shape.inset.md}`, borderRadius: shape.radius.control, border: line, background: color.bg.raised, selectors: { "&:hover": { backgroundColor: color.bg.sunken } } });
+export const pulseDot = style({ display: "inline-block", width: dot, height: dot, borderRadius: shape.radius.full, background: color.accent.info.solid });
 export const presence = style({ display: "flex", alignItems: "center", gap: layout.gap.md, isolation: "isolate" });
 export const themeSwap = style({ display: "flex", alignItems: "center", gap: layout.gap.md });
-export const presenceCard = style({ padding: `${shape.inset.sm} ${shape.inset.md}`, borderRadius: shape.radius.surface.md, border: line, background: color.bg.raised });
+export const presenceIdle = style({ visibility: "hidden" });

@@ -28,7 +28,7 @@ paper-ui/
     │       ├── index.ts        # entry `.` — 컴포넌트 · hook · Provider ("use client")
     │       ├── inventory.ts    # 이름 · 분류 · 순서의 정본 — import 가 없고 inventory.test 가 export 와 대조
     │       ├── tokens/         # 값의 유일한 정의 위치 — SOURCE → VALUES → 역할, *-recipes = 조합(typography-recipes = 글자 규칙 함수) · vocabulary.ts = 어휘 짝 · color-modes.ts = 모드 어휘 · variables.ts · variables.css.ts = 모든 CSS 변수의 배출 · public.ts = entry `/tokens` · layers.css.ts = cascade layer
-    │       ├── styles/         # class 의 실체 — color.css.ts (면 · 잉크 · accent × variant) · space.css.ts · elevation.css.ts (높이 — position · z · 그림자) · typography.css.ts (Text 역할 · mono · 숫자 · control preset · fontSize class) · theme.css.ts (문서 바탕 · 스코프 잉크) · global.css.ts = entry `/styles.css`. resolvers 를 import 하지 않음
+    │       ├── styles/         # class 의 실체 — color.css.ts (면 · 잉크 · accent × variant) · space.css.ts · elevation.css.ts (높이 — position · z · 그림자) · motion.css.ts (presence · loop · reduced-motion 정책) · typography.css.ts (Text 역할 · mono · 숫자 · control preset · fontSize class) · theme.css.ts (문서 바탕 · 스코프 잉크) · global.css.ts = entry `/styles.css`. resolvers 를 import 하지 않음
     │       ├── resolvers/      # 공유 축 이름 → class (styles/ 의 typed map 인덱싱)
     │       ├── theme/          # 테마 — engine.ts (React · CSS 없음) · store.ts = 문서당 저장소 · PaperProvider · context · scope · boot.ts = entry `/theme-boot`
     │       ├── primitives/     # 두 차수 — 1차 바탕: Box · Text · Icon · a11y/ (서로 기대지 않음), 2차 Box + 능력 하나: paint/ press/ select/ float/ drag/ focus/ field/ layout/. index.ts 가 유일한 배럴이고 primitives/orders.test.ts 가 폴더 사이의 길을 지킨다
@@ -56,8 +56,8 @@ workspace 에서는 `paper-ui-source` export 조건(Vite `resolve.conditions` ·
 pui.components`, 뒤의 레이어가 특정도와 무관하게 이긴다. 레이어 이름과 `layered(name)` wrapper 는
 `tokens/layers.css.ts` 하나가 정의하고, global.css.ts 가 그것을 맨 먼저 import 해 dist/paper-ui.css 는 레이어
 선언으로 시작한다. 파일마다 갈 레이어가 정해져 있다: tokens/variables.css.ts 의 변수는 theme, box-sizing 과 body margin 은
-reset, body 의 면과 글자(body 역할 전체) · 스코프 잉크 · 포커스 링 · reduced motion 은 base, 면 · 잉크 · 간격 · 높이 지도(color.css 의 fillClass · inkClass, space.css, elevation.css)와
-typography.css 의 class 전부(Text 역할 · mono · 숫자 · control preset · fontSize 탈출구)는 utilities, accent × variant 지도(color.css 의 accentVariantClass)와 primitives · atoms 는 components. `@keyframes` 와 `@property` 만 레이어 밖에 선다. 앱 CSS 는 레이어 밖에
+reset, body 의 면과 글자(body 역할 전체) · 스코프 잉크 · 포커스 링 · 전환 중 transition hold 는 base, 면 · 잉크 · 간격 · 높이 지도(color.css 의 fillClass · inkClass, space.css, elevation.css), motion.css 의 presence · loop 와
+typography.css 의 class 전부(Text 역할 · mono · 숫자 · control preset · fontSize 탈출구)는 utilities, accent × variant 지도(color.css 의 accentVariantClass)와 primitives · atoms, 그리고 모든 요소에 거는 reduced-motion 정책(motion.css)은 components. `@keyframes` 와 `@property` 만 레이어 밖에 선다. 앱 CSS 는 레이어 밖에
 두므로 앱 className 이 로드 순서와 무관하게 패키지를 이긴다.
 
 배포본은 ESM 전용이고 peer 는 react · react-dom `^18.2.0 || ^19.0.0` 이다. 타입은 `tsconfig.build.json`(테스트 ·
@@ -83,7 +83,7 @@ OKLCH Palette source → HEX Palette Token generation → semantic selection tab
 - palette.ts만 OKLCH neutral·accent anchor와 `alpha05`~`alpha95` opacity scale을 소유합니다. color-ladder.ts의 순수 함수를 호출해 완성된 coordinates와 HEX Palette Token을 조립해 export합니다. Palette 값은 테마와 무관하며, semantic layer가 light/dark 역할에 맞는 step을 선택합니다. accent hue·chroma와 amber의 옅은 끝 보정은 `ACCENT_IDENTITIES`, 중립의 중간 단계는 `NEUTRAL_BETWEEN` 데이터입니다.
 - color-ladder.ts는 palette.ts를 import하지 않는 순수 계산 모듈입니다. 입력받은 좌표·단계에 대해 보간·gamut-map·HEX 인코딩을 수행하며 semantic role 이름을 두지 않습니다.
 - colors.ts의 `COLOR_SELECTION`이 테마별로 역할마다 Palette 경로 하나를 고르는 유일한 표이고, `COLOR_VALUES`(_DARK)는 그 표에서 파생합니다. semantic leaf는 생성된 Palette Token만 선택하며 다른 semantic leaf, 직접 입력한 HEX, color math를 참조하지 않습니다. 상태색의 tone은 `ACCENT_TONE_STEPS`·`PRIMARY_TONE_STEPS`가 고르고, 표를 벗어나는 예외(light warning)는 pigment 이름이 아니라 status 이름으로 `STATUS_EXCEPTIONS`에 적습니다.
-- tokens/variables.ts는 semantic tree를 CSS variable 묶음으로 만들고 tokens/variables.css.ts가 그것을 내보냅니다. Package consumers는 tokens.color var 참조만 씁니다. Playground Foundations inspector(`app/src/playground/foundations/*.ts(x)`, 스타일시트 `*.css.ts` 제외)만 원본을 그대로 보여주기 위해 colors·palette·color-recipes·typography·shape·shape-recipes·layout 원본 모듈을 읽습니다 — 표시용이지 스타일용이 아닙니다. 원본에서 읽은 값은 글자로 찍거나 kit의 표시 부품(Swatch · Chip · StepGrid · Meter)을 거쳐서만 화면에 닿고, 클래스와 컴포넌트 prop은 `/tokens` 어휘나 손으로 적은 표본 지도에서 옵니다. 다른 raw-token import 제한은 유지합니다.
+- tokens/variables.ts는 semantic tree를 CSS variable 묶음으로 만들고 tokens/variables.css.ts가 그것을 내보냅니다. Package consumers는 tokens.color var 참조만 씁니다. Playground Foundations inspector(`app/src/playground/foundations/*.ts(x)`, 스타일시트 `*.css.ts` 제외)만 원본을 그대로 보여주기 위해 colors·palette·color-recipes·typography·shape·shape-recipes·layout·motion 원본 모듈을 읽습니다 — 표시용이지 스타일용이 아닙니다. 원본에서 읽은 값은 글자로 찍거나 kit의 표시 부품(Swatch · Chip · StepGrid · Meter)을 거쳐서만 화면에 닿고, 클래스와 컴포넌트 prop은 `/tokens` 어휘나 손으로 적은 표본 지도에서 옵니다. 다른 raw-token import 제한은 유지합니다.
 
 semantic color는 surface·ink·border·accent·interaction·overlay·shadow 역할로 나뉩니다.
 
@@ -133,6 +133,17 @@ focus ring 색은 `interaction.focus`에, 링크 색은 `interaction.link`에 �
 상위 화면 조합과 그 prop 축은 현재 패키지 API에 포함하지 않습니다. 실제 제품에서 반복되는 요구가 생기면 공통 책임과 축을 먼저 설계합니다.
 
 ---
+
+## 움직임 — Motion
+
+Motion은 가장 마지막 층이라 자기 길이를 갖지 않습니다. 시간(`DURATION`)과 곡선(`EASING`), 반복(`LOOP`)은 `tokens/motion.ts`의 원본이고 그 파일과 Foundations inspector만 읽습니다. `styles/motion.css.ts`는 원본이 아니라 배럴의 합성 셋(`MOTION` · `MOTION_LOOPS` · `MOTION_REDUCED`)으로만 읽습니다. 공개 트리는 `tokens.motion.role` 하나입니다. 정본은 [docs/foundations/motion.md](docs/foundations/motion.md)입니다.
+
+- 역할은 `MOTION_ROLES`(`press · hover · state · enter · exit · theme`)이고 포커스에는 역할이 없습니다. 컴포넌트는 역할을 고르고 `transition(role, …속성)`으로 transition 문자열을 조립합니다. 원본 duration·easing을 stylesheet에서 직접 쓰지 않고, 역할마다 쓰는 곳은 `MOTION_CONSUMERS`가 한 곳에서 정합니다.
+- 변위는 Shape·Layout 역할을 가리킵니다: `press`는 `shape.stroke.border`, `enter`는 `layout.gap.xs`(scale 0.99는 Motion의 값).
+- 조합은 `transition()`(`/tokens`)과 class 지도 `presence`(`surface` · `scrim`, `data-presence`의 `entering` · `exiting`에 `enter` · `exit` 역할)·`loop`(`spin` · `pulse`)입니다. 두 지도는 `.` entry의 class 지도입니다. keyframe은 `styles/motion.css.ts`에만 있습니다.
+- reduced-motion: 전이와 유한한 animation은 `::before` · `::after`까지 즉시 끝나고(components 레이어, `!important`), 반복은 `LOOP_REDUCED`가 정한 맥박으로 바뀝니다(utilities 레이어, `!important` — 중요 선언은 레이어 순서가 뒤집혀 앞선 레이어가 이기므로 반복이 정책에 지지 않습니다). 전환 중 hold(`data-pui-theme-swap`)는 base에 남습니다.
+- Atom의 전이는 속성 묶음마다 역할을 고릅니다: Button · IconButton은 테두리 `hover`, 배경·글자 `state`, 눌림 `press`; Field 래퍼 · Select · Textarea · Checkbox · Radio · Switch는 `state`; Field의 지우기·비밀번호 버튼은 `hover`.
+- Playground Foundations › Motion은 원본 → 역할(견본은 역할을 쓰는 실제 컴포넌트와 `presence` · `loop` class) → 조합 순서이고, 역할 행은 `MOTION_ROLES`에서 파생합니다.
 
 ## 글자
 
@@ -215,9 +226,9 @@ Primitive 계약의 정본은 [docs/primitives/](docs/primitives/README.md)(1차
 
 `docs/`의 계약 문장·문단·표 바로 앞에는 렌더되지 않는 표시 `[contract:<area>.<subject>.<slug>]: #`를 한 줄로 둡니다. area는 foundations · primitives · atoms · install · guardrails · app 중 하나입니다. 그 계약을 단언하는 테스트는 제목을 `[<id>]`로 시작하고, 한 테스트가 계약 여럿을 단언하면 id를 이어 씁니다(`[a] [b] 제목`). 새 계약 문장은 같은 변경에서 표시와 테스트를 함께 얻습니다. `scripts/check-contracts.mjs`가 `pnpm test` 안에서 둘을 1:1로 대조합니다 — 같은 id의 표시가 둘이거나, 테스트 없는 표시(skip · todo · fixme · fail 테스트는 세지 않습니다), 표시 없는 테스트 id, 내용 블록이 뒤따르지 않는 표시, 문단·목록·표에 이어 붙어 글자로 보이는 표시는 실패입니다. 표 바로 위의 표시는 GitHub에서 글자로 보이므로 표와 표시 사이에 빈 줄을 둡니다.
 
-테스트 파일은 계층과 시스템 이름을 따릅니다. 단위 테스트는 소스 옆에 `tokens/{color,typography,shape,layout}.test.ts` · `styles/typography.test.ts` · `theme/{engine,store}.test.ts` · `theme/provider.test.tsx` · `primitives/{layout,content,theme,paint,interaction,a11y}.test.tsx` · `primitives/orders.test.ts` · `atoms/<Atom>.test.tsx`로, e2e는 `tests/{foundations,primitives,atoms,app,install}/<시스템>.spec.ts`로 둡니다. 테스트 이름에서 Foundations는 Color부터 Motion까지 다섯 시스템만 뜻합니다. e2e 도구(하네스 · 키보드 · 기하 · 콘솔 · 계산된 스타일 probe `style.ts`)와 단위 테스트도 함께 쓰는 `dp()`는 `tests/support/`에 있습니다. 앱의 단위 테스트(`app/src/**/*.test.ts(x)`)는 문서 파서 · 링크 해석 · `docs/` 전체의 링크와 앵커 · 사이트 지도 · Playground registry와 JSX 문법에 더해, Foundations inspector(`playground/foundations/inspector.test.ts`: 역할 설명 `ROLE_NOTES`의 누락 없음 · 두 테마의 Palette 경로 이름 · 타이포 preset 범위)를 지킵니다.
+테스트 파일은 계층과 시스템 이름을 따릅니다. 단위 테스트는 소스 옆에 `tokens/{color,typography,shape,layout,motion}.test.ts` · `styles/typography.test.ts` · `theme/{engine,store}.test.ts` · `theme/provider.test.tsx` · `primitives/{layout,content,theme,paint,interaction,a11y}.test.tsx` · `primitives/orders.test.ts` · `atoms/<Atom>.test.tsx`로, e2e는 `tests/{foundations,primitives,atoms,app,install}/<시스템>.spec.ts`로 둡니다. 테스트 이름에서 Foundations는 Color부터 Motion까지 다섯 시스템만 뜻합니다. e2e 도구(하네스 · 키보드 · 기하 · 콘솔 · 계산된 스타일 probe `style.ts`)와 단위 테스트도 함께 쓰는 `dp()`는 `tests/support/`에 있습니다. 앱의 단위 테스트(`app/src/**/*.test.ts(x)`)는 문서 파서 · 링크 해석 · `docs/` 전체의 링크와 앵커 · 사이트 지도 · Playground registry와 JSX 문법에 더해, Foundations inspector(`playground/foundations/inspector.test.ts`: 역할 설명 `ROLE_NOTES`의 누락 없음 · 두 테마의 Palette 경로 이름 · 타이포 preset 범위 · Motion 역할과 반복의 설명)를 지킵니다.
 
-e2e는 자기 서버를 직접 띄웁니다. 앱은 41731, 하네스(`fixtures/harness`, `?case=geometry|theme|layers|layout|elevation|typography`)는 41732 포트에서 `--strictPort`로 뜨고 이미 떠 있는 서버를 재사용하지 않으므로, 포트를 다른 서버가 쓰고 있으면 실행이 실패합니다. 포트는 `E2E_APP_PORT` · `E2E_HARNESS_PORT`로 바꿉니다. 하네스는 Vite 내부 경로 없이 패키지를 exports로만 불러옵니다. 프로젝트는 chromium · chromium-dark · chromium-reduced-motion · chromium-forced-colors · firefox · webkit 여섯입니다. firefox · webkit은 `foundations/shape` · `primitives` · `atoms` spec을 돌고, `tests/dist/`는 배포본 전용 설정만 돌립니다 — 이름은 dist여도 산출물이 아니라 소스이므로 git · eslint · check-contracts는 산출물 `dist/`와 달리 이 디렉터리를 읽습니다. Tab은 `tests/support/keyboard.ts`의 `tab()`으로만 누릅니다 — macOS WebKit에서는 Alt+Tab이어야 버튼까지 닿습니다. 한 엔진에서만 나는 실패는 `playwright.config.ts`의 `ENGINE_EXCLUSIONS`에 이유와 다시 켜는 단계를 적어 그 엔진에서만 끕니다.
+e2e는 자기 서버를 직접 띄웁니다. 앱은 41731, 하네스(`fixtures/harness`, `?case=geometry|theme|layers|layout|elevation|typography|motion`)는 41732 포트에서 `--strictPort`로 뜨고 이미 떠 있는 서버를 재사용하지 않으므로, 포트를 다른 서버가 쓰고 있으면 실행이 실패합니다. 포트는 `E2E_APP_PORT` · `E2E_HARNESS_PORT`로 바꿉니다. 하네스는 Vite 내부 경로 없이 패키지를 exports로만 불러옵니다. 프로젝트는 chromium · chromium-dark · chromium-reduced-motion · chromium-forced-colors · firefox · webkit 여섯입니다. `foundations/motion` spec은 chromium에서 역할 타이밍을, chromium-reduced-motion에서 reduced-motion 정책을 돌립니다(프로젝트 옵션으로 서로의 테스트를 건너뜁니다). firefox · webkit은 `foundations/shape` · `primitives` · `atoms` spec을 돌고, `tests/dist/`는 배포본 전용 설정만 돌립니다 — 이름은 dist여도 산출물이 아니라 소스이므로 git · eslint · check-contracts는 산출물 `dist/`와 달리 이 디렉터리를 읽습니다. Tab은 `tests/support/keyboard.ts`의 `tab()`으로만 누릅니다 — macOS WebKit에서는 Alt+Tab이어야 버튼까지 닿습니다. 한 엔진에서만 나는 실패는 `playwright.config.ts`의 `ENGINE_EXCLUSIONS`에 이유와 다시 켜는 단계를 적어 그 엔진에서만 끕니다.
 
 ---
 

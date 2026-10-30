@@ -1,4 +1,4 @@
-import { tokens, CONTROL_SIZES, STATUSES, stateTransition } from "../tokens";
+import { tokens, CONTROL_SIZES, STATUSES, transition } from "../tokens";
 import type { ControlSize, Status } from "../tokens";
 import { outlinedControlProfile, outlinedControlHover } from "../tokens/color-recipes";
 import { controlGeometry, focusRing } from "../internal/shape";
@@ -20,7 +20,7 @@ export const fieldWrap = style({
   borderWidth: tokens.shape.stroke.border,
   borderStyle: "solid",
   cursor: "text",
-  transition: stateTransition("border-color", "background"),
+  transition: transition("state", "border-color", "background"),
   selectors: {
     // neutral hover는 배경을 흔들지 않고 전용 border.hover 선으로 형태를 가볍게 세운다.
     '&:not([data-status]):hover:has(input:enabled)': {
@@ -107,7 +107,7 @@ export const fieldAction = style({
   margin: 0,
   cursor: "pointer",
   color: tokens.color.ink.tertiary,
-  transition: stateTransition("color"),
+  transition: transition("hover", "color"),
   selectors: {
     "&:hover": { color: tokens.color.ink.primary },
     "&:focus-visible": { ...focusRing, borderRadius: tokens.shape.radius.control },

@@ -1,6 +1,6 @@
 import { focusRing, geometry } from "../internal/shape";
 
-import { tokens, stateTransition, CONTROL_SIZES, type ControlSize } from "../tokens";
+import { tokens, transition, CONTROL_SIZES, type ControlSize } from "../tokens";
 import { layered } from "../tokens/layers.css";
 
 const { style, styleVariants } = layered("components");
@@ -17,7 +17,7 @@ export const checkboxRoot = style({
   cursor: "pointer",
   display: "grid",
   placeContent: "center",
-  transition: stateTransition("background", "border-color"),
+  transition: transition("state", "background", "border-color"),
   selectors: {
     "&:checked": { background: tokens.color.accent.primary.solid, borderColor: tokens.color.accent.primary.solid },
     "&:checked::after": {

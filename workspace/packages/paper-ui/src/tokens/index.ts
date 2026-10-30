@@ -13,7 +13,7 @@ import { buildVarTree, pathToCssVar } from "./helpers";
 import { COLOR, OPACITY_VALUES } from "./colors";
 import { SHAPE } from "./shape";
 import { TYPOGRAPHY } from "./typography";
-import { MOTION_VALUES } from "./motion";
+import { MOTION } from "./motion";
 import { LAYOUT } from "./layout";
 
 export const tokens = {
@@ -23,8 +23,8 @@ export const tokens = {
   // Shape은 요소 하나의 형태, Layout은 요소 사이의 관계. 둘 다 역할만 노출한다 (shape.ts · layout.ts).
   shape: SHAPE,
   layout: LAYOUT,
-  // motion 은 var 로 굽지 않는다 — 값(duration·easing)을 직접 든다 (motion.ts 참고).
-  motion: MOTION_VALUES,
+  // motion 은 var 로 굽지 않는다 — 역할이 시간과 곡선을 값으로 들고 변위만 Shape·Layout var 를 가리킨다 (motion.ts 참고).
+  motion: { role: MOTION },
 } as const;
 
 // ───── 값 트리 · 타입 재수출 ────────────────────────────────────────────────
@@ -44,8 +44,7 @@ export type { AccentToken } from "./colors";
 
 export { CONTROL_ICON } from "./shape";
 
-export { MOTION_VALUES, DURATION, EASING, MOTION, stateTransition } from "./motion";
-export type { MotionDuration, MotionEasing, MotionRole } from "./motion";
+export { MOTION, MOTION_CONSUMERS, MOTION_LOOPS, MOTION_REDUCED, transition } from "./motion";
 
 export { kebab, pathToCssVar, pathToVarRef, walkValues, buildVarTree } from "./helpers";
 

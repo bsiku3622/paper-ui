@@ -1,10 +1,18 @@
+// @vitest-environment node
+
+import { readdirSync, readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
+import { MOTION_CONSUMERS, MOTION_ROLES } from "@studio-baeks/paper-ui/tokens";
+
 import { COLOR_SELECTION } from "../../../../packages/paper-ui/src/tokens/colors";
+import { LOOP } from "../../../../packages/paper-ui/src/tokens/motion";
 import { PALETTE_TOKENS } from "../../../../packages/paper-ui/src/tokens/palette";
 import { SHAPE_SOURCE } from "../../../../packages/paper-ui/src/tokens/shape";
 import { TYPOGRAPHY_SOURCE } from "../../../../packages/paper-ui/src/tokens/typography";
 import { GROUPS, ROLE_NOTES, formatPalettePath, hexAt, rolesOf, selectionAt } from "./color-roles";
+import { LOOP_NOTES, MOTION_NOTES, TRANSITION_PROPERTIES, roleNote, roleRange } from "./motion-roles";
 import { leafPaths } from "./paths";
 import { TARGET_NOTES } from "./shape-roles";
 import { CODE_SCALE_NOTES, PRESET_NOTES, PRESET_PATHS, SIZE_LEADING } from "./typography-roles";
@@ -71,5 +79,38 @@ describe("Shape inspector", () => {
   it("notes every target value the source has, and only those", () => {
     expect(Object.keys(TARGET_NOTES)).toEqual(Object.keys(SHAPE_SOURCE.target));
     for (const [name, note] of Object.entries(TARGET_NOTES)) expect(note.length, name).toBeGreaterThan(0);
+  });
+});
+
+describe("Motion inspector", () => {
+  it("notes every role the vocabulary has, in its order, and every loop", () => {
+    expect(Object.keys(MOTION_NOTES)).toEqual([...MOTION_ROLES]);
+    expect(Object.keys(LOOP_NOTES)).toEqual(Object.keys(LOOP));
+    for (const role of MOTION_ROLES) expect(MOTION_NOTES[role].length, role).toBeGreaterThan(0);
+  });
+
+  it("follows a role's note with the components that use it", () => {
+    for (const role of MOTION_ROLES) expect(roleNote(role), role).toBe([MOTION_NOTES[role], ...MOTION_CONSUMERS[role]].join(" · "));
+  });
+
+  it("composes only the roles that transition: press, hover and state", () => {
+    for (const role of Object.keys(TRANSITION_PROPERTIES)) expect(MOTION_ROLES, role).toContain(role);
+    expect(Object.keys(TRANSITION_PROPERTIES)).toEqual(["press", "hover", "state"]);
+  });
+
+  it("lists the properties each role drives in the package stylesheets", () => {
+    const root = fileURLToPath(new URL("../../../../packages/paper-ui/src", import.meta.url));
+    const driven: Record<string, string[]> = {};
+    for (const file of readdirSync(root, { recursive: true, encoding: "utf8" }).filter((name) => name.endsWith(".css.ts"))) {
+      for (const [, role = "", properties = ""] of readFileSync(`${root}/${file}`, "utf8").matchAll(/\btransition\("(\w+)"((?:,\s*"[^"]+")+)\)/g)) {
+        for (const [, property = ""] of properties.matchAll(/"([^"]+)"/g)) (driven[role] ??= []).push(property);
+      }
+    }
+    expect(Object.keys(driven).sort()).toEqual(Object.keys(TRANSITION_PROPERTIES).sort());
+    for (const [role, properties] of Object.entries(TRANSITION_PROPERTIES)) expect([...properties].sort(), role).toEqual([...new Set(driven[role])].sort());
+  });
+
+  it("writes the span of the role durations, the instant one left out", () => {
+    expect(roleRange(["100ms", "130ms", "200ms", "0ms"])).toBe("100~200ms");
   });
 });
