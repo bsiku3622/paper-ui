@@ -5,18 +5,18 @@ import { joinClass } from "../../internal/joinClass";
 import { useMergedRef } from "../../internal/refs";
 import { mergeProps } from "../composition";
 import { bareButton } from "../press/press.css";
-import type { DragOptions, MoveDragOptions, TransferDragOptions } from "../types";
+import type { DraggableOptions, MoveDragOptions, TransferDragOptions } from "../types";
 import { dragSurface } from "./drag.css";
-import { useDrag, type DragResult } from "./useDrag";
+import { useDraggable, type DraggableResult } from "./useDraggable";
 
-const DragContext = createContext<DragResult | null>(null);
-export type DraggableState = Pick<DragResult, "position" | "isDragging">;
-export type DraggableProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "onDragStart" | "onDragEnd" | "onDragMove"> & DragOptions & {
+const DragContext = createContext<DraggableResult | null>(null);
+export type DraggableState = Pick<DraggableResult, "position" | "isDragging">;
+export type DraggableProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "onDragStart" | "onDragEnd" | "onDragMove"> & DraggableOptions & {
   children?: ReactNode | ((state: DraggableState) => ReactNode);
 };
 // Every option either mode takes, as one optional shape: the props are split into the options and the native attributes.
 type OptionBag = Partial<Omit<MoveDragOptions, "mode" | "onDragStart" | "onDragMove" | "onDragEnd"> & Omit<TransferDragOptions, "mode" | "onDragStart" | "onDragMove" | "onDragEnd">> & {
-  mode?: DragOptions["mode"];
+  mode?: DraggableOptions["mode"];
   onDragStart?: (event: never) => void;
   onDragMove?: (event: never) => void;
   onDragEnd?: (event: never) => void;
@@ -28,7 +28,7 @@ const DraggableRoot = forwardRef<HTMLDivElement, DraggableProps>(function Dragga
     onDragStart, onDragMove, onDragEnd, onDragCancel, getItems, getAllowedDropOperations,
     children, className, style, ...dom
   } = props as PropBag;
-  const drag = useDrag({ mode, activation, disabled, axis, position, defaultPosition, onPositionChange, onDragStart, onDragMove, onDragEnd, onDragCancel, getItems, getAllowedDropOperations } as DragOptions);
+  const drag = useDraggable({ mode, activation, disabled, axis, position, defaultPosition, onPositionChange, onDragStart, onDragMove, onDragEnd, onDragCancel, getItems, getAllowedDropOperations } as DraggableOptions);
   const ref = useMergedRef(forwardedRef, drag.dragProps.ref);
   const surfaceProps = { role: mode === "transfer" && activation === "surface" ? "button" : "group", tabIndex: activation === "surface" && !disabled ? 0 : undefined };
   const positionStyle: CSSProperties = mode === "move" ? { translate: `${drag.position.x}px ${drag.position.y}px` } : {};

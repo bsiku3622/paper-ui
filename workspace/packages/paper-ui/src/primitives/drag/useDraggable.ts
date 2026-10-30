@@ -6,9 +6,9 @@ import { useControllableState } from "../../internal/useControllableState";
 import { MARKER_ATTRIBUTE, stateAttributes, type StateAttributes } from "../../tokens";
 import { mergeProps } from "../composition";
 import { usePressable } from "../press/usePressable";
-import type { DragOptions, DragPosition, MoveDragOptions } from "../types";
+import type { DraggableOptions, DragPosition, MoveDragOptions } from "../types";
 
-export type DragResult = {
+export type DraggableResult = {
   /** Spread on the element that moves, or that is dragged. Carries its own ref, `data-dragging` and `data-disabled`. */
   dragProps: HTMLAttributes<HTMLElement> & { ref: RefCallback<HTMLElement> } & StateAttributes<"dragging" | "disabled">;
   /** Spread on the handle, when `activation` is "handle". Carries `data-dragging` and `data-disabled`. */
@@ -28,7 +28,7 @@ const isChildControl = (event: { target: EventTarget | null; currentTarget: Even
   return !!control && control !== event.currentTarget && event.currentTarget.contains(control);
 };
 
-export function useDrag(options: DragOptions = {}): DragResult {
+export function useDraggable(options: DraggableOptions = {}): DraggableResult {
   const mode = options.mode ?? "move";
   const activation = options.activation ?? "surface";
   const disabled = options.disabled ?? false;
