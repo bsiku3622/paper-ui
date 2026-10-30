@@ -8,7 +8,7 @@
 
 import { globalStyle } from "@vanilla-extract/css";
 
-import { emphasisRule, tokens } from "@studio-baeks/paper-ui/tokens";
+import { emphasisRule, stateSelector, tokens } from "@studio-baeks/paper-ui/tokens";
 
 const BP = tokens.layout.breakpoint;
 
@@ -121,7 +121,7 @@ globalStyle(".home-filterhead", {
   paddingInline: tokens.shape.inset.sm,
 });
 
-globalStyle(".home-navitem[data-active='true']", {
+globalStyle(`.home-navitem${stateSelector("selected")}`, {
   background: tokens.color.interaction.selected,
   color: tokens.color.ink.primary,
   ...emphasisRule("medium"),

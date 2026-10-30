@@ -22,3 +22,6 @@ export type { Elevation, Breakpoint, Container, Align, Justify, JustifyItem, Ori
 
 export { MOTION_ROLES } from "./motion";
 export type { MotionRole } from "./motion";
+
+export { STATE_NAMES } from "./state";
+export type { StateName } from "./state";

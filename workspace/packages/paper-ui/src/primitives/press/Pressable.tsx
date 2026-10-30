@@ -1,23 +1,25 @@
-import { forwardRef, useRef, type ButtonHTMLAttributes, type ReactNode } from "react";
-import { mergeProps, mergeRefs } from "@react-aria/utils";
-import { useFocusRing } from "../a11y/focus";
-import { usePressable, type PressableOptions } from "./usePressable";
-import { bareButton } from "./press.css";
+import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react";
 
-export type PressableState = { isPressed: boolean; isFocused: boolean; isFocusVisible: boolean; isDisabled: boolean };
+import { useMergedRef } from "../../internal/refs";
+import { useFocusRing } from "../a11y/focus";
+import { mergeProps } from "../composition";
+import type { PressableOptions } from "../types";
+import { bareButton } from "./press.css";
+import { usePressable } from "./usePressable";
+
+export type PressableState = { isActive: boolean; isFocused: boolean; isFocusVisible: boolean; isDisabled: boolean };
 export type PressableProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> & PressableOptions & {
   children?: ReactNode | ((state: PressableState) => ReactNode);
 };
 export const Pressable = forwardRef<HTMLButtonElement, PressableProps>(function Pressable({
-  disabled = false, onPress, onPressStart, onPressEnd, onPressUp, onPressChange, isPressed: controlledPressed,
-  preventFocusOnPress, shouldCancelOnPointerExit, allowTextSelectionOnPress, children, type = "button", ...rest
+  disabled = false, onPress, onPressStart, onPressEnd, onPressUp, onPressChange,
+  preventFocusOnPress, cancelOnPointerExit, allowTextSelection, children, type = "button", ...rest
 }, forwardedRef) {
-  const ref = useRef<HTMLButtonElement>(null);
-  const { pressProps, isPressed } = usePressable({ disabled, onPress, onPressStart, onPressEnd, onPressUp, onPressChange, isPressed: controlledPressed, preventFocusOnPress, shouldCancelOnPointerExit, allowTextSelectionOnPress }, ref);
+  const { pressProps, isActive } = usePressable({ disabled, onPress, onPressStart, onPressEnd, onPressUp, onPressChange, preventFocusOnPress, cancelOnPointerExit, allowTextSelection });
   const { focusProps, isFocused, isFocusVisible } = useFocusRing();
-  const state = { isPressed, isFocused, isFocusVisible, isDisabled: disabled };
-  return <button {...mergeProps({ className: bareButton }, rest, pressProps, focusProps)} ref={mergeRefs(ref, forwardedRef)} type={type} disabled={disabled}
-    data-pressed={isPressed || undefined} data-focused={isFocused || undefined} data-focus-visible={isFocusVisible || undefined}>
+  const ref = useMergedRef(forwardedRef, pressProps.ref);
+  const state = { isActive, isFocused, isFocusVisible, isDisabled: disabled };
+  return <button {...mergeProps({ className: bareButton }, rest, pressProps, focusProps)} ref={ref} type={type} disabled={disabled}>
     {typeof children === "function" ? children(state) : children}
   </button>;
 });

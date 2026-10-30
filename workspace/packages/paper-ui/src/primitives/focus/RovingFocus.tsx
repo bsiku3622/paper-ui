@@ -1,6 +1,9 @@
-import { createContext, forwardRef, useCallback, useContext, useLayoutEffect, useRef, useState, type ComponentPropsWithoutRef, type ElementType, type HTMLAttributes, type KeyboardEvent, type ReactElement, type Ref } from "react";
-import { composeEventHandlers, mergeRefs } from "../composition";
-import type { Orientation } from "../../tokens";
+import { createContext, forwardRef, useCallback, useContext, useLayoutEffect, useRef, useState, type ComponentPropsWithoutRef, type ElementType, type HTMLAttributes, type KeyboardEvent, type ReactElement, type Ref, type RefCallback } from "react";
+import { paperError } from "../../internal/errors";
+import { useMergedRef } from "../../internal/refs";
+import { useControllableState } from "../../internal/useControllableState";
+import { MARKER_ATTRIBUTE, VALUE_ATTRIBUTE, type Orientation } from "../../tokens";
+import { composeEventHandlers } from "../composition";
 
 type Entry = { value: string; element: HTMLElement; disabled: boolean };
 const sortEntries = (entries: Entry[]) => entries.filter((entry) => !entry.disabled && entry.element.isConnected)
@@ -28,20 +31,22 @@ export const RovingFocusRoot = forwardRef<HTMLDivElement, RovingFocusProps>(func
   currentValue, defaultCurrentValue, onCurrentValueChange, children, ...props
 }, forwardedRef) {
   const root = useRef<HTMLDivElement>(null);
+  const rootRef = useMergedRef(root, forwardedRef);
   const [entries, setEntries] = useState<Entry[]>([]);
   const registry = useRef<Entry[]>([]);
-  const [internal, setInternal] = useState(defaultCurrentValue);
+  const [requested, setRequested] = useControllableState<string | null | undefined>({
+    value: currentValue,
+    defaultValue: defaultCurrentValue,
+    onChange: (value) => { if (value) onCurrentValueChange?.(value); },
+  });
   const mounted = useRef(false);
   const restore = useRef<number | null>(null);
   const focused = useRef<{ value: string; index: number } | null>(null);
   const ordered = sortEntries(entries);
-  const requested = currentValue === undefined ? internal : currentValue;
   const current = ordered.find((entry) => entry.value === requested)?.value ?? ordered[0]?.value;
   const activate = (value: string) => {
     focused.current = { value, index: sortEntries(registry.current).findIndex((entry) => entry.value === value) };
-    if (value === requested) return;
-    if (currentValue === undefined) setInternal(value);
-    onCurrentValueChange?.(value);
+    setRequested(value);
   };
   const register = useCallback((entry: Entry) => {
     registry.current = [...registry.current.filter((item) => item.value !== entry.value), entry];
@@ -93,7 +98,7 @@ export const RovingFocusRoot = forwardRef<HTMLDivElement, RovingFocusProps>(func
     target?.element.focus();
   };
   return <RovingContext.Provider value={{ current, disabled, register, activate, navigate }}>
-    <div tabIndex={-1} {...props} ref={mergeRefs(root, forwardedRef)} dir={dir} data-orientation={orientation}
+    <div tabIndex={-1} {...props} ref={rootRef} dir={dir} {...{ [VALUE_ATTRIBUTE.orientation]: orientation }}
       onBlur={(event) => {
         props.onBlur?.(event);
         if (!event.relatedTarget || !event.currentTarget.contains(event.relatedTarget as Node)) focused.current = null;
@@ -102,20 +107,35 @@ export const RovingFocusRoot = forwardRef<HTMLDivElement, RovingFocusProps>(func
 });
 
 export type RovingFocusItemOptions = { value: string; disabled?: boolean };
-export function useRovingFocusItem<Element extends HTMLElement = HTMLElement>({ value, disabled = false }: RovingFocusItemOptions) {
+export type RovingFocusItemResult<Element extends HTMLElement = HTMLElement> = {
+  /** Spread on the item. Carries its own ref, its place in the Tab order and the keys that move focus. */
+  itemProps: {
+    ref: RefCallback<Element>;
+    tabIndex: number;
+    onFocus: () => void;
+    onKeyDown: (event: KeyboardEvent<HTMLElement>) => void;
+  } & Record<typeof MARKER_ATTRIBUTE.rovingItem, string>;
+  /** The item that holds the group's Tab stop. */
+  isCurrent: boolean;
+};
+export function useRovingFocusItem<Element extends HTMLElement = HTMLElement>({ value, disabled = false }: RovingFocusItemOptions): RovingFocusItemResult<Element> {
   const context = useContext(RovingContext);
-  if (!context) throw new Error("useRovingFocusItem must be used inside RovingFocus");
+  if (!context) throw paperError("useRovingFocusItem must be used inside <RovingFocus>.");
   const [element, setElement] = useState<Element | null>(null);
   const ref = useCallback((node: Element | null) => setElement(node), []);
   const { register } = context;
   const isDisabled = disabled || context.disabled;
   useLayoutEffect(() => element ? register({ value, element, disabled: isDisabled }) : undefined, [element, value, isDisabled, register]);
+  const isCurrent = !isDisabled && context.current === value;
   return {
-    ref,
-    tabIndex: !isDisabled && context.current === value ? 0 : -1,
-    "data-roving-item": value,
-    onFocus: () => { if (!isDisabled) context.activate(value); },
-    onKeyDown: (event: KeyboardEvent<HTMLElement>) => context.navigate(event, value),
+    itemProps: {
+      ref,
+      tabIndex: isCurrent ? 0 : -1,
+      [MARKER_ATTRIBUTE.rovingItem]: value,
+      onFocus: () => { if (!isDisabled) context.activate(value); },
+      onKeyDown: (event) => context.navigate(event, value),
+    },
+    isCurrent,
   };
 }
 
@@ -126,13 +146,14 @@ export type RovingFocusItemProps<As extends ElementType = "button"> = RovingFocu
 const Item = forwardRef<HTMLElement, RovingFocusItemProps<ElementType>>(function RovingFocusItem({ as, value, disabled, onFocus, onKeyDown, ...props }, ref) {
   const context = useContext(RovingContext);
   const isDisabled = disabled || context?.disabled;
-  const item = useRovingFocusItem({ value, disabled });
+  const { itemProps } = useRovingFocusItem({ value, disabled });
+  const mergedRef = useMergedRef(itemProps.ref, ref);
   const Tag = as ?? "button";
   const nativeDisabled = typeof Tag !== "string" || ["button", "input", "select", "textarea"].includes(Tag);
-  return <Tag {...props} {...item} ref={mergeRefs(item.ref, ref)}
+  return <Tag {...props} {...itemProps} ref={mergedRef}
     type={Tag === "button" ? props.type ?? "button" : props.type}
     disabled={nativeDisabled ? isDisabled : undefined} aria-disabled={isDisabled || undefined}
-    onFocus={composeEventHandlers(onFocus, item.onFocus)} onKeyDown={composeEventHandlers(onKeyDown, item.onKeyDown)} />;
+    onFocus={composeEventHandlers(onFocus, itemProps.onFocus)} onKeyDown={composeEventHandlers(onKeyDown, itemProps.onKeyDown)} />;
 }) as <As extends ElementType = "button">(props: RovingFocusItemProps<As>) => ReactElement;
 
 export const RovingFocus = Object.assign(RovingFocusRoot, { Item });

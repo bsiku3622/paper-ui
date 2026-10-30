@@ -124,6 +124,7 @@ prop이 받는 닫힌 값의 집합을 **축**이라 부릅니다. 축마다 상
 | `JUSTIFY_ITEMS` · `JustifyItem` | `tokens/layout.ts` | Grid의 `justifyItems` — 칸 안의 가로 정렬 |
 | `ORIENTATIONS` · `Orientation` | `tokens/layout.ts` | Divider의 `orientation`, RovingFocus의 `orientation`(`both` 추가) |
 | `MOTION_ROLES` · `MotionRole` | `tokens/motion.ts` | `tokens.motion.role.<role>`, `transition()`의 첫 인자 |
+| `STATE_NAMES` · `StateName` | `tokens/state.ts` | 상태 attribute의 이름(`stateSelector()`의 인자) — active · focused · focusVisible · selected · disabled · invalid · required · dragging · dropTarget. attribute 이름은 이 파일 한 곳에서만 씁니다 |
 
 새 축은 원본 tree에서 파생하거나 `satisfies`로 양방향 묶고 `vocabulary.ts`에 상수·타입 짝으로 공개합니다. 원본 tree에서 파생한 축은 단계를 더하면 상수와 타입이 함께 늘고, `satisfies`로 묶은 축은 한쪽만 늘면 타입 검사가 막습니다.
 

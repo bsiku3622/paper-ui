@@ -1,10 +1,10 @@
 # Float
 
-Float Primitive는 떠 있는 층의 위치와 elevation(z와 그림자), 닫는 방식을 맡는 2차 primitive입니다. Trigger · Content · Close로 열린 상태를 연결하고, 입력 정규화와 배치 · 중첩 dismissal · 배경 inert · 스크롤 잠금은 React Aria에 위임하며 Paper가 공개 API와 상태 연결을 소유합니다. Floating은 elevation 한 단위(z와 그림자)와 modal의 scrim 및 그 gutter를 스스로 소유하고, 그 밖의 색은 입히지 않습니다 — 면 · 테두리 · 모서리 · 여백은 Content의 className이 지정하며(`surfaceClass()`로 fill · border · radius를 고릅니다), modal의 scrim만 Paint 층의 `scrimPaint`를 씁니다. Trigger와 Close는 눌리는 대상이라 [Press](press.md)의 Pressable 위에 섭니다.
+Float Primitive는 떠 있는 층의 위치와 elevation(z와 그림자), 닫는 방식을 맡는 2차 primitive입니다. Trigger · Content · Close로 열린 상태를 연결하고, 입력 정규화와 배치 · 중첩 dismissal · 배경 inert · 스크롤 잠금은 React Aria에 위임하며 Paper가 공개 API와 상태 연결을 소유합니다(`Placement`를 포함해 타입은 모두 Paper가 선언합니다). Floating은 elevation 한 단위(z와 그림자)와 modal의 scrim 및 그 gutter를 스스로 소유하고, 그 밖의 색은 입히지 않습니다 — 면 · 테두리 · 모서리 · 여백은 Content의 className이 지정하며(`surfaceClass()`로 fill · border · radius를 고릅니다), modal의 scrim만 Paint 층의 `scrimPaint`를 씁니다. Trigger와 Close는 눌리는 대상이라 [Press](press.md)의 Pressable 위에 섭니다.
 
 | 컴포넌트 | Hook | 책임 | 기본값 |
 | --- | --- | --- | --- |
-| Floating | useFloating | open/defaultOpen/onOpenChange, modal | non-modal. Trigger · Content · Close로 Portal · 배치 · 닫기 · focus 연결 |
+| Floating | useFloating · useFloatingContext | open/defaultOpen/onOpenChange, modal | non-modal. Trigger · Content · Close로 Portal · 배치 · 닫기 · focus 연결 |
 
 ## Floating
 
@@ -23,7 +23,7 @@ Floating은 열린 상태와 Trigger·Content·Close를 연결합니다. Root는
 </Floating>
 ```
 
-Root의 open/defaultOpen/onOpenChange는 controlled·uncontrolled 상태를 선택합니다. useFloating은 같은 옵션과 isOpen·setOpen·open·close·toggle을 제공하는 상태 hook입니다. DOM 동작은 Content가 연결합니다. Trigger·Close는 Pressable의 native button·ref·onPress 계약을 유지합니다. Trigger의 aria-haspopup=dialog·aria-expanded·aria-controls가 Content에 연결됩니다.
+Root의 open/defaultOpen/onOpenChange는 controlled·uncontrolled 상태를 선택합니다. useFloating은 같은 옵션을 받아 `FloatingResult`(isOpen·setOpen·open·close·toggle)를 돌려주는 상태 hook이고, 같은 값이면 알리지 않습니다. Floating 안의 부품은 `useFloatingContext()`로 같은 결과를 읽어 직접 만든 button으로 열고 닫습니다. DOM 동작은 Content가 연결합니다. Trigger·Close(`FloatingTriggerProps` · `FloatingCloseProps`)는 Pressable의 native button·ref·onPress 계약을 유지하고, 호출자의 `onPress`가 먼저 실행된 뒤 열기·닫기가 따릅니다. Trigger의 aria-haspopup=dialog·aria-expanded·aria-controls가 Content에 연결됩니다.
 
 Content role은 dialog / alertdialog이며 기본값은 dialog입니다. aria-label 또는 aria-labelledby로 이름을 제공해주세요. Modal에만 aria-modal=true가 붙습니다. Menu·Tooltip 등의 의미론은 이 API에 임의로 부여하지 않습니다.
 
@@ -35,11 +35,11 @@ Content role은 dialog / alertdialog이며 기본값은 dialog입니다. aria-la
 | autoFocus / restoreFocus | true / true | 진입 / 해제 후 복원 |
 | initialFocusRef | 없음 | 내부의 명시적 focus 대상 |
 | anchored | non-modal이면 true | Trigger 기준 배치 |
-| placement | bottom start | 방향·정렬 |
+| placement | bottom start | 방향·정렬(`Placement`, 논리 방향이라 오른쪽에서 왼쪽으로 쓰는 페이지에서는 거울상) |
 | offset / crossOffset | 0 / 0 | 실행 중 계산하는 배치 간격 |
-| shouldFlip | true | 공간이 부족하면 방향 전환 |
+| flip | true | 공간이 부족하면 방향 전환 |
 | portalContainer | document.body | Portal을 붙일 Element |
-| shouldCloseOnInteractOutside | 없음 | 바깥 조작 필터 |
+| closeOnInteractOutside | 없음 | 바깥 조작 필터 |
 | underlayClassName | 없음 | Modal scrim class |
 
 초기 focus는 initialFocusRef, 첫 내부 대상, 대상이 없는 경우 Content 순서입니다. 제목에 명시적으로 이동하려면 tabIndex=-1을 제공해주세요. AutoFocus=false이면 자동 이동을 하지 않습니다. Portal의 root가 열린 자리의 theme를 다시 걸어, 옮겨진 내용도 Paper의 해석된 theme를 유지합니다. 임의의 지역 CSS 상속이 필요하면 portalContainer를 지정합니다.

@@ -1,11 +1,11 @@
-import { createRef, useState } from "react";
+import { createRef, forwardRef, useState } from "react";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { textRoleClass } from "../styles/typography.css";
 import { ScopeModeContext } from "../theme/context";
 import { THEME_ATTRIBUTE } from "../tokens";
 import { portalRoot } from "./a11y/Portal.css";
-import { Icon, Portal, Pressable, RovingFocus, FormField, VisuallyHidden, useFocusWithin } from "./index";
+import { Icon, Portal, Pressable, RovingFocus, FormField, VisuallyHidden, mergeProps, useFocusRing, useFocusWithin, useFormField, useRovingFocusItem } from "./index";
 
 describe("roving focus", () => {
   it("[primitives.roving-focus.tab-stop] has one tab stop, skips disabled items and emits one change per arrow", () => {
@@ -126,6 +126,57 @@ describe("field relationships", () => {
   });
 });
 
+describe("field hook", () => {
+  it("[primitives.form-field.relations] useFormField gives the control, label, description and error props without rendering", () => {
+    function Probe() {
+      const field = useFormField({ id: "name", description: "Help", error: "Wrong", invalid: true, required: true });
+      return <><label {...field.labelProps}>Name</label><input {...field.controlProps} /><p {...field.descriptionProps}>Help</p><p {...field.errorProps}>Wrong</p></>;
+    }
+    render(<Probe />);
+    const input = screen.getByLabelText("Name");
+    expect(input.id).toBe("name");
+    expect(input.getAttribute("aria-describedby")).toBe("name-description name-error");
+    expect(input.getAttribute("aria-invalid")).toBe("true");
+  });
+
+  it("marks the field's state on its wrapper", () => {
+    render(<FormField label="Email" disabled required invalid data-testid="field">{({ controlProps }) => <input {...controlProps} />}</FormField>);
+    const field = screen.getByTestId("field");
+    expect(["data-disabled", "data-invalid", "data-required"].map((name) => field.getAttribute(name))).toEqual(["true", "true", "true"]);
+  });
+});
+
+describe("roving item hook", () => {
+  it("[primitives.hooks.result-shape] gives itemProps with the ref, the Tab stop and the marker, and says which item is current", () => {
+    function Item({ value }: { value: string }) {
+      const { itemProps, isCurrent } = useRovingFocusItem<HTMLButtonElement>({ value });
+      return <button type="button" {...itemProps} data-current={isCurrent}>{value}</button>;
+    }
+    render(<RovingFocus><Item value="a" /><Item value="b" /></RovingFocus>);
+    const a = screen.getByText("a");
+    const b = screen.getByText("b");
+    expect(a.getAttribute("data-roving-item")).toBe("a");
+    expect([a.tabIndex, b.tabIndex]).toEqual([0, -1]);
+    expect([a.dataset.current, b.dataset.current]).toEqual(["true", "false"]);
+  });
+
+  it("[primitives.composition.merge-props] keeps the item's ref when a forwardRef component was given none", () => {
+    const Item = forwardRef<HTMLButtonElement, { value: string }>(function Item({ value }, forwardedRef) {
+      const { itemProps } = useRovingFocusItem<HTMLButtonElement>({ value });
+      return <button type="button" {...mergeProps(itemProps, { ref: forwardedRef })}>{value}</button>;
+    });
+    render(<RovingFocus><Item value="a" /><Item value="b" /></RovingFocus>);
+    expect([screen.getByText("a").tabIndex, screen.getByText("b").tabIndex]).toEqual([0, -1]);
+  });
+
+  it("is a developer error outside a RovingFocus", () => {
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    function Lonely() { useRovingFocusItem({ value: "a" }); return null; }
+    expect(() => render(<Lonely />)).toThrow("[paper-ui] useRovingFocusItem must be used inside <RovingFocus>.");
+    log.mockRestore();
+  });
+});
+
 describe("field parts", () => {
   it("[primitives.form-field.parts] draws the label, description and error with Text roles and names each part", () => {
     render(<FormField label="Email" description="Help" error="Wrong" invalid>{({ controlProps }) => <input {...controlProps} />}</FormField>);
@@ -146,6 +197,40 @@ describe("hidden content and focus within", () => {
     render(<Pressable><Icon><path d="M1 1h2" /></Icon><VisuallyHidden>Create item</VisuallyHidden></Pressable>);
     expect(screen.getByRole("button", { name: "Create item" })).toBeTruthy();
     expect(screen.getByText("Create item").getAttribute("aria-hidden")).not.toBe("true");
+  });
+
+  it("VisuallyHidden forwards a ref to the element it renders, as the tag it is asked for", () => {
+    const ref = createRef<HTMLElement>();
+    render(<VisuallyHidden as="div" ref={ref}>Skip</VisuallyHidden>);
+    expect(ref.current).toBe(screen.getByText("Skip"));
+    expect(ref.current?.tagName).toBe("DIV");
+  });
+
+  it("VisuallyHidden focusable shows the content while it holds focus, and not otherwise", () => {
+    render(<><VisuallyHidden>Plain</VisuallyHidden><VisuallyHidden focusable><a href="#main">Skip to content</a></VisuallyHidden></>);
+    const hidden = screen.getByText("Plain");
+    const wrapper = screen.getByText("Skip to content").parentElement as HTMLElement;
+    expect(hidden.style.position).toBe("absolute");
+    expect(wrapper.style.position).toBe("absolute");
+    act(() => screen.getByText("Skip to content").focus());
+    expect(wrapper.style.position).not.toBe("absolute");
+    act(() => screen.getByText("Skip to content").blur());
+    expect(wrapper.style.position).toBe("absolute");
+  });
+
+  it("[primitives.hooks.result-shape] useFocusRing marks focus and keyboard focus, and a text input shows its ring for every focus", () => {
+    function Ring({ textInput }: { textInput?: boolean }) {
+      const { focusProps, isFocusVisible } = useFocusRing({ textInput });
+      return <input aria-label="Name" {...focusProps} data-visible={isFocusVisible} />;
+    }
+    render(<Ring textInput />);
+    const input = screen.getByLabelText("Name");
+    expect(input.hasAttribute("data-focused")).toBe(false);
+    act(() => input.focus());
+    expect(input.getAttribute("data-focused")).toBe("true");
+    expect(input.getAttribute("data-focus-visible")).toBe("true");
+    act(() => input.blur());
+    expect(input.hasAttribute("data-focused")).toBe(false);
   });
 
   it("focus-within stays active when focus moves between descendants", () => {

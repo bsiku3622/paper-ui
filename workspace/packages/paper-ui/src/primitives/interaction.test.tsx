@@ -1,7 +1,7 @@
-import { createRef } from "react";
+import { createRef, type ReactNode } from "react";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { Box, Pressable, Selectable, Draggable, SelectableGroup, useSelectableGroup, Floating, useFloating, useSelectable, usePressable, mergeProps, mergeRefs, composeEventHandlers } from "./index";
+import { Box, Pressable, Selectable, Draggable, Droppable, SelectableGroup, useSelectableGroup, Floating, useFloating, useFloatingContext, useSelectable, usePressable, useFocusRing, useDrag, useDrop, mergeProps, mergeRefs, composeEventHandlers } from "./index";
 import { spaceClass } from "../styles/space.css";
 import { ELEVATION_NEST_LIMIT } from "../tokens";
 import * as floatingStyles from "./float/Floating.css";
@@ -19,6 +19,94 @@ describe("interaction primitives", () => {
     expect(click).toHaveBeenCalledTimes(1);
     expect(ref.current).toBe(button);
     expect(ref.current?.type).toBe("button");
+  });
+
+  it("[primitives.hooks.result-shape] Pressable marks a press with data-active, and the children function reads isActive", () => {
+    render(<Pressable>{({ isActive }) => isActive ? "Pressing" : "Idle"}</Pressable>);
+    const button = screen.getByRole("button");
+    expect(button.hasAttribute("data-active")).toBe(false);
+    fireEvent.keyDown(button, { key: " " });
+    expect(button.getAttribute("data-active")).toBe("true");
+    expect(button.textContent).toBe("Pressing");
+    fireEvent.keyUp(button, { key: " " });
+    expect(button.hasAttribute("data-active")).toBe(false);
+    expect(button.hasAttribute("data-pressed")).toBe(false);
+  });
+
+  it("[primitives.pressable.input-paths] a mouse press leaves focus on the pressed button, unless the caller keeps it off", () => {
+    render(<><Pressable>Takes</Pressable><Pressable preventFocusOnPress>Keeps off</Pressable></>);
+    const pointer = { pointerType: "mouse", pointerId: 1, button: 0, width: 1, height: 1, isPrimary: true };
+    const press = (button: HTMLElement) => { fireEvent.pointerDown(button, pointer); fireEvent.mouseDown(button); fireEvent.pointerUp(button, pointer); fireEvent.mouseUp(button); fireEvent.click(button, { detail: 1 }); };
+    const takes = screen.getByRole("button", { name: "Takes" });
+    const keeps = screen.getByRole("button", { name: "Keeps off" });
+    press(takes);
+    expect(document.activeElement).toBe(takes);
+    press(keeps);
+    expect(document.activeElement).not.toBe(keeps);
+  });
+
+  it("[primitives.pressable.input-paths] a press stops at the element that handles it, unless the handler lets the parent have it", () => {
+    const outer = vi.fn();
+    const inner = vi.fn();
+    function Outer({ children }: { children: ReactNode }) {
+      const { pressProps } = usePressable({ onPress: outer });
+      return <div role="group" {...pressProps}>{children}</div>;
+    }
+    const view = render(<Outer><Pressable onPress={inner}>Inner</Pressable></Outer>);
+    fireEvent.click(screen.getByText("Inner"));
+    expect(inner).toHaveBeenCalledTimes(1);
+    expect(outer).not.toHaveBeenCalled();
+    view.unmount();
+    render(<Outer><Pressable onPress={(event) => event.continuePropagation()}>Inner</Pressable></Outer>);
+    fireEvent.click(screen.getByText("Inner"));
+    expect(outer).toHaveBeenCalledTimes(1);
+  });
+
+  it("[primitives.pressable.input-paths] Pressable marks a disabled button with data-disabled and runs no press", () => {
+    const press = vi.fn();
+    render(<Pressable disabled onPress={press}>Run</Pressable>);
+    const button = screen.getByRole("button");
+    expect(button.getAttribute("data-disabled")).toBe("true");
+    fireEvent.click(button);
+    expect(press).not.toHaveBeenCalled();
+  });
+
+  it("[primitives.hooks.result-shape] a hook-composed button carries its state attributes without writing them by hand", () => {
+    const press = vi.fn();
+    function Composed() {
+      const { pressProps } = usePressable({ onPress: press });
+      const { focusProps } = useFocusRing();
+      return <button type="button" {...mergeProps(pressProps, focusProps)}>Hook</button>;
+    }
+    render(<Composed />);
+    const button = screen.getByRole("button", { name: "Hook" });
+    fireEvent.keyDown(button, { key: "Enter" });
+    expect(button.getAttribute("data-active")).toBe("true");
+    fireEvent.keyUp(button, { key: "Enter" });
+    expect(press).toHaveBeenCalledTimes(1);
+    expect(button.hasAttribute("data-active")).toBe(false);
+    act(() => button.focus());
+    expect(button.getAttribute("data-focused")).toBe("true");
+  });
+
+  it("[primitives.hooks.result-shape] usePressable and useSelectable need no ref argument: the press props carry their own ref", () => {
+    let pressProps: ReturnType<typeof usePressable>["pressProps"] | undefined;
+    function Custom() {
+      const press = usePressable({});
+      const select = useSelectable();
+      pressProps = press.pressProps;
+      return <button type="button" {...press.pressProps} {...select.selectProps}>Both</button>;
+    }
+    render(<Custom />);
+    expect(screen.getByRole("button", { name: "Both" })).toBeTruthy();
+    expect(typeof pressProps!.ref).toBe("function");
+  });
+
+  it("[primitives.composition.compose-handlers] Selectable runs the caller's onPress before it asks for the change", () => {
+    const calls: string[] = [];
+    render(<Selectable onPress={() => calls.push("press")} onSelectedChange={() => calls.push("change")}>Pick</Selectable>);
+    fireEvent.click(screen.getByRole("button", { name: "Pick" }));
+    expect(calls).toEqual(["press", "change"]);
   });
 
   it("[primitives.selectable.input-paths] Selectable owns uncontrolled state and never activates while disabled", () => {
@@ -58,6 +146,24 @@ describe("interaction primitives", () => {
     fireEvent.click(button);
     expect(screen.getByRole("button", { name: "On" }).getAttribute("aria-pressed")).toBe("true");
     expect(screen.getByRole("button", { name: "On" }).hasAttribute("data-selected")).toBe(true);
+  });
+
+  it("[primitives.selectable.input-paths] toggle reads the latest value: twice in one handler returns to the start, and a held toggle keeps flipping", () => {
+    const change = vi.fn();
+    const held: { toggle?: () => void } = {};
+    function Harness() {
+      const { selectProps, toggle } = useSelectable({ onSelectedChange: change });
+      held.toggle ??= toggle;
+      return <button type="button" {...selectProps} onClick={() => { toggle(); toggle(); }}>twice</button>;
+    }
+    render(<Harness />);
+    const button = screen.getByRole("button", { name: "twice" });
+    fireEvent.click(button);
+    expect(button.getAttribute("aria-pressed")).toBe("false");
+    expect(change.mock.calls).toEqual([[true], [false]]);
+    act(() => held.toggle?.());
+    act(() => held.toggle?.());
+    expect(change.mock.calls.slice(2)).toEqual([[true], [false]]);
   });
 
   it("[primitives.selectable.input-paths] useSelectable alone never toggles on a click", () => {
@@ -169,7 +275,7 @@ describe("selectable groups", () => {
   it("hook supports the same group state without component wrappers", () => {
     function Example() {
       const state = useSelectableGroup({ selectionMode: "multiple" });
-      return <button onClick={() => state.toggle("a")}>{state.selectedValues.join(",") || "Empty"}</button>;
+      return <button onClick={() => state.toggleValue("a")}>{state.selectedValues.join(",") || "Empty"}</button>;
     }
     render(<Example />);
     fireEvent.click(screen.getByText("Empty"));
@@ -179,8 +285,58 @@ describe("selectable groups", () => {
   });
 });
 
+describe("drag and drop hooks", () => {
+  it("[primitives.hooks.result-shape] useDrag gives props that carry the ref and the state, and no separate target or handle ref", () => {
+    let result: ReturnType<typeof useDrag> | undefined;
+    function Probe() { result = useDrag({ activation: "handle" }); return <div {...result.dragProps}>Panel</div>; }
+    render(<Probe />);
+    expect(Object.keys(result!).sort()).toEqual(["cancel", "dragProps", "handleProps", "isDragging", "position"]);
+    expect(typeof result!.dragProps.ref).toBe("function");
+    expect(result!.dragProps["data-dragging"]).toBeUndefined();
+  });
+
+  it("[primitives.hooks.result-shape] useDrop gives dropProps with its ref and no ref argument, field or dropButtonProps", () => {
+    let result: ReturnType<typeof useDrop> | undefined;
+    function Probe() { result = useDrop({ disabled: true }); return <div {...result.dropProps}>Target</div>; }
+    render(<Probe />);
+    expect(Object.keys(result!).sort()).toEqual(["dropProps", "isDropTarget"]);
+    expect(result!.dropProps["data-disabled"]).toBe("true");
+    expect(screen.getByText("Target").getAttribute("aria-disabled")).toBe("true");
+    expect(screen.getByText("Target").hasAttribute("data-drop-target")).toBe(false);
+  });
+
+  it("Droppable and Draggable forward their refs to their element", () => {
+    const drop = createRef<HTMLDivElement>();
+    const drag = createRef<HTMLDivElement>();
+    render(<><Droppable ref={drop}>Drop</Droppable><Draggable ref={drag}>Drag</Draggable></>);
+    expect(drop.current).toBe(screen.getByText("Drop"));
+    expect(drag.current).toBe(screen.getByText("Drag"));
+  });
+
+  it("marks a disabled Draggable with data-disabled", () => {
+    render(<Draggable disabled data-testid="drag">Drag</Draggable>);
+    expect(screen.getByTestId("drag").getAttribute("data-disabled")).toBe("true");
+    expect(screen.getByTestId("drag").getAttribute("aria-disabled")).toBe("true");
+  });
+});
+
+describe("developer errors", () => {
+  const silently = (render: () => void) => {
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    try { render(); } finally { log.mockRestore(); }
+  };
+
+  it("prefix every message and name the part that was used outside its parent", () => {
+    silently(() => {
+      expect(() => render(<Floating.Trigger>Open</Floating.Trigger>)).toThrow("[paper-ui] Floating parts must be used inside <Floating>.");
+      expect(() => render(<Draggable.Handle aria-label="Move" />)).toThrow("[paper-ui] Draggable.Handle must be used inside <Draggable>.");
+      expect(() => render(<SelectableGroup.Item value="a">A</SelectableGroup.Item>)).toThrow("[paper-ui] SelectableGroup.Item must be used inside <SelectableGroup>.");
+    });
+  });
+});
+
 describe("composition contracts", () => {
-  it("merges handlers additively and refs onto a single native node", () => {
+  it("[primitives.composition.merge-props] merges handlers additively and refs onto a single native node", () => {
     const first = vi.fn();
     const second = vi.fn();
     const a = createRef<HTMLButtonElement>();
@@ -197,7 +353,7 @@ describe("composition contracts", () => {
     expect(b).toHaveBeenLastCalledWith(null);
   });
 
-  it("cancellable composition runs the caller before internal behavior", () => {
+  it("[primitives.composition.compose-handlers] cancellable composition runs the caller before internal behavior", () => {
     const internal = vi.fn();
     render(<button onClick={composeEventHandlers((event) => event.preventDefault(), internal)}>Cancel</button>);
     fireEvent.click(screen.getByText("Cancel"));
@@ -218,6 +374,19 @@ describe("floating state", () => {
     expect(screen.getByText("false")).toBeTruthy();
   });
 
+  it("lets a custom part open and close the Floating it stands in", () => {
+    function Toggle() {
+      const { isOpen, toggle } = useFloatingContext();
+      return <button onClick={toggle}>{isOpen ? "Hide" : "Show"}</button>;
+    }
+    render(<Floating><Toggle /><Floating.Content aria-label="Panel" anchored={false}>Body</Floating.Content></Floating>);
+    expect(screen.queryByText("Body")).toBeNull();
+    fireEvent.click(screen.getByText("Show"));
+    expect(screen.getByText("Body")).toBeTruthy();
+    fireEvent.click(screen.getByText("Hide"));
+    expect(screen.queryByText("Body")).toBeNull();
+  });
+
   it("exposes controlled trigger state without rendering closed content", () => {
     const change = vi.fn();
     render(<Floating open={false} onOpenChange={change}><Floating.Trigger>Open</Floating.Trigger><Floating.Content aria-label="Settings">Hidden</Floating.Content></Floating>);
@@ -227,6 +396,24 @@ describe("floating state", () => {
     expect(screen.queryByText("Hidden")).toBeNull();
     fireEvent.click(trigger);
     expect(change).toHaveBeenCalledWith(true);
+  });
+});
+
+describe("floating dismissal", () => {
+  it.each([{ modal: true }, { modal: false }])("closes on focus leaving only when asked to (modal: $modal)", ({ modal }) => {
+    const ask = (closeOnBlur: boolean) => {
+      const change = vi.fn();
+      const view = render(<>
+        <button>Outside</button>
+        <Floating open modal={modal} onOpenChange={change}><Floating.Content aria-label="Panel" anchored={false} closeOnBlur={closeOnBlur}><button>Inside</button></Floating.Content></Floating>
+      </>);
+      act(() => screen.getByText("Inside").focus());
+      act(() => screen.getByText("Outside").focus());
+      view.unmount();
+      return change;
+    };
+    expect(ask(false)).not.toHaveBeenCalled();
+    expect(ask(true)).toHaveBeenCalledWith(false);
   });
 });
 

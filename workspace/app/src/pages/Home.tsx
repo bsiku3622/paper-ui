@@ -72,7 +72,7 @@ const AppMockup = () => {
 
           <div className="home-nav">
             {NAV.map((n) => (
-              <div key={n.label} className="home-navitem" data-active={n.active}>
+              <div key={n.label} className="home-navitem" data-selected={n.active || undefined}>
                 <Dot ink={n.active ? "primary" : "tertiary"} size="xs" />
                 {n.label}
               </div>

@@ -49,11 +49,11 @@ describe("printJsx", () => {
   });
 
   it("writes a render function child as its named code", () => {
-    expect(print(<Pressable>{named("({ isPressed }) => isPressed", () => "x")}</Pressable>)).toBe("<Pressable>\n  {({ isPressed }) => isPressed}\n</Pressable>");
+    expect(print(<Pressable>{named("({ isActive }) => isActive", () => "x")}</Pressable>)).toBe("<Pressable>\n  {({ isActive }) => isActive}\n</Pressable>");
   });
 
   it("writes a spread through its expression and not through the keys it produced", () => {
-    const props = { onPointerDown: named("down", () => {}), "data-pressed": true };
+    const props = { onPointerDown: named("down", () => {}), "data-active": true };
     expect(print(spreadOf(<Box {...props} />, "mergeProps(a, b)", Object.keys(props)))).toBe("<Box {...mergeProps(a, b)} />");
   });
 

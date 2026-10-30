@@ -1,5 +1,12 @@
+import { stateSelector } from "../../tokens";
 import { layered } from "../../tokens/layers.css";
 
-const { style } = layered("components");
+const { style, globalStyle } = layered("components");
 
-export const dragSurface = style({ touchAction: "none", cursor: "grab", selectors: { '&[data-dragging="true"]': { cursor: "grabbing" }, '&[aria-disabled="true"]': { cursor: "default" } } });
+// The grab affordance of a draggable surface. The class carries no declarations of its own: they sit under :where(),
+// so any appearance class wins whatever the order of the stylesheets.
+export const dragSurface = style({});
+globalStyle(`:where(${dragSurface})`, { touchAction: "none", cursor: "grab" });
+globalStyle(`:where(${dragSurface}${stateSelector("dragging")})`, { cursor: "grabbing" });
+globalStyle(`:where(${dragSurface}:disabled)`, { cursor: "not-allowed" });
+globalStyle(`:where(${dragSurface}[aria-disabled="true"])`, { cursor: "default" });

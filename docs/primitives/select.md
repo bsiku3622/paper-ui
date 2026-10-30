@@ -12,7 +12,7 @@ Select Primitive는 선택 상태와 그것을 알리는 aria를 맡는 2차 pri
 [contract:primitives.selectable.input-paths]: #
 Selectable은 유지되는 boolean 선택 상태를 native button에 연결합니다. selected가 있으면 controlled, defaultSelected를 주면 uncontrolled이며 기본값은 false입니다. 변경 요청은 onSelectedChange(boolean)로 전달합니다. Disabled일 때 입력과 상태 변경을 막습니다.
 
-useSelectable은 SelectableOptions를 받아 isSelected · setSelected(boolean) · toggle() · selectProps를 반환합니다. press는 안에 없습니다 — 호출자가 toggle을 자기 press에 연결합니다. Selectable은 Pressable과 useSelectable을 묶은 컴포넌트이고, children 함수에는 Pressable 상태와 isSelected를 함께 전달합니다. 선택은 role이 정하는 aria 속성 하나와 `data-selected`로 알립니다. `current`를 주면 선택된 동안 `aria-current`만 답니다.
+useSelectable은 SelectableOptions를 받아 isSelected · setSelected(boolean) · toggle() · selectProps를 반환합니다. press는 안에 없습니다 — 호출자가 toggle을 자기 press에 연결합니다. Selectable은 Pressable과 useSelectable을 묶은 컴포넌트이고, children 함수에는 Pressable 상태와 isSelected를 함께 전달합니다. 호출자의 `onPress`가 먼저 실행되고 그다음에 선택이 바뀌어 `onSelectedChange`가 불립니다([합성 도구](README.md#합성-도구)). 선택은 role이 정하는 aria 속성 하나와 `data-selected`로 알립니다. `current`를 주면 선택된 동안 `aria-current`만 답니다.
 
 | role | 선택을 알리는 속성 |
 | --- | --- |
@@ -60,4 +60,4 @@ selectionMode는 single / multiple이며 기본값은 single입니다. selectedV
 
 Root disabled는 전체 입력과 변경을 막고 Item disabled는 해당 버튼만 막습니다. Disabled는 기존 선택을 지우지 않습니다. 제거된 value는 정리하며 controlled 상태에서는 변경을 요청합니다. 중복 value를 사용하지 않습니다. Root의 orientation·dir·loop·currentValue 계약은 [RovingFocus](focus.md#그룹-focus-탐색)와 같습니다.
 
-useSelectableGroup은 같은 상태 옵션과 선택적인 values 목록을 받고 selectedValues·isSelected(value)·setSelected(value, boolean)·toggle(value)을 반환합니다. Values를 제공하면 없는 key를 정리합니다. Hook 자체는 DOM·role·focus를 만들지 않습니다.
+useSelectableGroup은 같은 상태 옵션과 선택적인 values 목록을 받고 selectedValues·isValueSelected(value)·setValueSelected(value, boolean)·toggleValue(value)을 반환합니다. 같은 상태가 한 요소(`useSelectable`)에도 있어서 이름을 갈랐습니다. Values를 제공하면 없는 key를 정리합니다. Hook 자체는 DOM·role·focus를 만들지 않습니다.

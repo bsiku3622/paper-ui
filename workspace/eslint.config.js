@@ -12,6 +12,13 @@ const rawBarrelRestriction = {
   message: "Raw source를 barrel로 우회하지 말고 semantic tokens를 사용하세요.",
 };
 
+// React Aria is an implementation detail of the package: every import of it lives in src/internal/aria, behind
+// Paper's own names and types. Nothing else imports it, and nothing imports @react-stately at all.
+const ariaBoundary = {
+  group: ["@react-aria/*", "@react-stately/*", "@react-types/*", "react-aria", "react-aria/*", "react-aria-components", "react-aria-components/*", "react-stately", "react-stately/*"],
+  message: "React Aria 는 packages/paper-ui/src/internal/aria 안에서만 import 한다. 밖에서는 Paper 의 hook · 타입을 쓴다.",
+};
+
 // 절대 규칙을 문서가 아니라 빌드가 지킨다.
 // 규칙을 적어두고 리뷰어의 기억력에 맡기면 3 개월 뒤에 안 지켜져 있다.
 
@@ -75,6 +82,14 @@ export default [
     },
   },
 
+  // ── React Aria 경계 ─────────────────────────────────────────────────────────
+  // 아래 규칙 2 의 블록들은 같은 규칙의 옵션을 바꾸므로 ariaBoundary 를 patterns 에 함께 싣는다.
+  {
+    files: ["**/*.{js,mjs,cjs,ts,tsx}"],
+    ignores: ["packages/paper-ui/src/internal/aria/**"],
+    rules: { "no-restricted-imports": ["error", { patterns: [ariaBoundary] }] },
+  },
+
   // ── 규칙 1 — raw 색·크기 값 금지 ─────────────────────────────────────────
   // OKLCH source는 L0 palette, generated HEX token은 L1 generator에만. 소비처에 raw HEX를
   // 쓰면 같은 색의 정본이 두 곳이 된다.
@@ -102,6 +117,7 @@ export default [
         "error",
         {
           patterns: [
+            ariaBoundary,
             rawBarrelRestriction,
             {
               group: rawSourcePatterns,
@@ -123,7 +139,7 @@ export default [
       "no-restricted-imports": [
         "error",
         {
-          patterns: [rawBarrelRestriction, {
+          patterns: [ariaBoundary, rawBarrelRestriction, {
             group: [
               ...rawSourcePatterns,
               ...["colors", "palette", "color-recipes", "shape", "shape-recipes", "layout", "typography", "motion"].map((name) => `!../../../../packages/paper-ui/src/tokens/${name}`),
@@ -145,7 +161,7 @@ export default [
       "no-restricted-imports": [
         "error",
         {
-          patterns: [{
+          patterns: [ariaBoundary, {
             group: rawSourcePatterns,
             message:
               "규칙 2 — palette·ladder·raw VALUES는 소비처에서 import하지 않는다. tokens 배럴의 semantic var 참조를 쓰라.",

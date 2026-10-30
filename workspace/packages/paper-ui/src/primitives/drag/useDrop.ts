@@ -1,15 +1,21 @@
-import { useRef, type RefObject } from "react";
-import { useDrop as useAriaDrop, type DropOptions as AriaDropOptions, type DropResult as AriaDropResult } from "@react-aria/dnd";
+import { useCallback, useRef, type HTMLAttributes, type RefCallback } from "react";
 
-export type DropOptions = Omit<AriaDropOptions, "ref" | "isDisabled" | "hasDropButton"> & { disabled?: boolean };
-export type { DropEvent, DropItem, DragItem, DropOperation } from "@react-aria/dnd";
-export type DropResult = Omit<AriaDropResult, "dropProps"> & {
-  ref: RefObject<HTMLElement | null>;
-  dropProps: AriaDropResult["dropProps"] & { ref: RefObject<HTMLElement | null>; "data-drop-target": true | undefined; "aria-disabled": true | undefined };
+import { useAriaDrop } from "../../internal/aria/dnd";
+import { stateAttributes, type StateAttributes } from "../../tokens";
+import type { DropOptions } from "../types";
+
+export type DropResult = {
+  /** Spread on the drop target. Carries its own ref, `data-drop-target` while a drag is over it and `data-disabled` while disabled. */
+  dropProps: HTMLAttributes<HTMLElement> & { ref: RefCallback<HTMLElement> } & StateAttributes<"dropTarget" | "disabled">;
+  isDropTarget: boolean;
 };
-export function useDrop({ disabled, ...options }: DropOptions = {}, externalRef?: RefObject<HTMLElement | null>): DropResult {
-  const internalRef = useRef<HTMLElement>(null);
-  const ref = externalRef ?? internalRef;
-  const result = useAriaDrop({ ...options, isDisabled: disabled, ref });
-  return { ...result, ref, dropProps: { ...result.dropProps, ref, "data-drop-target": result.isDropTarget || undefined, "aria-disabled": disabled || undefined } };
+
+export function useDrop(options: DropOptions = {}): DropResult {
+  const target = useRef<HTMLElement | null>(null);
+  const ref = useCallback((node: HTMLElement | null) => { target.current = node; }, []);
+  const { dropProps, isDropTarget } = useAriaDrop(options, target);
+  return {
+    dropProps: { ...dropProps, ref, "aria-disabled": options.disabled || undefined, ...stateAttributes({ dropTarget: isDropTarget, disabled: options.disabled }) },
+    isDropTarget,
+  };
 }
