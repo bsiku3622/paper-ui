@@ -1,6 +1,6 @@
-import { Overlay as AriaOverlay } from "@react-aria/overlays";
 import type { ReactNode } from "react";
 
+import { PortalHost } from "../../internal/aria/portal";
 import { usePortalScope } from "../../theme/scope";
 import { portalRoot } from "./Portal.css";
 
@@ -15,8 +15,8 @@ export type PortalProps = {
 export function Portal({ container, children }: PortalProps) {
   const scope = usePortalScope();
   return (
-    <AriaOverlay portalContainer={container} disableFocusManagement>
+    <PortalHost container={container}>
       <div className={portalRoot} {...scope}>{children}</div>
-    </AriaOverlay>
+    </PortalHost>
   );
 }

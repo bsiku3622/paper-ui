@@ -44,6 +44,9 @@ export type { AccentToken } from "./colors";
 
 export { CONTROL_ICON } from "./shape";
 
+export { STATE_ATTRIBUTE, VALUE_ATTRIBUTE, MARKER_ATTRIBUTE, SELECTED_SELECTOR, ENABLED_SELECTOR, stateSelector, stateAttributes } from "./state";
+export type { StateAttributes } from "./state";
+
 export { MOTION, MOTION_CONSUMERS, MOTION_LOOPS, MOTION_REDUCED, transition } from "./motion";
 
 export { kebab, pathToCssVar, pathToVarRef, walkValues, buildVarTree } from "./helpers";

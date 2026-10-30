@@ -12,7 +12,7 @@ export { Text, type TextProps } from "./Text";
 export { Icon, type IconProps } from "./Icon";
 
 // A11y — relations for assistive technology and keyboard users; none has a geometry of its own.
-export { FocusScope, useFocusRing, useFocusWithin, type FocusScopeProps, type FocusRingOptions, type FocusWithinOptions, type FocusWithinResult } from "./a11y/focus";
+export { FocusScope, useFocusRing, useFocusWithin, type FocusRingResult, type FocusWithinResult } from "./a11y/focus";
 export { VisuallyHidden, type VisuallyHiddenProps } from "./a11y/VisuallyHidden";
 export { Portal, type PortalProps } from "./a11y/Portal";
 
@@ -24,7 +24,7 @@ export { Paint, paintClass, type PaintProps } from "./paint/Paint";
 
 // Press — semantics, cursor, disabled look. No colour.
 export { Pressable, type PressableProps, type PressableState } from "./press/Pressable";
-export { usePressable, type PressableOptions, type PressableResult, type PressEvent } from "./press/usePressable";
+export { usePressable, type PressableResult } from "./press/usePressable";
 
 // Select — selection state and its aria. No colour.
 export { Selectable, type SelectableProps, type SelectableState } from "./select/Selectable";
@@ -32,19 +32,19 @@ export { useSelectable, type SelectableOptions, type SelectableResult, type Sele
 export { SelectableGroup, useSelectableGroup, type SelectableGroupProps, type SelectableGroupItemProps, type SelectableGroupOptions, type SelectableGroupResult } from "./select/SelectableGroup";
 
 // Float — position, z, dismissal.
-export { Floating, useFloating, type FloatingProps, type FloatingOptions, type FloatingState, type FloatingTriggerProps, type FloatingContentProps } from "./float/Floating";
+export { Floating, useFloating, useFloatingContext, type FloatingProps, type FloatingOptions, type FloatingResult, type FloatingTriggerProps, type FloatingContentProps, type FloatingCloseProps } from "./float/Floating";
 
 // Drag — move and transfer drag, and the drop target.
-export { Draggable, type DraggableProps, type DragHandleProps, type DraggableState } from "./drag/Draggable";
+export { Draggable, type DraggableProps, type DraggableHandleProps, type DraggableState } from "./drag/Draggable";
 export { Droppable, type DroppableProps } from "./drag/Droppable";
-export { useDrag, type DragOptions, type MoveDragOptions, type TransferDragOptions, type MoveDragEvent, type DragPosition } from "./drag/useDrag";
-export { useDrop, type DropOptions, type DropResult, type DropEvent, type DropItem, type DragItem, type DropOperation } from "./drag/useDrop";
+export { useDrag, type DragResult } from "./drag/useDrag";
+export { useDrop, type DropResult } from "./drag/useDrop";
 
 // Focus — one Tab stop for a group, and the arrow keys inside it.
-export { RovingFocus, useRovingFocusItem, type RovingFocusProps, type RovingFocusItemProps, type RovingFocusItemOptions } from "./focus/RovingFocus";
+export { RovingFocus, useRovingFocusItem, type RovingFocusProps, type RovingFocusItemProps, type RovingFocusItemOptions, type RovingFocusItemResult } from "./focus/RovingFocus";
 
 // Field — a control's label, description and error, tied together by id.
-export { FormField, useField, type FormFieldProps, type FieldOptions, type FieldResult } from "./field/FormField";
+export { FormField, useFormField, type FormFieldProps, type FormFieldOptions, type FormFieldResult } from "./field/FormField";
 
 // Layout — arrangement only.
 export { Stack, type StackProps } from "./layout/Stack";
@@ -53,3 +53,11 @@ export { Grid, type GridProps } from "./layout/Grid";
 
 // Composition — the tools the second order is built from.
 export { mergeProps, mergeRefs, composeEventHandlers } from "./composition";
+
+// The event and option types the Interaction and A11y primitives are declared with.
+export type {
+  PointerType, PressEvent, PressableOptions, FocusRingOptions, FocusWithinOptions, FocusScopeProps, Placement,
+  DropOperation, DragItem, DragTypes, TextDropItem, FileDropItem, DirectoryDropItem, DropItem,
+  DropEvent, DropEnterEvent, DropMoveEvent, DropExitEvent, DropActivateEvent, DropOptions, TransferDragEvent,
+  DragPosition, MoveDragEvent, MoveDragOptions, TransferDragOptions, DragOptions,
+} from "./types";

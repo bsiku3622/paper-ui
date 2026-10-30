@@ -34,7 +34,7 @@ const rawColorRule = {
 // itself. "Reaches" follows what the value is made of: a declarator's initialiser and destructuring, a variable's
 // later assignments, member chains, a call's callee and arguments, the bodies of the functions it holds, and
 // conditional, logical, binary, template, spread and TypeScript-wrapper nodes. No call is opaque and no name is
-// listed. The declared runtime modules (the `runtime` option, each with its reason) are untracked: what they
+// listed; a `throw` is not followed, since what a function throws is never the value it returns. The declared runtime modules (the `runtime` option, each with its reason) are untracked: what they
 // compute is a value of the moment — an anchored position, an Aria press style, a carried source variable.
 const TRACKED_DIRECTORIES = ["tokens", "styles", "internal"];
 const PACKAGE_IMPORT = /^@studio-baeks\/paper-ui/;
@@ -67,7 +67,7 @@ const inlineTokenRule = {
       seen.add(node);
       if (node.type === "Identifier") return identifierReaches(node, seen);
       if (TYPE_WRAPPERS.has(node.type)) return reaches(node.expression, seen);
-      if (node.type.startsWith("TS")) return false;
+      if (node.type.startsWith("TS") || node.type === "ThrowStatement") return false;
       return (source.visitorKeys[node.type] ?? []).some((key) => {
         if (((key === "key" && node.type === "Property") || (key === "property" && node.type === "MemberExpression")) && !node.computed) return false;
         const children = node[key];

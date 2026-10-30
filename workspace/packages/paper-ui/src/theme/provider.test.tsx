@@ -42,7 +42,7 @@ describe("useTheme", () => {
   it("throws an English error outside <PaperProvider>", () => {
     mockMedia(false);
     const error = vi.spyOn(console, "error").mockImplementation(() => {});
-    expect(() => renderHook(() => useTheme())).toThrow("useTheme must be used inside <PaperProvider>.");
+    expect(() => renderHook(() => useTheme())).toThrow("[paper-ui] useTheme must be used inside <PaperProvider>.");
     error.mockRestore();
   });
 

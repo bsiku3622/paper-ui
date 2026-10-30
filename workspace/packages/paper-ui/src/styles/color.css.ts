@@ -5,7 +5,7 @@
 // 만들어지니 조합이 빠질 수 없고, 어휘 밖의 이름은 타입에서 걸린다. 이 파일은 resolver 를
 // import 하지 않는다 — 지도가 아래, resolver 가 위다.
 
-import { tokens, ACCENTS, STATUSES, VARIANTS, type Accent, type Ink, type Status, type Variant } from "../tokens";
+import { tokens, ACCENTS, STATUSES, VARIANTS, ENABLED_SELECTOR, type Accent, type Ink, type Status, type Variant } from "../tokens";
 import { layered } from "../tokens/layers.css";
 import { accentProfile } from "../tokens/color-recipes";
 
@@ -41,7 +41,6 @@ export const inkClass = utilities.styleVariants(INK_COLOR, (color) => ({ color }
 // `(hover: hover)` 안에서만, 눌릴 수 있는 대상(disabled · aria-disabled · data-disabled 가 아닌)에만 문다.
 
 export const hoverGate = components.style({});
-const ENABLED = ":not(:disabled):not([aria-disabled=true]):not([data-disabled])";
 
 const accentClass = (accent: Accent, variant: Variant): string => {
   const spec = accentProfile(accent, variant);
@@ -52,7 +51,7 @@ const accentClass = (accent: Accent, variant: Variant): string => {
     "@media": {
       "(hover: hover)": {
         selectors: {
-          [`&.${hoverGate}:hover${ENABLED}`]: {
+          [`&.${hoverGate}:hover${ENABLED_SELECTOR}`]: {
             // 중립: base 색은 두고 tint 레이어(backgroundImage)만 얹는다 — 어느 면 위든
             // 합성돼 어두워진다. 색·검정 solid 도 같은 방식으로 한 단계 반응한다.
             ...(spec.hoverTint ? { backgroundImage: `linear-gradient(0deg, ${spec.hoverTint}, ${spec.hoverTint})` } : {}),

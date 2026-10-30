@@ -1,44 +1,47 @@
-import { useCallback, useEffect, useRef, useState, type HTMLAttributes } from "react";
-import { useMove } from "@react-aria/interactions";
-import { useDrag as useAriaDrag, type DragOptions as AriaDragOptions } from "@react-aria/dnd";
-import { mergeProps } from "@react-aria/utils";
-import { usePressable } from "../press/usePressable";
+import { useCallback, useEffect, useRef, useState, type ButtonHTMLAttributes, type HTMLAttributes, type RefCallback } from "react";
 
-export type DragPosition = { x: number; y: number };
-export type MoveDragEvent = { position: DragPosition; delta: DragPosition; pointerType: string };
-type CommonDragOptions = { disabled?: boolean; activation?: "surface" | "handle" };
-export type MoveDragOptions = CommonDragOptions & {
-  mode?: "move";
-  position?: DragPosition;
-  defaultPosition?: DragPosition;
-  onPositionChange?: (position: DragPosition) => void;
-  axis?: "both" | "x" | "y";
-  onDragStart?: (event: MoveDragEvent) => void;
-  onDragMove?: (event: MoveDragEvent) => void;
-  onDragEnd?: (event: MoveDragEvent) => void;
-  onDragCancel?: (event: MoveDragEvent) => void;
+import { useAriaDrag } from "../../internal/aria/dnd";
+import { useAriaMove } from "../../internal/aria/move";
+import { useControllableState } from "../../internal/useControllableState";
+import { MARKER_ATTRIBUTE, stateAttributes, type StateAttributes } from "../../tokens";
+import { mergeProps } from "../composition";
+import { usePressable } from "../press/usePressable";
+import type { DragOptions, DragPosition, MoveDragOptions } from "../types";
+
+export type DragResult = {
+  /** Spread on the element that moves, or that is dragged. Carries its own ref, `data-dragging` and `data-disabled`. */
+  dragProps: HTMLAttributes<HTMLElement> & { ref: RefCallback<HTMLElement> } & StateAttributes<"dragging" | "disabled">;
+  /** Spread on the handle, when `activation` is "handle". Carries `data-dragging` and `data-disabled`. */
+  handleProps: ButtonHTMLAttributes<HTMLButtonElement> & StateAttributes<"dragging" | "disabled">;
+  position: DragPosition;
+  isDragging: boolean;
+  /** Ends a move in progress and returns to where it began. */
+  cancel: () => void;
 };
-export type TransferDragOptions = CommonDragOptions & Omit<AriaDragOptions, "isDisabled" | "hasDragButton" | "preview"> & { mode: "transfer" };
-export type DragOptions = MoveDragOptions | TransferDragOptions;
+
+const samePoint = (a: DragPosition, b: DragPosition) => a.x === b.x && a.y === b.y;
 
 // Inputs on child controls must keep text editing, navigation and button behavior.
 const isChildControl = (event: { target: EventTarget | null; currentTarget: EventTarget | null }) => {
   if (!(event.target instanceof Element) || !(event.currentTarget instanceof Element)) return false;
-  const control = event.target.closest("button, input, textarea, select, a[href], [contenteditable]:not([contenteditable=false]), [data-drag-ignore]");
+  const control = event.target.closest(`button, input, textarea, select, a[href], [contenteditable]:not([contenteditable=false]), [${MARKER_ATTRIBUTE.dragIgnore}]`);
   return !!control && control !== event.currentTarget && event.currentTarget.contains(control);
 };
 
-export function useDrag(options: DragOptions = {}) {
+export function useDrag(options: DragOptions = {}): DragResult {
   const mode = options.mode ?? "move";
   const activation = options.activation ?? "surface";
   const disabled = options.disabled ?? false;
   const movement: MoveDragOptions = options.mode === "transfer" ? {} : options;
-  const { onPositionChange, onDragCancel, position: controlledPosition } = movement;
   const transfer = options.mode === "transfer" ? options : null;
-  const targetRef = useRef<HTMLDivElement>(null);
-  const handleRef = useRef<HTMLButtonElement>(null);
-  const [internal, setInternal] = useState(movement.defaultPosition ?? { x: 0, y: 0 });
-  const position = movement.position ?? internal;
+  const target = useRef<HTMLElement | null>(null);
+  const targetRef = useCallback((node: HTMLElement | null) => { target.current = node; }, []);
+  const [position, set] = useControllableState({
+    value: movement.position,
+    defaultValue: movement.defaultPosition ?? { x: 0, y: 0 },
+    onChange: movement.onPositionChange,
+    equals: samePoint,
+  });
   const current = useRef(position);
   const origin = useRef(position);
   const distance = useRef({ x: 0, y: 0 });
@@ -48,9 +51,9 @@ export function useDrag(options: DragOptions = {}) {
   current.current = position;
   const setPosition = useCallback((next: DragPosition) => {
     current.current = next;
-    if (controlledPosition === undefined) setInternal(next);
-    onPositionChange?.(next);
-  }, [controlledPosition, onPositionChange]);
+    set(next);
+  }, [set]);
+  const { onDragCancel } = movement;
   const event = () => ({ position: current.current, delta: { x: current.current.x - origin.current.x, y: current.current.y - origin.current.y }, pointerType: pointerType.current });
   const cancel = useCallback(() => {
     if (!active.current) return;
@@ -69,7 +72,7 @@ export function useDrag(options: DragOptions = {}) {
     window.addEventListener("keydown", onKeyDown, true);
     return () => window.removeEventListener("keydown", onKeyDown, true);
   }, [isMoving, cancel]);
-  const { moveProps } = useMove({
+  const { moveProps } = useAriaMove({
     onMoveStart(e) {
       if (disabled || mode !== "move") return;
       origin.current = current.current;
@@ -94,13 +97,15 @@ export function useDrag(options: DragOptions = {}) {
     },
   });
   const native = useAriaDrag({
-    ...transfer,
     getItems: transfer?.getItems ?? (() => []),
-    isDisabled: disabled || mode !== "transfer",
-    hasDragButton: activation === "handle",
+    getAllowedDropOperations: transfer?.getAllowedDropOperations,
+    onDragStart: transfer?.onDragStart,
+    onDragMove: transfer?.onDragMove,
+    onDragEnd: transfer?.onDragEnd,
+    disabled: disabled || mode !== "transfer",
+    handle: activation === "handle",
   });
-  const { onPress: keyboardPress, ...dragButtonDOM } = native.dragButtonProps;
-  const dragButton = usePressable({ disabled: disabled || mode !== "transfer", onPress: keyboardPress }, activation === "handle" ? handleRef : undefined);
+  const dragButton = usePressable({ disabled: disabled || mode !== "transfer", onPress: native.startFromKeyboard });
   const moveInput: HTMLAttributes<HTMLElement> = disabled ? {} : {
     ...moveProps,
     onPointerDown(e) { if (!isChildControl(e)) moveProps.onPointerDown?.(e); },
@@ -108,16 +113,22 @@ export function useDrag(options: DragOptions = {}) {
     onTouchStart(e) { if (!isChildControl(e)) moveProps.onTouchStart?.(e); },
     onKeyDown(e) { if (e.target === e.currentTarget) moveProps.onKeyDown?.(e); },
   };
-  const transferInput = mergeProps(native.dragProps, dragButtonDOM, dragButton.pressProps, {
+  // The button's ref is the press hook's own; the drag reads its element from dragProps, so it is left out.
+  const pressDom: HTMLAttributes<HTMLElement> & { ref?: unknown } = { ...dragButton.pressProps };
+  delete pressDom.ref;
+  const transferInput = mergeProps(native.dragProps, native.buttonProps, pressDom, {
     onDragStart(e: React.DragEvent<HTMLElement>) {
-      if (targetRef.current && e.dataTransfer) e.dataTransfer.setDragImage(targetRef.current, 0, 0);
+      if (target.current && e.dataTransfer) e.dataTransfer.setDragImage(target.current, 0, 0);
     },
   });
-  const inputProps = mode === "move" ? moveInput : transferInput;
+  const inputProps: HTMLAttributes<HTMLElement> = mode === "move" ? moveInput : transferInput;
   const isDragging = mode === "move" ? isMoving : native.isDragging;
+  const states = stateAttributes({ dragging: isDragging, disabled });
   return {
-    targetRef, handleRef, position, isDragging, cancel,
-    draggableProps: { ...(activation === "surface" ? inputProps : {}), ref: targetRef, "data-dragging": isDragging || undefined, "aria-disabled": disabled || undefined },
-    handleProps: { ...(activation === "handle" ? inputProps : {}), ref: handleRef, disabled, "data-dragging": isDragging || undefined },
+    dragProps: mergeProps(activation === "surface" ? inputProps : null, { ref: targetRef, "aria-disabled": disabled || undefined, ...states }),
+    handleProps: mergeProps(activation === "handle" ? inputProps : null, { disabled, ...states }),
+    position,
+    isDragging,
+    cancel,
   };
 }

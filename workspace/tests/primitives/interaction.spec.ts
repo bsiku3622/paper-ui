@@ -23,7 +23,7 @@ test("[primitives.pressable.input-paths] press normalizes mouse, Enter, and Spac
   await expect(button).toHaveAttribute("data-focus-visible", "true");
   await page.keyboard.press("Enter");
   await page.keyboard.down("Space");
-  await expect(button).toHaveAttribute("data-pressed", "true");
+  await expect(button).toHaveAttribute("data-active", "true");
   await page.keyboard.up("Space");
   await expect(page.getByText("실행: 3", { exact: true })).toBeVisible();
   await page.getByRole("switch", { name: "disabled", exact: true }).check();

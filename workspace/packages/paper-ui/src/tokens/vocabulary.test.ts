@@ -6,6 +6,7 @@ import { LAYOUT_SOURCE } from "./layout";
 import { MOTION } from "./motion";
 import * as publicEntry from "./public";
 import { SHAPE_SOURCE } from "./shape";
+import { STATE_ATTRIBUTE } from "./state";
 import { TYPOGRAPHY, TYPOGRAPHY_SOURCE } from "./typography";
 import * as vocabulary from "./vocabulary";
 
@@ -17,7 +18,7 @@ describe("vocabulary", () => {
     expect(constants.map(([name]) => name).sort()).toEqual([
       "ACCENTS", "ACCENT_TONES", "ALIGNS", "BORDER_LEVELS", "BREAKPOINTS", "COLOR_MODES", "CONTAINERS", "CONTROL_FONT_SIZES", "CONTROL_PRESETS", "CONTROL_SHAPES",
       "CONTROL_SIZES", "DEPTHS", "DIMENSIONS", "DIVIDER_LEVELS", "ELEVATIONS", "EMPHASES", "ICON_SIZES", "INKS", "INK_LEVELS", "JUSTIFIES", "JUSTIFY_ITEMS", "MEASURES", "MOTION_ROLES", "ORIENTATIONS",
-      "SELECTABLE_VARIANTS", "SPACES", "STATUSES", "SURFACE_FILLS", "SURFACE_RADII", "SURFACE_THEMES", "TEXT_FAMILIES", "TEXT_VARIANTS", "THEME_PREFERENCES", "VARIANTS",
+      "SELECTABLE_VARIANTS", "SPACES", "STATE_NAMES", "STATUSES", "SURFACE_FILLS", "SURFACE_RADII", "SURFACE_THEMES", "TEXT_FAMILIES", "TEXT_VARIANTS", "THEME_PREFERENCES", "VARIANTS",
     ]);
   });
 
@@ -98,6 +99,11 @@ describe("vocabulary", () => {
 
   it("[foundations.vocabulary.one-pair-per-axis] derives the Motion axis from the tree that authors it", () => {
     expect(vocabulary.MOTION_ROLES).toEqual(keysOf(MOTION));
+  });
+
+  it("[foundations.vocabulary.one-pair-per-axis] derives the State axis from the tree that authors it", () => {
+    expect(vocabulary.STATE_NAMES).toEqual(keysOf(STATE_ATTRIBUTE));
+    expectTypeOf<vocabulary.StateName>().toEqualTypeOf<(typeof vocabulary.STATE_NAMES)[number]>();
   });
 
   it("[foundations.vocabulary.one-pair-per-axis] types each constant and its type as one pair", () => {

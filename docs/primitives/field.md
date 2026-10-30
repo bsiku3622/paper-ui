@@ -4,7 +4,7 @@ Field Primitive는 입력과 그 설명 · 오류의 연결을 맡는 2차 primi
 
 | 컴포넌트 | Hook | 책임 | 기본값 |
 | --- | --- | --- | --- |
-| FormField | useField | label, id, description, error, invalid, required, disabled, children 함수 | div wrapper. 실제 입력의 label · 설명 · 오류 관계 연결 |
+| FormField | useFormField | label, id, description, error, invalid, required, disabled, children 함수 | div wrapper. 실제 입력의 label · 설명 · 오류 관계 연결 |
 
 ## 입력과 설명의 관계
 
@@ -26,4 +26,4 @@ FormField는 div에 label·children·description·error를 렌더링합니다. C
 [contract:primitives.form-field.parts]: #
 FormField의 보이는 부분은 Typography 역할로 그려지고 `data-part`로 이름이 붙습니다. label은 Text `label`(`data-part="label"`), 설명은 Text `caption`(`data-part="description"`), 오류는 Text `caption`에 error 잉크를 입힌 것(`data-part="error"`)입니다. Label Atom과 같은 label 역할이라 나란히 놓아도 글자가 갈라지지 않습니다.
 
-useField는 같은 FieldOptions와 controlProps·labelProps·descriptionProps·errorProps를 반환하며 DOM을 만들지 않습니다. 직접 사용할 때 선언한 description/error를 해당 ID로 렌더링해주세요. 시각적 status·validation·값 저장·제출·오류 요약 이동·비동기 알림은 소비자가 결정합니다.
+useFormField는 같은 FormFieldOptions를 받아 FormFieldResult(controlProps·labelProps·descriptionProps·errorProps)를 반환하며 DOM을 만들지 않습니다. 같은 이름의 Atom `Field`와 겹치지 않도록 이름에 Form을 붙였습니다. wrapper는 data-disabled · data-invalid · data-required로 자기 상태를 알립니다. 직접 사용할 때 선언한 description/error를 해당 ID로 렌더링해주세요. 시각적 status·validation·값 저장·제출·오류 요약 이동·비동기 알림은 소비자가 결정합니다.

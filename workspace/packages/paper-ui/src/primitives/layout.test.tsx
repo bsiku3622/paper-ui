@@ -1,6 +1,6 @@
 import { createRef, type ReactElement } from "react";
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { Box, Grid, Stack, Inline, Text, Icon } from "./index";
 import { boxOverflow, boxSize } from "./Box.css";
@@ -35,6 +35,12 @@ describe("primitive composition", () => {
     expect(ref.current?.style.gridTemplateRows).toBe("repeat(2, minmax(0, 1fr))");
     expect(ref.current?.classList.contains(spaceClass.gap.md)).toBe(true);
     expect(ref.current?.classList.contains(spaceClass.padding.sm)).toBe(true);
+  });
+
+  it("Grid rejects a track count that is not a positive integer, as a prefixed RangeError", () => {
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    for (const columns of [0, -1, 1.5]) expect(() => render(<Grid columns={columns} />)).toThrow(new RangeError("[paper-ui] Grid track count must be a positive integer."));
+    log.mockRestore();
   });
 });
 

@@ -1,0 +1,102 @@
+// Compile-time guards on the types the Interaction and A11y primitives publish (tsc checks them; an unused
+// expect-error directive is a type that accepts what it must reject), and the runtime guard that React Aria stays
+// behind src/internal/aria.
+
+import { readdirSync, readFileSync } from "node:fs";
+import { dirname, join, relative } from "node:path";
+import { fileURLToPath } from "node:url";
+import type { ComponentProps } from "react";
+import { describe, expect, expectTypeOf, it } from "vitest";
+
+import {
+  VisuallyHidden, useDrag, useDrop, useFloating, useFocusRing, useFocusWithin, useFormField, usePressable, useRovingFocusItem, useSelectable, useSelectableGroup,
+  type DragResult, type DropResult, type FloatingResult, type FocusRingResult, type FocusWithinResult, type FormFieldResult, type PressEvent, type PressableOptions,
+  type PressableProps, type PressableResult, type RovingFocusItemResult, type SelectableGroupResult, type SelectableResult,
+} from "./index";
+
+// The hooks are called only to be type-checked, never run.
+const typeOnly = (check: () => void): void => void check;
+
+describe("public types", () => {
+  it("[primitives.aria.boundary] declares the press options by Paper's names", () => {
+    expectTypeOf(usePressable).parameters.toEqualTypeOf<[options?: PressableOptions]>();
+    typeOnly(() => {
+      // @ts-expect-error React Aria's isPressed is not an input
+      usePressable({ isPressed: true });
+      // @ts-expect-error the hook takes no ref argument
+      usePressable({}, { current: null });
+      // @ts-expect-error React Aria's name for cancelOnPointerExit
+      usePressable({ shouldCancelOnPointerExit: true });
+    });
+    expectTypeOf<PressableProps>().toHaveProperty("cancelOnPointerExit");
+    expectTypeOf<PressableProps>().toHaveProperty("allowTextSelection");
+    expectTypeOf<PressableProps>().not.toHaveProperty("isPressed");
+    expectTypeOf<PressableProps>().not.toHaveProperty("shouldCancelOnPointerExit");
+  });
+
+  it("[primitives.aria.boundary] declares the focus options by Paper's names", () => {
+    typeOnly(() => {
+      // @ts-expect-error React Aria's isTextInput
+      useFocusRing({ isTextInput: true });
+      useFocusRing({ within: true, textInput: true, autoFocus: true });
+    });
+    expectTypeOf<ComponentProps<typeof VisuallyHidden>>().toHaveProperty("focusable");
+    expectTypeOf<ComponentProps<typeof VisuallyHidden>>().not.toHaveProperty("isFocusable");
+    expectTypeOf<ComponentProps<typeof VisuallyHidden>>().not.toHaveProperty("elementType");
+  });
+
+  it("[primitives.hooks.result-shape] names the result of each hook", () => {
+    expectTypeOf<ReturnType<typeof usePressable>>().toEqualTypeOf<PressableResult>();
+    expectTypeOf<ReturnType<typeof useSelectable>>().toEqualTypeOf<SelectableResult>();
+    expectTypeOf<ReturnType<typeof useSelectableGroup>>().toEqualTypeOf<SelectableGroupResult>();
+    expectTypeOf<ReturnType<typeof useDrag>>().toEqualTypeOf<DragResult>();
+    expectTypeOf<ReturnType<typeof useDrop>>().toEqualTypeOf<DropResult>();
+    expectTypeOf<ReturnType<typeof useFloating>>().toEqualTypeOf<FloatingResult>();
+    expectTypeOf<ReturnType<typeof useFocusRing>>().toEqualTypeOf<FocusRingResult>();
+    expectTypeOf<ReturnType<typeof useFocusWithin>>().toEqualTypeOf<FocusWithinResult>();
+    expectTypeOf<ReturnType<typeof useRovingFocusItem>>().toEqualTypeOf<RovingFocusItemResult>();
+    expectTypeOf<ReturnType<typeof useFormField>>().toEqualTypeOf<FormFieldResult>();
+  });
+
+  it("[primitives.hooks.result-shape] gives a DOM hook its part's props, with the ref and the state attributes", () => {
+    expectTypeOf<PressableResult["pressProps"]>().toHaveProperty("ref");
+    expectTypeOf<PressableResult["pressProps"]>().toHaveProperty("data-active");
+    expectTypeOf<PressableResult["pressProps"]>().toHaveProperty("data-disabled");
+    expectTypeOf<PressableResult>().toHaveProperty("isActive");
+    expectTypeOf<PressableResult>().not.toHaveProperty("isPressed");
+    expectTypeOf<DragResult["dragProps"]>().toHaveProperty("ref");
+    expectTypeOf<DropResult["dropProps"]>().toHaveProperty("ref");
+    expectTypeOf<DropResult["dropProps"]>().toHaveProperty("data-drop-target");
+    expectTypeOf<FocusRingResult["focusProps"]>().toHaveProperty("data-focus-visible");
+    expectTypeOf<RovingFocusItemResult["itemProps"]>().toHaveProperty("ref");
+    expectTypeOf<SelectableResult>().not.toHaveProperty("pressProps");
+    expectTypeOf<SelectableResult["selectProps"]>().toHaveProperty("data-selected");
+  });
+
+  it("[primitives.aria.boundary] accepts a handler typed with Paper's event, without importing React Aria", () => {
+    const onPress = (event: PressEvent): void => void event.pointerType;
+    typeOnly(() => usePressable({ onPress }));
+    expectTypeOf(onPress).toMatchTypeOf<NonNullable<PressableOptions["onPress"]>>();
+  });
+});
+
+describe("the React Aria boundary", () => {
+  const src = dirname(fileURLToPath(import.meta.url));
+  const walk = (dir: string): string[] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((entry) => (entry.isDirectory() ? walk(join(dir, entry.name)) : [join(dir, entry.name)]));
+  const sources = walk(src).filter((file) => /\.(ts|tsx)$/.test(file) && !/\.test\.(ts|tsx)$/.test(file));
+  const ARIA = /["'](?:@react-aria|@react-stately|@react-types)\/|["'](?:react-aria|react-stately|react-aria-components)(?:\/|["'])/;
+
+  it("[primitives.aria.boundary] imports React Aria only inside src/internal/aria", () => {
+    expect(sources.length).toBeGreaterThan(0);
+    const outside = sources.filter((file) => ARIA.test(readFileSync(file, "utf8")) && !relative(src, file).startsWith(join("internal", "aria")));
+    expect(outside.map((file) => relative(src, file))).toEqual([]);
+  });
+
+  it("[primitives.aria.boundary] keeps the adapters in one folder, one file per concern", () => {
+    const adapters = readdirSync(join(src, "internal", "aria")).sort();
+    expect(adapters).toEqual(["dnd.ts", "focus.tsx", "move.ts", "overlay.ts", "portal.tsx", "press.ts", "visually-hidden.ts"]);
+    const importing = adapters.filter((file) => ARIA.test(readFileSync(join(src, "internal", "aria", file), "utf8")));
+    expect(importing).toEqual(adapters);
+  });
+});

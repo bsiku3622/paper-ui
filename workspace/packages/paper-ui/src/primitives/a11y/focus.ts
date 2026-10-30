@@ -1,11 +1,29 @@
-import { useState } from "react";
-import { useFocusWithin as useAriaFocusWithin, type FocusWithinProps, type FocusWithinResult as AriaFocusWithinResult } from "@react-aria/interactions";
-export { FocusScope, useFocusRing } from "@react-aria/focus";
-export type { FocusScopeProps, AriaFocusRingProps as FocusRingOptions } from "@react-aria/focus";
-export type FocusWithinOptions = Omit<FocusWithinProps, "isDisabled"> & { disabled?: boolean };
-export type FocusWithinResult = AriaFocusWithinResult & { isFocusWithin: boolean };
-export function useFocusWithin({ disabled, onFocusWithinChange, ...options }: FocusWithinOptions = {}): FocusWithinResult {
+import { useState, type HTMLAttributes } from "react";
+
+import { useAriaFocusRing, useAriaFocusWithin } from "../../internal/aria/focus";
+import { stateAttributes, type StateAttributes } from "../../tokens";
+import type { FocusRingOptions, FocusWithinOptions } from "../types";
+
+export { FocusScope } from "../../internal/aria/focus";
+
+export type FocusRingResult = {
+  /** Spread on the element that shows the ring. Carries `data-focused` and `data-focus-visible`. */
+  focusProps: HTMLAttributes<HTMLElement> & StateAttributes<"focused" | "focusVisible">;
+  isFocused: boolean;
+  /** Focus by keyboard, or any focus on a text input: where a ring should show. */
+  isFocusVisible: boolean;
+};
+export function useFocusRing(options: FocusRingOptions = {}): FocusRingResult {
+  const { focusProps, isFocused, isFocusVisible } = useAriaFocusRing(options);
+  return { focusProps: { ...focusProps, ...stateAttributes({ focused: isFocused, focusVisible: isFocusVisible }) }, isFocused, isFocusVisible };
+}
+
+export type FocusWithinResult = {
+  focusWithinProps: HTMLAttributes<HTMLElement>;
+  isFocusWithin: boolean;
+};
+export function useFocusWithin({ onFocusWithinChange, ...options }: FocusWithinOptions = {}): FocusWithinResult {
   const [isFocusWithin, setFocusWithin] = useState(false);
-  const result = useAriaFocusWithin({ ...options, isDisabled: disabled, onFocusWithinChange: (value) => { setFocusWithin(value); onFocusWithinChange?.(value); } });
-  return { ...result, isFocusWithin };
+  const { focusWithinProps } = useAriaFocusWithin({ ...options, onFocusWithinChange: (value) => { setFocusWithin(value); onFocusWithinChange?.(value); } });
+  return { focusWithinProps, isFocusWithin };
 }

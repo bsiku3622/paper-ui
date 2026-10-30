@@ -6,6 +6,7 @@
 
 import { createContext, useContext, useSyncExternalStore } from "react";
 
+import { paperError } from "../internal/errors";
 import type { ColorMode, ThemePreference } from "../tokens";
 import { getThemeStore } from "./store";
 
@@ -39,6 +40,6 @@ export const useResolvedTheme = (): ColorMode => {
 
 export const useTheme = (): ThemeControl => {
   const control = useContext(ThemeControlContext);
-  if (!control) throw new Error("useTheme must be used inside <PaperProvider>.");
+  if (!control) throw paperError("useTheme must be used inside <PaperProvider>.");
   return control;
 };

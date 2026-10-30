@@ -1,6 +1,10 @@
 import { createContext, forwardRef, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
+
+import { paperError } from "../../internal/errors";
+import { useMergedRef } from "../../internal/refs";
+import { useControllableState } from "../../internal/useControllableState";
+import { composeEventHandlers } from "../composition";
 import { RovingFocus, useRovingFocusItem, type RovingFocusProps } from "../focus/RovingFocus";
-import { composeEventHandlers, mergeRefs } from "../composition";
 import { Selectable, type SelectableProps } from "./Selectable";
 
 export type SelectableGroupOptions = {
@@ -13,9 +17,22 @@ export type SelectableGroupOptions = {
   /** Available keys, when items can be removed. */
   values?: readonly string[];
 };
-export function useSelectableGroup({ selectionMode = "single", selectedValues, defaultSelectedValues = [], onSelectedValuesChange, selectionRequired = false, disabled = false, values }: SelectableGroupOptions = {}) {
-  const [internal, setInternal] = useState(defaultSelectedValues);
-  const source = selectedValues ?? internal;
+export type SelectableGroupResult = {
+  selectedValues: string[];
+  isValueSelected: (value: string) => boolean;
+  setValueSelected: (value: string, selected: boolean) => void;
+  toggleValue: (value: string) => void;
+};
+
+const sameMembers = (a: readonly string[], b: readonly string[]) => a.length === b.length && a.every((value, index) => value === b[index]);
+
+export function useSelectableGroup({ selectionMode = "single", selectedValues, defaultSelectedValues = [], onSelectedValuesChange, selectionRequired = false, disabled = false, values }: SelectableGroupOptions = {}): SelectableGroupResult {
+  const [source, setSource] = useControllableState<readonly string[]>({
+    value: selectedValues,
+    defaultValue: defaultSelectedValues,
+    onChange: (next) => onSelectedValuesChange?.([...next]),
+    equals: sameMembers,
+  });
   const selected = [...new Set(source)].filter((value) => !values || values.includes(value));
   const normalized = selectionMode === "single" ? selected.slice(0, 1) : selected;
   const signature = JSON.stringify(normalized);
@@ -26,23 +43,21 @@ export function useSelectableGroup({ selectionMode = "single", selectedValues, d
     const request = `${sourceSignature}:${signature}`;
     if (lastPrune.current === request) return;
     lastPrune.current = request;
-    const next = JSON.parse(signature) as string[];
-    if (selectedValues === undefined) setInternal(next);
-    onSelectedValuesChange?.(next);
-  }, [signature, sourceSignature, selectedValues, onSelectedValuesChange]);
+    setSource(JSON.parse(signature) as string[]);
+  }, [signature, sourceSignature, setSource]);
   const current = useRef(normalized);
   current.current = normalized;
-  const setSelected = (value: string, next: boolean) => {
+  const setValueSelected = (value: string, next: boolean) => {
     if (disabled || (values && !values.includes(value))) return;
     const previous = current.current;
     if (previous.includes(value) === next || (!next && selectionRequired && previous.length === 1)) return;
     const result = next ? selectionMode === "single" ? [value] : [...previous, value] : previous.filter((key) => key !== value);
-    if (selectedValues === undefined) { current.current = result; setInternal(result); }
-    onSelectedValuesChange?.(result);
+    if (selectedValues === undefined) current.current = result;
+    setSource(result);
   };
-  return { selectedValues: normalized, isSelected: (value: string) => normalized.includes(value), setSelected, toggle: (value: string) => setSelected(value, !current.current.includes(value)) };
+  return { selectedValues: normalized, isValueSelected: (value) => normalized.includes(value), setValueSelected, toggleValue: (value) => setValueSelected(value, !current.current.includes(value)) };
 }
-type GroupContext = ReturnType<typeof useSelectableGroup> & { disabled: boolean; register: (value: string) => () => void };
+type GroupContext = SelectableGroupResult & { disabled: boolean; register: (value: string) => () => void };
 const Context = createContext<GroupContext | null>(null);
 export type SelectableGroupProps = Omit<RovingFocusProps, "onChange"> & Omit<SelectableGroupOptions, "values">;
 const Root = forwardRef<HTMLDivElement, SelectableGroupProps>(function SelectableGroup({ selectionMode, selectedValues, defaultSelectedValues, onSelectedValuesChange, selectionRequired, disabled = false, children, ...props }, ref) {
@@ -60,14 +75,14 @@ const Root = forwardRef<HTMLDivElement, SelectableGroupProps>(function Selectabl
 export type SelectableGroupItemProps = Omit<SelectableProps, "selected" | "defaultSelected" | "onSelectedChange" | "tabIndex"> & { value: string };
 const Item = forwardRef<HTMLButtonElement, SelectableGroupItemProps>(function SelectableGroupItem({ value, disabled, onFocus, onKeyDown, ...props }, ref) {
   const context = useContext(Context);
-  if (!context) throw new Error("SelectableGroup.Item must be used inside SelectableGroup");
+  if (!context) throw paperError("SelectableGroup.Item must be used inside <SelectableGroup>.");
   const isDisabled = disabled || context.disabled;
   const { register } = context;
   useLayoutEffect(() => register(value), [register, value]);
-  const item = useRovingFocusItem<HTMLButtonElement>({ value, disabled: isDisabled });
-  return <Selectable {...props} {...item} ref={mergeRefs(item.ref, ref)} disabled={isDisabled}
-    selected={context.isSelected(value)} onSelectedChange={(next) => context.setSelected(value, next)}
-    onFocus={composeEventHandlers(onFocus, item.onFocus)} onKeyDown={composeEventHandlers(onKeyDown, item.onKeyDown)} />;
+  const { itemProps } = useRovingFocusItem<HTMLButtonElement>({ value, disabled: isDisabled });
+  const mergedRef = useMergedRef(itemProps.ref, ref);
+  return <Selectable {...props} {...itemProps} ref={mergedRef} disabled={isDisabled}
+    selected={context.isValueSelected(value)} onSelectedChange={(next) => context.setValueSelected(value, next)}
+    onFocus={composeEventHandlers(onFocus, itemProps.onFocus)} onKeyDown={composeEventHandlers(onKeyDown, itemProps.onKeyDown)} />;
 });
 export const SelectableGroup = Object.assign(Root, { Item });
-export type SelectableGroupResult = ReturnType<typeof useSelectableGroup>;

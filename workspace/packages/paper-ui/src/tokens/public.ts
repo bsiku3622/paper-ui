@@ -6,4 +6,5 @@ export { SYSTEM_COLORS } from "./colors";
 export { FONT_STYLESHEETS } from "./typography";
 export { typographyRule, monoRule, codeRule, presetRule, emphasisRule } from "./typography-recipes";
 export type { CodeKind, ButtonWeight } from "./typography-recipes";
+export { stateSelector } from "./state";
 export * from "./vocabulary";

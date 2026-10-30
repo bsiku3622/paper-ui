@@ -27,6 +27,7 @@ test("[guardrails.inline-token.no-token-style] a token reaches `style` through n
     'import {sheet} from "../styles/space.css"; export const X = () => <div style={{gap: sheet.gap.md}} />;',
     'import {tokens} from "@studio-baeks/paper-ui/tokens"; export const X = () => <div style={{color: tokens.color.ink.primary}} />;',
     'import {tokens} from "../tokens"; export const props = () => ({style: {color: tokens.color.ink.primary}});',
+    'import {tokens} from "../tokens"; const pick = (n) => { if (!n) throw new Error("none"); return tokens.color.ink[n]; }; export const X = ({n}) => <div style={{color: pick(n)}} />;',
   ]) {
     assert.equal(await hasInline(code, probe), true, code);
   }
@@ -41,6 +42,7 @@ test("[guardrails.inline-token.no-token-style] a module or a name that holds no 
     'import {boxSize} from "./Box.css"; export const X = () => <div style={{width: boxSize.width}} />;',
     'import type {tokens} from "../tokens"; export const X = (p: {t: typeof tokens}) => <div style={{width: 1} as const} />;',
     'import {Space} from "../tokens"; export const X = ({gap}: {gap: Space}) => <div style={{gridTemplateColumns: `repeat(${gap}, 1fr)`}} />;',
+    'import {paperError} from "../internal/errors"; const tracks = (n) => { if (n < 1) throw paperError("bad"); return `repeat(${n}, 1fr)`; }; export const X = ({n}) => <div style={{gridTemplateColumns: tracks(n)}} />;',
   ]) assert.equal(await hasInline(code, probe), false, code);
 });
 

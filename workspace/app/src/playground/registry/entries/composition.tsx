@@ -8,21 +8,19 @@ import { control } from "./examples.css";
 
 export default defineSpec({
   name: "Composition",
-  blurb: "mergeProps는 이벤트를 병합하고 mergeRefs는 같은 요소를 연결합니다. composeEventHandlers는 preventDefault로 내부 동작을 취소하는 경로입니다.",
+  blurb: "mergeProps는 이벤트를 차례로 실행하고 className을 잇고 style을 키별로 합칩니다. mergeRefs는 같은 요소를 연결합니다. composeEventHandlers는 caller가 preventDefault하면 내부 동작을 건너뜁니다.",
   controls: [],
   defaults: {},
   useHarness: () => {
-    const ref = useRef<HTMLButtonElement>(null);
     const forwarded = useRef<HTMLButtonElement>(null);
     const [count, setCount] = useState(0);
-    const { pressProps, isPressed } = usePressable({ onPress: () => setCount((value) => value + 1) }, ref);
-    const { focusProps, isFocusVisible } = useFocusRing();
-    const states = { "data-pressed": isPressed || undefined, "data-focus-visible": isFocusVisible || undefined };
-    return { count, ref, forwarded, props: { ...mergeProps(pressProps, focusProps), ...states } };
+    const { pressProps } = usePressable({ onPress: () => setCount((value) => value + 1) });
+    const { focusProps } = useFocusRing();
+    return { count, forwarded, props: mergeProps(pressProps, focusProps) };
   },
-  subject: (_state, { ref, forwarded, props }) =>
+  subject: (_state, { forwarded, props }) =>
     spreadOf(
-      <Box as="button" {...props} ref={mergeRefs(ref, forwarded)} type="button" className={control}>Hook으로 조립한 버튼</Box>,
+      <Box as="button" {...props} ref={mergeRefs(props.ref, forwarded)} type="button" className={control}>Hook으로 조립한 버튼</Box>,
       "mergeProps(pressProps, focusProps)",
       Object.keys(props),
     ),

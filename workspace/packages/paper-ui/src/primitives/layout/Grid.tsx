@@ -2,6 +2,7 @@ import { forwardRef, type CSSProperties, type ElementType } from "react";
 import { Box, type BoxOwnProps } from "../Box";
 import { resolveGap, type GapProps } from "../../resolvers";
 import type { Align, Justify, JustifyItem } from "../../tokens";
+import { paperError } from "../../internal/errors";
 import { joinClass } from "../../internal/joinClass";
 import { gridRoot, gridAlign, gridJustify, gridJustifyItems } from "./Grid.css";
 import type { PolymorphicComponent, PolymorphicProps } from "../polymorphic";
@@ -21,7 +22,7 @@ export type GridProps<As extends ElementType = "div"> = PolymorphicProps<GridOwn
 
 const tracks = (value: GridOwnProps["columns"]) => {
   if (typeof value !== "number") return value;
-  if (!Number.isInteger(value) || value < 1) throw new RangeError("Grid track count must be a positive integer.");
+  if (!Number.isInteger(value) || value < 1) throw paperError("Grid track count must be a positive integer.", RangeError);
   return `repeat(${value}, minmax(0, 1fr))`;
 };
 const GridImpl = forwardRef<HTMLDivElement, Omit<GridProps, "as" | "ref"> & { as?: ElementType }>(function Grid({
