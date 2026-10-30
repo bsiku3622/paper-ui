@@ -1,6 +1,6 @@
 import { focusRing, geometry } from "../internal/shape";
 
-import { tokens, stateTransition, CONTROL_SIZES, type ControlSize } from "../tokens";
+import { tokens, stateTransition, elevationCast, elevationStack, CONTROL_SIZES, type ControlSize } from "../tokens";
 import { layered } from "../tokens/layers.css";
 
 const { style, styleVariants } = layered("components");
@@ -27,7 +27,8 @@ export const switchRoot = style({
       transform: "translate(0, -50%)",
       borderRadius: tokens.shape.radius.full,
       background: tokens.color.bg.raised,
-      boxShadow: tokens.layout.elevation.raised.shadow,
+      ...elevationStack("lifted"),
+      ...elevationCast("lifted"),
       transition: `transform ${tokens.motion.duration.base} ${tokens.motion.easing.standard}`,
     },
     "&:checked": { background: tokens.color.accent.primary.solid },

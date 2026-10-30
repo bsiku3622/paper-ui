@@ -123,4 +123,4 @@ coarse pointer에서 더 키우지 않습니다 — 촘촘한 목록에서 hit a
 
 ## 앱에서
 
-앱은 간격·형태·깊이를 역할로 고릅니다. 안쪽 여백은 `tokens.shape.inset`, 형제 사이·margin·위치 offset은 `tokens.layout.gap`, 선은 `tokens.shape.stroke`, 그림자와 z는 `tokens.layout.elevation`입니다. 사이드바 폭이나 그리드 트랙처럼 그 화면에만 있는 치수는 앱이 직접 씁니다. eslint `paper/source-numbers`의 앱 범위가 이 경계를 지킵니다.
+앱은 간격·형태·깊이를 역할로 고릅니다. 안쪽 여백은 `tokens.shape.inset`, 형제 사이·margin·위치 offset은 `tokens.layout.gap`, 선은 `tokens.shape.stroke`, position·z·그림자는 Layout의 `elevation` class입니다. 사이드바 폭이나 그리드 트랙처럼 그 화면에만 있는 치수는 앱이 직접 씁니다. eslint `paper/source-numbers`의 앱 범위가 이 경계를 지킵니다.

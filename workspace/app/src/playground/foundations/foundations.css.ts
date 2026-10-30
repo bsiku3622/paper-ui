@@ -2,7 +2,7 @@
 // each specimen only arranges the token it shows.
 import { globalStyle, keyframes, style, styleVariants, type ComplexStyleRule } from "@vanilla-extract/css";
 
-import { CONTROL_SIZES, SPACES, codeRule, presetRule, tokens, type ControlSize } from "@studio-baeks/paper-ui/tokens";
+import { CONTROL_SIZES, ELEVATIONS, SPACES, codeRule, presetRule, tokens, type ControlSize } from "@studio-baeks/paper-ui/tokens";
 
 import { bar } from "./kit.css";
 import type { PresetPath } from "./typography-roles";
@@ -57,9 +57,9 @@ export const zLayer = style({
   borderRadius: shape.radius.surface.sm,
   border: line,
   background: color.bg.raised,
-  selectors: Object.fromEntries([1, 2, 3, 4, 5, 6].map((n) => [`&:nth-child(${n})`, { insetInlineStart: `calc(${shape.inset.md} * ${n - 1})` }])),
+  selectors: Object.fromEntries(ELEVATIONS.map((_, index) => index + 1).map((n) => [`&:nth-child(${n})`, { insetInlineStart: `calc(${shape.inset.md} * ${n - 1})` }])),
 });
-export const elevationStage = style({ display: "flex", justifyContent: "center", padding: shape.inset.md, borderRadius: shape.radius.surface.sm, background: color.bg.canvas });
+export const elevationStage = style({ display: "flex", justifyContent: "center", padding: shape.inset.md, borderRadius: shape.radius.surface.sm, background: color.bg.canvas, isolation: "isolate" });
 export const elevationCard = style({ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: shape.control.height.lg, borderRadius: shape.radius.surface.md, border: line, background: color.bg.raised });
 // Two blocks a gap apart; a frame whose content sits a gutter in.
 export const gapSample = style({ display: "flex" });
@@ -90,6 +90,6 @@ const fade = keyframes({ "50%": { opacity: 0.25 } });
 export const spin = style({ display: "inline-block", width: shape.control.icon.md, height: shape.control.icon.md, borderRadius: shape.radius.full, border: `${shape.stroke.emphasis} solid ${color.border.base}`, borderTopColor: color.ink.primary, animationName: turn, animationTimingFunction: motion.easing.linear, animationIterationCount: "infinite" });
 export const pulse = style({ display: "inline-block", width: dot, height: dot, borderRadius: shape.radius.full, background: color.accent.info.solid, animationName: fade, animationTimingFunction: motion.easing.standard, animationIterationCount: "infinite" });
 export const hoverSample = style({ padding: `${shape.inset.sm} ${shape.inset.md}`, borderRadius: shape.radius.control, border: line, background: color.bg.raised, selectors: { "&:hover": { backgroundColor: color.bg.sunken } } });
-export const presence = style({ display: "flex", alignItems: "center", gap: layout.gap.md });
+export const presence = style({ display: "flex", alignItems: "center", gap: layout.gap.md, isolation: "isolate" });
 export const themeSwap = style({ display: "flex", alignItems: "center", gap: layout.gap.md });
-export const presenceCard = style({ padding: `${shape.inset.sm} ${shape.inset.md}`, borderRadius: shape.radius.surface.md, border: line, background: color.bg.raised, boxShadow: layout.elevation.overlay.shadow });
+export const presenceCard = style({ padding: `${shape.inset.sm} ${shape.inset.md}`, borderRadius: shape.radius.surface.md, border: line, background: color.bg.raised });

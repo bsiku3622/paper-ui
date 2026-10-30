@@ -15,6 +15,14 @@ export const named = <T extends object>(code: string, value: T): T => {
   return value;
 };
 
+const CLASS_CODES = new Map<string, string>();
+
+// A class string the page builds with a function, with the call the code panel shows for it.
+export const classNamed = (code: string, value: string): string => {
+  CLASS_CODES.set(value, code);
+  return value;
+};
+
 // Props that reach the element through `{...expression}`: the printer writes the expression instead
 // of the keys it produced.
 export const spreadOf = <E extends ReactElement>(element: E, code: string, keys: readonly string[]): E => {
@@ -100,7 +108,9 @@ const attributes = (element: ReactElement, name: string, options: PrintOptions):
     if (prop === "ref" && codeOf(value) === undefined) continue;
     if (prop === "className") {
       const kept = String(value).split(/\s+/).filter((token) => token && !options.ignoreClasses?.has(token));
-      if (kept.length) out.push(`className=${quote(kept.join(" "))}`);
+      const call = CLASS_CODES.get(kept.join(" "));
+      if (call) out.push(`className={${call}}`);
+      else if (kept.length) out.push(`className=${quote(kept.join(" "))}`);
       continue;
     }
     if (value === false) { if (own[prop] === true) out.push(`${prop}={false}`); continue; }

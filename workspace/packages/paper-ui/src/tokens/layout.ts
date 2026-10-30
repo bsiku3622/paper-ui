@@ -1,5 +1,5 @@
 // Layout — the relations between elements: the gap between siblings, the page frame (gutter ·
-// container), the viewport (breakpoints) and depth (elevation = stacking order + shadow).
+// container), the viewport (breakpoints) and depth (elevation = position + stacking order + shadow).
 //
 // Same direction as Shape:
 //
@@ -10,15 +10,17 @@
 //
 // Distances select from the Shape space scale, so a gap and an inset of the same step are the
 // same length. A shadow is assembled where it is cast, from its geometry here and its shadow
-// colour from Color.
+// colour from Color. An elevation is applied as one unit (tokens/elevation-recipes.ts), so it
+// has no public role of its own.
 
 import { COLOR_MODES, type ColorMode } from "./color-modes";
 import { COLOR, type Depth } from "./colors";
 import { buildVarTree, keys, lengths, mediaEm, pathToVarRef, px } from "./helpers";
 import { SPACE } from "./shape";
 
-export const ELEVATIONS = ["base", "raised", "sticky", "overlay", "modal", "toast"] as const;
+export const ELEVATIONS = ["lifted", "sticky", "overlay", "modal", "toast"] as const;
 export type Elevation = (typeof ELEVATIONS)[number];
+type ElevationPosition = "relative" | "sticky";
 type ShadowLayer = readonly [x: number, y: number, blur: number, spread: number];
 
 export const LAYOUT_SOURCE = {
@@ -27,16 +29,21 @@ export const LAYOUT_SOURCE = {
   // A page section opens and closes with a distance that follows the viewport height (vh of it), held
   // between two steps of the space scale. The one fluid distance; every other gap is fixed.
   section: { start: { vh: 8, maxRatio: 2 }, end: { vh: 5 } },
-  // One elevation decides how a layer stacks and whether it casts a shadow — only what floats
-  // has one. Tiers sit 10 apart so a layer can nudge within its tier without crossing the next.
+  // One tier decides how an element is positioned, where it stacks and whether it casts a shadow —
+  // only what floats has one; the ground is no tier. Tiers sit 10 apart so a panel can nudge within
+  // its tier without crossing the next.
   elevation: {
-    base: { z: 0, depth: null },
-    raised: { z: 10, depth: "lifted" },
-    sticky: { z: 20, depth: null },
-    overlay: { z: 30, depth: "floating" },
-    modal: { z: 40, depth: "floating" },
-    toast: { z: 50, depth: "floating" },
-  } satisfies Record<Elevation, { z: number; depth: Depth | null }>,
+    tier: {
+      lifted: { z: 10, depth: "lifted", position: "relative" },
+      sticky: { z: 20, depth: null, position: "sticky" },
+      overlay: { z: 30, depth: "floating", position: "relative" },
+      modal: { z: 40, depth: "floating", position: "relative" },
+      toast: { z: 50, depth: "floating", position: "relative" },
+    } satisfies Record<Elevation, { z: number; depth: Depth | null; position: ElevationPosition }>,
+    // A panel opened inside another of its tier rises one nudge; a tier holds span / nudge − 1 nudges, so
+    // nesting never reaches the next tier.
+    nudge: 1,
+  },
   // Shadow geometry per mode. Dark surfaces need tighter, negatively spread layers.
   shadow: {
     light: { lifted: [[0, 1, 3, 0]], floating: [[0, 8, 24, 0], [0, 2, 6, 0]] },
@@ -65,8 +72,15 @@ export type Orientation = (typeof ORIENTATIONS)[number];
 
 export const LAYOUT_VALUES = {
   container: lengths(LAYOUT_SOURCE.container),
-  elevation: Object.fromEntries(ELEVATIONS.map((level) => [level, { z: String(LAYOUT_SOURCE.elevation[level].z) }])) as Record<Elevation, { z: string }>,
+  elevation: {
+    ...(Object.fromEntries(ELEVATIONS.map((tier) => [tier, { z: String(LAYOUT_SOURCE.elevation.tier[tier].z) }])) as Record<Elevation, { z: string }>),
+    nudge: String(LAYOUT_SOURCE.elevation.nudge),
+  },
 } as const;
+
+// The nests a tier holds without reaching the next: the narrowest span between consecutive tiers, in nudges, less one.
+const ELEVATION_Z = ELEVATIONS.map((tier) => LAYOUT_SOURCE.elevation.tier[tier].z);
+export const ELEVATION_NEST_LIMIT = Math.min(...ELEVATION_Z.slice(1).map((z, index) => z - ELEVATION_Z[index]!)) / LAYOUT_SOURCE.elevation.nudge - 1;
 
 // One length list per layer, such as "0px 8px 24px 0px". Emitted per mode: the geometry is the part of a
 // shadow that a mode changes.
@@ -101,8 +115,4 @@ export const LAYOUT = {
     start: `clamp(${SPACE["3xl"]}, ${section.start.vh}vh, calc(${SPACE["3xl"]} * ${section.start.maxRatio}))`,
     end: `clamp(${SPACE["2xl"]}, ${section.end.vh}vh, ${SPACE["3xl"]})`,
   },
-  elevation: Object.fromEntries(ELEVATIONS.map((level) => {
-    const { depth } = LAYOUT_SOURCE.elevation[level];
-    return [level, { z: source.elevation[level].z, shadow: depth ? castShadow(depth) : "none" }];
-  })) as Record<Elevation, { z: string; shadow: string }>,
 } as const;

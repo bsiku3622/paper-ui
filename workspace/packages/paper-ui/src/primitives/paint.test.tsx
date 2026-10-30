@@ -2,11 +2,12 @@ import { createRef, type ReactElement } from "react";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
+import { elevation } from "../index";
 import { Box, Paint, Stack, Surface, paintClass, surfaceClass } from "./index";
-import { surfaceBorder, surfaceElevation, surfaceRadius } from "./paint/Surface.css";
+import { surfaceBorder, surfaceRadius } from "./paint/Surface.css";
 import { accentVariantClass, fillClass, hoverGate } from "../styles/color.css";
 import { spaceClass } from "../styles/space.css";
-import { ACCENTS, SURFACE_FILLS, VARIANTS } from "../tokens";
+import { ACCENTS, ELEVATIONS, SURFACE_FILLS, VARIANTS } from "../tokens";
 import { stackRoot } from "./layout/flex.css";
 
 // Never rendered: each line only has to compile.
@@ -16,14 +17,14 @@ describe("Surface", () => {
   it("[primitives.surface.classes] turns fill, border, radius and elevation into the classes of their own maps", () => {
     render(<Surface data-testid="surface" fill="raised" border radius="md" elevation="overlay" padding="md" />);
     const element = screen.getByTestId("surface");
-    for (const className of [fillClass.raised, surfaceBorder, surfaceRadius.md, surfaceElevation.overlay, spaceClass.padding.md]) {
+    for (const className of [fillClass.raised, surfaceBorder, surfaceRadius.md, elevation.overlay, spaceClass.padding.md]) {
       expect(element.classList.contains(className), className).toBe(true);
     }
   });
 
   it("[primitives.surface.classes] gives surfaceClass the same classes for everything but the theme", () => {
     expect(surfaceClass({ fill: "sunken", border: true, radius: "full", elevation: "modal" })).toBe(
-      [fillClass.sunken, surfaceBorder, surfaceRadius.full, surfaceElevation.modal].join(" "),
+      [fillClass.sunken, surfaceBorder, surfaceRadius.full, elevation.modal].join(" "),
     );
     expect(surfaceClass({})).toBe("");
     for (const fill of SURFACE_FILLS) expect(surfaceClass({ fill }), fill).toBe(fillClass[fill]);
@@ -38,6 +39,16 @@ describe("Surface", () => {
     for (const className of [stackRoot, spaceClass.gap.md, fillClass.raised, surfaceBorder]) expect(element.classList.contains(className), className).toBe(true);
   });
 
+  it("[primitives.surface.classes] takes each tier's class from the public elevation map, and nothing else with it", () => {
+    expect(Object.keys(elevation)).toEqual([...ELEVATIONS]);
+    expect(new Set(Object.values(elevation)).size).toBe(ELEVATIONS.length);
+    for (const tier of ELEVATIONS) {
+      render(<Surface data-testid={tier} elevation={tier} />);
+      expect(screen.getByTestId(tier).getAttribute("class"), tier).toBe(elevation[tier]);
+      expect(surfaceClass({ elevation: tier }), tier).toBe(elevation[tier]);
+    }
+  });
+
   it("[primitives.surface.classes] paints nothing it was not asked to", () => {
     render(<Surface data-testid="plain" />);
     expect(screen.getByTestId("plain").getAttribute("class") ?? "").toBe("");
@@ -46,7 +57,7 @@ describe("Surface", () => {
   it("[primitives.surface.classes] takes paint props that Box and the layout primitives do not", () => {
     compiles(
       <Surface as={Stack} gap="md" fill="raised" />,
-      <Surface as={Stack} gap="md" align="center" justify="between" theme="inverse" border radius="lg" elevation="raised" padding="md" />,
+      <Surface as={Stack} gap="md" align="center" justify="between" theme="inverse" border radius="lg" elevation="lifted" padding="md" />,
       <Surface as="section" fill="sunken" border />,
       // @ts-expect-error fill is Surface's, and Stack paints nothing
       <Stack fill="raised" />,
@@ -57,7 +68,7 @@ describe("Surface", () => {
       // @ts-expect-error radius is Surface's
       <Box radius="md" />,
       // @ts-expect-error elevation is Surface's
-      <Box elevation="raised" />,
+      <Box elevation="lifted" />,
       // @ts-expect-error a layout primitive takes no accent
       <Stack accent="info" />,
       // @ts-expect-error as={Stack} keeps Stack's prop names

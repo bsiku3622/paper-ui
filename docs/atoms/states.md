@@ -45,4 +45,4 @@ focus ring은 패키지 전체가 하나의 스타일(`focusRing`)을 씁니다 
 - selected/semantic 상태가 hover보다 우선해야 하는가?
 - 정적 표식에 hover를 넣어 정보 위계를 흐리게 만들고 있지는 않은가?
 
-답이 없으면 hover를 추가하지 않습니다. 상태를 그림자로 표현하지도 않습니다 — 그림자는 실제로 떠 있는 층만 갖고, 그 층은 [Layout](../foundations/layout.md)의 elevation이 정합니다.
+답이 없으면 hover를 추가하지 않습니다. 상태를 그림자로 표현하지도 않습니다 — 그림자는 실제로 떠 있는 tier만 갖고, 그 tier는 [Layout](../foundations/layout.md)의 elevation이 정합니다.

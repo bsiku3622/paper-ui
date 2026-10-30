@@ -32,7 +32,7 @@ export const INVENTORY = {
     Composition: ["mergeProps", "mergeRefs", "composeEventHandlers"],
     Theme: ["PaperProvider", "useTheme", "useResolvedTheme"],
   },
-  classes: ["surfaceClass", "paintClass"],
+  classes: ["surfaceClass", "paintClass", "elevation"],
   foundations: [
     "tokens", "stateTransition", "FONT_STYLESHEETS",
     "typographyRule", "monoRule", "codeRule", "presetRule", "emphasisRule",

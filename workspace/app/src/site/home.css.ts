@@ -44,8 +44,6 @@ globalStyle(".home-mockup", {
   border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`,
   overflow: "hidden",
   background: tokens.color.bg.raised,
-  // 제품 목업은 지면 위로 살짝 떠 있다(원칙 4 의 overlay 자리). 카드가 아니라 화면.
-  boxShadow: tokens.layout.elevation.overlay.shadow,
 });
 
 // 창 머리

@@ -55,7 +55,7 @@ export const SiteNav = () => {
   const { pathname } = useLocation();
   const active = SITE_NAV.find((n) => isActive(pathname, n.to))?.to;
   return (
-    <Box as="header" className={s.gnb}>
+    <Surface as="header" elevation="sticky" className={s.gnb}>
       <Inline className={s.gnbRow}>
         <Brand />
         <Box as="nav" aria-label="주요 메뉴" className={s.gnbLinks}>
@@ -68,7 +68,7 @@ export const SiteNav = () => {
           </Surface>
         </Inline>
       </Inline>
-    </Box>
+    </Surface>
   );
 };
 

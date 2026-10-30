@@ -56,12 +56,12 @@ export const Demo = () => {
       <Inline gap="sm" className={s.topActions}><Field className={s.search} aria-label="전체 검색" placeholder="작업 검색..." leading={<Glyph name="search"/>} value={query} onChange={(event) => setQuery(event.target.value)}/><Button variant="soft" shape="pill" aria-label="계정 메뉴">재</Button></Inline>
     </Box>
     <Box className={s.layout}>
-      <Box as="nav" className={s.sidebar} aria-label="주요 메뉴">
+      <Surface as="nav" elevation="sticky" className={s.sidebar} aria-label="주요 메뉴">
         <Inline className={s.workspacePicker}><Badge fontSize="body" shape="rounded">S</Badge><Text variant="body">Studio Baeks</Text><Glyph name="chevron"/></Inline>
         <Stack gap="sm"><Text variant="body" ink="tertiary">WORKSPACE</Text><Button variant="ghost" className={s.navItem}><Glyph name="grid"/> 프로젝트 개요</Button><Button variant="ghost" className={s.navItem}><Glyph name="check"/> 내 작업 <Badge fontSize="body">4</Badge></Button><Button variant="ghost" className={s.navItem}><Glyph name="inbox"/> 받은 알림 <Badge fontSize="body">2</Badge></Button></Stack>
         <Stack gap="sm"><Text variant="body" ink="tertiary">PROJECTS</Text><Button variant="soft" className={s.navItem}><Glyph name="layers"/> 웹사이트 리뉴얼</Button><Button variant="ghost" className={s.navItem}><Glyph name="layers"/> 모바일 앱</Button><Button variant="ghost" className={s.navItem}><Glyph name="layers"/> 브랜드 정리</Button><Button variant="ghost" className={s.navItem}><Glyph name="plus"/> 프로젝트 추가</Button></Stack>
         <Box className={s.user}><Badge fontSize="body" shape="pill">재</Badge><Stack gap="xs"><Text variant="body">백재원</Text><Text variant="body" ink="tertiary">Studio Baeks</Text></Stack><IconButton aria-label="계정 옵션" variant="ghost"><Glyph name="more"/></IconButton></Box>
-      </Box>
+      </Surface>
       <Stack as="main" className={s.main} gap="lg">
         <Inline className={s.breadcrumb}><Text variant="body" ink="tertiary">프로젝트</Text><Glyph name="chevron"/><Text variant="body">웹사이트 리뉴얼</Text></Inline>
         <Inline as="header" className={s.projectHeading} justify="between" align="center">
@@ -86,14 +86,14 @@ export const Demo = () => {
           </Surface>
         </Stack>
       </Stack>
-      <Stack className={s.rightRail} gap="md">
+      <Surface as={Stack} elevation="sticky" className={s.rightRail} gap="md">
         <Surface border radius="md" padding="md"><Inline justify="between"><Stack gap="xs"><Text variant="subheading">이번 주</Text><Text variant="body" ink="tertiary">9월 24일 — 30일</Text></Stack><IconButton aria-label="캘린더 열기" variant="ghost"><Glyph name="calendar"/></IconButton></Inline><Inline className={s.weekDays} justify="between">{([["월", "23"], ["화", "24"], ["수", "25"], ["목", "26"], ["금", "27"], ["토", "28"], ["일", "29"]] as const).map(([day, date]) => <Stack key={date} align="center" gap="xs"><Text variant="body" ink="tertiary">{day}</Text><Badge fontSize="body" variant={date === "25" ? "solid" : "ghost"} shape="pill">{date}</Badge></Stack>)}</Inline></Surface>
         <Surface border radius="md" padding="md"><Inline justify="between"><Text variant="subheading">다가오는 일정</Text><Button size="sm" variant="ghost">전체 보기</Button></Inline><Stack className={s.agenda} gap="sm">{[["오늘", "14:00", "홈 화면 시안 리뷰", "디자인 팀 · 회의", "info"], ["내일", "10:30", "콘텐츠 킥오프", "콘텐츠 팀 · 회의", "success"], ["월요일", "16:00", "개발 체크인", "제품 팀 · 체크인", "warning"]].map(([day, time, title, detail, accent]) => <Inline key={title} className={s.agendaItem}><Stack gap="xs"><Text variant="body">{day}</Text><Text variant="body" ink="tertiary">{time}</Text></Stack><Stack gap="xs"><Text variant="body">{title}</Text><Badge fontSize="body" accent={accent as "info" | "success" | "warning"} variant="muted">{detail}</Badge></Stack></Inline>)}</Stack></Surface>
         <Box className={s.activity} padding="sm"><Text variant="subheading">최근 활동</Text><Stack gap="md">{[["민", "민주", "메인 비주얼 시안", "을 검토로 옮겼습니다.", "12분 전"], ["지", "지현", "모바일 내비게이션", " 작업을 추가했습니다.", "1시간 전"], ["재", "재원", "프로젝트 설명", "을 수정했습니다.", "어제"]].map(([initial, name, item, action, time]) => <Inline key={name}><Badge fontSize="body" shape="pill">{initial}</Badge><Stack gap="xs"><Text variant="body"><b>{name}</b>님이 <b>{item}</b>{action}</Text><Text variant="body" ink="tertiary">{time}</Text></Stack></Inline>)}</Stack></Box>
         <Surface as={Stack} theme="inverse" fill="raised" radius="md" padding="lg" gap="md"><Inline gap="xs"><Glyph name="spark" ink="secondary"/><Text as="h3" variant="body" ink="secondary">다음 마일스톤</Text></Inline><Inline gap="xs" align="baseline"><Text as="span" variant="display">6일</Text><Text as="span" variant="body" ink="secondary">남음 · 디자인 확정</Text></Inline><Box className={s.milestoneProgress} role="progressbar" aria-label="마일스톤까지 지난 기간" aria-valuenow={40} aria-valuemin={0} aria-valuemax={100}><Box className={s.milestoneFill} style={{ width: "40%" }}/></Box><Text variant="body" ink="secondary">10월 1일까지 디자인을 확정합니다. 검토할 작업이 2개 남았습니다.</Text></Surface>
-      </Stack>
+      </Surface>
     </Box>
-    {notice && <Box className={s.toast} role="status"><Badge fontSize="body" accent="success" variant="ghost">✓</Badge><Text variant="body">{notice}</Text></Box>}
+    {notice && <Surface elevation="toast" className={s.toast} role="status"><Badge fontSize="body" accent="success" variant="ghost">✓</Badge><Text variant="body">{notice}</Text></Surface>}
   </Box>;
 };
 

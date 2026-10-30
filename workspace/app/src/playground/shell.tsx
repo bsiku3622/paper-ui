@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 
-import { Box, Inline, Stack, Text } from "@studio-baeks/paper-ui";
+import { Box, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";
 import { tokens } from "@studio-baeks/paper-ui/tokens";
 
 import { SiteNav, NAV_HEIGHT } from "../site/chrome";
@@ -59,8 +59,8 @@ const GroupSections = ({ group, value }: { group: PlaygroundGroup; value: string
 export const PlaygroundLayout = ({ value, children }: { value: string; children: ReactNode }) => (
   <Stack>
     <SiteNav />
-    <Box maxWidth="container.content" width="full" style={{ display: "grid", gridTemplateColumns: `${tokens.shape.dimension.width.lg} 1fr`, marginInline: "auto" }}>
-      <Box as="nav" aria-label="플레이그라운드" style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, maxHeight: `calc(100dvh - ${NAV_HEIGHT})`, overflowY: "auto", top: NAV_HEIGHT, position: "sticky", alignSelf: "start", padding: tokens.shape.inset.lg, borderRight: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
+    <Box maxWidth="container.content" width="full" style={{ display: "grid", gridTemplateColumns: `${tokens.shape.dimension.width.lg} 1fr`, marginInline: "auto", isolation: "isolate" }}>
+      <Surface as="nav" elevation="sticky" aria-label="플레이그라운드" style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, maxHeight: `calc(100dvh - ${NAV_HEIGHT})`, overflowY: "auto", top: NAV_HEIGHT, alignSelf: "start", padding: tokens.shape.inset.lg, borderRight: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
         {/* Foundations → Primitives → Atoms: the order the system is built in, as the site map lists it. */}
         <Stack gap="lg">
           <Link to="/playground" style={linkStyle(value === "overview")}>Overview</Link>
@@ -72,7 +72,7 @@ export const PlaygroundLayout = ({ value, children }: { value: string; children:
             </NavGroup>
           ))}
         </Stack>
-      </Box>
+      </Surface>
       <Box paddingX="xl" paddingY="xl" style={{ minWidth: 0 }}>{children}</Box>
     </Box>
   </Stack>
