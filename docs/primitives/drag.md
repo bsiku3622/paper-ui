@@ -4,12 +4,12 @@ Drag Primitive는 끌어 옮기기와 놓기를 맡는 2차 primitive입니다. 
 
 | 컴포넌트 | Hook | 책임 | 기본값 |
 | --- | --- | --- | --- |
-| Draggable | useDrag | mode, activation, disabled, move 또는 transfer 옵션 | move / surface. Handle은 별도 입력 대상 |
+| Draggable | useDraggable | mode, activation, disabled, move 또는 transfer 옵션 | move / surface. Handle은 별도 입력 대상 |
 | Droppable | useDrop | 허용 작업과 onDrop lifecycle, disabled | keyboard 접근 가능한 div |
 
 ## Drag: move와 transfer
 
-Draggable·useDrag는 mode로 두 계약을 명시합니다.
+Draggable·useDraggable는 mode로 두 계약을 명시합니다.
 
 | 모드 | 책임 | 필수 입력 |
 | --- | --- | --- |
@@ -36,7 +36,7 @@ Move 모드는 position/defaultPosition/onPositionChange, axis=both/x/y, onDragS
 Hook에서 이동 대상과 손잡이를 분리하는 예시입니다.
 
 ```tsx
-const { dragProps, handleProps, position } = useDrag({ activation: "handle" });
+const { dragProps, handleProps, position } = useDraggable({ activation: "handle" });
 
 return (
   <div {...dragProps} style={{ translate: position.x + "px " + position.y + "px" }}>
@@ -46,7 +46,7 @@ return (
 );
 ```
 
-useDrag는 dragProps·handleProps·position·isDragging·cancel을 반환합니다. dragProps에는 이동 대상의 ref와 data-dragging · data-disabled가 들어 있고, handleProps에는 data-dragging · data-disabled가 들어 있습니다. 외부 ref·이벤트와 함께 쓰려면 `mergeProps`로 병합하고, 객체 spread로 한쪽을 덮어쓰지 않습니다. 컴포넌트는 내부 ref와 전달받은 ref를 함께 연결합니다.
+useDraggable는 dragProps·handleProps·position·isDragging·cancel을 반환합니다. dragProps에는 이동 대상의 ref와 data-dragging · data-disabled가 들어 있고, handleProps에는 data-dragging · data-disabled가 들어 있습니다. 외부 ref·이벤트와 함께 쓰려면 `mergeProps`로 병합하고, 객체 spread로 한쪽을 덮어쓰지 않습니다. 컴포넌트는 내부 ref와 전달받은 ref를 함께 연결합니다.
 
 ## Transfer와 Drop
 

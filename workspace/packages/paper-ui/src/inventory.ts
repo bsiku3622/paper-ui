@@ -21,7 +21,7 @@ export const INVENTORY = {
     Press: { components: ["Pressable"], hooks: ["usePressable"] },
     Select: { components: ["Selectable", "SelectableGroup"], hooks: ["useSelectable", "useSelectableGroup"] },
     Float: { components: ["Floating"], hooks: ["useFloating", "useFloatingContext"] },
-    Drag: { components: ["Draggable", "Droppable"], hooks: ["useDrag", "useDrop"] },
+    Drag: { components: ["Draggable", "Droppable"], hooks: ["useDraggable", "useDrop"] },
     Focus: { components: ["RovingFocus"], hooks: ["useRovingFocusItem"] },
     Field: { components: ["FormField"], hooks: ["useFormField"] },
     Layout: { components: ["Stack", "Inline", "Grid"], hooks: [] },

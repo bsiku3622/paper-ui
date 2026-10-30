@@ -37,7 +37,7 @@ export { Floating, useFloating, useFloatingContext, type FloatingProps, type Flo
 // Drag — move and transfer drag, and the drop target.
 export { Draggable, type DraggableProps, type DraggableHandleProps, type DraggableState } from "./drag/Draggable";
 export { Droppable, type DroppableProps } from "./drag/Droppable";
-export { useDrag, type DragResult } from "./drag/useDrag";
+export { useDraggable, type DraggableResult } from "./drag/useDraggable";
 export { useDrop, type DropResult } from "./drag/useDrop";
 
 // Focus — one Tab stop for a group, and the arrow keys inside it.
@@ -59,5 +59,5 @@ export type {
   PointerType, PressEvent, PressableOptions, FocusRingOptions, FocusWithinOptions, FocusScopeProps, Placement,
   DropOperation, DragItem, DragTypes, TextDropItem, FileDropItem, DirectoryDropItem, DropItem,
   DropEvent, DropEnterEvent, DropMoveEvent, DropExitEvent, DropActivateEvent, DropOptions, TransferDragEvent,
-  DragPosition, MoveDragEvent, MoveDragOptions, TransferDragOptions, DragOptions,
+  DragPosition, MoveDragEvent, MoveDragOptions, TransferDragOptions, DraggableOptions,
 } from "./types";

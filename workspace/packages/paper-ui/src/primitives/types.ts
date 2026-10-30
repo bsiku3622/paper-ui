@@ -141,7 +141,7 @@ export type TransferDragOptions = CommonDragOptions & {
   onDragMove?: (event: TransferDragEvent) => void;
   onDragEnd?: (event: TransferDragEvent) => void;
 };
-export type DragOptions = MoveDragOptions | TransferDragOptions;
+export type DraggableOptions = MoveDragOptions | TransferDragOptions;
 
 // ───── Float ──────────────────────────────────────────────────────────────────
 

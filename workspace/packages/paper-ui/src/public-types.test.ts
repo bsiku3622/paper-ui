@@ -9,8 +9,8 @@ import type { ComponentProps } from "react";
 import { describe, expect, expectTypeOf, it } from "vitest";
 
 import {
-  VisuallyHidden, useDrag, useDrop, useFloating, useFocusRing, useFocusWithin, useFormField, usePressable, useRovingFocusItem, useSelectable, useSelectableGroup,
-  type DragResult, type DropResult, type FloatingResult, type FocusRingResult, type FocusWithinResult, type FormFieldResult, type PressEvent, type PressableOptions,
+  VisuallyHidden, useDraggable, useDrop, useFloating, useFocusRing, useFocusWithin, useFormField, usePressable, useRovingFocusItem, useSelectable, useSelectableGroup,
+  type DraggableResult, type DropResult, type FloatingResult, type FocusRingResult, type FocusWithinResult, type FormFieldResult, type PressEvent, type PressableOptions,
   type PressableProps, type PressableResult, type RovingFocusItemResult, type SelectableGroupResult, type SelectableResult,
 } from "./index";
 
@@ -49,7 +49,7 @@ describe("public types", () => {
     expectTypeOf<ReturnType<typeof usePressable>>().toEqualTypeOf<PressableResult>();
     expectTypeOf<ReturnType<typeof useSelectable>>().toEqualTypeOf<SelectableResult>();
     expectTypeOf<ReturnType<typeof useSelectableGroup>>().toEqualTypeOf<SelectableGroupResult>();
-    expectTypeOf<ReturnType<typeof useDrag>>().toEqualTypeOf<DragResult>();
+    expectTypeOf<ReturnType<typeof useDraggable>>().toEqualTypeOf<DraggableResult>();
     expectTypeOf<ReturnType<typeof useDrop>>().toEqualTypeOf<DropResult>();
     expectTypeOf<ReturnType<typeof useFloating>>().toEqualTypeOf<FloatingResult>();
     expectTypeOf<ReturnType<typeof useFocusRing>>().toEqualTypeOf<FocusRingResult>();
@@ -64,7 +64,7 @@ describe("public types", () => {
     expectTypeOf<PressableResult["pressProps"]>().toHaveProperty("data-disabled");
     expectTypeOf<PressableResult>().toHaveProperty("isActive");
     expectTypeOf<PressableResult>().not.toHaveProperty("isPressed");
-    expectTypeOf<DragResult["dragProps"]>().toHaveProperty("ref");
+    expectTypeOf<DraggableResult["dragProps"]>().toHaveProperty("ref");
     expectTypeOf<DropResult["dropProps"]>().toHaveProperty("ref");
     expectTypeOf<DropResult["dropProps"]>().toHaveProperty("data-drop-target");
     expectTypeOf<FocusRingResult["focusProps"]>().toHaveProperty("data-focus-visible");

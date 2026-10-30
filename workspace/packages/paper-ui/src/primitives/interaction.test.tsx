@@ -1,7 +1,7 @@
 import { createRef, type ReactNode } from "react";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { Box, Pressable, Selectable, Draggable, Droppable, SelectableGroup, useSelectableGroup, Floating, useFloating, useFloatingContext, useSelectable, usePressable, useFocusRing, useDrag, useDrop, mergeProps, mergeRefs, composeEventHandlers } from "./index";
+import { Box, Pressable, Selectable, Draggable, Droppable, SelectableGroup, useSelectableGroup, Floating, useFloating, useFloatingContext, useSelectable, usePressable, useFocusRing, useDraggable, useDrop, mergeProps, mergeRefs, composeEventHandlers } from "./index";
 import { spaceClass } from "../styles/space.css";
 import { ELEVATION_NEST_LIMIT } from "../tokens";
 import * as floatingStyles from "./float/Floating.css";
@@ -286,9 +286,9 @@ describe("selectable groups", () => {
 });
 
 describe("drag and drop hooks", () => {
-  it("[primitives.hooks.result-shape] useDrag gives props that carry the ref and the state, and no separate target or handle ref", () => {
-    let result: ReturnType<typeof useDrag> | undefined;
-    function Probe() { result = useDrag({ activation: "handle" }); return <div {...result.dragProps}>Panel</div>; }
+  it("[primitives.hooks.result-shape] useDraggable gives props that carry the ref and the state, and no separate target or handle ref", () => {
+    let result: ReturnType<typeof useDraggable> | undefined;
+    function Probe() { result = useDraggable({ activation: "handle" }); return <div {...result.dragProps}>Panel</div>; }
     render(<Probe />);
     expect(Object.keys(result!).sort()).toEqual(["cancel", "dragProps", "handleProps", "isDragging", "position"]);
     expect(typeof result!.dragProps.ref).toBe("function");
