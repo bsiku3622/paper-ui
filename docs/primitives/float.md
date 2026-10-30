@@ -1,6 +1,6 @@
 # Float
 
-Float Primitive는 떠 있는 층의 위치와 z, 닫는 방식을 맡는 2차 primitive입니다. Trigger · Content · Close로 열린 상태를 연결하고, 입력 정규화와 배치 · 중첩 dismissal · 배경 inert · 스크롤 잠금은 React Aria에 위임하며 Paper가 공개 API와 상태 연결을 소유합니다. 색은 입히지 않습니다 — 면 · 테두리 · 여백은 Content의 className이 지정하고, modal의 scrim만 Paint 층의 `scrimPaint`를 씁니다. Trigger와 Close는 눌리는 대상이라 [Press](press.md)의 Pressable 위에 섭니다.
+Float Primitive는 떠 있는 층의 위치와 elevation(z와 그림자), 닫는 방식을 맡는 2차 primitive입니다. Trigger · Content · Close로 열린 상태를 연결하고, 입력 정규화와 배치 · 중첩 dismissal · 배경 inert · 스크롤 잠금은 React Aria에 위임하며 Paper가 공개 API와 상태 연결을 소유합니다. Floating은 elevation 한 단위(z와 그림자)와 modal의 scrim 및 그 gutter를 스스로 소유하고, 그 밖의 색은 입히지 않습니다 — 면 · 테두리 · 모서리 · 여백은 Content의 className이 지정하며(`surfaceClass()`로 fill · border · radius를 고릅니다), modal의 scrim만 Paint 층의 `scrimPaint`를 씁니다. Trigger와 Close는 눌리는 대상이라 [Press](press.md)의 Pressable 위에 섭니다.
 
 | 컴포넌트 | Hook | 책임 | 기본값 |
 | --- | --- | --- | --- |
@@ -9,7 +9,7 @@ Float Primitive는 떠 있는 층의 위치와 z, 닫는 방식을 맡는 2차 p
 ## Floating
 
 [contract:primitives.floating.portal]: #
-Floating은 열린 상태와 Trigger·Content·Close를 연결합니다. Root는 DOM wrapper를 만들지 않고 Content가 열릴 때 [Portal](a11y.md#portal)과 focus 범위를 mount합니다. 기본값은 non-modal dialog overlay입니다. Content의 면·여백·테두리는 className으로 지정합니다. 앱이 넘긴 class는 로드 순서가 아니라 레이어로 패키지 스타일을 이깁니다([우선순위](../get-started/install.md#우선순위)).
+Floating은 열린 상태와 Trigger·Content·Close를 연결합니다. Root는 DOM wrapper를 만들지 않고 Content가 열릴 때 [Portal](a11y.md#portal)과 focus 범위를 mount합니다. 기본값은 non-modal dialog overlay입니다. Content의 면·여백·테두리·모서리는 className으로 지정합니다. 기본 popover는 overlay tier, modal은 modal tier에 서고 둘 다 floating 그림자를 스스로 그립니다. 앱이 넘긴 class는 로드 순서가 아니라 레이어로 패키지 스타일을 이깁니다([우선순위](../get-started/install.md#우선순위)).
 
 명시적으로 연 모달에 이름과 닫기 버튼을 제공하는 예시입니다.
 
@@ -47,4 +47,4 @@ Content role은 dialog / alertdialog이며 기본값은 dialog입니다. aria-la
 [contract:primitives.floating.nesting]: #
 [contract:primitives.floating.focus-restore]: #
 [contract:primitives.floating.dismiss]: #
-Modal은 React Aria의 focus containment·배경 inert·스크롤 잠금을 사용합니다. 중첩 Floating은 안쪽부터 Escape를 처리하고 각 이전 대상을 복원합니다. 중첩 깊이는 Layout의 elevation 층(overlay·modal)에서 파생한 z로 반영합니다 — 깊이마다 한 tier씩 올라갑니다. 마지막 모달 해제 시 배경과 스크롤을 복원합니다. Dismissable과 Escape는 독립적입니다. 모두 끄면 명시적인 닫기 수단을 제공해야 합니다. 호출 버튼 제거 후의 제품별 목적지, 라우팅과 exit 애니메이션은 소비자가 결정합니다.
+Modal은 React Aria의 focus containment·배경 inert·스크롤 잠금을 사용합니다. 중첩 Floating은 안쪽부터 Escape를 처리하고 각 이전 대상을 복원합니다. 중첩은 elevation의 nudge로 반영합니다 — 같은 tier의 panel 위에 열린 panel은 한 걸음씩 올라가고(`ELEVATION_NEST_LIMIT`번까지) 다음 tier에 닿지 않으며, 더 높은 tier 위에서 연 panel은 그 tier를 따릅니다. 그래서 popover 위에서 연 modal의 scrim이 그 popover를 덮고, modal 위에서 연 popover는 그 scrim 위에 섭니다. React Aria가 배치한 panel의 z는 쓰지 않습니다. 마지막 모달 해제 시 배경과 스크롤을 복원합니다. Dismissable과 Escape는 독립적입니다. 모두 끄면 명시적인 닫기 수단을 제공해야 합니다. 호출 버튼 제거 후의 제품별 목적지, 라우팅과 exit 애니메이션은 소비자가 결정합니다.

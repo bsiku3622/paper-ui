@@ -49,7 +49,7 @@ const FILTERS: { label: string; accent: "info" | "success" | "warning" | "error"
 const AppMockup = () => {
   const [tab, setTab] = useState("all");
   return (
-    <div className="home-mockup">
+    <Surface elevation="overlay" className="home-mockup">
       <div className="home-mockup-bar">
         <Inline gap="xs">
           {[0, 1, 2].map((i) => (
@@ -126,7 +126,7 @@ const AppMockup = () => {
           </Box>
         </main>
       </div>
-    </div>
+    </Surface>
   );
 };
 
@@ -135,7 +135,7 @@ export const Home = () => (
     <SiteNav />
 
     <Box paddingX="xl">
-      <Box data-testid="home-column" maxWidth="container.content" width="full" style={{ marginInline: "auto" }}>
+      <Box data-testid="home-column" maxWidth="container.content" width="full" style={{ marginInline: "auto", isolation: "isolate" }}>
         {/* ── Hero ─────────────────────────────────────────────── */}
         <div className="home-hero">
           <Inline gap="sm" align="center" style={{ marginBottom: tokens.layout.gap.lg }}>

@@ -17,7 +17,7 @@ export const dropTarget = style({ minHeight: 100, padding: tokens.shape.inset.md
 globalStyle(`${dropTarget}[data-drop-target]`, { borderColor: tokens.color.interaction.focus });
 export const roving = style({ display: "flex", flexWrap: "wrap", gap: tokens.layout.gap.sm });
 globalStyle(`${roving}[data-orientation="vertical"]`, { flexDirection: "column", alignItems: "flex-start" });
-export const floatingContent = style({ width: 340, maxWidth: "100%", padding: tokens.shape.inset.lg, border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`, borderRadius: tokens.shape.radius.surface.md, background: tokens.color.bg.raised, color: tokens.color.ink.primary, boxShadow: tokens.layout.elevation.overlay.shadow });
+export const floatingContent = style({ width: 340, maxWidth: "100%", padding: tokens.shape.inset.lg, color: tokens.color.ink.primary });
 // What a Portal carries to the body is placed in the corner of the viewport, where it can be seen.
 export const portalNote = style({ position: "fixed", insetInlineEnd: tokens.layout.gap.lg, insetBlockEnd: tokens.layout.gap.lg });
 export const formField = style({ display: "grid", gap: tokens.layout.gap.sm });

@@ -36,6 +36,9 @@ export * from "./vocabulary";
 export { THEME_ATTRIBUTE, THEME_SWAP_ATTRIBUTE, COLOR_MODE_QUERY } from "./color-modes";
 export { SOURCE_VARIABLES } from "./variables";
 
+export { ELEVATION_NEST_LIMIT } from "./layout";
+export { ELEVATION, elevationStack, elevationCast, elevationStyle } from "./elevation-recipes";
+
 export { STATUS_PALETTE } from "./colors";
 export type { AccentToken } from "./colors";
 

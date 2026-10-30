@@ -12,9 +12,9 @@ const components: readonly string[] = [...primitives.flatMap((group) => group.co
 const functions: readonly string[] = [
   ...primitives.flatMap((group) => group.hooks),
   ...Object.values(INVENTORY.utilities).flat(),
-  ...INVENTORY.classes,
 ];
-const listed: readonly string[] = [...components, ...functions];
+const classes: readonly string[] = INVENTORY.classes;
+const listed: readonly string[] = [...components, ...functions, ...classes];
 
 describe("INVENTORY", () => {
   it("lists exactly the value exports of '.'", () => {
@@ -56,6 +56,14 @@ describe("INVENTORY", () => {
 
   it("lists a function for every hook and utility", () => {
     for (const name of functions) expect(typeof exported[name], name).toBe("function");
+  });
+
+  it("lists a class function or a map of class names for every class", () => {
+    for (const name of classes) {
+      const value = exported[name];
+      const isMap = typeof value === "object" && value !== null && Object.values(value).every((entry) => typeof entry === "string" && entry !== "");
+      expect(typeof value === "function" || isMap, name).toBe(true);
+    }
   });
 
   it("renders as='section' as a <section> for every polymorphic entry", () => {

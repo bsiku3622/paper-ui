@@ -123,9 +123,6 @@ describe("Layout shadow is geometry per mode, assembled where it is cast", () =>
       "--pui-layout-shadow-floating-0", "--pui-color-shadow-floating", "--pui-layout-shadow-floating-1", "--pui-color-shadow-floating",
     ]);
     expect(castShadow("lifted")).toBe("var(--pui-layout-shadow-lifted-0) var(--pui-color-shadow-lifted)");
-    expect(tokens.layout.elevation.overlay.shadow).toBe(floating);
-    expect(tokens.layout.elevation.raised.shadow).toBe(castShadow("lifted"));
-    expect(tokens.layout.elevation.base.shadow).toBe("none");
     expect([...declarations.keys(), ...Object.keys(invariant)].some((name) => /elevation-[\w-]*shadow/.test(name))).toBe(false);
   });
 });

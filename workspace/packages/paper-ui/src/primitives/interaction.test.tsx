@@ -3,6 +3,9 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { Box, Pressable, Selectable, Draggable, SelectableGroup, useSelectableGroup, Floating, useFloating, useSelectable, usePressable, mergeProps, mergeRefs, composeEventHandlers } from "./index";
 import { spaceClass } from "../styles/space.css";
+import { ELEVATION_NEST_LIMIT } from "../tokens";
+import * as floatingStyles from "./float/Floating.css";
+import { nestElevation, type FloatingElevation } from "./float/nestElevation";
 
 describe("interaction primitives", () => {
   it("Pressable composes caller events and forwards the native button ref", () => {
@@ -224,5 +227,71 @@ describe("floating state", () => {
     expect(screen.queryByText("Hidden")).toBeNull();
     fireEvent.click(trigger);
     expect(change).toHaveBeenCalledWith(true);
+  });
+});
+
+describe("floating elevation", () => {
+  type Own = FloatingElevation["tier"];
+  const stand = (own: Own, parent?: FloatingElevation) => nestElevation(parent, own);
+
+  it("[primitives.floating.nesting] rises one rank inside the same tier and starts a higher tier at rank 0", () => {
+    expect(stand("overlay")).toEqual({ tier: "overlay", rank: 0 });
+    expect(stand("modal")).toEqual({ tier: "modal", rank: 0 });
+    expect(stand("overlay", { tier: "overlay", rank: 0 })).toEqual({ tier: "overlay", rank: 1 });
+    expect(stand("overlay", { tier: "modal", rank: 2 })).toEqual({ tier: "modal", rank: 3 });
+    expect(stand("modal", { tier: "overlay", rank: 4 })).toEqual({ tier: "modal", rank: 0 });
+    expect(stand("modal", { tier: "modal", rank: 0 })).toEqual({ tier: "modal", rank: 1 });
+  });
+
+  it("[primitives.floating.nesting] holds a deep chain at the limit its tier allows", () => {
+    for (const tier of ["overlay", "modal"] as const) {
+      const chain = Array.from({ length: 12 }).reduce<FloatingElevation | undefined>((parent) => stand(tier, parent), undefined) as FloatingElevation;
+      expect(chain).toEqual({ tier, rank: ELEVATION_NEST_LIMIT });
+    }
+  });
+
+  it("[primitives.floating.nesting] draws each panel's tier on the panel itself and the stack on its backdrop", () => {
+    render(
+      <Floating defaultOpen>
+        <Floating.Trigger>outer</Floating.Trigger>
+        <Floating.Content aria-label="popover" anchored={false}>
+          <Floating defaultOpen modal>
+            <Floating.Trigger>inner</Floating.Trigger>
+            <Floating.Content aria-label="dialog">Inner</Floating.Content>
+          </Floating>
+        </Floating.Content>
+      </Floating>,
+    );
+    const popover = screen.getByRole("dialog", { name: "popover", hidden: true });
+    const dialog = screen.getByRole("dialog", { name: "dialog", hidden: true });
+    const { stack, cast, rankProperty } = floatingStyles;
+    expect(popover.classList.contains(stack.overlay)).toBe(true);
+    expect(popover.classList.contains(cast.overlay)).toBe(true);
+    // A modal's panel casts its shadow; its backdrop, which carries the stack, is the panel's parent.
+    expect(dialog.classList.contains(cast.modal)).toBe(true);
+    expect(dialog.classList.contains(stack.modal)).toBe(false);
+    expect(dialog.parentElement!.classList.contains(stack.modal)).toBe(true);
+    // React Aria's own z never reaches the panel, and the rank is written as the custom property the stack reads.
+    expect(popover.style.zIndex).toBe("");
+    expect(popover.style.getPropertyValue(rankProperty)).toBe("0");
+    expect(dialog.parentElement!.style.getPropertyValue(rankProperty)).toBe("0");
+  });
+
+  it("[primitives.floating.nesting] writes the rank of a panel nested inside its own tier", () => {
+    render(
+      <Floating defaultOpen modal>
+        <Floating.Trigger>outer</Floating.Trigger>
+        <Floating.Content aria-label="first">
+          <Floating defaultOpen modal>
+            <Floating.Trigger>inner</Floating.Trigger>
+            <Floating.Content aria-label="second">Inner</Floating.Content>
+          </Floating>
+        </Floating.Content>
+      </Floating>,
+    );
+    const { rankProperty } = floatingStyles;
+    const backdrop = (name: string) => screen.getByRole("dialog", { name, hidden: true }).parentElement!;
+    expect(backdrop("first").style.getPropertyValue(rankProperty)).toBe("0");
+    expect(backdrop("second").style.getPropertyValue(rankProperty)).toBe("1");
   });
 });

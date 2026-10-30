@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 import { THEME_ATTRIBUTE, THEME_STORAGE_KEY } from "../../packages/paper-ui/src/theme/boot";
-import { THEME_SWAP_ATTRIBUTE, tokens } from "../../packages/paper-ui/src/tokens";
+import { ELEVATION, THEME_SWAP_ATTRIBUTE } from "../../packages/paper-ui/src/tokens";
 import { COLOR_CONTRAST_MORE, COLOR_VALUES_BY_MODE } from "../../packages/paper-ui/src/tokens/colors";
 import { LAYOUT_MODE_VALUES } from "../../packages/paper-ui/src/tokens/layout";
 import { openHarness } from "../support/harness";
@@ -76,7 +76,7 @@ test("[foundations.theme.scope-roles] a Surface theme casts its shadow and draws
   const inside = page.getByTestId("inverse-card-child");
   await expect(card).toHaveAttribute(THEME_ATTRIBUTE, "dark");
   // Beside the card, an element on the same ground casts the same shadow: the page's, light.
-  await expectStyle(card, { boxShadow: tokens.layout.elevation.overlay.shadow });
+  await expectStyle(card, { boxShadow: ELEVATION.shadow.overlay });
   const shadow = (locator: typeof card) => locator.evaluate((element) => getComputedStyle(element).boxShadow);
   expect(await shadow(card)).toContain("24px 0px");
   expect(await shadow(inside)).toContain("22px -5px");

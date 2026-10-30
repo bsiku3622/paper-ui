@@ -1,8 +1,13 @@
 import { expect, test } from "@playwright/test";
 
-import { BREAKPOINTS, LAYOUT_SOURCE } from "../../packages/paper-ui/src/tokens/layout";
+import { ELEVATION } from "../../packages/paper-ui/src/tokens";
+import { BREAKPOINTS, ELEVATIONS, LAYOUT_SOURCE, type Elevation } from "../../packages/paper-ui/src/tokens/layout";
+import { openHarness, openPlayground } from "../support/harness";
+import { expectStyle } from "../support/style";
 
 // CDP runs in chromium only, so this spec is not part of the cross-engine set.
+
+const z = (tier: Elevation) => String(LAYOUT_SOURCE.elevation.tier[tier].z);
 
 test("the Layout page reads each breakpoint in em beside its px at the default root font", async ({ page }) => {
   await page.goto("/playground/foundations/layout");
@@ -30,4 +35,134 @@ test("[foundations.layout.breakpoint-em] a breakpoint follows the browser's defa
   await expect(page.locator("html")).toHaveCSS("font-size", "20px");
   await expect(sidebar).toBeHidden();
   await expect(column).toHaveCSS("max-width", "1440px");
+});
+
+test("[foundations.layout.elevation-unit] a Surface in block flow takes its tier's position, z and shadow together", async ({ page }) => {
+  await openHarness(page, "elevation");
+  for (const tier of ELEVATIONS) {
+    const surface = page.getByTestId(`tier-${tier}`);
+    await expect(surface, tier).toHaveCSS("position", LAYOUT_SOURCE.elevation.tier[tier].position);
+    await expect(surface, tier).toHaveCSS("z-index", z(tier));
+    await expectStyle(surface, { boxShadow: ELEVATION.shadow[tier] });
+  }
+});
+
+test("[foundations.layout.elevation-unit] the GNB is sticky at the sticky tier, and the Demo toast stands at the toast tier with the floating shadow", async ({ page }) => {
+  await page.goto("/");
+  const header = page.getByRole("banner");
+  await expect(header).toHaveCSS("position", "sticky");
+  await expect(header).toHaveCSS("z-index", z("sticky"));
+  await page.goto("/demo");
+  // The finished task leaves the list, so the click is not followed by a state check.
+  await page.getByRole("checkbox", { name: "랜딩 페이지 정보 구조 확정 완료 처리" }).click();
+  const toast = page.getByRole("status");
+  await expect(toast).toBeVisible();
+  await expect(toast).toHaveCSS("z-index", z("toast"));
+  await expectStyle(toast, { boxShadow: ELEVATION.shadow.toast });
+});
+
+test("[foundations.layout.elevation-nesting] the Floating example's popover stands at the overlay tier, and its confirm dialog's scrim covers it", async ({ page }) => {
+  await openPlayground(page, "floating", "Floating");
+  await page.getByRole("button", { name: "설정 열기", exact: true }).click();
+  const popover = page.getByRole("dialog", { name: "설정", exact: true });
+  // React Aria stacks an anchored panel at 100000; the tier decides instead.
+  await expect(popover).toHaveCSS("z-index", z("overlay"));
+  await expectStyle(popover, { boxShadow: ELEVATION.shadow.overlay });
+  await popover.getByRole("button", { name: "확인 창 열기", exact: true }).click();
+  const confirm = page.getByRole("dialog", { name: "중첩 확인", exact: true });
+  const scrim = confirm.locator("xpath=..");
+  await expect(scrim).toHaveCSS("z-index", z("modal"));
+  await expectStyle(confirm, { boxShadow: ELEVATION.shadow.modal });
+  const corner = await popover.evaluate((element) => {
+    const { x, y } = element.getBoundingClientRect();
+    return { x: x + 4, y: y + 4 };
+  });
+  expect(await scrim.evaluate((element, point) => element.contains(document.elementFromPoint(point.x, point.y)), corner), "the scrim is above the popover").toBe(true);
+});
+
+test("[foundations.layout.elevation-nesting] a modal Floating stands at the modal tier, and one nested in it a nudge above", async ({ page }) => {
+  await openPlayground(page, "floating", "Floating");
+  await page.getByRole("switch", { name: "modal", exact: true }).check();
+  await page.getByRole("button", { name: "설정 열기", exact: true }).click();
+  const outer = page.getByRole("dialog", { name: "설정", exact: true });
+  await expect(outer.locator("xpath=..")).toHaveCSS("z-index", z("modal"));
+  await expectStyle(outer, { boxShadow: ELEVATION.shadow.modal });
+  await outer.getByRole("button", { name: "확인 창 열기", exact: true }).click();
+  const inner = page.getByRole("dialog", { name: "중첩 확인", exact: true });
+  const nudge = LAYOUT_SOURCE.elevation.nudge;
+  await expect(inner.locator("xpath=..")).toHaveCSS("z-index", String(Number(z("modal")) + nudge));
+  await expectStyle(inner, { boxShadow: ELEVATION.shadow.modal });
+});
+
+test("[foundations.layout.elevation-nesting] a toast paints above an open popover", async ({ page }) => {
+  await openHarness(page, "elevation");
+  const popover = page.getByTestId("popover");
+  await expect(popover).toBeVisible();
+  await expect(popover).toHaveCSS("z-index", z("overlay"));
+  await expect(page.getByTestId("toast")).toHaveCSS("z-index", z("toast"));
+  const stack = await popover.evaluate((element) => {
+    const { x, y, width, height } = element.getBoundingClientRect();
+    return document.elementsFromPoint(x + width / 2, y + height / 2).map((hit) => hit.getAttribute("data-testid")).filter(Boolean);
+  });
+  expect(stack.indexOf("popover"), "the popover is under the point").toBeGreaterThanOrEqual(0);
+  expect(stack.indexOf("toast")).toBeGreaterThanOrEqual(0);
+  expect(stack.indexOf("toast")).toBeLessThan(stack.indexOf("popover"));
+});
+
+test("[foundations.layout.elevation-nesting] a toast paints above an open modal and its scrim", async ({ page }) => {
+  await openHarness(page, "elevation", { modal: "true" });
+  const dialog = page.getByTestId("popover");
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator("xpath=..")).toHaveCSS("z-index", z("modal"));
+  await expect(page.getByTestId("toast")).toHaveCSS("z-index", z("toast"));
+  // An open modal makes #root inert, which only takes it out of hit-testing; what is asked here is paint order.
+  await page.evaluate(() => document.getElementById("root")!.removeAttribute("inert"));
+  const order = await dialog.evaluate((element) => {
+    const { x, y, width, height } = element.getBoundingClientRect();
+    const hits = document.elementsFromPoint(x + width / 2, y + height / 2);
+    return { scrim: hits.indexOf(element.parentElement!), toast: hits.findIndex((hit) => hit.getAttribute("data-testid") === "toast") };
+  });
+  expect(order.scrim, "the scrim is under the point").toBeGreaterThanOrEqual(0);
+  expect(order.toast).toBeGreaterThanOrEqual(0);
+  expect(order.toast, "the toast is ahead of the scrim").toBeLessThan(order.scrim);
+});
+
+test("[foundations.layout.elevation-nesting] a previewed Surface at the toast tier stays under the GNB, because the preview stage isolates its content", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 500 });
+  await openPlayground(page, "surface", "Surface");
+  await page.getByRole("combobox", { name: "elevation", exact: true }).selectOption("toast");
+  const sample = page.getByTestId("surface-example");
+  await expect(sample).toHaveCSS("z-index", z("toast"));
+  await expect(page.locator(".preview-stage")).toHaveCSS("isolation", "isolate");
+  // Scroll the sample to the top of the window, where the sticky GNB is; the GNB is what a point there hits.
+  const box = (await sample.boundingBox())!;
+  await page.evaluate((y) => window.scrollBy(0, y), box.y + box.height / 2 - 20);
+  const hit = await sample.evaluate((element) => {
+    const { x, width } = element.getBoundingClientRect();
+    return document.elementFromPoint(x + width / 2, 20)?.closest("header") !== null;
+  });
+  expect(hit, "the GNB is above the previewed Surface").toBe(true);
+});
+
+test("[foundations.layout.elevation-nesting] a sticky rail that rides up under the GNB at the end of a page stays under it", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 400 });
+  const rails = [
+    { path: "/docs/primitives/float", heading: "Float", anchor: () => page.getByRole("navigation", { name: "문서 목차" }) },
+    { path: "/playground/button", heading: "Button", anchor: () => page.getByText("Props", { exact: true }) },
+  ];
+  for (const { path, heading, anchor } of rails) {
+    await page.goto(path);
+    await expect(page.getByRole("heading", { name: heading, exact: true }).first()).toBeVisible();
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    const { overlap, underGnb } = await anchor().evaluate((element) => {
+      let rail: HTMLElement | null = element as HTMLElement;
+      while (rail && getComputedStyle(rail).position !== "sticky") rail = rail.parentElement;
+      const gnb = document.querySelector("header")!.getBoundingClientRect();
+      const { left, top } = rail!.getBoundingClientRect();
+      const hit = document.elementFromPoint(left + 20, gnb.height / 2);
+      return { overlap: top < gnb.bottom, underGnb: hit?.closest("header") != null };
+    });
+    expect(overlap, `${path}: the rail reaches the GNB's strip`).toBe(true);
+    expect(underGnb, `${path}: the GNB owns its strip`).toBe(true);
+  }
 });

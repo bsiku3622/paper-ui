@@ -1,4 +1,4 @@
-import { createContext, forwardRef, useContext, useEffect, useId, useRef, type HTMLAttributes, type ReactNode, type Ref, type RefObject } from "react";
+import { createContext, forwardRef, useContext, useEffect, useId, useRef, type CSSProperties, type HTMLAttributes, type ReactNode, type Ref, type RefObject } from "react";
 import { useModalOverlay, useOverlay as useAriaOverlay, useOverlayPosition, type PositionProps } from "@react-aria/overlays";
 import { useOverlayTriggerState } from "@react-stately/overlays";
 import { FocusScope, useFocusManager } from "@react-aria/focus";
@@ -8,6 +8,7 @@ import { Portal } from "../a11y/Portal";
 import { scrimPaint } from "../paint/recipes.css";
 import { Pressable, type PressableProps } from "../press/Pressable";
 import * as styles from "./Floating.css";
+import { nestElevation, type FloatingElevation } from "./nestElevation";
 
 export type FloatingOptions = {
   open?: boolean;
@@ -24,7 +25,7 @@ export type FloatingState = {
 export function useFloating(options: FloatingOptions = {}): FloatingState {
   return useOverlayTriggerState({ isOpen: options.open, defaultOpen: options.defaultOpen, onOpenChange: options.onOpenChange });
 }
-type FloatingContext = { state: FloatingState; modal: boolean; triggerRef: RefObject<HTMLButtonElement | null>; contentId: string; depth: number };
+type FloatingContext = { state: FloatingState; modal: boolean; triggerRef: RefObject<HTMLButtonElement | null>; contentId: string; elevation: FloatingElevation };
 const Context = createContext<FloatingContext | null>(null);
 function useContextValue() {
   const context = useContext(Context);
@@ -37,7 +38,7 @@ function Root({ modal = false, children, ...options }: FloatingProps) {
   const state = useFloating(options);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const contentId = useId();
-  return <Context.Provider value={{ state, modal, triggerRef, contentId, depth: (parent?.depth ?? -1) + 1 }}>{children}</Context.Provider>;
+  return <Context.Provider value={{ state, modal, triggerRef, contentId, elevation: nestElevation(parent?.elevation, modal ? "modal" : "overlay") }}>{children}</Context.Provider>;
 }
 export type FloatingTriggerProps = PressableProps;
 const Trigger = forwardRef<HTMLButtonElement, FloatingTriggerProps>(function FloatingTrigger({ onPress, ...props }, ref) {
@@ -64,11 +65,13 @@ export type FloatingContentProps = Omit<HTMLAttributes<HTMLDivElement>, "childre
   underlayClassName?: string;
 };
 type PanelProps = FloatingContentProps & { forwardedRef: Ref<HTMLDivElement> };
+// React Aria stacks an anchored panel at its own z; the tier decides that here.
+const withoutZ = (style: CSSProperties | undefined): CSSProperties => Object.fromEntries(Object.entries(style ?? {}).filter(([property]) => property !== "zIndex"));
 function Panel({ forwardedRef, children, role = "dialog", dismissable = true, keyboardDismissDisabled = false, closeOnBlur = false,
   autoFocus = true, initialFocusRef, anchored, placement = "bottom start", offset = 0, crossOffset = 0, shouldFlip = true,
   shouldCloseOnInteractOutside, underlayClassName, className, style, ...props }: PanelProps) {
   const context = useContextValue();
-  const { state, modal, triggerRef, contentId } = context;
+  const { state, modal, triggerRef, contentId, elevation } = context;
   const ref = useRef<HTMLDivElement>(null);
   const isAnchored = anchored ?? !modal;
   const position = useOverlayPosition({ targetRef: triggerRef, overlayRef: ref, isOpen: state.isOpen && isAnchored, placement, offset, crossOffset, shouldFlip });
@@ -79,8 +82,8 @@ function Panel({ forwardedRef, children, role = "dialog", dismissable = true, ke
     shouldCloseOnInteractOutside: (element: Element) => !triggerRef.current?.contains(element) && (shouldCloseOnInteractOutside?.(element) ?? true),
   };
   const common = { context, surfaceRef: ref, forwardedRef, behavior, initialFocusRef, autoFocus, role, underlayClassName,
-    domProps: { ...props, id: contentId, role, tabIndex: -1, className: joinClass(styles.surface, !modal && styles.floating, className),
-      style: { [styles.layerDepth]: context.depth, ...(isAnchored ? position.overlayProps.style : undefined), ...style }, "data-placement": isAnchored ? position.placement : undefined,
+    domProps: { ...props, id: contentId, role, tabIndex: -1, className: joinClass(styles.surface, !modal && styles.stack[elevation.tier], styles.cast[elevation.tier], className),
+      style: { [styles.rankProperty]: String(elevation.rank), ...withoutZ(isAnchored ? position.overlayProps.style : undefined), ...style }, "data-placement": isAnchored ? position.placement : undefined,
       children: typeof children === "function" ? children(state) : children } };
   return modal ? <ModalPanel {...common} /> : <NonModalPanel {...common} />;
 }
@@ -114,10 +117,10 @@ function useInitialFocus(ref: RefObject<HTMLDivElement | null>, initial: RefObje
     }
   }, [ref, initial, autoFocus, manager]);
 }
-function ModalPanel({ context: { state, depth }, surfaceRef: ref, forwardedRef, behavior, initialFocusRef, autoFocus, underlayClassName, domProps }: PanelSurfaceProps) {
+function ModalPanel({ context: { state, elevation }, surfaceRef: ref, forwardedRef, behavior, initialFocusRef, autoFocus, underlayClassName, domProps }: PanelSurfaceProps) {
   const { modalProps, underlayProps } = useModalOverlay(behavior, { ...state, point: null, setPoint: () => {} }, ref);
   useInitialFocus(ref, initialFocusRef, autoFocus);
-  return <div {...underlayProps} className={joinClass(styles.backdrop, scrimPaint, underlayClassName)} style={{ [styles.layerDepth]: depth }}>
+  return <div {...underlayProps} className={joinClass(styles.backdrop, styles.stack[elevation.tier], scrimPaint, underlayClassName)} style={{ [styles.rankProperty]: String(elevation.rank) }}>
     <div {...mergeProps(domProps, modalProps)} ref={mergeRefs(ref, forwardedRef)} aria-modal="true" />
   </div>;
 }

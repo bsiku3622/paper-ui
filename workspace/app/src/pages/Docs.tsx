@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Link, Navigate, useLocation } from "react-router-dom";
 import { DOCS } from "virtual:paper-docs";
 
-import { Box, Stack, Text } from "@studio-baeks/paper-ui";
+import { Box, Stack, Surface, Text } from "@studio-baeks/paper-ui";
 import { tokens } from "@studio-baeks/paper-ui/tokens";
 
 import { loadDocBody } from "../docs/content";
@@ -43,8 +43,8 @@ export const Docs = () => {
   return (
     <Stack>
       <SiteNav />
-      <Box maxWidth="container.content" width="full" style={{ display: "grid", gridTemplateColumns: `${tokens.shape.dimension.width.lg} 1fr`, marginInline: "auto" }}>
-        <Box as="nav" aria-label="문서 목차" style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, top: NAV_HEIGHT, position: "sticky", alignSelf: "start", padding: tokens.shape.inset.lg, borderRight: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
+      <Box maxWidth="container.content" width="full" style={{ display: "grid", gridTemplateColumns: `${tokens.shape.dimension.width.lg} 1fr`, marginInline: "auto", isolation: "isolate" }}>
+        <Surface as="nav" elevation="sticky" aria-label="문서 목차" style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, top: NAV_HEIGHT, alignSelf: "start", padding: tokens.shape.inset.lg, borderRight: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
           <Stack gap="lg">
             {DOC_GROUPS.map((group) => (
               <Stack key={group.id} gap="xs">
@@ -57,7 +57,7 @@ export const Docs = () => {
               </Stack>
             ))}
           </Stack>
-        </Box>
+        </Surface>
 
         {/* 본문 */}
         <Box paddingX="xl" paddingY="xl">

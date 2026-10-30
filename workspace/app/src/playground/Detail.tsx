@@ -210,7 +210,7 @@ const DetailView = ({ entry }: { entry: Entry }) => {
         </Stack>
 
         {/* controls */}
-        <Surface fill="canvas" radius="md" padding="lg" style={{ position: "sticky", top: `calc(${NAV_HEIGHT} + ${tokens.layout.gap.xl})`, border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
+        <Surface fill="canvas" radius="md" padding="lg" elevation="sticky" style={{ top: `calc(${NAV_HEIGHT} + ${tokens.layout.gap.xl})`, border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
           <Stack gap="lg">
             <Inline justify="between" align="center">
               <Text variant="label">Props</Text>

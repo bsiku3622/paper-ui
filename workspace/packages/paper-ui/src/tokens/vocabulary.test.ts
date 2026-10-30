@@ -90,7 +90,7 @@ describe("vocabulary", () => {
   });
 
   it("[foundations.vocabulary.one-pair-per-axis] derives the Layout axes from the trees that author them", () => {
-    expect(vocabulary.ELEVATIONS).toEqual(keysOf(LAYOUT_SOURCE.elevation));
+    expect(vocabulary.ELEVATIONS).toEqual(keysOf(LAYOUT_SOURCE.elevation.tier));
     expect(vocabulary.BREAKPOINTS).toEqual(keysOf(LAYOUT_SOURCE.breakpoint));
     expect(vocabulary.CONTAINERS).toEqual(keysOf(LAYOUT_SOURCE.container));
   });

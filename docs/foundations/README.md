@@ -15,7 +15,7 @@ Color → Typography → Shape → Layout → Motion → Primitives → Atoms
 | [Color](color.md) | 면·잉크·경계·의미색·상태 tint | — | `tokens/palette.ts` |
 | [Typography](typography.md) | 서체·크기·굵기·행간·자간, 글자 역할 | 역할별 기본 잉크(Color) | `tokens/typography.ts` |
 | [Shape](shape.md) | 요소 하나의 곡률·선·포커스 링·크기·안쪽 여백 | 컨트롤 글자 줄(Typography) | `tokens/shape.ts` |
-| [Layout](layout.md) | 형제 간격·페이지 틀·breakpoint·elevation | 길이 scale(Shape), 그림자 색(Color) | `tokens/layout.ts` |
+| [Layout](layout.md) | 형제 간격·페이지 틀·breakpoint·elevation(position · z · 그림자) | 길이 scale(Shape), 그림자 색(Color) | `tokens/layout.ts` |
 | [Motion](motion.md) | 전이 시간·곡선·상황별 움직임 | 위 네 시스템이 바뀌는 방식 | `tokens/motion.ts` |
 
 Shape와 Layout의 경계는 하나의 질문으로 가립니다. **빈 캔버스에 그 요소 하나만 놓아도 남는가.** 버튼의 곡률·높이·안쪽 여백은 버튼 하나만 있어도 보이므로 Shape이고, 형제 사이 간격이나 쌓임 순서는 두 번째 요소나 화면이 있어야 생기므로 Layout입니다.
@@ -29,7 +29,7 @@ Shape와 Layout의 경계는 하나의 질문으로 가립니다. **빈 캔버�
 | Color | OKLCH Palette → HEX Palette Token | `bg` · `ink` · `border` · `accent` · `interaction` … | accent × variant profile |
 | Typography | Typography Palette | `hero` ~ `label` 글자 역할 | Control preset · 코드 · 강조 규칙 |
 | Shape | `SHAPE_SOURCE` | `inset` · `radius` · `control` · `selection` … | Shape recipe |
-| Layout | `LAYOUT_SOURCE` | `gap` · `gutter` · `container` · `elevation` | Surface `elevation` |
+| Layout | `LAYOUT_SOURCE` | `gap` · `gutter` · `container` · `breakpoint` · `section` | elevation class · Surface `elevation` |
 | Motion | duration · easing · loop | `press` · `hover` · `state` · `enter` … | `stateTransition()` |
 
 Playground의 [Foundations](/playground/foundations/color) 페이지가 이 순서 그대로 각 시스템을 보여줍니다. 위에서부터 원본, 역할, 조합 순서입니다. Color만은 예전 형태(Palette 행렬과 역할별 값 카드)를 유지하고, 맨 아래에 accent × variant 표가 붙어 조합 단을 맡습니다. 모든 페이지의 행은 원본에서 파생하므로, 역할이나 단계를 더하면 페이지가 따라옵니다.
@@ -116,7 +116,7 @@ prop이 받는 닫힌 값의 집합을 **축**이라 부릅니다. 축마다 상
 | `ICON_SIZES` · `IconSize` | `tokens/shape.ts` | Icon의 `size`, IconButton의 `iconSize` — `TEXT_VARIANTS`의 부분집합 |
 | `CONTROL_SHAPES` · `ControlShape` | `tokens/shape.ts` | Button · Badge · Field · Select의 `shape` |
 | `SURFACE_RADII` · `SurfaceRadius` | `tokens/shape.ts` | Surface의 `radius` — `radius.surface`의 단계와 `full` |
-| `ELEVATIONS` · `Elevation` | `tokens/layout.ts` | Surface의 `elevation`, `tokens.layout.elevation.<elevation>` |
+| `ELEVATIONS` · `Elevation` | `tokens/layout.ts` | Surface의 `elevation`, `elevation` class 지도의 키 |
 | `BREAKPOINTS` · `Breakpoint` | `tokens/layout.ts` | `tokens.layout.breakpoint.<breakpoint>` |
 | `CONTAINERS` · `Container` | `tokens/layout.ts` | Box의 `container.<container>` 폭, `tokens.layout.container.<container>` |
 | `ALIGNS` · `Align` | `tokens/layout.ts` | Stack · Inline · Grid의 `align` (Stack은 `baseline` 제외) |
@@ -132,21 +132,21 @@ prop이 받는 닫힌 값의 집합을 **축**이라 부릅니다. 축마다 상
 
 ```ts
 import { style } from "@vanilla-extract/css";
+import { elevation } from "@studio-baeks/paper-ui";
 import { tokens } from "@studio-baeks/paper-ui/tokens";
 
-export const panel = style({
+export const panel = style([elevation.overlay, {
   padding: tokens.shape.inset.lg,
   borderRadius: tokens.shape.radius.surface.lg,
   border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`,
   background: tokens.color.bg.raised,
-  boxShadow: tokens.layout.elevation.overlay.shadow,
   transition: `background-color ${tokens.motion.role.hover.duration} ${tokens.motion.role.hover.easing}`,
-});
+}]);
 ```
 
 예시처럼 stylesheet를 `.css.ts`로 쓰는 앱은 `@vanilla-extract/css`와 번들러 플러그인(예: `@vanilla-extract/vite-plugin`)을 직접 설치합니다. 패키지는 빌드할 때만 vanilla-extract를 쓰고, 배포본은 완성된 CSS(`styles.css`)만 담기 때문입니다.
 
-안쪽 여백은 `tokens.shape.inset`, 형제 사이와 margin·위치 offset은 `tokens.layout.gap`, 그림자와 z는 `tokens.layout.elevation`에서 고릅니다. 미디어 쿼리는 CSS 변수를 읽지 못하므로 `tokens.layout.breakpoint`는 `"48em"` 같은 값입니다. 사이드바 폭이나 그리드 트랙처럼 그 화면에만 있는 치수는 앱이 직접 씁니다.
+안쪽 여백은 `tokens.shape.inset`, 형제 사이와 margin·위치 offset은 `tokens.layout.gap`에서 고르고, position·z·그림자는 `elevation` class 하나로 한 번에 붙입니다. `elevation`은 class 지도라 `/tokens`가 아니라 컴포넌트 entry(`@studio-baeks/paper-ui`)에서 나옵니다. 미디어 쿼리는 CSS 변수를 읽지 못하므로 `tokens.layout.breakpoint`는 `"48em"` 같은 값입니다. 사이드바 폭이나 그리드 트랙처럼 그 화면에만 있는 치수는 앱이 직접 씁니다.
 
 ## 규칙은 빌드가 지킨다
 
@@ -161,7 +161,7 @@ export const panel = style({
 
 1. **raw 색값 금지** (`paper/raw-color`). OKLCH source는 `palette.ts`, HEX 생성은 `color-ladder.ts`에만 있습니다. 소비처는 `tokens.color`만 참조하고 색을 계산하지 않습니다.
 2. **원본 import 격리** (`no-restricted-imports`). palette·ladder·shape·layout의 원본 모듈은 컴포넌트·resolver·앱이 import하지 않습니다. 원본을 그대로 보여주는 Foundations inspector만 예외입니다.
-3. **패키지의 inline style로 토큰 주입 금지** (`paper/inline-token`). 패키지 스타일은 `.css.ts`의 className으로만 적용합니다. 패키지의 `.ts` · `.tsx`에서 토큰 · `styles` · `internal` · 패키지 자신에서 온 값이 `style`에 닿으면, 변수와 함수 호출을 거쳐도 규칙이 따라가 막습니다. 실행 중에 정해지는 값만 예외이고 그 목록이 전부입니다: Draggable 이동 좌표, Grid track, Floating 층 깊이 변수, Floating 앵커 위치, Floating 원본 변수 운반, 호출자가 넘긴 style.
+3. **패키지의 inline style로 토큰 주입 금지** (`paper/inline-token`). 패키지 스타일은 `.css.ts`의 className으로만 적용합니다. 패키지의 `.ts` · `.tsx`에서 토큰 · `styles` · `internal` · 패키지 자신에서 온 값이 `style`에 닿으면, 변수와 함수 호출을 거쳐도 규칙이 따라가 막습니다. 실행 중에 정해지는 값만 예외이고 그 목록이 전부입니다: Draggable 이동 좌표, Grid track, Floating rank 변수, Floating 앵커 위치, Floating 원본 변수 운반, 호출자가 넘긴 style.
 4. **길이는 원본에만** (`paper/source-numbers`). 패키지는 원본 파일 밖에서 길이 숫자를 쓰지 않습니다. 앱은 간격·형태·깊이(padding·margin·gap·offset·radius·선·그림자·z)를 역할로 고르고, 화면 고유의 치수만 직접 씁니다.
 5. **패키지 CSS는 레이어 안에** (`paper/layered-styles`). 패키지 stylesheet는 vanilla-extract의 `style` · `styleVariants` · `globalStyle`을 직접 부르지 않고 `tokens/layers.css.ts`의 `layered()`로 규칙을 만듭니다. 그래서 모든 규칙이 cascade layer `pui` 안에 들고, 레이어 밖의 앱 CSS가 로드 순서와 무관하게 이깁니다([우선순위](../get-started/install.md#우선순위)). 레이어를 정의하는 `layers.css.ts`만 예외이고, `keyframes`·`createVar`는 그대로 씁니다.
 6. **규칙은 주석으로 끄지 않음** (`paper/no-rule-disable`). paper 규칙은 `eslint-disable` 주석으로 끌 수 없고, 예외는 `eslint.config.js`에만 선언합니다. 다른 규칙을 끄는 주석은 `--` 뒤에 이유를 적고, 아무것도 가리지 않는 주석은 그 자체로 오류입니다.

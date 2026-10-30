@@ -26,7 +26,7 @@ Primitive는 두 차수로 나뉩니다. **1차**는 바탕입니다 — Box · 
 | Element | 1차 | Box | — | [Element](element.md) |
 | Content | 1차 | Text · Icon | — | [Content](content.md) |
 | A11y | 1차 | FocusScope · VisuallyHidden · Portal | useFocusRing · useFocusWithin | [A11y](a11y.md) |
-| Paint | 2차 | Surface · Paint | — (class 함수 surfaceClass · paintClass) | [Paint](paint.md) |
+| Paint | 2차 | Surface · Paint | — (class 함수 surfaceClass · paintClass, class 지도 elevation) | [Paint](paint.md) |
 | Press | 2차 | Pressable | usePressable | [Press](press.md) |
 | Select | 2차 | Selectable · SelectableGroup | useSelectable · useSelectableGroup | [Select](select.md) |
 | Float | 2차 | Floating | useFloating | [Float](float.md) |
@@ -56,7 +56,7 @@ Surface는 button 역할이나 Tab 정지를 자동으로 붙이지 않습니다
 [contract:primitives.polymorphic.own-props-win]: #
 `as`로 고른 요소의 native 속성 가운데 Primitive 자신의 prop과 이름이 겹치는 것은 타입에서 빠지고 자신의 prop이 이깁니다. `<Inline as="td" align="start">`의 `align`은 td의 native `align`이 아니라 Inline의 `align`입니다. Text는 `as`를 주지 않아도 variant가 그리는 태그(`label`은 span, `heading`은 h2)의 타입으로 ref를 받습니다.
 
-입력·포커스·보조 기술의 이벤트 처리는 React Aria에 위임하고, Paper가 공개 API와 상태 연결을 소유합니다. 패키지 스타일은 CSS class로 적용하고 토큰을 inline style로 넘기지 않습니다. 실행 중에 정해지는 값만 runtime style을 씁니다: Draggable 이동 좌표, Grid track, Floating 층 깊이 변수, Floating 앵커 위치, Floating 원본 변수 운반, 호출자가 넘긴 style.
+입력·포커스·보조 기술의 이벤트 처리는 React Aria에 위임하고, Paper가 공개 API와 상태 연결을 소유합니다. 패키지 스타일은 CSS class로 적용하고 토큰을 inline style로 넘기지 않습니다. 실행 중에 정해지는 값만 runtime style을 씁니다: Draggable 이동 좌표, Grid track, Floating rank 변수, Floating 앵커 위치, Floating 원본 변수 운반, 호출자가 넘긴 style.
 
 ## 테마 도구
 

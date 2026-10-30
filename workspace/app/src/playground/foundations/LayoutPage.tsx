@@ -1,7 +1,7 @@
-import { Text, useResolvedTheme } from "@studio-baeks/paper-ui";
+import { Text, elevation, useResolvedTheme } from "@studio-baeks/paper-ui";
 import { tokens, BREAKPOINTS, ELEVATIONS, SPACES, type Depth, type Elevation } from "@studio-baeks/paper-ui/tokens";
 
-import { LAYOUT_SOURCE } from "../../../../packages/paper-ui/src/tokens/layout";
+import { ELEVATION_NEST_LIMIT, LAYOUT_SOURCE } from "../../../../packages/paper-ui/src/tokens/layout";
 import { Board, BoardGroup, BoardRow, Cell, FoundationSection, Meter, TokenCell, ValueCell, mediaValue, resolved } from "./kit";
 import * as s from "./foundations.css";
 
@@ -9,22 +9,25 @@ const layout = tokens.layout;
 const maxBreakpoint = Math.max(...Object.values(LAYOUT_SOURCE.breakpoint));
 const geometry = (layers: readonly (readonly number[])[]) => layers.map((layer) => layer.join(" ")).join(", ");
 
+const { tier, nudge } = LAYOUT_SOURCE.elevation;
+const tierSpan = tier.sticky.z - tier.lifted.z;
+
 // The levels that cast a given depth of shadow, in elevation order; the first one stands for the depth.
-const levelsOf = (depth: Depth) => ELEVATIONS.filter((level) => LAYOUT_SOURCE.elevation[level].depth === depth);
+const levelsOf = (depth: Depth) => ELEVATIONS.filter((level) => tier[level].depth === depth);
 
 const ELEVATION_USE: Record<Elevation, string> = {
-  base: "지면에 붙은 면",
-  raised: "살짝 들린 작은 것 — 스위치 손잡이, 미리보기 위 도구",
+  lifted: "살짝 들린 작은 것 — 스위치 손잡이",
   sticky: "sticky 헤더·사이드바 — 그림자 대신 경계선",
   overlay: "팝오버·메뉴",
   modal: "대화상자 — 아래에 scrim",
   toast: "가장 위 알림",
 };
 
-// A raised card on the page canvas carrying the level's shadow, in the current theme.
+// A card on the page canvas carrying the level's elevation, in the current theme. The stage isolates it, so its z
+// stays inside the board.
 const ElevationCard = ({ level }: { level: Elevation }) => (
   <div className={s.elevationStage}>
-    <div className={s.elevationCard} style={{ boxShadow: layout.elevation[level].shadow }}><Text variant="caption" ink="secondary">{level}</Text></div>
+    <div className={`${s.elevationCard} ${elevation[level]}`}><Text variant="caption" ink="secondary">{level}</Text></div>
   </div>
 );
 
@@ -50,19 +53,24 @@ export const LayoutPage = () => {
               </BoardRow>
             ))}
           </BoardGroup>
-          <BoardGroup label="Elevation z — tier 사이를 10씩 띄웁니다">
+          <BoardGroup label={`Elevation z — tier 사이를 ${tierSpan}씩 띄웁니다`}>
             {ELEVATIONS.map((level, index) => (
               <BoardRow key={level}>
                 <TokenCell name={`layout.elevation.${level}.z`} />
                 <Cell><div className={s.zStack}>{ELEVATIONS.slice(0, index + 1).map((step) => <span key={step} className={s.zLayer} />)}</div></Cell>
-                <ValueCell>{resolved(layout.elevation[level].z)}</ValueCell>
+                <ValueCell>{tier[level].z}</ValueCell>
               </BoardRow>
             ))}
+            <BoardRow>
+              <TokenCell name="layout.elevation.nudge" note={`같은 tier 안의 한 걸음, tier당 ${ELEVATION_NEST_LIMIT}번`} />
+              <Meter value={nudge} max={tierSpan} />
+              <ValueCell>{nudge}</ValueCell>
+            </BoardRow>
           </BoardGroup>
-          <BoardGroup label={`Shadow geometry — x y blur spread (px), 지금 테마(${theme})의 기하 · 색은 Color의 shadow colour`}>
+          <BoardGroup label={`Shadow geometry — x y blur spread (px), 지금 테마(${theme})의 기하 · 색은 Color의 shadow 색`}>
             {(Object.keys(LAYOUT_SOURCE.shadow[theme]) as Depth[]).map((depth) => (
               <BoardRow key={depth}>
-                <TokenCell name={`shadow.${depth}.${theme}`} note={`${levelsOf(depth).join(" · ")} 층`} />
+                <TokenCell name={`layout.shadow.${depth}`} note={`${levelsOf(depth).join(" · ")} tier`} />
                 <ElevationCard level={levelsOf(depth)[0]!} />
                 <ValueCell>{geometry(LAYOUT_SOURCE.shadow[theme][depth])}</ValueCell>
               </BoardRow>
@@ -92,12 +100,12 @@ export const LayoutPage = () => {
         </Board>
       </FoundationSection>
 
-      <FoundationSection title="Elevation" description={`층 하나가 쌓임 순서(z)와 그림자를 함께 정합니다. 떠 있는 층만 그림자를 갖고, 깊이는 lifted와 floating 둘뿐입니다. Surface는 elevation prop으로 층을 고릅니다. 지금 테마(${theme})의 그림자입니다.`}>
+      <FoundationSection title="Elevation" description={`tier 하나가 position과 쌓임 순서(z)와 그림자를 함께 정합니다. 떠 있는 tier만 그림자를 갖고, 깊이는 lifted와 floating 둘뿐입니다. Surface는 elevation prop으로, 그 밖의 요소는 elevation class로 tier를 고릅니다. 지금 테마(${theme})의 그림자입니다.`}>
         <Board columns={[{ label: "Level" }, { label: "z", align: "end" }, { label: "Specimen", align: "center" }]} template="minmax(0, 1.5fr) minmax(3rem, auto) minmax(12rem, 1fr)" minWidth="36rem">
           {ELEVATIONS.map((level) => (
             <BoardRow key={level} size="md">
               <TokenCell name={`layout.elevation.${level}`} note={ELEVATION_USE[level]} />
-              <ValueCell>{resolved(layout.elevation[level].z)}</ValueCell>
+              <ValueCell>{tier[level].z}</ValueCell>
               <ElevationCard level={level} />
             </BoardRow>
           ))}

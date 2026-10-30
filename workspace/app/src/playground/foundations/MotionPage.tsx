@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Button, Inline, Surface, Switch, Text } from "@studio-baeks/paper-ui";
+import { Button, Inline, Surface, Switch, Text, elevation } from "@studio-baeks/paper-ui";
 import { tokens } from "@studio-baeks/paper-ui/tokens";
 
 import { Board, BoardGroup, BoardRow, Cell, FoundationSection, TokenCell, ValueCell } from "./kit";
@@ -34,7 +34,7 @@ const Presence = ({ mode }: { mode: "enter" | "exit" }) => {
   return (
     <div className={s.presence}>
       <Button size="sm" variant="hairline" onClick={() => setShown((value) => !value)}>{shown ? "닫기" : "열기"}</Button>
-      <div className={s.presenceCard} style={{ opacity: shown ? 1 : 0, transform: shown ? "none" : hidden, transition: `opacity ${timing.duration} ${timing.easing}, transform ${timing.duration} ${timing.easing}` }}>
+      <div className={`${s.presenceCard} ${elevation.overlay}`} style={{ opacity: shown ? 1 : 0, transform: shown ? "none" : hidden, transition: `opacity ${timing.duration} ${timing.easing}, transform ${timing.duration} ${timing.easing}` }}>
         <Text variant="caption">{shown ? "떠오른 면" : "사라지는 중"}</Text>
       </div>
     </div>

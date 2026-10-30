@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { Box, Button, Field, Floating, Icon, Inline, Pressable, Stack, Surface, Text } from "@studio-baeks/paper-ui";
 
-import { componentNames, named, parseChildrenText, parseOpeningTag, printJsx, spreadOf } from "./jsx";
+import { classNamed, componentNames, named, parseChildrenText, parseOpeningTag, printJsx, spreadOf } from "./jsx";
 
 const names = componentNames();
 const print = (element: Parameters<typeof printJsx>[0], defaults: Record<string, unknown> = {}, scope: string[] = []) => printJsx(element, { names, defaults, scope });
@@ -65,6 +65,11 @@ describe("printJsx", () => {
 
   it("leaves out the testid and a class the page asks to ignore", () => {
     expect(printJsx(<Box data-testid="x" className="demo keep" />, { names, ignoreClasses: new Set(["demo"]) })).toBe('<Box className="keep" />');
+  });
+
+  it("writes a class string the page built with a function as that call", () => {
+    const face = classNamed('surfaceClass({ fill: "raised" })', "face edge");
+    expect(printJsx(<Box className={`${face} demo`} />, { names, ignoreClasses: new Set(["demo"]) })).toBe('<Box className={surfaceClass({ fill: "raised" })} />');
   });
 });
 

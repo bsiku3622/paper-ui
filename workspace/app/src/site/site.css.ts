@@ -24,9 +24,7 @@ globalStyle(":root", {
 });
 
 export const gnb = style({
-  position: "sticky",
   top: 0,
-  zIndex: tokens.layout.elevation.sticky.z,
   height: NAV_HEIGHT,
   background: tokens.color.bg.canvas,
   borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`,

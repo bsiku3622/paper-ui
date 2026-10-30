@@ -27,6 +27,7 @@ globalStyle(".preview-stage", {
   borderRadius: tokens.shape.radius.surface.lg,
   border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`,
   overflow: "auto",
+  isolation: "isolate",
 });
 globalStyle(".preview-stage--track", { background: tokens.color.control.track });
 
@@ -34,7 +35,6 @@ globalStyle(".preview-surface-switcher", {
   position: "absolute",
   top: tokens.layout.gap.sm,
   left: tokens.layout.gap.sm,
-  zIndex: tokens.layout.elevation.raised.z,
   display: "flex",
   gap: tokens.layout.gap.xs,
 });
@@ -122,7 +122,6 @@ globalStyle(".code-actions", {
   position: "absolute",
   top: tokens.layout.gap.sm,
   right: tokens.layout.gap.sm,
-  zIndex: tokens.layout.elevation.raised.z,
   display: "flex",
   alignItems: "center",
   gap: tokens.layout.gap.xs,

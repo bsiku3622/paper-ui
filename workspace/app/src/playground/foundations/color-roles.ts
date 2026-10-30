@@ -31,7 +31,7 @@ export const ROLE_NOTES: Record<RolePath, string> = {
   "interaction.link": "링크 글자",
   "overlay.scrim": "모달 뒤를 어둡게 누르는 면",
   "shadow.floating": "떠 있는 층(overlay · modal · toast) 그림자의 색",
-  "shadow.lifted": "살짝 들린 층(raised) 그림자의 색",
+  "shadow.lifted": "살짝 들린 층(lifted) 그림자의 색",
 };
 
 export const GROUPS: { title: string; description: string; branches: Branch[] }[] = [

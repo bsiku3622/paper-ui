@@ -39,6 +39,9 @@ export type {
   SpinnerProps,
 } from "./atoms";
 
+// Class maps — class names for what a stylesheet cannot reach. elevation is one class per tier: position, z and shadow together.
+export { elevation } from "./styles/elevation.css";
+
 // Theme — the Provider and the hooks; the boot script is the entry "theme-boot"
 export { PaperProvider, useTheme, useResolvedTheme } from "./theme";
 export type { PaperProviderProps, ThemeControl } from "./theme";
