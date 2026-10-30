@@ -53,10 +53,10 @@ Box의 `padding` · `paddingX` · `paddingY`가 이 단계를 받습니다. 앱 
 |---|---|---|
 | `radius.control` | 4 | Button · Field · Select · Textarea · Badge, 포커스 링 |
 | `radius.selection` | 3 | Checkbox |
-| `radius.surface.sm / md / lg` | 4 / 6 / 8 | Box의 `radius` prop |
+| `radius.surface.sm / md / lg` | 4 / 6 / 8 | Surface의 `radius` prop |
 | `radius.full` | 999px | 알약, 원(Radio · Switch · Spinner) |
 
-Box의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값이 같아도 역할과 변수는 따로입니다.
+Surface의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값이 같아도 역할과 변수는 따로입니다.
 
 ## Stroke · Focus
 

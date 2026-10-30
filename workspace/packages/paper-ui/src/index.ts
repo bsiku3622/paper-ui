@@ -2,7 +2,7 @@
 // Values and vocabulary come from "@studio-baeks/paper-ui/tokens"; styles load only through
 // "@studio-baeks/paper-ui/styles.css".
 
-// Layout, Content, Interaction, and A11y primitives.
+// The Primitives, in two orders (see primitives/index.ts).
 export * from "./primitives";
 
 // Atoms (13)
@@ -44,5 +44,5 @@ export { PaperProvider, useTheme, useResolvedTheme } from "./theme";
 export type { PaperProviderProps, ThemeControl } from "./theme";
 
 // Inventory — every name above by category and order, as data
-export { INVENTORY, PRIMITIVE_GROUPS } from "./inventory";
-export type { PrimitiveGroup } from "./inventory";
+export { INVENTORY, PRIMITIVE_ORDERS, PRIMITIVE_GROUPS } from "./inventory";
+export type { PrimitiveOrder, PrimitiveGroup } from "./inventory";

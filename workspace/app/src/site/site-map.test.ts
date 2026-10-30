@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { INVENTORY, PRIMITIVE_GROUPS } from "@studio-baeks/paper-ui";
+import { INVENTORY, PRIMITIVE_GROUPS, PRIMITIVE_ORDERS } from "@studio-baeks/paper-ui";
 
-import { DOC_GROUPS, FOUNDATIONS, PLAYGROUND_NAV, SITE_NAV, docFile, docSlug, slugOf } from "./site-map";
+import { DOC_GROUPS, FOUNDATIONS, PLAYGROUND_NAV, PRIMITIVE_ORDER_LABELS, SITE_NAV, docFile, docSlug, slugOf } from "./site-map";
 
 const unique = (values: readonly string[]) => values.filter((value, index) => values.indexOf(value) !== index);
 
@@ -10,7 +10,7 @@ describe("slugOf", () => {
   it("turns a PascalCase name into a kebab-case slug", () => {
     expect(slugOf("Box")).toBe("box");
     expect(slugOf("IconButton")).toBe("icon-button");
-    expect(slugOf("ToggleGroup")).toBe("toggle-group");
+    expect(slugOf("SelectableGroup")).toBe("selectable-group");
     expect(slugOf("A11y")).toBe("a11y");
   });
 });
@@ -35,6 +35,15 @@ describe("PLAYGROUND_NAV", () => {
       expect(primitives?.sections.find((section) => section.label === group)?.items.map((item) => item.name)).toEqual([...INVENTORY.primitives[group].components]);
     }
     expect(atoms?.sections.flatMap((section) => section.items.map((item) => item.name))).toEqual([...INVENTORY.atoms]);
+  });
+
+  it("puts every primitive group under the order that lists it, the first order before the second, and Utilities under none", () => {
+    const sections = PLAYGROUND_NAV.find((group) => group.id === "primitives")!.sections;
+    for (const [order, groups] of Object.entries(PRIMITIVE_ORDERS)) {
+      expect(sections.filter((section) => section.order === order).map((section) => section.label), order).toEqual([...groups]);
+    }
+    expect(sections.map((section) => section.order)).toEqual([...PRIMITIVE_ORDERS.first.map(() => "first"), ...PRIMITIVE_ORDERS.second.map(() => "second"), undefined]);
+    expect(Object.keys(PRIMITIVE_ORDER_LABELS)).toEqual(Object.keys(PRIMITIVE_ORDERS));
   });
 
   it("names Composition and Theme under Utilities, both known to the inventory", () => {

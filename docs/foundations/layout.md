@@ -38,12 +38,12 @@ section은 고정 gap 사다리의 선언된 유동 예외입니다. `start`는 
 | `modal` | 40 | floating | 대화상자, 그 아래 `color.overlay.scrim` |
 | `toast` | 50 | floating | 가장 위 알림 |
 
-tier 사이를 10씩 띄워, 같은 tier 안에서 조금 올리고 내려도 다음 tier를 넘지 않습니다. 중첩된 Overlay는 깊이마다 한 tier(`modal − overlay`)씩 올라갑니다.
+tier 사이를 10씩 띄워, 같은 tier 안에서 조금 올리고 내려도 다음 tier를 넘지 않습니다. 중첩된 Floating은 깊이마다 한 tier(`modal − overlay`)씩 올라갑니다.
 
 그림자 깊이는 lifted와 floating 둘뿐입니다. 기하는 모드별로 Layout이 갖고(다크는 더 조이고 음의 spread를 씁니다), 그림자 색(shadow colour)은 Color의 `shadow.lifted` · `shadow.floating`이 칠합니다. 그림자는 층마다 그림자 깊이의 레이어 기하 변수와 그림자 색 변수를 쓰이는 요소에서 이어 붙인 값이라, 테마 스코프가 기하나 색 어느 쪽을 바꿔도 그 아래의 그림자가 따라옵니다. 스코프 요소 자신이 드리우는 그림자는 바깥 지면의 모드로 그려집니다.
 
-Box는 `elevation` prop으로 층을 고릅니다. z와 그림자가 함께 붙습니다.
+Surface는 `elevation` prop으로 층을 고릅니다. z와 그림자가 함께 붙습니다.
 
 ```tsx
-<Box surface="raised" border radius="md" padding="md" elevation="overlay">…</Box>
+<Surface fill="raised" border radius="md" padding="md" elevation="overlay">…</Surface>
 ```

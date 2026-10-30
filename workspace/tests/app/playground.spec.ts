@@ -1,9 +1,9 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
-import { INVENTORY, PRIMITIVE_GROUPS } from "../../packages/paper-ui/src/inventory";
-import { FOUNDATIONS } from "../../app/src/site/site-core";
+import { INVENTORY, PRIMITIVE_GROUPS, PRIMITIVE_ORDERS } from "../../packages/paper-ui/src/inventory";
+import { FOUNDATIONS, PRIMITIVE_ORDER_LABELS } from "../../app/src/site/site-core";
 import { COLOR_VALUES_BY_MODE } from "../../packages/paper-ui/src/tokens/colors";
-import { ALIGNS, BOX_RADII, BOX_THEMES, ICON_SIZES, JUSTIFIES, JUSTIFY_ITEMS, SPACES } from "../../packages/paper-ui/src/tokens/vocabulary";
+import { ALIGNS, SURFACE_RADII, SURFACE_THEMES, ICON_SIZES, JUSTIFIES, JUSTIFY_ITEMS, SPACES } from "../../packages/paper-ui/src/tokens/vocabulary";
 import { pageErrors } from "../support/console";
 import { openPlayground } from "../support/harness";
 
@@ -28,8 +28,13 @@ test("the sidebar lists the Playground in the inventory's order, with Utilities 
   const nav = sidebar(page);
   await expect(nav.getByRole("link")).toHaveText(["Overview", ...EXPECTED]);
   const text = (await nav.innerText()).split("\n");
-  for (const heading of ["Foundations", "Primitives", ...PRIMITIVE_GROUPS, "Utilities", "Atoms"]) expect(text, heading).toContain(heading);
-  expect(text.indexOf("Utilities")).toBeGreaterThan(text.indexOf("A11y"));
+  for (const heading of ["Foundations", "Primitives", ...Object.values(PRIMITIVE_ORDER_LABELS), ...PRIMITIVE_GROUPS, "Utilities", "Atoms"]) expect(text, heading).toContain(heading);
+  // Each order's heading stands above its groups: the first order's three, then the second order's eight.
+  const [first, second] = [PRIMITIVE_ORDER_LABELS.first, PRIMITIVE_ORDER_LABELS.second].map((heading) => text.indexOf(heading));
+  expect(first).toBeLessThan(text.indexOf("Element"));
+  expect(text.indexOf("A11y")).toBeLessThan(second!);
+  expect(second).toBeLessThan(text.indexOf("Paint"));
+  expect(text.indexOf("Utilities")).toBeGreaterThan(text.lastIndexOf(PRIMITIVE_ORDERS.second.at(-1)!));
   expect(text.indexOf("Utilities")).toBeLessThan(text.indexOf("Atoms"));
 });
 
@@ -77,17 +82,21 @@ test("the knobs that props already had now have controls", async ({ page }) => {
   await expect(control(page, "orientation")).toBeVisible();
   await expect(control(page, "level")).toBeVisible();
   await openPlayground(page, "box", "Box");
-  for (const axis of ["surface", "theme", "elevation", "radius", "padding", "paddingX", "paddingY", "width", "minWidth", "maxWidth", "height", "minHeight", "maxHeight", "overflow", "overflowX", "overflowY"]) {
+  for (const axis of ["padding", "paddingX", "paddingY", "width", "minWidth", "maxWidth", "height", "minHeight", "maxHeight", "overflow", "overflowX", "overflowY"]) {
     await expect(control(page, axis), axis).toBeVisible();
   }
   await expect(control(page, "gap"), "Box does not lay children out").toHaveCount(0);
-  expect(await optionsOf(control(page, "radius"))).toEqual(["__pui_default__", ...BOX_RADII]);
+  for (const axis of ["fill", "theme", "elevation", "radius"]) await expect(control(page, axis), `Box has no ${axis}`).toHaveCount(0);
+  await expect(page.getByRole("switch", { name: "border", exact: true }), "Box has no border").toHaveCount(0);
   expect(await optionsOf(control(page, "width"))).toEqual(expect.arrayContaining(["md", "measure.md", "container.content", "fit"]));
   expect(await optionsOf(control(page, "overflow"))).toEqual(["__pui_default__", "visible", "hidden", "clip", "scroll", "auto"]);
+  await openPlayground(page, "surface", "Surface");
+  for (const axis of ["fill", "theme", "elevation", "radius"]) await expect(control(page, axis), axis).toBeVisible();
   await expect(page.getByRole("switch", { name: "border", exact: true })).toBeVisible();
   await expect(page.getByRole("switch", { name: "inverse", exact: true })).toHaveCount(0);
-  expect(await optionsOf(control(page, "theme"))).toEqual(["__pui_default__", ...BOX_THEMES]);
-  expect(await optionsOf(control(page, "surface"))).not.toContain("none");
+  expect(await optionsOf(control(page, "radius"))).toEqual(["__pui_default__", ...SURFACE_RADII]);
+  expect(await optionsOf(control(page, "theme"))).toEqual(["__pui_default__", ...SURFACE_THEMES]);
+  expect(await optionsOf(control(page, "fill"))).not.toContain("none");
 });
 
 test("the layout primitives offer one alignment vocabulary, and Grid tells its tracks from its items", async ({ page }) => {
@@ -113,8 +122,8 @@ test("a select names the component's real default, and the code prints the subje
   await openPlayground(page, "inline", "Inline");
   await expect(control(page, "align").locator("option").first()).toHaveText("default (center)");
   await expect(page.locator(".code-block pre")).not.toContainText("align=");
-  await openPlayground(page, "box", "Box");
-  await expect(page.locator(".code-block pre")).toContainText('<Box surface="raised" radius="md" width="md">');
+  await openPlayground(page, "surface", "Surface");
+  await expect(page.locator(".code-block pre")).toContainText('<Surface fill="raised" radius="md" padding="md" width="md">');
   await openPlayground(page, "field", "Field");
   await page.getByRole("switch", { name: "leading(검색 아이콘)", exact: true }).check();
   await expect(page.locator(".code-block pre")).toContainText('<circle cx="11" cy="11" r="7" />');
@@ -155,22 +164,22 @@ test("the Theme page shows the hooks: the scope's resolved theme and the page's 
   await expect(page.getByText(/^useTheme\(\): theme=.*, resolved=light$/)).toBeVisible();
   await page.getByRole("combobox", { name: "theme", exact: true }).selectOption("light");
   await expect(page.getByText("useResolvedTheme(): light", { exact: true })).toBeVisible();
-  await expect(page.locator(".code-block pre")).toContainText('<Box theme="light"');
+  await expect(page.locator(".code-block pre")).toContainText('<Surface theme="light"');
   await expect(page.locator(".code-block pre")).toContainText("const resolved = useResolvedTheme();");
 });
 
-test("a Box theme prints in the code, and a themed Box without a surface paints the theme's canvas", async ({ page }) => {
-  await openPlayground(page, "box", "Box");
+test("a Surface theme prints in the code, and a themed Surface without a fill paints the theme's canvas", async ({ page }) => {
+  await openPlayground(page, "surface", "Surface");
   await control(page, "theme").selectOption("dark");
   await expect(page.locator(".code-block pre")).toContainText('theme="dark"');
-  await control(page, "surface").selectOption("__pui_default__");
-  const box = page.getByText("surface=none", { exact: true }).locator("..");
+  await control(page, "fill").selectOption("__pui_default__");
+  const box = page.getByText("fill=none", { exact: true }).locator("..");
   await expect(box).toHaveAttribute("data-pui-theme", "dark");
   const [r, g, b] = [1, 3, 5].map((at) => parseInt(COLOR_VALUES_BY_MODE.dark.bg.canvas.slice(at, at + 2), 16));
   await expect(box).toHaveCSS("background-color", `rgb(${r}, ${g}, ${b})`);
 });
 
-test("the Motion page lists the theme role as instant, with a Box that swaps theme", async ({ page }) => {
+test("the Motion page lists the theme role as instant, with a Surface that swaps theme", async ({ page }) => {
   await openPlayground(page, "foundations/motion", "Motion");
   const row = page.getByText("motion.role.theme", { exact: true }).locator("xpath=ancestor::div[2]");
   await expect(row).toContainText("0ms");

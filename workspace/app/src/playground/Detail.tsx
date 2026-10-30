@@ -10,8 +10,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 
-import { Box, Button, Field, Icon, IconButton, Inline, Select, Stack, Switch, Text, ToggleGroup, useResolvedTheme } from "@studio-baeks/paper-ui";
-import { tokens, type Surface } from "@studio-baeks/paper-ui/tokens";
+import { Button, Field, Icon, IconButton, Inline, Select, Stack, Surface, Switch, Text, SelectableGroup, useResolvedTheme } from "@studio-baeks/paper-ui";
+import { tokens, type SurfaceFill } from "@studio-baeks/paper-ui/tokens";
 
 import { PlaygroundLayout, ReferenceHeading } from "./shell";
 import { NAV_HEIGHT } from "../site/chrome";
@@ -19,12 +19,12 @@ import { codeOf, entryBySlug, initialState, normalized, stateFromCode, type Cont
 import type { Entry } from "./registry";
 import "./detail.css";
 
-const PREVIEW_SURFACES = ["raised", "canvas", "sunken"] as const satisfies readonly Surface[];
+const PREVIEW_SURFACES = ["raised", "canvas", "sunken"] as const satisfies readonly SurfaceFill[];
 const PREVIEW_BACKGROUNDS = [...PREVIEW_SURFACES, "track"] as const;
 type PreviewBackground = (typeof PREVIEW_BACKGROUNDS)[number];
 const PREVIEW_SURFACE_KEY = "paper-ui-preview-surface";
 // In dark the sunken surface is the canvas (the surface ladder); the button for sunken says so.
-const FOLDED = { surface: "sunken", into: "canvas" } as const satisfies Record<string, Surface>;
+const FOLDED = { surface: "sunken", into: "canvas" } as const satisfies Record<string, SurfaceFill>;
 const FOLDED_TITLE = "다크에서는 canvas와 같은 단계";
 
 const readPreviewBackground = (): PreviewBackground => {
@@ -174,12 +174,12 @@ const DetailView = ({ entry }: { entry: Entry }) => {
         <Stack gap="md" style={{ minWidth: 0 }}>
           <div className="preview-frame">
             <div ref={probes} hidden>
-              {[FOLDED.surface, FOLDED.into].map((surface) => <Box key={surface} surface={surface} />)}
+              {[FOLDED.surface, FOLDED.into].map((surface) => <Surface key={surface} fill={surface} />)}
             </div>
-            <Box surface={previewBackground === "track" ? undefined : previewBackground} className={`preview-stage${entry.preview === "flush" ? " preview-stage--flush" : ""}${previewBackground === "track" ? " preview-stage--track" : ""}`} data-preview-background={previewBackground}>
+            <Surface fill={previewBackground === "track" ? undefined : previewBackground} className={`preview-stage${entry.preview === "flush" ? " preview-stage--flush" : ""}${previewBackground === "track" ? " preview-stage--track" : ""}`} data-preview-background={previewBackground}>
               {Stage ? <Stage subject={subject} state={state} harness={harness} /> : subject}
-            </Box>
-            <ToggleGroup
+            </Surface>
+            <SelectableGroup
               className="preview-surface-switcher"
               aria-label="미리보기 배경"
               selectionRequired
@@ -190,7 +190,7 @@ const DetailView = ({ entry }: { entry: Entry }) => {
               }}
             >
               {PREVIEW_BACKGROUNDS.map((background) => (
-                <ToggleGroup.Item
+                <SelectableGroup.Item
                   key={background}
                   value={background}
                   className="preview-surface-button"
@@ -199,9 +199,9 @@ const DetailView = ({ entry }: { entry: Entry }) => {
                   title={background === FOLDED.surface && folded ? FOLDED_TITLE : `${background} background`}
                 >
                   {previewBackground === background ? <Icon size="caption"><path d="m5 12 4 4L19 6" /></Icon> : null}
-                </ToggleGroup.Item>
+                </SelectableGroup.Item>
               ))}
-            </ToggleGroup>
+            </SelectableGroup>
           </div>
           <Stack gap="xs">
             <Text variant="label">코드</Text>
@@ -210,7 +210,7 @@ const DetailView = ({ entry }: { entry: Entry }) => {
         </Stack>
 
         {/* controls */}
-        <Box surface="canvas" radius="md" padding="lg" style={{ position: "sticky", top: `calc(${NAV_HEIGHT} + ${tokens.layout.gap.xl})`, border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
+        <Surface fill="canvas" radius="md" padding="lg" style={{ position: "sticky", top: `calc(${NAV_HEIGHT} + ${tokens.layout.gap.xl})`, border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
           <Stack gap="lg">
             <Inline justify="between" align="center">
               <Text variant="label">Props</Text>
@@ -231,7 +231,7 @@ const DetailView = ({ entry }: { entry: Entry }) => {
               </Stack>
             )}
           </Stack>
-        </Box>
+        </Surface>
       </div>
     </Stack>
   );

@@ -30,7 +30,7 @@ export const sourceOf = codeOf;
 const isComponent = (value: unknown): boolean =>
   typeof value === "function" || (typeof value === "object" && value !== null && "$$typeof" in value);
 
-// Every component the package exports, and its compound statics (Overlay.Content, Select.Option).
+// Every component the package exports, and its compound statics (Floating.Content, Select.Option).
 export const componentNames = (parts: Readonly<Record<string, ElementType>> = {}): Map<unknown, string> => {
   const names = new Map<unknown, string>();
   for (const [key, value] of Object.entries(paperUi)) {
@@ -171,8 +171,8 @@ const interpret = (raw: string): AttrValue => {
   return { expression: raw };
 };
 
-// The first `<name …>` in the code. A name is followed by whitespace, `>` or `/`, so Overlay does
-// not match Overlay.Content.
+// The first `<name …>` in the code. A name is followed by whitespace, `>` or `/`, so Floating does
+// not match Floating.Content.
 export const parseOpeningTag = (code: string, name: string): OpeningTag | undefined => {
   let start = code.indexOf(`<${name}`);
   while (start >= 0 && !/[\s>/]/.test(code[start + name.length + 1] ?? "")) start = code.indexOf(`<${name}`, start + 1);

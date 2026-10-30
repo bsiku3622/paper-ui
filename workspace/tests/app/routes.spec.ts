@@ -9,6 +9,14 @@ test("former palette and tokens routes land on the Color foundation", async ({ p
   }
 });
 
+test("the slugs of the renamed primitives land on their new pages", async ({ page }) => {
+  const renamed = { toggleable: "selectable", "toggle-group": "selectable-group", overlay: "floating", hoverable: "surface" };
+  for (const [old, current] of Object.entries(renamed)) {
+    await page.goto(`/playground/${old}`);
+    await expect(page).toHaveURL(new RegExp(`/playground/${current}$`));
+  }
+});
+
 test("an unknown docs slug lands on the docs overview", async ({ page }) => {
   await page.goto("/docs/no-such-doc");
   await expect(page).toHaveURL(/\/docs$/);

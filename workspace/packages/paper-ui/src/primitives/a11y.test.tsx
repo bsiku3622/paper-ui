@@ -2,7 +2,10 @@ import { createRef, useState } from "react";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { textRoleClass } from "../styles/typography.css";
-import { Icon, Pressable, RovingFocus, FormField, VisuallyHidden, useFocusWithin } from "./index";
+import { ScopeModeContext } from "../theme/context";
+import { THEME_ATTRIBUTE } from "../tokens";
+import { portalRoot } from "./a11y/Portal.css";
+import { Icon, Portal, Pressable, RovingFocus, FormField, VisuallyHidden, useFocusWithin } from "./index";
 
 describe("roving focus", () => {
   it("[primitives.roving-focus.tab-stop] has one tab stop, skips disabled items and emits one change per arrow", () => {
@@ -160,5 +163,29 @@ describe("hidden content and focus within", () => {
     expect(change.mock.calls.map(([value]) => value)).toEqual([true]);
     act(() => second.blur());
     expect(change.mock.calls.map(([value]) => value)).toEqual([true, false]);
+  });
+});
+
+describe("portal", () => {
+  it("[primitives.portal.root] carries its children out of the tree into one display-contents root that holds the opener's mode", () => {
+    render(
+      <ScopeModeContext.Provider value="dark">
+        <div data-testid="origin"><Portal><span>Inside</span></Portal></div>
+      </ScopeModeContext.Provider>,
+    );
+    const child = screen.getByText("Inside");
+    expect(screen.getByTestId("origin").contains(child)).toBe(false);
+    const root = child.parentElement as HTMLElement;
+    expect(root.parentElement).toBe(document.body);
+    expect(root.classList.contains(portalRoot)).toBe(true);
+    expect(root.getAttribute(THEME_ATTRIBUTE)).toBe("dark");
+  });
+
+  it("[primitives.portal.root] lands in the container it is given", () => {
+    const container = document.createElement("div");
+    document.body.append(container);
+    render(<Portal container={container}><span>Inside</span></Portal>);
+    expect(container.contains(screen.getByText("Inside"))).toBe(true);
+    container.remove();
   });
 });

@@ -32,10 +32,14 @@ export const App = () => (
       <Route path="/playground" element={<Overview />} />
       <Route path="/playground/foundations" element={<Navigate to="/playground/foundations/color" replace />} />
       <Route path="/playground/foundations/:section" element={<FoundationsPage />} />
-      {/* Former routes: the palette is now the Color source, tokens the Foundations pages, and a slug is the component name in kebab case. */}
+      {/* Former routes: the palette is now the Color source, tokens the Foundations pages, and a slug is the component name in kebab case; a renamed or removed primitive's old slug lands on the page that took it over. */}
       <Route path="/playground/palette" element={<Navigate to="/playground/foundations/color" replace />} />
       <Route path="/playground/tokens" element={<Navigate to="/playground/foundations/color" replace />} />
       <Route path="/playground/iconbutton" element={<Navigate to="/playground/icon-button" replace />} />
+      <Route path="/playground/toggleable" element={<Navigate to="/playground/selectable" replace />} />
+      <Route path="/playground/toggle-group" element={<Navigate to="/playground/selectable-group" replace />} />
+      <Route path="/playground/overlay" element={<Navigate to="/playground/floating" replace />} />
+      <Route path="/playground/hoverable" element={<Navigate to="/playground/surface" replace />} />
       <Route path="/playground/:slug" element={<ComponentDetail />} />
       <Route path="/docs/*" element={<Docs />} />
       <Route path="*" element={<Navigate to="/" replace />} />

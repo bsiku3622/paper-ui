@@ -19,11 +19,11 @@ export default defineSpec({
     enumControl<FieldProps, "size">("size", vocab("CONTROL_SIZES")),
     enumControl<FieldProps, "fontSize">("fontSize", vocab("CONTROL_FONT_SIZES")),
     enumControl<FieldProps, "shape">("shape", vocab("CONTROL_SHAPES")),
-    enumControl<FieldProps, "surface">("surface", subset("SURFACES", ["raised", "sunken"], "canvas is the page ground, not a face a field can have")),
+    enumControl<FieldProps, "fill">("fill", subset("SURFACE_FILLS", ["raised", "sunken"], "canvas is the page ground, not a face a field can have")),
     boolControl<FieldProps, "disabled">("disabled"),
     boolControl<FieldProps, "numeric">("numeric"),
   ],
-  defaults: { type: "text", size: "md", shape: "rounded", surface: "raised" },
+  defaults: { type: "text", size: "md", shape: "rounded", fill: "raised" },
   subject: (state) => (
     <Field
       placeholder={words(state, "placeholder") || undefined}
@@ -38,7 +38,7 @@ export default defineSpec({
       size={pick<NonNullable<FieldProps["size"]>>(state, "size")}
       fontSize={pick<NonNullable<FieldProps["fontSize"]>>(state, "fontSize")}
       shape={pick<NonNullable<FieldProps["shape"]>>(state, "shape")}
-      surface={pick<NonNullable<FieldProps["surface"]>>(state, "surface")}
+      fill={pick<NonNullable<FieldProps["fill"]>>(state, "fill")}
       disabled={flag(state, "disabled")}
       numeric={flag(state, "numeric")}
     />

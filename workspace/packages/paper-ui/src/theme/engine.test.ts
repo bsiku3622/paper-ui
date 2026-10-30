@@ -2,8 +2,8 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { BOX_THEMES, COLOR_MODES, THEME_ATTRIBUTE, THEME_PREFERENCES, THEME_SWAP_ATTRIBUTE, type ColorMode } from "../tokens";
-import { THEME_STORAGE_KEY, holdTransitions, invertMode, readRootMode, resolveBoxTheme, resolvePreference, subscribeRootMode, themeBootScript } from "./engine";
+import { SURFACE_THEMES, COLOR_MODES, THEME_ATTRIBUTE, THEME_PREFERENCES, THEME_SWAP_ATTRIBUTE, type ColorMode } from "../tokens";
+import { THEME_STORAGE_KEY, holdTransitions, invertMode, readRootMode, resolveSurfaceTheme, resolvePreference, subscribeRootMode, themeBootScript } from "./engine";
 
 const root = document.documentElement;
 
@@ -32,10 +32,10 @@ describe("the theme's pure rules", () => {
     for (const mode of COLOR_MODES) expect(invertMode(invertMode(mode))).toBe(mode);
   });
 
-  it("resolves a Box theme against the mode around it", () => {
+  it("resolves a Surface theme against the mode around it", () => {
     for (const ambient of COLOR_MODES) {
-      expect(resolveBoxTheme("inverse", ambient)).toBe(invertMode(ambient));
-      for (const theme of BOX_THEMES.filter((box): box is ColorMode => box !== "inverse")) expect(resolveBoxTheme(theme, ambient)).toBe(theme);
+      expect(resolveSurfaceTheme("inverse", ambient)).toBe(invertMode(ambient));
+      for (const theme of SURFACE_THEMES.filter((theme): theme is ColorMode => theme !== "inverse")) expect(resolveSurfaceTheme(theme, ambient)).toBe(theme);
     }
   });
 

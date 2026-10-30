@@ -167,7 +167,7 @@ export default [
         runtime: {
           "internal/aria/**": "anchored position and Aria press styles",
           "internal/measure.ts": "measured lengths of the moment",
-          "theme/source-carry.ts": "the Overlay's opener source carry",
+          "theme/source-carry.ts": "the Floating's opener source carry",
         },
       }],
     },

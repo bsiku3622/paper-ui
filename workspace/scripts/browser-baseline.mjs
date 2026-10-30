@@ -64,6 +64,8 @@ export const FEATURES = [
   { name: "overflow: clip", pattern: /(?<![\w-])overflow(?:-[xy])?\s*:\s*clip\b/, kind: "required", since: since("90", "90", "81", "16", "16") },
   // The named keywords of Box's width and height classes. fit-content waits longest: Firefox ships it unprefixed from 94.
   { name: "intrinsic sizing keywords", pattern: /(?<![\w-])(?:(?:min|max)-)?(?:width|height)\s*:\s*(?:fit|min|max)-content\b/, kind: "required", since: since("46", "79", "94", "11", "11") },
+  // Hover colour is gated on a pointer that can hover, so touch never takes it.
+  { name: "hover media feature", pattern: /\(\s*hover\s*:/, kind: "required", since: since("41", "12", "64", "9", "9") },
 ];
 
 // Every feature the stylesheet uses, and the engines at the floor that lack it.

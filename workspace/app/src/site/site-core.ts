@@ -15,13 +15,17 @@ export type FoundationId = (typeof FOUNDATIONS)[number]["id"];
 // `label` the sidebar heading and `ko` the heading of the map in docs/README.md. Each name in `docs` is a
 // file in that folder without .md; README is the group's overview.
 export type DocGroup = { id: string; label: string; ko: string; docs: readonly string[] };
+// The Primitives docs follow the groups of the inventory, the first order before the second.
 export const DOC_GROUPS: readonly DocGroup[] = [
   { id: "", label: "", ko: "", docs: ["README"] },
   { id: "get-started", label: "Getting Started", ko: "시작하기", docs: ["philosophy", "install", "theming"] },
   { id: "foundations", label: "Foundations", ko: "Foundations", docs: ["README", ...FOUNDATIONS.map(({ id }) => id)] },
-  { id: "primitives", label: "Primitives", ko: "Primitives", docs: ["README", "layout", "content", "interaction", "a11y"] },
+  { id: "primitives", label: "Primitives", ko: "Primitives", docs: ["README", "element", "content", "a11y", "paint", "press", "select", "float", "drag", "focus", "field", "layout"] },
   { id: "atoms", label: "Atoms", ko: "Atoms", docs: ["README", "states"] },
 ];
+
+// The heading of each order of the Primitives in the Playground sidebar, above the groups of that order.
+export const PRIMITIVE_ORDER_LABELS = { first: "1차 — 바탕", second: "2차 — Box + 능력 하나" } as const;
 
 // A doc as the Docs page lists it: `slug` is the path after /docs/ ('' for the overview).
 export type DocEntry = { slug: string; group: string; title: string; file: string };

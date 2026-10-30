@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Box, Button, Inline, Switch, Text } from "@studio-baeks/paper-ui";
+import { Button, Inline, Surface, Switch, Text } from "@studio-baeks/paper-ui";
 import { tokens } from "@studio-baeks/paper-ui/tokens";
 
 import { Board, BoardGroup, BoardRow, Cell, FoundationSection, TokenCell, ValueCell } from "./kit";
@@ -41,18 +41,18 @@ const Presence = ({ mode }: { mode: "enter" | "exit" }) => {
   );
 };
 
-// A Box that swaps between the ambient theme and its inverse: the Switch inside changes in the same frame.
+// A Surface that swaps between the ambient theme and its inverse: the Switch inside changes in the same frame.
 const ThemeSwap = () => {
   const [inverse, setInverse] = useState(false);
   return (
     <div className={s.themeSwap}>
       <Button size="sm" variant="hairline" onClick={() => setInverse((value) => !value)}>전환</Button>
-      <Box theme={inverse ? "inverse" : undefined} surface="canvas" border radius="md" padding="sm">
+      <Surface theme={inverse ? "inverse" : undefined} fill="canvas" border radius="md" padding="sm">
         <Inline gap="sm">
           <Switch size="sm" defaultChecked aria-label="테마 전환 예시" />
           <Text variant="caption">{inverse ? "inverse" : "ambient"}</Text>
         </Inline>
-      </Box>
+      </Surface>
     </div>
   );
 };

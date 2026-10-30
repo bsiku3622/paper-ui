@@ -1,6 +1,6 @@
 // Pieces the entries share: the glyphs and sample children their subjects are written with.
 
-import { Box, Icon, Text } from "@studio-baeks/paper-ui";
+import { Icon, Surface, Text } from "@studio-baeks/paper-ui";
 
 import { named } from "./jsx";
 
@@ -14,9 +14,9 @@ export const glyph = {
 // Sunken boxes that give a layout something to arrange.
 export const sunkenBoxes = (labels: readonly string[]) =>
   labels.map((label) => (
-    <Box key={label} surface="sunken" radius="sm" padding="sm">
+    <Surface key={label} fill="sunken" radius="sm" padding="sm">
       <Text variant="caption" as="span">{label}</Text>
-    </Box>
+    </Surface>
   ));
 
 // An anchor in a preview should stay on the page.

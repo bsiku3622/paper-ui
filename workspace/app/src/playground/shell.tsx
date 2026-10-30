@@ -5,7 +5,7 @@ import { Box, Inline, Stack, Text } from "@studio-baeks/paper-ui";
 import { tokens } from "@studio-baeks/paper-ui/tokens";
 
 import { SiteNav, NAV_HEIGHT } from "../site/chrome";
-import { PLAYGROUND_NAV, type PlaygroundItem, type PlaygroundSection } from "../site/site-map";
+import { PLAYGROUND_NAV, PRIMITIVE_ORDER_LABELS, type PlaygroundGroup, type PlaygroundItem, type PlaygroundSection } from "../site/site-map";
 
 const linkStyle = (active: boolean) => ({
   display: "block",
@@ -35,6 +35,26 @@ const SectionLinks = ({ section, value }: { section: PlaygroundSection; value: s
   </Stack>
 );
 
+// The sections of a group. The sections of one order stand together under that order's heading.
+const GroupSections = ({ group, value }: { group: PlaygroundGroup; value: string }) => {
+  const blocks = group.sections.reduce<PlaygroundSection[][]>((out, section) => {
+    const last = out.at(-1);
+    if (last && section.order !== undefined && last[0]!.order === section.order) last.push(section);
+    else out.push([section]);
+    return out;
+  }, []);
+  return (
+    <Stack gap="md">
+      {blocks.map(([head, ...rest]) => (
+        <Stack key={head!.label} gap="sm">
+          {head!.order ? <Text variant="label" ink="tertiary" style={{ paddingInline: tokens.shape.inset.md }}>{PRIMITIVE_ORDER_LABELS[head!.order]}</Text> : null}
+          {[head!, ...rest].map((section) => <SectionLinks key={section.label} section={section} value={value} />)}
+        </Stack>
+      ))}
+    </Stack>
+  );
+};
+
 // `value` is the slug of the page being shown ("overview" for the index).
 export const PlaygroundLayout = ({ value, children }: { value: string; children: ReactNode }) => (
   <Stack>
@@ -48,7 +68,7 @@ export const PlaygroundLayout = ({ value, children }: { value: string; children:
             <NavGroup key={group.id} label={group.label}>
               {group.id === "foundations"
                 ? <NavLinks items={group.sections.flatMap((section) => section.items)} value={value} />
-                : group.sections.map((section) => <SectionLinks key={section.label} section={section} value={value} />)}
+                : <GroupSections group={group} value={value} />}
             </NavGroup>
           ))}
         </Stack>

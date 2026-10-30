@@ -5,7 +5,7 @@
 
 import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 
-import { Box, Stack, Text } from "@studio-baeks/paper-ui";
+import { Stack, Surface, Text } from "@studio-baeks/paper-ui";
 
 import * as s from "./kit.css";
 
@@ -24,14 +24,14 @@ export const FoundationSection = ({ title, description, children }: { title: str
 
 // `template` is the board's column tracks; header, groups and rows inherit them.
 export const Board = ({ columns, template, minWidth, children }: { columns: Column[]; template: string; minWidth?: string; children: ReactNode }) => (
-  <Box className={s.board} surface="raised" border radius="lg" padding="md">
+  <Surface className={s.board} fill="raised" border radius="lg" padding="md">
     <div className={s.grid} style={{ gridTemplateColumns: `0 ${template} 0`, minWidth }}>
       <div className={s.header}>
         {columns.map((column) => <Text key={column.label} className={s.align[column.align ?? "start"]} variant="label" ink="primary">{column.label}</Text>)}
       </div>
       {children}
     </div>
-  </Box>
+  </Surface>
 );
 
 export const BoardGroup = ({ label, children }: { label?: string; children: ReactNode }) => (
@@ -114,11 +114,11 @@ export const Ladder = ({ values }: { values: string[] }) => (
 
 // One palette step, painted with its generated colour.
 export const Swatch = ({ color, label }: { color: string; label: string }) => (
-  <Box className={s.swatch} border radius="sm" title={`${label} · ${color}`} aria-label={`${label} ${color}`} style={{ background: color }} />
+  <Surface className={s.swatch} border radius="sm" title={`${label} · ${color}`} aria-label={`${label} ${color}`} style={{ background: color }} />
 );
 
 // A semantic role as it renders now, painted through its token.
-export const Chip = ({ path }: { path: s.ChipRole }) => <Box className={`${s.chipBox} ${s.chip[path]}`} border radius="sm" />;
+export const Chip = ({ path }: { path: s.ChipRole }) => <Surface className={`${s.chipBox} ${s.chip[path]}`} border radius="sm" />;
 
 export const StepGrid = ({ steps, children, ...rest }: { steps: number; children: ReactNode; "data-testid"?: string }) => (
   <div className={s.stepGrid} style={{ [s.stepsProperty]: steps } as CSSProperties} {...rest}>{children}</div>

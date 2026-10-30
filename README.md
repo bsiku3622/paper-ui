@@ -30,16 +30,23 @@ The system stacks in three tiers, and the docs and the playground are organised 
 | Tier | | |
 |---|---|---|
 | Foundations | 5 systems | `Color → Typography → Shape → Layout → Motion` — each reads only the ones before it |
-| Primitives | Layout 4 | `Box · Stack · Inline · Grid` |
+| Primitives, first order | Element 1 | `Box` |
 | | Content 2 | `Text · Icon` |
-| | Interaction 7 | `Pressable · Hoverable · Toggleable · Draggable · Droppable · ToggleGroup · Overlay` |
-| | A11y 4 | `FocusScope · VisuallyHidden · RovingFocus · FormField` |
+| | A11y 3 | `FocusScope · VisuallyHidden · Portal` |
+| Primitives, second order | Paint 2 | `Surface · Paint` |
+| | Press 1 | `Pressable` |
+| | Select 2 | `Selectable · SelectableGroup` |
+| | Float 1 | `Floating` |
+| | Drag 2 | `Draggable · Droppable` |
+| | Focus 1 | `RovingFocus` |
+| | Field 1 | `FormField` |
+| | Layout 3 | `Stack · Inline · Grid` |
 | Atoms | 13 | `Button · IconButton · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Spinner · Divider · Link` |
 
-The theme is one attribute, `<html data-pui-theme>`, and one store per document. `PaperProvider` keeps the user's choice under `storageKey` (`pui-theme` by default), `themeBootScript` from `@studio-baeks/paper-ui/theme-boot` applies it before the first paint, and a subtree takes its own mode through `<Box theme="light | dark | inverse">`.
+The theme is one attribute, `<html data-pui-theme>`, and one store per document. `PaperProvider` keeps the user's choice under `storageKey` (`pui-theme` by default), `themeBootScript` from `@studio-baeks/paper-ui/theme-boot` applies it before the first paint, and a subtree takes its own mode through `<Surface theme="light | dark | inverse">`.
 
 Every Foundations system writes its numbers once, in its source, and exposes roles that select from it: [docs/foundations](docs/foundations/README.md). Product-specific compositions are owned by consuming applications. The package exposes three kinds of names: components and hooks (Primitives and Atoms), `tokens` with its role
-rules, and the vocabulary, one constant and one type for each axis (`Accent`, `Variant`, `Surface`, `Space` …).
+rules, and the vocabulary, one constant and one type for each axis (`Accent`, `Variant`, `SurfaceFill`, `Space` …).
 `<Box as="…">` remains the typed route to semantic HTML when an application needs it.
 
 ## Running

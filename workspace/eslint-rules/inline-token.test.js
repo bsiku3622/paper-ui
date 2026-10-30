@@ -46,16 +46,16 @@ test("[guardrails.inline-token.no-token-style] a module or a name that holds no 
 
 test("[guardrails.inline-token.declared-runtime] a runtime value of the moment reaches `style`: track strings, drag coordinates, a variable by name, an Aria position, the caller's style", async () => {
   for (const [code, path] of [
-    ['export const X = ({columns}) => <div style={{gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`}} />;', "packages/paper-ui/src/primitives/Grid.tsx"],
-    ['export const X = ({position}) => <div style={{translate: `${position.x}px ${position.y}px`}} />;', "packages/paper-ui/src/primitives/interaction/Draggable.tsx"],
-    ['import {styles} from "./Overlay.css"; export const X = ({rank}) => <div style={{[styles.rank]: rank}} />;', "packages/paper-ui/src/primitives/interaction/Overlay.tsx"],
-    ['import {overlayPosition} from "../../internal/aria/position"; export const X = (p) => <div style={overlayPosition(p).style} />;', "packages/paper-ui/src/primitives/interaction/Overlay.tsx"],
-    ['import {pressStyle} from "../../internal/aria/press"; export const props = (p) => ({style: pressStyle(p)});', "packages/paper-ui/src/primitives/interaction/Pressable.tsx"],
-    ['import {measureSpace} from "../internal/measure"; export const X = ({gap}) => <div style={{marginTop: measureSpace(gap)}} />;', "packages/paper-ui/src/primitives/interaction/Overlay.tsx"],
+    ['export const X = ({columns}) => <div style={{gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`}} />;', "packages/paper-ui/src/primitives/layout/Grid.tsx"],
+    ['export const X = ({position}) => <div style={{translate: `${position.x}px ${position.y}px`}} />;', "packages/paper-ui/src/primitives/drag/Draggable.tsx"],
+    ['import {styles} from "./Floating.css"; export const X = ({rank}) => <div style={{[styles.rank]: rank}} />;', "packages/paper-ui/src/primitives/float/Floating.tsx"],
+    ['import {overlayPosition} from "../../internal/aria/position"; export const X = (p) => <div style={overlayPosition(p).style} />;', "packages/paper-ui/src/primitives/float/Floating.tsx"],
+    ['import {pressStyle} from "../../internal/aria/press"; export const props = (p) => ({style: pressStyle(p)});', "packages/paper-ui/src/primitives/press/Pressable.tsx"],
+    ['import {measureSpace} from "../internal/measure"; export const X = ({gap}) => <div style={{marginTop: measureSpace(gap)}} />;', "packages/paper-ui/src/primitives/float/Floating.tsx"],
     ['export const X = ({style}) => <div style={{...style}} />;', "packages/paper-ui/src/atoms/Field.tsx"],
   ]) assert.equal(await hasInline(code, path), false, `${path}: ${code}`);
   // The same shapes are reported when the value comes from a tracked module.
-  assert.equal(await hasInline('import {overlayStyle} from "../../internal/shape"; export const X = (p) => <div style={overlayStyle(p)} />;', "packages/paper-ui/src/primitives/interaction/Overlay.tsx"), true);
+  assert.equal(await hasInline('import {overlayStyle} from "../../internal/shape"; export const X = (p) => <div style={overlayStyle(p)} />;', "packages/paper-ui/src/primitives/float/Floating.tsx"), true);
 });
 
 test("[guardrails.inline-token.no-token-style] the rule reads package .ts and .tsx, and leaves stylesheets, tests and the app alone", async () => {

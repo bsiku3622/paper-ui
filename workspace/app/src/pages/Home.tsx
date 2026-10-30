@@ -10,6 +10,7 @@ import {
   Field,
   Inline,
   Stack,
+  Surface,
   Text,
 } from "@studio-baeks/paper-ui";
 import { tokens, type Status } from "@studio-baeks/paper-ui/tokens";
@@ -52,12 +53,12 @@ const AppMockup = () => {
       <div className="home-mockup-bar">
         <Inline gap="xs">
           {[0, 1, 2].map((i) => (
-            <Box key={i} surface="sunken" radius="full" style={{ width: "0.6rem", height: "0.6rem" }} />
+            <Surface key={i} fill="sunken" radius="full" style={{ width: "0.6rem", height: "0.6rem" }} />
           ))}
         </Inline>
-        <Box surface="canvas" radius="full" paddingX="sm" style={{ marginInline: "auto", border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
+        <Surface fill="canvas" radius="full" paddingX="sm" style={{ marginInline: "auto", border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
           <Text variant="caption" as="span" ink="tertiary">app.studio-baeks.dev / issues</Text>
-        </Box>
+        </Surface>
       </div>
 
       <div className="home-mockup-body">

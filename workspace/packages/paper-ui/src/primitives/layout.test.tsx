@@ -4,8 +4,8 @@ import { describe, expect, it } from "vitest";
 
 import { Box, Grid, Stack, Inline, Text, Icon } from "./index";
 import { boxOverflow, boxSize } from "./Box.css";
-import { flexAlign, flexJustify, inlineRoot, inlineWrap, stackRoot } from "./flex.css";
-import { gridAlign, gridJustify, gridJustifyItems, gridRoot } from "./Grid.css";
+import { flexAlign, flexJustify, inlineRoot, inlineWrap, stackRoot } from "./layout/flex.css";
+import { gridAlign, gridJustify, gridJustifyItems, gridRoot } from "./layout/Grid.css";
 import { spaceClass } from "../styles/space.css";
 
 describe("primitive composition", () => {
@@ -29,11 +29,12 @@ describe("primitive composition", () => {
 
   it("Grid preserves Box props and supports explicit CSS tracks", () => {
     const ref = createRef<HTMLDivElement>();
-    render(<Grid ref={ref} columns="minmax(0, 1fr) auto" rows={2} gap="md" border data-testid="grid" />);
+    render(<Grid ref={ref} columns="minmax(0, 1fr) auto" rows={2} gap="md" padding="sm" data-testid="grid" />);
     expect(ref.current).toBe(screen.getByTestId("grid"));
     expect(ref.current?.style.gridTemplateColumns).toBe("minmax(0, 1fr) auto");
     expect(ref.current?.style.gridTemplateRows).toBe("repeat(2, minmax(0, 1fr))");
     expect(ref.current?.classList.contains(spaceClass.gap.md)).toBe(true);
+    expect(ref.current?.classList.contains(spaceClass.padding.sm)).toBe(true);
   });
 });
 

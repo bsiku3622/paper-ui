@@ -1,7 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { SHAPE_SOURCE } from "../../packages/paper-ui/src/tokens/shape";
-import { tokens, CONTROL_SIZES, STATUSES, SURFACES, TEXT_VARIANTS, VARIANTS, type ControlSize, type TextVariant } from "../../packages/paper-ui/src/tokens";
+import { tokens, CONTROL_SIZES, STATUSES, SURFACE_FILLS, TEXT_VARIANTS, VARIANTS, type ControlSize, type TextVariant } from "../../packages/paper-ui/src/tokens";
 import { pageErrors } from "../support/console";
 import { expectStyle, profile, type Style } from "../support/style";
 
@@ -27,7 +27,7 @@ const open = async (page: Page) => {
   return errors;
 };
 
-const SECTIONS = ["Type scale", "Color", "Box · 구조 패널", "Button", "Field · Label · Select · Checkbox", "Badge · Divider · Link · Icon"];
+const SECTIONS = ["Type scale", "Color", "Surface · 면", "Button", "Field · Label · Select · Checkbox", "Badge · Divider · Link · Icon"];
 
 test("every section of the Overview is a heading with specimens under it and renders without an error", async ({ page }) => {
   const errors = await open(page);
@@ -49,16 +49,16 @@ test("the Type scale shows each text role as its role", async ({ page }) => {
 
 test("the Color section shows each surface and each accent's solid and ink", async ({ page }) => {
   await open(page);
-  for (const surface of SURFACES) await expectStyle(page.getByTestId(`swatch-paper-${surface}`), { backgroundColor: tokens.color.bg[surface] });
+  for (const surface of SURFACE_FILLS) await expectStyle(page.getByTestId(`swatch-paper-${surface}`), { backgroundColor: tokens.color.bg[surface] });
   for (const accent of STATUSES) {
     await expectStyle(page.getByTestId(`dot-${accent}`), { backgroundColor: tokens.color.accent[accent].solid, ...radius(tokens.shape.radius.full) });
     await expectStyle(page.getByTestId(`ink-${accent}`), { color: tokens.color.accent[accent].ink });
   }
 });
 
-test("the Box section draws the hairline and the three surface radii from the tokens", async ({ page }) => {
+test("the Surface section draws the hairline and the three surface radii from the tokens", async ({ page }) => {
   await open(page);
-  await expectStyle(page.getByTestId("box-border"), { borderTopStyle: "solid", borderTopWidth: tokens.shape.stroke.border, borderTopColor: tokens.color.border.base });
+  await expectStyle(page.getByTestId("surface-border"), { borderTopStyle: "solid", borderTopWidth: tokens.shape.stroke.border, borderTopColor: tokens.color.border.base });
   const radii = { small: tokens.shape.radius.surface.sm, card: tokens.shape.radius.surface.md, large: tokens.shape.radius.surface.lg };
   const group = page.getByTestId("spec-layout-radius");
   await expect(group.locator("[data-testid^=radius-]")).toHaveCount(3);
@@ -232,9 +232,9 @@ test("every testid on the Overview is one the tests above bind to a value", asyn
   await open(page);
   const bound = [
     ...TEXT_VARIANTS.map((variant) => `text-${variant}`), "text-mono",
-    ...SURFACES.map((surface) => `swatch-paper-${surface}`),
+    ...SURFACE_FILLS.map((surface) => `swatch-paper-${surface}`),
     ...STATUSES.flatMap((status) => [`dot-${status}`, `ink-${status}`, `badge-${status}`]),
-    "box-border", "spec-layout-radius", "radius-small", "radius-card", "radius-large",
+    "surface-border", "spec-layout-radius", "radius-small", "radius-card", "radius-large",
     "spec-button-variants", ...VARIANTS.map((variant) => `btn-${variant}`), "btn-danger", "btn-soft-success", "btn-soft-warning",
     "spec-button-sizes", ...CONTROL_SIZES.flatMap((size) => [`btn-${size}`, `spec-size-${size}`, `badge-${size}`]),
     "btn-disabled", "btn-loading", "btn-icononly", "btn-fullwidth", "spec-button-shape", "btn-shape-default", "btn-shape-pill",

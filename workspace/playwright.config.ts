@@ -16,14 +16,14 @@ type EngineExclusion = { spec: string; test: string; engine: Engine; reason: str
 const ENGINE_EXCLUSIONS: readonly EngineExclusion[] = [
   {
     spec: "primitives/interaction.spec.ts",
-    test: "[primitives.toggleable.input-paths] toggle preserves selection across press releases and supports keyboard input",
+    test: "[primitives.selectable.input-paths] selection survives press releases and follows keyboard input",
     engine: "webkit",
     reason: "macOS WebKit does not focus a button on a mouse click, so the Space press after the click reaches no button.",
     until: "S16",
   },
   {
     spec: "primitives/interaction.spec.ts",
-    test: "hook composition keeps press, hover and focus behavior on one node",
+    test: "hook composition keeps press and focus behavior on one node",
     engine: "webkit",
     reason: "macOS WebKit does not focus a button on a mouse click, so the Space press after the click reaches no button.",
     until: "S16",
@@ -37,14 +37,14 @@ const ENGINE_EXCLUSIONS: readonly EngineExclusion[] = [
   },
   {
     spec: "primitives/interaction.spec.ts",
-    test: "[primitives.overlay.portal] popover portals, anchors, dismisses and restores focus",
+    test: "[primitives.floating.portal] popover portals, anchors, dismisses and restores focus",
     engine: "webkit",
     reason: "macOS WebKit does not focus the trigger on a mouse click, so closing the popover has no focused trigger to restore.",
     until: "S20",
   },
   {
     spec: "primitives/interaction.spec.ts",
-    test: "[primitives.overlay.nesting] [primitives.overlay.focus-restore] nested modal closes only the top overlay, contains focus and restores each trigger",
+    test: "[primitives.floating.nesting] [primitives.floating.focus-restore] nested modal closes only the top panel, contains focus and restores each trigger",
     engine: "webkit",
     reason: "macOS WebKit does not focus a trigger on a mouse click, so closing each modal has no focused trigger to restore.",
     until: "S20",

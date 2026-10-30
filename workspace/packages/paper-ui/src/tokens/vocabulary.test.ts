@@ -14,9 +14,9 @@ const keysOf = (tree: object): string[] => Object.keys(tree);
 describe("vocabulary", () => {
   it("[foundations.vocabulary.one-pair-per-axis] exports every constant once and nothing else", () => {
     expect(constants.map(([name]) => name).sort()).toEqual([
-      "ACCENTS", "ACCENT_TONES", "ALIGNS", "BORDER_LEVELS", "BOX_RADII", "BOX_THEMES", "BREAKPOINTS", "COLOR_MODES", "CONTAINERS", "CONTROL_FONT_SIZES", "CONTROL_PRESETS", "CONTROL_SHAPES",
+      "ACCENTS", "ACCENT_TONES", "ALIGNS", "BORDER_LEVELS", "BREAKPOINTS", "COLOR_MODES", "CONTAINERS", "CONTROL_FONT_SIZES", "CONTROL_PRESETS", "CONTROL_SHAPES",
       "CONTROL_SIZES", "DEPTHS", "DIMENSIONS", "DIVIDER_LEVELS", "ELEVATIONS", "EMPHASES", "ICON_SIZES", "INKS", "INK_LEVELS", "JUSTIFIES", "JUSTIFY_ITEMS", "MEASURES", "ORIENTATIONS",
-      "SELECTABLE_VARIANTS", "SPACES", "STATUSES", "SURFACES", "TEXT_FAMILIES", "TEXT_VARIANTS", "THEME_PREFERENCES", "VARIANTS",
+      "SELECTABLE_VARIANTS", "SPACES", "STATUSES", "SURFACE_FILLS", "SURFACE_RADII", "SURFACE_THEMES", "TEXT_FAMILIES", "TEXT_VARIANTS", "THEME_PREFERENCES", "VARIANTS",
     ]);
   });
 
@@ -32,7 +32,7 @@ describe("vocabulary", () => {
   });
 
   it("[foundations.vocabulary.one-pair-per-axis] derives the Color axes from the trees that author them", () => {
-    expect(vocabulary.SURFACES).toEqual(keysOf(COLOR_VALUES.bg));
+    expect(vocabulary.SURFACE_FILLS).toEqual(keysOf(COLOR_VALUES.bg));
     expect(vocabulary.INK_LEVELS).toEqual(keysOf(COLOR_VALUES.ink));
     expect(vocabulary.INKS).toEqual([...keysOf(COLOR_VALUES.ink), ...keysOf(STATUS_PALETTE), "inherit"]);
     expect(vocabulary.BORDER_LEVELS).toEqual(keysOf(COLOR_VALUES.border));
@@ -47,11 +47,11 @@ describe("vocabulary", () => {
   it("[foundations.vocabulary.one-pair-per-axis] derives the mode axes from the modes the selection table has", () => {
     expect(vocabulary.COLOR_MODES).toEqual(keysOf(COLOR_SELECTION));
     expect(vocabulary.THEME_PREFERENCES).toEqual([...vocabulary.COLOR_MODES, "system"]);
-    expect(vocabulary.BOX_THEMES).toEqual([...vocabulary.COLOR_MODES, "inverse"]);
+    expect(vocabulary.SURFACE_THEMES).toEqual([...vocabulary.COLOR_MODES, "inverse"]);
   });
 
   it("orders the surfaces as the Color docs do", () => {
-    expect(vocabulary.SURFACES).toEqual(["canvas", "raised", "sunken"]);
+    expect(vocabulary.SURFACE_FILLS).toEqual(["canvas", "raised", "sunken"]);
   });
 
   it("keeps the divider levels inside the border levels", () => {
@@ -84,7 +84,7 @@ describe("vocabulary", () => {
     expect(vocabulary.DIMENSIONS).toEqual(keysOf(SHAPE_SOURCE.dimension.height));
     expect(vocabulary.MEASURES).toEqual(keysOf(SHAPE_SOURCE.measure));
     expect(vocabulary.ICON_SIZES).toEqual(keysOf(SHAPE_SOURCE.icon));
-    expect(vocabulary.BOX_RADII).toEqual([...keysOf(SHAPE_SOURCE.radius.surface), "full"]);
+    expect(vocabulary.SURFACE_RADII).toEqual([...keysOf(SHAPE_SOURCE.radius.surface), "full"]);
     expect(vocabulary.CONTROL_SIZES).toEqual(keysOf(SHAPE_SOURCE.control.height));
     for (const size of vocabulary.ICON_SIZES) expect(vocabulary.TEXT_VARIANTS, size).toContain(size);
   });
@@ -104,8 +104,8 @@ describe("vocabulary", () => {
     expectTypeOf<vocabulary.Depth>().toEqualTypeOf<(typeof vocabulary.DEPTHS)[number]>();
     expectTypeOf<vocabulary.ColorMode>().toEqualTypeOf<(typeof vocabulary.COLOR_MODES)[number]>();
     expectTypeOf<vocabulary.ThemePreference>().toEqualTypeOf<(typeof vocabulary.THEME_PREFERENCES)[number]>();
-    expectTypeOf<vocabulary.BoxTheme>().toEqualTypeOf<(typeof vocabulary.BOX_THEMES)[number]>();
-    expectTypeOf<vocabulary.Surface>().toEqualTypeOf<(typeof vocabulary.SURFACES)[number]>();
+    expectTypeOf<vocabulary.SurfaceTheme>().toEqualTypeOf<(typeof vocabulary.SURFACE_THEMES)[number]>();
+    expectTypeOf<vocabulary.SurfaceFill>().toEqualTypeOf<(typeof vocabulary.SURFACE_FILLS)[number]>();
     expectTypeOf<vocabulary.InkLevel>().toEqualTypeOf<(typeof vocabulary.INK_LEVELS)[number]>();
     expectTypeOf<vocabulary.Ink>().toEqualTypeOf<(typeof vocabulary.INKS)[number]>();
     expectTypeOf<vocabulary.BorderLevel>().toEqualTypeOf<(typeof vocabulary.BORDER_LEVELS)[number]>();
@@ -121,7 +121,7 @@ describe("vocabulary", () => {
     expectTypeOf<vocabulary.Measure>().toEqualTypeOf<(typeof vocabulary.MEASURES)[number]>();
     expectTypeOf<vocabulary.IconSize>().toEqualTypeOf<(typeof vocabulary.ICON_SIZES)[number]>();
     expectTypeOf<vocabulary.ControlShape>().toEqualTypeOf<(typeof vocabulary.CONTROL_SHAPES)[number]>();
-    expectTypeOf<vocabulary.BoxRadius>().toEqualTypeOf<(typeof vocabulary.BOX_RADII)[number]>();
+    expectTypeOf<vocabulary.SurfaceRadius>().toEqualTypeOf<(typeof vocabulary.SURFACE_RADII)[number]>();
     expectTypeOf<vocabulary.Elevation>().toEqualTypeOf<(typeof vocabulary.ELEVATIONS)[number]>();
     expectTypeOf<vocabulary.Breakpoint>().toEqualTypeOf<(typeof vocabulary.BREAKPOINTS)[number]>();
     expectTypeOf<vocabulary.Container>().toEqualTypeOf<(typeof vocabulary.CONTAINERS)[number]>();
@@ -134,7 +134,7 @@ describe("vocabulary", () => {
   it("closes the axes at the values the components rely on", () => {
     expectTypeOf<vocabulary.Status>().toEqualTypeOf<"info" | "success" | "warning" | "error">();
     expectTypeOf<vocabulary.Accent>().toEqualTypeOf<"primary" | "info" | "success" | "warning" | "error">();
-    expectTypeOf<vocabulary.Surface>().toEqualTypeOf<"canvas" | "raised" | "sunken">();
+    expectTypeOf<vocabulary.SurfaceFill>().toEqualTypeOf<"canvas" | "raised" | "sunken">();
     expectTypeOf<vocabulary.Ink>().toEqualTypeOf<"primary" | "secondary" | "tertiary" | "info" | "success" | "warning" | "error" | "inherit">();
     expectTypeOf<vocabulary.ControlSize>().toEqualTypeOf<"sm" | "md" | "lg">();
     expectTypeOf<vocabulary.ControlFontSize>().toEqualTypeOf<"label" | "caption" | "body">();
@@ -142,13 +142,13 @@ describe("vocabulary", () => {
     expectTypeOf<vocabulary.TextVariant>().toEqualTypeOf<"hero" | "display" | "title" | "heading" | "subheading" | "body" | "caption" | "label">();
     expectTypeOf<vocabulary.Space>().toEqualTypeOf<"xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl">();
     expectTypeOf<vocabulary.DividerLevel>().toEqualTypeOf<"base" | "strong">();
-    expectTypeOf<vocabulary.BoxRadius>().toEqualTypeOf<"sm" | "md" | "lg" | "full">();
+    expectTypeOf<vocabulary.SurfaceRadius>().toEqualTypeOf<"sm" | "md" | "lg" | "full">();
     expectTypeOf<vocabulary.Align>().toEqualTypeOf<"start" | "center" | "end" | "stretch" | "baseline">();
     expectTypeOf<vocabulary.Justify>().toEqualTypeOf<"start" | "center" | "end" | "between">();
     expectTypeOf<vocabulary.JustifyItem>().toEqualTypeOf<"start" | "center" | "end" | "stretch">();
     expectTypeOf<vocabulary.Orientation>().toEqualTypeOf<"horizontal" | "vertical">();
     expectTypeOf<vocabulary.ColorMode>().toEqualTypeOf<"light" | "dark">();
     expectTypeOf<vocabulary.ThemePreference>().toEqualTypeOf<"light" | "dark" | "system">();
-    expectTypeOf<vocabulary.BoxTheme>().toEqualTypeOf<"light" | "dark" | "inverse">();
+    expectTypeOf<vocabulary.SurfaceTheme>().toEqualTypeOf<"light" | "dark" | "inverse">();
   });
 });

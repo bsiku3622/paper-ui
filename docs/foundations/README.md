@@ -29,7 +29,7 @@ Shape와 Layout의 경계는 하나의 질문으로 가립니다. **빈 캔버�
 | Color | OKLCH Palette → HEX Palette Token | `bg` · `ink` · `border` · `accent` · `interaction` … | accent × variant profile |
 | Typography | Typography Palette | `hero` ~ `label` 글자 역할 | Control preset · 코드 · 강조 규칙 |
 | Shape | `SHAPE_SOURCE` | `inset` · `radius` · `control` · `selection` … | Shape recipe |
-| Layout | `LAYOUT_SOURCE` | `gap` · `gutter` · `container` · `elevation` | Box `elevation` |
+| Layout | `LAYOUT_SOURCE` | `gap` · `gutter` · `container` · `elevation` | Surface `elevation` |
 | Motion | duration · easing · loop | `press` · `hover` · `state` · `enter` … | `stateTransition()` |
 
 Playground의 [Foundations](/playground/foundations/color) 페이지가 이 순서 그대로 각 시스템을 보여줍니다. 위에서부터 원본, 역할, 조합 순서입니다. Color만은 예전 형태(Palette 행렬과 역할별 값 카드)를 유지하고, 맨 아래에 accent × variant 표가 붙어 조합 단을 맡습니다. 모든 페이지의 행은 원본에서 파생하므로, 역할이나 단계를 더하면 페이지가 따라옵니다.
@@ -50,7 +50,7 @@ dp·em·색    CSS 값       var() 참조                  숫자 없는 완성�
 | Color | `tokens/palette.ts` · `tokens/colors.ts` · `tokens/color-modes.ts` · `tokens/color-recipes.ts` |
 | Typography | `tokens/typography.ts` · `tokens/typography-recipes.ts` · `styles/typography.css.ts` |
 | Shape | `tokens/shape.ts` · `tokens/shape-recipes.ts` |
-| Layout | `tokens/layout.ts` · `primitives/Box.css.ts` |
+| Layout | `tokens/layout.ts` · `primitives/Box.css.ts` · `primitives/paint/Surface.css.ts` |
 | Motion | `tokens/motion.ts` |
 
 네 군데는 시스템마다 일부러 다르게 짜여 있습니다. 모양을 억지로 맞추면 쓰임이 틀어지므로, 다른 점과 까닭을 한 표에 모아 둡니다.
@@ -95,7 +95,7 @@ prop이 받는 닫힌 값의 집합을 **축**이라 부릅니다. 축마다 상
 | `ACCENT_TONES` · `AccentTone` | `tokens/colors.ts` | `tokens.color.accent.<accent>.<tone>` |
 | `VARIANTS` · `Variant` | `tokens/color-recipes.ts` | Button · IconButton · Badge의 `variant` |
 | `SELECTABLE_VARIANTS` · `SelectableVariant` | `tokens/color-recipes.ts` | 선택된 상태를 soft 면으로 알릴 수 있는 variant — `VARIANTS`의 부분집합 |
-| `SURFACES` · `Surface` | `tokens/colors.ts` | Box의 `surface`, `tokens.color.bg.<surface>` |
+| `SURFACE_FILLS` · `SurfaceFill` | `tokens/colors.ts` | Surface의 `fill`, Field의 `fill`, `tokens.color.bg.<fill>` |
 | `INK_LEVELS` · `InkLevel` | `tokens/colors.ts` | `tokens.color.ink.<level>` |
 | `INKS` · `Ink` | `tokens/colors.ts` | Text · Icon의 `ink` — `INK_LEVELS`와 `STATUSES`, 그리고 `inherit` |
 | `BORDER_LEVELS` · `BorderLevel` | `tokens/colors.ts` | `tokens.color.border.<level>` |
@@ -103,7 +103,7 @@ prop이 받는 닫힌 값의 집합을 **축**이라 부릅니다. 축마다 상
 | `DEPTHS` · `Depth` | `tokens/colors.ts` | `tokens.color.shadow.<depth>`, Layout elevation이 가진 그림자 깊이 |
 | `COLOR_MODES` · `ColorMode` | `tokens/color-modes.ts` | 색 역할 한 벌과 그림자 기하를 묶는 모드 — light · dark |
 | `THEME_PREFERENCES` · `ThemePreference` | `tokens/color-modes.ts` | 사용자가 고르는 테마 — 모드 둘과 `system`. `PaperProvider`의 `defaultTheme`, `useTheme().theme` |
-| `BOX_THEMES` · `BoxTheme` | `tokens/color-modes.ts` | Box · Stack · Inline · Grid의 `theme` — 모드 둘과 주변의 반대인 `inverse` |
+| `SURFACE_THEMES` · `SurfaceTheme` | `tokens/color-modes.ts` | Surface의 `theme` — 모드 둘과 주변의 반대인 `inverse` |
 | `TEXT_VARIANTS` · `TextVariant` | `tokens/typography.ts` | Text의 `variant`, `tokens.typography.role.<variant>` |
 | `TEXT_FAMILIES` · `TextFamily` | `tokens/typography.ts` | Text의 `family` |
 | `CONTROL_SIZES` · `ControlSize` | `tokens/typography.ts` | 컨트롤의 `size` |
@@ -115,8 +115,8 @@ prop이 받는 닫힌 값의 집합을 **축**이라 부릅니다. 축마다 상
 | `MEASURES` · `Measure` | `tokens/shape.ts` | Box의 `measure.<measure>` 폭, `tokens.shape.measure.<measure>` |
 | `ICON_SIZES` · `IconSize` | `tokens/shape.ts` | Icon의 `size`, IconButton의 `iconSize` — `TEXT_VARIANTS`의 부분집합 |
 | `CONTROL_SHAPES` · `ControlShape` | `tokens/shape.ts` | Button · Badge · Field · Select의 `shape` |
-| `BOX_RADII` · `BoxRadius` | `tokens/shape.ts` | Box의 `radius` — `radius.surface`의 단계와 `full` |
-| `ELEVATIONS` · `Elevation` | `tokens/layout.ts` | Box의 `elevation`, `tokens.layout.elevation.<elevation>` |
+| `SURFACE_RADII` · `SurfaceRadius` | `tokens/shape.ts` | Surface의 `radius` — `radius.surface`의 단계와 `full` |
+| `ELEVATIONS` · `Elevation` | `tokens/layout.ts` | Surface의 `elevation`, `tokens.layout.elevation.<elevation>` |
 | `BREAKPOINTS` · `Breakpoint` | `tokens/layout.ts` | `tokens.layout.breakpoint.<breakpoint>` |
 | `CONTAINERS` · `Container` | `tokens/layout.ts` | Box의 `container.<container>` 폭, `tokens.layout.container.<container>` |
 | `ALIGNS` · `Align` | `tokens/layout.ts` | Stack · Inline · Grid의 `align` (Stack은 `baseline` 제외) |
@@ -161,11 +161,11 @@ export const panel = style({
 
 1. **raw 색값 금지** (`paper/raw-color`). OKLCH source는 `palette.ts`, HEX 생성은 `color-ladder.ts`에만 있습니다. 소비처는 `tokens.color`만 참조하고 색을 계산하지 않습니다.
 2. **원본 import 격리** (`no-restricted-imports`). palette·ladder·shape·layout의 원본 모듈은 컴포넌트·resolver·앱이 import하지 않습니다. 원본을 그대로 보여주는 Foundations inspector만 예외입니다.
-3. **패키지의 inline style로 토큰 주입 금지** (`paper/inline-token`). 패키지 스타일은 `.css.ts`의 className으로만 적용합니다. 패키지의 `.ts` · `.tsx`에서 토큰 · `styles` · `internal` · 패키지 자신에서 온 값이 `style`에 닿으면, 변수와 함수 호출을 거쳐도 규칙이 따라가 막습니다. 실행 중에 정해지는 값만 예외이고 그 목록이 전부입니다: Draggable 이동 좌표, Grid track, Overlay 층 깊이 변수, Overlay 앵커 위치, Overlay 원본 변수 운반, 호출자가 넘긴 style.
+3. **패키지의 inline style로 토큰 주입 금지** (`paper/inline-token`). 패키지 스타일은 `.css.ts`의 className으로만 적용합니다. 패키지의 `.ts` · `.tsx`에서 토큰 · `styles` · `internal` · 패키지 자신에서 온 값이 `style`에 닿으면, 변수와 함수 호출을 거쳐도 규칙이 따라가 막습니다. 실행 중에 정해지는 값만 예외이고 그 목록이 전부입니다: Draggable 이동 좌표, Grid track, Floating 층 깊이 변수, Floating 앵커 위치, Floating 원본 변수 운반, 호출자가 넘긴 style.
 4. **길이는 원본에만** (`paper/source-numbers`). 패키지는 원본 파일 밖에서 길이 숫자를 쓰지 않습니다. 앱은 간격·형태·깊이(padding·margin·gap·offset·radius·선·그림자·z)를 역할로 고르고, 화면 고유의 치수만 직접 씁니다.
 5. **패키지 CSS는 레이어 안에** (`paper/layered-styles`). 패키지 stylesheet는 vanilla-extract의 `style` · `styleVariants` · `globalStyle`을 직접 부르지 않고 `tokens/layers.css.ts`의 `layered()`로 규칙을 만듭니다. 그래서 모든 규칙이 cascade layer `pui` 안에 들고, 레이어 밖의 앱 CSS가 로드 순서와 무관하게 이깁니다([우선순위](../get-started/install.md#우선순위)). 레이어를 정의하는 `layers.css.ts`만 예외이고, `keyframes`·`createVar`는 그대로 씁니다.
 6. **규칙은 주석으로 끄지 않음** (`paper/no-rule-disable`). paper 규칙은 `eslint-disable` 주석으로 끌 수 없고, 예외는 `eslint.config.js`에만 선언합니다. 다른 규칙을 끄는 주석은 `--` 뒤에 이유를 적고, 아무것도 가리지 않는 주석은 그 자체로 오류입니다.
-7. **앱은 패키지 내부 class 이름을 쓰지 않음** (`paper/internal-class`). 앱과 테스트는 `pui-` 뒤에 글자가 오는 문자열을 쓰지 않습니다. 공유 축의 class는 패키지가 가진 타입 있는 지도(`surfaceClass` · `inkClass` · `accentVariantClass` · `spaceClass`)에서 고르고, 그 이름은 빌드가 짓습니다. 변수 `--pui-*`와 속성 `data-pui-*`는 이름을 따로 약속하므로 통과합니다.
+7. **앱은 패키지 내부 class 이름을 쓰지 않음** (`paper/internal-class`). 앱과 테스트는 `pui-` 뒤에 글자가 오는 문자열을 쓰지 않습니다. 공유 축의 class는 패키지가 가진 타입 있는 지도(`fillClass` · `inkClass` · `accentVariantClass` · `spaceClass`)에서 고르고, 그 이름은 빌드가 짓습니다. 변수 `--pui-*`와 속성 `data-pui-*`는 이름을 따로 약속하므로 통과합니다.
 
 [contract:foundations.class-maps.follow-vocabulary]: #
 값만 원본에서 나오는 것이 아닙니다. 어휘 상수와 타입, class 지도의 키도 같은 원본 tree를 돌아 만들어지므로, 원본에 단계를 더하면 상수 · 타입 · class가 함께 늘고 어휘 밖의 이름은 타입에서 걸립니다.

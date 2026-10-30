@@ -92,7 +92,7 @@ export const LayoutPage = () => {
         </Board>
       </FoundationSection>
 
-      <FoundationSection title="Elevation" description={`층 하나가 쌓임 순서(z)와 그림자를 함께 정합니다. 떠 있는 층만 그림자를 갖고, 깊이는 lifted와 floating 둘뿐입니다. Box는 elevation prop으로 층을 고릅니다. 지금 테마(${theme})의 그림자입니다.`}>
+      <FoundationSection title="Elevation" description={`층 하나가 쌓임 순서(z)와 그림자를 함께 정합니다. 떠 있는 층만 그림자를 갖고, 깊이는 lifted와 floating 둘뿐입니다. Surface는 elevation prop으로 층을 고릅니다. 지금 테마(${theme})의 그림자입니다.`}>
         <Board columns={[{ label: "Level" }, { label: "z", align: "end" }, { label: "Specimen", align: "center" }]} template="minmax(0, 1.5fr) minmax(3rem, auto) minmax(12rem, 1fr)" minWidth="36rem">
           {ELEVATIONS.map((level) => (
             <BoardRow key={level} size="md">

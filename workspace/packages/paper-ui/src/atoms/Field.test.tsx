@@ -8,7 +8,7 @@ describe("Field", () => {
   it("sunken 표면과 leading/trailing adornment를 함께 렌더한다", () => {
     render(
       <Field
-        surface="sunken"
+        fill="sunken"
         placeholder="작업 검색..."
         leading={<span>검색 아이콘</span>}
         trailing={<kbd>⌘ K</kbd>}
@@ -20,11 +20,11 @@ describe("Field", () => {
     expect(screen.getByText("⌘ K").tagName).toBe("KBD");
   });
 
-  it("기본 surface는 raised다", () => {
+  it("기본 fill은 raised다", () => {
     const { rerender } = render(<Field aria-label="raised" />);
     const raisedClass = screen.getByLabelText("raised").parentElement?.className;
 
-    rerender(<Field aria-label="sunken" surface="sunken" />);
+    rerender(<Field aria-label="sunken" fill="sunken" />);
     const sunkenClass = screen.getByLabelText("sunken").parentElement?.className;
 
     expect(raisedClass).not.toBe(sunkenClass);

@@ -5,7 +5,7 @@
 // <html>'s attribute is the root's one truth. When it is absent, the OS decides — the stylesheet by
 // media query, readRootMode by matchMedia.
 
-import { COLOR_MODES, COLOR_MODE_QUERY, THEME_ATTRIBUTE, THEME_PREFERENCES, THEME_SWAP_ATTRIBUTE, type BoxTheme, type ColorMode, type ThemePreference } from "../tokens";
+import { COLOR_MODES, COLOR_MODE_QUERY, THEME_ATTRIBUTE, THEME_PREFERENCES, THEME_SWAP_ATTRIBUTE, type SurfaceTheme, type ColorMode, type ThemePreference } from "../tokens";
 
 // Where the user's choice is kept; the Provider and the boot script read the same key.
 export const THEME_STORAGE_KEY = "pui-theme";
@@ -15,8 +15,8 @@ export const isThemePreference = (value: unknown): value is ThemePreference => T
 
 export const invertMode = (mode: ColorMode): ColorMode => (mode === "dark" ? "light" : "dark");
 
-// A Box's theme against the mode around it; "inverse" is the opposite of the ambient mode.
-export const resolveBoxTheme = (theme: BoxTheme, ambient: ColorMode): ColorMode => (theme === "inverse" ? invertMode(ambient) : theme);
+// A Surface's theme against the mode around it; "inverse" is the opposite of the ambient mode.
+export const resolveSurfaceTheme = (theme: SurfaceTheme, ambient: ColorMode): ColorMode => (theme === "inverse" ? invertMode(ambient) : theme);
 
 export const resolvePreference = (preference: ThemePreference, prefersDark: boolean): ColorMode =>
   preference === "system" ? (prefersDark ? "dark" : "light") : preference;

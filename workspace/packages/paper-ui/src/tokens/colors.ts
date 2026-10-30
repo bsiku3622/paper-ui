@@ -150,8 +150,8 @@ const mapLeaves = <T extends object, V>(tree: T, fn: (leaf: PalettePath) => V): 
 export const COLOR_VALUES = mapLeaves(COLOR_SELECTION.light, paletteValue);
 
 // Each axis lists the keys of the tree that authors it.
-export const SURFACES = keys(COLOR_VALUES.bg);
-export type Surface = keyof typeof COLOR_VALUES.bg;
+export const SURFACE_FILLS = keys(COLOR_VALUES.bg);
+export type SurfaceFill = keyof typeof COLOR_VALUES.bg;
 export const INK_LEVELS = keys(COLOR_VALUES.ink);
 export type InkLevel = keyof typeof COLOR_VALUES.ink;
 // The ink a mark (Text, Icon) asks for: a level, a status's own ink, or `inherit` to leave the colour to
@@ -178,7 +178,7 @@ export const COLOR_VALUES_BY_MODE = { light: COLOR_VALUES, dark: COLOR_VALUES_DA
 export const COLOR = buildVarTree(COLOR_VALUES, ["color"]);
 
 // Front to back, the order surfaces recede in. Dark folds sunken into canvas, but the order holds.
-export const SURFACE_ORDER = ["raised", "canvas", "sunken"] as const satisfies readonly Surface[];
+export const SURFACE_ORDER = ["raised", "canvas", "sunken"] as const satisfies readonly SurfaceFill[];
 
 // ───── Ground roles ──────────────────────────────────────────────────────────
 // Roles painted outside their element, on the ground it stands on — a theme scope changes them from

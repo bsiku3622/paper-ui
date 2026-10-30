@@ -72,7 +72,7 @@ export const Document = ({ children }: { children: React.ReactNode }) => (
 | hook | Provider | 돌려주는 것 |
 |---|---|---|
 | `useTheme()` | 안에서만 | `theme`(선택, `system` 포함) · `resolved`(`<html>`이 보이는 모드) · `setTheme(선택)` |
-| `useResolvedTheme()` | 어디서나 | 가장 가까운 Box `theme`의 모드, 없으면 Provider의 모드, 없으면 `<html>` 속성(속성이 없으면 OS 설정) |
+| `useResolvedTheme()` | 어디서나 | 가장 가까운 Surface `theme`의 모드, 없으면 Provider의 모드, 없으면 `<html>` 속성(속성이 없으면 OS 설정) |
 
 `useTheme`을 Provider 밖에서 부르면 오류입니다. 선택을 바꾸는 주인이 Provider이기 때문입니다. `useResolvedTheme`은 읽기만 하므로 Provider 없이도 실제 모드를 답합니다.
 
@@ -80,15 +80,15 @@ export const Document = ({ children }: { children: React.ReactNode }) => (
 
 ## 일부만 뒤집기
 
-화면의 한 부분만 다른 모드로 두려면 Box의 `theme`을 씁니다. `light` · `dark`는 고정이고 `inverse`는 주변의 반대입니다. 자세한 규칙은 [Layout](../primitives/layout.md#box--면-하나)에 있습니다.
+화면의 한 부분만 다른 모드로 두려면 Surface의 `theme`을 씁니다. `light` · `dark`는 고정이고 `inverse`는 주변의 반대입니다. 자세한 규칙은 [Paint](../primitives/paint.md#surface--면)에 있습니다.
 
 ```tsx
-<Box theme="inverse" padding="lg" radius="md">
+<Surface theme="inverse" padding="lg" radius="md">
   <Text variant="heading">반대 테마의 면</Text>
-</Box>
+</Surface>
 ```
 
 ## 전환은 즉시
 
 [contract:foundations.theme.swap-instant]: #
-모드가 바뀌는 프레임 동안 `<html>`이 `data-pui-theme-swap` 속성을 달고, 그동안 모든 요소의 transition은 즉시 끝납니다(Motion의 `theme` 역할). 그래서 버튼·입력·스위치가 페이지보다 늦게 따라 바뀌지 않습니다. Provider가 쓸 때뿐 아니라 Box의 `theme`이나 Overlay가 여는 층의 모드가 바뀔 때도 같고, 페이지에 있는 다른 라이브러리의 transition도 그 프레임에는 멈춥니다.
+모드가 바뀌는 프레임 동안 `<html>`이 `data-pui-theme-swap` 속성을 달고, 그동안 모든 요소의 transition은 즉시 끝납니다(Motion의 `theme` 역할). 그래서 버튼·입력·스위치가 페이지보다 늦게 따라 바뀌지 않습니다. Provider가 쓸 때뿐 아니라 Surface의 `theme`이나 Floating이 여는 층의 모드가 바뀔 때도 같고, 페이지에 있는 다른 라이브러리의 transition도 그 프레임에는 멈춥니다.
