@@ -9,7 +9,7 @@ const FILES = import.meta.glob<{ default: Spec }>("./entries/*.tsx", { eager: tr
 
 export type Entry = Spec & {
   slug: string;
-  // The sidebar section the entry sits in (Layout, Content, Interaction, A11y, Utilities), or Atoms.
+  // The sidebar section the entry sits in (a primitive group, or Utilities), or Atoms.
   group: string;
   // Which part of the system it documents: the id of the site map group (Primitives or Atoms).
   part: "primitives" | "atoms";

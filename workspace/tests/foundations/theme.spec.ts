@@ -70,7 +70,7 @@ test("[foundations.theme.scope-roles] a scope re-declares ink, takes its own rol
   expect(await variable(page, "#nested-child", "--pui-color-interaction-focus")).toBe(light.interaction.focus);
 });
 
-test("[foundations.theme.scope-roles] a Box theme casts its shadow and draws its focus ring on the ground it stands on, and the Box inside casts in its own mode", async ({ page }) => {
+test("[foundations.theme.scope-roles] a Surface theme casts its shadow and draws its focus ring on the ground it stands on, and the Surface inside casts in its own mode", async ({ page }) => {
   await mount(page, "light");
   const card = page.getByTestId("inverse-card");
   const inside = page.getByTestId("inverse-card-child");
@@ -101,7 +101,7 @@ test("[foundations.theme.scope-roles] a Box theme casts its shadow and draws its
   await expect(card).toHaveCSS("outline-color", rgb(light.interaction.focus));
 });
 
-test("[primitives.box.theme] raw text, an Icon, a Pressable and Overlay content inside an inverse Box take the inverse ink", async ({ page }) => {
+test("[primitives.surface.theme] raw text, an Icon, a Pressable and Floating content inside an inverse Surface take the inverse ink", async ({ page }) => {
   await mount(page, "light");
   const ink = rgb(dark.ink.primary);
   const scope = page.getByTestId("ink-scope");
@@ -112,15 +112,15 @@ test("[primitives.box.theme] raw text, an Icon, a Pressable and Overlay content 
   await expect(page.getByTestId("ink-pressable")).toHaveCSS("color", ink);
   // The page around it keeps its own ink.
   await expect(page.locator("body")).toHaveCSS("color", rgb(light.ink.primary));
-  // The Overlay's portal root re-establishes the opener's mode, so content outside the Box reads it too.
+  // The portal root re-establishes the opener's mode, so content outside the Surface reads it too.
   await page.getByTestId("ink-trigger").click();
   const panel = page.getByRole("dialog", { name: "Ink panel" });
-  await expect(panel).toHaveAttribute(THEME_ATTRIBUTE, "dark");
-  await expect(page.getByTestId("ink-overlay-raw")).toHaveCSS("color", ink);
-  await expect(page.getByTestId("ink-overlay-close")).toHaveCSS("color", ink);
+  await expect(panel.locator(`xpath=ancestor-or-self::*[@${THEME_ATTRIBUTE}][1]`)).toHaveAttribute(THEME_ATTRIBUTE, "dark");
+  await expect(page.getByTestId("ink-floating-raw")).toHaveCSS("color", ink);
+  await expect(page.getByTestId("ink-floating-close")).toHaveCSS("color", ink);
 });
 
-test("[primitives.box.theme] an inverse Box paints the opposite canvas, and follows the OS live", async ({ page }) => {
+test("[primitives.surface.theme] an inverse Surface paints the opposite canvas, and follows the OS live", async ({ page }) => {
   await mount(page, "light");
   const scope = page.getByTestId("ink-scope");
   await expect(scope).toHaveCSS("background-color", rgb(dark.bg.canvas));

@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import { OKLCH_PALETTE, PALETTE_TOKENS } from "./palette";
-import { BOX_THEMES, COLOR_MODES, THEME_PREFERENCES } from "./color-modes";
+import { SURFACE_THEMES, COLOR_MODES, THEME_PREFERENCES } from "./color-modes";
 import {
   ACCENTS, ACCENT_PALETTE, ACCENT_TONES, ACCENT_TONE_STEPS, BORDER_LEVELS, COLOR_CONTRAST_MORE, COLOR_SELECTION, COLOR_VALUES, COLOR_VALUES_BY_MODE,
-  COLOR_VALUES_DARK, DEPTHS, GROUND_ROLES, OPACITY_ROLES, OPACITY_VALUES, PRIMARY_TONE_STEPS, STATUSES, STATUS_EXCEPTIONS, STATUS_PALETTE, SURFACES,
+  COLOR_VALUES_DARK, DEPTHS, GROUND_ROLES, OPACITY_ROLES, OPACITY_VALUES, PRIMARY_TONE_STEPS, STATUSES, STATUS_EXCEPTIONS, STATUS_PALETTE, SURFACE_FILLS,
   SURFACE_ORDER, SYSTEM_COLORS, isGroundRole, paletteValue,
 } from "./colors";
 import { ACCENT_IDENTITIES, ACCENT_PALETTES, ACCENT_STEPS, ALPHA_OPACITY, ALPHA_STEPS, NEUTRAL_BASE_STEPS, NEUTRAL_BETWEEN, PALETTE_STEPS } from "./palette";
@@ -241,7 +241,7 @@ describe("color modes", () => {
     expect(COLOR_VALUES_BY_MODE.light).toBe(COLOR_VALUES);
     expect(COLOR_VALUES_BY_MODE.dark).toBe(COLOR_VALUES_DARK);
     expect([...THEME_PREFERENCES]).toEqual([...COLOR_MODES, "system"]);
-    expect([...BOX_THEMES]).toEqual([...COLOR_MODES, "inverse"]);
+    expect([...SURFACE_THEMES]).toEqual([...COLOR_MODES, "inverse"]);
   });
 
   it("[foundations.theme.scope-roles] keeps ground roles to the focus ring and the shadow colours, all of them in the Color tree", () => {
@@ -255,14 +255,14 @@ describe("color modes", () => {
 
 describe("surface ladder", () => {
   it("[foundations.color.surface-ladder] recedes front to back in both modes, strictly in light and folded into canvas in dark", () => {
-    expect([...SURFACE_ORDER].sort()).toEqual([...SURFACES].sort());
+    expect([...SURFACE_ORDER].sort()).toEqual([...SURFACE_FILLS].sort());
     for (const mode of COLOR_MODES) {
       const { bg, ink } = COLOR_VALUES_BY_MODE[mode];
       const steps = SURFACE_ORDER.map((surface) => luminance(bg[surface]));
       steps.forEach((step, index) => {
         if (index > 0) expect(step, `${mode} ${SURFACE_ORDER[index]}`).toBeLessThanOrEqual(steps[index - 1]!);
       });
-      for (const surface of SURFACES) {
+      for (const surface of SURFACE_FILLS) {
         for (const level of Object.values(ink)) expect(contrast(level, bg[surface]), `${mode} ${surface}`).toBeGreaterThanOrEqual(4.5);
       }
     }

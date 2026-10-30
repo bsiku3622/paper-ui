@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 
 import * as pkg from "./index";
 import * as tokensEntry from "./tokens/public";
-import { INVENTORY, PRIMITIVE_GROUPS } from "./inventory";
+import { INVENTORY, PRIMITIVE_GROUPS, PRIMITIVE_ORDERS } from "./inventory";
 
 const exported = pkg as unknown as Record<string, unknown>;
 const primitives = Object.values(INVENTORY.primitives);
@@ -18,7 +18,7 @@ const listed: readonly string[] = [...components, ...functions];
 
 describe("INVENTORY", () => {
   it("lists exactly the value exports of '.'", () => {
-    expect(Object.keys(pkg).sort()).toEqual([...listed, "INVENTORY", "PRIMITIVE_GROUPS"].sort());
+    expect(Object.keys(pkg).sort()).toEqual([...listed, "INVENTORY", "PRIMITIVE_ORDERS", "PRIMITIVE_GROUPS"].sort());
   });
 
   it("lists exactly the value exports of '/tokens' as foundations", () => {
@@ -30,8 +30,10 @@ describe("INVENTORY", () => {
     expect(names.filter((name, index) => names.indexOf(name) !== index)).toEqual([]);
   });
 
-  it("keeps PRIMITIVE_GROUPS the order of the primitive categories", () => {
+  it("keeps PRIMITIVE_GROUPS the order of the primitive categories, the first order before the second", () => {
     expect(Object.keys(INVENTORY.primitives)).toEqual([...PRIMITIVE_GROUPS]);
+    expect([...PRIMITIVE_GROUPS]).toEqual([...PRIMITIVE_ORDERS.first, ...PRIMITIVE_ORDERS.second]);
+    expect(exported.PRIMITIVE_ORDERS).toBe(PRIMITIVE_ORDERS);
   });
 
   it("lists a function or a forwardRef object for every component", () => {

@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { Box, Grid, Inline, Overlay, Stack } from "./index";
-import { surfaceClass } from "../styles/color.css";
+import { Floating, Grid, Inline, Stack, Surface } from "./index";
+import { fillClass } from "../styles/color.css";
 import { ScopeModeContext, useResolvedTheme } from "../theme/context";
-import { SURFACES, THEME_ATTRIBUTE, type BoxTheme } from "../tokens";
+import { SURFACE_FILLS, THEME_ATTRIBUTE, type SurfaceTheme } from "../tokens";
 
 const root = document.documentElement;
 
@@ -21,11 +21,11 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe("Box theme", () => {
-  it("[primitives.box.theme] inverse takes the opposite of the mode around it, on its own element and in context", () => {
+describe("Surface theme", () => {
+  it("[primitives.surface.theme] inverse takes the opposite of the mode around it, on its own element and in context", () => {
     render(
       <ScopeModeContext.Provider value="dark">
-        <Box theme="inverse" data-testid="box"><Mode id="inside" /></Box>
+        <Surface theme="inverse" data-testid="box"><Mode id="inside" /></Surface>
         <Mode id="outside" />
       </ScopeModeContext.Provider>,
     );
@@ -34,24 +34,24 @@ describe("Box theme", () => {
     expect(screen.getByTestId("outside").textContent).toBe("dark");
   });
 
-  it("[primitives.box.theme] flips back in a nested inverse, and reads the page's mode when nothing is above it", () => {
+  it("[primitives.surface.theme] flips back in a nested inverse, and reads the page's mode when nothing is above it", () => {
     root.setAttribute(THEME_ATTRIBUTE, "light");
     render(
-      <Box theme="inverse" data-testid="outer">
-        <Box theme="inverse" data-testid="inner"><Mode id="inside" /></Box>
-      </Box>,
+      <Surface theme="inverse" data-testid="outer">
+        <Surface theme="inverse" data-testid="inner"><Mode id="inside" /></Surface>
+      </Surface>,
     );
     expect(screen.getByTestId("outer").getAttribute(THEME_ATTRIBUTE)).toBe("dark");
     expect(screen.getByTestId("inner").getAttribute(THEME_ATTRIBUTE)).toBe("light");
     expect(screen.getByTestId("inside").textContent).toBe("light");
   });
 
-  it("[primitives.box.theme] fixes light and dark whatever the mode around it", () => {
+  it("[primitives.surface.theme] fixes light and dark whatever the mode around it", () => {
     for (const ambient of ["light", "dark"] as const) {
       const view = render(
         <ScopeModeContext.Provider value={ambient}>
-          <Box theme="dark" data-testid="dark"><Mode id="dark-inside" /></Box>
-          <Box theme="light" data-testid="light"><Mode id="light-inside" /></Box>
+          <Surface theme="dark" data-testid="dark"><Mode id="dark-inside" /></Surface>
+          <Surface theme="light" data-testid="light"><Mode id="light-inside" /></Surface>
         </ScopeModeContext.Provider>,
       );
       expect(screen.getByTestId("dark").getAttribute(THEME_ATTRIBUTE), ambient).toBe("dark");
@@ -62,33 +62,33 @@ describe("Box theme", () => {
     }
   });
 
-  it("[primitives.box.theme] paints the theme's canvas unless it is given a surface", () => {
+  it("[primitives.surface.theme] paints the theme's canvas unless it is given a fill", () => {
     render(
       <>
-        <Box theme="inverse" data-testid="board" />
-        <Box theme="dark" surface="raised" data-testid="raised" />
-        <Box data-testid="plain" />
+        <Surface theme="inverse" data-testid="board" />
+        <Surface theme="dark" fill="raised" data-testid="raised" />
+        <Surface data-testid="plain" />
       </>,
     );
-    expect(screen.getByTestId("board").classList.contains(surfaceClass.canvas)).toBe(true);
-    expect(screen.getByTestId("raised").classList.contains(surfaceClass.raised)).toBe(true);
-    expect(screen.getByTestId("raised").classList.contains(surfaceClass.canvas)).toBe(false);
-    for (const surface of SURFACES) expect(screen.getByTestId("plain").classList.contains(surfaceClass[surface]), surface).toBe(false);
+    expect(screen.getByTestId("board").classList.contains(fillClass.canvas)).toBe(true);
+    expect(screen.getByTestId("raised").classList.contains(fillClass.raised)).toBe(true);
+    expect(screen.getByTestId("raised").classList.contains(fillClass.canvas)).toBe(false);
+    for (const fill of SURFACE_FILLS) expect(screen.getByTestId("plain").classList.contains(fillClass[fill]), fill).toBe(false);
   });
 
   it("writes no attribute and gives no scope without a theme", () => {
-    render(<Box data-testid="plain"><Mode id="inside" /></Box>);
+    render(<Surface data-testid="plain"><Mode id="inside" /></Surface>);
     expect(screen.getByTestId("plain").hasAttribute(THEME_ATTRIBUTE)).toBe(false);
     expect(screen.getByTestId("inside").textContent).toBe("light");
   });
 
-  it("is an axis of Stack, Inline and Grid as well", () => {
-    const themes: BoxTheme[] = ["dark", "light", "inverse"];
+  it("reaches Stack, Inline and Grid through `as`, on the same element", () => {
+    const themes: SurfaceTheme[] = ["dark", "light", "inverse"];
     render(
       <ScopeModeContext.Provider value="light">
-        <Stack theme={themes[0]} data-testid="stack" />
-        <Inline theme={themes[1]} data-testid="inline" />
-        <Grid theme={themes[2]} data-testid="grid" />
+        <Surface as={Stack} theme={themes[0]} data-testid="stack" />
+        <Surface as={Inline} theme={themes[1]} data-testid="inline" />
+        <Surface as={Grid} theme={themes[2]} data-testid="grid" />
       </ScopeModeContext.Provider>,
     );
     expect(screen.getByTestId("stack").getAttribute(THEME_ATTRIBUTE)).toBe("dark");
@@ -96,27 +96,29 @@ describe("Box theme", () => {
     expect(screen.getByTestId("grid").getAttribute(THEME_ATTRIBUTE)).toBe("dark");
   });
 
-  it("[foundations.theme.swap-instant] holds transitions when a Box's mode changes between commits, and not on its first", () => {
+  it("[foundations.theme.swap-instant] holds transitions when a Surface's mode changes between commits, and not on its first", () => {
     const swapping = () => root.hasAttribute("data-pui-theme-swap");
-    const view = render(<ScopeModeContext.Provider value="light"><Box theme="inverse" /></ScopeModeContext.Provider>);
+    const view = render(<ScopeModeContext.Provider value="light"><Surface theme="inverse" /></ScopeModeContext.Provider>);
     expect(swapping()).toBe(false);
-    view.rerender(<ScopeModeContext.Provider value="dark"><Box theme="inverse" /></ScopeModeContext.Provider>);
+    view.rerender(<ScopeModeContext.Provider value="dark"><Surface theme="inverse" /></ScopeModeContext.Provider>);
     expect(swapping()).toBe(true);
   });
 });
 
-describe("Overlay portal scope", () => {
-  it("[primitives.box.theme] re-establishes the opener's mode on the portal element", () => {
+describe("Portal scope", () => {
+  it("[primitives.surface.theme] re-establishes the opener's mode on the portal root", () => {
     render(
-      <Box theme="dark">
-        <Overlay defaultOpen>
-          <Overlay.Content aria-label="Panel"><Mode id="panel" /></Overlay.Content>
-        </Overlay>
-      </Box>,
+      <Surface theme="dark">
+        <Floating defaultOpen>
+          <Floating.Content aria-label="Panel"><Mode id="panel" /></Floating.Content>
+        </Floating>
+      </Surface>,
     );
     const panel = screen.getByRole("dialog", { name: "Panel" });
-    expect(panel.getAttribute(THEME_ATTRIBUTE)).toBe("dark");
-    expect(panel.closest("[data-testid]")).toBeNull();
+    const portalRoot = panel.closest(`[${THEME_ATTRIBUTE}]`);
+    expect(portalRoot?.getAttribute(THEME_ATTRIBUTE)).toBe("dark");
+    expect(panel.hasAttribute(THEME_ATTRIBUTE)).toBe(false);
+    expect(portalRoot?.closest("[data-testid]")).toBeNull();
     expect(screen.getByTestId("panel").textContent).toBe("dark");
   });
 });

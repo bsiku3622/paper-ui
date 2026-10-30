@@ -2,18 +2,18 @@
 
 import { describe, it, expect } from "vitest";
 
-import { accentVariantClass, inkClass, interactiveClass, surfaceClass } from "../styles/color.css";
+import { accentVariantClass, fillClass, hoverGate, inkClass } from "../styles/color.css";
 import { spaceClass } from "../styles/space.css";
 import { controlFontSizeClass, presetClass, textMonoClass, textNumericClass, textRoleClass } from "../styles/typography.css";
-import { ACCENTS, CONTROL_FONT_SIZES, CONTROL_PRESETS, CONTROL_SIZES, INKS, SPACES, SURFACES, TEXT_VARIANTS, VARIANTS } from "../tokens";
+import { ACCENTS, CONTROL_FONT_SIZES, CONTROL_PRESETS, CONTROL_SIZES, INKS, SPACES, SURFACE_FILLS, TEXT_VARIANTS, VARIANTS } from "../tokens";
 import { TEXT_INK } from "../tokens/typography";
-import { BOX_STYLE, BOX_STYLE_KEYS, resolveAccent, resolveBoxClass, resolveControlFontSize, resolveGap, resolveInk, resolvePreset, resolveSpace, resolveSurface, resolveText } from "./index";
+import { BOX_STYLE, BOX_STYLE_KEYS, resolveBoxClass, resolveControlFontSize, resolveFill, resolveGap, resolveInk, resolvePreset, resolveSpace, resolveText } from "./index";
 
 const distinct = (classes: readonly string[]) => new Set(classes).size === classes.length && classes.every(Boolean);
 
 describe("the class maps", () => {
   it("[foundations.class-maps.follow-vocabulary] name every value of the axis they index, once, with a class of their own", () => {
-    expect(Object.keys(surfaceClass)).toEqual([...SURFACES]);
+    expect(Object.keys(fillClass)).toEqual([...SURFACE_FILLS]);
     expect(Object.keys(inkClass)).toEqual([...INKS]);
     expect(Object.keys(accentVariantClass)).toEqual([...ACCENTS]);
     for (const accent of ACCENTS) expect(Object.keys(accentVariantClass[accent]), accent).toEqual([...VARIANTS]);
@@ -21,7 +21,7 @@ describe("the class maps", () => {
     expect(Object.keys(textRoleClass)).toEqual([...TEXT_VARIANTS]);
     expect(Object.keys(textMonoClass)).toEqual([...TEXT_VARIANTS]);
 
-    expect(distinct(Object.values(surfaceClass))).toBe(true);
+    expect(distinct(Object.values(fillClass))).toBe(true);
     expect(distinct(Object.values(inkClass))).toBe(true);
     expect(distinct(ACCENTS.flatMap((accent) => Object.values(accentVariantClass[accent])))).toBe(true);
     for (const [axis, map] of Object.entries(spaceClass)) expect(distinct(Object.values(map)), axis).toBe(true);
@@ -33,28 +33,17 @@ describe("the class maps", () => {
   });
 
   it("give the hover gate a class that is none of the accent classes", () => {
-    expect(interactiveClass).toBeTruthy();
-    expect(ACCENTS.flatMap((accent) => Object.values(accentVariantClass[accent]))).not.toContain(interactiveClass);
+    expect(hoverGate).toBeTruthy();
+    expect(ACCENTS.flatMap((accent) => Object.values(accentVariantClass[accent]))).not.toContain(hoverGate);
   });
 });
 
-describe("resolveSurface / resolveInk", () => {
+describe("resolveFill / resolveInk", () => {
   it("pick the class their map holds for every value, and nothing for undefined", () => {
-    for (const surface of SURFACES) expect(resolveSurface(surface), surface).toBe(surfaceClass[surface]);
+    for (const fill of SURFACE_FILLS) expect(resolveFill(fill), fill).toBe(fillClass[fill]);
     for (const ink of INKS) expect(resolveInk(ink), ink).toBe(inkClass[ink]);
-    expect(resolveSurface(undefined)).toBe("");
+    expect(resolveFill(undefined)).toBe("");
     expect(resolveInk(undefined)).toBe("");
-  });
-});
-
-describe("resolveAccent", () => {
-  it("picks the accent × variant class, and solid when the variant is left out", () => {
-    for (const accent of ACCENTS) {
-      for (const variant of VARIANTS) expect(resolveAccent(accent, variant), `${accent} ${variant}`).toBe(accentVariantClass[accent][variant]);
-      expect(resolveAccent(accent), accent).toBe(accentVariantClass[accent].solid);
-    }
-    expect(resolveAccent(undefined)).toBe("");
-    expect(resolveAccent(undefined, "soft")).toBe("");
   });
 });
 
@@ -115,11 +104,9 @@ describe("resolveGap", () => {
 });
 
 describe("resolveBoxClass", () => {
-  it("joins the surface and the space classes in BOX_STYLE_KEYS order — Box has no ink", () => {
-    expect(BOX_STYLE_KEYS).toEqual(["surface", "padding", "paddingX", "paddingY"]);
-    expect(resolveBoxClass({ paddingX: "sm", padding: "md", surface: "sunken" })).toBe(
-      [surfaceClass.sunken, spaceClass.padding.md, spaceClass.paddingX.sm].join(" "),
-    );
+  it("joins the space classes in BOX_STYLE_KEYS order — Box has no ink and no paint", () => {
+    expect(BOX_STYLE_KEYS).toEqual(["padding", "paddingX", "paddingY"]);
+    expect(resolveBoxClass({ paddingX: "sm", padding: "md" })).toBe([spaceClass.padding.md, spaceClass.paddingX.sm].join(" "));
     expect(resolveBoxClass({ paddingX: "lg", paddingY: "xs" })).toBe([spaceClass.paddingX.lg, spaceClass.paddingY.xs].join(" "));
   });
 

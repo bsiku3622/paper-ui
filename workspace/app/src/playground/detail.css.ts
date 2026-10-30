@@ -2,7 +2,7 @@
 
 import { globalStyle } from "@vanilla-extract/css";
 
-import { SURFACES, tokens } from "@studio-baeks/paper-ui/tokens";
+import { SURFACE_FILLS, tokens } from "@studio-baeks/paper-ui/tokens";
 
 const BP = tokens.layout.breakpoint;
 
@@ -49,7 +49,7 @@ globalStyle(".preview-surface-button", {
   color: tokens.color.ink.primary,
   cursor: "pointer",
 });
-for (const surface of SURFACES) globalStyle(`.preview-surface-button[data-bg="${surface}"]`, { background: tokens.color.bg[surface] });
+for (const surface of SURFACE_FILLS) globalStyle(`.preview-surface-button[data-bg="${surface}"]`, { background: tokens.color.bg[surface] });
 globalStyle('.preview-surface-button[data-bg="track"]', { background: tokens.color.control.track });
 globalStyle('.preview-surface-button[aria-pressed="true"]', { borderColor: tokens.color.border.strong });
 globalStyle(".preview-surface-button:hover", { borderColor: tokens.color.border.hover });

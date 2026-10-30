@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Button, Field, FocusScope, Pressable, Stack } from "@studio-baeks/paper-ui";
+import { Button, Field, FocusScope, Pressable, Stack, Surface } from "@studio-baeks/paper-ui";
 
 import { named } from "../jsx";
 import { defineSpec } from "../schema";
@@ -20,10 +20,10 @@ export default defineSpec({
     // Opened by an explicit user action; focus enters the new scope and is restored on close.
     // eslint-disable-next-line jsx-a11y/no-autofocus -- the example shows focus landing on the first input as the scope opens
     <FocusScope contain restoreFocus autoFocus>
-      <Stack role="group" aria-label="포커스 범위" gap="sm" padding="md" border radius="md" width="full">
+      <Surface as={Stack} role="group" aria-label="포커스 범위" gap="sm" padding="md" border radius="md" width="full">
         <Field aria-label="첫 입력" placeholder="자동 포커스" />
         <Button onClick={named("close", () => setOpen(false))}>Focus scope 닫기</Button>
-      </Stack>
+      </Surface>
     </FocusScope>
   ),
   Stage: ({ subject, harness }) => (

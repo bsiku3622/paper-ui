@@ -104,7 +104,7 @@ const ThemeToggle = () => {
 };
 ```
 
-화면 일부만 다른 모드로 두려면 `<Box theme="inverse">`처럼 Box의 `theme`을 씁니다 — 같은 엔진입니다.
+화면 일부만 다른 모드로 두려면 `<Surface theme="inverse">`처럼 Surface의 `theme`을 씁니다 — 같은 엔진입니다.
 
 ## 폰트
 

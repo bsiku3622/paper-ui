@@ -1,14 +1,14 @@
 // scope.ts — the only writers of the theme attribute below <html>.
 //
-// A Box theme and an Overlay portal root each carry their mode on their own element and in context in the
+// A Surface theme and a Portal root each carry their mode on their own element and in context in the
 // same render, so the DOM and what React reads cannot diverge. When a scope's mode changes between commits,
 // transitions are held for the frame, the way the store holds them for the root.
 
 import { createElement, useInsertionEffect, useRef, type ReactNode } from "react";
 
-import { THEME_ATTRIBUTE, type BoxTheme, type ColorMode } from "../tokens";
+import { THEME_ATTRIBUTE, type SurfaceTheme, type ColorMode } from "../tokens";
 import { ScopeModeContext, useResolvedTheme } from "./context";
-import { holdTransitions, resolveBoxTheme } from "./engine";
+import { holdTransitions, resolveSurfaceTheme } from "./engine";
 
 export type ModeScope = {
   mode: ColorMode | undefined;
@@ -25,10 +25,10 @@ const useThemeSwapGuard = (mode: ColorMode | undefined): void => {
   }, [mode]);
 };
 
-// A Box's scope: none without a theme.
-export const useThemeScope = (theme?: BoxTheme): ModeScope => {
+// A Surface's scope: none without a theme.
+export const useThemeScope = (theme?: SurfaceTheme): ModeScope => {
   const ambient = useResolvedTheme();
-  const mode = theme === undefined ? undefined : resolveBoxTheme(theme, ambient);
+  const mode = theme === undefined ? undefined : resolveSurfaceTheme(theme, ambient);
   useThemeSwapGuard(mode);
   return {
     mode,

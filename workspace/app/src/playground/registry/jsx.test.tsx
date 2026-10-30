@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { Box, Button, Field, Icon, Inline, Overlay, Pressable, Stack, Text } from "@studio-baeks/paper-ui";
+import { Box, Button, Field, Floating, Icon, Inline, Pressable, Stack, Surface, Text } from "@studio-baeks/paper-ui";
 
 import { componentNames, named, parseChildrenText, parseOpeningTag, printJsx, spreadOf } from "./jsx";
 
@@ -10,14 +10,14 @@ const print = (element: Parameters<typeof printJsx>[0], defaults: Record<string,
 describe("componentNames", () => {
   it("names the package's components and their compound statics", () => {
     expect(names.get(Box)).toBe("Box");
-    expect(names.get(Overlay.Content)).toBe("Overlay.Content");
-    expect(names.get(Overlay)).toBe("Overlay");
+    expect(names.get(Floating.Content)).toBe("Floating.Content");
+    expect(names.get(Floating)).toBe("Floating");
   });
 });
 
 describe("printJsx", () => {
   it("writes strings quoted, numbers in braces, true bare and leaves out false and undefined", () => {
-    expect(print(<Stack gap="md" tabIndex={-1} aria-hidden border={false} radius={undefined} />)).toBe('<Stack gap="md" tabIndex={-1} aria-hidden />');
+    expect(print(<Surface as={Stack} gap="md" tabIndex={-1} aria-hidden border={false} radius={undefined} />)).toBe('<Surface as={Stack} gap="md" tabIndex={-1} aria-hidden />');
   });
 
   it("leaves out a prop equal to the component's default, but only on the elements the defaults belong to", () => {
@@ -58,9 +58,9 @@ describe("printJsx", () => {
   });
 
   it("breaks a long tag into one prop per line", () => {
-    const code = print(<Box surface="raised" border radius="md" padding="lg" paddingX="xl" paddingY="xl" width="240px" minWidth="120px" />);
-    expect(code.split("\n")[0]).toBe("<Box");
-    expect(parseOpeningTag(code, "Box")?.attrs).toMatchObject({ surface: "raised", border: true, minWidth: "120px" });
+    const code = print(<Surface fill="raised" border radius="md" padding="lg" paddingX="xl" paddingY="xl" width="240px" minWidth="120px" />);
+    expect(code.split("\n")[0]).toBe("<Surface");
+    expect(parseOpeningTag(code, "Surface")?.attrs).toMatchObject({ fill: "raised", border: true, minWidth: "120px" });
   });
 
   it("leaves out the testid and a class the page asks to ignore", () => {
@@ -78,10 +78,10 @@ describe("parseOpeningTag", () => {
     });
   });
 
-  it("finds a name only where it ends: Overlay is not Overlay.Content", () => {
-    const code = '<Overlay.Content dismissable={false}><Overlay modal>';
-    expect(parseOpeningTag(code, "Overlay")?.attrs).toEqual({ modal: true });
-    expect(parseOpeningTag(code, "Overlay.Content")?.attrs).toEqual({ dismissable: false });
+  it("finds a name only where it ends: Floating is not Floating.Content", () => {
+    const code = '<Floating.Content dismissable={false}><Floating modal>';
+    expect(parseOpeningTag(code, "Floating")?.attrs).toEqual({ modal: true });
+    expect(parseOpeningTag(code, "Floating.Content")?.attrs).toEqual({ dismissable: false });
   });
 
   it("reads a tag across lines and tells a self-closing one", () => {

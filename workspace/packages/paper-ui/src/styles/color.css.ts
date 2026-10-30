@@ -1,4 +1,4 @@
-// color.css — 색 축의 이름이 가리키는 class 의 실체. 면(surface) · 잉크(ink) · accent × variant 가
+// color.css — 색 축의 이름이 가리키는 class 의 실체. 면(fill) · 잉크(ink) · accent × variant 가
 // 각자 지도 하나로 굳는다.
 //
 // 컴포넌트는 resolver 로 이 지도를 인덱싱할 뿐 class 이름을 짓지 않는다. 키는 어휘를 돌며
@@ -12,14 +12,14 @@ import { accentProfile } from "../tokens/color-recipes";
 const utilities = layered("utilities");
 const components = layered("components");
 
-// ───── surface — 면 (Box 전용 구조 축) ──────────────────────────────────────
+// ───── fill — 면 (Surface 의 구조 축) ───────────────────────────────────────
 //
 // 깊이 사다리(앞에서 뒤로): raised — canvas — sunken. 색이 아니라 지면이다. 라이트는 세 단계, 다크는 두 단계다 —
 // 페이지(canvas)가 이미 가장 깊은 단계라 sunken 이 같은 neutral.950 을 쓴다. canvas 위의 sunken 은 border 로 구분되고,
 // raised 위에서는 두 모드 모두 물러나 보인다.
-// 카드 테두리는 별도(Box 의 border prop). hover 는 면이 아니라 앱의 interaction 이 맡는다.
+// 카드 테두리는 별도(Surface 의 border prop). hover 는 면이 아니라 앱의 interaction 이 맡는다.
 
-export const surfaceClass = utilities.styleVariants(tokens.color.bg, (background) => ({ backgroundColor: background }));
+export const fillClass = utilities.styleVariants(tokens.color.bg, (background) => ({ backgroundColor: background }));
 
 // ───── ink — 마크(Text · Icon)가 소유하는 색 ───────────────────────────────
 //
@@ -33,12 +33,15 @@ const INK_COLOR: Record<Ink, string> = { ...tokens.color.ink, ...STATUS_INK, inh
 
 export const inkClass = utilities.styleVariants(INK_COLOR, (color) => ({ color }));
 
-// ───── accent × variant — Button · Badge 의 색 ─────────────────────────────
+// ───── accent × variant — Paint 와 그 위의 Atom(Button · Badge)의 색 ───────
 //
-// hover 는 interactiveClass 가 함께 있을 때만 문다 — 눌리는 것(Button)만 gate 를 붙이고,
-// 표시용(Badge)에는 안 붙여 hover 색이 뜨지 않는다.
+// hover 는 hoverGate 가 함께 있을 때만 문다 — 눌리는 것(Button)만 gate 를 붙이고,
+// 표시용(Badge)에는 안 붙여 hover 색이 뜨지 않는다. gate 는 paintClass({ hoverable }) 말고는
+// 닿는 길이 없다(primitives/paint 밖에서는 import 하지 않는다). 터치는 hover 가 없으므로
+// `(hover: hover)` 안에서만, 눌릴 수 있는 대상(disabled · aria-disabled · data-disabled 가 아닌)에만 문다.
 
-export const interactiveClass = components.style({});
+export const hoverGate = components.style({});
+const ENABLED = ":not(:disabled):not([aria-disabled=true]):not([data-disabled])";
 
 const accentClass = (accent: Accent, variant: Variant): string => {
   const spec = accentProfile(accent, variant);
@@ -46,12 +49,16 @@ const accentClass = (accent: Accent, variant: Variant): string => {
     background: spec.background,
     color: spec.color,
     borderColor: spec.borderColor,
-    selectors: {
-      [`&.${interactiveClass}:hover:not(:disabled)`]: {
-        // 중립: base 색은 두고 tint 레이어(backgroundImage)만 얹는다 — 어느 면 위든
-        // 합성돼 어두워진다. 색·검정 solid 도 같은 방식으로 한 단계 반응한다.
-        ...(spec.hoverTint ? { backgroundImage: `linear-gradient(0deg, ${spec.hoverTint}, ${spec.hoverTint})` } : {}),
-        ...(spec.hoverBorderColor ? { borderColor: spec.hoverBorderColor } : {}),
+    "@media": {
+      "(hover: hover)": {
+        selectors: {
+          [`&.${hoverGate}:hover${ENABLED}`]: {
+            // 중립: base 색은 두고 tint 레이어(backgroundImage)만 얹는다 — 어느 면 위든
+            // 합성돼 어두워진다. 색·검정 solid 도 같은 방식으로 한 단계 반응한다.
+            ...(spec.hoverTint ? { backgroundImage: `linear-gradient(0deg, ${spec.hoverTint}, ${spec.hoverTint})` } : {}),
+            ...(spec.hoverBorderColor ? { borderColor: spec.hoverBorderColor } : {}),
+          },
+        },
       },
     },
   });

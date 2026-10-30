@@ -29,7 +29,7 @@ base.globalStyle("body", {
 
 reset.globalStyle("*", { boxSizing: "border-box" });
 
-// 상속되는 글자색은 스코프마다 다시 선언한다 — Box theme · Overlay portal 안의 글자가 페이지의
+// 상속되는 글자색은 스코프마다 다시 선언한다 — Surface theme · Portal 안의 글자가 페이지의
 // 모드가 아니라 스코프 자신의 모드 잉크를 받는다. 특정도 0이라 class 가 정한 색은 그대로 이긴다.
 base.globalStyle(`:where([${THEME_ATTRIBUTE}])`, { color: tokens.color.ink.primary });
 

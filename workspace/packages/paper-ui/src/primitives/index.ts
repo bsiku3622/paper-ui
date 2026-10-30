@@ -1,13 +1,55 @@
+// The Primitives, in two orders. The first order is the ground: its members do not lean on each other.
+// The second order is Box plus one capability; Atoms bundle them through hooks and class functions.
+// primitives/orders.test.ts pins the edges between the folders.
+
+// ───── First order ─────────────────────────────────────────────────────────────
+
+// Element — the box: as, ref, padding, size, overflow. No paint of any kind.
 export { Box, type BoxProps, type BoxWidth, type BoxHeight, type BoxLayoutProps } from "./Box";
-export { Stack, type StackProps } from "./Stack";
-export { Inline, type InlineProps } from "./Inline";
+
+// Content — Text and Icon keep their own ink, the one documented colour exception.
 export { Text, type TextProps } from "./Text";
 export { Icon, type IconProps } from "./Icon";
 
-export { Grid, type GridProps } from "./Grid";
-export * from "./interaction";
+// A11y — relations for assistive technology and keyboard users; none has a geometry of its own.
 export { FocusScope, useFocusRing, useFocusWithin, type FocusScopeProps, type FocusRingOptions, type FocusWithinOptions, type FocusWithinResult } from "./a11y/focus";
 export { VisuallyHidden, type VisuallyHiddenProps } from "./a11y/VisuallyHidden";
-export { RovingFocus, useRovingFocusItem, type RovingFocusProps, type RovingFocusItemProps, type RovingFocusItemOptions } from "./a11y/RovingFocus";
-export { FormField, useField, type FormFieldProps, type FieldOptions, type FieldResult } from "./a11y/FormField";
+export { Portal, type PortalProps } from "./a11y/Portal";
+
+// ───── Second order ────────────────────────────────────────────────────────────
+
+// Paint — all colour: fill, border, radius, elevation, theme; accent × variant.
+export { Surface, surfaceClass, type SurfaceProps } from "./paint/Surface";
+export { Paint, paintClass, type PaintProps } from "./paint/Paint";
+
+// Press — semantics, cursor, disabled look. No colour.
+export { Pressable, type PressableProps, type PressableState } from "./press/Pressable";
+export { usePressable, type PressableOptions, type PressableResult, type PressEvent } from "./press/usePressable";
+
+// Select — selection state and its aria. No colour.
+export { Selectable, type SelectableProps, type SelectableState } from "./select/Selectable";
+export { useSelectable, type SelectableOptions, type SelectableResult, type SelectableCurrent } from "./select/useSelectable";
+export { SelectableGroup, useSelectableGroup, type SelectableGroupProps, type SelectableGroupItemProps, type SelectableGroupOptions, type SelectableGroupResult } from "./select/SelectableGroup";
+
+// Float — position, z, dismissal.
+export { Floating, useFloating, type FloatingProps, type FloatingOptions, type FloatingState, type FloatingTriggerProps, type FloatingContentProps } from "./float/Floating";
+
+// Drag — move and transfer drag, and the drop target.
+export { Draggable, type DraggableProps, type DragHandleProps, type DraggableState } from "./drag/Draggable";
+export { Droppable, type DroppableProps } from "./drag/Droppable";
+export { useDrag, type DragOptions, type MoveDragOptions, type TransferDragOptions, type MoveDragEvent, type DragPosition } from "./drag/useDrag";
+export { useDrop, type DropOptions, type DropResult, type DropEvent, type DropItem, type DragItem, type DropOperation } from "./drag/useDrop";
+
+// Focus — one Tab stop for a group, and the arrow keys inside it.
+export { RovingFocus, useRovingFocusItem, type RovingFocusProps, type RovingFocusItemProps, type RovingFocusItemOptions } from "./focus/RovingFocus";
+
+// Field — a control's label, description and error, tied together by id.
+export { FormField, useField, type FormFieldProps, type FieldOptions, type FieldResult } from "./field/FormField";
+
+// Layout — arrangement only.
+export { Stack, type StackProps } from "./layout/Stack";
+export { Inline, type InlineProps } from "./layout/Inline";
+export { Grid, type GridProps } from "./layout/Grid";
+
+// Composition — the tools the second order is built from.
 export { mergeProps, mergeRefs, composeEventHandlers } from "./composition";

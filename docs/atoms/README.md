@@ -26,7 +26,7 @@ Atom은 같은 축 몇 개로 말합니다. 축의 값은 모두 Foundations에�
 | --- | --- | --- |
 | Button | as · accent · variant · size · fontSize · shape · loading · fullWidth | button / primary / solid / md / rounded, type=button. solid는 strong preset, 나머지는 medium. loading은 spinner·aria-busy·disabled |
 | IconButton | Button의 축에서 children·fontSize 제외 · iconSize · 필수 aria-label · 단일 children | iconSize=body. 정사각형. children이 Icon이면 iconSize를 전달 |
-| Field | status · size · surface=raised/sunken(다크에서 sunken은 canvas와 같은 단계) · fontSize · shape · numeric · align · leading / trailing · clearable · showPasswordToggle · onClear | default / md / raised / rounded, type=text. wrapper가 면·높이·상태·포커스를 소유 |
+| Field | status · size · fill=raised/sunken(다크에서 sunken은 canvas와 같은 단계) · fontSize · shape · numeric · align · leading / trailing · clearable · showPasswordToggle · onClear | default / md / raised / rounded, type=text. wrapper가 면·높이·상태·포커스를 소유 |
 | Textarea | status · size · fontSize · native textarea props | default / md. 한 줄 높이 = 같은 size Field, 최소 높이 96, 세로 resize. pill 없음 |
 | Select | size · fontSize · shape · children · native select props | md / rounded. native select와 Option·Group. 화살표는 trailing Icon |
 | Checkbox | size · indeterminate · native input props | md. 상자 = 컨트롤 높이의 절반, 체크는 그 절반 |
@@ -62,7 +62,7 @@ className으로 넘긴 앱 class는 패키지 CSS가 든 레이어 밖에 있어
 
 ## 상태와 접근성
 
-Button은 loading·disabled일 때 native button을 비활성화합니다. Field · Textarea의 error status는 `aria-invalid`도 설정합니다. 설명·오류 문구의 연결은 [FormField](../primitives/a11y.md#입력과-설명의-관계)가 하거나 호출자가 직접 조립합니다. Field는 clear 뒤 input 이벤트와 onClear를 보내고 포커스를 input으로 되돌리며, password toggle은 그 type에서만 보입니다.
+Button은 loading·disabled일 때 native button을 비활성화합니다. Field · Textarea의 error status는 `aria-invalid`도 설정합니다. 설명·오류 문구의 연결은 [FormField](../primitives/field.md#입력과-설명의-관계)가 하거나 호출자가 직접 조립합니다. Field는 clear 뒤 input 이벤트와 onClear를 보내고 포커스를 input으로 되돌리며, password toggle은 그 type에서만 보입니다.
 
 Field · Select · Textarea는 포인터 포커스와 키보드 포커스를 구분해, 키보드로 왔을 때만 바깥에 포커스 링을 그립니다. Checkbox · Radio · Switch는 native 포커스·비활성·checked 동작을 그대로 씁니다. IconButton의 aria-label은 타입에서 필수이고, Badge의 점과 Select 화살표는 장식으로 숨깁니다. hover·focus·selected의 우선순위는 [상태와 피드백](states.md)에 있습니다.
 

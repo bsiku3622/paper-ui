@@ -20,11 +20,12 @@ import {
   Select,
   Spinner,
   Stack,
+  Surface,
   Switch,
   Text,
   Textarea,
 } from "@studio-baeks/paper-ui";
-import { ACCENTS, CONTROL_SIZES, STATUSES, SURFACES, TEXT_VARIANTS, VARIANTS, tokens, type ControlSize } from "@studio-baeks/paper-ui/tokens";
+import { ACCENTS, CONTROL_SIZES, STATUSES, SURFACE_FILLS, TEXT_VARIANTS, VARIANTS, tokens, type ControlSize } from "@studio-baeks/paper-ui/tokens";
 
 import { Dot } from "../compositions/Dot";
 import { Computed, px } from "./foundations/kit";
@@ -101,12 +102,12 @@ export const Overview = () => {
         </Section>
 
         <Section id="sec-color" title="Color">
-          <Spec label="surface — 면의 깊이 (Box 의 구조 축, 색 아님)">
-            {SURFACES.map((s) => (
-              <Box key={s} surface={s} border radius="md" padding="lg" data-testid={`swatch-paper-${s}`}
+          <Spec label="fill — 면의 깊이 (Surface 의 구조 축, 색 아님)">
+            {SURFACE_FILLS.map((s) => (
+              <Surface key={s} fill={s} border radius="md" padding="lg" data-testid={`swatch-paper-${s}`}
                 style={{ minWidth: "5rem" }}>
                 <Text variant="caption" as="span">{s}</Text>
-              </Box>
+              </Surface>
             ))}
           </Spec>
           <Spec label="accent — 상태 점(solid) · 잉크 · Badge">
@@ -120,26 +121,26 @@ export const Overview = () => {
           </Spec>
         </Section>
 
-        {/* ── Primitives · Box ──────────────────────────────── */}
-        <Section id="sec-box" title="Box · 구조 패널">
-          <Spec label="surface + border (붙은 면의 헤어라인) · inverse (검은 판)">
-            <Box surface="raised" padding="md" radius="md">
+        {/* ── Primitives · Surface ───────────────────────────── */}
+        <Section id="sec-surface" title="Surface · 면">
+          <Spec label="fill + border (붙은 면의 헤어라인) · inverse (검은 판)">
+            <Surface fill="raised" padding="md" radius="md">
               <Text variant="caption" as="span">raised</Text>
-            </Box>
-            <Box surface="raised" border padding="md" radius="md" data-testid="box-border">
+            </Surface>
+            <Surface fill="raised" border padding="md" radius="md" data-testid="surface-border">
               <Text variant="caption" as="span">raised + border</Text>
-            </Box>
-            <Box surface="sunken" padding="md" radius="md">
+            </Surface>
+            <Surface fill="sunken" padding="md" radius="md">
               <Text variant="caption" as="span">sunken</Text>
-            </Box>
-            <Box theme="inverse" surface="canvas" border padding="md" radius="md">
+            </Surface>
+            <Surface theme="inverse" fill="canvas" border padding="md" radius="md">
               <Text variant="caption" as="span">inverse</Text>
-            </Box>
+            </Surface>
           </Spec>
           <Spec label={`radius — 작은 면 ${px(tokens.shape.radius.surface.sm)} · 카드 ${px(tokens.shape.radius.surface.md)} · 큰 면 ${px(tokens.shape.radius.surface.lg)}`} testid="spec-layout-radius">
-            <Box surface="raised" border radius="sm" padding="md" data-testid="radius-small"><Text variant="caption">{px(tokens.shape.radius.surface.sm)} · small</Text></Box>
-            <Box surface="raised" border radius="md" padding="md" data-testid="radius-card"><Text variant="caption">{px(tokens.shape.radius.surface.md)} · card</Text></Box>
-            <Box surface="raised" border radius="lg" padding="md" data-testid="radius-large"><Text variant="caption">{px(tokens.shape.radius.surface.lg)} · large</Text></Box>
+            <Surface fill="raised" border radius="sm" padding="md" data-testid="radius-small"><Text variant="caption">{px(tokens.shape.radius.surface.sm)} · small</Text></Surface>
+            <Surface fill="raised" border radius="md" padding="md" data-testid="radius-card"><Text variant="caption">{px(tokens.shape.radius.surface.md)} · card</Text></Surface>
+            <Surface fill="raised" border radius="lg" padding="md" data-testid="radius-large"><Text variant="caption">{px(tokens.shape.radius.surface.lg)} · large</Text></Surface>
           </Spec>
         </Section>
 
@@ -226,11 +227,11 @@ export const Overview = () => {
             <Box style={{ width: "22rem" }}>
               <Field
                 type="search"
-                surface="sunken"
+                fill="sunken"
                 placeholder="작업 검색..."
                 aria-label="작업 검색"
                 leading={<Icon size="body" aria-hidden><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon>}
-                trailing={<Box as="kbd" surface="raised" border radius="sm" paddingX="xs"><Text variant="caption">⌘ K</Text></Box>}
+                trailing={<Surface as="kbd" fill="raised" border radius="sm" paddingX="xs"><Text variant="caption">⌘ K</Text></Surface>}
               />
             </Box>
           </Spec>

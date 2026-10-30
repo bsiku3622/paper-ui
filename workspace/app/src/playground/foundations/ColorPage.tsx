@@ -2,7 +2,7 @@
 // value card, then the accent × variant combinations. Values are the current theme's: switching
 // the theme switches every card. Every row comes from the selection table (color-roles.ts).
 
-import { Badge, Box, Button, Inline, Stack, Text, useResolvedTheme } from "@studio-baeks/paper-ui";
+import { Badge, Button, Inline, Stack, Surface, Text, useResolvedTheme } from "@studio-baeks/paper-ui";
 import { ACCENTS, ACCENT_TONES, VARIANTS, type ColorMode } from "@studio-baeks/paper-ui/tokens";
 
 import { VARIANT_RECIPE } from "../../../../packages/paper-ui/src/tokens/color-recipes";
@@ -23,18 +23,18 @@ const ColorValue = ({ path, mode, compact = false }: { path: ChipRole; mode: Col
   const paletteToken = formatPalettePath(selectionAt(mode, path));
   const hex = hexAt(mode, path);
   return (
-    <Stack className={compact ? `${s.value} ${s.valueCompact}` : s.value} surface="canvas" gap="sm" border radius="md" padding="sm" title={`${paletteToken} · ${hex}`}>
+    <Surface as={Stack} className={compact ? `${s.value} ${s.valueCompact}` : s.value} fill="canvas" gap="sm" border radius="md" padding="sm" title={`${paletteToken} · ${hex}`}>
       <Chip path={path} />
       <div className={s.meta}>
         <Text as="span" variant="caption" family="mono" ink="primary">{paletteToken}</Text>
         <Text as="span" variant="caption" family="mono" ink="tertiary">{hex}</Text>
       </div>
-    </Stack>
+    </Surface>
   );
 };
 
 const TokenPill = ({ token }: { token: string }) => (
-  <Box as="code" className={s.token} surface="sunken" radius="sm" paddingX="sm" paddingY="xs"><Text as="span" variant="caption" family="mono">{token}</Text></Box>
+  <Surface as="code" className={s.token} fill="sunken" radius="sm" paddingX="sm" paddingY="xs"><Text as="span" variant="caption" family="mono">{token}</Text></Surface>
 );
 
 const SectionHeading = ({ title, description }: { title: string; description: string }) => (
@@ -92,7 +92,7 @@ const PaletteMatrix = () => {
   return (
     <Stack gap="md">
       <Inline align="baseline" justify="between" wrap><SectionHeading title="Palette" description="테마와 무관한 원본 ramp 하나입니다. light와 dark의 의미 역할이 모두 여기서 단계를 고릅니다." /><Text variant="caption" family="mono" ink="tertiary">{isDark ? "950 → 50" : "50 → 950"}</Text></Inline>
-      <Box className={s.paletteScroll} surface="raised" border radius="lg" padding="md">
+      <Surface className={s.paletteScroll} fill="raised" border radius="lg" padding="md">
         <StepGrid steps={steps.length} data-testid="palette-matrix">
           <span className={s.headCell} />{steps.map((step) => <Text key={step} className={s.headCell} variant="caption" family="mono" ink="tertiary">{step}</Text>)}
           {rows.flatMap((row) => [
@@ -100,7 +100,7 @@ const PaletteMatrix = () => {
             ...row.values.map((color, index) => <Swatch key={`${row.name}-${steps[index]}`} color={color} label={`${row.name} ${steps[index]}`} />),
           ])}
         </StepGrid>
-      </Box>
+      </Surface>
     </Stack>
   );
 };

@@ -30,9 +30,9 @@ test("[primitives.pressable.input-paths] press normalizes mouse, Enter, and Spac
   await expect(button).toBeDisabled();
 });
 
-test("[primitives.toggleable.input-paths] toggle preserves selection across press releases and supports keyboard input", async ({ page }) => {
-  await openPlayground(page, "toggleable", "Toggleable");
-  const button = page.getByTestId("toggle-example");
+test("[primitives.selectable.input-paths] selection survives press releases and follows keyboard input", async ({ page }) => {
+  await openPlayground(page, "selectable", "Selectable");
+  const button = page.getByTestId("select-example");
   await button.click();
   await expect(button).toHaveAttribute("aria-pressed", "true");
   await expect(button).toHaveAttribute("data-selected", "true");
@@ -40,16 +40,36 @@ test("[primitives.toggleable.input-paths] toggle preserves selection across pres
   await expect(button).toHaveAttribute("aria-pressed", "false");
 });
 
-test("[primitives.hoverable.input-paths] hover exposes pointer state without becoming a button or hover-on-touch", async ({ page }) => {
-  await openPlayground(page, "hoverable", "Hoverable");
-  const element = page.getByTestId("hover-example");
+test("[primitives.paint.hover] a hoverable Paint takes its tint under a pointer that can hover, and a blocked one does not", async ({ page }) => {
+  await openPlayground(page, "paint", "Paint");
+  const element = page.getByTestId("paint-example");
+  await expect(element).toHaveCSS("background-image", "none");
+  // Without hoverable the tint is never taken.
   await element.hover();
-  await expect(element).toHaveAttribute("data-hovered", "true");
-  await expect(element).not.toHaveAttribute("role");
+  await expect(element).toHaveCSS("background-image", "none");
+  await page.getByRole("switch", { name: "hoverable", exact: true }).check();
+  await element.hover();
+  await expect(element).not.toHaveCSS("background-image", "none");
   await page.mouse.move(0, 0);
-  await expect(element).not.toHaveAttribute("data-hovered");
-  await element.dispatchEvent("pointerenter", { pointerType: "touch" });
-  await expect(element).not.toHaveAttribute("data-hovered");
+  await expect(element).toHaveCSS("background-image", "none");
+  // A target that is blocked does not take it either.
+  await page.getByRole("switch", { name: "aria-disabled", exact: true }).check();
+  await element.hover();
+  await expect(element).toHaveCSS("background-image", "none");
+});
+
+test.describe("on a pointer that cannot hover", () => {
+  test.use({ hasTouch: true, isMobile: true });
+  test.skip(({ browserName }) => browserName !== "chromium", "only Chromium emulates a touch-only device");
+
+  test("[primitives.paint.hover] a hoverable Paint never takes the tint, whatever the tap leaves behind", async ({ page }) => {
+    await openPlayground(page, "paint", "Paint");
+    expect(await page.evaluate(() => matchMedia("(hover: hover)").matches)).toBe(false);
+    const element = page.getByTestId("paint-example");
+    await page.getByRole("switch", { name: "hoverable", exact: true }).check();
+    await element.tap();
+    await expect(element).toHaveCSS("background-image", "none");
+  });
 });
 
 test("[primitives.draggable.input-paths] handle moves the entire box while content and internal actions remain independent", async ({ page }) => {
@@ -105,8 +125,8 @@ test("[primitives.droppable.input-paths] transfer and drop have a keyboard path"
   await expect(page.getByText("받음: Paper item", { exact: true })).toBeVisible();
 });
 
-test("[primitives.toggle-group.multiple] group selection separates focus, supports multiple and removes unavailable keys", async ({ page }) => {
-  await page.goto("/playground/toggle-group");
+test("[primitives.selectable-group.multiple] group selection separates focus, supports multiple and removes unavailable keys", async ({ page }) => {
+  await page.goto("/playground/selectable-group");
   const group = page.getByRole("group", { name: "정렬 선택", exact: true });
   const left = group.getByRole("button", { name: "왼쪽", exact: true });
   const center = group.getByRole("button", { name: "가운데", exact: true });
@@ -127,14 +147,16 @@ test("[primitives.toggle-group.multiple] group selection separates focus, suppor
   await expect(group.locator('[tabindex="0"]')).toHaveCount(0);
 });
 
-test("[primitives.overlay.portal] popover portals, anchors, dismisses and restores focus", async ({ page }) => {
-  await page.goto("/playground/overlay");
+test("[primitives.floating.portal] popover portals, anchors, dismisses and restores focus", async ({ page }) => {
+  await page.goto("/playground/floating");
   const trigger = page.getByRole("button", { name: "설정 열기", exact: true });
   await trigger.click();
   const dialog = page.getByRole("dialog", { name: "설정", exact: true });
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole("heading", { name: "설정", exact: true })).toBeFocused();
   expect(await dialog.evaluate((element) => !document.querySelector("#root")?.contains(element))).toBe(true);
+  // The panel sits in the portal root, which takes no box of its own.
+  await expect(dialog.locator("xpath=..")).toHaveCSS("display", "contents");
   expect(await dialog.getAttribute("data-placement")).toMatch(/top|bottom/);
   const triggerBox = (await trigger.boundingBox())!;
   const contentBox = (await dialog.boundingBox())!;
@@ -143,12 +165,12 @@ test("[primitives.overlay.portal] popover portals, anchors, dismisses and restor
   await expect(dialog).toHaveCount(0);
   await expect(trigger).toBeFocused();
   await trigger.click();
-  await page.getByRole("heading", { name: "Overlay", exact: true }).click();
+  await page.getByRole("heading", { name: "Floating", exact: true }).click();
   await expect(dialog).toHaveCount(0);
 });
 
-test("[primitives.overlay.nesting] [primitives.overlay.focus-restore] nested modal closes only the top overlay, contains focus and restores each trigger", async ({ page }) => {
-  await page.goto("/playground/overlay");
+test("[primitives.floating.nesting] [primitives.floating.focus-restore] nested modal closes only the top panel, contains focus and restores each trigger", async ({ page }) => {
+  await page.goto("/playground/floating");
   await page.getByRole("switch", { name: "modal", exact: true }).check();
   const trigger = page.getByRole("button", { name: "설정 열기", exact: true });
   await trigger.click();
@@ -175,23 +197,21 @@ test("[primitives.overlay.nesting] [primitives.overlay.focus-restore] nested mod
   expect(await page.locator("html").evaluate((element) => getComputedStyle(element).overflow)).not.toBe("hidden");
 });
 
-test("[primitives.overlay.dismiss] outside dismissal can be disabled while Escape remains available", async ({ page }) => {
-  await page.goto("/playground/overlay");
+test("[primitives.floating.dismiss] outside dismissal can be disabled while Escape remains available", async ({ page }) => {
+  await page.goto("/playground/floating");
   await page.getByRole("switch", { name: "dismissable", exact: true }).uncheck();
   await page.getByRole("button", { name: "설정 열기", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "설정", exact: true });
-  await page.getByRole("heading", { name: "Overlay", exact: true }).click();
+  await page.getByRole("heading", { name: "Floating", exact: true }).click();
   await expect(dialog).toBeVisible();
   await dialog.getByRole("textbox", { name: "표시 이름", exact: true }).focus();
   await page.keyboard.press("Escape");
   await expect(dialog).toHaveCount(0);
 });
 
-test("hook composition keeps press, hover and focus behavior on one node", async ({ page }) => {
+test("hook composition keeps press and focus behavior on one node", async ({ page }) => {
   await page.goto("/playground/composition");
   const button = page.getByRole("button", { name: "Hook으로 조립한 버튼" });
-  await button.hover();
-  await expect(button).toHaveAttribute("data-hovered", "true");
   await button.click();
   await page.keyboard.press("Space");
   await expect(page.getByText("실행: 2", { exact: true })).toBeVisible();

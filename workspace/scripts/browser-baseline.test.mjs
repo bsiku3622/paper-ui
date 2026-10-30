@@ -30,6 +30,7 @@ test("[install.browsers.baseline] the declared floor supports every required CSS
     "@media (prefers-contrast: more){:root{--pui-color-border-base:#000}}",
     ".g{overflow-x:clip}",
     ".h{min-width:fit-content}.i{height:max-content}",
+    "@media (hover: hover){.j:hover{outline:0}}",
   ].join("");
   const result = checkStylesheet(css, floor);
   assert.deepEqual(result.used, FEATURES.map(({ name }) => name));
@@ -37,6 +38,8 @@ test("[install.browsers.baseline] the declared floor supports every required CSS
 
   // Look-alikes are not features: the color-scheme property inside its media query's name, an inset shadow, translate() and a round cap.
   assert.deepEqual(checkStylesheet("@media (prefers-color-scheme: dark){.a{box-shadow:inset 0 0 0 1px;transform:translateY(1px);stroke-linecap:round}}", floor).used, ["prefers-color-scheme"]);
+  // The :hover pseudo-class is not the hover media feature.
+  assert.deepEqual(checkStylesheet(".a:hover{color:red}", floor).used, []);
   // Hidden overflow and the clip margin are not the clip keyword.
   assert.deepEqual(checkStylesheet(".a{overflow:hidden;overflow-clip-margin:2px}", floor).used, []);
   // Grid track sizing takes the same words but is not a box size.

@@ -1,5 +1,5 @@
 // Badge — 상태 한 낱말. Button 과 같은 accent 시스템(accent × variant)을 쓴다. 표시용이라
-// hover gate(interactiveClass)는 안 붙인다.
+// paintClass 에 hoverable 을 안 줘 hover 색이 뜨지 않는다.
 //   variant  soft(옅은 면, 기본) · solid(강조) · hairline · ghost · muted(accent subtle 보조 글자)
 //   dot      앞에 작은 색 점 — 상태 표시자
 //
@@ -11,7 +11,8 @@
 import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import { resolveAccent, resolveControlFontSize, resolvePreset } from "../resolvers";
+import { paintClass } from "../primitives/paint/Paint";
+import { resolveControlFontSize, resolvePreset } from "../resolvers";
 import type { Accent, ControlFontSize, ControlShape, ControlSize, Variant } from "../tokens";
 import { badgeRoot, badgeSize, badgeDot, badgePill } from "./Badge.css";
 
@@ -44,7 +45,7 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
         badgeSize[size],
         resolvePreset("badge"),
         resolveControlFontSize(fontSize),
-        resolveAccent(accent, variant),
+        paintClass({ accent, variant }),
         shape === "pill" && badgePill,
         className,
       )}

@@ -68,7 +68,7 @@ Palette Token은 내부 이름입니다. 컴포넌트와 앱은 import하지 않
 
 `control.track`은 Switch 트랙과 진행 막대의 홈처럼 컨트롤 안에 박힌 면입니다. `bg` 밖에 따로 둔 이유는 컨트롤의 세부가 일반 페이지 면으로 번지지 않게 하기 위해서입니다. 포커스 링의 색은 `interaction.focus`가 갖고, 두께와 offset은 [Shape](shape.md)이, 그림자의 기하는 [Layout](layout.md)의 elevation이 갖습니다.
 
-그림자의 색은 층 이름이 아니라 깊이로 부릅니다. `floating`은 팝오버·대화상자·알림처럼 떠 있는 층의 그림자 색이고, `lifted`는 살짝 들린 층의 그림자 색입니다. 라이트에서는 두 값이 같고 다크에서만 갈립니다(60 대 45). 이 시스템에서 "overlay"는 떠 있는 층(Overlay · elevation `overlay` · `overlay.scrim`)만 가리키고, 면 위에 얹는 상태 wash는 tint라고 부릅니다.
+그림자의 색은 층 이름이 아니라 깊이로 부릅니다. `floating`은 팝오버·대화상자·알림처럼 떠 있는 층의 그림자 색이고, `lifted`는 살짝 들린 층의 그림자 색입니다. 라이트에서는 두 값이 같고 다크에서만 갈립니다(60 대 45). 이 시스템에서 "overlay"는 떠 있는 층(Floating · elevation `overlay` · `overlay.scrim`)만 가리키고, 면 위에 얹는 상태 wash는 tint라고 부릅니다.
 
 `opacity`는 팔레트 단계가 아니라 alpha 단계 하나를 값으로 씁니다. `disabled`는 alpha 50(0.5), `subdued`는 alpha 70(0.7)이고 어떤 테마에서도 같습니다. 선택표 밖에 있어서 위 표와 Playground Color에는 나오지 않습니다.
 
@@ -131,7 +131,7 @@ Atom은 색을 직접 고르지 않고 `accent`와 `variant` 두 축을 말합�
 
 선택된 상태를 soft 면으로 알릴 수 있는 variant는 `SELECTABLE_VARIANTS`(`hairline` · `ghost` · `muted`)입니다. 면이 없거나 옅어서 선택된 모습이 따로 필요한 variant들입니다.
 
-`resolveAccent("error", "solid")`는 `styles/color.css.ts`의 `accentVariantClass.error.solid`에 든 class를 고릅니다. 그 지도는 `ACCENTS × VARIANTS` 배열을 걸어 만들므로 조합이 빠지거나 어긋날 수 없고, 어휘 밖의 이름은 타입에서 걸립니다. class의 이름은 빌드가 짓습니다. 전역으로 약속된 이름이 없으니 앱은 이름을 문자열로 붙들지 않고 컴포넌트 prop으로 고릅니다. 면과 잉크는 색과 다른 축이라 `surfaceClass` · `inkClass`로 따로 갑니다. 글자와 아이콘의 `ink`는 `INKS`, 곧 Color의 `ink.*` 이름(`primary` · `secondary` · `tertiary`)과 상태 이름과 `inherit`입니다. hover는 `interactiveClass`가 붙은 컴포넌트에만 걸려, Badge처럼 누를 수 없는 표식에는 번지지 않습니다. 상태별 우선순위는 [상태와 피드백](../atoms/states.md)에 있습니다.
+`paintClass({ accent: "error", variant: "solid" })`는 `styles/color.css.ts`의 `accentVariantClass.error.solid`에 든 class를 고릅니다. 그 지도는 `ACCENTS × VARIANTS` 배열을 걸어 만들므로 조합이 빠지거나 어긋날 수 없고, 어휘 밖의 이름은 타입에서 걸립니다. class의 이름은 빌드가 짓습니다. 전역으로 약속된 이름이 없으니 앱은 이름을 문자열로 붙들지 않고 컴포넌트 prop으로 고릅니다. 면과 잉크는 색과 다른 축이라 `fillClass` · `inkClass`로 따로 갑니다. 글자와 아이콘의 `ink`는 `INKS`, 곧 Color의 `ink.*` 이름(`primary` · `secondary` · `tertiary`)과 상태 이름과 `inherit`입니다. hover는 `hoverable`을 준 컴포넌트에만 걸려, Badge처럼 누를 수 없는 표식에는 번지지 않습니다. 상태별 우선순위는 [상태와 피드백](../atoms/states.md)에 있습니다.
 
 ## 색을 바꿀 때
 

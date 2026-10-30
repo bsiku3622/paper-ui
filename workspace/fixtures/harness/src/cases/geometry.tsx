@@ -1,11 +1,11 @@
-import { Badge, Box, Button, Checkbox, Field, Icon, IconButton, Radio, Select, Switch, Textarea } from "@studio-baeks/paper-ui";
+import { Badge, Button, Checkbox, Field, Icon, IconButton, Radio, Select, Surface, Switch, Textarea } from "@studio-baeks/paper-ui";
 
 import { SELECT_OPTIONS } from "./options.js";
 import { ThemeBoxes } from "./theme.js";
 
 const SIZES = ["sm", "md", "lg"] as const;
 
-// Every control at every size, a Box corner and the nested theme scopes, in one form: the shape spec
+// Every control at every size, a Surface corner and the nested theme scopes, in one form: the shape spec
 // measures them, overrides source variables on #shape-fixture and reads the form's data.
 export const GeometryCase = () => (
   <div id="shape-fixture">
@@ -26,7 +26,7 @@ export const GeometryCase = () => (
           <Badge size={size} data-testid={`badge-${size}`}>Badge</Badge>
         </div>
       ))}
-      <Box radius="sm" data-testid="surface-corner">Surface</Box>
+      <Surface radius="sm" data-testid="surface-corner">Surface</Surface>
       <ThemeBoxes />
     </form>
   </div>

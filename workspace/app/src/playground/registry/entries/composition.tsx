@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 
-import { Box, Stack, Text, mergeProps, mergeRefs, useFocusRing, useHover, usePress } from "@studio-baeks/paper-ui";
+import { Box, Stack, Text, mergeProps, mergeRefs, useFocusRing, usePressable } from "@studio-baeks/paper-ui";
 
 import { spreadOf } from "../jsx";
 import { defineSpec } from "../schema";
@@ -15,16 +15,15 @@ export default defineSpec({
     const ref = useRef<HTMLButtonElement>(null);
     const forwarded = useRef<HTMLButtonElement>(null);
     const [count, setCount] = useState(0);
-    const { pressProps, isPressed } = usePress({ onPress: () => setCount((value) => value + 1) }, ref);
-    const { hoverProps, isHovered } = useHover();
+    const { pressProps, isPressed } = usePressable({ onPress: () => setCount((value) => value + 1) }, ref);
     const { focusProps, isFocusVisible } = useFocusRing();
-    const states = { "data-pressed": isPressed || undefined, "data-hovered": isHovered || undefined, "data-focus-visible": isFocusVisible || undefined };
-    return { count, ref, forwarded, props: { ...mergeProps(pressProps, hoverProps, focusProps), ...states } };
+    const states = { "data-pressed": isPressed || undefined, "data-focus-visible": isFocusVisible || undefined };
+    return { count, ref, forwarded, props: { ...mergeProps(pressProps, focusProps), ...states } };
   },
   subject: (_state, { ref, forwarded, props }) =>
     spreadOf(
       <Box as="button" {...props} ref={mergeRefs(ref, forwarded)} type="button" className={control}>Hook으로 조립한 버튼</Box>,
-      "mergeProps(pressProps, hoverProps, focusProps)",
+      "mergeProps(pressProps, focusProps)",
       Object.keys(props),
     ),
   Stage: ({ subject, harness }) => (

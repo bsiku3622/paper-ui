@@ -81,7 +81,7 @@ import { themeBootScript } from "@studio-baeks/paper-ui/theme-boot";
 }
 ```
 
-A subtree takes its own mode through `<Box theme="light | dark | inverse">`.
+A subtree takes its own mode through `<Surface theme="light | dark | inverse">`.
 
 There is no `primaryColor`. A brand has no colour to pick here — the identity is
 white, black, and whitespace.
@@ -115,8 +115,9 @@ and nothing else.
 
 | Tier | Exports |
 |---|---|
-| Primitives | `Box · Stack · Inline · Text` |
-| Atoms | `Button · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Icon · Spinner · Divider · Link` |
+| Primitives, first order | `Box · Text · Icon · FocusScope · VisuallyHidden · Portal` |
+| Primitives, second order | `Surface · Paint · Pressable · Selectable · SelectableGroup · Floating · Draggable · Droppable · RovingFocus · FormField · Stack · Inline · Grid` |
+| Atoms | `Button · IconButton · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Spinner · Divider · Link` |
 | `/tokens` | `tokens`, and the vocabulary: one constant and one type for each axis (`ACCENTS` · `Accent`, `VARIANTS` · `Variant`, `SPACES` · `Space` …) |
 
 The package stops at primitives and atoms. Product-specific compositions belong

@@ -5,7 +5,7 @@
 
 import { Link, useLocation } from "react-router-dom";
 
-import { Box, Inline, Text, useTheme } from "@studio-baeks/paper-ui";
+import { Box, Inline, Surface, Text, useTheme } from "@studio-baeks/paper-ui";
 import { tokens, type ColorMode } from "@studio-baeks/paper-ui/tokens";
 
 import { Logo } from "./Logo";
@@ -63,9 +63,9 @@ export const SiteNav = () => {
         </Box>
         <Inline gap="sm" align="center" className={s.gnbTools}>
           <ThemeToggle />
-          <Box surface="sunken" radius="full" paddingX="sm" paddingY="xs" style={{ border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
+          <Surface fill="sunken" radius="full" paddingX="sm" paddingY="xs" style={{ border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
             <Text variant="caption" as="span" ink="secondary" numeric>v0.1.0</Text>
-          </Box>
+          </Surface>
         </Inline>
       </Inline>
     </Box>

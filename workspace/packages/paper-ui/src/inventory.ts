@@ -2,21 +2,29 @@
 // Playground and the app's site map read this list, and inventory.test.ts holds it to the real exports.
 // It imports nothing, so a script or the app's site map can read it without loading a component.
 
-export const PRIMITIVE_GROUPS = ["Layout", "Content", "Interaction", "A11y"] as const;
+// The two orders of the Primitives. The first is the ground: its members do not lean on each other. The second
+// is Box plus one capability, and Atoms bundle them. A group belongs to the order that lists it.
+export const PRIMITIVE_ORDERS = {
+  first: ["Element", "Content", "A11y"],
+  second: ["Paint", "Press", "Select", "Float", "Drag", "Focus", "Field", "Layout"],
+} as const;
+export type PrimitiveOrder = keyof typeof PRIMITIVE_ORDERS;
+export const PRIMITIVE_GROUPS = [...PRIMITIVE_ORDERS.first, ...PRIMITIVE_ORDERS.second] as const;
 export type PrimitiveGroup = (typeof PRIMITIVE_GROUPS)[number];
 
 export const INVENTORY = {
   primitives: {
-    Layout: { components: ["Box", "Stack", "Inline", "Grid"], hooks: [] },
+    Element: { components: ["Box"], hooks: [] },
     Content: { components: ["Text", "Icon"], hooks: [] },
-    Interaction: {
-      components: ["Pressable", "Hoverable", "Toggleable", "Draggable", "Droppable", "ToggleGroup", "Overlay"],
-      hooks: ["usePress", "useHover", "useToggle", "useDrag", "useDrop", "useToggleGroup", "useOverlay"],
-    },
-    A11y: {
-      components: ["FocusScope", "VisuallyHidden", "RovingFocus", "FormField"],
-      hooks: ["useFocusRing", "useFocusWithin", "useRovingFocusItem", "useField"],
-    },
+    A11y: { components: ["FocusScope", "VisuallyHidden", "Portal"], hooks: ["useFocusRing", "useFocusWithin"] },
+    Paint: { components: ["Surface", "Paint"], hooks: [] },
+    Press: { components: ["Pressable"], hooks: ["usePressable"] },
+    Select: { components: ["Selectable", "SelectableGroup"], hooks: ["useSelectable", "useSelectableGroup"] },
+    Float: { components: ["Floating"], hooks: ["useFloating"] },
+    Drag: { components: ["Draggable", "Droppable"], hooks: ["useDrag", "useDrop"] },
+    Focus: { components: ["RovingFocus"], hooks: ["useRovingFocusItem"] },
+    Field: { components: ["FormField"], hooks: ["useField"] },
+    Layout: { components: ["Stack", "Inline", "Grid"], hooks: [] },
   },
   atoms: ["Button", "IconButton", "Field", "Textarea", "Select", "Checkbox", "Switch", "Radio", "Label", "Badge", "Spinner", "Divider", "Link"],
   anatomy: { Select: ["Option", "Group"] },
@@ -24,15 +32,15 @@ export const INVENTORY = {
     Composition: ["mergeProps", "mergeRefs", "composeEventHandlers"],
     Theme: ["PaperProvider", "useTheme", "useResolvedTheme"],
   },
-  classes: [],
+  classes: ["surfaceClass", "paintClass"],
   foundations: [
     "tokens", "stateTransition", "FONT_STYLESHEETS",
     "typographyRule", "monoRule", "codeRule", "presetRule", "emphasisRule",
-    "STATUSES", "ACCENTS", "ACCENT_TONES", "VARIANTS", "SELECTABLE_VARIANTS", "SURFACES", "INK_LEVELS", "INKS", "BORDER_LEVELS", "DIVIDER_LEVELS", "DEPTHS",
-    "COLOR_MODES", "THEME_PREFERENCES", "BOX_THEMES", "SYSTEM_COLORS",
+    "STATUSES", "ACCENTS", "ACCENT_TONES", "VARIANTS", "SELECTABLE_VARIANTS", "SURFACE_FILLS", "INK_LEVELS", "INKS", "BORDER_LEVELS", "DIVIDER_LEVELS", "DEPTHS",
+    "COLOR_MODES", "THEME_PREFERENCES", "SURFACE_THEMES", "SYSTEM_COLORS",
     "TEXT_VARIANTS", "TEXT_FAMILIES", "CONTROL_SIZES", "CONTROL_FONT_SIZES", "CONTROL_PRESETS", "EMPHASES",
-    "SPACES", "DIMENSIONS", "MEASURES", "ICON_SIZES", "CONTROL_SHAPES", "BOX_RADII",
+    "SPACES", "DIMENSIONS", "MEASURES", "ICON_SIZES", "CONTROL_SHAPES", "SURFACE_RADII",
     "ELEVATIONS", "BREAKPOINTS", "CONTAINERS", "ALIGNS", "JUSTIFIES", "JUSTIFY_ITEMS", "ORIENTATIONS",
   ],
-  polymorphic: ["Box", "Stack", "Inline", "Grid", "Text", "Hoverable", "RovingFocus.Item", "Button"],
+  polymorphic: ["Box", "Surface", "Paint", "Stack", "Inline", "Grid", "Text", "RovingFocus.Item", "Button"],
 } as const;
