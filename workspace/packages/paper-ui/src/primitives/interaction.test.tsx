@@ -8,6 +8,18 @@ import * as floatingStyles from "./float/Floating.css";
 import { nestElevation, type FloatingElevation } from "./float/nestElevation";
 
 describe("interaction primitives", () => {
+  it("[primitives.pressable.one-click] Enter and Space each run the target's onClick once", () => {
+    const click = vi.fn();
+    render(<Pressable onClick={click}>Go</Pressable>);
+    const button = screen.getByRole("button", { name: "Go" });
+    for (const key of [" ", "Enter"]) {
+      click.mockClear();
+      fireEvent.keyDown(button, { key });
+      fireEvent.keyUp(button, { key });
+      expect(click, JSON.stringify(key)).toHaveBeenCalledTimes(1);
+    }
+  });
+
   it("Pressable composes caller events and forwards the native button ref", () => {
     const press = vi.fn();
     const click = vi.fn();

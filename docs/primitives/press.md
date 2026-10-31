@@ -13,6 +13,9 @@ Pressable은 onPress·onPressStart·onPressEnd·onPressUp·onPressChange와 disa
 
 Pressable의 children 함수는 isActive·isFocused·isFocusVisible·isDisabled를 받습니다. 상태는 data-active·data-focused·data-focus-visible·data-disabled에도 반영합니다. 눌리는 동안의 순간 상태는 `active`라고 부릅니다 — `pressed`는 선택을 알리는 aria-pressed만 뜻합니다. 소비 앱은 data 속성에 연결된 class 스타일을 작성합니다. hover는 상태로 노출하지 않습니다 — hover 색은 CSS의 몫이고, 눌리는 자리에 색을 입히는 [Paint](paint.md#paint--accent--variant)의 `hoverable`이 그립니다.
 
+[contract:primitives.pressable.one-click]: #
+press 한 번은 입력과 플랫폼에 상관없이 대상의 click 한 번입니다. React Aria는 자신이 처리하는 키에서 브라우저의 click을 막습니다. `type=button`의 Space와 Mac이 아닌 플랫폼의 Enter가 그렇습니다. Pressable은 이렇게 막힌 click과, 키 활성화가 없는 요소가 받지 못하는 click을 대신 냅니다. 그래서 대상의 `onClick`은 마우스 · 터치 · 키보드 · 보조 기술 어느 입력에서나 한 번 실행됩니다. submit 버튼과 링크의 click은 브라우저가 내므로 겹치지 않습니다.
+
 직접 구현한 button에 press 행동을 연결하는 예시입니다. pressProps에 ref와 상태 attribute가 들어 있어 따로 쓰지 않습니다.
 
 ```tsx
