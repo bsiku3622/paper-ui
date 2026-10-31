@@ -15,7 +15,7 @@ paper-ui는 React 18.2 이상 또는 React 19를 peer dependency로 받습니다
 | entry | 담는 것 |
 |---|---|
 | `@studio-baeks/paper-ui` | 컴포넌트, hook, `PaperProvider`와 그 prop 타입. 클라이언트에서 도는 코드라 `"use client"` 경계를 선언합니다. |
-| `@studio-baeks/paper-ui/tokens` | `tokens`, 어휘 상수(`CONTROL_SIZES` · `SPACES` …)와 어휘 타입(`Space` · `Accent` · `Variant` …). 축마다 상수와 타입이 한 짝이고, 목록은 [공개 어휘](../foundations/README.md#공개-어휘)에 있습니다. React와 CSS를 import하지 않는 값입니다. |
+| `@studio-baeks/paper-ui/tokens` | `tokens`, 어휘 상수(`CONTROL_SIZES` · `SPACES` …)와 어휘 타입(`Space` · `Accent` · `Variant` …), 원본을 덮어쓰는 `sourceVars`([원본 덮어쓰기](#원본-덮어쓰기)). 축마다 상수와 타입이 한 짝이고, 목록은 [공개 어휘](../foundations/README.md#공개-어휘)에 있습니다. React와 CSS를 import하지 않는 값입니다. |
 | `@studio-baeks/paper-ui/theme-boot` | 첫 화면 전에 테마를 적용하는 `themeBootScript`와 `THEME_STORAGE_KEY` · `THEME_ATTRIBUTE`. React와 CSS를 import하지 않으므로 빌드 도구와 서버가 단독으로 불러옵니다. [Theming](theming.md)에서 씁니다. |
 | `@studio-baeks/paper-ui/styles.css` | 전역 스타일시트 하나. CSS 변수와 컴포넌트 스타일이 모두 여기에 들어 있습니다. |
 
@@ -52,6 +52,21 @@ pui.reset < pui.theme < pui.base < pui.utilities < pui.components
   button { background: none; }
 }
 ```
+
+## 원본 덮어쓰기
+
+한 영역의 크기나 간격만 바꾸고 싶다면 역할이 아니라 원본을 덮어씁니다. 컨트롤 높이 같은 원본을 하위 트리에서 하나 바꾸면 그 위에 지은 역할이 그 자리에서 다시 계산됩니다([Shape › 원본 덮어쓰기](../foundations/shape.md#원본-덮어쓰기)). `sourceVars()`는 원본의 경로에서 방출되는 변수 이름을 만들어 주므로, 변수 이름을 문자열로 적지 않아도 됩니다.
+
+```ts
+import { style } from "@vanilla-extract/css";
+import { sourceVars } from "@studio-baeks/paper-ui/tokens";
+
+export const dense = style({
+  vars: sourceVars({ shape: { control: { height: { md: "40px" } } } }),
+});
+```
+
+경로는 `shape` · `layout` · `typography` 원본에서 시작하고, 역할의 경로는 타입이 막고 모르는 경로는 실행 때 던집니다. 결과는 React의 `style`에도 그대로 들어갑니다. 그 영역에서 연 Floating의 panel도 덮어쓴 원본을 따라갑니다. 색 역할은 이 길로 덮어쓰지 않습니다 — 색은 테마 스코프가 정합니다([테마](theming.md)).
 
 ## 실행 환경
 

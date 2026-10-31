@@ -3,27 +3,27 @@ import type { CSSProperties } from "react";
 import { Text } from "@studio-baeks/paper-ui";
 import { tokens, CONTROL_SIZES, TEXT_VARIANTS, type ControlSize, type TextVariant } from "@studio-baeks/paper-ui/tokens";
 
-import { Board, BoardGroup, BoardRow, FoundationSection, MatrixCell, TokenCell, ValueCell, px, resolved } from "./kit";
+import { Board, BoardGroup, BoardRow, FoundationSection, FontSample, MatrixCell, TokenCell, ValueCell, px, resolved } from "./kit";
 import { valueAt } from "./paths";
 import { CODE_BLOCK, CODE_SCALE_NOTES, PRESET_NOTES, PRESET_PATHS, SIZE_LEADING, fluidRole, fluidStepOf, isLadder, type PresetPath } from "./typography-roles";
 import * as s from "./foundations.css";
 
 const SPECIMEN = "Aa 가나다 0123";
 
-type PaletteGroup = { key: string; label: string; rows: { name: string; value: string; style: CSSProperties; sample?: React.ReactNode }[] };
+type PaletteGroup = { key: string; label: string; rows: { name: string; value: string; font: CSSProperties; sample?: React.ReactNode }[] };
 const palette = tokens.typography.palette;
 const entries = <T extends Record<string, string>>(values: T) => Object.entries(values) as [string, string][];
 
 const PALETTE_GROUPS: PaletteGroup[] = [
-  { key: "fontSize", label: "Font size", rows: entries(palette.fontSize).map(([name, value]) => ({ name, value, style: { fontSize: value, lineHeight: palette.leading[SIZE_LEADING[name as keyof typeof SIZE_LEADING]] }, sample: fluidStepOf(name)?.palette })) },
-  { key: "weight", label: "Weight", rows: entries(palette.weight).map(([name, value]) => ({ name, value, style: { fontWeight: value } })) },
-  { key: "leading", label: "Leading", rows: entries(palette.leading).map(([name, value]) => ({ name, value, style: { lineHeight: value }, sample: <>한 줄과 다음 줄의 간격을<br />눈으로 확인합니다.</> })) },
-  { key: "tracking", label: "Tracking", rows: entries(palette.tracking).map(([name, value]) => ({ name, value, style: { letterSpacing: value }, sample: "TRACKING · 가나다" })) },
+  { key: "fontSize", label: "Font size", rows: entries(palette.fontSize).map(([name, value]) => ({ name, value, font: { fontSize: value, lineHeight: palette.leading[SIZE_LEADING[name as keyof typeof SIZE_LEADING]] }, sample: fluidStepOf(name)?.palette })) },
+  { key: "weight", label: "Weight", rows: entries(palette.weight).map(([name, value]) => ({ name, value, font: { fontWeight: value } })) },
+  { key: "leading", label: "Leading", rows: entries(palette.leading).map(([name, value]) => ({ name, value, font: { lineHeight: value }, sample: <>한 줄과 다음 줄의 간격을<br />눈으로 확인합니다.</> })) },
+  { key: "tracking", label: "Tracking", rows: entries(palette.tracking).map(([name, value]) => ({ name, value, font: { letterSpacing: value }, sample: "TRACKING · 가나다" })) },
   { key: "family", label: "Family", rows: [
-    ...entries(palette.family).map(([name, value]) => ({ name, value, style: { fontFamily: value, fontSize: name === "mono" ? `calc(${palette.fontSize["14"]} * ${palette.monoSizeScale})` : palette.fontSize["14"] } })),
+    ...entries(palette.family).map(([name, value]) => ({ name, value, font: { fontFamily: value, fontSize: name === "mono" ? `calc(${palette.fontSize["14"]} * ${palette.monoSizeScale})` : palette.fontSize["14"] } })),
   ] },
   { key: "decoration", label: "Decoration", rows: [
-    { name: "underlineOffset", value: palette.decoration.underlineOffset, style: { textDecoration: "underline", textUnderlineOffset: palette.decoration.underlineOffset }, sample: "밑줄이 글자에서 떨어진 거리" },
+    { name: "underlineOffset", value: palette.decoration.underlineOffset, font: { textDecoration: "underline", textUnderlineOffset: palette.decoration.underlineOffset }, sample: "밑줄이 글자에서 떨어진 거리" },
   ] },
 ];
 const MONO_SCALE = { name: "monoSizeScale", value: palette.monoSizeScale };
@@ -79,7 +79,7 @@ export const TypographyPage = () => (
             {group.rows.map((row) => (
               <BoardRow key={row.name}>
                 <TokenCell name={`typography.palette.${group.key}.${row.name}`} />
-                <Text className={s.specimen} variant="body" ink="primary" style={row.style}>{row.sample ?? SPECIMEN}</Text>
+                <FontSample className={s.specimen} font={row.font}>{row.sample ?? SPECIMEN}</FontSample>
                 <ValueCell>{resolved(row.value)}</ValueCell>
               </BoardRow>
             ))}

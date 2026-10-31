@@ -5,9 +5,8 @@
 // 만들어지니 조합이 빠질 수 없고, 어휘 밖의 이름은 타입에서 걸린다. 이 파일은 resolver 를
 // import 하지 않는다 — 지도가 아래, resolver 가 위다.
 
-import { tokens, ACCENTS, STATUSES, VARIANTS, ENABLED_SELECTOR, SELECTED_SELECTOR, STATE_TINT_PROPERTY, SYSTEM_COLORS, stateStyle, strokeRing, type Accent, type Ink, type Status, type Variant } from "../tokens";
+import { tokens, ACCENTS, STATUSES, VARIANTS, ENABLED_SELECTOR, SELECTED_SELECTOR, STATE_TINT_PROPERTY, SYSTEM_COLORS, accentProfile, itemProfile, stateStyle, strokeRing, type Accent, type Ink, type Status, type Variant } from "../tokens";
 import { layered } from "../tokens/layers.css";
-import { accentProfile, itemProfile } from "../tokens/color-recipes";
 
 const utilities = layered("utilities");
 const components = layered("components");

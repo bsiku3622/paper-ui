@@ -63,6 +63,15 @@ dp·em·색    CSS 값       var() 참조                  숫자 없는 완성�
 | Typography | 강조를 규칙으로 공개합니다. | 글자 안의 강조는 `emphasisRule()`이 Palette의 굵기 이름(`regular` · `medium` · `semibold` · `bold`)으로 고르고, 앱은 Palette를 직접 읽지 않습니다. 장식(밑줄 `underlineOffset`)만 Palette에서 읽습니다. |
 | Motion | 역할만 공개합니다. | duration·easing·loop는 Motion의 원본이라 `tokens.motion`에 없습니다. 컴포넌트는 역할을 고르고 `transition(role, …속성)`으로 조립해, 속성마다 자기 duration을 따로 고르지 않습니다. |
 
+## 토큰 층과 그 문
+
+원본(`SOURCE`)과 `VALUES` 트리, 이름을 짓는 도우미는 `tokens/` 안에만 있습니다. 패키지의 나머지가 읽는 문은 배럴 `tokens/index.ts` 하나이고, 거기서 나오는 것은 역할(`tokens`), 어휘, 조합(recipe · 규칙 함수 · 상태 조각)뿐입니다.
+
+[contract:foundations.barrel.roles-only]: #
+배럴의 모든 export는 어휘 짝, 조합 함수, 이름(attribute · selector · 시스템 색), 조합 객체, 문서화된 값 역할 가운데 하나로 `tokens/barrel.test.ts`에 올라 있고, 역할 트리의 leaf는 변수 참조거나 변수 위의 식입니다. 값이 역할 자체인 자리는 분기점(`tokens.layout.breakpoint`), 유동 구간(`tokens.layout.section`), Motion의 시간과 곡선(`tokens.motion`과 `MOTION` · `MOTION_LOOPS` · `MOTION_REDUCED`)뿐이고 테스트가 그 이유를 적어 둡니다. 원본이나 `VALUES`, 도우미를 배럴에 올리면 테스트가 막습니다.
+
+원본을 그대로 보여 줘야 하는 곳은 Playground의 Foundations inspector뿐입니다. 시스템마다 읽기 전용 재수출(`tokens/inspect/<시스템>.ts`)이 있고, 앱의 Vite와 tsconfig가 별칭 하나(`@paper-ui/inspect/<시스템>`)로 풉니다. 패키지는 이 폴더를 import하지 않고 배포본에도 담기지 않습니다. 값을 덮어쓰는 길은 반대편에 하나 있습니다 — [`sourceVars()`](shape.md#원본-덮어쓰기).
+
 ## 값이 화면까지 가는 길
 
 `tokens` 객체의 leaf는 값이 아니라 CSS 변수 참조입니다. `tokens.color.bg.raised`는 `#ffffff`가 아니라 `"var(--pui-color-bg-raised)"`이고, 실제 값은 `tokens/variables.css.ts`가 `:root`와 테마 스코프에 한 번 굽습니다. 테마가 바뀌면 변수 값만 바뀌므로 소비처는 테마를 분기하지 않습니다.
@@ -181,22 +190,37 @@ export const panel = style([elevation.overlay, {
 
 ## 규칙은 빌드가 지킨다
 
-원칙은 리뷰어의 기억이 아니라 eslint가 지킵니다. 각 규칙 뒤의 이름은 그 규칙을 거는 eslint 규칙입니다.
+원칙은 리뷰어의 기억이 아니라 eslint가 지킵니다. 각 규칙 뒤의 이름은 그 규칙을 거는 eslint 규칙입니다. 규칙이 읽는 경로와 예외는 모두 `eslint-rules/manifest.js`에 선언하고, 규칙의 이름과 요약도 그 `RULES`가 정본입니다. 예외를 주석으로 만들지 않습니다.
 
-[contract:guardrails.layered-styles.package-css-layered]: #
-[contract:guardrails.no-rule-disable.paper-rules-stay-on]: #
-[contract:guardrails.no-rule-disable.reason-required]: #
-[contract:guardrails.internal-class.no-class-names]: #
+[contract:guardrails.raw-color.no-color-literals]: #
+[contract:guardrails.raw-color.color-owners]: #
+[contract:guardrails.source-isolation.package-barrel-only]: #
+[contract:guardrails.source-isolation.app-exports-only]: #
+[contract:guardrails.source-isolation.inspector-alias]: #
+[contract:guardrails.source-isolation.inspector-flow]: #
+[contract:guardrails.source-isolation.variable-literal]: #
 [contract:guardrails.inline-token.no-token-style]: #
 [contract:guardrails.inline-token.declared-runtime]: #
+[contract:guardrails.source-numbers.structural-only]: #
+[contract:guardrails.source-numbers.media-keys]: #
+[contract:guardrails.source-numbers.depth-owners]: #
+[contract:guardrails.source-numbers.app-roles]: #
+[contract:guardrails.layered-styles.package-css-layered]: #
+[contract:guardrails.internal-class.no-class-names]: #
+[contract:guardrails.global-class.scoped-selectors]: #
+[contract:guardrails.no-rule-disable.paper-rules-stay-on]: #
+[contract:guardrails.no-rule-disable.reason-required]: #
+[contract:guardrails.no-rule-disable.second-pass]: #
+[contract:guardrails.manifest.declared-boundaries]: #
 
-1. **raw 색값 금지** (`paper/raw-color`). OKLCH source는 `palette.ts`, HEX 생성은 `color-ladder.ts`에만 있습니다. 소비처는 `tokens.color`만 참조하고 색을 계산하지 않습니다.
-2. **원본 import 격리** (`no-restricted-imports`). palette·ladder·shape·layout의 원본 모듈은 컴포넌트·resolver·앱이 import하지 않습니다. 원본을 그대로 보여주는 Foundations inspector만 예외입니다.
-3. **패키지의 inline style로 토큰 주입 금지** (`paper/inline-token`). 패키지 스타일은 `.css.ts`의 className으로만 적용합니다. 패키지의 `.ts` · `.tsx`에서 토큰 · `styles` · `internal` · 패키지 자신에서 온 값이 `style`에 닿으면, 변수와 함수 호출을 거쳐도 규칙이 따라가 막습니다. 실행 중에 정해지는 값만 예외이고 그 목록이 전부입니다: Draggable 이동 좌표, Grid track, Floating rank 변수, Floating 앵커 위치, Floating 원본 변수 운반, 호출자가 넘긴 style.
-4. **길이는 원본에만** (`paper/source-numbers`). 패키지는 원본 파일 밖에서 길이 숫자를 쓰지 않습니다. 앱은 간격·형태·깊이(padding·margin·gap·offset·radius·선·그림자·z)를 역할로 고르고, 화면 고유의 치수만 직접 씁니다.
+1. **raw 색값 금지** (`paper/raw-color`). 색 원본은 `palette.ts`의 OKLCH 좌표뿐이고 HEX는 `color-ladder.ts`가 생성합니다. 어떤 파일도 색 리터럴을 손으로 쓰지 않습니다 — HEX, `oklch()` 같은 색 함수, 색을 받는 속성의 이름 있는 색과 CSS 시스템 색 키워드가 모두 막히고, 시스템 색은 `SYSTEM_COLORS`를 거칩니다. 패키지에서 `tokens.color`를 읽는 곳은 paint 층(`primitives/paint/`), `styles/`의 class 지도, Icon의 잉크뿐입니다.
+2. **원본 격리** (`paper/source-isolation`). 원본 값을 읽는 곳은 토큰 층(`tokens/`)뿐입니다. 패키지의 나머지는 tokens 배럴로만 들어가고, 앱과 fixture는 패키지 소스를 import하지 않고 exports로만 씁니다. Foundations inspector는 자기 시스템 하나를 `@paper-ui/inspect/<시스템>`으로 읽어 글자나 kit의 표시 부품(`Swatch` · `Meter` …)으로만 보여 주고, 그 값은 `style` · `className` · 패키지 컴포넌트의 prop에 닿지 않습니다. `--pui-` 변수는 문자열로 쓰지 않고 `tokens`로 읽고 `sourceVars()`로 덮어씁니다. 테스트는 검증 코드라 받지 않습니다. 같은 묶음이 React Aria 경계도 지킵니다: `@react-aria/*` · `@react-stately/*` · `@react-types/*`는 `internal/aria` 밖에서 import하지 않습니다.
+3. **inline style로 토큰 주입 금지** (`paper/inline-token`). 토큰은 `.css.ts`의 className으로만 적용합니다. 패키지와 앱의 `.tsx`에서 토큰 · `styles` · `internal` · 패키지 자신에서 온 값이 `style`에 닿으면, 변수와 함수 호출을 거쳐도 규칙이 따라가 막습니다. 실행 중에 정해지는 값만 예외이고 그 목록이 전부입니다: Draggable 이동 좌표, Grid track, Floating rank 변수, Floating 앵커 위치, Floating 원본 변수 운반, 호출자가 넘긴 style.
+4. **숫자는 원본에만** (`paper/source-numbers`). 스타일 자리에 쓰는 숫자 · 단위 · easing은 구조 값(0 · 100% · 50% · 1fr · 45°의 배수 · calc의 `/ 2`와 `* -1`, 정본은 `eslint-rules/structural.js`)이 아니면 원본의 값입니다. 패키지는 토큰 층 밖에서 간격 · 형태 · 깊이 · 글자 · 투명도 · 시간 · 치수를 모두 역할로 고르고, 앱은 화면 고유의 치수(폭 · 높이 · 그리드 트랙)만 직접 씁니다. 미디어 쿼리의 길이는 `tokens.layout.breakpoint`로만 적습니다. 깊이(`zIndex` · `boxShadow` · `filter`)는 Surface와 Floating의 stylesheet나 elevation 조각에서, 안쪽 선은 `strokeRing()`에서만 나옵니다.
 5. **패키지 CSS는 레이어 안에** (`paper/layered-styles`). 패키지 stylesheet는 vanilla-extract의 `style` · `styleVariants` · `globalStyle`을 직접 부르지 않고 `tokens/layers.css.ts`의 `layered()`로 규칙을 만듭니다. 그래서 모든 규칙이 cascade layer `pui` 안에 들고, 레이어 밖의 앱 CSS가 로드 순서와 무관하게 이깁니다([우선순위](../get-started/install.md#우선순위)). 레이어를 정의하는 `layers.css.ts`만 예외이고, `keyframes`·`createVar`는 그대로 씁니다.
-6. **규칙은 주석으로 끄지 않음** (`paper/no-rule-disable`). paper 규칙은 `eslint-disable` 주석으로 끌 수 없고, 예외는 `eslint.config.js`에만 선언합니다. 다른 규칙을 끄는 주석은 `--` 뒤에 이유를 적고, 아무것도 가리지 않는 주석은 그 자체로 오류입니다.
-7. **앱은 패키지 내부 class 이름을 쓰지 않음** (`paper/internal-class`). 앱과 테스트는 `pui-` 뒤에 글자가 오는 문자열을 쓰지 않습니다. 공유 축의 class는 패키지가 가진 타입 있는 지도(`fillClass` · `inkClass` · `accentVariantClass` · `spaceClass`)에서 고르고, 그 이름은 빌드가 짓습니다. 변수 `--pui-*`와 속성 `data-pui-*`는 이름을 따로 약속하므로 통과합니다.
+6. **앱은 패키지 내부 class 이름을 쓰지 않음** (`paper/internal-class`). 앱과 테스트는 `pui-` 뒤에 글자가 오는 문자열을 쓰지 않습니다. 공유 축의 class는 패키지가 가진 타입 있는 지도(`fillClass` · `inkClass` · `accentVariantClass` · `spaceClass`)에서 고르고, 그 이름은 빌드가 짓습니다. 변수 `--pui-*`와 속성 `data-pui-*`는 이 규칙을 통과합니다(변수 문자열은 2번이 막습니다).
+7. **손으로 지은 전역 이름 금지** (`paper/global-class`). 앱 `.css.ts`의 `globalStyle` selector는 scoped class에서 시작합니다. 요소와 `:root` selector는 `site/shell.css.ts`에만 있고, 전역 keyframes와 전역 변수 이름은 짓지 않습니다.
+8. **규칙은 주석으로 끄지 않음** (`paper/no-rule-disable`). paper 규칙은 `eslint-disable` 주석으로 끌 수 없고, 예외는 `eslint-rules/manifest.js`에만 선언합니다. 다른 규칙을 끄는 주석은 `--` 뒤에 이유를 적고, 아무것도 가리지 않는 주석은 그 자체로 오류입니다. lint는 두 번 돕니다. 두 번째 판(`eslint.paper.config.js`)은 paper 규칙만 주석 설정을 끈 채 읽으므로 `/* eslint paper/…: "off" */` 같은 설정 주석도 아무것도 끄지 못합니다.
 
 [contract:foundations.class-maps.follow-vocabulary]: #
 값만 원본에서 나오는 것이 아닙니다. 어휘 상수와 타입, class 지도의 키도 같은 원본 tree를 돌아 만들어지므로, 원본에 단계를 더하면 상수 · 타입 · class가 함께 늘고 어휘 밖의 이름은 타입에서 걸립니다.

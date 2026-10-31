@@ -2,7 +2,8 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    "customConditions": ["paper-ui-source"]
+    "customConditions": ["paper-ui-source"],
+    "paths": { "@paper-ui/inspect/*": ["../packages/paper-ui/src/tokens/inspect/*.ts"] }
   },
   "include": ["src/**/*", "vite/**/*", "vite.config.ts"]
 }

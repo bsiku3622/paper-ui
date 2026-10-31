@@ -2,8 +2,8 @@ import { useState, type ReactNode } from "react";
 
 import { Button, Inline, Spinner, Surface, Switch, Text, loop, presence } from "@studio-baeks/paper-ui";
 import { MOTION_CONSUMERS, MOTION_ROLES, tokens, transition, type MotionRole } from "@studio-baeks/paper-ui/tokens";
+import { DURATION, EASING, LOOP, LOOP_REDUCED } from "@paper-ui/inspect/motion";
 
-import { DURATION, EASING, LOOP, LOOP_REDUCED } from "../../../../packages/paper-ui/src/tokens/motion";
 import { Board, BoardGroup, BoardRow, Cell, Curve, FoundationSection, TokenCell, Travel, ValueCell, px } from "./kit";
 import { LOOP_NOTES, TRANSITION_PROPERTIES, roleNote, roleRange } from "./motion-roles";
 import * as s from "./foundations.css";

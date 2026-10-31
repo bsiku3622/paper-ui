@@ -25,6 +25,10 @@ breakpoint는 em으로 적습니다. 길이는 rem, 미디어 쿼리는 em, 선�
 [contract:foundations.layout.section-fluid]: #
 section은 고정 gap 사다리의 선언된 유동 예외입니다. `start`는 `clamp(3xl, 8vh, 2 × 3xl)`, `end`는 `clamp(2xl, 5vh, 3xl)`이라 뷰포트가 낮으면 3xl · 2xl에 머물고 높아지면 위 한도까지 자랍니다. 새 변수를 굽지 않고 Space 원본 변수를 쓰는 식이라, 하위 트리에서 Space 원본을 덮으면 section도 다시 계산됩니다. 유동 단계는 Typography의 `hero`와 이 section 둘뿐입니다.
 
+## 앱에서
+
+앱은 형제 사이와 페이지 가장자리를 `tokens.layout.gap` · `gutter` · `container`로, 구간의 위아래를 `section`으로 고릅니다. 미디어 쿼리도 breakpoint 역할로만 적습니다 — `` `(max-width: ${tokens.layout.breakpoint.md})` ``처럼 값을 끼워 넣고 길이를 손으로 쓰지 않으며, `paper/source-numbers`가 `@media`와 `@container`의 키에서 이를 막습니다. 한 화면이 제 폭에서 접히는 `/demo`는 예외로, 그 화면의 치수와 분기점을 `pages/demo/layout.ts` 한 모듈에 모아 manifest에 선언합니다. position · z · 그림자는 아래 elevation으로만 고릅니다.
+
 ## Elevation — 위치와 쌓임과 그림자는 한 단위다
 
 [contract:foundations.layout.elevation-unit]: #

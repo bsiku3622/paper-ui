@@ -67,7 +67,7 @@
     "!src/tokens/inspect"
   ],
   "scripts": {
-    "build": "eslint src --max-warnings 0 && tsc --noEmit && vite build && node scripts/build-types.mjs",
+    "build": "eslint src --max-warnings 0 && eslint src -c ../../eslint.paper.config.js --quiet && tsc --noEmit && vite build && node scripts/build-types.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest --run",
     "check:package": "publint --strict && attw --pack . --profile esm-only --exclude-entrypoints ./styles.css",

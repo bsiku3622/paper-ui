@@ -1,8 +1,6 @@
 import { joinClass } from "../internal/joinClass";
 import { controlFontSizeClass, presetClass, textMonoClass, textNumericClass, textRoleClass } from "../styles/typography.css";
-import type { ControlFontSize, ControlSize, Ink, TextFamily, TextVariant } from "../tokens";
-import { TEXT_INK } from "../tokens/typography";
-import type { ButtonWeight } from "../tokens/typography-recipes";
+import { TEXT_INK, type ButtonWeight, type ControlFontSize, type ControlSize, type Ink, type TextFamily, type TextVariant } from "../tokens";
 import { resolveInk } from "./color";
 
 type TextOptions = { variant?: TextVariant; family?: TextFamily; ink?: Ink; numeric?: boolean };

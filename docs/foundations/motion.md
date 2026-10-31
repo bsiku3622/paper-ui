@@ -71,6 +71,10 @@ export const row = style({
 
 `transition("state", "background", "border-color")`는 `background 130ms cubic-bezier(0.4, 0, 0.2, 1), border-color 130ms …`가 됩니다.
 
+## 앱에서
+
+앱도 시간과 곡선을 숫자로 쓰지 않습니다. 전이는 `transition(role, …속성)`으로, 등장과 반복은 `presence` · `loop` class로 고르고, 앱 stylesheet의 `transition` · `animation`에 `150ms`나 `cubic-bezier(…)`를 적으면 `paper/source-numbers`가 막습니다. 새 움직임이 필요하면 역할을 더하는 일이지 앱의 값을 더하는 일이 아닙니다.
+
 ## Reduced motion
 
 [contract:foundations.motion.reduced]: #

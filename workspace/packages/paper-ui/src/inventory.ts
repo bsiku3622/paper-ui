@@ -43,6 +43,7 @@ export const INVENTORY = {
     "SPACES", "DIMENSIONS", "MEASURES", "ICON_SIZES", "CONTROL_SHAPES", "SURFACE_RADII",
     "ELEVATIONS", "BREAKPOINTS", "CONTAINERS", "ALIGNS", "JUSTIFIES", "JUSTIFY_ITEMS", "ORIENTATIONS",
     "MOTION_ROLES",
+    "sourceVars",
   ],
   polymorphic: [
     "Box", "Surface", "Paint", "Stack", "Inline", "Grid", "Text", "VisuallyHidden",

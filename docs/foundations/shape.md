@@ -24,19 +24,27 @@ SHAPE_RECIPES   컴포넌트 anatomy: 역할과 원본 anatomy를 조합한 식 
 *.css.ts        className으로 적용
 ```
 
+### 원본 덮어쓰기
+
 [contract:foundations.override.rederives-roles]: #
 역할은 자기 변수를 갖지 않습니다. 별칭은 원본 변수 그 자체이고, 식은 그 식을 쓰는 요소에서 계산됩니다. 그래서 어떤 하위 트리에서 원본 변수 하나를 덮어쓰면, 그 위에 지은 역할과 recipe가 그 자리에서 모두 다시 계산됩니다. 아래 예시는 한 영역의 컨트롤 높이만 바꿉니다.
 
-```css
-.dense { --pui-shape-control-height-md: 40px; }
+```ts
+import { style } from "@vanilla-extract/css";
+import { sourceVars } from "@studio-baeks/paper-ui/tokens";
+
+export const dense = style({ vars: sourceVars({ shape: { control: { height: { md: "40px" } } } }) });
 ```
 
 이 한 줄로 그 영역의 md 버튼 높이는 40, 입력 inset은 12, 버튼 inset은 17, 체크박스는 20, 스위치 트랙은 40×22가 됩니다. 역할 변수를 따로 구웠다면 `:root`에서 이미 계산이 끝나 이 재정의를 따라가지 못합니다.
 
+[contract:foundations.override.source-paths-only]: #
+`sourceVars()`는 원본 트리의 경로를 그 값이 방출되는 변수 이름으로 바꿔 돌려줍니다. 경로는 원본을 그대로 따라 `shape` · `layout` · `typography` 셋에서 시작하고, 역할의 경로(`shape.inset`)는 타입이 막고 모르는 경로는 실행 때 던집니다. 돌려주는 이름은 언제나 모드와 무관하게 구워지는 원본 변수(`SOURCE_VARIABLES`)의 부분집합이라, 같은 값을 Floating의 panel이 따라 옮깁니다. 결과는 vanilla-extract의 `vars`와 React의 `style`에 그대로 들어갑니다. 변수를 일반 CSS에 직접 적을 수도 있지만 그 형태(`.dense { --pui-shape-control-height-md: 40px }`)는 검사받지 않습니다 — 이름은 Playground [Shape](/playground/foundations/shape)의 원본 표에 나옵니다. 앱과 fixture는 `--pui-` 이름을 문자열로 쓰지 않고 이 함수를 부릅니다(`paper/source-isolation`).
+
 [contract:foundations.override.portal-carry]: #
 그 영역에서 연 Floating의 panel은 `<body>` 아래로 옮겨지지만 덮어쓴 원본을 잃지 않습니다. Portal의 root가 열린 자리와 container 사이에서 값이 다른 원본 변수(`SOURCE_VARIABLES`: Shape · mode와 무관한 Layout · Typography)만 얹어 옮기므로, 영역 안에서 연 popover와 dialog 속 컨트롤도 40이 되고 dialog의 scrim 여백도 영역의 gutter를 따릅니다. 처음부터 열려 있는 panel도 Trigger가 선 자리를 따르고, 영역 밖에서 연 것은 기본값 그대로입니다. 색 역할은 옮기지 않고, 모드는 테마 속성이 옮깁니다.
 
-패키지 안에서는 숫자를 원본 파일(`shape.ts` · `layout.ts` · `typography.ts` · `motion.ts`와 색 원본)에만 씁니다. recipe와 stylesheet에는 숫자가 없고, eslint `paper/source-numbers`가 패키지 전체에서 이를 막습니다.
+패키지 안에서는 숫자를 원본 파일(`shape.ts` · `layout.ts` · `typography.ts` · `motion.ts`와 색 원본)에만 씁니다. recipe와 stylesheet에는 구조 값(0 · 100% · 1fr …) 말고 숫자가 없고, eslint `paper/source-numbers`가 토큰 층 밖의 패키지 전체에서 이를 막습니다.
 
 ## 길이 scale — inset
 
@@ -134,4 +142,4 @@ Switch의 손잡이는 꺼지면 트랙 끝에서 테만큼, 켜지면 반대쪽
 
 ## 앱에서
 
-앱은 간격·형태·깊이를 역할로 고릅니다. 안쪽 여백은 `tokens.shape.inset`, 형제 사이·margin·위치 offset은 `tokens.layout.gap`, 선은 `tokens.shape.stroke`, position·z·그림자는 Layout의 `elevation` class입니다. 사이드바 폭이나 그리드 트랙처럼 그 화면에만 있는 치수는 앱이 직접 씁니다. eslint `paper/source-numbers`의 앱 범위가 이 경계를 지킵니다.
+앱은 간격·형태·깊이를 역할로 고릅니다. 안쪽 여백은 `tokens.shape.inset`, 형제 사이·margin·위치 offset은 `tokens.layout.gap`, 선은 `tokens.shape.stroke`, position·z·그림자는 Layout의 `elevation` class입니다. 사이드바 폭이나 그리드 트랙처럼 그 화면에만 있는 치수는 앱이 직접 쓰고, 미디어 쿼리의 길이는 `tokens.layout.breakpoint`로 적습니다. eslint `paper/source-numbers`의 앱 범위(콘텐츠 치수를 뺀 모든 범주)가 이 경계를 지킵니다.

@@ -1,9 +1,8 @@
 // The paints other primitives and Atoms borrow. Colour lives in the paint tier and nowhere else, so a
 // part that needs a colour takes the class from here instead of reading tokens.color itself.
 
-import { ENABLED_SELECTOR, SYSTEM_COLORS, VALUE_ATTRIBUTE, stateSelector, stateStyle, strokeRing, tokens, type DividerLevel } from "../../tokens";
+import { ENABLED_SELECTOR, SYSTEM_COLORS, VALUE_ATTRIBUTE, markForcedProfile, markProfile, outlinedControlProfile, stateSelector, stateStyle, strokeRing, tokens, type DividerLevel } from "../../tokens";
 import { layered } from "../../tokens/layers.css";
-import { markForcedProfile, markProfile, outlinedControlProfile } from "../../tokens/color-recipes";
 
 const { style, styleVariants } = layered("components");
 

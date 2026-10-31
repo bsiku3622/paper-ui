@@ -3,9 +3,8 @@
 // 변수는 tokens/variables.css.ts 가 굽는다. 여기는 그 변수를 읽어 문서에 얹는 규칙만 둔다.
 // component · resolver · app 은 tokens var() 만 본다.
 
-import { THEME_ATTRIBUTE, THEME_SWAP_ATTRIBUTE, tokens } from "../tokens";
+import { THEME_ATTRIBUTE, THEME_SWAP_ATTRIBUTE, tokens, typographyRule } from "../tokens";
 import { layered } from "../tokens/layers.css";
-import { typographyRule } from "../tokens/typography-recipes";
 
 // 문서 바탕(body)은 pui.base, box-sizing 과 body margin 은
 // 맨 앞의 pui.reset 에 든다.

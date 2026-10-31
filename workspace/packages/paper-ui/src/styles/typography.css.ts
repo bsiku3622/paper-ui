@@ -2,9 +2,8 @@
 // preset · fontSize 탈출구가 각자 지도 하나로 굳는다. 선언은 tokens/typography-recipes.ts 가 만들고
 // 여기는 그것을 class 로 얹을 뿐이다. 전부 pui.utilities 에 있어서 컴포넌트의 geometry 가 이긴다.
 
-import { tokens, CONTROL_FONT_SIZES, CONTROL_SIZES, type ControlFontSize, type ControlSize } from "../tokens";
+import { tokens, CONTROL_FONT_SIZES, CONTROL_SIZES, presetRule, typographyRule, type ControlFontSize, type ControlSize } from "../tokens";
 import { layered } from "../tokens/layers.css";
-import { presetRule, typographyRule } from "../tokens/typography-recipes";
 
 const { style, styleVariants } = layered("utilities");
 

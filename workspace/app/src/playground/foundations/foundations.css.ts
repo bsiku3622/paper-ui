@@ -2,7 +2,7 @@
 // each specimen only arranges the token it shows.
 import { globalStyle, style, styleVariants, type ComplexStyleRule } from "@vanilla-extract/css";
 
-import { CONTROL_SIZES, ELEVATIONS, SPACES, codeRule, focusRing, presetRule, tokens, type ControlSize } from "@studio-baeks/paper-ui/tokens";
+import { CONTROL_SIZES, ELEVATIONS, SPACES, codeRule, focusRing, monoRule, presetRule, tokens, type ControlSize } from "@studio-baeks/paper-ui/tokens";
 
 import { bar } from "./kit.css";
 import type { PresetPath } from "./typography-roles";
@@ -44,7 +44,7 @@ export const focusBox = style({ width: shape.control.height.md, height: shape.co
 export const targetBox = style({ width: shape.target.min, height: shape.target.min, borderRadius: shape.radius.control, border: line, background: color.bg.sunken });
 const controlBase = style({ width: shape.dimension.width.sm, borderRadius: shape.radius.control, border: line, background: color.bg.sunken });
 export const controlBox = variantsOf(CONTROL_SIZES, (size) => [controlBase, { height: shape.control.height[size] }]);
-export const rule = style({ fontFamily: tokens.typography.palette.family.mono, fontSize: tokens.typography.role.caption.size, color: color.ink.secondary });
+export const rule = style({ fontFamily: monoRule().fontFamily, fontSize: tokens.typography.role.caption.size, color: color.ink.secondary });
 export const recipeSample = style({ display: "flex", alignItems: "center", minHeight: shape.control.height.lg, minWidth: 0 });
 
 // Layout
@@ -57,7 +57,7 @@ export const zLayer = style({
   borderRadius: shape.radius.surface.sm,
   border: line,
   background: color.bg.raised,
-  selectors: Object.fromEntries(ELEVATIONS.map((_, index) => index + 1).map((n) => [`&:nth-child(${n})`, { insetInlineStart: `calc(${shape.inset.md} * ${n - 1})` }])),
+  selectors: Object.fromEntries(ELEVATIONS.map((_, index) => [`&:nth-child(${index + 1})`, { insetInlineStart: `calc(${shape.inset.md} * ${index})` }])),
 });
 export const elevationStage = style({ display: "flex", justifyContent: "center", padding: shape.inset.md, borderRadius: shape.radius.surface.sm, background: color.bg.canvas, isolation: "isolate" });
 export const elevationCard = style({ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: shape.control.height.lg, borderRadius: shape.radius.surface.md, border: line, background: color.bg.raised });

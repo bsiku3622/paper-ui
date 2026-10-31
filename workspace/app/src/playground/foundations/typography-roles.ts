@@ -1,7 +1,9 @@
 // The Typography inspector's data, read from the specs that choose from the palette: the leading each
 // font size is shown on, and the preset rows with what each one is for.
 
-import { CODE_SPEC, PRESET_SPEC, ROLE_SPEC, TYPOGRAPHY_SOURCE, type TextVariant } from "../../../../packages/paper-ui/src/tokens/typography";
+import type { TextVariant } from "@studio-baeks/paper-ui/tokens";
+import { CODE_SPEC, PRESET_SPEC, ROLE_SPEC, TYPOGRAPHY_SOURCE } from "@paper-ui/inspect/typography";
+
 import { valueAt } from "./paths";
 
 type FontSize = keyof typeof TYPOGRAPHY_SOURCE.fontSize | keyof typeof TYPOGRAPHY_SOURCE.fluid;

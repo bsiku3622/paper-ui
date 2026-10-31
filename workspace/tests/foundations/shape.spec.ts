@@ -1,5 +1,6 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import type { SourceOverrides } from "../../packages/paper-ui/src/tokens/overrides";
 import { metrics as measure } from "../support/geometry";
 import { openHarness, openPlayground } from "../support/harness";
 import { tab } from "../support/keyboard";
@@ -87,6 +88,32 @@ test("[foundations.override.rederives-roles] one source override in a subtree re
   await page.locator("#shape-fixture").evaluate((element: HTMLElement) => { element.dir = "rtl"; });
   // Right to left, the checked thumb is at the track's left end: the rim from the left edge.
   await expect.poll(() => thumbEdges(page.locator("#shape-fixture [aria-label=switch-md]"))).toEqual({ left: 2, right: 40 - 2 - 18 });
+});
+
+test("[foundations.override.source-paths-only] window.__paper.sourceVars names the variables of a source override, a region that wears them re-derives its controls, and a role path throws", async ({ page }) => {
+  await openHarness(page, "overrides");
+  type Paper = { __paper: { sourceVars: (overrides: SourceOverrides) => Record<string, string> } };
+  const vars = await page.evaluate(() => (window as unknown as Paper).__paper.sourceVars({ shape: { control: { height: { md: "40px" } }, radius: { control: "9px" } } }));
+  expect(vars).toEqual({ "--pui-shape-control-height-md": "40px", "--pui-shape-radius-control": "9px" });
+  expect((await measure(page.getByTestId("button"))).height).toBe(32);
+  await page.getByTestId("override-region").evaluate((element, declarations) => {
+    for (const [name, value] of Object.entries(declarations)) element.style.setProperty(name, value);
+  }, vars);
+  // control height 40 → the button is 40 tall and round(12 × 1.4) = 17 inset; the control radius follows.
+  const button = await measure(page.getByTestId("button"));
+  expect(button.height).toBe(40);
+  expect(button.padding).toBe(17);
+  expect(button.radius).toBe(9);
+  expect((await measure(page.getByTestId("field"))).height).toBe(40);
+  const refusal = await page.evaluate(() => {
+    try {
+      (window as unknown as Paper).__paper.sourceVars({ shape: { inset: { lg: "24px" } } } as unknown as SourceOverrides);
+      return "";
+    } catch (error) {
+      return (error as Error).message;
+    }
+  });
+  expect(refusal).toContain("shape.inset.lg");
 });
 
 test("[foundations.override.portal-carry] a Floating opened inside an overriding region draws its controls with the region's source, and one opened outside keeps the defaults", async ({ page }) => {

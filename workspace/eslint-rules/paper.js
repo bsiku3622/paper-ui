@@ -1,29 +1,84 @@
 import path from "node:path";
 
-const rawColor = /(?:#|%23)(?:[\da-f]{8}|[\da-f]{6}|[\da-f]{4}|[\da-f]{3})\b|\b(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color|color-mix)\s*\(/i;
-const manualVar = /var\(\s*--(?:pui|paper)-/;
-const colorProperty = /^(?:color|background|backgroundColor|border(?:Top|Right|Bottom|Left|Inline|Block|InlineStart|InlineEnd)?(?:Color)?|outline(?:Color)?|boxShadow|textShadow|fill|stroke|caretColor|accentColor|textDecorationColor)$/;
-const namedColors = new Set(("aliceblue antiquewhite aqua aquamarine azure beige bisque black blanchedalmond blue blueviolet brown burlywood cadetblue chartreuse chocolate coral cornflowerblue cornsilk crimson cyan darkblue darkcyan darkgoldenrod darkgray darkgreen darkgrey darkkhaki darkmagenta darkolivegreen darkorange darkorchid darkred darksalmon darkseagreen darkslateblue darkslategray darkslategrey darkturquoise darkviolet deeppink deepskyblue dimgray dimgrey dodgerblue firebrick floralwhite forestgreen fuchsia gainsboro ghostwhite gold goldenrod gray green greenyellow grey honeydew hotpink indianred indigo ivory khaki lavender lavenderblush lawngreen lemonchiffon lightblue lightcoral lightcyan lightgoldenrodyellow lightgray lightgreen lightgrey lightpink lightsalmon lightseagreen lightskyblue lightslategray lightslategrey lightsteelblue lightyellow lime limegreen linen magenta maroon mediumaquamarine mediumblue mediumorchid mediumpurple mediumseagreen mediumslateblue mediumspringgreen mediumturquoise mediumvioletred midnightblue mintcream mistyrose moccasin navajowhite navy oldlace olive olivedrab orange orangered orchid palegoldenrod palegreen paleturquoise palevioletred papayawhip peachpuff peru pink plum powderblue purple rebeccapurple red rosybrown royalblue saddlebrown salmon sandybrown seagreen seashell sienna silver skyblue slateblue slategray slategrey snow springgreen steelblue tan teal thistle tomato turquoise violet wheat white whitesmoke yellow yellowgreen").split(" "));
+import { COLOR_OWNERS, GLOBAL_SELECTOR_FILES, RUNTIME_STYLE, TOKEN_LAYER, isInside, isTestFile, workspacePath } from "./manifest.js";
+import { sourceIsolationRule } from "./source-isolation.js";
+import { sourceNumbersRule } from "./source-numbers.js";
 
-const propertyName = (node) => {
-  const parent = node.parent;
-  if (parent?.type === "Property") return parent.key.name ?? parent.key.value;
-  if (parent?.type === "JSXAttribute") return parent.name.name;
-  return undefined;
+// A colour written by hand: a HEX (also url-encoded) or a colour function. Any string, template or key.
+const rawColor = /(?:#|%23)(?:[\da-f]{8}|[\da-f]{6}|[\da-f]{4}|[\da-f]{3})\b|\b(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color|color-mix)\s*\(/i;
+// The properties whose value may be a colour, so a keyword in them is read as one.
+const colorProperty = /color|background|border|outline|shadow|fill|stroke|caret|accent|decoration|columnRule|filter|mask|^--/i;
+const namedColors = new Set(("aliceblue antiquewhite aqua aquamarine azure beige bisque black blanchedalmond blue blueviolet brown burlywood cadetblue chartreuse chocolate coral cornflowerblue cornsilk crimson cyan darkblue darkcyan darkgoldenrod darkgray darkgreen darkgrey darkkhaki darkmagenta darkolivegreen darkorange darkorchid darkred darksalmon darkseagreen darkslateblue darkslategray darkslategrey darkturquoise darkviolet deeppink deepskyblue dimgray dimgrey dodgerblue firebrick floralwhite forestgreen fuchsia gainsboro ghostwhite gold goldenrod gray green greenyellow grey honeydew hotpink indianred indigo ivory khaki lavender lavenderblush lawngreen lemonchiffon lightblue lightcoral lightcyan lightgoldenrodyellow lightgray lightgreen lightgrey lightpink lightsalmon lightseagreen lightskyblue lightslategray lightslategrey lightsteelblue lightyellow lime limegreen linen magenta maroon mediumaquamarine mediumblue mediumorchid mediumpurple mediumseagreen mediumslateblue mediumspringgreen mediumturquoise mediumvioletred midnightblue mintcream mistyrose moccasin navajowhite navy oldlace olive olivedrab orange orangered orchid palegoldenrod palegreen paleturquoise palevioletred papayawhip peachpuff peru pink plum powderblue purple rebeccapurple red rosybrown royalblue saddlebrown salmon sandybrown seagreen seashell sienna silver skyblue slateblue slategray slategrey snow springgreen steelblue tan teal thistle tomato turquoise violet wheat white whitesmoke yellow yellowgreen").split(" "));
+// The CSS system colours, spelled as the specification spells them. A component asks for one by name through
+// SYSTEM_COLORS, never by its keyword. The spelling is read as written, so `canvas` the Surface fill stays a word.
+const systemColors = new Set("Canvas CanvasText LinkText VisitedText ActiveText ButtonFace ButtonText ButtonBorder Field FieldText Highlight HighlightText SelectedItem SelectedItemText Mark MarkText GrayText AccentColor AccentColorText".split(" "));
+
+const QUOTED_WRAPPERS = new Set(["TSAsExpression", "TSSatisfiesExpression", "TSNonNullExpression", "TSTypeAssertion"]);
+
+// The string pieces a value is made of, through wrappers, conditionals, logicals, templates, concatenations,
+// arrays and the arguments of a call. A piece is a string literal or a template's text.
+const pieces = (node, found = []) => {
+  if (!node) return found;
+  if (QUOTED_WRAPPERS.has(node.type)) return pieces(node.expression, found);
+  switch (node.type) {
+    case "Literal": if (typeof node.value === "string") found.push(node); break;
+    case "TemplateLiteral": found.push(node); node.expressions.forEach((expression) => pieces(expression, found)); break;
+    case "ConditionalExpression": pieces(node.consequent, found); pieces(node.alternate, found); break;
+    case "LogicalExpression":
+    case "BinaryExpression": pieces(node.left, found); pieces(node.right, found); break;
+    case "ArrayExpression": node.elements.forEach((element) => pieces(element, found)); break;
+    case "CallExpression": node.arguments.forEach((argument) => pieces(argument, found)); break;
+    default:
+  }
+  return found;
+};
+const textOf = (node) => (node.type === "TemplateLiteral" ? node.quasis.map((part) => part.value.cooked ?? part.value.raw).join(" ") : node.value);
+
+// The package reads `tokens.color` in the paint tier and nowhere else: a part that needs a colour takes the class
+// from there. A read is `tokens.color…` or `const { color } = tokens`.
+const PACKAGE_SRC = TOKEN_LAYER.replace(/\/tokens$/, "");
+const readsColorRoles = {
+  MemberExpression(node) {
+    return node.object.type === "Identifier" && node.object.name === "tokens" && ((!node.computed && node.property.name === "color") || (node.computed && node.property.value === "color"));
+  },
+  VariableDeclarator(node) {
+    return node.init?.type === "Identifier" && node.init.name === "tokens" && node.id.type === "ObjectPattern"
+      && node.id.properties.some((property) => property.type === "Property" && (property.key.name ?? property.key.value) === "color");
+  },
 };
 
 const rawColorRule = {
-  meta: { type: "problem", schema: [], messages: { raw: "Raw color 금지. tokens.color의 semantic 참조를 사용하세요.", variable: "CSS variable 문자열을 직접 작성하지 말고 tokens 참조를 사용하세요." } },
+  meta: { type: "problem", schema: [], messages: { raw: "Raw color 금지. tokens.color의 semantic 참조를 사용하세요.", named: "이름 있는 색(`{{word}}`)을 쓰지 않습니다. 색은 tokens.color에서, 시스템 색은 SYSTEM_COLORS에서 고릅니다.", owner: "tokens.color는 paint 층(primitives/paint)과 styles/의 class 지도, Icon의 잉크에서만 읽습니다. 다른 곳은 paint 층이 주는 class를 씁니다." } },
   create(context) {
-    const check = (node, value) => {
-      if (rawColor.test(value) || (colorProperty.test(propertyName(node) ?? "") && value.split(/[\s,()]+/).some((word) => namedColors.has(word.toLowerCase())))) {
-        context.report({ node, messageId: "raw" });
+    const file = workspacePath(context.filename);
+    const ownership = isInside(file, PACKAGE_SRC) && !isInside(file, TOKEN_LAYER) && !isTestFile(file) && !COLOR_OWNERS.some((owner) => isInside(file, owner));
+    const reported = new WeakSet();
+    const flag = (node, messageId, data) => {
+      if (reported.has(node)) return;
+      reported.add(node);
+      context.report({ node, messageId, data });
+    };
+    // A keyword in the value of a colour-capable key.
+    const checkKeyword = (value) => {
+      for (const piece of pieces(value)) {
+        const word = textOf(piece).split(/[\s,()/]+/).find((candidate) => namedColors.has(candidate.toLowerCase()) || systemColors.has(candidate));
+        if (word) flag(piece, "named", { word });
       }
-      if (manualVar.test(value)) context.report({ node, messageId: "variable" });
     };
     return {
-      Literal(node) { if (typeof node.value === "string") check(node, node.value); },
-      TemplateLiteral(node) { check(node, node.quasis.map((part) => part.value.cooked ?? part.value.raw).join(" ")); },
+      ...(ownership ? {
+        MemberExpression(node) { if (readsColorRoles.MemberExpression(node)) flag(node, "owner"); },
+        VariableDeclarator(node) { if (readsColorRoles.VariableDeclarator(node)) flag(node, "owner"); },
+      } : {}),
+      Literal(node) { if (typeof node.value === "string" && rawColor.test(node.value)) flag(node, "raw"); },
+      TemplateLiteral(node) { if (rawColor.test(textOf(node))) flag(node, "raw"); },
+      Property(node) {
+        if (node.parent.type === "ObjectExpression" && colorProperty.test(String(node.key.name ?? node.key.value ?? ""))) checkKeyword(node.value);
+      },
+      JSXAttribute(node) {
+        if (node.value?.type === "JSXExpressionContainer" && colorProperty.test(String(node.name.name))) checkKeyword(node.value.expression);
+        else if (node.value?.type === "Literal" && colorProperty.test(String(node.name.name))) checkKeyword(node.value);
+      },
     };
   },
 };
@@ -34,7 +89,7 @@ const rawColorRule = {
 // itself. "Reaches" follows what the value is made of: a declarator's initialiser and destructuring, a variable's
 // later assignments, member chains, a call's callee and arguments, the bodies of the functions it holds, and
 // conditional, logical, binary, template, spread and TypeScript-wrapper nodes. No call is opaque and no name is
-// listed; a `throw` is not followed, since what a function throws is never the value it returns. The declared runtime modules (the `runtime` option, each with its reason) are untracked: what they
+// listed; a `throw` is not followed, since what a function throws is never the value it returns. The declared runtime modules (RUNTIME_STYLE in the manifest, each with its reason) are untracked: what they
 // compute is a value of the moment — an anchored position, an Aria press style, a carried source variable.
 const TRACKED_DIRECTORIES = ["tokens", "styles", "internal"];
 const PACKAGE_IMPORT = /^@studio-baeks\/paper-ui/;
@@ -42,24 +97,24 @@ const SOURCE_ROOT = /^(.*[\\/]packages[\\/]paper-ui[\\/]src)[\\/]/;
 const TYPE_WRAPPERS = new Set(["TSAsExpression", "TSSatisfiesExpression", "TSNonNullExpression", "TSTypeAssertion", "TSInstantiationExpression"]);
 
 const modulePath = (entry) => entry.replace(/\/\*\*$/, "").replace(/(?:\.css)?\.tsx?$/, "");
+const RUNTIME_MODULES = Object.keys(RUNTIME_STYLE).map(modulePath);
 
 const inlineTokenRule = {
   meta: {
     type: "problem",
-    schema: [{ type: "object", properties: { runtime: { type: "object", additionalProperties: { type: "string", minLength: 1 } } }, additionalProperties: false }],
-    messages: { inline: "Package 토큰은 inline style 대신 .css.ts className으로 적용하세요." },
+    schema: [],
+    messages: { inline: "토큰은 inline style 대신 .css.ts className으로 적용하세요." },
   },
   create(context) {
     const source = context.sourceCode;
     const root = SOURCE_ROOT.exec(context.filename)?.[1];
-    const runtime = Object.keys(context.options[0]?.runtime ?? {}).map(modulePath);
 
     const isTracked = (specifier) => {
       if (PACKAGE_IMPORT.test(specifier)) return true;
       if (!root || !specifier.startsWith(".")) return false;
       const inside = path.relative(root, path.resolve(path.dirname(context.filename), specifier)).split(path.sep).join("/");
       if (inside.startsWith("..") || !TRACKED_DIRECTORIES.includes(inside.split("/")[0])) return false;
-      return !runtime.some((module) => inside === module || inside.startsWith(`${module}/`));
+      return !RUNTIME_MODULES.some((module) => inside === module || inside.startsWith(`${module}/`));
     };
 
     const reaches = (node, seen = new Set()) => {
@@ -104,36 +159,6 @@ const inlineTokenRule = {
       Property(node) {
         if (node.parent.type === "ObjectExpression" && !node.computed && (node.key.name ?? node.key.value) === "style") check(node, node.value);
       },
-    };
-  },
-};
-
-// scope "all" (package): no length literal anywhere — every number lives in a token source.
-// scope "spacing" (apps): spacing, form and depth come from Shape / Layout roles; an app's own
-// content dimensions (widths, heights, grid tracks) stay the app's.
-const sourceNumbersRule = {
-  meta: {
-    type: "problem",
-    schema: [{ type: "object", properties: { scope: { enum: ["all", "spacing"] } }, additionalProperties: false }],
-    messages: { raw: "고정 geometry는 semantic Shape / Layout 토큰이나 내부 recipe에서 선택하세요." },
-  },
-  create(context) {
-    const scope = context.options[0]?.scope ?? "all";
-    const lengthProperty = /^(?:(?:min|max)?(?:Width|Height)|width|height|zIndex|(?:padding|margin|inset|gap|rowGap|columnGap|top|right|bottom|left|borderRadius|borderWidth|outlineWidth|outlineOffset|strokeWidth).*)$/;
-    const spacingProperty = /^(?:zIndex|boxShadow|border(?:Top|Right|Bottom|Left|Inline|Block)?|(?:padding|margin|inset|gap|rowGap|columnGap|top|right|bottom|left|borderRadius|outline|outlineWidth|outlineOffset|border\w*Width|border\w*Radius).*)$/;
-    const unitLength = /(?:^|[^\w])[-+]?(?:\d*\.)?\d+(?:px|rem|em|ch)\b/i;
-    const check = (node, value) => {
-      if (scope === "spacing") {
-        if (node.parent?.type !== "Property" || !spacingProperty.test(propertyName(node) ?? "")) return;
-        if (typeof value === "string" && unitLength.test(value) || typeof value === "number" && value !== 0) context.report({ node, messageId: "raw" });
-        return;
-      }
-      if (typeof value === "string" && unitLength.test(value)
-        || typeof value === "number" && value !== 0 && lengthProperty.test(propertyName(node) ?? "")) context.report({ node, messageId: "raw" });
-    };
-    return {
-      Literal(node) { check(node, node.value); },
-      TemplateLiteral(node) { check(node, node.quasis.map((part) => part.value.cooked ?? part.value.raw).join(" ")); },
     };
   },
 };
@@ -233,13 +258,82 @@ const noRuleDisableRule = {
   },
 };
 
+// An app stylesheet makes no global name of its own. A globalStyle selector starts from a scoped class (an
+// interpolated `${scoped}`), so the rule reaches only what a component names; an element or :root selector
+// lives in the manifest's GLOBAL_SELECTOR_FILES. A global keyframes or a global variable is a name made up by
+// hand, and has no place at all. Where a selector is built by a call, the rule cannot see its start and passes.
+// Does a selector list, written as a template, have a selector that begins with literal text?
+const templateStartsWithText = (quasis) => {
+  let depth = 0;
+  let atStart = true;
+  for (const [index, part] of quasis.entries()) {
+    for (const char of part.value.cooked ?? "") {
+      if (atStart) {
+        if (/[\s,]/.test(char)) continue;
+        return true;
+      }
+      if (char === "(") depth += 1;
+      else if (char === ")") depth = Math.max(0, depth - 1);
+      else if (char === "," && depth === 0) atStart = true;
+    }
+    // An interpolation that opens a selector is the scoped class itself.
+    if (index < quasis.length - 1) atStart = false;
+  }
+  return false;
+};
+
+const startsWithText = (node, resolve) => {
+  if (!node) return false;
+  switch (node.type) {
+    case "Literal": return typeof node.value === "string" && node.value.trim() !== "";
+    case "TemplateLiteral": return templateStartsWithText(node.quasis);
+    case "BinaryExpression": return node.operator === "+" && startsWithText(node.left, resolve);
+    case "Identifier": {
+      const init = resolve(node);
+      return init !== undefined && startsWithText(init, resolve);
+    }
+    default: return false;
+  }
+};
+
+const GLOBAL_NAMES = new Set(["globalKeyframes", "createGlobalVar"]);
+const globalClassRule = {
+  meta: {
+    type: "problem",
+    schema: [],
+    messages: {
+      selector: "globalStyle selector는 scoped class에서 시작합니다. 요소 · :root selector는 {{files}}에만 둡니다.",
+      name: "전역 이름을 손으로 짓지 않습니다. `{{name}}`은 scoped export로 만드세요.",
+    },
+  },
+  create(context) {
+    const file = workspacePath(context.filename);
+    const source = context.sourceCode;
+    const resolve = (identifier) => {
+      let scope = source.getScope(identifier);
+      while (scope && !scope.set.has(identifier.name)) scope = scope.upper;
+      return scope?.set.get(identifier.name)?.defs.find((def) => def.type === "Variable" && def.node.init)?.node.init;
+    };
+    const mayName = GLOBAL_SELECTOR_FILES.includes(file);
+    return {
+      CallExpression(call) {
+        const name = call.callee.type === "Identifier" ? call.callee.name : undefined;
+        if (name === "globalStyle" && !mayName && startsWithText(call.arguments[0], resolve)) context.report({ node: call.arguments[0], messageId: "selector", data: { files: GLOBAL_SELECTOR_FILES.join(" · ") } });
+        else if (GLOBAL_NAMES.has(name) && !mayName) context.report({ node: call, messageId: "name", data: { name } });
+      },
+    };
+  },
+};
+
 export default {
   rules: {
     "raw-color": rawColorRule,
     "inline-token": inlineTokenRule,
+    "source-isolation": sourceIsolationRule,
     "source-numbers": sourceNumbersRule,
     "layered-styles": layeredStylesRule,
     "internal-class": internalClassRule,
+    "global-class": globalClassRule,
     "no-rule-disable": noRuleDisableRule,
   },
 };

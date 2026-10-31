@@ -6,11 +6,10 @@ import { describe, expect, it } from "vitest";
 
 import { MOTION_CONSUMERS, MOTION_ROLES, STATE_TINT_PROPERTY } from "@studio-baeks/paper-ui/tokens";
 
-import { COLOR_SELECTION } from "../../../../packages/paper-ui/src/tokens/colors";
-import { LOOP } from "../../../../packages/paper-ui/src/tokens/motion";
-import { PALETTE_TOKENS } from "../../../../packages/paper-ui/src/tokens/palette";
-import { SHAPE_SOURCE } from "../../../../packages/paper-ui/src/tokens/shape";
-import { TYPOGRAPHY_SOURCE } from "../../../../packages/paper-ui/src/tokens/typography";
+import { COLOR_SELECTION, PALETTE_TOKENS } from "@paper-ui/inspect/color";
+import { LOOP } from "@paper-ui/inspect/motion";
+import { SHAPE_SOURCE } from "@paper-ui/inspect/shape";
+import { TYPOGRAPHY_SOURCE } from "@paper-ui/inspect/typography";
 import { GROUPS, ROLE_NOTES, formatPalettePath, hexAt, rolesOf, selectionAt } from "./color-roles";
 import { LOOP_NOTES, MOTION_NOTES, TRANSITION_PROPERTIES, roleNote, roleRange } from "./motion-roles";
 import { leafPaths } from "./paths";

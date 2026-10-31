@@ -8,7 +8,7 @@ const ROW = "minmax(0, 1fr) minmax(14rem, 18rem)";
 const ROW_NARROW = "minmax(0, 1fr) minmax(10rem, 1fr)";
 const TONES = "minmax(7rem, 0.9fr) repeat(5, minmax(6.5rem, 1fr))";
 const line = `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`;
-const narrow = "screen and (max-width: 760px)";
+const narrow = `screen and (max-width: ${tokens.layout.breakpoint.md})`;
 // Very narrow: the token stacks over its value instead of sharing the row.
 const stacked = `screen and (max-width: ${tokens.layout.breakpoint.sm})`;
 
