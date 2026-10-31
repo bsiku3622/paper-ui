@@ -149,7 +149,7 @@ test("[atoms.link.underline] a Link underlines at rest, or only under the pointe
 
 test("[atoms.link.underline] a link in a documentation page is the Link Atom: underlined at rest, in the link ink, with the Link's corner", async ({ page }) => {
   await page.goto("/docs/atoms");
-  const link = page.locator(".md a").first();
+  const link = page.getByTestId("prose").locator("a").first();
   await expect(link).toBeVisible();
   await expectStyle(link, { color: tokens.color.interaction.link, textDecorationLine: "underline", borderTopLeftRadius: tokens.shape.radius.control });
 });

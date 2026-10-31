@@ -10,7 +10,7 @@ import { FOUNDATIONS, PLAYGROUND_NAV } from "./site/site-map";
 import { SiteLayout } from "./site/SiteLayout";
 
 const Home = lazy(() => import("./pages/Home").then((m) => ({ default: m.Home })));
-const Demo = lazy(() => import("./pages/Demo").then((m) => ({ default: m.Demo })));
+const Demo = lazy(() => import("./pages/demo/Demo").then((m) => ({ default: m.Demo })));
 const Overview = lazy(() => import("./playground/Overview").then((m) => ({ default: m.Overview })));
 const ComponentDetail = lazy(() => import("./playground/Detail").then((m) => ({ default: m.ComponentDetail })));
 const Foundations = lazy(() => import("./playground/foundations").then((m) => ({ default: m.Foundations })));

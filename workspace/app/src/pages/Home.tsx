@@ -10,6 +10,8 @@ import {
   Field,
   Inline,
   Link,
+  Paint,
+  SelectableGroup,
   Stack,
   Surface,
   Text,
@@ -47,52 +49,54 @@ const FILTERS: { label: string; accent: "info" | "success" | "warning" | "error"
   { label: "완료", accent: "success" },
 ];
 
+const TABS = [["all", "전체"], ["open", "열림"], ["done", "완료"]] as const;
+
 // App-local issue tracker composition used to show the primitives and atoms in context.
 const AppMockup = () => {
-  const [tab, setTab] = useState("all");
+  const [tab, setTab] = useState<string>("all");
   return (
-    <Surface elevation="overlay" className="home-mockup">
-      <div className="home-mockup-bar">
+    <Surface fill="raised" border radius="lg" elevation="overlay" className={s.mockup}>
+      <Surface as={Inline} fill="sunken" gap="sm" align="center" paddingX="md" className={s.mockupBar}>
         <Inline gap="xs">
           {[0, 1, 2].map((i) => (
             <Surface key={i} fill="sunken" radius="full" width="0.6rem" height="0.6rem" />
           ))}
         </Inline>
-        <Surface fill="canvas" radius="full" border paddingX="sm" style={{ marginInline: "auto" }}>
+        <Surface fill="canvas" radius="full" border paddingX="sm" className={s.urlPill}>
           <Text variant="caption" as="span" ink="tertiary">app.studio-baeks.dev / issues</Text>
         </Surface>
-      </div>
+      </Surface>
 
-      <div className="home-mockup-body">
-        <div className="home-mockup-side">
+      <Box className={s.mockupBody}>
+        <Surface as={Stack} fill="sunken" gap="md" padding="md" className={s.mockupSide} data-testid="home-mockup-side">
           <Inline gap="sm" align="center" paddingX="sm">
-            <Box className={s.brandMark}>
-              <Text variant="caption" as="span" className={s.brandInitial}>S</Text>
-            </Box>
+            <Paint accent="primary" variant="solid" className={s.brandMark}>
+              <Text variant="caption" as="span" ink="inherit" className={s.brandInitial}>S</Text>
+            </Paint>
             <Text variant="subheading" as="span">Studio</Text>
           </Inline>
 
-          <div className="home-nav">
+          <Stack gap="xs">
             {NAV.map((n) => (
-              <div key={n.label} className="home-navitem" data-selected={n.active || undefined}>
+              <Box key={n.label} className={s.navItem} data-selected={n.active || undefined}>
                 <Dot ink={n.active ? "primary" : "tertiary"} size="xs" />
                 {n.label}
-              </div>
+              </Box>
             ))}
-          </div>
+          </Stack>
 
           <Stack gap="xs">
-            <Text variant="label" as="p" ink="secondary" className="home-filterhead">필터</Text>
+            <Text variant="label" as="p" ink="secondary" className={s.filterHead}>필터</Text>
             {FILTERS.map((f) => (
-              <Inline key={f.label} className="home-filterrow" gap="sm" align="center">
+              <Inline key={f.label} className={s.filterRow} gap="sm" align="center">
                 <Dot status={f.accent} size="sm" />
                 <Text variant="caption" as="span" ink="secondary">{f.label}</Text>
               </Inline>
             ))}
           </Stack>
-        </div>
+        </Surface>
 
-        <div className="home-mockup-main">
+        <Stack className={s.mockupMain}>
           {/* 제목 줄과 필터 줄은 **한 덩어리**다 — 사이에 선이 없으니 각자 여백을 갖는 두
               밴드일 이유가 없다. 따로 두면 12(위) / 20(사이) / 9(아래) 로 리듬이 어긋나고,
               선이 없어진 순간 그게 "제목이 위로 붙은" 인상으로 드러난다. */}
@@ -108,9 +112,9 @@ const AppMockup = () => {
             </Inline>
 
             <Inline align="center" justify="between" gap="sm">
-              <Inline gap="xs" role="group" aria-label="이슈 필터">
-                {([["all", "전체"], ["open", "열림"], ["done", "완료"]] as const).map(([value, label]) => <Button key={value} size="sm" shape="pill" variant={tab === value ? "soft" : "ghost"} aria-pressed={tab === value} onClick={() => setTab(value)}>{label}</Button>)}
-              </Inline>
+              <SelectableGroup aria-label="이슈 필터" selectionRequired selectedValues={[tab]} onSelectedValuesChange={([next]) => next && setTab(next)} className={s.tabs}>
+                {TABS.map(([value, label]) => <Button key={value} as={SelectableGroup.Item} value={value} size="sm" shape="pill" variant="ghost">{label}</Button>)}
+              </SelectableGroup>
               <Text variant="caption" as="span" ink="secondary">6건 · 열림 4</Text>
             </Inline>
           </Stack>
@@ -126,28 +130,28 @@ const AppMockup = () => {
               </Box>)}</Box>
             </Box>
           </Box>
-        </div>
-      </div>
+        </Stack>
+      </Box>
     </Surface>
   );
 };
 
 export const Home = () => (
   <Box paddingX="xl">
-    <Box data-testid="home-column" maxWidth="container.content" width="full" style={{ marginInline: "auto", isolation: "isolate" }}>
+    <Box data-testid="home-column" maxWidth="container.content" width="full" className={s.column}>
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <div className="home-hero">
+      <Box className={s.hero}>
         <Inline gap="sm" align="center" className={s.heroMeta}>
-          <Badge accent="info">Studio Baeks</Badge>
+          <Badge>Studio Baeks</Badge>
           <Text variant="caption" ink="secondary">{`Design System · v${__PAPER_UI_VERSION__}`}</Text>
         </Inline>
 
-        <Text as="h1" variant="display" className="home-headline">
+        <Text variant="hero">
           복잡한 웹앱을 위한<br />
-          조용한 바탕<span className="home-dot">.</span>
+          조용한 바탕.
         </Text>
 
-        <Text variant="body" as="p" ink="secondary" className="home-sub">
+        <Text variant="body" as="p" ink="secondary" className={s.sub}>
           레이아웃은 Primitive로, 상호작용은 Atom으로 시작합니다. 색은 의미가 있을 때만 쓰고, 순백 위에 부드럽게.
         </Text>
 
@@ -160,7 +164,7 @@ export const Home = () => (
             Playground 살펴보기
           </Button>
         </Inline>
-      </div>
+      </Box>
 
       {/* ── 완전한 앱 목업 ──────────────────────────────────────── */}
       <Box as="figure" className={s.figure}>
@@ -177,7 +181,7 @@ export const Home = () => (
       {/* ── 푸터 ────────────────────────────────────────────────── */}
       <Box as="footer" className={s.footer}>
         <Inline justify="between" align="center" wrap gap="md">
-          <Logo height={18} style={{ opacity: 0.7 }} />
+          <Logo height={18} className={s.footerLogo} />
           <Inline gap="md" wrap align="center">
             <RouterLink to="/docs/get-started/philosophy" className={navLink.plain}><Text variant="caption" as="span" ink="secondary">원칙</Text></RouterLink>
             <RouterLink to="/docs/foundations" className={navLink.plain}><Text variant="caption" as="span" ink="secondary">Foundations</Text></RouterLink>

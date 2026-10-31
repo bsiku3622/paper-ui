@@ -37,7 +37,7 @@ describe("Prose", () => {
   it("gives headings an id and keeps each table in a scroll wrapper", () => {
     const { container } = renderProse();
     expect(screen.getByRole("heading", { name: "Links" }).id).toBe("links");
-    const table = container.querySelector(".md > .md-table > table");
+    const table = container.querySelector("[data-testid=prose] > [data-testid=prose-table] > table");
     expect(table?.querySelectorAll("tr")).toHaveLength(2);
     expect(container.querySelectorAll("table")).toHaveLength(1);
   });

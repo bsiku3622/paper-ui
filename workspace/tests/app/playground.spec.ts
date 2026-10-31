@@ -121,12 +121,12 @@ test("a select names the component's real default, and the code prints the subje
   await expect(control(page, "activation").locator("option").first()).toHaveText("default (surface)");
   await openPlayground(page, "inline", "Inline");
   await expect(control(page, "align").locator("option").first()).toHaveText("default (center)");
-  await expect(page.locator(".code-block pre")).not.toContainText("align=");
+  await expect(page.getByTestId("code-block").locator("pre")).not.toContainText("align=");
   await openPlayground(page, "surface", "Surface");
-  await expect(page.locator(".code-block pre")).toContainText('<Surface fill="raised" radius="md" padding="md" width="md">');
+  await expect(page.getByTestId("code-block").locator("pre")).toContainText('<Surface fill="raised" radius="md" padding="md" width="md">');
   await openPlayground(page, "field", "Field");
   await page.getByRole("switch", { name: "leading(검색 아이콘)", exact: true }).check();
-  await expect(page.locator(".code-block pre")).toContainText('<circle cx="11" cy="11" r="7" />');
+  await expect(page.getByTestId("code-block").locator("pre")).toContainText('<circle cx="11" cy="11" r="7" />');
 });
 
 test("editing the code moves the controls, and code that cannot be read says so", async ({ page }) => {
@@ -164,14 +164,14 @@ test("the Theme page shows the hooks: the scope's resolved theme and the page's 
   await expect(page.getByText(/^useTheme\(\): theme=.*, resolved=light$/)).toBeVisible();
   await page.getByRole("combobox", { name: "theme", exact: true }).selectOption("light");
   await expect(page.getByText("useResolvedTheme(): light", { exact: true })).toBeVisible();
-  await expect(page.locator(".code-block pre")).toContainText('<Surface theme="light"');
-  await expect(page.locator(".code-block pre")).toContainText("const resolved = useResolvedTheme();");
+  await expect(page.getByTestId("code-block").locator("pre")).toContainText('<Surface theme="light"');
+  await expect(page.getByTestId("code-block").locator("pre")).toContainText("const resolved = useResolvedTheme();");
 });
 
 test("a Surface theme prints in the code, and a themed Surface without a fill paints the theme's canvas", async ({ page }) => {
   await openPlayground(page, "surface", "Surface");
   await control(page, "theme").selectOption("dark");
-  await expect(page.locator(".code-block pre")).toContainText('theme="dark"');
+  await expect(page.getByTestId("code-block").locator("pre")).toContainText('theme="dark"');
   await control(page, "fill").selectOption("__pui_default__");
   const box = page.getByText("fill=none", { exact: true }).locator("..");
   await expect(box).toHaveAttribute("data-pui-theme", "dark");

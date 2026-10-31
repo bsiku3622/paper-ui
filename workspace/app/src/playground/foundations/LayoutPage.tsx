@@ -2,13 +2,14 @@ import { Text, elevation, useResolvedTheme } from "@studio-baeks/paper-ui";
 import { tokens, BREAKPOINTS, ELEVATIONS, SPACES, type Depth, type Elevation } from "@studio-baeks/paper-ui/tokens";
 
 import { ELEVATION_NEST_LIMIT, LAYOUT_SOURCE } from "../../../../packages/paper-ui/src/tokens/layout";
-import { Board, BoardGroup, BoardRow, Cell, FoundationSection, Meter, TokenCell, ValueCell, mediaValue, resolved } from "./kit";
+import { Board, BoardGroup, BoardRow, Cell, Computed, FoundationSection, Meter, TokenCell, ValueCell, mediaValue, resolved } from "./kit";
 import * as s from "./foundations.css";
 
 const layout = tokens.layout;
 const maxBreakpoint = Math.max(...Object.values(LAYOUT_SOURCE.breakpoint));
 const geometry = (layers: readonly (readonly number[])[]) => layers.map((layer) => layer.join(" ")).join(", ");
 
+const { section } = LAYOUT_SOURCE;
 const { tier, nudge } = LAYOUT_SOURCE.elevation;
 const tierSpan = tier.sticky.z - tier.lifted.z;
 
@@ -35,7 +36,7 @@ export const LayoutPage = () => {
   const theme = useResolvedTheme() === "dark" ? "dark" : "light";
   return (
     <>
-      <FoundationSection title="Layout Source" description="요소 사이의 관계를 정하는 원본입니다. 거리는 Shape의 길이 scale을 그대로 쓰므로 여기에는 페이지 틀·분기점·깊이만 있습니다.">
+      <FoundationSection title="Layout Source" description="요소 사이의 관계를 정하는 원본입니다. 거리는 Shape의 길이 scale을 그대로 쓰므로 여기에는 페이지 틀·구간·분기점·깊이만 있습니다.">
         <Board columns={[{ label: "Token" }, { label: "Specimen" }, { label: "Value", align: "end" }]} template="minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr)" minWidth="36rem">
           <BoardGroup label="Container">
             <BoardRow>
@@ -52,6 +53,18 @@ export const LayoutPage = () => {
                 <ValueCell>{mediaValue(layout.breakpoint[name])}</ValueCell>
               </BoardRow>
             ))}
+          </BoardGroup>
+          <BoardGroup label="Section — 페이지의 한 구간이 열고 닫는 거리, 뷰포트 높이를 따라 자라는 선언된 유동 단계입니다">
+            <BoardRow>
+              <TokenCell name="layout.section.start" note={`구간 위 — 뷰포트 높이의 ${section.start.vh}%, space.3xl에서 ${section.start.maxRatio}배 사이`} />
+              <Meter value={section.start.vh} max={100} />
+              <ValueCell><Computed value={layout.section.start} /></ValueCell>
+            </BoardRow>
+            <BoardRow>
+              <TokenCell name="layout.section.end" note={`구간 아래 — 뷰포트 높이의 ${section.end.vh}%, space.2xl에서 space.3xl 사이`} />
+              <Meter value={section.end.vh} max={100} />
+              <ValueCell><Computed value={layout.section.end} /></ValueCell>
+            </BoardRow>
           </BoardGroup>
           <BoardGroup label={`Elevation z — tier 사이를 ${tierSpan}씩 띄웁니다`}>
             {ELEVATIONS.map((level, index) => (

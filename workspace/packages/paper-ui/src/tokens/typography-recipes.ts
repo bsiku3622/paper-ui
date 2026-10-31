@@ -21,7 +21,7 @@ type Refs = { size: string; weight: string; leading: string; tracking: string };
 type FontRule = { fontFamily: string; fontSize: string; fontWeight: string; lineHeight: string; letterSpacing: string };
 type BreakingRule = (typeof breaking)[TextFamily];
 type MonoRule = { fontFamily: string; fontSize: string; letterSpacing: string } & BreakingRule;
-type CodeRule = { fontFamily: string; fontSize: string; fontWeight?: string; lineHeight?: string } & BreakingRule;
+type CodeRule = { fontFamily: string; fontSize: string; fontWeight?: string; lineHeight?: string } & Partial<BreakingRule>;
 type PresetRule = FontRule & { whiteSpace?: "nowrap" };
 
 // 한 줄에 서는 preset — 라벨이 줄을 바꾸지 않는다. 입력은 값이 줄을 정한다.
@@ -59,13 +59,14 @@ export const monoRule = (): MonoRule => ({
 
 export type CodeKind = "inline" | "compact" | "block";
 
-// 코드. inline 은 문단 속, compact 는 표 칸 속 조각이고 둘러싼 글자의 비율로 줄어든다. block 은 자기 크기와
-// 줄을 갖는다. 자간은 정하지 않는다.
+// 코드. inline 은 문단 속, compact 는 표 칸 속 조각이고 둘러싼 글자의 비율로 줄어들며, 줄바꿈도 둘러싼 글자를
+// 따른다 — 칸 안의 식별자가 어디서든 끊겨 칸의 최소 폭을 줄이지 않는다. block 은 자기 크기와 줄을 갖고 mono 로
+// 끊는다. 자간은 정하지 않는다.
 export const codeRule = (kind: CodeKind): CodeRule => {
-  const base = { fontFamily: palette.family.mono, ...breaking.mono };
+  const base = { fontFamily: palette.family.mono };
   if (kind !== "block") return { ...base, fontSize: `calc(100% * ${palette.codeScale[kind]})` };
   const { size, weight, leading } = CODE_SPEC.block;
-  return { ...base, fontSize: palette.fontSize[size], fontWeight: palette.weight[weight], lineHeight: palette.leading[leading] };
+  return { ...base, ...breaking.mono, fontSize: palette.fontSize[size], fontWeight: palette.weight[weight], lineHeight: palette.leading[leading] };
 };
 
 const presetOf = (name: ControlPreset, refs: Refs): PresetRule => ({

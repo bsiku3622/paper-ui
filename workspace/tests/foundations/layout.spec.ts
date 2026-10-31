@@ -19,7 +19,7 @@ test("the Layout page reads each breakpoint in em beside its px at the default r
 
 test("[foundations.layout.breakpoint-em] a breakpoint follows the browser's default font size, and so does the container", async ({ page }) => {
   await page.setViewportSize({ width: 900, height: 900 });
-  const sidebar = page.locator(".home-mockup-side");
+  const sidebar = page.getByTestId("home-mockup-side");
   const column = page.getByTestId("home-column");
 
   await page.goto("/");
@@ -55,7 +55,8 @@ test("[foundations.layout.elevation-unit] the GNB is sticky at the sticky tier, 
   await page.goto("/demo");
   // The finished task leaves the list, so the click is not followed by a state check.
   await page.getByRole("checkbox", { name: "랜딩 페이지 정보 구조 확정 완료 처리" }).click();
-  const toast = page.getByRole("status");
+  // The notice is the plate inside the live region the page mounts from the start.
+  const toast = page.getByRole("status").locator(":scope > *");
   await expect(toast).toBeVisible();
   await expect(toast).toHaveCSS("z-index", z("toast"));
   await expectStyle(toast, { boxShadow: ELEVATION.shadow.toast });
@@ -135,7 +136,7 @@ test("[foundations.layout.elevation-nesting] a previewed Surface at the toast ti
   await page.getByRole("combobox", { name: "elevation", exact: true }).selectOption("toast");
   const sample = page.getByTestId("surface-example");
   await expect(sample).toHaveCSS("z-index", z("toast"));
-  await expect(page.locator(".preview-stage")).toHaveCSS("isolation", "isolate");
+  await expect(page.locator("[data-preview-background]")).toHaveCSS("isolation", "isolate");
   // Scroll the sample to the top of the window, where the sticky GNB is; the GNB is what a point there hits.
   const box = (await sample.boundingBox())!;
   await page.evaluate((y) => window.scrollBy(0, y), box.y + box.height / 2 - 20);
