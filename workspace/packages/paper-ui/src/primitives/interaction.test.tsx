@@ -1,7 +1,7 @@
 import { createRef, type ReactNode } from "react";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { Box, Pressable, Selectable, Draggable, Droppable, SelectableGroup, useSelectableGroup, Floating, useFloating, useFloatingContext, useSelectable, usePressable, useFocusRing, useDraggable, useDrop, mergeProps, mergeRefs, composeEventHandlers } from "./index";
+import { Box, Pressable, Selectable, Draggable, Droppable, SelectableGroup, useSelectableGroup, Floating, useFloating, useFloatingContext, useSelectable, usePressable, useFocusRing, useDraggable, useDroppable, mergeProps, mergeRefs, composeEventHandlers } from "./index";
 import { spaceClass } from "../styles/space.css";
 import { ELEVATION_NEST_LIMIT } from "../tokens";
 import * as floatingStyles from "./float/Floating.css";
@@ -295,9 +295,9 @@ describe("drag and drop hooks", () => {
     expect(result!.dragProps["data-dragging"]).toBeUndefined();
   });
 
-  it("[primitives.hooks.result-shape] useDrop gives dropProps with its ref and no ref argument, field or dropButtonProps", () => {
-    let result: ReturnType<typeof useDrop> | undefined;
-    function Probe() { result = useDrop({ disabled: true }); return <div {...result.dropProps}>Target</div>; }
+  it("[primitives.hooks.result-shape] useDroppable gives dropProps with its ref and no ref argument, field or dropButtonProps", () => {
+    let result: ReturnType<typeof useDroppable> | undefined;
+    function Probe() { result = useDroppable({ disabled: true }); return <div {...result.dropProps}>Target</div>; }
     render(<Probe />);
     expect(Object.keys(result!).sort()).toEqual(["dropProps", "isDropTarget"]);
     expect(result!.dropProps["data-disabled"]).toBe("true");

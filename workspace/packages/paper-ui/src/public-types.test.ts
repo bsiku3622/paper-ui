@@ -9,8 +9,8 @@ import type { ComponentProps } from "react";
 import { describe, expect, expectTypeOf, it } from "vitest";
 
 import {
-  VisuallyHidden, useDraggable, useDrop, useFloating, useFocusRing, useFocusWithin, useFormField, usePressable, useRovingFocusItem, useSelectable, useSelectableGroup,
-  type DraggableResult, type DropResult, type FloatingResult, type FocusRingResult, type FocusWithinResult, type FormFieldResult, type PressEvent, type PressableOptions,
+  VisuallyHidden, useDraggable, useDroppable, useFloating, useFocusRing, useFocusWithin, useFormField, usePressable, useRovingFocusItem, useSelectable, useSelectableGroup,
+  type DraggableResult, type DroppableResult, type FloatingResult, type FocusRingResult, type FocusWithinResult, type FormFieldResult, type PressEvent, type PressableOptions,
   type PressableProps, type PressableResult, type RovingFocusItemResult, type SelectableGroupResult, type SelectableResult,
 } from "./index";
 
@@ -50,7 +50,7 @@ describe("public types", () => {
     expectTypeOf<ReturnType<typeof useSelectable>>().toEqualTypeOf<SelectableResult>();
     expectTypeOf<ReturnType<typeof useSelectableGroup>>().toEqualTypeOf<SelectableGroupResult>();
     expectTypeOf<ReturnType<typeof useDraggable>>().toEqualTypeOf<DraggableResult>();
-    expectTypeOf<ReturnType<typeof useDrop>>().toEqualTypeOf<DropResult>();
+    expectTypeOf<ReturnType<typeof useDroppable>>().toEqualTypeOf<DroppableResult>();
     expectTypeOf<ReturnType<typeof useFloating>>().toEqualTypeOf<FloatingResult>();
     expectTypeOf<ReturnType<typeof useFocusRing>>().toEqualTypeOf<FocusRingResult>();
     expectTypeOf<ReturnType<typeof useFocusWithin>>().toEqualTypeOf<FocusWithinResult>();
@@ -65,8 +65,8 @@ describe("public types", () => {
     expectTypeOf<PressableResult>().toHaveProperty("isActive");
     expectTypeOf<PressableResult>().not.toHaveProperty("isPressed");
     expectTypeOf<DraggableResult["dragProps"]>().toHaveProperty("ref");
-    expectTypeOf<DropResult["dropProps"]>().toHaveProperty("ref");
-    expectTypeOf<DropResult["dropProps"]>().toHaveProperty("data-drop-target");
+    expectTypeOf<DroppableResult["dropProps"]>().toHaveProperty("ref");
+    expectTypeOf<DroppableResult["dropProps"]>().toHaveProperty("data-drop-target");
     expectTypeOf<FocusRingResult["focusProps"]>().toHaveProperty("data-focus-visible");
     expectTypeOf<RovingFocusItemResult["itemProps"]>().toHaveProperty("ref");
     expectTypeOf<SelectableResult>().not.toHaveProperty("pressProps");

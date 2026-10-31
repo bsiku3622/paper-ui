@@ -1,7 +1,7 @@
 import { useDrag, useDrop } from "@react-aria/dnd";
 import type { HTMLAttributes, RefObject } from "react";
 
-import type { DragItem, DropOperation, DropOptions, PressEvent, TransferDragEvent } from "../../primitives/types";
+import type { DragItem, DropOperation, DroppableOptions, PressEvent, TransferDragEvent } from "../../primitives/types";
 
 // Native drag and drop, with the keyboard path React Aria builds for it. The keyboard path starts from a button the
 // caller renders: startFromKeyboard is its press handler and buttonProps its description.
@@ -25,7 +25,7 @@ export function useAriaDrag({ disabled, ...options }: {
   return { dragProps, buttonProps: buttonProps as HTMLAttributes<HTMLElement>, startFromKeyboard: onPress as ((event: PressEvent) => void) | undefined, isDragging };
 }
 
-export function useAriaDrop({ disabled, ...options }: DropOptions, ref: RefObject<HTMLElement | null>): { dropProps: HTMLAttributes<HTMLElement>; isDropTarget: boolean } {
+export function useAriaDrop({ disabled, ...options }: DroppableOptions, ref: RefObject<HTMLElement | null>): { dropProps: HTMLAttributes<HTMLElement>; isDropTarget: boolean } {
   const { dropProps, isDropTarget } = useDrop({ ...options, isDisabled: disabled, ref });
   return { dropProps, isDropTarget };
 }

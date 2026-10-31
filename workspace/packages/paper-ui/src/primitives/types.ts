@@ -101,7 +101,7 @@ export type DropExitEvent = DragPoint & { type: "dropexit" };
 export type DropActivateEvent = DragPoint & { type: "dropactivate" };
 export type DropEvent = DragPoint & { type: "drop"; dropOperation: DropOperation; items: DropItem[] };
 
-export type DropOptions = {
+export type DroppableOptions = {
   disabled?: boolean;
   getDropOperation?: (types: DragTypes, allowedOperations: DropOperation[]) => DropOperation;
   getDropOperationForPoint?: (types: DragTypes, allowedOperations: DropOperation[], x: number, y: number) => DropOperation;

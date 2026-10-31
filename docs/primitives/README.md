@@ -30,7 +30,7 @@ Primitive는 두 차수로 나뉩니다. **1차**는 바탕입니다 — Box · 
 | Press | 2차 | Pressable | usePressable | [Press](press.md) |
 | Select | 2차 | Selectable · SelectableGroup | useSelectable · useSelectableGroup | [Select](select.md) |
 | Float | 2차 | Floating | useFloating · useFloatingContext | [Float](float.md) |
-| Drag | 2차 | Draggable · Droppable | useDraggable · useDrop | [Drag](drag.md) |
+| Drag | 2차 | Draggable · Droppable | useDraggable · useDroppable | [Drag](drag.md) |
 | Focus | 2차 | RovingFocus | useRovingFocusItem | [Focus](focus.md) |
 | Field | 2차 | FormField | useFormField | [Field](field.md) |
 | Layout | 2차 | Stack · Inline · Grid | — | [Layout](layout.md) |
@@ -74,7 +74,7 @@ DOM에 닿는 hook은 `{ <부분>Props, ...상태 }` 한 꼴로 돌려줍니다.
 | useFocusRing | focusProps | data-focused · data-focus-visible |
 | useSelectable | selectProps | role이 정하는 aria 속성 하나 · data-selected |
 | useDraggable | dragProps · handleProps | data-dragging · data-disabled |
-| useDrop | dropProps | data-drop-target · data-disabled · aria-disabled |
+| useDroppable | dropProps | data-drop-target · data-disabled · aria-disabled |
 | useRovingFocusItem | itemProps | data-roving-item(값은 항목의 value) |
 | FormField | (wrapper) | data-disabled · data-invalid · data-required, 부분은 data-part |
 | Floating.Content | (panel) | data-placement |
