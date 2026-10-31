@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 
-import { openPlayground } from "../support/harness";
+import { openHarness, openPlayground } from "../support/harness";
 import { tab } from "../support/keyboard";
 
 const dragBy = async (page: Page, locator: ReturnType<Page["locator"]>, x: number, y: number, release = true) => {
@@ -105,6 +105,51 @@ test("[primitives.draggable.input-paths] move supports Escape cancellation, keyb
   await expect(page.getByTestId("position")).toHaveText(before!);
   await page.getByRole("switch", { name: "disabled", exact: true }).check();
   await expect(handle).toBeDisabled();
+});
+
+test("[primitives.draggable.input-paths] a live handle moves its panel, the control for the two below", async ({ page }) => {
+  await openHarness(page, "drag");
+  await dragBy(page, page.getByTestId("live"), 30, 20);
+  await expect(page.getByTestId("live-panel")).not.toHaveAttribute("data-x", "0");
+  await expect(page.getByTestId("live-panel")).toHaveAttribute("data-starts", "1");
+});
+
+for (const id of ["off-button", "off-div"]) {
+  test(`[primitives.draggable.input-paths] a handle switched off by itself takes no pointer drag and no arrow key (${id})`, async ({ page }) => {
+    await openHarness(page, "drag");
+    const handle = page.getByTestId(id);
+    const panel = page.getByTestId(`${id}-panel`);
+    await dragBy(page, handle, 30, 20);
+    await handle.focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(panel).toHaveAttribute("data-x", "0");
+    await expect(panel).toHaveAttribute("data-starts", "0");
+    await expect(handle).toHaveAttribute("data-disabled", "true");
+  });
+}
+
+test("[primitives.draggable.input-paths] a disabled Draggable shows the not-allowed cursor on its surface and on its handle", async ({ page }) => {
+  await openPlayground(page, "draggable", "Draggable");
+  const panel = page.getByTestId("moving-panel");
+  const handle = page.getByRole("button", { name: "패널 이동", exact: true });
+  await page.getByRole("combobox", { name: "activation", exact: true }).selectOption("surface");
+  await expect(panel).not.toHaveAttribute("data-disabled", "true");
+  await expect(panel).toHaveCSS("cursor", "grab");
+  await page.getByRole("switch", { name: "disabled", exact: true }).check();
+  await expect(panel).toHaveAttribute("data-disabled", "true");
+  await expect(panel).toHaveCSS("cursor", "not-allowed");
+  await expect(handle).toBeDisabled();
+  await expect(handle).toHaveCSS("cursor", "not-allowed");
+});
+
+test("[primitives.droppable.input-paths] a disabled Droppable shows the not-allowed cursor", async ({ page }) => {
+  await openPlayground(page, "droppable", "Droppable");
+  const target = page.getByRole("button", { name: "항목 받기", exact: true });
+  await expect(target).not.toHaveCSS("cursor", "not-allowed");
+  await page.getByRole("switch", { name: "disabled", exact: true }).check();
+  await expect(target).toHaveAttribute("data-disabled", "true");
+  await expect(target).toHaveAttribute("aria-disabled", "true");
+  await expect(target).toHaveCSS("cursor", "not-allowed");
 });
 
 test("[primitives.droppable.input-paths] transfer drag accepts native data through a dedicated handle", async ({ page }) => {

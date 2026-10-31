@@ -11,10 +11,10 @@ export default defineSpec({
   blurb: "그룹의 Tab 진입점을 하나로 유지합니다. 방향키·Home·End, RTL, 비활성 항목, 제거 뒤 focus 이동을 관리합니다.",
   controls: [
     enumControl<RovingFocusProps, "orientation">("orientation", local<RovingFocusProps, "orientation">()(["horizontal", "vertical", "both"], "ORIENTATIONS plus RovingFocus's own 'both'")),
-    enumControl<RovingFocusProps, "dir">("dir", local<RovingFocusProps, "dir">()(["ltr", "rtl"], "the two writing directions")),
+    enumControl<RovingFocusProps, "dir">("dir", local<RovingFocusProps, "dir">()(["ltr", "rtl"], "the two writing directions"), { omitted: "inherit" }),
     boolControl<RovingFocusProps, "loop">("loop", true, { behaviorOnly: "wrapping happens on a key press, which a static render does not show" }),
   ],
-  defaults: { orientation: "horizontal", dir: "ltr", loop: false },
+  defaults: { orientation: "horizontal", loop: false },
   useHarness: () => {
     const [last, setLast] = useState(true);
     return { last, remove: () => setLast(false), restore: () => setLast(true) };

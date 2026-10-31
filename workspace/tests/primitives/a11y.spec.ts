@@ -23,6 +23,41 @@ test("[primitives.roving-focus.tab-stop] roving focus has one Tab stop, supports
   await expect(toolbar.getByRole("button", { name: "밑줄", exact: true })).toBeFocused();
 });
 
+test("[primitives.roving-focus.direction] the dir control starts at its omission, and an inherited right-to-left page mirrors the arrows", async ({ page }) => {
+  await page.goto("/playground/roving-focus");
+  const dir = page.getByRole("combobox", { name: "dir", exact: true });
+  await expect(dir.locator("option:checked")).toHaveText("default (inherit)");
+  const toolbar = page.getByRole("toolbar", { name: "텍스트 도구" });
+  await expect(toolbar).not.toHaveAttribute("dir", /./);
+  await page.evaluate(() => { document.documentElement.dir = "rtl"; });
+  const first = toolbar.getByRole("button", { name: "굵게", exact: true });
+  await first.focus();
+  await page.keyboard.press("ArrowLeft");
+  await expect(toolbar.getByRole("button", { name: "밑줄", exact: true })).toBeFocused();
+  await dir.selectOption("ltr");
+  await expect(toolbar).toHaveAttribute("dir", "ltr");
+});
+
+test("[primitives.live-region.roles] the LiveRegion page keeps its region mounted and changes only what is inside", async ({ page }) => {
+  await page.goto("/playground/live-region");
+  const region = page.getByTestId("live-region");
+  await expect(region).toHaveAttribute("role", "status");
+  await expect(region).toHaveAttribute("aria-live", "polite");
+  await expect(region).toHaveAttribute("aria-atomic", "true");
+  await page.getByRole("button", { name: "영역 내용 바꾸기", exact: true }).click();
+  await expect(region).toHaveText("1번째로 저장했습니다.");
+  await page.getByRole("combobox", { name: "politeness", exact: true }).selectOption("assertive");
+  await expect(region).toHaveAttribute("role", "alert");
+  await expect(region).toHaveAttribute("aria-live", "assertive");
+});
+
+test("[primitives.live-region.announce] announce leaves a message in the page's live region and nothing visible", async ({ page }) => {
+  await page.goto("/playground/live-region");
+  await page.getByRole("button", { name: "announce() 호출", exact: true }).click();
+  await expect(page.locator('[data-testid="live-region"]')).toHaveText("아직 알릴 내용이 없습니다.");
+  await expect(page.locator('[aria-live="polite"]', { hasText: "저장했습니다." }).first()).toBeAttached();
+});
+
 test("[primitives.form-field.relations] field labels, descriptions and errors point to the actual native input", async ({ page }) => {
   await page.goto("/playground/form-field");
   const input = page.getByRole("textbox", { name: "이메일", exact: true });

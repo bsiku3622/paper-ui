@@ -57,6 +57,9 @@ type ControlBase = {
   // The value the component's root already holds when the prop is omitted. The select names it as the default,
   // but it is not a `defaults` entry: stating it would add a class the root has no need of.
   rootDefault?: string;
+  // What omitting the prop means when no value of it says so: the prop inherits from the page. The select names the
+  // omission with it, as "default (inherit)", and it is neither a stated default nor an option.
+  omitted?: string;
 };
 
 export type Control = ControlBase &
@@ -66,7 +69,7 @@ export type Control = ControlBase &
     | { kind: "text"; initial: string; bind: "children" | "attribute" }
   );
 
-type Extra = { key?: string; label?: string; target?: string; behaviorOnly?: string; derived?: string; rootDefault?: string };
+type Extra = { key?: string; label?: string; target?: string; behaviorOnly?: string; derived?: string; rootDefault?: string; omitted?: string };
 
 const base = (prop: string, extra: Extra): ControlBase => ({
   key: extra.key ?? prop,
@@ -76,6 +79,7 @@ const base = (prop: string, extra: Extra): ControlBase => ({
   ...(extra.behaviorOnly ? { behaviorOnly: extra.behaviorOnly } : {}),
   ...(extra.derived ? { derived: extra.derived } : {}),
   ...(extra.rootDefault ? { rootDefault: extra.rootDefault } : {}),
+  ...(extra.omitted ? { omitted: extra.omitted } : {}),
 });
 
 // Types the options against the prop: a value the prop does not accept fails typecheck.

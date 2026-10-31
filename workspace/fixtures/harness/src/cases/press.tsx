@@ -57,6 +57,21 @@ const PressedTrigger = () => {
   );
 };
 
+const DivSelectable = () => {
+  const { counted, onClick } = useCounts();
+  return <Selectable as="div" data-testid="div-selectable" {...counted} onClick={onClick}>Div Selectable</Selectable>;
+};
+
+const DivTrigger = () => {
+  const { counted, onClick } = useCounts();
+  return (
+    <Floating>
+      <Floating.Trigger as="div" data-testid="div-trigger" {...counted} onClick={onClick}>Div Trigger</Floating.Trigger>
+      <Floating.Content aria-label="Div panel" anchored={false}><Floating.Close>Close</Floating.Close></Floating.Content>
+    </Floating>
+  );
+};
+
 // The elements a press lands on, each counting its clicks and presses in data attributes.
 export const PressCase = () => (
   <>
@@ -68,5 +83,7 @@ export const PressCase = () => (
     <BareSelectable />
     <PressedSelectable />
     <PressedTrigger />
+    <DivSelectable />
+    <DivTrigger />
   </>
 );

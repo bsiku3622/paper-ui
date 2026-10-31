@@ -29,7 +29,9 @@ Controlled selectable을 만드는 예시입니다.
 </Selectable>
 ```
 
-Selectable은 click만 받는 native button이라 `onPress`와 `data-active` · `data-focus-visible`, 마우스·터치 뒤의 focus가 없습니다. 이것들이 필요하면 [Press](press.md)의 Pressable에 `as`로 올립니다.
+`as`로 다른 대상을 고를 수 있고 [공통 계약](README.md#공통-계약)의 투영을 따릅니다. `<Selectable as="div">`는 `role="button"`과 tabIndex 0, `aria-pressed`를 얻고 Enter · Space로도 눌립니다. 비활성이면 대상에 `data-disabled`가 붙고 native로 막을 수 없는 대상은 클릭과 키를 받지 않습니다.
+
+Selectable은 click만 받는 native button이라 `onPress`와 `data-active` · `data-focus-visible`이 없고, Safari에서는 마우스·터치 뒤의 focus도 없습니다. 이것들이 필요하면 [Press](press.md)의 Pressable에 `as`로 올립니다.
 
 ```tsx
 <Pressable as={Selectable} onPress={log} defaultSelected>
@@ -52,7 +54,7 @@ return <button {...pressProps} {...selectProps} role="tab" type="button">홈</bu
 
 ## SelectableGroup
 
-SelectableGroup은 Selectable들의 선택 상태와 [RovingFocus](focus.md)를 연결합니다. Item은 Selectable이라 role을 주면(`role="radio"` 등) 그 role의 aria 속성으로 선택을 알리고, 주지 않으면 aria-pressed를 가진 button입니다. 방향키는 focus만 이동하고 선택은 click으로 변경합니다. Radio · Tab · Option의 의미론은 role을 주는 쪽이 책임집니다.
+SelectableGroup은 Selectable들의 선택 상태와 [RovingFocus](focus.md)를 연결합니다. 항목 목록은 RovingFocus 등록부 하나뿐이라 SelectableGroup은 자기 목록을 두지 않고, 같은 value의 항목은 먼저 등록된 쪽만 인정합니다([Focus](focus.md#그룹-focus-탐색)). children은 노드이거나 `{ selectedValues, isDisabled }`(`SelectableGroupState`)를 받는 함수입니다. Item은 Selectable이라 role을 주면(`role="radio"` 등) 그 role의 aria 속성으로 선택을 알리고, 주지 않으면 aria-pressed를 가진 button입니다. 방향키는 focus만 이동하고 선택은 click으로 변경합니다. Radio · Tab · Option의 의미론은 role을 주는 쪽이 책임집니다.
 
 Controlled 단일 선택 그룹을 만드는 예시입니다.
 
@@ -68,6 +70,6 @@ Controlled 단일 선택 그룹을 만드는 예시입니다.
 [contract:primitives.selectable-group.multiple]: #
 selectionMode는 single / multiple이며 기본값은 single입니다. selectedValues/defaultSelectedValues는 문자열 배열이고 onSelectedValuesChange는 다음 배열을 받습니다. Single은 최대 하나를 선택합니다. selectionRequired는 사용자가 마지막 선택을 해제하는 것을 막으며 초기 항목을 자동 선택하지는 않습니다. 선택 항목 자체를 제거하면 빈 선택도 허용합니다.
 
-Root disabled는 전체 입력과 변경을 막고 Item disabled는 해당 버튼만 막습니다. Disabled는 기존 선택을 지우지 않습니다. 제거된 value는 정리하며 controlled 상태에서는 변경을 요청합니다. 중복 value를 사용하지 않습니다. Root의 orientation·dir·loop·currentValue 계약은 [RovingFocus](focus.md#그룹-focus-탐색)와 같습니다.
+Root disabled는 전체 입력과 변경을 막고 Item disabled는 해당 버튼만 막습니다. Disabled는 기존 선택을 지우지 않습니다. 제거된 value는 정리하며 controlled 상태에서는 변경을 요청합니다. 중복 value를 사용하지 않습니다(개발 오류이고 한 항목만 인정합니다). Root의 orientation·dir·loop·currentValue 계약은 [RovingFocus](focus.md#그룹-focus-탐색)와 같습니다.
 
 useSelectableGroup은 같은 상태 옵션과 선택적인 values 목록을 받고 selectedValues·isValueSelected(value)·setValueSelected(value, boolean)·toggleValue(value)을 반환합니다. 같은 상태가 한 요소(`useSelectable`)에도 있어서 이름을 갈랐습니다. Values를 제공하면 없는 key를 정리합니다. Hook 자체는 DOM·role·focus를 만들지 않습니다.

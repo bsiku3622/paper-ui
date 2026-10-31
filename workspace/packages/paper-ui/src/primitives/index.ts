@@ -15,6 +15,7 @@ export { Icon, type IconProps } from "./Icon";
 export { FocusScope, useFocusRing, useFocusWithin, type FocusRingResult, type FocusWithinResult } from "./a11y/focus";
 export { VisuallyHidden, type VisuallyHiddenProps } from "./a11y/VisuallyHidden";
 export { Portal, type PortalProps } from "./a11y/Portal";
+export { LiveRegion, announce, clearAnnouncements, type LiveRegionProps, type LivePoliteness, type AnnounceOptions } from "./a11y/LiveRegion";
 
 // ───── Second order ────────────────────────────────────────────────────────────
 
@@ -29,22 +30,22 @@ export { usePressable, type PressableResult } from "./press/usePressable";
 // Select — selection state and its aria. No colour.
 export { Selectable, type SelectableProps, type SelectableState } from "./select/Selectable";
 export { useSelectable, type SelectableOptions, type SelectableResult, type SelectableCurrent } from "./select/useSelectable";
-export { SelectableGroup, useSelectableGroup, type SelectableGroupProps, type SelectableGroupItemProps, type SelectableGroupOptions, type SelectableGroupResult } from "./select/SelectableGroup";
+export { SelectableGroup, useSelectableGroup, type SelectableGroupProps, type SelectableGroupItemProps, type SelectableGroupOptions, type SelectableGroupResult, type SelectableGroupState } from "./select/SelectableGroup";
 
 // Float — position, z, dismissal.
-export { Floating, useFloating, useFloatingContext, type FloatingProps, type FloatingOptions, type FloatingResult, type FloatingTriggerProps, type FloatingContentProps, type FloatingCloseProps } from "./float/Floating";
+export { Floating, useFloating, useFloatingContext, type FloatingProps, type FloatingOptions, type FloatingResult, type FloatingTriggerProps, type FloatingContentProps, type FloatingContentState, type FloatingCloseProps } from "./float/Floating";
 
 // Drag — move and transfer drag, and the drop target.
 export { Draggable, type DraggableProps, type DraggableHandleProps, type DraggableState } from "./drag/Draggable";
-export { Droppable, type DroppableProps } from "./drag/Droppable";
+export { Droppable, type DroppableProps, type DroppableState } from "./drag/Droppable";
 export { useDraggable, type DraggableResult } from "./drag/useDraggable";
 export { useDroppable, type DroppableResult } from "./drag/useDroppable";
 
 // Focus — one Tab stop for a group, and the arrow keys inside it.
-export { RovingFocus, useRovingFocusItem, type RovingFocusProps, type RovingFocusItemProps, type RovingFocusItemOptions, type RovingFocusItemResult } from "./focus/RovingFocus";
+export { RovingFocus, useRovingFocusItem, type RovingFocusProps, type RovingFocusState, type RovingFocusItemProps, type RovingFocusItemOptions, type RovingFocusItemResult } from "./focus/RovingFocus";
 
-// Field — a control's label, description and error, tied together by id.
-export { FormField, useFormField, type FormFieldProps, type FormFieldOptions, type FormFieldResult } from "./field/FormField";
+// Field — a control's label, description and error, tied together by id; the control reads them with useFormFieldControl.
+export { FormField, useFormField, useFormFieldControl, type FormFieldProps, type FormFieldOptions, type FormFieldResult, type FormFieldState, type FormFieldControlOptions, type FormFieldControlResult } from "./field/FormField";
 
 // Layout — arrangement only.
 export { Stack, type StackProps } from "./layout/Stack";

@@ -24,7 +24,7 @@ import {
 import { joinClass } from "../internal/joinClass";
 import { resolveControlFontSize, resolvePreset, resolveFill } from "../resolvers";
 import type { Status, ControlFontSize, ControlShape, ControlSize, SurfaceFill } from "../tokens";
-import { Icon } from "../primitives";
+import { Icon, useFormFieldControl } from "../primitives";
 import { textNumericClass } from "../styles/typography.css";
 import { fieldWrap, fieldInput, fieldInputLeading, fieldSize, fieldStatus, fieldAlign, fieldAdornment, fieldAction, fieldPill } from "./Field.css";
 
@@ -88,7 +88,11 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
     value,
     defaultValue,
     onChange,
+    id,
     disabled,
+    required,
+    "aria-invalid": ariaInvalid,
+    "aria-describedby": describedBy,
     className,
     style,
     "data-testid": testid,
@@ -96,6 +100,7 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
   },
   ref,
 ) {
+  const { controlProps } = useFormFieldControl({ id, disabled, required, "aria-invalid": ariaInvalid, "aria-describedby": describedBy, status });
   const innerRef = useRef<HTMLInputElement | null>(null);
   const setRef = useCallback(
     (el: HTMLInputElement | null) => {
@@ -130,7 +135,7 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
     onClear?.();
   };
 
-  const showClear = !!clearable && hasValue && !disabled;
+  const showClear = !!clearable && hasValue && !controlProps.disabled;
 
   return (
     // 래퍼는 위젯이 아니라 여백 클릭을 안쪽 input 으로 넘기는 표현용 컨테이너다 —
@@ -163,10 +168,9 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
         value={value}
         defaultValue={defaultValue}
         onChange={handleChange}
-        disabled={disabled}
-        aria-invalid={status === "error" || undefined}
         className={joinClass(fieldInput, fieldInputLeading[size], align && fieldAlign[align])}
         {...rest}
+        {...controlProps}
       />
       {showClear ? (
         <button type="button" className={fieldAction} onClick={clear} aria-label="지우기">

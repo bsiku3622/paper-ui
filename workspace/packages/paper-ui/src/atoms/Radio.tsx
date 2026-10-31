@@ -3,6 +3,7 @@
 import { forwardRef, type InputHTMLAttributes } from "react";
 
 import { joinClass } from "../internal/joinClass";
+import { useFormFieldControl } from "../primitives/field/FormField";
 import type { ControlSize } from "../tokens";
 import { radioRoot, radioSize } from "./Radio.css";
 
@@ -13,8 +14,9 @@ export type RadioProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "c
 };
 
 export const Radio = forwardRef<HTMLInputElement, RadioProps>(function Radio(
-  { size = "md", className, ...rest },
+  { size = "md", className, id, disabled, required, "aria-invalid": ariaInvalid, "aria-describedby": describedBy, ...rest },
   ref,
 ) {
-  return <input type="radio" ref={ref} className={joinClass(radioRoot, radioSize[size], className)} {...rest} />;
+  const { controlProps } = useFormFieldControl({ id, disabled, required, "aria-invalid": ariaInvalid, "aria-describedby": describedBy });
+  return <input type="radio" ref={ref} className={joinClass(radioRoot, radioSize[size], className)} {...rest} {...controlProps} />;
 });

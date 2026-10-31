@@ -71,6 +71,22 @@ for (const [name, platform] of Object.entries(PLATFORMS)) {
         await once(target);
         await expect(page.getByRole("dialog", { name: "Panel" })).toBeVisible();
       });
+
+      test(`[primitives.target.projection] ${key} on <Selectable as="div"> flips the selection once`, async ({ page }) => {
+        const target = page.getByTestId("div-selectable");
+        await target.focus();
+        await page.keyboard.press(key);
+        await flipped(target);
+      });
+
+      test(`[primitives.target.projection] ${key} on <Floating.Trigger as="div"> opens once, and the key's release does not reach the Close that took focus`, async ({ page }) => {
+        const target = page.getByTestId("div-trigger");
+        await target.focus();
+        await page.keyboard.press(key);
+        await expect(target).toHaveAttribute("aria-expanded", "true");
+        await expect(target).toHaveAttribute("data-clicks", "1");
+        await expect(page.getByRole("dialog", { name: "Div panel" })).toBeVisible();
+      });
     }
 
     test("[primitives.pressable.one-click] Enter on a link is one press and one click", async ({ page }) => {

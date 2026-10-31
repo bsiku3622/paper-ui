@@ -26,7 +26,7 @@ export const TypographyCase = () => (
     <Text variant="caption" numeric data-testid="text-numeric">v0.1.0 1,234</Text>
     <Label data-testid="label">Name</Label>
     <FormField label="Email" description="Help" error="Wrong" invalid>
-      {({ controlProps }) => <Field {...controlProps} />}
+      <Field />
     </FormField>
   </div>
 );

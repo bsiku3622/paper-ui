@@ -190,6 +190,17 @@ describe("defaults", () => {
     }
   });
 
+  it("let an inheriting prop name its omission without a stated default or an option of that name", () => {
+    const inheriting = enums.filter(({ control }) => control.omitted !== undefined);
+    expect(inheriting.length).toBeGreaterThan(0);
+    for (const { entry, control } of inheriting) {
+      if (control.kind !== "enum") continue;
+      expect(control.options, `${entry.name}.${control.prop}`).not.toContain(control.omitted);
+      expect(control.rootDefault, `${entry.name}.${control.prop}`).toBeUndefined();
+      expect(entry.defaults[control.prop], `${entry.name}.${control.prop}`).toBeUndefined();
+    }
+  });
+
   it("leave every prop without a default changing the markup, option by option", () => {
     for (const entry of REGISTRY) {
       const harness = harnessOf(entry);

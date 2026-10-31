@@ -26,7 +26,7 @@ export default defineSpec({
         <Stack gap="md">
           <Text as="h2" variant="heading" ref={named("titleRef", title)} tabIndex={-1}>설정</Text>
           <FormField label="표시 이름" description="화면에 표시할 이름입니다." className={formField}>
-            {named("({ controlProps }) => <Field {...controlProps} />", ({ controlProps }) => <Field {...controlProps} />)}
+            <Field />
           </FormField>
           <Floating modal>
             <Floating.Trigger className={control}>확인 창 열기</Floating.Trigger>

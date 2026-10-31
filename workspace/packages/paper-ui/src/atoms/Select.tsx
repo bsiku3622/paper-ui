@@ -12,6 +12,7 @@ import { joinClass } from "../internal/joinClass";
 import { resolveControlFontSize, resolvePreset } from "../resolvers";
 import { CONTROL_ICON, type ControlFontSize, type ControlShape, type ControlSize } from "../tokens";
 import { Icon } from "../primitives/Icon";
+import { useFormFieldControl } from "../primitives/field/FormField";
 import { selectRoot, selectSize, selectPill, selectWrap, selectArrow, selectArrowSize } from "./Select.css";
 
 // className/style target the visible wrapper; ref and native attributes target select.
@@ -24,9 +25,10 @@ export type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "classNa
 };
 
 const SelectRoot = forwardRef<HTMLSelectElement, SelectProps>(function SelectRoot(
-  { children, size = "md", fontSize, shape = "rounded", className, style, onPointerDown, onBlur, ...rest },
+  { children, size = "md", fontSize, shape = "rounded", className, style, onPointerDown, onBlur, id, disabled, required, "aria-invalid": ariaInvalid, "aria-describedby": describedBy, ...rest },
   ref,
 ) {
+  const { controlProps } = useFormFieldControl({ id, disabled, required, "aria-invalid": ariaInvalid, "aria-describedby": describedBy });
   return (
     <span style={style} className={joinClass(selectWrap, selectSize[size], resolvePreset("field", size), resolveControlFontSize(fontSize), shape === "pill" && selectPill, className)}>
       <select
@@ -41,6 +43,7 @@ const SelectRoot = forwardRef<HTMLSelectElement, SelectProps>(function SelectRoo
         }}
         className={selectRoot}
         {...rest}
+        {...controlProps}
       >
         {children}
       </select>

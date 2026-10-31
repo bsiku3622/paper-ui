@@ -16,14 +16,14 @@ export const INVENTORY = {
   primitives: {
     Element: { components: ["Box"], hooks: [] },
     Content: { components: ["Text", "Icon"], hooks: [] },
-    A11y: { components: ["FocusScope", "VisuallyHidden", "Portal"], hooks: ["useFocusRing", "useFocusWithin"] },
+    A11y: { components: ["FocusScope", "VisuallyHidden", "Portal", "LiveRegion"], hooks: ["useFocusRing", "useFocusWithin"], functions: ["announce", "clearAnnouncements"] },
     Paint: { components: ["Surface", "Paint"], hooks: [] },
     Press: { components: ["Pressable"], hooks: ["usePressable"] },
     Select: { components: ["Selectable", "SelectableGroup"], hooks: ["useSelectable", "useSelectableGroup"] },
     Float: { components: ["Floating"], hooks: ["useFloating", "useFloatingContext"] },
     Drag: { components: ["Draggable", "Droppable"], hooks: ["useDraggable", "useDroppable"] },
     Focus: { components: ["RovingFocus"], hooks: ["useRovingFocusItem"] },
-    Field: { components: ["FormField"], hooks: ["useFormField"] },
+    Field: { components: ["FormField"], hooks: ["useFormField", "useFormFieldControl"] },
     Layout: { components: ["Stack", "Inline", "Grid"], hooks: [] },
   },
   atoms: ["Button", "IconButton", "Field", "Textarea", "Select", "Checkbox", "Switch", "Radio", "Label", "Badge", "Spinner", "Divider", "Link"],
@@ -44,5 +44,9 @@ export const INVENTORY = {
     "ELEVATIONS", "BREAKPOINTS", "CONTAINERS", "ALIGNS", "JUSTIFIES", "JUSTIFY_ITEMS", "ORIENTATIONS",
     "MOTION_ROLES",
   ],
-  polymorphic: ["Box", "Surface", "Paint", "Pressable", "Stack", "Inline", "Grid", "Text", "RovingFocus.Item", "Button"],
+  polymorphic: [
+    "Box", "Surface", "Paint", "Stack", "Inline", "Grid", "Text", "VisuallyHidden",
+    "Pressable", "Selectable", "SelectableGroup.Item", "Floating.Trigger", "Floating.Close", "Draggable", "Draggable.Handle", "Droppable", "RovingFocus.Item",
+    "Button",
+  ],
 } as const;

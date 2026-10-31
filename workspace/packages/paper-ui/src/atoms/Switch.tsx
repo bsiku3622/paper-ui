@@ -3,6 +3,7 @@
 import { forwardRef, type InputHTMLAttributes } from "react";
 
 import { joinClass } from "../internal/joinClass";
+import { useFormFieldControl } from "../primitives/field/FormField";
 import type { ControlSize } from "../tokens";
 import { switchRoot, switchSize } from "./Switch.css";
 
@@ -13,10 +14,11 @@ export type SwitchProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "
 };
 
 export const Switch = forwardRef<HTMLInputElement, SwitchProps>(function Switch(
-  { size = "md", className, ...rest },
+  { size = "md", className, id, disabled, required, "aria-invalid": ariaInvalid, "aria-describedby": describedBy, ...rest },
   ref,
 ) {
+  const { controlProps } = useFormFieldControl({ id, disabled, required, "aria-invalid": ariaInvalid, "aria-describedby": describedBy });
   return (
-    <input type="checkbox" role="switch" ref={ref} className={joinClass(switchRoot, switchSize[size], className)} {...rest} />
+    <input type="checkbox" role="switch" ref={ref} className={joinClass(switchRoot, switchSize[size], className)} {...rest} {...controlProps} />
   );
 });

@@ -87,7 +87,7 @@ const ControlRow = ({ control, value, defaults, onChange }: { control: Control; 
           value={value === undefined ? OMITTED : String(value)}
           onChange={(e) => onChange(e.currentTarget.value === OMITTED ? undefined : e.currentTarget.value)}
         >
-          {control.required ? null : <Select.Option value={OMITTED}>{`default (${String(defaults[control.prop] ?? control.rootDefault ?? "none")})`}</Select.Option>}
+          {control.required ? null : <Select.Option value={OMITTED}>{`default (${String(defaults[control.prop] ?? control.rootDefault ?? control.omitted ?? "none")})`}</Select.Option>}
           {control.options.map((option) => <Select.Option key={option} value={option}>{control.labels?.[option] ?? option}</Select.Option>)}
         </Select>
       ) : (

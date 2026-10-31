@@ -62,7 +62,7 @@ className으로 넘긴 앱 class는 패키지 CSS가 든 레이어 밖에 있어
 
 ## 상태와 접근성
 
-Button은 loading·disabled일 때 native button을 비활성화합니다. Field · Textarea의 error status는 `aria-invalid`도 설정합니다. 설명·오류 문구의 연결은 [FormField](../primitives/field.md#입력과-설명의-관계)가 하거나 호출자가 직접 조립합니다. Field는 clear 뒤 input 이벤트와 onClear를 보내고 포커스를 input으로 되돌리며, password toggle은 그 type에서만 보입니다.
+Button은 loading·disabled일 때 native button을 비활성화합니다. Field · Textarea의 error status는 `aria-invalid`도 설정합니다. Field · Textarea · Select · Checkbox · Radio · Switch는 [FormField](../primitives/field.md#입력과-설명의-관계) 안에 두면 field의 id · 설명 · 오류 · disabled · required를 context로 받아 `controlProps`로 마지막에 펼치고, 밖에서는 자기 props만 씁니다. aria-invalid는 직접 준 값이 이기고, 없으면 error status이거나 field가 invalid일 때 `true`입니다. Field는 clear 뒤 input 이벤트와 onClear를 보내고 포커스를 input으로 되돌리며, password toggle은 그 type에서만 보입니다.
 
 Field · Select · Textarea는 포인터 포커스와 키보드 포커스를 구분해, 키보드로 왔을 때만 바깥에 포커스 링을 그립니다. Checkbox · Radio · Switch는 native 포커스·비활성·checked 동작을 그대로 씁니다. IconButton의 aria-label은 타입에서 필수이고, Badge의 점과 Select 화살표는 장식으로 숨깁니다. hover·focus·selected의 우선순위는 [상태와 피드백](states.md)에 있습니다.
 

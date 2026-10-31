@@ -1,10 +1,12 @@
-import { createContext, forwardRef, useCallback, useContext, useEffect, useId, useMemo, useRef, type ButtonHTMLAttributes, type HTMLAttributes, type MouseEvent, type ReactNode, type Ref, type RefObject } from "react";
+import { createContext, forwardRef, useCallback, useContext, useEffect, useId, useMemo, useRef, type ElementType, type HTMLAttributes, type MouseEvent, type ReactNode, type Ref, type RefObject } from "react";
 
 import { useScopeFocus } from "../../internal/aria/focus";
 import { useAriaDismiss, useAriaModal, useAriaPosition } from "../../internal/aria/overlay";
 import { paperError } from "../../internal/errors";
+import { FormFieldContext } from "../../internal/form-field-context";
 import { joinClass } from "../../internal/joinClass";
 import { useMergedRef } from "../../internal/refs";
+import { registerPart, targetProps } from "../../internal/render-target";
 import { useControllableState } from "../../internal/useControllableState";
 import { VALUE_ATTRIBUTE } from "../../tokens";
 import { FocusScope } from "../a11y/focus";
@@ -12,6 +14,7 @@ import { Portal } from "../a11y/Portal";
 import { bareButton } from "../bare-button.css";
 import { composeEventHandlers, mergeProps } from "../composition";
 import { scrimPaint } from "../paint/recipes.css";
+import type { PolymorphicComponent, PolymorphicProps } from "../polymorphic";
 import type { Placement } from "../types";
 import * as styles from "./Floating.css";
 import { nestElevation, type FloatingElevation } from "./nestElevation";
@@ -54,20 +57,35 @@ function Root({ modal = false, children, ...options }: FloatingProps) {
   const contentId = useId();
   return <Context.Provider value={{ state, modal, triggerRef, contentId, elevation: nestElevation(parent?.elevation, modal ? "modal" : "overlay") }}>{children}</Context.Provider>;
 }
-export type FloatingTriggerProps = ButtonHTMLAttributes<HTMLButtonElement>;
-const Trigger = forwardRef<HTMLButtonElement, FloatingTriggerProps>(function FloatingTrigger({ onClick, ...props }, forwardedRef) {
+// What a Floating part may read of the panel it stands in. `elevation` is where it stands in the stack.
+export type FloatingContentState = {
+  isOpen: boolean;
+  presentation: "popover" | "modal";
+  /** The side of the anchor the panel settled on; undefined while it is not anchored. */
+  placement: "top" | "bottom" | "left" | "right" | "center" | undefined;
+  elevation: FloatingElevation;
+};
+
+type FloatingButtonOwnProps = { disabled?: boolean };
+export type FloatingTriggerProps<As extends ElementType = "button"> = PolymorphicProps<FloatingButtonOwnProps, As>;
+const TriggerImpl = forwardRef<HTMLElement, Omit<FloatingTriggerProps, "as" | "ref"> & { as?: ElementType }>(function FloatingTrigger({ as, disabled = false, onClick, onKeyDown, ...props }, forwardedRef) {
   const { state, triggerRef, contentId } = useContextValue();
   const ref = useMergedRef(triggerRef, forwardedRef);
+  const Tag = as ?? "button";
+  const { type, href } = props as { type?: string; href?: string };
   // The Trigger is the opener focus returns to, and Safari leaves a clicked button unfocused.
-  const toggle = (event: MouseEvent<HTMLButtonElement>) => {
+  const toggle = (event: MouseEvent<HTMLElement>) => {
     event.currentTarget.focus({ preventScroll: true });
     state.toggle();
   };
-  return <button {...mergeProps({ className: bareButton, type: "button" }, props)} ref={ref} aria-haspopup="dialog" aria-expanded={state.isOpen}
-    aria-controls={state.isOpen ? contentId : undefined} onClick={composeEventHandlers(onClick, toggle)} />;
+  const bare = Tag === "button" ? { className: bareButton } : undefined;
+  const target = targetProps(Tag, { disabled, type, href, activateOnKey: true, kind: "control" });
+  return <Tag {...mergeProps(bare, target, props)} ref={ref} aria-haspopup="dialog" aria-expanded={state.isOpen}
+    aria-controls={state.isOpen ? contentId : undefined} onClick={composeEventHandlers(onClick, toggle)} onKeyDown={composeEventHandlers(onKeyDown, target.onKeyDown)} />;
 });
+const Trigger = registerPart(TriggerImpl) as PolymorphicComponent<FloatingButtonOwnProps, "button">;
 export type FloatingContentProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "autoFocus" | "role" | "id"> & {
-  children: ReactNode | ((state: FloatingResult) => ReactNode);
+  children: ReactNode | ((state: FloatingContentState) => ReactNode);
   role?: "dialog" | "alertdialog";
   dismissable?: boolean;
   keyboardDismissDisabled?: boolean;
@@ -102,7 +120,7 @@ function Panel({ forwardedRef, children, role = "dialog", dismissable = true, ke
   const common = { context, surfaceRef: ref, forwardedRef, behavior, initialFocusRef, autoFocus, role, underlayClassName,
     domProps: { ...props, id: contentId, role, tabIndex: -1, className: joinClass(styles.surface, !modal && styles.stack[elevation.tier], styles.cast[elevation.tier], className),
       style: { [styles.rankProperty]: String(elevation.rank), ...(isAnchored ? position.style : undefined), ...style }, [VALUE_ATTRIBUTE.placement]: isAnchored ? position.placement : undefined,
-      children: typeof children === "function" ? children(state) : children } };
+      children: typeof children === "function" ? children({ isOpen: state.isOpen, presentation: modal ? "modal" : "popover", placement: isAnchored ? position.placement ?? undefined : undefined, elevation }) : children } };
   return modal ? <ModalPanel {...common} /> : <NonModalPanel {...common} />;
 }
 type BehaviorProps = {
@@ -156,14 +174,21 @@ const Content = forwardRef<HTMLDivElement, FloatingContentProps>(function Floati
   /* eslint-disable jsx-a11y/no-autofocus -- focus enters a floating panel the user just opened */
   return <Portal container={portalContainer}>
     <FocusScope contain={modal} restoreFocus={restoreFocus}>
-      <Panel {...props} autoFocus={autoFocus} forwardedRef={ref} />
+      <FormFieldContext.Provider value={null}>
+        <Panel {...props} autoFocus={autoFocus} forwardedRef={ref} />
+      </FormFieldContext.Provider>
     </FocusScope>
   </Portal>;
   /* eslint-enable jsx-a11y/no-autofocus */
 });
-export type FloatingCloseProps = ButtonHTMLAttributes<HTMLButtonElement>;
-const Close = forwardRef<HTMLButtonElement, FloatingCloseProps>(function FloatingClose({ onClick, ...props }, ref) {
+export type FloatingCloseProps<As extends ElementType = "button"> = PolymorphicProps<FloatingButtonOwnProps, As>;
+const CloseImpl = forwardRef<HTMLElement, Omit<FloatingCloseProps, "as" | "ref"> & { as?: ElementType }>(function FloatingClose({ as, disabled = false, onClick, onKeyDown, ...props }, ref) {
   const { state } = useContextValue();
-  return <button {...mergeProps({ className: bareButton, type: "button" }, props)} ref={ref} onClick={composeEventHandlers(onClick, state.close)} />;
+  const Tag = as ?? "button";
+  const { type, href } = props as { type?: string; href?: string };
+  const bare = Tag === "button" ? { className: bareButton } : undefined;
+  const target = targetProps(Tag, { disabled, type, href, activateOnKey: true, kind: "control" });
+  return <Tag {...mergeProps(bare, target, props)} ref={ref} onClick={composeEventHandlers(onClick, state.close)} onKeyDown={composeEventHandlers(onKeyDown, target.onKeyDown)} />;
 });
+const Close = registerPart(CloseImpl) as PolymorphicComponent<FloatingButtonOwnProps, "button">;
 export const Floating = Object.assign(Root, { Trigger, Content, Close });
