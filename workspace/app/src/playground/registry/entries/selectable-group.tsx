@@ -8,7 +8,7 @@ import { control, roving } from "./examples.css";
 
 export default defineSpec({
   name: "SelectableGroup",
-  blurb: "Selectable 항목의 단일·복수 선택과 그룹 focus 탐색을 연결합니다. 선택과 focus는 별도 상태이고, role을 주면 항목이 그 role의 aria로 선택을 알립니다.",
+  blurb: "Selectable 항목의 단일·복수 선택과 그룹 focus 탐색을 연결합니다. 항목은 click으로 선택을 바꾸는 native button입니다. 선택과 focus는 별도 상태이고, role을 주면 항목이 그 role의 aria로 선택을 알립니다.",
   controls: [
     enumControl<SelectableGroupProps, "selectionMode">("selectionMode", local<SelectableGroupProps, "selectionMode">()(["single", "multiple"], "SelectableGroup's own two selection modes")),
     boolControl<SelectableGroupProps, "selectionRequired">("selectionRequired", false, { behaviorOnly: "a required selection only refuses the last deselect, which a static render does not show" }),

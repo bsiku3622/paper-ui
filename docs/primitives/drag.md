@@ -1,6 +1,6 @@
 # Drag
 
-Drag Primitive는 끌어 옮기기와 놓기를 맡는 2차 primitive입니다. 색과 크기는 고르지 않고, 상태를 `data-*` 속성과 children 함수로 노출해 소비자가 스타일을 붙이게 합니다. 입력 정규화와 native drag and drop은 React Aria에 위임하고, Paper가 공개 API와 상태 연결을 소유합니다(옵션 · 이벤트 · 항목 타입은 모두 Paper가 선언합니다). transfer drag의 키보드 버튼은 [Press](press.md) 위에 섭니다.
+Drag Primitive는 끌어 옮기기와 놓기를 맡는 2차 primitive입니다. 색과 크기는 고르지 않고, 상태를 `data-*` 속성과 children 함수로 노출해 소비자가 스타일을 붙이게 합니다. 입력 정규화와 native drag and drop은 React Aria에 위임하고, Paper가 공개 API와 상태 연결을 소유합니다(옵션 · 이벤트 · 항목 타입은 모두 Paper가 선언합니다). transfer drag의 키보드 버튼(Draggable.Handle)은 native button이고, 눌림은 drag hook이 직접 다룹니다.
 
 | 컴포넌트 | Hook | 책임 | 기본값 |
 | --- | --- | --- | --- |

@@ -1,6 +1,6 @@
 # Float
 
-Float Primitive는 떠 있는 층의 위치와 elevation(z와 그림자), 닫는 방식을 맡는 2차 primitive입니다. Trigger · Content · Close로 열린 상태를 연결하고, 입력 정규화와 배치 · 중첩 dismissal · 배경 inert · 스크롤 잠금은 React Aria에 위임하며 Paper가 공개 API와 상태 연결을 소유합니다(`Placement`를 포함해 타입은 모두 Paper가 선언합니다). Floating은 elevation 한 단위(z와 그림자)와 modal의 scrim 및 그 gutter를 스스로 소유하고, 그 밖의 색은 입히지 않습니다 — 면 · 테두리 · 모서리 · 여백은 Content의 className이 지정하며(`surfaceClass()`로 fill · border · radius를 고릅니다), modal의 scrim만 Paint 층의 `scrimPaint`를 씁니다. Trigger와 Close는 눌리는 대상이라 [Press](press.md)의 Pressable 위에 섭니다.
+Float Primitive는 떠 있는 층의 위치와 elevation(z와 그림자), 닫는 방식을 맡는 2차 primitive입니다. Trigger · Content · Close로 열린 상태를 연결하고, 입력 정규화와 배치 · 중첩 dismissal · 배경 inert · 스크롤 잠금은 React Aria에 위임하며 Paper가 공개 API와 상태 연결을 소유합니다(`Placement`를 포함해 타입은 모두 Paper가 선언합니다). Floating은 elevation 한 단위(z와 그림자)와 modal의 scrim 및 그 gutter를 스스로 소유하고, 그 밖의 색은 입히지 않습니다 — 면 · 테두리 · 모서리 · 여백은 Content의 className이 지정하며(`surfaceClass()`로 fill · border · radius를 고릅니다), modal의 scrim만 Paint 층의 `scrimPaint`를 씁니다. Trigger와 Close는 `onClick`을 받는 native button이라 press를 안에 두지 않습니다.
 
 | 컴포넌트 | Hook | 책임 | 기본값 |
 | --- | --- | --- | --- |
@@ -23,7 +23,7 @@ Floating은 열린 상태와 Trigger·Content·Close를 연결합니다. Root는
 </Floating>
 ```
 
-Root의 open/defaultOpen/onOpenChange는 controlled·uncontrolled 상태를 선택합니다. useFloating은 같은 옵션을 받아 `FloatingResult`(isOpen·setOpen·open·close·toggle)를 돌려주는 상태 hook이고, 같은 값이면 알리지 않습니다. Floating 안의 부품은 `useFloatingContext()`로 같은 결과를 읽어 직접 만든 button으로 열고 닫습니다. DOM 동작은 Content가 연결합니다. Trigger·Close(`FloatingTriggerProps` · `FloatingCloseProps`)는 Pressable의 native button·ref·onPress 계약을 유지하고, 호출자의 `onPress`가 먼저 실행된 뒤 열기·닫기가 따릅니다. Trigger의 aria-haspopup=dialog·aria-expanded·aria-controls가 Content에 연결됩니다.
+Root의 open/defaultOpen/onOpenChange는 controlled·uncontrolled 상태를 선택합니다. useFloating은 같은 옵션을 받아 `FloatingResult`(isOpen·setOpen·open·close·toggle)를 돌려주는 상태 hook이고, 같은 값이면 알리지 않습니다. Floating 안의 부품은 `useFloatingContext()`로 같은 결과를 읽어 직접 만든 button으로 열고 닫습니다. DOM 동작은 Content가 연결합니다. Trigger·Close(`FloatingTriggerProps` · `FloatingCloseProps`)는 `type="button"`인 native button이고 `ButtonHTMLAttributes<HTMLButtonElement>`를 받습니다. 호출자의 `onClick`이 먼저 실행된 뒤 열기·닫기가 따르며([합성 도구](README.md#합성-도구)), 호출자가 `preventDefault()`를 부르면 열고 닫지 않습니다. Trigger는 focus가 돌아오는 opener라서 클릭에 스스로 focus를 가져옵니다 — Safari는 클릭한 button에 focus를 주지 않기 때문입니다. `onPress`와 `data-active`가 필요하면 [Press](press.md)의 Pressable에 `as`로 올립니다(`<Pressable as={Floating.Trigger}>`). 요소는 하나이고 press 장치도 하나이며, 열기는 한 번만 일어납니다. Trigger의 aria-haspopup=dialog·aria-expanded·aria-controls가 Content에 연결됩니다.
 
 Content role은 dialog / alertdialog이며 기본값은 dialog입니다. aria-label 또는 aria-labelledby로 이름을 제공해주세요. Modal에만 aria-modal=true가 붙습니다. Menu·Tooltip 등의 의미론은 이 API에 임의로 부여하지 않습니다.
 

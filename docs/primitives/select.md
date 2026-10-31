@@ -1,10 +1,10 @@
 # Select
 
-Select Primitive는 선택 상태와 그것을 알리는 aria를 맡는 2차 primitive입니다. 선택을 가진 button(Selectable), 선택을 묶는 그룹(SelectableGroup)과 그 hook을 제공합니다. 상태와 aria만 다루고 색은 입히지 않습니다 — 선택된 모습은 `data-selected`를 읽는 쪽의 stylesheet가 그립니다. Selectable과 SelectableGroup.Item은 눌리는 대상이라 [Press](press.md) 위에 서고, SelectableGroup은 Tab 정지가 하나라 [Focus](focus.md)의 RovingFocus 위에 섭니다.
+Select Primitive는 선택 상태와 그것을 알리는 aria를 맡는 2차 primitive입니다. 선택을 가진 button(Selectable), 선택을 묶는 그룹(SelectableGroup)과 그 hook을 제공합니다. 상태와 aria만 다루고 색은 입히지 않습니다 — 선택된 모습은 `data-selected`를 읽는 쪽의 stylesheet가 그립니다. Selectable은 native button이고 `onClick`으로 선택을 바꾸므로 press를 안에 두지 않습니다. SelectableGroup은 Tab 정지가 하나라 [Focus](focus.md)의 RovingFocus 위에 섭니다.
 
 | 컴포넌트 | Hook | 책임 | 기본값 |
 | --- | --- | --- | --- |
-| Selectable | useSelectable | selected / defaultSelected / onSelectedChange, role, current + Pressable | false, role이 정하는 aria 속성 하나와 data-selected |
+| Selectable | useSelectable | selected / defaultSelected / onSelectedChange, role, current + native button의 onClick | false, role이 정하는 aria 속성 하나와 data-selected |
 | SelectableGroup | useSelectableGroup | selectionMode, selectedValues 계열, selectionRequired, disabled | single / 빈 선택. focus와 선택 분리 |
 
 ## Selectable
@@ -12,7 +12,7 @@ Select Primitive는 선택 상태와 그것을 알리는 aria를 맡는 2차 pri
 [contract:primitives.selectable.input-paths]: #
 Selectable은 유지되는 boolean 선택 상태를 native button에 연결합니다. selected가 있으면 controlled, defaultSelected를 주면 uncontrolled이며 기본값은 false입니다. 변경 요청은 onSelectedChange(boolean)로 전달합니다. Disabled일 때 입력과 상태 변경을 막습니다.
 
-useSelectable은 SelectableOptions를 받아 isSelected · setSelected(boolean) · toggle() · selectProps를 반환합니다. press는 안에 없습니다 — 호출자가 toggle을 자기 press에 연결합니다. Selectable은 Pressable과 useSelectable을 묶은 컴포넌트이고, children 함수에는 Pressable 상태와 isSelected를 함께 전달합니다. 호출자의 `onPress`가 먼저 실행되고 그다음에 선택이 바뀌어 `onSelectedChange`가 불립니다([합성 도구](README.md#합성-도구)). 선택은 role이 정하는 aria 속성 하나와 `data-selected`로 알립니다. `current`를 주면 선택된 동안 `aria-current`만 답니다.
+useSelectable은 SelectableOptions를 받아 isSelected · setSelected(boolean) · toggle() · selectProps를 반환합니다. press는 안에 없습니다 — 호출자가 toggle을 자기 click이나 press에 연결합니다. Selectable은 `useSelectable`과 `<button type="button">`을 묶은 컴포넌트이고, `onClick`에서 선택을 바꿉니다. children 함수는 `{ isSelected, isDisabled }`(`SelectableState`)를 받습니다. 호출자의 `onClick`이 먼저 실행되고 그다음에 선택이 바뀌어 `onSelectedChange`가 불리며, 호출자가 `onClick`에서 `preventDefault()`를 부르면 선택은 바뀌지 않습니다([합성 도구](README.md#합성-도구)). 선택은 role이 정하는 aria 속성 하나와 `data-selected`로 알립니다. `current`를 주면 선택된 동안 `aria-current`만 답니다.
 
 | role | 선택을 알리는 속성 |
 | --- | --- |
@@ -29,6 +29,16 @@ Controlled selectable을 만드는 예시입니다.
 </Selectable>
 ```
 
+Selectable은 click만 받는 native button이라 `onPress`와 `data-active` · `data-focus-visible`, 마우스·터치 뒤의 focus가 없습니다. 이것들이 필요하면 [Press](press.md)의 Pressable에 `as`로 올립니다.
+
+```tsx
+<Pressable as={Selectable} onPress={log} defaultSelected>
+  {({ isActive }) => isActive ? "누르는 중" : "선택"}
+</Pressable>
+```
+
+요소는 하나이고 press 장치도 하나입니다. Pressable이 낸 click을 Selectable이 받아 선택을 한 번만 바꿉니다(press 한 번은 늘 click 한 번입니다). Pressable의 children 함수는 `PressableState`만 받으므로 선택 상태는 `data-selected`나 `aria-*`, 또는 제어하는 쪽의 `selected`로 읽습니다. `disabled`는 Selectable의 native button까지 전달됩니다.
+
 직접 구현한 요소에 선택을 연결하는 예시입니다.
 
 ```tsx
@@ -42,7 +52,7 @@ return <button {...pressProps} {...selectProps} role="tab" type="button">홈</bu
 
 ## SelectableGroup
 
-SelectableGroup은 Selectable들의 선택 상태와 [RovingFocus](focus.md)를 연결합니다. Item은 Selectable이라 role을 주면(`role="radio"` 등) 그 role의 aria 속성으로 선택을 알리고, 주지 않으면 aria-pressed를 가진 button입니다. 방향키는 focus만 이동하고 선택은 press로 변경합니다. Radio · Tab · Option의 의미론은 role을 주는 쪽이 책임집니다.
+SelectableGroup은 Selectable들의 선택 상태와 [RovingFocus](focus.md)를 연결합니다. Item은 Selectable이라 role을 주면(`role="radio"` 등) 그 role의 aria 속성으로 선택을 알리고, 주지 않으면 aria-pressed를 가진 button입니다. 방향키는 focus만 이동하고 선택은 click으로 변경합니다. Radio · Tab · Option의 의미론은 role을 주는 쪽이 책임집니다.
 
 Controlled 단일 선택 그룹을 만드는 예시입니다.
 

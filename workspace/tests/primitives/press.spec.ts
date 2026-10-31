@@ -7,6 +7,11 @@ const once = async (target: Locator) => {
   await expect(target).toHaveAttribute("data-clicks", "1");
 };
 
+const flipped = async (target: Locator) => {
+  await expect(target).toHaveAttribute("aria-pressed", "true");
+  await expect(target).toHaveAttribute("data-clicks", "1");
+};
+
 // React Aria leaves Enter to the browser on a Mac and keeps it back everywhere else, so the keys run under both.
 const PLATFORMS = { "a Mac": "MacIntel", "another platform": "Win32" };
 
@@ -42,6 +47,32 @@ for (const [name, platform] of Object.entries(PLATFORMS)) {
       });
     }
 
+    for (const key of ["Enter", "Space"]) {
+      test(`[primitives.pressable.one-click] ${key} on <Pressable as={Selectable}> flips the selection once with one press`, async ({ page }) => {
+        const target = page.getByTestId("pressable-selectable");
+        await target.focus();
+        await page.keyboard.press(key);
+        await expect(target).toHaveAttribute("aria-pressed", "true");
+        await once(target);
+      });
+
+      test(`[primitives.selectable.input-paths] ${key} on a bare Selectable flips the selection once`, async ({ page }) => {
+        const target = page.getByTestId("selectable");
+        await target.focus();
+        await page.keyboard.press(key);
+        await flipped(target);
+      });
+
+      test(`[primitives.pressable.one-click] ${key} on <Pressable as={Floating.Trigger}> opens once with one press`, async ({ page }) => {
+        const target = page.getByTestId("pressable-trigger");
+        await target.focus();
+        await page.keyboard.press(key);
+        await expect(target).toHaveAttribute("aria-expanded", "true");
+        await once(target);
+        await expect(page.getByRole("dialog", { name: "Panel" })).toBeVisible();
+      });
+    }
+
     test("[primitives.pressable.one-click] Enter on a link is one press and one click", async ({ page }) => {
       const link = page.getByTestId("link");
       await link.focus();
@@ -68,6 +99,26 @@ test.describe("with other inputs", () => {
     await once(button);
   });
 
+  test("[primitives.pressable.one-click] a mouse click flips <Pressable as={Selectable}> once with one press", async ({ page }) => {
+    const target = page.getByTestId("pressable-selectable");
+    await target.click();
+    await expect(target).toHaveAttribute("aria-pressed", "true");
+    await once(target);
+  });
+
+  test("[primitives.pressable.one-click] element.click() flips <Pressable as={Selectable}> once with one press", async ({ page }) => {
+    const target = page.getByTestId("pressable-selectable");
+    await target.evaluate((node: HTMLElement) => node.click());
+    await expect(target).toHaveAttribute("aria-pressed", "true");
+    await once(target);
+  });
+
+  test("[primitives.selectable.input-paths] a mouse click flips a bare Selectable once", async ({ page }) => {
+    const target = page.getByTestId("selectable");
+    await target.click();
+    await flipped(target);
+  });
+
   test("[primitives.pressable.one-click] a disabled target gets neither", async ({ page }) => {
     const disabled = page.getByTestId("disabled");
     await disabled.click({ force: true });
@@ -84,5 +135,13 @@ test.describe("by touch", () => {
     const button = page.getByTestId("button");
     await button.tap();
     await once(button);
+  });
+
+  test("[primitives.pressable.one-click] a tap flips <Pressable as={Selectable}> once with one press", async ({ page }) => {
+    await openHarness(page, "press");
+    const target = page.getByTestId("pressable-selectable");
+    await target.tap();
+    await expect(target).toHaveAttribute("aria-pressed", "true");
+    await once(target);
   });
 });

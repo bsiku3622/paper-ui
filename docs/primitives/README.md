@@ -4,19 +4,18 @@ Primitive는 Foundations의 값을 화면 구조로 옮기는 첫 컴포넌트�
 
 ## 1차와 2차
 
-Primitive는 두 차수로 나뉩니다. **1차**는 바탕입니다 — Box · Text · Icon · A11y로, 서로 기대지 않습니다. **2차**는 Box에 능력 하나를 더한 것입니다 — 색(Paint), 누르기(Press), 선택(Select), 떠 있는 층(Float), 끌기(Drag), 그룹 탐색(Focus), 입력 연결(Field), 배치(Layout) 가운데 하나씩만 맡습니다. Atom은 이 둘을 hook과 class 함수로 묶습니다. 2차끼리는 서로의 색이나 상태를 가져가지 않고, 묶는 일은 Atom이 합니다.
+Primitive는 두 차수로 나뉩니다. **1차**는 바탕입니다 — Box · Text · Icon · A11y로, 서로 기대지 않습니다. **2차**는 Box에 능력 하나를 더한 것입니다 — 색(Paint), 누르기(Press), 선택(Select), 떠 있는 층(Float), 끌기(Drag), 그룹 탐색(Focus), 입력 연결(Field), 배치(Layout) 가운데 하나씩만 맡습니다. Atom은 이 둘을 hook과 class 함수로 묶습니다. 2차끼리는 서로 기대지 않고(예외는 아래 둘뿐입니다), 묶는 일은 Atom이 합니다. 누르기는 부품이 안에 두지 않습니다 — 부품(Selectable · SelectableGroup.Item · Floating.Trigger · Floating.Close · RovingFocus.Item)은 `onClick`을 받는 native button이고, 누르기 장치가 필요하면 `<Pressable as={부품}>`으로 올립니다.
 
 [contract:primitives.orders.first]: #
 1차 파일은 2차 폴더를 import하지 않습니다.
 
 [contract:primitives.orders.second]: #
-2차 폴더끼리 서로 닿는 길은 아래 다섯 줄이 전부이고, 어느 2차 폴더든 1차 primitive를 import할 수 있습니다. Atom은 모든 Primitive를 import할 수 있습니다.
+2차 폴더끼리 서로 기대지 않습니다. 소유자가 승인한 예외는 아래 둘이고, 어느 2차 폴더든 1차 primitive를 import할 수 있습니다. Atom은 모든 Primitive를 import할 수 있습니다.
 
-- Select → Press: Selectable과 SelectableGroup.Item은 눌리는 대상입니다. `useSelectable` 자체는 press를 import하지 않습니다.
 - Select → Focus: SelectableGroup은 Tab 정지가 하나라 RovingFocus 위에 섭니다.
-- Float → Press: Floating.Trigger와 Floating.Close는 눌리는 대상입니다.
 - Float → Paint: modal의 backdrop이 쓰는 `scrimPaint` 하나뿐입니다.
-- Drag → Press: transfer drag의 키보드 button입니다.
+
+Atom과 호출자 말고는 아무도 Press에 닿지 않습니다. 부품에 press가 필요하면 호출자가 `<Pressable as={Selectable}>`처럼 올리고, press 한 번이 늘 click 한 번이라([Press](press.md)) 그 요소의 press 장치는 하나입니다.
 
 [contract:primitives.orders.colour]: #
 색 규칙은 [Paint](paint.md) 층(`primitives/paint/`)에만 있습니다. `primitives/` 아래에서 `tokens.color`를 읽는 stylesheet는 그 폴더와 Icon의 잉크뿐이고, Box의 stylesheet도 읽지 않습니다.
@@ -40,7 +39,7 @@ Primitive는 두 차수로 나뉩니다. **1차**는 바탕입니다 — Box · 
 
 ## 공통 계약
 
-Box · Surface · Paint · Stack · Inline · Grid · Text는 `as`로 렌더 대상을 고르고, native props와 ref를 같은 요소로 전달합니다. Icon도 SVG ref와 native SVG props를 전달합니다. Pressable · Selectable · Draggable.Handle은 native button(`type="button"`)을, Draggable과 Droppable은 div를 렌더링합니다. 어느 것도 중첩 wrapper를 더하지 않습니다.
+Box · Surface · Paint · Pressable · Stack · Inline · Grid · Text는 `as`로 렌더 대상을 고르고, native props와 ref를 같은 요소로 전달합니다. Pressable의 `as`에는 부품도 올 수 있습니다(`<Pressable as={Selectable}>`). Icon도 SVG ref와 native SVG props를 전달합니다. Pressable · Selectable · Floating.Trigger · Floating.Close · Draggable.Handle은 native button(`type="button"`)을, Draggable과 Droppable은 div를 렌더링합니다. 어느 것도 중첩 wrapper를 더하지 않습니다.
 
 `as`는 대상과 ref를 바꿀 뿐 의미론을 만들지 않습니다. 아래 예시는 Stack을 면으로 만듭니다 — 요소는 하나이고, Stack의 prop(`gap`)과 Surface의 prop(`fill` · `border`)이 함께 타입으로 검사됩니다.
 
@@ -109,9 +108,9 @@ const { focusProps } = useFocusRing();
 `mergeRefs(...refs)`는 callback ref와 object ref를 한 callback으로 모아 같은 DOM에 연결합니다. 해제될 때 callback ref는 null로 호출되고, cleanup을 돌려준 callback ref는 null 대신 그 cleanup이 실행됩니다.
 
 [contract:primitives.composition.compose-handlers]: #
-`composeEventHandlers(caller, internal)`은 caller와 내부 동작을 잇는 유일한 규칙입니다. caller가 먼저 실행되고, `defaultPrevented`를 가진 취소할 수 있는 이벤트에서 caller가 preventDefault했을 때만 internal을 건너뜁니다. PressEvent는 취소할 수 없는 알림이라 internal이 늘 뒤따릅니다 — Selectable의 `onPress`는 `onSelectedChange`보다 먼저 실행됩니다. Floating.Trigger와 Close의 `onPress`, RovingFocus.Item과 SelectableGroup.Item의 `onFocus` · `onKeyDown`이 모두 이 규칙을 씁니다. Focus 이벤트의 preventDefault는 브라우저의 실제 focus 이동을 취소하지 않습니다.
+`composeEventHandlers(caller, internal)`은 caller와 내부 동작을 잇는 유일한 규칙입니다. caller가 먼저 실행되고, `defaultPrevented`를 가진 취소할 수 있는 이벤트에서 caller가 preventDefault했을 때만 internal을 건너뜁니다. Selectable의 `onClick`은 `onSelectedChange`보다 먼저 실행되고 `preventDefault()`를 부르면 선택이 바뀌지 않으며, Floating.Trigger와 Close의 `onClick`도 열기·닫기보다 먼저 실행되어 같은 규칙으로 취소됩니다. RovingFocus.Item과 SelectableGroup.Item의 `onFocus` · `onKeyDown`도 이 규칙을 씁니다. PressEvent는 취소할 수 없는 알림이라 `onPress`에는 취소가 없고, 취소는 `onClick`에서 합니다. Focus 이벤트의 preventDefault는 브라우저의 실제 focus 이동을 취소하지 않습니다.
 
-Disabled는 행동마다 책임이 다릅니다. Pressable·Selectable·SelectableGroup.Item은 native button을 비활성화합니다. Hook을 직접 쓰면 native disabled·접근성 이름·역할을 함께 연결합니다. `as`는 대상과 ref를 바꾸지만 의미론을 자동으로 만들지 않습니다.
+Disabled는 행동마다 책임이 다릅니다. Pressable·Selectable·SelectableGroup.Item은 native button을 비활성화하고, Floating.Trigger와 Close는 native `disabled`를 그대로 받습니다. Hook을 직접 쓰면 native disabled·접근성 이름·역할을 함께 연결합니다. `as`는 대상과 ref를 바꾸지만 의미론을 자동으로 만들지 않습니다.
 
 ## 패키지가 멈추는 곳
 

@@ -13,6 +13,9 @@ const CLICKS_BY_ITSELF = "button, input, a[href], area[href], summary";
 // submit button, a link, an input, Enter on a Mac. The click it kept back, and the one an element with no key
 // activation of its own never gets, is made here. So one press is one click whatever the input and the platform,
 // and a handler on the target needs no press of its own.
+// Enter on a Mac is kept back too, for a plain button: the browser would click it as the key goes down, and a
+// click that moves focus (a Floating.Trigger opening its panel) would take the key-up away from the pressed
+// element and lose its press. The click follows the press, as it does for Space and on every other platform.
 export function useAriaPress(
   { disabled, cancelOnPointerExit, allowTextSelection, onPress, ...options }: PressableOptions,
   ref: RefObject<HTMLElement | null>,
@@ -34,6 +37,8 @@ export function useAriaPress(
       ...pressProps,
       onKeyDown: (event) => {
         pressProps.onKeyDown?.(event);
+        const target = event.currentTarget;
+        if (event.key === "Enter" && !event.defaultPrevented && !event.ctrlKey && event.target === target && target.tagName === "BUTTON" && (target as HTMLButtonElement).type === "button") event.preventDefault();
         if (ACTIVATION_KEYS.includes(event.key)) clickKeptBack.current = event.defaultPrevented;
       },
     },

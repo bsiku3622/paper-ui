@@ -12,7 +12,7 @@ const panel = `${face} ${floatingContent}`;
 
 export default defineSpec({
   name: "Floating",
-  blurb: "Trigger·Content·Close로 열린 상태, Portal, 배치, 중첩 닫기와 focus 복원을 연결합니다. modal은 배경 조작과 스크롤을 차단합니다. 위치와 elevation(z와 그림자), 닫는 방식을 맡고 면·테두리·모서리는 호출자의 className이 정합니다.",
+  blurb: "Trigger·Content·Close로 열린 상태, Portal, 배치, 중첩 닫기와 focus 복원을 연결합니다. Trigger·Close는 onClick을 받는 native button이고, Trigger는 클릭에 스스로 focus를 가져옵니다. modal은 배경 조작과 스크롤을 차단합니다. 위치와 elevation(z와 그림자), 닫는 방식을 맡고 면·테두리·모서리는 호출자의 className이 정합니다.",
   controls: [
     boolControl<FloatingProps, "modal">("modal", false, { behaviorOnly: "Floating renders nothing until it opens, so a closed render has no markup for it" }),
     boolControl<FloatingContentProps, "dismissable">("dismissable", true, { target: "Floating.Content", behaviorOnly: "dismissal happens after the panel opens" }),

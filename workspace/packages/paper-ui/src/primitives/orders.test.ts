@@ -15,12 +15,11 @@ const src = dirname(primitives);
 // The second-order folders, by the name of the group that holds them.
 const SECOND = PRIMITIVE_ORDERS.second.map((group) => group.toLowerCase());
 
-// select → press: a Selectable is a pressed thing. float → press: Trigger and Close. drag → press: the
-// keyboard button of a transfer drag. select → focus: a group is one tab stop. float → paint: the scrim only.
+// select → focus: a group is one tab stop. float → paint: the scrim only. Nothing else reaches across, and
+// nothing but Atoms and callers reaches press: a part is a native button and `<Pressable as={Part}>` gives it a press.
 const EDGES: Record<string, readonly string[]> = {
-  select: ["press", "focus"],
-  float: ["press", "paint"],
-  drag: ["press"],
+  select: ["focus"],
+  float: ["paint"],
 };
 
 const walk = (dir: string): string[] =>
