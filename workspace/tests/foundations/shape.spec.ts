@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 import { metrics as measure } from "../support/geometry";
-import { openHarness } from "../support/harness";
+import { openHarness, openPlayground } from "../support/harness";
 import { tab } from "../support/keyboard";
 
 // The real package, mounted by the harness through its exports (?case=geometry).
@@ -125,4 +125,29 @@ test("[atoms.select.native-form] Select keeps native form and keyboard contracts
   }, role);
   await expect(dark.locator("+ svg")).toHaveCSS("color", await ink(dark, "secondary"));
   await expect(nested.locator("+ svg")).toHaveCSS("color", await ink(nested, "tertiary"));
+});
+
+test("[foundations.shape.focus-ring] the baseline draws the ring on an element with no corners of its own and leaves its corners alone, where Link and the prose link keep theirs", async ({ page }) => {
+  await mount(page);
+  await page.evaluate(() => {
+    const probe = document.createElement("div");
+    probe.id = "ring-probe";
+    probe.tabIndex = 0;
+    probe.textContent = "no corners of its own";
+    document.body.prepend(probe);
+  });
+  await tab(page);
+  const probe = page.locator("#ring-probe");
+  await expect(probe).toBeFocused();
+  await expect(probe).toHaveCSS("outline-style", "solid");
+  await expect(probe).toHaveCSS("outline-width", "2px");
+  await expect(probe).toHaveCSS("outline-offset", "2px");
+  await expect(probe).toHaveCSS("border-top-left-radius", "0px");
+
+  // A link in prose is rounded by the rule that styles it, so its ring is still a rounded one.
+  await page.goto("/docs/foundations/shape");
+  await expect(page.locator(".md a").first()).toHaveCSS("border-top-left-radius", "4px");
+  // So is the Link Atom, whose stylesheet declares the corner its ring follows.
+  await openPlayground(page, "link", "Link");
+  await expect(page.getByRole("link", { name: "링크", exact: true })).toHaveCSS("border-top-left-radius", "4px");
 });

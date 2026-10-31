@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 
 import { elevation } from "../index";
 import { Box, Paint, Stack, Surface, paintClass, surfaceClass } from "./index";
-import { surfaceBorder, surfaceRadius } from "./paint/Surface.css";
+import { surfaceBorder, surfaceItem, surfaceRadius } from "./paint/Surface.css";
 import { accentVariantClass, fillClass, hoverGate } from "../styles/color.css";
 import { spaceClass } from "../styles/space.css";
 import { ACCENTS, ELEVATIONS, SURFACE_FILLS, VARIANTS } from "../tokens";
@@ -47,6 +47,22 @@ describe("Surface", () => {
       expect(screen.getByTestId(tier).getAttribute("class"), tier).toBe(elevation[tier]);
       expect(surfaceClass({ elevation: tier }), tier).toBe(elevation[tier]);
     }
+  });
+
+  it("[primitives.surface.item] makes a hoverable Surface an item, and gives surfaceClass the same class", () => {
+    render(<Surface data-testid="item" hoverable fill="raised" />);
+    expect(screen.getByTestId("item").classList.contains(surfaceItem)).toBe(true);
+    expect(surfaceClass({ hoverable: true, fill: "raised" })).toBe([fillClass.raised, surfaceItem].join(" "));
+    expect(surfaceClass({ fill: "raised" })).not.toContain(surfaceItem);
+  });
+
+  it("[primitives.surface.item] sets data-selected from selected and never relays selected into a class", () => {
+    render(<><Surface data-testid="on" hoverable selected /><Surface data-testid="off" hoverable selected={false} /><Surface data-testid="bare" selected /></>);
+    expect(screen.getByTestId("on").getAttribute("data-selected")).toBe("true");
+    expect(screen.getByTestId("off").hasAttribute("data-selected")).toBe(false);
+    expect(screen.getByTestId("on").className).toBe(screen.getByTestId("off").className);
+    expect(screen.getByTestId("bare").getAttribute("data-selected")).toBe("true");
+    expect(screen.getByTestId("bare").getAttribute("class") ?? "").toBe("");
   });
 
   it("[primitives.surface.classes] paints nothing it was not asked to", () => {
@@ -101,9 +117,19 @@ describe("Paint", () => {
     for (const className of [accentVariantClass.success.hairline, hoverGate, spaceClass.padding.sm, "mine"]) expect(element.classList.contains(className), className).toBe(true);
   });
 
+  it("[primitives.paint.selected] sets data-selected from selected, with the same class selected or not", () => {
+    render(<><Paint data-testid="on" accent="info" variant="ghost" selected /><Paint data-testid="off" accent="info" variant="ghost" /></>);
+    expect(screen.getByTestId("on").getAttribute("data-selected")).toBe("true");
+    expect(screen.getByTestId("off").hasAttribute("data-selected")).toBe(false);
+    expect(screen.getByTestId("on").className).toBe(screen.getByTestId("off").className);
+  });
+
   it("[primitives.paint.classes] takes the accent props that Box does not", () => {
     compiles(
-      <Paint accent="error" variant="soft" hoverable />,
+      <Paint accent="error" variant="soft" hoverable selected />,
+      <Surface fill="raised" hoverable selected />,
+      // @ts-expect-error selected is Surface's and Paint's
+      <Box selected />,
       <Paint as="span" accent="info" />,
       // @ts-expect-error accent is Paint's
       <Box accent="info" />,

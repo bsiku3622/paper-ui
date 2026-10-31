@@ -5,6 +5,8 @@ import { describe, expect, it } from "vitest";
 import { textMonoClass, textNumericClass, textRoleClass } from "../styles/typography.css";
 import { TEXT_VARIANTS } from "../tokens";
 import { Icon, Text } from "./index";
+import { iconSize } from "./Icon.css";
+import { IconSizeContext } from "./icon-context";
 
 describe("Text", () => {
   it("draws its role with the tag that role implies, hero and display as the page's h1", () => {
@@ -41,6 +43,26 @@ describe("Text", () => {
 });
 
 describe("Icon", () => {
+  const path = <path d="M1 1h2" />;
+
+  it("[primitives.icon.size-precedence] takes an explicit size over the size its container gives it, and that over body", () => {
+    render(
+      <>
+        <Icon data-testid="alone">{path}</Icon>
+        <IconSizeContext.Provider value="caption">
+          <Icon data-testid="inherits">{path}</Icon>
+          <Icon data-testid="explicit" size="label">{path}</Icon>
+        </IconSizeContext.Provider>
+      </>,
+    );
+    const has = (id: string, size: keyof typeof iconSize) => screen.getByTestId(id).classList.contains(iconSize[size]);
+    expect(has("alone", "body")).toBe(true);
+    expect(has("inherits", "caption")).toBe(true);
+    expect(has("inherits", "body")).toBe(false);
+    expect(has("explicit", "label")).toBe(true);
+    expect(has("explicit", "caption")).toBe(false);
+  });
+
   it("an externally labelled Icon stays in the accessibility tree", () => {
     render(<><Text as="span" id="icon-name">Project icon</Text><Icon aria-labelledby="icon-name"><path d="M1 1h2" /></Icon></>);
     expect(screen.getByLabelText("Project icon").getAttribute("aria-hidden")).not.toBe("true");

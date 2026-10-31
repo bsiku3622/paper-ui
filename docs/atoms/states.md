@@ -32,11 +32,13 @@ neutral Form의 `border.hover`는 `border.base`·`border.strong`보다 진하고
 
 `soft`·`ghost`·`muted`와 solid의 hover는 배경을 직접 바꾸지 않고 `tokens.color.interaction.bgHover`를 `backgroundImage` tint로 겹칩니다. 그래서 raised·canvas·sunken 어느 면 위에서도 같은 방향으로 읽힙니다. `hairline`은 면 대신 경계를 `border.hover`로 올립니다.
 
+선택될 수 있는 variant(`hairline` · `ghost` · `muted`)는 `data-selected`나 `aria-current`가 있으면 그 accent의 `soft` 면을 입고, 그 위의 hover는 경계를 올리지 않고 tint만 얹습니다. 면이 이미 있는 `solid`와 `soft`에는 selected가 없습니다. 중립 항목(행 · 메뉴 항목 · 분절)은 같은 일을 `stateStyle.item`이 합니다 — 눌림 > 선택 > hover 순으로 `--pui-state-tint`를 바꾸고, 선택된 항목의 글자는 `ink.primary`입니다([상태 recipe](../foundations/README.md#상태-recipe)).
+
 이 규칙은 `tokens/color-recipes.ts`가 정의하고 `styles/color.css.ts`가 `ACCENTS × VARIANTS` 전체에 방출합니다. 표시 전용 컴포넌트는 `hoverable`을 받지 않으므로 Badge처럼 hover가 의미 없는 곳에 상태색이 번지지 않습니다. hover 색은 `@media (hover: hover)` 안에서, disabled · `aria-disabled` · `data-disabled`가 아닌 대상에만 뜹니다 — 터치는 hover가 없고 막힌 대상은 포인터가 올라와도 반응하지 않습니다([Paint](../primitives/paint.md#paint--accent--variant)).
 
 ## Focus와 transition
 
-focus ring은 패키지 전체가 하나의 스타일(`focusRing`)을 씁니다 — 색은 `interaction.focus`, 폭과 offset은 Shape의 `focus.width`·`focus.offset`(2px · 2px)입니다. Form wrapper가 focus의 주인이므로 안쪽 native control은 자기 outline을 끕니다. 전이 시간은 Motion의 역할이 정합니다. hover 반응(테두리·글자색)은 `hover`(100ms), 켜진 채 머무는 상태와 면의 전이는 `state`(130ms)이고, 정본은 [Motion](../foundations/motion.md)입니다. `prefers-reduced-motion: reduce`에서는 전이가 즉시 끝납니다.
+focus ring은 패키지 전체가 하나의 스타일(`focusRing`)을 씁니다 — 색은 `interaction.focus`, 폭과 offset은 Shape의 `focus.width`·`focus.offset`(2px · 2px)입니다. Form wrapper가 focus의 주인이므로 안쪽 native control은 자기 outline을 끕니다. 링 주인이 없는 요소는 전역 baseline `:where(:focus-visible)`이 링만 그리고 요소의 모양은 바꾸지 않으므로, 링은 요소 자신의 곡률을 따릅니다([Shape](../foundations/shape.md#stroke--focus)). 전이 시간은 Motion의 역할이 정합니다. hover 반응(테두리·글자색)은 `hover`(100ms), 켜진 채 머무는 상태와 면의 전이는 `state`(130ms)이고, 정본은 [Motion](../foundations/motion.md)입니다. `prefers-reduced-motion: reduce`에서는 전이가 즉시 끝납니다.
 
 새 컴포넌트는 다음 질문에 답한 뒤 hover를 추가합니다.
 

@@ -5,9 +5,9 @@
 // 만들어지니 조합이 빠질 수 없고, 어휘 밖의 이름은 타입에서 걸린다. 이 파일은 resolver 를
 // import 하지 않는다 — 지도가 아래, resolver 가 위다.
 
-import { tokens, ACCENTS, STATUSES, VARIANTS, ENABLED_SELECTOR, type Accent, type Ink, type Status, type Variant } from "../tokens";
+import { tokens, ACCENTS, STATUSES, VARIANTS, ENABLED_SELECTOR, SELECTED_SELECTOR, type Accent, type Ink, type Status, type Variant } from "../tokens";
 import { layered } from "../tokens/layers.css";
-import { accentProfile } from "../tokens/color-recipes";
+import { accentProfile, itemProfile } from "../tokens/color-recipes";
 
 const utilities = layered("utilities");
 const components = layered("components");
@@ -42,21 +42,29 @@ export const inkClass = utilities.styleVariants(INK_COLOR, (color) => ({ color }
 
 export const hoverGate = components.style({});
 
+const tintLayer = (tint: string) => `linear-gradient(0deg, ${tint}, ${tint})`;
+
 const accentClass = (accent: Accent, variant: Variant): string => {
   const spec = accentProfile(accent, variant);
+  // 중립: base 색은 두고 tint 레이어(backgroundImage)만 얹는다 — 어느 면 위든 합성돼 어두워진다.
+  // 색·검정 solid 도 같은 방식으로 한 단계 반응하고, hairline 은 경계가 한 단계 진해진다.
+  const hover = "tint" in spec.hover ? { backgroundImage: tintLayer(spec.hover.tint) } : { borderColor: spec.hover.border };
+  const gated = `&.${hoverGate}:hover${ENABLED_SELECTOR}`;
   return components.style({
-    background: spec.background,
-    color: spec.color,
-    borderColor: spec.borderColor,
+    background: spec.face,
+    color: spec.ink,
+    borderColor: spec.border,
+    // 선택은 data-selected 나 aria-current 가 알린다. 선택된 면은 hover 로 경계가 올라오지 않고, 면 위에 tint 만 얹는다.
+    ...(spec.selected
+      ? { selectors: { [`&${SELECTED_SELECTOR}`]: { backgroundColor: spec.selected.face, color: spec.selected.ink, borderColor: spec.selected.border } } }
+      : {}),
     "@media": {
       "(hover: hover)": {
         selectors: {
-          [`&.${hoverGate}:hover${ENABLED_SELECTOR}`]: {
-            // 중립: base 색은 두고 tint 레이어(backgroundImage)만 얹는다 — 어느 면 위든
-            // 합성돼 어두워진다. 색·검정 solid 도 같은 방식으로 한 단계 반응한다.
-            ...(spec.hoverTint ? { backgroundImage: `linear-gradient(0deg, ${spec.hoverTint}, ${spec.hoverTint})` } : {}),
-            ...(spec.hoverBorderColor ? { borderColor: spec.hoverBorderColor } : {}),
-          },
+          [gated]: hover,
+          ...(spec.selected
+            ? { [`&.${hoverGate}${SELECTED_SELECTOR}:hover${ENABLED_SELECTOR}`]: { backgroundImage: tintLayer(itemProfile.hoverTint), borderColor: spec.selected.border } }
+            : {}),
         },
       },
     },

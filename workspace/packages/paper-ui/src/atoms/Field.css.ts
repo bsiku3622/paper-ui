@@ -1,7 +1,7 @@
-import { tokens, CONTROL_SIZES, STATUSES, transition } from "../tokens";
+import { tokens, CONTROL_SIZES, STATUSES, transition, focusRing } from "../tokens";
 import type { ControlSize, Status } from "../tokens";
-import { outlinedControlProfile, outlinedControlHover } from "../tokens/color-recipes";
-import { controlGeometry, focusRing } from "../internal/shape";
+import { outlinedControlProfile } from "../tokens/color-recipes";
+import { controlGeometry } from "../internal/shape";
 import { layered } from "../tokens/layers.css";
 
 const { style, styleVariants } = layered("components");
@@ -10,8 +10,8 @@ const { style, styleVariants } = layered("components");
 // 투명·무테로 값만 담는다. leading/trailing 어도먼트(아이콘·$·단위·clear·비밀번호)가
 // input 양옆에 앉는다. 크기(height·paddingInline·fontSize)는 fieldSize 가 래퍼에 준다.
 export const fieldWrap = style({
-  color: outlinedControlProfile.color,
-  borderColor: outlinedControlProfile.borderColor,
+  color: outlinedControlProfile.ink,
+  borderColor: outlinedControlProfile.border,
   display: "flex",
   alignItems: "center",
   gap: tokens.shape.control.gap,
@@ -24,7 +24,7 @@ export const fieldWrap = style({
   selectors: {
     // neutral hover는 배경을 흔들지 않고 전용 border.hover 선으로 형태를 가볍게 세운다.
     '&:not([data-status]):hover:has(input:enabled)': {
-      ...outlinedControlHover,
+      borderColor: outlinedControlProfile.hoverBorder,
     },
     // keyboard focus — 안쪽 input 이 :focus-visible일 때만 래퍼 *바깥* 에 파란 링.
     // 클릭은 caret과 edge만 남기고, Tab 탐색 위치에만 ring을 쓴다.
@@ -44,8 +44,7 @@ export const fieldInput = style({
   // input box 경계에서 잘릴 수 있다. 입력면 높이 전체를 확보하고 줄상자는 내부에서 중앙에 둔다.
   height: "100%",
   border: "none",
-  // 전역 :focus-visible의 radius는 wrapper가 아니라 input 자신에게도 적용된다. Native
-  // input은 overflow: clip이라 선택 highlight와 caret을 그 둥근 경계에서 잘라낸다.
+  // Native input은 overflow: clip이라 선택 highlight와 caret을 둥근 경계에서 잘라낸다.
   // Field의 ring은 wrapper가 소유하므로 안쪽 입력 면은 직각 clipping box로 둔다.
   borderRadius: 0,
   background: "transparent",
@@ -60,8 +59,7 @@ export const fieldInput = style({
   margin: 0,
   selectors: {
     "&::placeholder": { color: tokens.color.ink.tertiary },
-    // 전역 :focus-visible rule보다 높은 특정도로 input 자체의 ring은 끈다. ring의 주인은
-    // keyboard focus를 읽는 wrapper다.
+    // input 자체의 ring은 끈다. ring의 주인은 keyboard focus를 읽는 wrapper다.
     "&:focus-visible": { outline: "none", borderRadius: 0 },
   },
 });
@@ -78,12 +76,7 @@ export const fieldInputLeading = styleVariants(
 
 // status — semantic Form은 accent ink 선으로 상태를 분명히 표시한다.
 export const fieldStatus = styleVariants(
-  Object.fromEntries(
-    STATUSES.map((s) => {
-      const accent = tokens.color.accent[s];
-      return [s, { borderColor: accent.ink }];
-    }),
-  ) as Record<Status, { borderColor: string }>,
+  Object.fromEntries(STATUSES.map((s) => [s, { borderColor: outlinedControlProfile.status[s] }])) as Record<Status, { borderColor: string }>,
 );
 
 // 어도먼트 — leading/trailing 슬롯(아이콘·$·단위). 흐린 잉크, 축소 안 됨.

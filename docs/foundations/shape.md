@@ -61,7 +61,10 @@ Surface의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값
 ## Stroke · Focus
 
 [contract:foundations.shape.stroke-px]: #
-선과 포커스 링은 root 글자 크기를 따라 커지지 않도록 CSS px로 둡니다. `stroke.border` 1px은 테두리와 Divider, `stroke.emphasis` 2px은 체크 표시·Spinner 링·스위치 손잡이 둘레, `stroke.icon` 1.75는 24 artboard 위 SVG 선입니다. 포커스 링은 `focus.width` 2px · `focus.offset` 2px이고, 패키지의 모든 포커스 링은 한 스타일(`focusRing`)을 공유합니다. 링의 두께와 offset은 Shape, 색은 Color(`interaction.focus`)가 소유합니다.
+선과 포커스 링은 root 글자 크기를 따라 커지지 않도록 CSS px로 둡니다. `stroke.border` 1px은 테두리와 Divider, `stroke.emphasis` 2px은 체크 표시·Spinner 링·스위치 손잡이 둘레, `stroke.icon` 1.75는 24 artboard 위 SVG 선입니다. 포커스 링은 `focus.width` 2px · `focus.offset` 2px이고, 패키지의 모든 포커스 링은 한 스타일(`focusRing`)을 공유합니다. 링의 두께와 offset은 Shape, 색은 Color(`interaction.focus`)가 소유합니다. 안쪽에 그리는 1px 선은 `strokeRing(color)`가 `inset 0 0 0 stroke.border`로 한 곳에서 만들어, 요소의 크기를 바꾸지 않고 상자 안쪽에 선을 긋습니다.
+
+[contract:foundations.shape.focus-ring]: #
+링은 요소 자신의 곡률을 따릅니다. 전역 baseline(`:where(:focus-visible)`)은 링만 그리고 요소의 모양을 바꾸지 않으므로, 자기 곡률이 없는 요소(제목, 사이드바 링크)의 키보드 링은 각지게 그려집니다. 곡률은 링을 그리는 요소가 정합니다 — Button · Field · Select · Textarea와 Link는 `radius.control`을 가집니다.
 
 ## Control
 
@@ -77,7 +80,7 @@ Surface의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값
 | `control.icon` | 16 | 18 | 20 | 높이를 따르는 icon 크기 (caption · body · subheading) |
 | `control.gap` | 8 | 8 | 8 | 아이콘과 라벨 사이, inset sm |
 
-컨트롤 안의 아이콘은 옆 글자가 아니라 컨트롤 높이를 따라 30 → 16, 32 → 18, 36 → 20으로 커집니다. 컨트롤 글자는 control preset(13 · 13 · 14)이라 어느 Text 역할과도 같지 않기 때문입니다. 같은 size의 Button · Field · Select는 같은 높이를 고르고, 글자는 Typography의 control preset에서 따로 고릅니다. 각 컨트롤은 `internal/shape.ts`의 `controlGeometry`에서 자기 역할을 고르며, stylesheet가 자기만의 크기 사다리를 만들지 않습니다.
+컨트롤 안의 아이콘은 옆 글자가 아니라 컨트롤 높이를 따라 30 → 16, 32 → 18, 36 → 20으로 커집니다. 컨트롤 글자는 control preset(13 · 13 · 14)이라 어느 Text 역할과도 같지 않기 때문입니다. 같은 size의 Button · Field · Select는 같은 높이를 고르고, 글자는 Typography의 control preset에서 따로 고릅니다. `controlGeometry`(`internal/shape.ts`)는 크기가 있는 모든 Atom의 단일 진입점이고, stylesheet가 자기만의 크기 사다리를 만들지 않습니다. 항목은 button · iconButton(높이를 변으로 하는 정사각, 안쪽 여백 없음) · field · select · selectArrow · textarea · selection(선택 상자) · checkbox · radio · switch · badge · spinner · spinnerInline입니다. `control.icon`은 컨트롤 안 아이콘의 기본 크기입니다. 컨트롤 안의 Icon은 그 컨트롤이 정한 크기를 맥락(`IconSizeContext`)으로 받고, 명시한 `size`가 있으면 그것이 이깁니다.
 
 ## Sizing
 
@@ -116,7 +119,7 @@ coarse pointer에서 더 키우지 않습니다 — 촘촘한 목록에서 hit a
 | Switch | 트랙 폭 = 컨트롤 높이, 트랙 높이 = 선택 상자 + 테, 손잡이 = 선택 상자 − 테. 테는 `stroke.emphasis`라, 손잡이는 사방 2px 안쪽에 앉고 정확히 자기 폭만큼 이동합니다. RTL에서는 이동 방향을 뒤집습니다. |
 | Textarea | 한 줄은 같은 size의 Field와 정확히 같은 높이입니다: block 여백 = (컨트롤 높이 − textarea 글자 줄) / 2 − 테두리. 최소 높이는 `dimension.height.sm`입니다. |
 | Select | 화살표는 trailing icon입니다. `control.icon` 크기의 Icon이 입력 inset 자리에 앉고, 값은 그보다 `control.gap`만큼 앞에서 멈춥니다 — Field의 leading icon을 거울로 비춘 구조입니다. |
-| Spinner | 지름은 `control.icon`, 링은 `stroke.emphasis`입니다. 버튼 안 스피너는 라벨 글자(1em)를 따릅니다. |
+| Spinner | 지름은 `control.icon`, 링은 `stroke.emphasis`입니다. 글줄 안에 놓는 스피너(`spinner.inline`)는 라벨 글자(1em)를 따릅니다. |
 | Badge | 높이 20 · 22 · 24와 inset 6 · 8 · 10은 규칙으로 나오지 않아 원본 anatomy에 둡니다. 점은 글자의 0.5em, 점과 글자 사이는 inset xs입니다. |
 
 링크 밑줄 offset은 글자의 장식이라 Typography(`typography.palette.decoration.underlineOffset`)가 소유합니다.

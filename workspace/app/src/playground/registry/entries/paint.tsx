@@ -5,11 +5,12 @@ import { paintSample } from "./examples.css";
 
 export default defineSpec({
   name: "Paint",
-  blurb: "Box 위에 accent × variant를 입히는 primitive입니다. accent는 의미를, variant는 시각 무게를 고르고 둘의 조합은 하나의 지도에서 옵니다. accent를 주지 않으면 칠하지 않습니다. hoverable은 포인터가 올라갈 수 있는 환경에서, 막히지 않은 대상에만 hover 색을 띄웁니다. Button과 Badge가 이 위에 섭니다.",
+  blurb: "Box 위에 accent × variant를 입히는 primitive입니다. accent는 의미를, variant는 시각 무게를 고르고 둘의 조합은 하나의 지도에서 옵니다. accent를 주지 않으면 칠하지 않습니다. hoverable은 포인터가 올라갈 수 있는 환경에서, 막히지 않은 대상에만 hover 색을 띄웁니다. selected는 data-selected를 달고, hairline·ghost·muted는 그 속성을 읽어 선택된 면을 입습니다. Button과 Badge가 이 위에 섭니다.",
   controls: [
     enumControl<PaintProps, "accent">("accent", vocab("ACCENTS"), { initial: "primary" }),
     enumControl<PaintProps, "variant">("variant", vocab("VARIANTS")),
     boolControl<PaintProps, "hoverable">("hoverable"),
+    boolControl<PaintProps, "selected">("selected"),
     boolControl<PaintProps, "aria-disabled">("aria-disabled", false, { key: "disabled", label: "aria-disabled" }),
   ],
   defaults: { variant: "solid" },
@@ -20,6 +21,7 @@ export default defineSpec({
       accent={pick<NonNullable<PaintProps["accent"]>>(state, "accent")}
       variant={pick<NonNullable<PaintProps["variant"]>>(state, "variant")}
       hoverable={flag(state, "hoverable")}
+      selected={flag(state, "selected")}
       aria-disabled={flag(state, "disabled") || undefined}
       padding="md"
       width="md"

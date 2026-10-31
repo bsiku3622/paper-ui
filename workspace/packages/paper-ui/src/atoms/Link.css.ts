@@ -7,6 +7,8 @@ const { style } = layered("components");
 export const linkRoot = style({
   color: tokens.color.interaction.link,
   textDecoration: "none",
+  // The ring follows the link's own corners; the baseline ring leaves them alone.
+  borderRadius: tokens.shape.radius.control,
   cursor: "pointer",
   selectors: {
     "&:hover": { textDecoration: "underline", textUnderlineOffset: tokens.typography.palette.decoration.underlineOffset },

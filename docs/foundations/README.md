@@ -52,6 +52,7 @@ dp·em·색    CSS 값       var() 참조                  숫자 없는 완성�
 | Shape | `tokens/shape.ts` · `tokens/shape-recipes.ts` |
 | Layout | `tokens/layout.ts` · `primitives/Box.css.ts` · `primitives/paint/Surface.css.ts` |
 | Motion | `tokens/motion.ts` · `styles/motion.css.ts` |
+| State recipes | `tokens/state.ts` · `tokens/state-recipes.ts` · `styles/states.css.ts` |
 
 네 군데는 시스템마다 일부러 다르게 짜여 있습니다. 모양을 억지로 맞추면 쓰임이 틀어지므로, 다른 점과 까닭을 한 표에 모아 둡니다.
 
@@ -81,6 +82,27 @@ dp·em·색    CSS 값       var() 참조                  숫자 없는 완성�
 - **Typography**는 Palette를 굽고, 글자 역할과 control preset은 Palette 변수를 조합한 class입니다.
 - **Shape·Layout**은 원본만 굽습니다. 역할은 원본 변수의 별칭이거나 쓰이는 요소에서 계산되는 `calc()` 식이라, 하위 트리에서 원본 하나를 덮으면 그 위의 역할이 그 자리에서 모두 다시 계산됩니다. 그림자의 기하는 모드마다 달라 모드별 원본 변수로 굽고, 그림자 값은 쓰이는 요소에서 기하 변수와 그림자 색을 이어 붙여 조립합니다.
 - **Motion**은 변수로 굽지 않습니다. duration·easing은 한 변수로 줄여 쓰기 어려워, stylesheet가 빌드 때 `transition()`으로 transition 문자열을 조립하고, 변위는 Shape·Layout 변수를 가리킵니다. 등장·퇴장과 반복은 `presence`·`loop` class로 겁니다.
+
+## 상태 recipe
+
+hover · 눌림 · 선택 · 비활성 · 키보드 포커스가 어떻게 보이는지는 시스템이 아니라 조합입니다. Color가 면과 선의 색을, Shape가 링의 모양을, Motion이 전이 시간을 정하고, 상태 recipe(`tokens/state-recipes.ts`)가 그 값을 상태 attribute에 묶어 style 조각으로 내놓습니다. 상태의 이름(`data-active` · `data-selected` …)은 `tokens/state.ts` 한 곳에서만 적고, recipe의 selector는 모두 거기서 만들어집니다.
+
+| 조각 | 하는 일 |
+|---|---|
+| `focusRing` | 키보드 포커스 링 — `focus.width` · `focus.offset`과 `interaction.focus` |
+| `stateStyle.focusVisible` | 링 주인이 native outline을 끄고 `data-focus-visible`에서 링을 그림 |
+| `stateStyle.disabled` · `disabledCursor` | 비활성 — `opacity.disabled`와 not-allowed 커서 |
+| `stateStyle.press` | 눌림 1px |
+| `stateStyle.tinted` · `item` | 면 위 tint — hover · 눌림 · 선택 |
+| `stateStyle.field` | 입력 상자의 status별 경계와 hover 경계 |
+| `stateStyle.dropTarget` | drop 대상의 경계 |
+| `linkStyle` | Link Atom 밖에서 그리는 링크 — prose의 `a` |
+
+[contract:foundations.state.recipes]: #
+조각은 plain 객체이고 `/tokens`로 나갑니다. 어떤 조각도 transition을 정하지 않아, 요소가 쓰는 속성에 맞춰 `transition()`으로 직접 묶습니다. 색을 칠하는 조각(`tinted` · `item` · `field` · `dropTarget`)은 paint 층과 패키지 밖의 앱이 spread하고, forced-colors에서 칠하는 색은 시스템 색(`SYSTEM_COLORS`)뿐입니다. 우선순위는 비활성 > 눌림 > 선택 > hover입니다. hover는 포인터가 올라갈 수 있는 환경(`@media (hover: hover)`)에서 막히지 않은 대상에만 뜨고, 가장 약한 상태라 selector에 특정도를 더하지 않습니다.
+
+[contract:foundations.state.tint-property]: #
+tint는 `--pui-state-tint` 하나입니다. `styles/states.css.ts`가 `<color>`, 상속 없음, 초기값 투명으로 등록해 전이할 수 있고, 규칙은 이 변수만 바꾸므로 면 색은 건드리지 않습니다. `@property`를 쓰지 못하는 브라우저에서는 tint는 뜨되 번지지 않습니다. 키보드 링의 baseline(`:where(:focus-visible)`)도 같은 파일에 있고, 그 규칙은 [Shape](shape.md#stroke--focus)가 정합니다.
 
 ## 공개 어휘
 

@@ -1,13 +1,15 @@
-import { tokens, transition, CONTROL_SIZES, type ControlSize } from "../tokens";
-import { outlinedControlProfile, outlinedControlHover } from "../tokens/color-recipes";
-import { controlGeometry, focusRing, geometry } from "../internal/shape";
+import { tokens, transition, focusRing, CONTROL_SIZES, type ControlSize } from "../tokens";
+import { outlinedControlProfile } from "../tokens/color-recipes";
+import { controlGeometry, geometry } from "../internal/shape";
 import { layered } from "../tokens/layers.css";
 
 const { style, styleVariants } = layered("components");
 
 // The wrapper owns appearance and layout; native select owns form and focus behavior.
 export const selectWrap = style({
-  ...outlinedControlProfile,
+  background: outlinedControlProfile.face,
+  color: outlinedControlProfile.ink,
+  borderColor: outlinedControlProfile.border,
   display: "inline-grid",
   position: "relative",
   width: "100%",
@@ -20,7 +22,7 @@ export const selectWrap = style({
   transition: transition("state", "border-color", "background-color"),
   selectors: {
     '&:has(option[value=""]:checked)': { color: tokens.color.ink.tertiary },
-    "&:hover:has(select:enabled)": outlinedControlHover,
+    "&:hover:has(select:enabled)": { borderColor: outlinedControlProfile.hoverBorder },
     "&:has(select:focus-visible:not([data-pui-pointer-focus]))": focusRing,
     "&:has(select:disabled)": { opacity: 0.5, cursor: "not-allowed" },
   },

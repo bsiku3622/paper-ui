@@ -1,10 +1,8 @@
 import { globalStyle, style } from "@vanilla-extract/css";
-import { stateSelector, tokens } from "@studio-baeks/paper-ui/tokens";
+import { STATE_TINT_PROPERTY, stateStyle, tokens, transition } from "@studio-baeks/paper-ui/tokens";
 
-export const control = style({ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: tokens.layout.gap.sm, padding: tokens.shape.inset.sm, minHeight: tokens.shape.control.height.md, border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`, borderRadius: tokens.shape.radius.control, background: tokens.color.bg.raised, color: tokens.color.ink.primary, cursor: "pointer" });
-globalStyle(`${control}${stateSelector("selected")}`, { background: tokens.color.bg.sunken });
-globalStyle(`${control}:hover:not(:disabled)`, { "@media": { "(hover: hover)": { background: tokens.color.bg.sunken } } });
-globalStyle(`${control}:disabled`, { opacity: 0.5, cursor: "not-allowed" });
+// An item of a control group: the pointer, the press and the selection tint its face, and the keyboard ring is the baseline's.
+export const control = style([stateStyle.item, stateStyle.disabled, { display: "inline-flex", alignItems: "center", justifyContent: "center", gap: tokens.layout.gap.sm, minHeight: tokens.shape.control.height.md, paddingBlock: tokens.shape.inset.xs, paddingInline: tokens.shape.control.inset.button.md, border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`, borderRadius: tokens.shape.radius.control, backgroundColor: tokens.color.bg.raised, color: tokens.color.ink.primary, cursor: "pointer", transition: transition("hover", STATE_TINT_PROPERTY) }]);
 // A Box paints nothing, so its sample draws its own edge to be seen.
 export const boxSample = style({ outline: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` });
 // A Paint sample gives the accent classes a line to colour: the width and style, never the colour.
@@ -13,8 +11,7 @@ export const stage = style({ position: "relative", width: "100%", minWidth: 320,
 export const moving = style({ position: "absolute", insetInlineStart: tokens.layout.gap.lg, top: tokens.layout.gap.lg, width: 240, padding: tokens.shape.inset.md, border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`, borderRadius: tokens.shape.radius.surface.md, background: tokens.color.bg.raised });
 export const handle = style({ display: "inline-flex", padding: tokens.shape.inset.xs, borderRadius: tokens.shape.radius.control });
 export const transfer = style({ padding: tokens.shape.inset.md, border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`, borderRadius: tokens.shape.radius.surface.sm, background: tokens.color.bg.raised });
-export const dropTarget = style({ minHeight: 100, padding: tokens.shape.inset.md, border: `${tokens.shape.stroke.border} dashed ${tokens.color.border.strong}`, borderRadius: tokens.shape.radius.surface.md, background: tokens.color.bg.raised });
-globalStyle(`${dropTarget}${stateSelector("dropTarget")}`, { borderColor: tokens.color.interaction.focus });
+export const dropTarget = style([stateStyle.dropTarget, { minHeight: 100, padding: tokens.shape.inset.md, border: `${tokens.shape.stroke.border} dashed ${tokens.color.border.strong}`, borderRadius: tokens.shape.radius.surface.md, background: tokens.color.bg.raised }]);
 export const roving = style({ display: "flex", flexWrap: "wrap", gap: tokens.layout.gap.sm });
 globalStyle(`${roving}[data-orientation="vertical"]`, { flexDirection: "column", alignItems: "flex-start" });
 export const floatingContent = style({ width: 340, maxWidth: "100%", padding: tokens.shape.inset.lg, color: tokens.color.ink.primary });
