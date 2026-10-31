@@ -1,8 +1,6 @@
 import type { StyleRule } from "@vanilla-extract/css";
 
-import { tokens } from "../tokens";
-import { controlSizes } from "../tokens/shape";
-import { SHAPE_RECIPES } from "../tokens/shape-recipes";
+import { SHAPE_RECIPES, controlSizes, tokens } from "../tokens";
 
 export const geometry = SHAPE_RECIPES;
 

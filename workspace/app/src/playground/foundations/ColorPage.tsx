@@ -4,10 +4,8 @@
 
 import { Badge, Button, Inline, Stack, Surface, Text, useResolvedTheme } from "@studio-baeks/paper-ui";
 import { ACCENTS, ACCENT_TONES, VARIANTS, type ColorMode } from "@studio-baeks/paper-ui/tokens";
+import { ACCENT_PALETTE, ACCENT_PALETTES, ACCENT_STEPS, PALETTE_TOKENS, VARIANT_RECIPE } from "@paper-ui/inspect/color";
 
-import { VARIANT_RECIPE } from "../../../../packages/paper-ui/src/tokens/color-recipes";
-import { ACCENT_PALETTE } from "../../../../packages/paper-ui/src/tokens/colors";
-import { ACCENT_PALETTES, ACCENT_STEPS, PALETTE_TOKENS } from "../../../../packages/paper-ui/src/tokens/palette";
 import { SectionHeading } from "../../site/SectionHeading";
 import { GROUPS, ROLE_NOTES, formatPalettePath, hexAt, rolesOf, selectionAt } from "./color-roles";
 import { Chip, StepGrid, Swatch } from "./kit";

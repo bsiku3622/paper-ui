@@ -1,8 +1,7 @@
 import { Badge, Button, Checkbox, Field, Icon, Radio, Select, Spinner, Switch, Textarea } from "@studio-baeks/paper-ui";
 import { tokens, CONTROL_SIZES, DIMENSIONS, ICON_SIZES, MEASURES, SPACES, type ControlSize } from "@studio-baeks/paper-ui/tokens";
+import { SHAPE_RECIPES, SHAPE_SOURCE } from "@paper-ui/inspect/shape";
 
-import { SHAPE_SOURCE } from "../../../../packages/paper-ui/src/tokens/shape";
-import { SHAPE_RECIPES } from "../../../../packages/paper-ui/src/tokens/shape-recipes";
 import { Board, BoardGroup, BoardRow, Cell, Computed, FoundationSection, Ladder, MatrixCell, Meter, TokenCell, ValueCell, resolved } from "./kit";
 import { leafPaths, valueAt } from "./paths";
 import { TARGET_NOTES } from "./shape-roles";

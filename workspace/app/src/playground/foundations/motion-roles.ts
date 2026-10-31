@@ -2,8 +2,7 @@
 // keyed by its source, so a role or loop added there fails typecheck until it has a note.
 
 import { MOTION_CONSUMERS, STATE_TINT_PROPERTY, type MotionRole } from "@studio-baeks/paper-ui/tokens";
-
-import type { Loop } from "../../../../packages/paper-ui/src/tokens/motion";
+import type { Loop } from "@paper-ui/inspect/motion";
 
 export const MOTION_NOTES: Record<MotionRole, string> = {
   press: "누르는 순간 1px 내려앉음",

@@ -20,50 +20,10 @@ test("raw colors are caught in JSX, compound CSS, encoded SVG and templates", as
   ]) assert.equal(await hasRule(code, "paper/raw-color"), true, code);
 });
 
-test("both token variable prefixes are guarded", async () => {
-  for (const prefix of ["pui", "paper"]) {
-    assert.equal(await hasRule(`export const style = {color: "var(--${prefix}-color-ink-primary)"};`, "paper/raw-color"), true);
-  }
-});
-
-test("consumer styles, CSS classes, inherited ink and system colors stay available", async () => {
-  assert.deepEqual(await errors('import {tokens} from "@studio-baeks/paper-ui/tokens"; export const X = () => <div style={{color:tokens.color.ink.primary}} />;', "app/src/TokenProbe.tsx"), []);
-  assert.deepEqual(await errors('import {tokens} from "../tokens"; export const style = {color: tokens.color.ink.primary, borderColor: "currentColor", background: "transparent", outlineColor: "CanvasText"};', "packages/paper-ui/src/atoms/TokenProbe.css.ts"), []);
+test("consumer styles, CSS classes, inherited ink and system colors through SYSTEM_COLORS stay available", async () => {
+  assert.deepEqual(await errors('import {tokens} from "@studio-baeks/paper-ui/tokens"; export const X = () => <div className={s.probe} data-token={tokens.color.ink.primary} />;', "app/src/TokenProbe.tsx"), []);
+  assert.deepEqual(await errors('import {tokens, SYSTEM_COLORS} from "../tokens"; export const style = {color: tokens.color.ink.primary, borderColor: "currentColor", background: "transparent", outlineColor: SYSTEM_COLORS.canvasText};', "packages/paper-ui/src/styles/TokenProbe.css.ts"), []);
   assert.deepEqual(await errors('export const X = ({style}) => <div style={style} />;'), []);
-});
-
-test("raw imports cannot bypass the boundary through a barrel", async () => {
-  assert.equal(await hasRule('import {COLOR_VALUES} from "../tokens"; export {COLOR_VALUES};', "no-restricted-imports"), true);
-  assert.equal(await hasRule('import {SHAPE_SOURCE} from "../tokens/shape"; export {SHAPE_SOURCE};', "no-restricted-imports"), true);
-  assert.equal(await hasRule('import {COLOR_VALUES} from "../tokens/index.ts"; export {COLOR_VALUES};', "no-restricted-imports"), true);
-  assert.equal(await hasRule('import {LAYOUT_SOURCE} from "../tokens/layout.ts"; export {LAYOUT_SOURCE};', "no-restricted-imports"), true);
-  assert.equal(await hasRule('import {SPACE} from "../tokens"; export {SPACE};', "no-restricted-imports"), true);
-  assert.deepEqual(await errors('import {COLOR_VALUES} from "../../../../packages/paper-ui/src/tokens/colors"; export {COLOR_VALUES};', "app/src/playground/foundations/ColorPage.tsx"), []);
-  assert.deepEqual(await errors('import {SHAPE_SOURCE} from "../../../../packages/paper-ui/src/tokens/shape"; export {SHAPE_SOURCE};', "app/src/playground/foundations/ShapePage.tsx"), []);
-  assert.equal(await hasRule('import {COLOR_VALUES} from "../../packages/paper-ui/src/tokens/colors"; export {COLOR_VALUES};', "no-restricted-imports", "app/src/pages/Probe.tsx"), true);
-});
-
-test("fixed component geometry belongs to tokens while structural CSS stays local", async () => {
-  const path = "packages/paper-ui/src/atoms/TokenProbe.css.ts";
-  for (const code of ['export const style={width:16};', 'export const style={padding:"1rem"};', 'export const style={transform:`translateY(1px)`};']) {
-    assert.equal(await hasRule(code, "paper/source-numbers", path), true, code);
-  }
-  assert.deepEqual(await errors('export const style={width:"100%",margin:0,aspectRatio:"1",transform:"translateY(-50%)"};', path), []);
-});
-
-test("the package writes no length outside a token source", async () => {
-  for (const path of ["packages/paper-ui/src/primitives/TokenProbe.tsx", "packages/paper-ui/src/internal/probe.ts", "packages/paper-ui/src/tokens/shape-recipes.ts"]) {
-    assert.equal(await hasRule('export const style={marginTop:"2px"};', "paper/source-numbers", path), true, path);
-  }
-  assert.deepEqual(await errors('export const SOURCE={space:{sm:8}, stroke:"1px"};', "packages/paper-ui/src/tokens/shape.ts"), []);
-});
-
-test("apps take spacing, form and depth from roles but own their content dimensions", async () => {
-  const path = "app/src/pages/Probe.css.ts";
-  for (const code of ['export const s={padding:"0 28px"};', 'export const s={gap:26};', 'export const s={zIndex:10};', 'export const s={borderRadius:6};', 'export const s={top:20};', 'export const s={boxShadow:"0 1px 2px"};', 'export const X=()=> <div style={{marginTop:8}} />;']) {
-    assert.equal(await hasRule(code, "paper/source-numbers", path.replace(".css.ts", code.includes("<") ? ".tsx" : ".css.ts")), true, code);
-  }
-  assert.deepEqual(await errors('export const s={width:218, height:58, gridTemplateColumns:"218px minmax(0,1fr) 260px", maxWidth:1540, flex:1, margin:0};', path), []);
 });
 
 test("[guardrails.internal-class.no-class-names] an app or a test cannot spell a package class name, but variables and attributes keep their prefix", async () => {
@@ -107,4 +67,16 @@ test("build output is not linted, but the specs under tests/dist are", async () 
     assert.equal(await eslint.isPathIgnored(path), true, path);
   }
   assert.equal(await eslint.isPathIgnored("tests/dist/consumer.spec.ts"), false);
+});
+
+test("[guardrails.no-rule-disable.second-pass] the second lint pass runs the paper rules with inline configuration off, so a comment that switches them off changes nothing", async () => {
+  const second = new ESLint({ overrideConfigFile: "eslint.paper.config.js" });
+  const code = '/* eslint paper/no-rule-disable: "off", paper/raw-color: "off" */\nexport const style = { color: "#f00" };';
+  // The main pass lets the comment through: ESLint applies inline configuration before any rule runs.
+  assert.deepEqual(await errors(code), []);
+  const messages = (await second.lintText(code, { filePath: packagePath }))[0].messages.filter((message) => message.severity === 2);
+  assert.deepEqual(messages.map((message) => message.ruleId).sort(), ["paper/no-rule-disable", "paper/raw-color"]);
+  // It reads only the paper rules.
+  const other = (await second.lintText("export const x = 1; var y = 2; export { y };", { filePath: packagePath }))[0].messages;
+  assert.deepEqual(other, []);
 });

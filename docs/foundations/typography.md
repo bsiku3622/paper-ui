@@ -111,4 +111,8 @@ Field의 입력값은 글자 줄(16)이 아니라 preset의 `inputLeading`(20) �
 [contract:foundations.typography.font-size-escape]: #
 `fontSize` prop은 글자 크기만 다른 역할로 바꾸는 탈출구입니다. 컨트롤 상자가 담을 수 있는 `label` · `caption` · `body`만 받고(`CONTROL_FONT_SIZES`), 그보다 큰 역할은 타입이 막습니다. 크기를 바꿔도 행간은 preset에 남으므로 geometry는 고른 size의 preset을 기준으로 유지됩니다.
 
+## 앱에서
+
+앱이 글자를 고르는 길은 역할입니다. 컴포넌트에서는 `Text`의 `variant` · `ink` · `family` · `numeric`으로, stylesheet에서는 `typographyRule(variant, { family })`와 `codeRule` · `presetRule` · `emphasisRule`로 고르고, 값을 직접 읽어야 하는 자리는 `tokens.typography.role.<variant>`(`size` · `weight` · `leading` · `tracking`)와 `tokens.typography.preset.<preset>`입니다. `fontSize` · `fontWeight` · `lineHeight` · `letterSpacing`에 숫자나 단위 값을 적지 않고, Palette(`tokens.typography.palette`)는 읽지 않습니다. 굵기 하나만 바꾸는 강조는 `emphasisRule`, 코드는 `codeRule`입니다. eslint `paper/source-numbers`의 앱 범위가 이를 막고, Palette를 보여 주는 Typography inspector만 예외입니다. 컨트롤 글자 크기를 한 단계 바꾸는 탈출구는 컨트롤의 `fontSize` prop입니다.
+
 Playground [Typography](/playground/foundations/typography)에서 Palette·역할·preset을 실제 글자로 볼 수 있습니다.

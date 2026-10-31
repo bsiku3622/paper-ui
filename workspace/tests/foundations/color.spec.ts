@@ -1,10 +1,12 @@
 import { expect, test } from "@playwright/test";
 
+import { LAYOUT_SOURCE } from "../../packages/paper-ui/src/tokens/layout";
 import { ACCENT_PALETTES, ACCENT_STEPS } from "../../packages/paper-ui/src/tokens/palette";
 import { ACCENTS, VARIANTS } from "../../packages/paper-ui/src/tokens";
 import { expectStyle, profile } from "../support/style";
 
-for (const width of [760, 1440]) {
+// The narrow layout starts at the md breakpoint; the wide one is the desktop frame.
+for (const width of [LAYOUT_SOURCE.breakpoint.md, 1440]) {
   test(`palette rows stay aligned at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto("/playground/foundations/color");

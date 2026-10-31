@@ -149,12 +149,14 @@ Shape is the system's call, not the caller's. What you choose is meaning:
 `size`, `status`, `accent`. Where a shape prop does exist it takes a closed
 vocabulary — `shape="pill"`, not `radius={10}`.
 
-Six rules hold the rest together, and eslint enforces them rather than the
+Eight rules hold the rest together, and eslint enforces them rather than the
 documentation: no raw colour outside the token sources, source modules isolated
-behind the token barrel, no token reads through inline styles, no length outside
-the token sources, every package rule inside a `pui` cascade layer, and no
-`eslint-disable` comment that switches a `paper/*` rule off. The package build,
-prepublish and CI run those checks.
+behind the token barrel (an app uses the package through its exports and overrides
+a source with `sourceVars()` instead of naming its variable), no token read
+through an inline style, no number outside the token sources, every package rule
+inside a `pui` cascade layer, no internal class name in an app, no hand-named
+global class, and no `eslint-disable` comment that switches a `paper/*` rule off.
+The package build, prepublish and CI run those checks.
 
 ## Documentation
 

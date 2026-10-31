@@ -1,7 +1,7 @@
 import { Text, elevation, useResolvedTheme } from "@studio-baeks/paper-ui";
 import { tokens, BREAKPOINTS, ELEVATIONS, SPACES, type Depth, type Elevation } from "@studio-baeks/paper-ui/tokens";
+import { ELEVATION_NEST_LIMIT, LAYOUT_SOURCE } from "@paper-ui/inspect/layout";
 
-import { ELEVATION_NEST_LIMIT, LAYOUT_SOURCE } from "../../../../packages/paper-ui/src/tokens/layout";
 import { Board, BoardGroup, BoardRow, Cell, Computed, FoundationSection, Meter, TokenCell, ValueCell, mediaValue, resolved } from "./kit";
 import * as s from "./foundations.css";
 

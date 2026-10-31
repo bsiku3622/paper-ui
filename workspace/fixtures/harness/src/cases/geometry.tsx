@@ -1,5 +1,6 @@
 import { Badge, Button, Checkbox, Field, Floating, Icon, IconButton, Radio, Select, Surface, Switch, Textarea } from "@studio-baeks/paper-ui";
-import { useState, type CSSProperties } from "react";
+import { sourceVars } from "@studio-baeks/paper-ui/tokens";
+import { useState } from "react";
 
 import { SELECT_OPTIONS } from "./options.js";
 import { ThemeBoxes } from "./theme.js";
@@ -56,8 +57,8 @@ export const GeometryCase = () => (
   </>
 );
 
-const REGION = { "--pui-shape-control-height-md": "40px", "--pui-shape-space-lg": "24px", "--pui-shape-space-sm": "12px" } as CSSProperties;
-const OTHER_REGION = { "--pui-shape-control-height-md": "48px", "--pui-shape-space-lg": "32px", "--pui-shape-space-sm": "20px" } as CSSProperties;
+const REGION = sourceVars({ shape: { control: { height: { md: "40px" } }, space: { lg: "24px", sm: "12px" } } });
+const OTHER_REGION = sourceVars({ shape: { control: { height: { md: "48px" } }, space: { lg: "32px", sm: "20px" } } });
 
 // One panel already open when it mounts, so its Trigger's ref does not exist yet while it first renders. ?where= stands it
 // in an overriding region or out of it, ?presentation= picks the panel, ?trigger=below writes the Trigger under its Content,

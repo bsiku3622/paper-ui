@@ -2,22 +2,11 @@ import tseslint from "@typescript-eslint/eslint-plugin";
 import tsparser from "@typescript-eslint/parser";
 import reactHooks from "eslint-plugin-react-hooks";
 import jsxA11y from "eslint-plugin-jsx-a11y";
+import { ARIA_BOUNDARY } from "./eslint-rules/manifest.js";
 import paper from "./eslint-rules/paper.js";
 
-const rawSourcePatterns = ["palette", "color-ladder", "colors", "shape", "shape-recipes", "layout", "motion"]
-  .flatMap((name) => ["", ".ts", ".js"].map((extension) => `**/tokens/${name}${extension}`));
-const rawBarrelRestriction = {
-  regex: String.raw`(?:^|/)(?:tokens(?:/index(?:\.[tj]s)?)?|@studio-baeks/paper-ui)$`,
-  importNames: ["COLOR_VALUES", "COLOR_VALUES_DARK", "PALETTE", "SHAPE_SOURCE", "SHAPE_VALUES", "SHAPE_RECIPES", "SPACE", "ANATOMY", "LAYOUT_SOURCE", "LAYOUT_VALUES", "MOTION", "MOTION_LOOPS", "MOTION_REDUCED"],
-  message: "Raw source를 barrel로 우회하지 말고 semantic tokens를 사용하세요.",
-};
-
-// React Aria is an implementation detail of the package: every import of it lives in src/internal/aria, behind
-// Paper's own names and types. Nothing else imports it, and nothing imports @react-stately at all.
-const ariaBoundary = {
-  group: ["@react-aria/*", "@react-stately/*", "@react-types/*", "react-aria", "react-aria/*", "react-aria-components", "react-aria-components/*", "react-stately", "react-stately/*"],
-  message: "React Aria 는 packages/paper-ui/src/internal/aria 안에서만 import 한다. 밖에서는 Paper 의 hook · 타입을 쓴다.",
-};
+// Every boundary the paper rules guard is declared in eslint-rules/manifest.js; the blocks below only say
+// which files each rule reads.
 
 // 절대 규칙을 문서가 아니라 빌드가 지킨다.
 // 규칙을 적어두고 리뷰어의 기억력에 맡기면 3 개월 뒤에 안 지켜져 있다.
@@ -83,129 +72,57 @@ export default [
   },
 
   // ── React Aria 경계 ─────────────────────────────────────────────────────────
-  // 아래 규칙 2 의 블록들은 같은 규칙의 옵션을 바꾸므로 ariaBoundary 를 patterns 에 함께 싣는다.
+  // React Aria 는 패키지의 구현 세부라 import 가 모두 src/internal/aria 안에 산다. 경계의 패턴은 manifest 에 있다.
   {
     files: ["**/*.{js,mjs,cjs,ts,tsx}"],
     ignores: ["packages/paper-ui/src/internal/aria/**"],
-    rules: { "no-restricted-imports": ["error", { patterns: [ariaBoundary] }] },
+    rules: { "no-restricted-imports": ["error", { patterns: [ARIA_BOUNDARY] }] },
   },
 
-  // ── 규칙 1 — raw 색·크기 값 금지 ─────────────────────────────────────────
-  // OKLCH source는 L0 palette, generated HEX token은 L1 generator에만. 소비처에 raw HEX를
-  // 쓰면 같은 색의 정본이 두 곳이 된다.
+  // ── 규칙 1 — raw 색값 금지 ─────────────────────────────────────────────
+  // 색 원본은 palette.ts 의 OKLCH 좌표뿐이고 HEX 는 color-ladder.ts 가 생성한다. 어떤 파일도 색 리터럴을
+  // 손으로 쓰지 않고, 이름 있는 색과 시스템 색도 SYSTEM_COLORS 를 거친다 — 원본 파일도 예외가 아니다.
   {
     files: ["packages/paper-ui/src/**/*.{ts,tsx}", "app/src/**/*.{ts,tsx}"],
-    ignores: [
-      "packages/paper-ui/src/tokens/palette.ts",
-      "packages/paper-ui/src/tokens/color-ladder.ts",
-      "**/*.test.{ts,tsx}",
-    ],
+    ignores: ["**/*.test.{ts,tsx}"],
     plugins: { paper },
     rules: { "paper/raw-color": "error" },
   },
 
-  // ── 규칙 2 — VALUES(raw) import 격리 ────────────────────────────────────
-  // L0 palette·L1 ladder·L2 raw VALUES는 theme.css.ts/token assembly만 본다. Foundations
-  // inspector만 source layer를 그대로 보여주는 자리라 아래에서 따로 연다.
+  // ── 규칙 2 — 원본 격리 ─────────────────────────────────────────────────────
+  // 토큰 층(tokens/)만 원본을 읽는다. 패키지는 tokens 배럴로, 앱과 fixture 는 패키지의 exports 로만 들어가고,
+  // inspector 는 @paper-ui/inspect/<시스템> 하나를 글자와 kit 의 표시 부품으로만 보여 준다. 경로와 예외는
+  // 모두 eslint-rules/manifest.js 에 있다. 테스트는 검증 코드라 이 규칙을 받지 않는다.
   {
-    files: [
-      "packages/paper-ui/src/{primitives,atoms,resolvers,theme}/**/*.{ts,tsx}",
-      "app/src/**/*.{ts,tsx}",
-    ],
-    rules: {
-      "no-restricted-imports": [
-        "error",
-        {
-          patterns: [
-            ariaBoundary,
-            rawBarrelRestriction,
-            {
-              group: rawSourcePatterns,
-              message:
-                "규칙 2 — palette·ladder·raw VALUES는 소비처에서 import하지 않는다. tokens 배럴의 semantic var 참조를 쓰라.",
-            },
-          ],
-        },
-      ],
-    },
-  },
-
-  // The Foundations inspector shows each system's source as authored, so it may read those
-  // source modules — to display them, never to style with them. The ladder stays closed.
-  {
-    files: ["app/src/playground/foundations/*.{ts,tsx}"],
-    ignores: ["app/src/playground/foundations/*.css.ts"],
-    rules: {
-      "no-restricted-imports": [
-        "error",
-        {
-          patterns: [ariaBoundary, rawBarrelRestriction, {
-            group: [
-              ...rawSourcePatterns,
-              ...["colors", "palette", "color-recipes", "shape", "shape-recipes", "layout", "typography", "motion"].map((name) => `!../../../../packages/paper-ui/src/tokens/${name}`),
-            ],
-            message: "규칙 2 — inspector에서 허용한 source(colors·palette·color-recipes·shape·shape-recipes·layout·typography·motion) 외의 raw VALUES는 직접 import하지 않는다.",
-          }],
-        },
-      ],
-    },
-  },
-
-  // The registry's schema and printer bind select options to the vocabulary by constant name and name
-  // components by what the package exports, so they (and the test that checks them) read those two
-  // entries as namespaces. They export no raw source value; the raw source files stay closed, and the
-  // entries stay under the barrel restriction above.
-  {
-    files: ["app/src/playground/registry/{schema,jsx}.ts", "app/src/playground/registry/registry.test.tsx"],
-    rules: {
-      "no-restricted-imports": [
-        "error",
-        {
-          patterns: [ariaBoundary, {
-            group: rawSourcePatterns,
-            message:
-              "규칙 2 — palette·ladder·raw VALUES는 소비처에서 import하지 않는다. tokens 배럴의 semantic var 참조를 쓰라.",
-          }],
-        },
-      ],
-    },
+    files: ["packages/paper-ui/src/**/*.{ts,tsx}", "app/**/*.{ts,tsx}", "fixtures/**/*.{ts,tsx}"],
+    plugins: { paper },
+    rules: { "paper/source-isolation": "error" },
   },
 
   // ── 규칙 3 — inline style 로 토큰 주입 금지 ─────────────────────────────
-  // 패키지의 .ts/.tsx 는 토큰·internal·styles 에서 온 값을 `style` 로 넘기지 않는다. 아래 모듈은 실행 중에 정해지는
-  // 값(위치·눌림 style·원본 변수 운반)을 만들어 규칙이 따라가지 않는다 — 이유를 함께 적는다.
+  // .ts/.tsx 는 토큰·internal·styles·패키지에서 온 값을 `style` 로 넘기지 않는다. 실행 중에 정해지는 값을 만드는
+  // 모듈(위치·눌림 style·원본 변수 운반)은 manifest 의 RUNTIME_STYLE 에 이유와 함께 선언한다.
   {
-    files: ["packages/paper-ui/src/**/*.{ts,tsx}"],
+    files: ["packages/paper-ui/src/**/*.{ts,tsx}", "app/src/**/*.tsx"],
     ignores: ["**/*.test.{ts,tsx}", "**/*.css.ts"],
     plugins: { paper },
-    rules: {
-      "paper/inline-token": ["error", {
-        runtime: {
-          "internal/aria/**": "anchored position and Aria press styles",
-          "internal/measure.ts": "measured lengths of the moment",
-          "theme/source-carry.ts": "the Floating's opener source carry",
-        },
-      }],
-    },
+    rules: { "paper/inline-token": "error" },
   },
 
-  // ── 규칙 4 — 길이는 token source에만 ─────────────────────────────────────
-  // 패키지는 예외 없이: 숫자는 Shape·Layout·Typography·Motion source에서 한 번만 쓰고, 나머지는
-  // 역할·recipe·수식으로 고른다. 앱은 간격·형태·깊이를 역할로 고르고, 자기 화면의 치수
-  // (폭·높이·그리드 트랙)만 직접 쓴다.
+  // ── 규칙 4 — 숫자는 원본에만 ─────────────────────────────────────────────
+  // 패키지는 예외 없이: 숫자는 token 원본에서 한 번만 쓰고, 나머지는 역할·recipe·수식으로 고른다. 앱은 간격·형태·
+  // 깊이·글자·투명도·시간·분기점을 역할로 고르고, 자기 화면의 치수(폭·높이·그리드 트랙)만 직접 쓴다.
   {
     files: ["packages/paper-ui/src/**/*.{ts,tsx}"],
-    ignores: [
-      "packages/paper-ui/src/tokens/{shape,layout,typography,motion,palette,color-ladder,colors}.ts",
-      "**/*.test.{ts,tsx}",
-    ],
+    ignores: ["packages/paper-ui/src/tokens/**", "**/*.test.{ts,tsx}"],
     plugins: { paper },
-    rules: { "paper/source-numbers": ["error", { scope: "all" }] },
+    rules: { "paper/source-numbers": ["error", { scope: "package" }] },
   },
   {
     files: ["app/src/**/*.{ts,tsx}"],
+    ignores: ["**/*.test.{ts,tsx}"],
     plugins: { paper },
-    rules: { "paper/source-numbers": ["error", { scope: "spacing" }] },
+    rules: { "paper/source-numbers": ["error", { scope: "app" }] },
   },
 
   // ── 규칙 5 — 패키지 CSS 는 cascade layer 안에 ──────────────────────────────
@@ -218,13 +135,22 @@ export default [
     rules: { "paper/layered-styles": "error" },
   },
 
-  // ── 규칙 7 — 앱과 테스트는 패키지 내부 class 이름을 쓰지 않는다 ───────────────
+  // ── 규칙 6 — 앱과 테스트는 패키지 내부 class 이름을 쓰지 않는다 ───────────────
   // 공유 축의 class 는 패키지의 typed map 이 고른다. 앱과 테스트가 `pui-` 이름을 문자열로 알면 그 이름이
   // 약속이 되어 버린다. 변수(--pui-*)와 속성(data-pui-*)은 이름을 따로 약속하므로 통과한다.
   {
     files: ["app/src/**/*.{ts,tsx}", "tests/**/*.{ts,tsx}"],
     plugins: { paper },
     rules: { "paper/internal-class": "error" },
+  },
+
+  // ── 규칙 7 — 앱은 전역 이름을 짓지 않는다 ─────────────────────────────────
+  // globalStyle 의 selector 는 scoped class 에서 시작한다. 요소 · :root selector 는 manifest 의
+  // GLOBAL_SELECTOR_FILES 에만 둔다.
+  {
+    files: ["app/src/**/*.css.ts"],
+    plugins: { paper },
+    rules: { "paper/global-class": "error" },
   },
 
 ];

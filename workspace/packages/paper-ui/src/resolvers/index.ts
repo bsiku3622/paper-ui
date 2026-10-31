@@ -6,7 +6,6 @@
 
 import { joinClass } from "../internal/joinClass";
 import { spaceClass } from "../styles/space.css";
-import { keys } from "../tokens/helpers";
 export { resolveControlFontSize, resolvePreset, resolveText } from "./typography";
 export { resolveFill, resolveInk } from "./color";
 export { resolveGap, resolveSpace, type GapProps } from "./space";
@@ -25,7 +24,7 @@ export const BOX_STYLE = {
 
 export type BoxStyleProps = { [K in keyof typeof BOX_STYLE]?: keyof (typeof BOX_STYLE)[K] };
 
-export const BOX_STYLE_KEYS = keys(BOX_STYLE);
+export const BOX_STYLE_KEYS = Object.keys(BOX_STYLE) as (keyof typeof BOX_STYLE)[];
 
 export const resolveBoxClass = (props: BoxStyleProps): string =>
   joinClass(

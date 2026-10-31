@@ -1,7 +1,7 @@
 // Foundations kit — Typography, Shape, Layout and Motion are drawn with this board, in the order the
 // system is built: its source values, the roles that select from them, then the presets or recipes
 // that combine roles into components. Color keeps its own form (AGENTS.md). The display parts at the
-// end — Swatch, Chip, StepGrid, Meter, Travel and Curve — are how every page paints a value read from a source.
+// end — Swatch, Chip, StepGrid, FontSample, Meter, Travel and Curve — are how every page paints a value read from a source.
 
 import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 
@@ -120,6 +120,11 @@ export const Chip = ({ path }: { path: s.ChipRole }) => <Surface className={`${s
 
 export const StepGrid = ({ steps, children, ...rest }: { steps: number; children: ReactNode; "data-testid"?: string }) => (
   <div className={s.stepGrid} style={{ [s.stepsProperty]: steps } as CSSProperties} {...rest}>{children}</div>
+);
+
+// A line set in one Palette value, named by the declarations that give it.
+export const FontSample = ({ font, className, children }: { font: CSSProperties; className?: string; children: ReactNode }) => (
+  <Text className={className} variant="body" ink="primary" style={font}>{children}</Text>
 );
 
 // A bar as long as `value` is of `max`.

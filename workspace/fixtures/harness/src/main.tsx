@@ -1,6 +1,7 @@
 // The e2e harness: one page that uses the package the way a consumer does — the stylesheet through
 // styles.css, components through the root entry — and renders the case named by ?case=.
 import "@studio-baeks/paper-ui/styles.css";
+import { sourceVars } from "@studio-baeks/paper-ui/tokens";
 
 import { StrictMode, type ComponentType } from "react";
 import { createRoot } from "react-dom/client";
@@ -13,14 +14,18 @@ import { LayersCase } from "./cases/layers.js";
 import { LayoutCase } from "./cases/layout.js";
 import { MarksCase } from "./cases/marks.js";
 import { MotionCase } from "./cases/motion.js";
+import { OverridesCase } from "./cases/overrides.js";
 import { PressCase } from "./cases/press.js";
 import { StatesCase } from "./cases/states.js";
 import { ThemeCase } from "./cases/theme.js";
 import { TypographyCase } from "./cases/typography.js";
 
-const CASES: Record<CaseName, ComponentType> = { geometry: GeometryCase, carry: CarryCase, theme: ThemeCase, layers: LayersCase, layout: LayoutCase, elevation: ElevationCase, typography: TypographyCase, motion: MotionCase, press: PressCase, states: StatesCase, marks: MarksCase, drag: DragCase };
+const CASES: Record<CaseName, ComponentType> = { geometry: GeometryCase, carry: CarryCase, theme: ThemeCase, layers: LayersCase, layout: LayoutCase, elevation: ElevationCase, typography: TypographyCase, motion: MotionCase, press: PressCase, states: StatesCase, marks: MarksCase, drag: DragCase, overrides: OverridesCase };
 
 const isCase = (name: string | null): name is CaseName => CASE_NAMES.some((known) => known === name);
+
+// What a spec calls from the page: the typed path to a source override.
+Object.assign(window, { __paper: { sourceVars } });
 
 const name = new URLSearchParams(window.location.search).get("case");
 if (!isCase(name)) throw new Error(`Unknown harness case "${name}"; use ?case=${CASE_NAMES.join("|")}.`);

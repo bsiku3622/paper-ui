@@ -60,10 +60,33 @@ test("[guardrails.inline-token.declared-runtime] a runtime value of the moment r
   assert.equal(await hasInline('import {overlayStyle} from "../../internal/shape"; export const X = (p) => <div style={overlayStyle(p)} />;', "packages/paper-ui/src/primitives/float/Floating.tsx"), true);
 });
 
-test("[guardrails.inline-token.no-token-style] the rule reads package .ts and .tsx, and leaves stylesheets, tests and the app alone", async () => {
+test("[guardrails.inline-token.no-token-style] the rule reads package .ts and .tsx, and leaves stylesheets and tests alone", async () => {
   const token = 'import {tokens} from "../tokens"; export const props = () => ({style: {color: tokens.color.ink.primary}});';
   assert.equal(await hasInline(token, "packages/paper-ui/src/primitives/useProbe.ts"), true);
   assert.equal(await hasInline(token, "packages/paper-ui/src/primitives/Probe.css.ts"), false);
   assert.equal(await hasInline(token, "packages/paper-ui/src/primitives/probe.test.tsx"), false);
-  assert.equal(await hasInline('import {tokens} from "@studio-baeks/paper-ui/tokens"; export const X = () => <div style={{color: tokens.color.ink.primary}} />;', "app/src/TokenProbe.tsx"), false);
+});
+
+test("[guardrails.inline-token.no-token-style] an app .tsx tracks what the package hands it, and nothing else", async () => {
+  const app = "app/src/pages/TokenProbe.tsx";
+  for (const code of [
+    'import {tokens} from "@studio-baeks/paper-ui/tokens"; export const X = () => <div style={{color: tokens.color.ink.primary}} />;',
+    'import {tokens} from "@studio-baeks/paper-ui/tokens"; const gap = tokens.layout.gap.md; export const X = () => <div style={{gap}} />;',
+    'import {tokens as t} from "@studio-baeks/paper-ui/tokens"; export const X = ({on}) => <div style={on ? {color: t.color.ink.primary} : undefined} />;',
+    'import {tokens} from "@studio-baeks/paper-ui/tokens"; export const props = () => ({style: {padding: String(tokens.shape.inset.lg)}});',
+    'import {focusRing} from "@studio-baeks/paper-ui/tokens"; export const X = () => <div style={focusRing} />;',
+    'import {STATE_TINT} from "@studio-baeks/paper-ui/tokens"; export const X = () => <div style={{background: STATE_TINT}} />;',
+    'import {elevation} from "@studio-baeks/paper-ui"; export const X = () => <div style={{zIndex: elevation.modal}} />;',
+  ]) assert.equal(await hasInline(code, app), true, code);
+  for (const code of [
+    'export const X = ({style}) => <div style={style} />;',
+    'export const X = ({columns}) => <div style={{gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`}} />;',
+    'import {tokens} from "@studio-baeks/paper-ui/tokens"; import * as s from "./probe.css"; export const X = () => <div className={s.probe} data-gap={tokens.layout.gap.md} />;',
+    'import {Swatch} from "./kit"; export const X = ({color}) => <Swatch color={color} />;',
+    'export const X = ({color}) => <div style={{background: color}} />;',
+  ]) assert.equal(await hasInline(code, app), false, code);
+  // The stylesheets, the tests and the e2e specs are not read.
+  const token = 'import {tokens} from "@studio-baeks/paper-ui/tokens"; export const X = () => <div style={{color: tokens.color.ink.primary}} />;';
+  assert.equal(await hasInline(token, "app/src/pages/probe.css.ts"), false);
+  assert.equal(await hasInline(token, "app/src/pages/probe.test.tsx"), false);
 });
