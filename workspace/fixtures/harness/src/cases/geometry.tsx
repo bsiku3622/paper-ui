@@ -37,8 +37,10 @@ export const GeometryCase = () => (
               <Icon><path d="M12 4v16M4 12h16" /></Icon>
             </IconButton>
             <Field size={size} aria-label={`field-${size}`} data-testid={`field-${size}`} />
-            <Select size={size} name={`select-${size}`} aria-label={`select-${size}`}>{SELECT_OPTIONS}</Select>
+            <Field size={size} type="password" showPasswordToggle clearable defaultValue="secret" aria-label={`actions-${size}`} data-testid={`actions-${size}`} />
+            <Select size={size} name={`select-${size}`} aria-label={`select-${size}`} data-testid={`select-${size}`}>{SELECT_OPTIONS}</Select>
             <Textarea size={size} aria-label={`textarea-${size}`} />
+            <Textarea size={size} rows={1} aria-label={`textarea-row-${size}`} />
             <Checkbox size={size} defaultChecked aria-label={`checkbox-${size}`} />
             <Radio size={size} defaultChecked aria-label={`radio-${size}`} />
             <Switch size={size} defaultChecked aria-label={`switch-${size}`} />

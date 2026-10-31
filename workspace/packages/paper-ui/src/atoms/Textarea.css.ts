@@ -1,35 +1,14 @@
-import { tokens, transition, focusRing } from "../tokens";
-import { outlinedControlProfile } from "../tokens/color-recipes";
-import { controlGeometry, geometry } from "../internal/shape";
+import { controlGeometry } from "../internal/shape";
 import { layered } from "../tokens/layers.css";
 
 const { style, styleVariants } = layered("components");
 
-// Field 와 같은 결의 여러 줄 입력. 높이만 자라고, 세로로만 resize.
-// 크기(padding·fontSize)는 size 축(textareaSize)이 정한다 — 컨트롤 높이·글자 사다리를
-// 공유하고, 여러 줄 입력에 필요한 세로 여백만 별도 축으로 보정한다.
+// Field 와 같은 결의 여러 줄 입력. 틀(테두리·모서리·포커스링·비활성)은 inputFrame, 색은 fieldPaint, 면은 Surface fill 이다.
+// 높이는 rows 가 정하고 세로로만 resize 한다. 크기(padding·fontSize)는 size 축(textareaSize)이 정한다 — 컨트롤 높이·글자
+// 사다리를 공유하고, 여러 줄 입력에 필요한 세로 여백만 별도 축으로 보정한다.
 export const textareaRoot = style({
-  background: outlinedControlProfile.face,
-  color: outlinedControlProfile.ink,
-  borderColor: outlinedControlProfile.border,
   width: "100%",
-  // 줄 수가 높이를 정하므로(rows) 여기서 잡는 건 바닥뿐이다.
-  minHeight: geometry.textarea.minHeight,
-  borderRadius: tokens.shape.radius.control,
-  borderWidth: tokens.shape.stroke.border,
-  borderStyle: "solid",
   resize: "vertical",
-  transition: transition("state", "border-color", "box-shadow", "background"),
-  selectors: {
-    "&::placeholder": { color: tokens.color.ink.tertiary },
-    '&:not([data-status]):hover:not(:disabled)': {
-      borderColor: outlinedControlProfile.hoverBorder,
-    },
-    // keyboard focus만 바깥 ring으로 알린다. 클릭은 caret과 edge만 남긴다.
-    "&:focus-visible:not([data-pui-pointer-focus])": focusRing,
-    "&[data-pui-pointer-focus]:focus-visible": { outline: "none" },
-    "&:disabled": { opacity: 0.5, cursor: "not-allowed" },
-  },
 });
 
 // Block inset accounts for the textarea preset’s leading and font size.

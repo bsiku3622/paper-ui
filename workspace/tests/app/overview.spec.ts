@@ -129,7 +129,8 @@ test("the Field specimens show their status, their adornments and the password t
   await password.getByRole("button").click();
   await expect(password.locator("input")).toHaveAttribute("type", "text");
 
-  const select = page.getByTestId("select");
+  // The test id stands on the wrapper; the native select is inside it.
+  const select = page.getByTestId("select").locator("select");
   expect(await select.evaluate((element) => element.tagName)).toBe("SELECT");
   expect(await select.locator("option").evaluateAll((options) => options.map((option) => (option as HTMLOptionElement).value))).toEqual(["", "a", "b"]);
 });

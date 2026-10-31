@@ -76,7 +76,9 @@ describe("Shape is source → role → recipe", () => {
   });
 
   it("[foundations.shape.recipe-geometry] places the Select arrow as a trailing control icon", () => {
-    expect(bySize(SHAPE_RECIPES.select.arrow)).toEqual([16, 18, 20]);
+    expect(bySize(tokens.shape.control.icon)).toEqual([16, 18, 20]);
+    expect("arrow" in SHAPE_RECIPES.select).toBe(false);
+    expect("minHeight" in SHAPE_RECIPES.textarea).toBe(false);
     expect(SHAPE_RECIPES.select.arrowInset).toBe(tokens.shape.control.inset.input);
     expect(bySize(SHAPE_RECIPES.select.paddingEnd)).toEqual([31, 34, 38]);
     expect(SHAPE_RECIPES.spinner.size).toBe(tokens.shape.control.icon);

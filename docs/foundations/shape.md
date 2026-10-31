@@ -67,7 +67,7 @@ Surface의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값
 선과 포커스 링은 root 글자 크기를 따라 커지지 않도록 CSS px로 둡니다. `stroke.border` 1px은 테두리와 Divider, `stroke.emphasis` 2px은 체크 표시·Spinner 링·스위치 손잡이 둘레, `stroke.icon` 1.75는 24 artboard 위 SVG 선입니다. 포커스 링은 `focus.width` 2px · `focus.offset` 2px이고, 패키지의 모든 포커스 링은 한 스타일(`focusRing`)을 공유합니다. 링의 두께와 offset은 Shape, 색은 Color(`interaction.focus`)가 소유합니다. 안쪽에 그리는 1px 선은 `strokeRing(color)`가 `inset 0 0 0 stroke.border`로 한 곳에서 만들어, 요소의 크기를 바꾸지 않고 상자 안쪽에 선을 긋습니다.
 
 [contract:foundations.shape.focus-ring]: #
-링은 요소 자신의 곡률을 따릅니다. 전역 baseline(`:where(:focus-visible)`)은 링만 그리고 요소의 모양을 바꾸지 않으므로, 자기 곡률이 없는 요소(제목, 사이드바 링크)의 키보드 링은 각지게 그려집니다. 곡률은 링을 그리는 요소가 정합니다 — Button · Field · Select · Textarea와 Link는 `radius.control`을 가집니다.
+링은 요소 자신의 곡률을 따릅니다. 전역 baseline(`:where(:focus-visible)`)은 링만 그리고 요소의 모양을 바꾸지 않으므로, 자기 곡률이 없는 요소(제목, 사이드바 링크)의 키보드 링은 각지게 그려집니다. 곡률은 링을 그리는 요소가 정합니다 — Button · Field · Select · Textarea와 Link는 `radius.control`을 가집니다. Field와 Select는 wrapper가 링을 그리는 틀이라 그 곡률을, Textarea는 자기 곡률을 따르고, 안쪽 native control은 곡률도 outline도 갖지 않습니다.
 
 ## Control
 
@@ -107,6 +107,8 @@ Surface의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값
 | `target.switchBlock` | targetReach(Switch 트랙 높이) | −3.5 | −3 | −2 |
 | `target.action` | targetReach(`control.icon`) | −4 | −3 | −2 |
 
+hit area를 갖는 Atom은 지금 Field의 지우기와 보기 버튼입니다. 버튼 안의 아이콘은 `control.icon` 그대로 그려지고, 보이지 않는 `::before`가 `target.action`만큼 사방으로 넓어져 24px 정사각이 됩니다. 나란한 두 버튼은 `control.gap` 8을 사이에 두므로 서로의 hit area를 침범하지 않습니다.
+
 coarse pointer에서 더 키우지 않습니다 — 촘촘한 목록에서 hit area가 겹치면 탭이 엉뚱한 곳으로 가기 때문이고, 행 단위 hit area는 앱이 정합니다.
 
 ## Recipe — 컴포넌트 anatomy
@@ -120,8 +122,8 @@ coarse pointer에서 더 키우지 않습니다 — 촘촘한 목록에서 hit a
 | Checkbox | 모서리 `radius.selection`. 체크는 상자의 절반 너비·4분의 1 높이인 L자를 대각선으로 돌린 것이고, 돌리면 시각 무게가 아래 왼쪽으로 쏠려 자기 획의 ¼ · ½만큼 옮깁니다. indeterminate 대시는 체크의 긴 변 길이로 그은 둥근 끝 emphasis 선입니다. |
 | Radio | 점은 상자의 절반입니다. |
 | Switch | 트랙 폭 = 컨트롤 높이, 트랙 높이 = 선택 상자 + 테, 손잡이 = 선택 상자 − 테. 테는 `stroke.emphasis`라, 손잡이는 사방 2px 안쪽에 앉고 정확히 자기 폭만큼 이동합니다. RTL에서는 이동 방향을 뒤집습니다. |
-| Textarea | 한 줄은 같은 size의 Field와 정확히 같은 높이입니다: block 여백 = (컨트롤 높이 − textarea 글자 줄) / 2 − 테두리. 최소 높이는 `dimension.height.sm`입니다. |
-| Select | 화살표는 trailing icon입니다. `control.icon` 크기의 Icon이 입력 inset 자리에 앉고, 값은 그보다 `control.gap`만큼 앞에서 멈춥니다 — Field의 leading icon을 거울로 비춘 구조입니다. |
+| Textarea | 한 줄은 같은 size의 Field와 정확히 같은 높이입니다: block 여백 = (컨트롤 높이 − textarea 글자 줄) / 2 − 테두리. 최소 높이는 없고 높이는 `rows`(기본 4)가 정합니다 — 4줄은 sm 90 · md 92 · lg 96입니다. |
+| Select | 화살표는 trailing icon입니다. `control.icon` 크기의 Icon(레시피에 따로 둔 값이 없습니다)이 입력 inset 자리에 앉고, 값은 그보다 `control.gap`만큼 앞에서 멈춥니다 — Field의 leading icon을 거울로 비춘 구조입니다. |
 | Spinner | 지름은 `control.icon`, 링은 `stroke.emphasis`입니다. 글줄 안에 놓는 스피너(`spinner.inline`)는 라벨 글자(1em)를 따르고, Button의 loading 표식이 그 크기입니다. |
 | Badge | 높이 20 · 22 · 24와 inset 6 · 8 · 10은 규칙으로 나오지 않아 원본 anatomy에 둡니다. 점은 글자의 0.5em, 점과 글자 사이는 inset xs입니다. |
 

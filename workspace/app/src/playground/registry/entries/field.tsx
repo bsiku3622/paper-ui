@@ -13,7 +13,9 @@ export default defineSpec({
     boolControl<FieldProps, "leading">("leading", false, { label: "leading(검색 아이콘)" }),
     boolControl<FieldProps, "trailing">("trailing", false, { label: "trailing(단위 kg)" }),
     boolControl<FieldProps, "clearable">("clearable"),
+    textControl<FieldProps, "clearLabel">("clearLabel", ""),
     boolControl<FieldProps, "showPasswordToggle">("showPasswordToggle", false, { behaviorOnly: "the toggle shows only for a password type" }),
+    textControl<FieldProps, "showPasswordLabel">("showPasswordLabel", ""),
     enumControl<FieldProps, "align">("align", local<FieldProps, "align">()(["start", "center", "end"], "the text alignments an input has")),
     enumControl<FieldProps, "status">("status", vocab("STATUSES")),
     enumControl<FieldProps, "size">("size", vocab("CONTROL_SIZES")),
@@ -31,7 +33,9 @@ export default defineSpec({
       leading={flag(state, "leading") ? glyph.search : undefined}
       trailing={flag(state, "trailing") ? <Text variant="caption" as="span" ink="tertiary">kg</Text> : undefined}
       clearable={flag(state, "clearable")}
+      clearLabel={words(state, "clearLabel") || undefined}
       showPasswordToggle={flag(state, "showPasswordToggle")}
+      showPasswordLabel={words(state, "showPasswordLabel") || undefined}
       defaultValue={flag(state, "clearable") ? "지울 값" : undefined}
       align={pick<NonNullable<FieldProps["align"]>>(state, "align")}
       status={pick<NonNullable<FieldProps["status"]>>(state, "status")}

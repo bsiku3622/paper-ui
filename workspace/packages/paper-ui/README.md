@@ -113,8 +113,8 @@ fixed, so geometry stays identical. D2Coding supplies Korean monospace glyphs.
 ## Browser support
 
 Chrome and Edge 125, Firefox 121 and Safari 16.4 (iOS included) or newer. `round()`,
-`:has()` and `:dir()` set that floor: button insets, the keyboard focus ring of Field
-and Select, and the Switch in right-to-left layouts depend on them. CSS features newer
+`:has()` and `:dir()` set that floor: button insets, the empty choice of a Select, and
+the Switch in right-to-left layouts depend on them. CSS features newer
 than the floor are used only as enhancements, so a browser at the floor loses motion
 and nothing else.
 
