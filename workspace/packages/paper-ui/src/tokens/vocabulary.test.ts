@@ -17,7 +17,7 @@ describe("vocabulary", () => {
   it("[foundations.vocabulary.one-pair-per-axis] exports every constant once and nothing else", () => {
     expect(constants.map(([name]) => name).sort()).toEqual([
       "ACCENTS", "ACCENT_TONES", "ALIGNS", "BORDER_LEVELS", "BREAKPOINTS", "COLOR_MODES", "CONTAINERS", "CONTROL_FONT_SIZES", "CONTROL_PRESETS", "CONTROL_SHAPES",
-      "CONTROL_SIZES", "DEPTHS", "DIMENSIONS", "DIVIDER_LEVELS", "ELEVATIONS", "EMPHASES", "ICON_SIZES", "INKS", "INK_LEVELS", "JUSTIFIES", "JUSTIFY_ITEMS", "MEASURES", "MOTION_ROLES", "ORIENTATIONS",
+      "CONTROL_SIZES", "DEPTHS", "DIMENSIONS", "DIVIDER_LEVELS", "ELEVATIONS", "EMPHASES", "ICON_SIZES", "INKS", "INK_LEVELS", "JUSTIFIES", "JUSTIFY_ITEMS", "LINK_UNDERLINES", "MEASURES", "MOTION_ROLES", "ORIENTATIONS",
       "SELECTABLE_VARIANTS", "SPACES", "STATE_NAMES", "STATUSES", "SURFACE_FILLS", "SURFACE_RADII", "SURFACE_THEMES", "TEXT_FAMILIES", "TEXT_VARIANTS", "THEME_PREFERENCES", "VARIANTS",
     ]);
   });
@@ -76,6 +76,7 @@ describe("vocabulary", () => {
     expect(vocabulary.CONTROL_PRESETS).toEqual(keysOf(TYPOGRAPHY.preset));
     expect(vocabulary.CONTROL_SIZES).toEqual(keysOf(TYPOGRAPHY.preset.field));
     expect(vocabulary.EMPHASES).toEqual(["regular", "medium", "semibold", "bold"]);
+    expect(vocabulary.LINK_UNDERLINES).toEqual(["always", "hover"]);
     for (const emphasis of vocabulary.EMPHASES) expect(keysOf(TYPOGRAPHY_SOURCE.weight), emphasis).toContain(emphasis);
     for (const fontSize of vocabulary.CONTROL_FONT_SIZES) expect(vocabulary.TEXT_VARIANTS, fontSize).toContain(fontSize);
   });
@@ -127,6 +128,7 @@ describe("vocabulary", () => {
     expectTypeOf<vocabulary.ControlFontSize>().toEqualTypeOf<(typeof vocabulary.CONTROL_FONT_SIZES)[number]>();
     expectTypeOf<vocabulary.ControlPreset>().toEqualTypeOf<(typeof vocabulary.CONTROL_PRESETS)[number]>();
     expectTypeOf<vocabulary.Emphasis>().toEqualTypeOf<(typeof vocabulary.EMPHASES)[number]>();
+    expectTypeOf<vocabulary.LinkUnderline>().toEqualTypeOf<(typeof vocabulary.LINK_UNDERLINES)[number]>();
     expectTypeOf<vocabulary.Space>().toEqualTypeOf<(typeof vocabulary.SPACES)[number]>();
     expectTypeOf<vocabulary.Dimension>().toEqualTypeOf<(typeof vocabulary.DIMENSIONS)[number]>();
     expectTypeOf<vocabulary.Measure>().toEqualTypeOf<(typeof vocabulary.MEASURES)[number]>();

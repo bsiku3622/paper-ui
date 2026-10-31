@@ -135,7 +135,7 @@ Atom은 색을 직접 고르지 않고 `accent`와 `variant` 두 축을 말합�
 | `ghost` | 투명 | `ink` | `bgHover.onSurface` tint | 그 accent의 `soft` 면 |
 | `muted` | 투명 | `subtle` | `bgHover.onSurface` tint | 그 accent의 `soft` 면, 글자는 `ink` |
 
-선택된 상태를 soft 면으로 알릴 수 있는 variant는 `SELECTABLE_VARIANTS`(`hairline` · `ghost` · `muted`)입니다. 면이 없거나 옅어서 선택된 모습이 따로 필요한 variant들이고, `solid`와 `soft`는 이미 면이 있어 selected가 없습니다. 선택은 `data-selected`나 `aria-current`가 알리고 `Paint`의 `selected`가 `data-selected`를 답니다. 선택된 면 위의 hover는 경계를 올리지 않고 tint만 얹습니다.
+선택된 상태를 soft 면으로 알릴 수 있는 variant는 `SELECTABLE_VARIANTS`(`hairline` · `ghost` · `muted`)입니다. 면이 없거나 옅어서 선택된 모습이 따로 필요한 variant들이고, `solid`와 `soft`는 이미 면이 있어 selected가 없습니다. 선택은 `data-selected`나 `aria-current`가 알리고 `Paint`의 `selected`가 `data-selected`를 답니다. 선택된 면 위의 hover는 경계를 올리지 않고 tint만 얹습니다. tint는 면(`backgroundColor`)을 바꾸지 않고 면 위에 깔린 한 겹 `--pui-state-tint`를 옮기는 것이라, 전이가 면 위에서 합성됩니다([상태와 피드백](../atoms/states.md#tint와-색-profile)).
 
 profile은 `accentProfile(accent, variant)`가 `{ face, ink, border, hover, selected? }`로 돌려줍니다. `hover`는 `{ tint }`와 `{ border }` 중 하나뿐이라 variant마다 hover 표현이 정확히 하나이고, `selected`는 `SELECTABLE_VARIANTS`에만 있습니다. 같은 파일이 입력 상자(`outlinedControlProfile`: 면·잉크·경계·hover 경계·status별 경계), 중립 항목(`itemProfile`), 선택 표식(`markProfile`, OS가 색을 정하는 모드의 `markForcedProfile`)의 색도 데이터로 정합니다.
 

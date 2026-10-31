@@ -80,7 +80,7 @@ Paper UI는 밀도를 다룰 때 두 어휘를 직교시킵니다. **Space**는 
 
 #### 원칙 4. 떠 있는 것만 그림자를 갖는다
 
-그림자는 장식이 아니라 떠 있음의 표식입니다. 그래서 그림자는 따로 고르지 않고 Layout의 elevation tier가 정합니다. tier 하나가 position과 z와 그림자를 함께 정하므로 그림자만 떼어 쓰는 길은 없습니다. 팝오버·대화상자·알림처럼 페이지 위에 떠 있는 tier(overlay · modal · toast)는 floating 그림자를, Switch 손잡이처럼 살짝 들린 lifted tier는 lifted 그림자를 갖습니다. 붙어있는 control과 surface는 지속 그림자 대신 면과 경계의 대비로 구분합니다. 흐름 안에 그리는 견본과 목업은 `isolation: isolate` 무대에 두어, 견본의 z가 페이지의 sticky 헤더 위로 올라오지 않게 합니다. semantic form hover의 짧은 pigment 피드백만 예외입니다.
+그림자는 장식이 아니라 떠 있음의 표식입니다. 그래서 그림자는 따로 고르지 않고 Layout의 elevation tier가 정합니다. tier 하나가 position과 z와 그림자를 함께 정하므로 그림자만 떼어 쓰는 길은 없습니다. 팝오버·대화상자·알림처럼 페이지 위에 떠 있는 tier(overlay · modal · toast)는 floating 그림자를, Switch 손잡이처럼 살짝 들린 lifted tier는 lifted 그림자를 갖습니다. 붙어있는 control과 surface는 지속 그림자 대신 면과 경계의 대비로 구분합니다. 흐름 안에 그리는 견본과 목업은 `isolation: isolate` 무대에 두어, 견본의 z가 페이지의 sticky 헤더 위로 올라오지 않게 합니다.
 
 Paper UI는 강조가 필요할 때 요소를 띄우지 않고 반대로 가라앉힙니다(원칙 2). 종이에서 무언가를 강조하는 방법은 튀어나오게 하는 게 아니라 자국을 남기는 쪽에 가깝습니다. 개발자가 그림자를 카드마다 남발하면, 무엇이 진짜 떠 있는지 알 수 없게 됩니다.
 

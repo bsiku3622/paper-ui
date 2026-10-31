@@ -38,7 +38,7 @@ export const INVENTORY = {
     "typographyRule", "monoRule", "codeRule", "presetRule", "emphasisRule",
     "STATUSES", "ACCENTS", "ACCENT_TONES", "VARIANTS", "SELECTABLE_VARIANTS", "SURFACE_FILLS", "INK_LEVELS", "INKS", "BORDER_LEVELS", "DIVIDER_LEVELS", "DEPTHS",
     "COLOR_MODES", "THEME_PREFERENCES", "SURFACE_THEMES", "SYSTEM_COLORS",
-    "TEXT_VARIANTS", "TEXT_FAMILIES", "CONTROL_SIZES", "CONTROL_FONT_SIZES", "CONTROL_PRESETS", "EMPHASES",
+    "TEXT_VARIANTS", "TEXT_FAMILIES", "CONTROL_SIZES", "CONTROL_FONT_SIZES", "CONTROL_PRESETS", "EMPHASES", "LINK_UNDERLINES",
     "STATE_NAMES", "stateSelector", "focusRing", "stateStyle", "linkStyle", "STATE_TINT", "STATE_TINT_PROPERTY",
     "SPACES", "DIMENSIONS", "MEASURES", "ICON_SIZES", "CONTROL_SHAPES", "SURFACE_RADII",
     "ELEVATIONS", "BREAKPOINTS", "CONTAINERS", "ALIGNS", "JUSTIFIES", "JUSTIFY_ITEMS", "ORIENTATIONS",
@@ -47,6 +47,6 @@ export const INVENTORY = {
   polymorphic: [
     "Box", "Surface", "Paint", "Stack", "Inline", "Grid", "Text", "VisuallyHidden",
     "Pressable", "Selectable", "SelectableGroup.Item", "Floating.Trigger", "Floating.Close", "Draggable", "Draggable.Handle", "Droppable", "RovingFocus.Item",
-    "Button",
+    "Button", "IconButton", "Link",
   ],
 } as const;

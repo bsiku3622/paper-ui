@@ -3,9 +3,10 @@ import { useCallback, useRef, type HTMLAttributes, type RefCallback } from "reac
 import { useAriaPress } from "../../internal/aria/press";
 import { stateAttributes, type StateAttributes } from "../../tokens";
 import type { PressEvent, PressableOptions } from "../types";
+import { pressMotion } from "./press.css";
 
 export type PressableResult = {
-  /** Spread on the element that is pressed. Carries its own ref, `data-active` while pressed and `data-disabled` while disabled. */
+  /** Spread on the element that is pressed. Carries its own ref, `data-active` while pressed and `data-disabled` while disabled, and the class of its motion. */
   pressProps: HTMLAttributes<HTMLElement> & { ref: RefCallback<HTMLElement> } & StateAttributes<"active" | "disabled">;
   /** The transient press. `pressed` is reserved for aria-pressed, which a selection sets. */
   isActive: boolean;
@@ -20,9 +21,9 @@ const pressEnd = ({ preventFocusOnPress, onPressEnd }: PressableOptions) => (eve
   onPressEnd?.(event);
 };
 
-export function usePressable(options: PressableOptions = {}): PressableResult {
+export function usePressable({ motion = "none", ...options }: PressableOptions = {}): PressableResult {
   const target = useRef<HTMLElement | null>(null);
   const ref = useCallback((node: HTMLElement | null) => { target.current = node; }, []);
   const { pressProps, isActive } = useAriaPress({ ...options, onPressEnd: pressEnd(options) }, target);
-  return { pressProps: { ...pressProps, ref, ...stateAttributes({ active: isActive, disabled: options.disabled }) }, isActive };
+  return { pressProps: { ...pressProps, ref, ...(motion === "press" ? { className: pressMotion } : null), ...stateAttributes({ active: isActive, disabled: options.disabled }) }, isActive };
 }

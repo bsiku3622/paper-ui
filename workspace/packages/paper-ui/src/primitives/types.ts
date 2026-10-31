@@ -28,6 +28,8 @@ export type PressEvent = {
 
 export type PressableOptions = {
   disabled?: boolean;
+  /** `press` makes the 1px press of a button, with its pointer cursor and the look of a target that cannot be used. */
+  motion?: "none" | "press";
   onPress?: (event: PressEvent) => void;
   onPressStart?: (event: PressEvent) => void;
   onPressEnd?: (event: PressEvent) => void;

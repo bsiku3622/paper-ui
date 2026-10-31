@@ -148,6 +148,10 @@ export type ControlFontSize = (typeof CONTROL_FONT_SIZES)[number];
 export const EMPHASES = ["regular", "medium", "semibold", "bold"] as const satisfies readonly (keyof typeof TYPOGRAPHY_SOURCE.weight)[];
 export type Emphasis = (typeof EMPHASES)[number];
 
+// 링크의 밑줄이 드러나는 때. always 는 늘 밑줄이 있고(문장 안 링크가 색만으로 본문과 구분되지 않는다), hover 는 가리킬 때만 그린다.
+export const LINK_UNDERLINES = ["always", "hover"] as const;
+export type LinkUnderline = (typeof LINK_UNDERLINES)[number];
+
 const BUTTON_MEDIUM = {
   sm: { size: "13", weight: "medium", leading: "16", tracking: "normal" },
   md: { size: "13", weight: "medium", leading: "16", tracking: "normal" },

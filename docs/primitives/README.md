@@ -50,10 +50,10 @@ Box · Surface · Paint · Pressable · Stack · Inline · Grid · Text는 `as`�
 | input · select · textarea · fieldset · optgroup · option | 없음 | native `disabled` | native `disabled` |
 | a[href] | tabIndex 0 | `aria-disabled`, tabIndex −1, 클릭 차단 | `data-disabled`만 |
 | 그 밖의 태그(div …) | `role="button"`, tabIndex 0 | `aria-disabled`, tabIndex −1, 클릭 차단 | `data-disabled`만 |
-| Paper 부품 | `type`은 줄 때만 | `disabled` | `disabled` |
+| Paper 부품 · pressable Atom | `type`은 줄 때만 | `disabled` | `disabled` |
 | 그 밖의 컴포넌트 | `type`은 줄 때만 | `aria-disabled`, tabIndex −1, 클릭 차단 | `disabled` |
 
-`focusable`을 주면 비활성 control이 Tab 정지에 남습니다. button은 native `disabled` 대신 `aria-disabled`를 달고, 다른 태그와 컴포넌트는 tabIndex 0을 유지합니다(로딩 중인 Button처럼 포커스를 잃으면 안 되는 대상). native input · select는 언제나 native `disabled`입니다. 클릭 차단은 대상의 `onClick`과 조상의 handler가 클릭을 듣기 전에 멈추므로, 비활성 링크 컴포넌트는 이동하지 않습니다. 호출자가 준 `role` · `tabIndex`는 투영을 이깁니다. hover는 CSS이고 비활성 대상에는 뜨지 않으며, hover만 따로 끄는 스위치는 없습니다. Atom의 모습을 부품에 입히는 길은 `<Button as={부품}>`입니다.
+`focusable`을 주면 비활성 control이 Tab 정지에 남습니다. button은 native `disabled` 대신 `aria-disabled`를 달고, 다른 태그와 컴포넌트는 tabIndex 0을 유지하며, Paper 부품도 `disabled`를 받는 대신 `aria-disabled`와 클릭 차단으로 막힙니다(로딩 중인 Button처럼 포커스를 잃으면 안 되는 대상). native input · select는 언제나 native `disabled`입니다. 클릭 차단은 대상의 `onClick`과 조상의 handler가 클릭을 듣기 전에 멈추고 가운데 버튼 클릭도 함께 막으므로, 비활성 링크 컴포넌트는 이동하지 않습니다. 브라우저 컨텍스트 메뉴의 '새 탭에서 열기'는 막지 못합니다. 호출자가 준 `role` · `tabIndex`는 투영을 이깁니다. hover는 CSS이고 비활성 대상에는 뜨지 않으며, hover만 따로 끄는 스위치는 없습니다. Atom의 모습을 부품에 입히는 길은 `<Button as={부품}>`입니다. 반대로 부품이나 Pressable의 `as`에 Button · IconButton을 주면(`<Floating.Trigger as={Button}>`) 한 요소에 press 장치가 둘이 되므로, 개발 모드 오류를 한 번 내고 Button이 부품을 받는 모양을 안내합니다.
 
 Selectable · SelectableGroup.Item · Floating.Trigger · Floating.Close는 press 장치가 없는 부품이라, `role="button"`을 받은 태그 위에서는 button의 키를 스스로 갖습니다. Enter와 Space가 클릭을 냅니다. 비활성이면 받지 않고, 안쪽 입력에서 올라온 키는 그 입력의 것이며, 호출자의 `onKeyDown`이 먼저 실행되어 `preventDefault()`를 부르면 누르지 않습니다. Pressable의 키는 press가, Draggable · Draggable.Handle · Droppable의 키는 키보드 끌기가 맡습니다. a[href]와 native 태그, 컴포넌트 대상은 자기 키를 그대로 씁니다.
 

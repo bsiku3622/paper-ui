@@ -38,7 +38,7 @@ import "@studio-baeks/paper-ui/styles.css";
 pui.reset < pui.theme < pui.base < pui.utilities < pui.components
 ```
 
-`reset`에는 box-sizing과 body 여백, `theme`에는 CSS 변수, `base`에는 문서 바탕(body의 면과 글자, 포커스 링, Text 역할)이 있습니다. `utilities`에는 면·잉크·간격·높이·등장과 반복(`presence` · `loop`)처럼 공유 축의 이름이 고르는 class가, `components`에는 Primitive와 Atom의 스타일과 reduced motion 정책이 있습니다. `@keyframes`와 `@property`만 레이어 밖에 섭니다.
+`reset`에는 box-sizing과 body 여백, 부품 button의 reset(`bareButton`), `theme`에는 CSS 변수, `base`에는 문서 바탕(body의 면과 글자, 포커스 링, Text 역할)이 있습니다. `utilities`에는 면·잉크·간격·높이·등장과 반복(`presence` · `loop`)처럼 공유 축의 이름이 고르는 class가, `components`에는 Primitive와 Atom의 스타일과 reduced motion 정책이 있습니다. 그래서 타입 preset과 크기 · 색이 button reset을 이깁니다. `@keyframes`와 `@property`만 레이어 밖에 섭니다.
 
 [contract:install.layers.app-css-wins]: #
 앱의 CSS는 레이어 밖에 두는 것이 기본입니다. 레이어 밖의 CSS는 로드 순서와 특정도에 상관없이 패키지 CSS를 이깁니다. 그래서 앱이 컴포넌트에 넘긴 className은 스타일시트가 어떤 순서로 실리든 hover·disabled 같은 상태 규칙까지 덮습니다. `!important`는 반대로 레이어 안의 것이 이깁니다. 사용자가 움직임을 줄였을 때(reduced motion) 패키지가 거는 `!important`는 앱의 `!important`보다 강합니다.

@@ -7,6 +7,7 @@ import { stepProbe } from "../internal/measure.css";
 import { spaceClass } from "../styles/space.css";
 import { ELEVATION_NEST_LIMIT } from "../tokens";
 import * as floatingStyles from "./float/Floating.css";
+import { pressMotion } from "./press/press.css";
 import { scrimPaint } from "./paint/recipes.css";
 import { nestElevation, type FloatingElevation, type FloatingPresentation } from "./float/nestElevation";
 
@@ -102,6 +103,39 @@ describe("interaction primitives", () => {
     render(<Outer><Pressable onPress={(event) => event.continuePropagation()}>Inner</Pressable></Outer>);
     fireEvent.click(screen.getByText("Inner"));
     expect(outer).toHaveBeenCalledTimes(1);
+  });
+
+  it("[primitives.pressable.motion] motion=\"press\" gives the target the class of the 1px press, and the default gives it none", () => {
+    function Hook() {
+      const { pressProps } = usePressable({ motion: "press" });
+      return <button type="button" {...pressProps}>Hook</button>;
+    }
+    render(<><Pressable>None</Pressable><Pressable motion="none">Also none</Pressable><Pressable motion="press">Press</Pressable><Hook /></>);
+    expect(screen.getByRole("button", { name: "None" }).classList.contains(pressMotion)).toBe(false);
+    expect(screen.getByRole("button", { name: "Also none" }).classList.contains(pressMotion)).toBe(false);
+    expect(screen.getByRole("button", { name: "Press" }).classList.contains(pressMotion)).toBe(true);
+    expect(screen.getByRole("button", { name: "Hook" }).classList.contains(pressMotion)).toBe(true);
+  });
+
+  it("[primitives.pressable.motion] keeps the class of the motion beside the caller's own and the part's", () => {
+    render(<Pressable as={Selectable} motion="press" className="mine">Both</Pressable>);
+    const classes = screen.getByRole("button", { name: "Both" }).classList;
+    expect([classes.contains(pressMotion), classes.contains("mine")]).toEqual([true, true]);
+  });
+
+  it("[primitives.pressable.input-paths] a focusable disabled Pressable stays in the Tab order, says aria-disabled and runs no press or click", () => {
+    const press = vi.fn();
+    const click = vi.fn();
+    render(<Pressable disabled focusable onPress={press} onClick={click}>Busy</Pressable>);
+    const button = screen.getByRole<HTMLButtonElement>("button", { name: "Busy" });
+    expect([button.disabled, button.getAttribute("aria-disabled"), button.getAttribute("data-disabled")]).toEqual([false, "true", "true"]);
+    act(() => button.focus());
+    expect(document.activeElement).toBe(button);
+    fireEvent.click(button);
+    fireEvent.keyDown(button, { key: "Enter" });
+    fireEvent.keyUp(button, { key: "Enter" });
+    expect(press).not.toHaveBeenCalled();
+    expect(click).not.toHaveBeenCalled();
   });
 
   it("[primitives.pressable.input-paths] Pressable marks a disabled button with data-disabled and runs no press", () => {

@@ -41,6 +41,7 @@ const DraggableImpl = forwardRef<HTMLElement, Omit<DraggableProps, "as" | "ref">
   // else: its content stays live. It says so the way targetProps tells it to; the aria-disabled in dragProps is for
   // a hook's own element.
   delete target.onClickCapture;
+  delete target.onAuxClickCapture;
   const surface = { ...target, role: mode === "transfer" && activation === "surface" ? "button" : "group", tabIndex: activation === "surface" && !disabled ? 0 : undefined };
   const positionStyle: CSSProperties = mode === "move" ? { translate: `${drag.position.x}px ${drag.position.y}px` } : {};
   return <DragContext.Provider value={drag}>

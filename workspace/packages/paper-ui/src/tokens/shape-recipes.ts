@@ -23,7 +23,6 @@ export const targetReach = (visual: string) => `calc((min(${visual}, ${SHAPE.tar
 export const strokeRing = (color: string): string => `inset 0 0 0 ${stroke.border} ${color}`;
 
 export const SHAPE_RECIPES = {
-  button: { spinner: ANATOMY.inline.spinner },
   badge: { height: ANATOMY.badge.height, inset: ANATOMY.badge.inset, gap: SPACE.xs, dot: ANATOMY.inline.dot },
   checkbox: {
     radius: radius.selection,

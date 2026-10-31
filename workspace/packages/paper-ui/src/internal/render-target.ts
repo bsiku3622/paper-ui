@@ -10,6 +10,7 @@
 import type { ElementType, KeyboardEvent, MouseEvent } from "react";
 
 import { stateAttributes, type StateAttributes } from "../tokens";
+import { paperError } from "./errors";
 
 export type TargetKind = "control" | "region";
 
@@ -29,11 +30,11 @@ export type TargetOptions = {
 export type TargetProps = {
   type?: string;
   disabled?: boolean;
-  focusable?: boolean;
   role?: "button";
   tabIndex?: number;
   "aria-disabled"?: true;
   onClickCapture?: (event: MouseEvent<HTMLElement>) => void;
+  onAuxClickCapture?: (event: MouseEvent<HTMLElement>) => void;
   onKeyDown?: (event: KeyboardEvent<HTMLElement>) => void;
 } & StateAttributes<"disabled">;
 
@@ -48,13 +49,28 @@ export const registerPart = <Component extends ElementType>(component: Component
   return component;
 };
 
+// The pressable Atoms (Button, IconButton) are parts too, as targets, but a behaviour takes an Atom's look from the Atom
+// (`<Button as={Floating.Trigger}>`), never the other way round: a part rendered as an Atom would put two press
+// machineries on one element. The mistake is said once per Atom.
+const ATOMS = new WeakSet<object>();
+const told = new WeakSet<object>();
+export const registerAtom = <Component extends ElementType>(component: Component): Component => {
+  if (typeof component !== "string") ATOMS.add(component as object);
+  return registerPart(component);
+};
+const refuseAtom = (Tag: ElementType) => {
+  if (process.env.NODE_ENV === "production" || typeof Tag === "string" || !ATOMS.has(Tag as object) || told.has(Tag as object)) return;
+  told.add(Tag as object);
+  console.error(paperError("An Atom is not a target for a behaviour. Give the Atom the part instead: <Button as={Floating.Trigger}>, not <Floating.Trigger as={Button}>.").message);
+};
+
 // An element that cannot be disabled natively still must not act: the click stops before anything of the
 // target's own, or of its ancestors, hears it. A link with this does not navigate.
 const block = (event: MouseEvent<HTMLElement>) => {
   event.preventDefault();
   event.stopPropagation();
 };
-const blocked = { "aria-disabled": true, onClickCapture: block } as const;
+const blocked = { "aria-disabled": true, onClickCapture: block, onAuxClickCapture: block } as const;
 
 // What a button does with its keys, for a tag that has to be told. A key meant for something inside the target stays
 // there, and a held key clicks once.
@@ -65,6 +81,7 @@ const activate = (event: KeyboardEvent<HTMLElement>) => {
 };
 
 export function targetProps(Tag: ElementType, { disabled = false, focusable = false, type, href, activateOnKey = false, kind }: TargetOptions): TargetProps {
+  if (kind === "control") refuseAtom(Tag);
   const state = disabled ? stateAttributes({ disabled }) : undefined;
   if (typeof Tag === "string") {
     const native = NATIVE.has(Tag);
@@ -79,6 +96,6 @@ export function targetProps(Tag: ElementType, { disabled = false, focusable = fa
   }
   const part = PARTS.has(Tag as object);
   if (kind === "region") return { ...(disabled ? { disabled: true } : null), ...state };
-  if (part) return { ...(type !== undefined ? { type } : null), ...(disabled ? { disabled: true, ...(focusable ? { focusable: true } : null) } : null), ...state };
+  if (part) return { ...(type !== undefined ? { type } : null), ...(disabled ? (focusable ? blocked : { disabled: true }) : null), ...state };
   return { ...(type !== undefined ? { type } : null), ...(disabled ? { ...blocked, tabIndex: focusable ? 0 : -1 } : null), ...state };
 }

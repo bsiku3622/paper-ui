@@ -1,11 +1,14 @@
 // A doc's Markdown as the page shows it. Links go where resolveDocHref says: a heading of the same doc, another
-// doc or an app route through the router, anything else to a new tab. Tables scroll inside the column.
+// doc or an app route through the router, anything else to a new tab. Every one is the Link Atom, so prose links
+// are underlined and ringed like any other. Tables scroll inside the column.
 
 import { useMemo } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
+
+import { Link } from "@studio-baeks/paper-ui";
 
 import "../site/markdown.css";
 import { docPath, resolveDocHref } from "./links";
@@ -18,13 +21,13 @@ const componentsFor = (file: string): Components => ({
     const target = resolveDocHref(file, href);
     switch (target.kind) {
       case "anchor":
-        return <a href={`#${target.hash}`}>{children}</a>;
+        return <Link href={`#${target.hash}`}>{children}</Link>;
       case "doc":
-        return <Link to={docPath(target.slug, target.hash)}>{children}</Link>;
+        return <Link as={RouterLink} to={docPath(target.slug, target.hash)}>{children}</Link>;
       case "app":
-        return <Link to={target.path}>{children}</Link>;
+        return <Link as={RouterLink} to={target.path}>{children}</Link>;
       case "external":
-        return <a href={target.href} target="_blank" rel="noreferrer">{children}</a>;
+        return <Link href={target.href} target="_blank" rel="noreferrer">{children}</Link>;
     }
   },
   table: ({ children }) => <div className="md-table"><table>{children}</table></div>,

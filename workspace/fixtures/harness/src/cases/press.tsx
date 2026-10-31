@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Floating, Pressable, Selectable, mergeProps, usePressable } from "@studio-baeks/paper-ui";
+import { Button, Floating, Pressable, Selectable, mergeProps, usePressable } from "@studio-baeks/paper-ui";
 
 const useCounts = () => {
   const [counts, setCounts] = useState({ clicks: 0, presses: 0 });
@@ -72,6 +72,28 @@ const DivTrigger = () => {
   );
 };
 
+// The Atom over each kind of target: a plain Button, and a Button that takes the look of a Paper part. The Atom has no
+// press of its own to count, so these count their clicks.
+const AtomButton = () => {
+  const { counted, onClick } = useCounts();
+  return <Button data-testid="atom-button" {...counted} onClick={onClick}>Atom Button</Button>;
+};
+
+const AtomSelectable = () => {
+  const { counted, onClick } = useCounts();
+  return <Button as={Selectable} variant="ghost" data-testid="atom-selectable" {...counted} onClick={onClick}>Atom Selectable</Button>;
+};
+
+const AtomTrigger = () => {
+  const { counted, onClick } = useCounts();
+  return (
+    <Floating>
+      <Button as={Floating.Trigger} variant="hairline" data-testid="atom-trigger" {...counted} onClick={onClick}>Atom Trigger</Button>
+      <Floating.Content aria-label="Atom panel">Atom panel</Floating.Content>
+    </Floating>
+  );
+};
+
 // The elements a press lands on, each counting its clicks and presses in data attributes.
 export const PressCase = () => (
   <>
@@ -85,5 +107,8 @@ export const PressCase = () => (
     <PressedTrigger />
     <DivSelectable />
     <DivTrigger />
+    <AtomButton />
+    <AtomSelectable />
+    <AtomTrigger />
   </>
 );

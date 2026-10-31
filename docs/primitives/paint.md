@@ -32,7 +32,7 @@ Surface의 `fill` · `border` · `radius` · `elevation`은 각자 지도 하나
 여백과 곡률은 이름으로 짝을 맞추면 자연스럽습니다. 카드는 `padding="md" radius="md"`, 패널은 `padding="lg" radius="lg"`처럼 씁니다. `elevation`은 그림자만이 아니라 position과 쌓임 순서도 바꾸므로(`lifted`는 relative, `sticky`는 sticky), 실제로 겹쳐 떠 있는 면에만 줍니다. 그림자가 없는 `sticky`처럼 지면 위에 붙어 있어야 하는 면도 같은 prop으로 고르고, 지면에 붙은 면은 prop을 생략합니다.
 
 [contract:primitives.surface.item]: #
-`hoverable` Surface는 항목입니다. 포인터가 올라가면 `interaction.bgHover.onSurface` tint가, 눌리면(`:active` 또는 `data-active`) `interaction.active` tint가, 선택되면(`data-selected`나 `aria-current`) `interaction.selected` tint가 면 위에 겹치고, 눌림이 선택을, 선택이 hover를 이깁니다. hover는 `@media (hover: hover)` 안에서, 막힌 대상(disabled · `aria-disabled` · `data-disabled`)이 아닌 곳에만 뜨고, 막힌 항목은 어느 쪽에도 반응하지 않습니다. `selected` prop은 `data-selected`만 달 뿐 class를 바꾸지 않으므로, 선택된 모습은 `hoverable`로 항목이 된 면이 속성을 읽어 입습니다. 선택 tint 위의 글자는 `ink.primary`입니다.
+`hoverable` Surface는 항목입니다. 포인터가 올라가면 `interaction.bgHover.onSurface` tint가, 눌리면(`:active` 또는 `data-active`) `interaction.active` tint가, 선택되면(`data-selected`나 `aria-current`) `interaction.selected` tint가 면 위에 겹치고, 눌림이 선택을, 선택이 hover를 이깁니다. hover는 `@media (hover: hover)` 안에서, 막힌 대상(disabled · `aria-disabled` · `data-disabled`)이 아닌 곳에만 뜨고, 막힌 항목은 포인터와 눌림에 반응하지 않고, 선택 tint는 그대로 유지합니다. `selected` prop은 `data-selected`만 달 뿐 class를 바꾸지 않으므로, 선택된 모습은 `hoverable`로 항목이 된 면이 속성을 읽어 입습니다. 선택 tint 위의 글자는 `ink.primary`입니다.
 
 ```tsx
 <Surface as="section" fill="raised" border radius="lg" padding="lg">…</Surface>
@@ -48,7 +48,7 @@ Paint는 accent(의미)와 variant(시각 무게)를 고르면 그 조합의 색
 `accent`는 primary(중립)와 info · success · warning · error이고 `variant`는 solid · soft · hairline · ghost · muted입니다. variant를 생략하면 solid이고, accent를 주지 않으면 아무 것도 칠하지 않습니다. `paintClass`는 Atom이 accent class에 닿는 유일한 길이고, `hoverable`일 때만 hover gate를 함께 붙입니다.
 
 [contract:primitives.paint.hover]: #
-hover 색은 CSS가 그립니다. `hoverable` Paint는 `@media (hover: hover)` 안에서만, disabled · `aria-disabled` · `data-disabled`가 아닌 대상에만 tint를 입습니다. 터치는 hover가 없으므로 탭이 남기는 `:hover`로도 색이 뜨지 않고, 막힌 대상은 포인터가 올라와도 뜨지 않습니다. 어떤 컴포넌트도 hover 속성을 내보내지 않습니다. 표시용(Badge)은 `hoverable`을 주지 않아 색이 뜨지 않습니다.
+hover 색은 CSS가 그립니다. `hoverable` Paint는 면 위에 tint 한 겹(`--pui-state-tint`)을 깔고, `@media (hover: hover)` 안에서만, disabled · `aria-disabled` · `data-disabled`가 아닌 대상에만 그 tint를 옮깁니다(hairline은 대신 경계를 올립니다). 터치는 hover가 없으므로 탭이 남기는 `:hover`로도 색이 뜨지 않고, 막힌 대상은 포인터가 올라와도 뜨지 않습니다. 어떤 컴포넌트도 hover 속성을 내보내지 않습니다. 표시용(Badge)은 `hoverable`을 주지 않아 색이 뜨지 않습니다.
 
 [contract:primitives.paint.selected]: #
 `selected`는 `data-selected`만 답니다. 선택된 면은 그 속성(또는 `aria-current`)을 읽는 CSS가 입히고, `hairline` · `ghost` · `muted`만 그 accent의 `soft` 면을 입습니다. `solid`와 `soft`는 이미 면이 있어 모습이 그대로입니다. 선택된 `hairline`은 경계가 투명해지고, 선택된 면 위의 hover는 경계를 올리지 않고 tint만 얹습니다.

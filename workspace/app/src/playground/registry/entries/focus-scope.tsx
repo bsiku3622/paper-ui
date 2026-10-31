@@ -1,10 +1,9 @@
 import { useState } from "react";
 
-import { Button, Field, FocusScope, Pressable, Stack, Surface } from "@studio-baeks/paper-ui";
+import { Button, Field, FocusScope, Stack, Surface } from "@studio-baeks/paper-ui";
 
 import { named } from "../jsx";
 import { defineSpec } from "../schema";
-import { control } from "./examples.css";
 
 export default defineSpec({
   name: "FocusScope",
@@ -28,7 +27,7 @@ export default defineSpec({
   ),
   Stage: ({ subject, harness }) => (
     <Stack gap="md" width="full" align="start">
-      <Pressable className={control} onPress={() => harness.setOpen(true)} disabled={harness.open}>Focus scope 열기</Pressable>
+      <Button variant="hairline" onClick={() => harness.setOpen(true)} disabled={harness.open}>Focus scope 열기</Button>
       {harness.open && subject}
     </Stack>
   ),
