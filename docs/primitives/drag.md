@@ -5,7 +5,7 @@ Drag Primitive는 끌어 옮기기와 놓기를 맡는 2차 primitive입니다. 
 | 컴포넌트 | Hook | 책임 | 기본값 |
 | --- | --- | --- | --- |
 | Draggable | useDraggable | mode, activation, disabled, move 또는 transfer 옵션 | move / surface. Handle은 별도 입력 대상 |
-| Droppable | useDrop | 허용 작업과 onDrop lifecycle, disabled | keyboard 접근 가능한 div |
+| Droppable | useDroppable | 허용 작업과 onDrop lifecycle, disabled | keyboard 접근 가능한 div |
 
 ## Drag: move와 transfer
 
@@ -52,7 +52,7 @@ useDraggable는 dragProps·handleProps·position·isDragging·cancel을 반환�
 
 Transfer 모드의 getItems는 MIME type과 문자열 데이터의 record(`DragItem`) 배열을 반환합니다. getAllowedDropOperations로 move/copy/link 허용 작업(`DropOperation`)을 선택하고 onDragStart/onDragMove/onDragEnd로 lifecycle(`TransferDragEvent`)을 받습니다. Native drag preview는 전체 박스를 사용합니다. Handle만 등록해도 키보드와 스크린리더 경로를 함께 제공합니다.
 
-Droppable·useDrop은 getDropOperation(types, allowedOperations), getDropOperationForPoint, onDropEnter/onDropMove/onDropExit/onDropActivate/onDrop, disabled를 받습니다. getDropOperation은 허용한 작업 또는 cancel을 반환합니다. useDrop은 ref 인자를 받지 않습니다. 결과는 dropProps(ref · data-drop-target · data-disabled · aria-disabled)와 isDropTarget이며, 이벤트는 `DropEvent` · `DropEnterEvent` 같은 Paper의 타입입니다.
+Droppable·useDroppable은 getDropOperation(types, allowedOperations), getDropOperationForPoint, onDropEnter/onDropMove/onDropExit/onDropActivate/onDrop, disabled를 받습니다. getDropOperation은 허용한 작업 또는 cancel을 반환합니다. useDroppable은 ref 인자를 받지 않습니다. 결과는 dropProps(ref · data-drop-target · data-disabled · aria-disabled)와 isDropTarget이며, 이벤트는 `DropEvent` · `DropEnterEvent` 같은 Paper의 타입입니다.
 
 텍스트 데이터를 전달하고 읽는 예시입니다.
 
