@@ -1,31 +1,17 @@
-import { tokens, transition, focusRing, CONTROL_SIZES, type ControlSize } from "../tokens";
-import { outlinedControlProfile } from "../tokens/color-recipes";
-import { controlGeometry, geometry } from "../internal/shape";
+import { controlGeometry } from "../internal/shape";
 import { layered } from "../tokens/layers.css";
 
 const { style, styleVariants } = layered("components");
 
-// The wrapper owns appearance and layout; native select owns form and focus behavior.
+// The wrapper is the frame: inputFrame draws its border, corner and ring, fieldPaint its colour, the Surface fill its face.
+// The native select owns the form and the focus behaviour.
 export const selectWrap = style({
-  background: outlinedControlProfile.face,
-  color: outlinedControlProfile.ink,
-  borderColor: outlinedControlProfile.border,
   display: "inline-grid",
   position: "relative",
   width: "100%",
   minWidth: 0,
   verticalAlign: "middle",
-  borderRadius: tokens.shape.radius.control,
-  borderWidth: tokens.shape.stroke.border,
-  borderStyle: "solid",
   cursor: "pointer",
-  transition: transition("state", "border-color", "background-color"),
-  selectors: {
-    '&:has(option[value=""]:checked)': { color: tokens.color.ink.tertiary },
-    "&:hover:has(select:enabled)": { borderColor: outlinedControlProfile.hoverBorder },
-    "&:has(select:focus-visible:not([data-pui-pointer-focus]))": focusRing,
-    "&:has(select:disabled)": { opacity: 0.5, cursor: "not-allowed" },
-  },
 });
 
 export const selectRoot = style({
@@ -38,35 +24,23 @@ export const selectRoot = style({
   margin: 0,
   padding: "inherit",
   border: "none",
-  borderRadius: "inherit",
   outline: "none",
   background: "transparent",
   color: "inherit",
   font: "inherit",
   letterSpacing: "inherit",
   cursor: "inherit",
-  selectors: {
-    "&:focus-visible": { outline: "none", borderRadius: "inherit" },
-  },
 });
 
 export const selectSize = styleVariants(controlGeometry.select);
-export const selectPill = style({ borderRadius: tokens.shape.radius.full });
 
 // The arrow is a trailing Icon: SVG backgrounds cannot inherit semantic vars; this
-// non-interactive decoration can. Its artboard and stroke come from Icon, its place from size.
+// non-interactive decoration can. Its artboard and stroke come from Icon, its place from size, its colour from selectArrowPaint.
 export const selectArrow = style({
   position: "absolute",
   top: "50%",
   transform: "translateY(-50%)",
   pointerEvents: "none",
-  color: tokens.color.ink.secondary,
-  selectors: {
-    [`${selectWrap}:has(option[value=""]:checked) &`]: { color: tokens.color.ink.tertiary },
-    [`${selectRoot}[multiple] + &`]: { display: "none" },
-  },
 });
 
-export const selectArrowSize = styleVariants(Object.fromEntries(CONTROL_SIZES.map((size) => [size, {
-  insetInlineEnd: geometry.select.arrowInset[size],
-}])) as Record<ControlSize, { insetInlineEnd: string }>);
+export const selectArrowSize = styleVariants(controlGeometry.selectArrow);

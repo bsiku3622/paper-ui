@@ -36,19 +36,20 @@ describe("INVENTORY", () => {
     expect(exported.PRIMITIVE_ORDERS).toBe(PRIMITIVE_ORDERS);
   });
 
+  const isComponent = (value: unknown) => {
+    const isForwardRef = typeof value === "object" && value !== null && (value as { $$typeof?: symbol }).$$typeof === Symbol.for("react.forward_ref");
+    return typeof value === "function" || isForwardRef;
+  };
+
   it("lists a function or a forwardRef object for every component", () => {
-    for (const name of components) {
-      const value = exported[name];
-      const isForwardRef = typeof value === "object" && value !== null && (value as { $$typeof?: symbol }).$$typeof === Symbol.for("react.forward_ref");
-      expect(typeof value === "function" || isForwardRef, name).toBe(true);
-    }
+    for (const name of components) expect(isComponent(exported[name]), name).toBe(true);
   });
 
   it("lists the compound statics of an atom without exporting them on their own", () => {
     for (const [name, parts] of Object.entries(INVENTORY.anatomy)) {
       const compound = exported[name] as unknown as Record<string, unknown>;
       for (const part of parts) {
-        expect(typeof compound[part], `${name}.${part}`).toBe("function");
+        expect(isComponent(compound[part]), `${name}.${part}`).toBe(true);
         expect(exported[`${name}${part}`], `${name}${part}`).toBeUndefined();
       }
     }

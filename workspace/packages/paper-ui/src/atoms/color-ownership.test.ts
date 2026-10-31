@@ -25,6 +25,6 @@ describe("the Atom recipes", () => {
 
 describe("accent-coloured Atoms", () => {
   it("never reference tokens.color in their stylesheet", () => {
-    for (const atom of ["Button", "Badge"]) expect(stylesheet(atom), atom).not.toMatch(/tokens\.color\b/);
+    for (const atom of ["Button", "Badge", "Field", "Textarea", "Select"]) expect(stylesheet(atom), atom).not.toMatch(/tokens\.color\b/);
   });
 });

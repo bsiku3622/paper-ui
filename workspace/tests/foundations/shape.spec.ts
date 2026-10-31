@@ -26,12 +26,16 @@ test("[foundations.shape.control-geometry] [foundations.shape.recipe-geometry] a
     const field = await metrics(page, `[data-testid=field-${size}]`);
     expect(field.height).toBe(button.height);
     expect(field.padding).toBe([7, 8, 10][i]);
-    const select = await metrics(page, `span:has(> select[aria-label=select-${size}])`);
+    // The actions of a Field follow the control's icon, not the text beside it.
+    for (const svg of [0, 1]) expect((await metrics(page, `[data-testid=actions-${size}] button >> nth=${svg} >> svg`)).width, `${size} action ${svg}`).toBe([16, 18, 20][i]);
+    const select = await metrics(page, `[data-testid=select-${size}]`);
     expect(select.height).toBe(button.height);
     expect(select.padding).toBe([7, 8, 10][i]);
-    // One textarea row is exactly one control tall.
+    // One textarea row is exactly one control tall, and the rows decide the height: four by default.
     expect((await metrics(page, `textarea[aria-label=textarea-${size}]`)).blockPadding).toBe([4, 5, 7][i]);
-    expect((await metrics(page, `span:has(> select[aria-label=select-${size}]) > svg`)).width).toBe([16, 18, 20][i]);
+    expect((await metrics(page, `textarea[aria-label=textarea-row-${size}]`)).height).toBe(button.height);
+    expect((await metrics(page, `textarea[aria-label=textarea-${size}]`)).height).toBe([90, 92, 96][i]);
+    expect((await metrics(page, `[data-testid=select-${size}] > svg`)).width).toBe([16, 18, 20][i]);
     expect((await metrics(page, `[aria-label=checkbox-${size}]`)).width).toBe([15, 16, 18][i]);
     expect((await metrics(page, `[aria-label=checkbox-${size}]`)).radius).toBe(3);
     expect((await metrics(page, `[aria-label=checkbox-${size}]`, "::after")).width).toBe([7.5, 8, 9][i]);
@@ -123,6 +127,29 @@ for (const [where, height, gutter, gap] of [["inside", 40, 24, 12], ["outside", 
   }
 }
 
+test("[foundations.shape.target-reach] a pointer within 11px of a Field action's centre hits that action, and the two neighbours never share a point", async ({ page }) => {
+  await mount(page);
+  const named = (x: number, y: number) => page.evaluate(([px, py]) => document.elementFromPoint(px!, py!)?.closest("button")?.getAttribute("aria-label") ?? null, [x, y]);
+  for (const size of ["sm", "md", "lg"]) {
+    const actions = page.locator(`#shape-fixture [data-testid=actions-${size}] button`);
+    await actions.first().scrollIntoViewIfNeeded();
+    const [clear, reveal] = [(await actions.nth(0).boundingBox())!, (await actions.nth(1).boundingBox())!];
+    expect(await actions.nth(0).getAttribute("aria-label")).toBe("Clear");
+    expect(await actions.nth(1).getAttribute("aria-label")).toBe("Show password");
+    for (const [box, name] of [[clear, "Clear"], [reveal, "Show password"]] as const) {
+      const [x, y] = [box.x + box.width / 2, box.y + box.height / 2];
+      for (const [dx, dy] of [[0, 0], [-11, 0], [11, 0], [0, -11], [0, 11]] as const) expect(await named(x + dx, y + dy), `${size} ${name} at ${dx},${dy}`).toBe(name);
+    }
+    // The reach is a 24px square around each icon (the browser places its edge within a pixel), so 11px from a centre is inside it.
+    // Between the two, a point just outside either icon still belongs to that icon, and none belongs to both.
+    const gap = reveal.x - (clear.x + clear.width);
+    expect(gap).toBeGreaterThan(0);
+    const y = clear.y + clear.height / 2;
+    expect(await named(clear.x + clear.width + 0.5, y), `${size} just past Clear`).toBe("Clear");
+    expect(await named(reveal.x - 0.5, y), `${size} just before the toggle`).toBe("Show password");
+  }
+});
+
 test("[foundations.shape.stroke-px] rem geometry scales together while edge strokes stay in CSS pixels", async ({ page }) => {
   await mount(page);
   await page.evaluate(() => { document.documentElement.style.fontSize = "20px"; });
@@ -150,8 +177,10 @@ test("[atoms.select.native-form] Select keeps native form and keyboard contracts
   await expect(arrow).toHaveCSS("stroke", "rgb(102, 51, 153)");
   expect(await page.locator("#shape-form").evaluate((form) => new FormData(form as HTMLFormElement).get("select-md"))).toBe("a");
   await select.click();
-  await page.keyboard.press("Escape");
+  // A click draws no ring: the wrapper owns it, and the native select inside draws none.
   await expect(select).toHaveCSS("outline-style", "none");
+  await expect(select.locator("..")).toHaveCSS("outline-style", "none");
+  await page.keyboard.press("Escape");
   await tab(page);
   await tab(page, { shift: true });
   await expect(select).toBeFocused();

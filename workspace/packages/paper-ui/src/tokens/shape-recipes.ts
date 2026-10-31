@@ -47,14 +47,12 @@ export const SHAPE_RECIPES = {
   // The arrow is a trailing icon: it sits at the input inset, and the value stops a control gap
   // before it — the mirror of a Field's leading icon.
   select: {
-    arrow: control.icon,
     arrowInset: control.inset.input,
     paddingEnd: controlSizes((size) => `calc(${control.inset.input[size]} + ${control.icon[size]} + ${control.gap})`),
   },
   // One row of a textarea is exactly a Field of the same size: the first line sits where the
   // Field's line would.
   textarea: {
-    minHeight: SHAPE.dimension.height.sm,
     paddingBlock: controlSizes((size) => {
       const line = TYPOGRAPHY.preset.textarea[size].leading;
       return `calc((${control.height[size]} - ${line}) / 2 - ${stroke.border})`;

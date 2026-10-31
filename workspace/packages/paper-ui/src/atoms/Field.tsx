@@ -6,14 +6,14 @@
 //   align    정렬 축 — start · center · end. numeric 과 직교 (우측정렬 숫자열은 numeric + align="end").
 //   leading  왼쪽 어도먼트 (검색 아이콘 · "$" 프리픽스 등)
 //   trailing 오른쪽 어도먼트 (단위 "kg" · 아이콘 등)
-//   clearable  값이 있으면 × 로 지우기 (controlled·uncontrolled 양쪽)
-//   showPasswordToggle  type="password" 일 때 👁 보기 토글을 켠다 (clearable 과 대칭인 opt-in).
+//   clearable  값이 있으면 × 로 지우기 (controlled·uncontrolled 양쪽). 이름은 clearLabel.
+//   showPasswordToggle  type="password" 일 때 👁 보기 토글을 켠다 (clearable 과 대칭인 opt-in). 이름은 showPasswordLabel.
 //
 // ref 는 안쪽 input 을 가리킨다. className·style·data-testid 는 래퍼(보이는 필드)로.
+// 키보드 포커스는 useFocusRing 이 input 에서 판정하고, 링은 래퍼가 그린다.
 
 import {
   forwardRef,
-  useCallback,
   useRef,
   useState,
   type CSSProperties,
@@ -22,11 +22,17 @@ import {
 } from "react";
 
 import { joinClass } from "../internal/joinClass";
+import { useMessages } from "../internal/locale";
+import { useMergedRef } from "../internal/refs";
+import { Icon, Pressable, Selectable, mergeProps } from "../primitives";
+import { IconSizeContext } from "../primitives/icon-context";
+import { fieldActionPaint, fieldAdornmentPaint, fieldPaint, fieldPlaceholderPaint } from "../primitives/paint/recipes.css";
 import { resolveControlFontSize, resolvePreset, resolveFill } from "../resolvers";
-import type { Status, ControlFontSize, ControlShape, ControlSize, SurfaceFill } from "../tokens";
-import { Icon, useFormFieldControl } from "../primitives";
 import { textNumericClass } from "../styles/typography.css";
-import { fieldWrap, fieldInput, fieldInputLeading, fieldSize, fieldStatus, fieldAlign, fieldAdornment, fieldAction, fieldPill } from "./Field.css";
+import { CONTROL_ICON, type Status, type ControlFontSize, type ControlShape, type ControlSize, type SurfaceFill } from "../tokens";
+import { useInputControl } from "./input-control";
+import { fieldWrap, fieldInput, fieldInputLeading, fieldSize, fieldAlign, fieldAdornment, fieldAction, fieldActionReach } from "./Field.css";
+import { inputFrame, inputFramePill } from "./recipes/input-frame.css";
 
 export type FieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "size" | "prefix"> & {
   status?: Status;
@@ -43,8 +49,12 @@ export type FieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className"
   leading?: ReactNode;
   trailing?: ReactNode;
   clearable?: boolean;
+  // 지우기 버튼의 이름. 안 주면 PaperProvider 의 locale 이 고른 문구.
+  clearLabel?: string;
   // type="password" 일 때 👁 보기 토글을 켠다 (clearable 과 대칭인 opt-in).
   showPasswordToggle?: boolean;
+  // 보기 토글의 이름 — 눌림 여부는 aria-pressed 가 알리므로 이름은 늘 같다. 안 주면 locale 문구.
+  showPasswordLabel?: string;
   onClear?: () => void;
   className?: string;
   style?: CSSProperties;
@@ -52,18 +62,18 @@ export type FieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className"
 };
 
 const XIcon = (
-  <Icon size="caption" aria-hidden>
+  <Icon aria-hidden>
     <path d="M6 6 18 18M18 6 6 18" />
   </Icon>
 );
 const EyeIcon = (
-  <Icon size="caption" aria-hidden>
+  <Icon aria-hidden>
     <path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z" />
     <circle cx="12" cy="12" r="2.75" />
   </Icon>
 );
 const EyeOffIcon = (
-  <Icon size="caption" aria-hidden>
+  <Icon aria-hidden>
     <path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z" />
     <circle cx="12" cy="12" r="2.75" />
     <path d="M3 3 21 21" />
@@ -82,7 +92,9 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
     leading,
     trailing,
     clearable,
+    clearLabel,
     showPasswordToggle,
+    showPasswordLabel,
     onClear,
     type = "text",
     value,
@@ -100,16 +112,10 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
   },
   ref,
 ) {
-  const { controlProps } = useFormFieldControl({ id, disabled, required, "aria-invalid": ariaInvalid, "aria-describedby": describedBy, status });
-  const innerRef = useRef<HTMLInputElement | null>(null);
-  const setRef = useCallback(
-    (el: HTMLInputElement | null) => {
-      innerRef.current = el;
-      if (typeof ref === "function") ref(el);
-      else if (ref) ref.current = el;
-    },
-    [ref],
-  );
+  const messages = useMessages();
+  const { controlProps, focusHandlers, frameProps } = useInputControl({ id, disabled, required, "aria-invalid": ariaInvalid, "aria-describedby": describedBy, status, textInput: true });
+  const input = useRef<HTMLInputElement>(null);
+  const setRef = useMergedRef(ref, input);
 
   const [revealed, setRevealed] = useState(false);
   const isPassword = type === "password" && !!showPasswordToggle;
@@ -126,7 +132,7 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
 
   // native setter + input 이벤트로 controlled·uncontrolled 양쪽에서 onChange 를 발화시킨다.
   const clear = () => {
-    const el = innerRef.current;
+    const el = input.current;
     if (!el) return;
     const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value")?.set;
     setter?.call(el, "");
@@ -135,60 +141,52 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
     onClear?.();
   };
 
-  const showClear = !!clearable && hasValue && !controlProps.disabled;
+  const isDisabled = controlProps.disabled === true;
+  const showClear = !!clearable && hasValue && !isDisabled;
+  const actionClass = joinClass(fieldAction, fieldActionPaint, fieldActionReach[size]);
 
   return (
     // 래퍼는 위젯이 아니라 여백 클릭을 안쪽 input 으로 넘기는 표현용 컨테이너다 —
     // 진짜 컨트롤은 input 이라 role·키보드를 붙이는 게 오히려 틀리다.
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions -- 여백 클릭만 안쪽 input 으로 넘긴다
     <div
-      className={joinClass(fieldWrap, resolveFill(fill), fieldSize[size], resolvePreset("field", size), resolveControlFontSize(fontSize), numeric && textNumericClass, shape === "pill" && fieldPill, status && fieldStatus[status], className)}
+      className={joinClass(inputFrame, fieldPaint, fieldWrap, resolveFill(fill), fieldSize[size], resolvePreset("field", size), resolveControlFontSize(fontSize), numeric && textNumericClass, shape === "pill" && inputFramePill, className)}
       style={style}
       data-testid={testid}
-      data-status={status}
-      // text input은 브라우저가 pointer click 뒤에도 :focus-visible로 판단할 수 있다.
-      // React state 반영보다 먼저 DOM attribute를 세워 default focus보다 앞서 ring을 막는다.
-      onPointerDownCapture={(event) => { event.currentTarget.dataset.puiPointerFocus = "true"; }}
-      onBlurCapture={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) delete event.currentTarget.dataset.puiPointerFocus;
-      }}
+      {...frameProps}
       // 래퍼 여백을 클릭해도 input 이 포커스되게 (액션 버튼은 제외)
       onMouseDown={(e) => {
         const t = e.target as HTMLElement;
-        if (t !== innerRef.current && !t.closest("button")) {
+        if (t !== input.current && !t.closest("button")) {
           e.preventDefault();
-          innerRef.current?.focus();
+          input.current?.focus();
         }
       }}
     >
-      {leading ? <span className={fieldAdornment}>{leading}</span> : null}
-      <input
-        ref={setRef}
-        type={effectiveType}
-        value={value}
-        defaultValue={defaultValue}
-        onChange={handleChange}
-        className={joinClass(fieldInput, fieldInputLeading[size], align && fieldAlign[align])}
-        {...rest}
-        {...controlProps}
-      />
-      {showClear ? (
-        <button type="button" className={fieldAction} onClick={clear} aria-label="지우기">
-          {XIcon}
-        </button>
-      ) : null}
-      {isPassword ? (
-        <button
-          type="button"
-          className={fieldAction}
-          onClick={() => setRevealed((v) => !v)}
-          aria-label={revealed ? "비밀번호 숨기기" : "비밀번호 보기"}
-          aria-pressed={revealed}
-        >
-          {revealed ? EyeOffIcon : EyeIcon}
-        </button>
-      ) : null}
-      {trailing ? <span className={fieldAdornment}>{trailing}</span> : null}
+      {/* 컨트롤 안의 아이콘은 옆 글자가 아니라 컨트롤을 따른다. */}
+      <IconSizeContext.Provider value={CONTROL_ICON[size]}>
+        {leading ? <span className={joinClass(fieldAdornment, fieldAdornmentPaint)}>{leading}</span> : null}
+        <input
+          ref={setRef}
+          type={effectiveType}
+          value={value}
+          defaultValue={defaultValue}
+          onChange={handleChange}
+          className={joinClass(fieldInput, fieldPlaceholderPaint, fieldInputLeading[size], align && fieldAlign[align])}
+          {...mergeProps(focusHandlers, rest, controlProps)}
+        />
+        {showClear ? (
+          <Pressable className={actionClass} onPress={clear} aria-label={clearLabel ?? messages.clear}>
+            {XIcon}
+          </Pressable>
+        ) : null}
+        {isPassword ? (
+          <Pressable as={Selectable} className={actionClass} selected={revealed} onSelectedChange={setRevealed} disabled={isDisabled} aria-label={showPasswordLabel ?? messages.showPassword}>
+            {revealed ? EyeOffIcon : EyeIcon}
+          </Pressable>
+        ) : null}
+        {trailing ? <span className={joinClass(fieldAdornment, fieldAdornmentPaint)}>{trailing}</span> : null}
+      </IconSizeContext.Provider>
     </div>
   );
 });

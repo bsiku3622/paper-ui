@@ -112,10 +112,10 @@ DOM에 닿는 hook은 `{ <부분>Props, ...상태 }` 한 꼴로 돌려줍니다.
 | --- | --- | --- |
 | data-active | 누르는 동안 | Pressable · usePressable |
 | data-focused | focus가 있는 동안 | Pressable · useFocusRing |
-| data-focus-visible | focus를 보여줘야 하는 동안(키보드로 옮긴 focus) | Pressable · useFocusRing |
+| data-focus-visible | focus를 보여줘야 하는 동안(키보드로 옮긴 focus) | Pressable · useFocusRing, 그리고 링을 그리는 Atom의 틀(Field · Select의 wrapper, Textarea 자신) |
 | data-selected | 선택된 동안 | Selectable · SelectableGroup.Item · useSelectable |
 | data-disabled | 비활성인 동안 | [공통 계약](#공통-계약)의 투영을 따르는 모든 부품과 VisuallyHidden · FormField · usePressable · useDraggable · useDroppable |
-| data-invalid | `invalid`인 동안 | FormField |
+| data-invalid | `invalid`인 동안 | FormField, 그리고 오류인 Field · Textarea · Select의 틀 |
 | data-required | 필수인 동안 | FormField |
 | data-dragging | 끄는 동안 | Draggable · Draggable.Handle · useDraggable |
 | data-drop-target | 끌던 것이 위에 있는 동안 | Droppable · useDroppable |

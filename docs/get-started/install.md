@@ -64,7 +64,7 @@ paper-ui는 브라우저에서 렌더하는 앱(CSR)과 서버에서 HTML을 먼
 ## 지원 브라우저
 
 [contract:install.browsers.baseline]: #
-paper-ui는 Chrome·Edge 125, Firefox 121, Safari 16.4(iOS 포함) 이상을 지원합니다. 하한을 정하는 기능은 `round()` · `:has()` · `:dir()`입니다. 버튼의 좌우 여백, Field·Select의 키보드 포커스 링, 오른쪽에서 왼쪽으로 쓰는 화면의 Switch가 이 세 기능에 기댑니다. 하한보다 새로운 CSS 기능은 enhancement로만 쓰고, 그 기능이 없는 하한 브라우저에서는 움직임만 빠집니다.
+paper-ui는 Chrome·Edge 125, Firefox 121, Safari 16.4(iOS 포함) 이상을 지원합니다. 하한을 정하는 기능은 `round()` · `:has()` · `:dir()`입니다. 버튼의 좌우 여백, 빈 선택을 보여 주는 Select, 오른쪽에서 왼쪽으로 쓰는 화면의 Switch가 이 세 기능에 기댑니다. 하한보다 새로운 CSS 기능은 enhancement로만 쓰고, 그 기능이 없는 하한 브라우저에서는 움직임만 빠집니다.
 
 ## 첫 화면
 

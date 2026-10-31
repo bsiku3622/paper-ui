@@ -11,12 +11,13 @@ Atom은 같은 축 몇 개로 말합니다. 축의 값은 모두 Foundations에�
 | `size` | sm · md · lg, 기본 md | Shape control 사다리 — 높이 30 · 32 · 36 |
 | `accent` | primary · info · success · warning · error | Color accent |
 | `variant` | solid · soft · hairline · ghost · muted | Color [accent × variant](../foundations/color.md#accent--variant) |
-| `status` (입력) | info · success · warning · error, 생략하면 중립 | Color accent `ink` 경계 |
+| `status` (입력) | info · success · warning · error, 생략하면 중립. Field · Textarea · Select가 같은 축을 씀 | Color accent `ink` 경계 |
+| `fill` (입력) | raised · sunken, 기본 raised. Field · Textarea · Select가 같은 축을 씀 | Color [Surface](../foundations/color.md) 면 — 다크에서 sunken은 canvas와 같은 단계 |
 | `shape` | rounded · pill, 기본 rounded | Shape `radius.control` · `radius.full` |
 | `fontSize` | `label` · `caption` · `body` (`CONTROL_FONT_SIZES`) | Typography — 글자 크기만 바꾸는 탈출구. 컨트롤 상자가 담을 수 있는 역할만 받음 |
 
 [contract:atoms.field.neutral-status]: #
-축마다 중립값은 이름이 아니라 기본값이나 생략입니다. `accent`의 중립은 `primary`, Divider `level`의 중립은 `base`이고, 입력의 `status`는 생략하면 중립이라 `default`라는 값이 없습니다. Field와 Textarea는 `status`를 줬을 때만 `data-status`를 그리고, `status="error"`는 `aria-invalid`도 설정합니다.
+축마다 중립값은 이름이 아니라 기본값이나 생략입니다. `accent`의 중립은 `primary`, Divider `level`의 중립은 `base`이고, 입력의 `status`는 생략하면 중립이라 `default`라는 값이 없습니다. Field · Textarea · Select는 `status`를 줬을 때(또는 오류 상태가 됐을 때의 error)만 입력의 틀에 `data-status`를 그리고, `status="error"`는 `aria-invalid`도 설정합니다.
 
 `size`는 geometry를 고르고, 글자는 Typography의 [Control preset](../foundations/typography.md#control-preset)에서 따로 고릅니다. 같은 size의 Button · Field · Select는 같은 높이에 서고 글자 높이도 맞습니다. `fontSize`로 글자를 바꿔도 geometry는 고른 size를 따릅니다.
 
@@ -26,9 +27,9 @@ Atom은 같은 축 몇 개로 말합니다. 축의 값은 모두 Foundations에�
 | --- | --- | --- |
 | Button | as · accent · variant · size · fontSize · shape · selected · loading · loadingLabel · fullWidth | button / primary / solid / md / rounded, type=button. solid는 strong preset, 나머지는 medium. selected는 hairline · ghost · muted에서 aria-pressed와 선택된 면. loading은 spinner·aria-busy, 포커스는 유지하고 누름과 제출만 막음 |
 | IconButton | as · accent · variant · size · shape · disabled · iconSize · 필수 aria-label · 단일 children | 정사각형, 높이가 변. 안의 Icon은 iconSize를 주지 않으면 컨트롤 높이를 따라 16 · 18 · 20. loading · fullWidth · fontSize는 없음 |
-| Field | status · size · fill=raised/sunken(다크에서 sunken은 canvas와 같은 단계) · fontSize · shape · numeric · align · leading / trailing · clearable · showPasswordToggle · onClear | default / md / raised / rounded, type=text. wrapper가 면·높이·상태·포커스를 소유 |
-| Textarea | status · size · fontSize · native textarea props | default / md. 한 줄 높이 = 같은 size Field, 최소 높이 96, 세로 resize. pill 없음 |
-| Select | size · fontSize · shape · children · native select props | md / rounded. native select와 Option·Group. 화살표는 trailing Icon |
+| Field | status · size · fill · fontSize · shape · numeric · align · leading / trailing · clearable · clearLabel · showPasswordToggle · showPasswordLabel · onClear | 중립 / md / raised / rounded, type=text. wrapper가 면·높이·상태·포커스를 소유. 지우기와 보기 버튼의 이름은 locale 문구이고 label prop으로 바꿈. 브라우저의 search 취소 ×와 Edge 비밀번호 보기 장치는 Field가 소유해 숨기고, number 증감·date 선택 장치는 브라우저에 남음 |
+| Textarea | status · size · fill · fontSize · rows · native textarea props | 중립 / md / raised, 기본 4줄. rows가 높이를 정하고(최소 높이 없음) 한 줄 = 같은 size Field, 세로 resize. pill 없음 |
+| Select | status · size · fill · fontSize · shape · children · native select props | 중립 / md / raised / rounded. native select와 Option·Group, multiple 없음. 화살표는 trailing Icon. className · style · data-testid는 wrapper |
 | Checkbox | size · indeterminate · native input props | md. 상자 = 컨트롤 높이의 절반, 체크는 그 절반 |
 | Radio | size · native input props | md. Checkbox와 같은 상자, 점은 상자의 절반. name·선택은 호출자가 조립 |
 | Switch | size · native input props | md. input type=checkbox + role=switch. 트랙 폭 = 컨트롤 높이 |
@@ -72,22 +73,32 @@ Link는 `as`로 라우터의 Link 같은 컴포넌트를 받아 태그 하나만
 
 ## ref와 스타일 대상
 
-| Atom | ref · native 속성 대상 | className · style 대상 |
-| --- | --- | --- |
-| Button · IconButton | 선택한 root element | 같은 root |
-| Link | 선택한 root element(기본 a) | 같은 root |
-| Spinner | span | 같은 span |
-| Field | 안쪽 input | 보이는 div wrapper (data-testid도 wrapper) |
-| Select | 안쪽 select | 보이는 span wrapper |
-| Textarea · Checkbox · Radio · Switch · Badge | 각 native element | 같은 element |
+[contract:atoms.field.target]: #
+Field · Textarea · Select는 `ref`와 native 속성을 안쪽 native control에, `className` · `style` · `data-testid`를 눈에 보이는 틀에 건넵니다. Textarea는 틀이 control 자신이라 모두 한 요소입니다.
+
+| Atom | ref · native 속성 대상 | className · style 대상 | data-testid 대상 |
+| --- | --- | --- | --- |
+| Button · IconButton | 선택한 root element | 같은 root | 같은 root |
+| Link | 선택한 root element(기본 a) | 같은 root | 같은 root |
+| Spinner | span | 같은 span | 같은 span |
+| Field | 안쪽 input | 보이는 div wrapper | wrapper |
+| Select | 안쪽 select | 보이는 span wrapper | wrapper |
+| Textarea · Checkbox · Radio · Switch · Badge | 각 native element | 같은 element | 같은 element |
 
 [contract:atoms.select.native-form]: #
 className으로 넘긴 앱 class는 패키지 CSS가 든 레이어 밖에 있어, 로드 순서와 무관하게 Atom의 상태 규칙까지 이깁니다([우선순위](../get-started/install.md#우선순위)). Field와 Select는 wrapper가 면·테두리·포커스 링을 갖고, label 연결·폼 제출·value·disabled·ref는 native 요소에 남습니다. Select 화살표는 포커스를 받거나 클릭을 가로채지 않습니다. Label · Divider는 별도의 ref 전달 계약을 두지 않습니다.
 
 ## 상태와 접근성
 
-Field · Textarea의 error status는 `aria-invalid`도 설정합니다. Field · Textarea · Select · Checkbox · Radio · Switch는 [FormField](../primitives/field.md#입력과-설명의-관계) 안에 두면 field의 id · 설명 · 오류 · disabled · required를 context로 받아 `controlProps`로 마지막에 펼치고, 밖에서는 자기 props만 씁니다. aria-invalid는 직접 준 값이 이기고, 없으면 error status이거나 field가 invalid일 때 `true`입니다. Field는 clear 뒤 input 이벤트와 onClear를 보내고 포커스를 input으로 되돌리며, password toggle은 그 type에서만 보입니다.
+[contract:atoms.field.invalid]: #
+Field · Textarea · Select는 오류를 하나의 규칙으로 말합니다. [FormField](../primitives/field.md#입력과-설명의-관계) 안에 두면 field의 id · 설명 · 오류 · disabled · required를 context로 받아 `controlProps`로 마지막에 펼치고, 밖에서는 자기 props만 씁니다. `aria-invalid`는 직접 준 값이 이기고, 없으면 `status="error"`이거나 field가 invalid일 때 `true`입니다. 둘 중 하나만 주면 되고, `status`를 안 줘도 field가 invalid면 틀이 error 경계를 그립니다. 직접 준 `aria-invalid={false}`는 속성을 `false`로 두면서 `status="error"`의 경계는 그대로 둡니다. 틀은 오류일 때 `data-invalid`를, 상태가 있을 때 `data-status`를 답니다. Checkbox · Radio · Switch도 FormField 안에서는 같은 hook을 부릅니다.
 
-Field · Select · Textarea는 포인터 포커스와 키보드 포커스를 구분해, 키보드로 왔을 때만 바깥에 포커스 링을 그립니다. Checkbox · Radio · Switch는 native 포커스·비활성·checked 동작을 그대로 씁니다. IconButton의 aria-label은 타입에서 필수이고, Badge의 점과 Select 화살표는 장식으로 숨깁니다. hover·focus·selected의 우선순위는 [상태와 피드백](states.md)에 있습니다.
+[contract:atoms.field.actions]: #
+Field의 지우기는 값이 있고 Field를 쓸 수 있을 때만 보이는 버튼이고, 이름은 `clearLabel`(없으면 locale의 '지우기' · 'Clear')입니다. 누르면 native setter와 input 이벤트로 controlled · uncontrolled 양쪽의 `onChange`를 발화하고 `onClear`를 부른 뒤 포커스를 input으로 되돌립니다. 보기 토글은 `type="password"`와 `showPasswordToggle`일 때만 보이며 이름은 늘 같고(`showPasswordLabel`, 없으면 '비밀번호 보기' · 'Show password') 눌림 여부는 `aria-pressed`가 알립니다. Field가 비활성이면(FormField의 disabled 포함) 토글은 그려진 채 비활성이라 반응도 Tab 정지도 없고 지우기는 숨습니다. 두 버튼의 아이콘은 `size`를 주지 않으면 컨트롤 높이를 따라 16 · 18 · 20이며(leading · trailing 어도먼트 안의 Icon도 같습니다), 보이는 크기와 별도로 24px hit area를 가집니다(WCAG 2.5.8) — 나란한 두 버튼의 hit area는 겹치지 않습니다. 지우기(검색창의 ×)와 비밀번호 보기는 Field가 소유하므로 브라우저가 같은 일로 입력 안에 그리는 장치(search 취소 ×, Edge 보기)는 숨깁니다. number의 증감과 date의 선택 장치는 브라우저에 남습니다.
+
+[contract:atoms.textarea.rows]: #
+Textarea의 높이는 `rows`(기본 4)가 정하고 최소 높이는 없습니다. 한 줄(`rows={1}`)은 같은 size의 Field와 같은 높이이고, 기본 4줄은 sm 90 · md 92 · lg 96입니다. 면은 Field와 같은 `fill`(raised 기본, sunken)이 고르며, 틀은 Field · Select와 같은 `inputFrame`이라 Field의 stylesheet에는 기대지 않습니다.
+
+Field · Select · Textarea는 React Aria의 입력 modality 하나로 키보드 포커스를 판정하고, 링을 그리는 틀(Field · Select는 wrapper, Textarea는 자기 자신)에 `data-focus-visible`을 답니다. 포인터 포커스에는 링이 없고 Tab이나 Shift+Tab으로 오면 2px 링이 틀에 뜹니다. Checkbox · Radio · Switch는 native 포커스·비활성·checked 동작을 그대로 씁니다. IconButton의 aria-label은 타입에서 필수이고, Badge의 점과 Select 화살표는 장식으로 숨깁니다. hover·focus·selected의 우선순위는 [상태와 피드백](states.md)에 있습니다.
 
 동작 예제는 Playground의 [Atoms](/playground/button) 목록에서 확인합니다.

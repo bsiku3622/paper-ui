@@ -112,12 +112,12 @@ prop이 받는 닫힌 값의 집합을 **축**이라 부릅니다. 축마다 상
 
 | 짝 (상수 · 타입) | 정의 위치 | 쓰는 prop · tokens 경로 |
 |---|---|---|
-| `STATUSES` · `Status` | `tokens/colors.ts` | Field · Textarea의 `status` |
+| `STATUSES` · `Status` | `tokens/colors.ts` | Field · Textarea · Select의 `status` |
 | `ACCENTS` · `Accent` | `tokens/colors.ts` | Button · IconButton · Badge의 `accent`, `tokens.color.accent.<accent>` |
 | `ACCENT_TONES` · `AccentTone` | `tokens/colors.ts` | `tokens.color.accent.<accent>.<tone>` |
 | `VARIANTS` · `Variant` | `tokens/color-recipes.ts` | Button · IconButton · Badge의 `variant` |
 | `SELECTABLE_VARIANTS` · `SelectableVariant` | `tokens/color-recipes.ts` | 선택된 상태를 soft 면으로 알릴 수 있는 variant — `VARIANTS`의 부분집합 |
-| `SURFACE_FILLS` · `SurfaceFill` | `tokens/colors.ts` | Surface의 `fill`, Field의 `fill`, `tokens.color.bg.<fill>` |
+| `SURFACE_FILLS` · `SurfaceFill` | `tokens/colors.ts` | Surface의 `fill`, Field · Textarea · Select의 `fill`(raised · sunken), `tokens.color.bg.<fill>` |
 | `INK_LEVELS` · `InkLevel` | `tokens/colors.ts` | `tokens.color.ink.<level>` |
 | `INKS` · `Ink` | `tokens/colors.ts` | Text · Icon의 `ink` — `INK_LEVELS`와 `STATUSES`, 그리고 `inherit` |
 | `BORDER_LEVELS` · `BorderLevel` | `tokens/colors.ts` | `tokens.color.border.<level>` |

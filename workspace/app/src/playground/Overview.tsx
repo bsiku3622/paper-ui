@@ -228,6 +228,7 @@ export const Overview = () => {
               <Field
                 type="search"
                 fill="sunken"
+                clearable
                 placeholder="작업 검색..."
                 aria-label="작업 검색"
                 leading={<Icon size="body" aria-hidden><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon>}
@@ -262,7 +263,7 @@ export const Overview = () => {
             <Button variant="hairline" size="md" data-testid="base-button">hairline</Button>
             <Box style={{ width: "9rem" }}><Field size="md" placeholder="Field" aria-label="field base" data-testid="base-field" /></Box>
             <Box style={{ width: "9rem" }}><Select size="md" data-testid="base-select"><Select.Option value="a">Select</Select.Option></Select></Box>
-            <Box style={{ width: "12rem" }}><Textarea size="md" rows={2} placeholder="Textarea" aria-label="textarea base" data-testid="base-textarea" /></Box>
+            <Box style={{ width: "12rem" }}><Textarea size="md" placeholder="Textarea" aria-label="textarea base" data-testid="base-textarea" /></Box>
           </Spec>
           {/* 알약은 컨트롤 어휘 하나다 — Button·Field·Select 가 같은 곡선을 든다. 검색
               한 줄에 셋이 나란히 서는 게 이 어휘가 있는 이유고, 여백은 안 움직인다

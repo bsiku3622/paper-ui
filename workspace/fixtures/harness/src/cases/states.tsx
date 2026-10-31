@@ -1,5 +1,7 @@
-import { Button, Icon, IconButton, Link } from "@studio-baeks/paper-ui";
+import { Button, Field, Icon, IconButton, Link, Select, Textarea } from "@studio-baeks/paper-ui";
 import { useState } from "react";
+
+import { SELECT_OPTIONS } from "./options.js";
 
 const glyph = <Icon><path d="M4 12h16" /></Icon>;
 
@@ -14,7 +16,8 @@ const Submits = () => {
   );
 };
 
-// The Button family in the states a pointer, a key and an attribute put it in; the states spec reads their computed style.
+// The Button family and the input family in the states a pointer, a key and an attribute put them in; the states and focus specs
+// read their computed style. Each input is followed by a button, so the Tab order has a place to go and to come back from.
 export const StatesCase = () => (
   <>
     <button type="button" data-testid="before">Before</button>
@@ -39,5 +42,21 @@ export const StatesCase = () => (
     <Link href="#target" underline="hover" data-testid="link-hover">Hover link</Link>
     <Link href="#target" underline="hover" aria-disabled data-testid="link-hover-disabled">Blocked hover link</Link>
     <Submits />
+    <Field aria-label="Field" data-testid="field" />
+    <button type="button">After field</button>
+    <Field aria-label="Field error" status="error" data-testid="field-error" />
+    <Field aria-label="Field warning" status="warning" data-testid="field-warning" />
+    <Field aria-label="Field disabled" disabled data-testid="field-disabled" />
+    <Field aria-label="Search" type="search" clearable defaultValue="query" data-testid="search" />
+    <Field aria-label="Secret" type="password" showPasswordToggle clearable defaultValue="secret" data-testid="secret" />
+    <Field aria-label="Locked" type="password" showPasswordToggle disabled defaultValue="secret" data-testid="locked" />
+    <Textarea aria-label="Textarea" data-testid="textarea" />
+    <button type="button">After textarea</button>
+    <Textarea aria-label="Textarea error" status="error" data-testid="textarea-error" />
+    <Textarea aria-label="Textarea disabled" disabled data-testid="textarea-disabled" />
+    <Select aria-label="Select" data-testid="select">{SELECT_OPTIONS}</Select>
+    <button type="button">After select</button>
+    <Select aria-label="Select error" status="error" data-testid="select-error">{SELECT_OPTIONS}</Select>
+    <Select aria-label="Select disabled" disabled data-testid="select-disabled">{SELECT_OPTIONS}</Select>
   </>
 );

@@ -1,9 +1,10 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator } from "@playwright/test";
 
 import { tokens } from "../../packages/paper-ui/src/tokens";
 import { accentProfile, itemProfile } from "../../packages/paper-ui/src/tokens/color-recipes";
 import type { Accent, Variant } from "../../packages/paper-ui/src/tokens";
 import { openHarness } from "../support/harness";
+import { tab } from "../support/keyboard";
 import { expectStyle } from "../support/style";
 
 // What a hoverable control lays over its own face: the computed gradient of the tint property.
@@ -152,6 +153,89 @@ test("[atoms.link.underline] a link in a documentation page is the Link Atom: un
   await expectStyle(link, { color: tokens.color.interaction.link, textDecorationLine: "underline", borderTopLeftRadius: tokens.shape.radius.control });
 });
 
+const FRAMES = ["field", "textarea", "select"] as const;
+
+test("[atoms.field.frame] a neutral input rests on the base border and rises to the hover border under a pointer, and a status keeps its own border", async ({ page }) => {
+  for (const id of FRAMES) {
+    const frame = page.getByTestId(id);
+    await page.mouse.move(0, 0);
+    await expectStyle(frame, { borderTopColor: tokens.color.border.base });
+    await frame.hover();
+    await expectStyle(frame, { borderTopColor: tokens.color.border.hover });
+    await page.mouse.move(0, 0);
+    await expectStyle(frame, { borderTopColor: tokens.color.border.base });
+  }
+  for (const [id, accent] of [["field-error", "error"], ["textarea-error", "error"], ["select-error", "error"], ["field-warning", "warning"]] as const) {
+    const frame = page.getByTestId(id);
+    await expect(frame).toHaveAttribute("data-status", accent);
+    await page.mouse.move(0, 0);
+    await expectStyle(frame, { borderTopColor: tokens.color.accent[accent].ink });
+    await frame.hover();
+    await expectStyle(frame, { borderTopColor: tokens.color.accent[accent].ink });
+  }
+  await page.mouse.move(0, 0);
+});
+
+test("[atoms.field.frame] a disabled input is dimmed, shows the not-allowed cursor over its whole frame and native control, and does not rise under a pointer", async ({ page }) => {
+  for (const id of ["field-disabled", "textarea-disabled", "select-disabled"]) {
+    const frame = page.getByTestId(id);
+    await expect(frame).toHaveAttribute("data-disabled", "true");
+    await expectStyle(frame, { opacity: tokens.color.opacity.disabled, cursor: "not-allowed" });
+    await frame.hover({ force: true });
+    await expectStyle(frame, { borderTopColor: tokens.color.border.base });
+  }
+  await page.mouse.move(0, 0);
+  for (const label of ["Field disabled", "Select disabled", "Textarea disabled"]) {
+    const control = page.getByLabel(label, { exact: true });
+    await expect(control).toBeDisabled();
+    await expectStyle(control, { cursor: "not-allowed" });
+  }
+  await expectStyle(page.getByTestId("field"), { cursor: "text" });
+  await expect(page.getByLabel("Field", { exact: true })).not.toHaveCSS("cursor", "not-allowed");
+});
+
+test("[atoms.field.frame] a Field action rests tertiary and answers a pointer with the primary ink, and the toggle of a disabled Field stays drawn and does nothing", async ({ page }) => {
+  const clear = page.getByTestId("search").getByRole("button", { name: "Clear" });
+  await page.mouse.move(0, 0);
+  await expectStyle(clear, { color: tokens.color.ink.tertiary, cursor: "pointer" });
+  await clear.hover();
+  await expectStyle(clear, { color: tokens.color.ink.primary });
+  await page.mouse.move(0, 0);
+
+  const locked = page.getByTestId("locked").getByRole("button", { name: "Show password" });
+  await expect(locked).toBeDisabled();
+  await expect(locked).toHaveAttribute("data-disabled", "true");
+  await expectStyle(locked, { color: tokens.color.ink.tertiary, cursor: "not-allowed" });
+  await locked.hover({ force: true });
+  await expectStyle(locked, { color: tokens.color.ink.tertiary });
+  await locked.click({ force: true });
+  await expect(page.getByLabel("Locked", { exact: true })).toHaveAttribute("type", "password");
+  // Tab passes over it: the disabled Field has nothing to stop at.
+  await page.getByTestId("field-warning").locator("input").focus();
+  for (let i = 0; i < 6; i++) {
+    await tab(page);
+    await expect(locked).not.toBeFocused();
+  }
+});
+
+test("[atoms.field.actions] the password toggle flips the field once per press, by pointer and by key, and says so with aria-pressed and a name that does not change", async ({ page }) => {
+  const input = page.getByLabel("Secret", { exact: true });
+  const toggle = page.getByTestId("secret").getByRole("button", { name: "Show password" });
+  await expect(input).toHaveAttribute("type", "password");
+  await expect(toggle).toHaveAttribute("aria-pressed", "false");
+  await toggle.click();
+  await expect(input).toHaveAttribute("type", "text");
+  await expect(toggle).toHaveAttribute("aria-pressed", "true");
+  await expect(toggle).toHaveAttribute("data-selected", "true");
+  await toggle.focus();
+  await page.keyboard.press("Enter");
+  await expect(input).toHaveAttribute("type", "password");
+  await page.keyboard.press("Space");
+  await expect(input).toHaveAttribute("type", "text");
+  await expect(toggle).toHaveAccessibleName("Show password");
+  await expect(toggle).toHaveAttribute("aria-pressed", "true");
+});
+
 test.describe("on a pointer that cannot hover", () => {
   test.use({ hasTouch: true, isMobile: true });
   test.skip(({ browserName }) => browserName !== "chromium", "only Chromium emulates a touch-only device");
@@ -166,5 +250,20 @@ test.describe("on a pointer that cannot hover", () => {
     await expectStyle(page.getByTestId("hairline"), { borderTopColor: accentProfile("primary", "hairline").border });
     await page.getByTestId("link-hover").tap();
     await expectStyle(page.getByTestId("link-hover"), { textDecorationLine: "none" });
+  });
+
+  test("[atoms.field.frame] a tap raises no input border and leaves a Field action its resting ink", async ({ page }) => {
+    // What a hover would start is a transition from the resting value, so these wait it out before reading.
+    const settled = (target: Locator) => target.evaluate((element) => Promise.all(element.getAnimations().map((animation) => animation.finished)));
+    const toggle = page.getByTestId("secret").getByRole("button", { name: "Show password" });
+    await toggle.tap();
+    await settled(toggle);
+    await expectStyle(toggle, { color: tokens.color.ink.tertiary });
+    for (const id of FRAMES) {
+      const frame = page.getByTestId(id);
+      await frame.tap();
+      await settled(frame);
+      await expectStyle(frame, { borderTopColor: tokens.color.border.base });
+    }
   });
 });

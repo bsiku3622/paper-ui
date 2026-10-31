@@ -11,7 +11,7 @@ Atom이 hover·focus·selected·disabled에 어떻게 반응하는지 정합니�
 3. `selected` / `active` — 현재 선택된 항목의 면을 유지합니다.
 4. `hover` — 포인터가 올라온 동안만 일시적인 피드백을 보여줍니다.
 
-포인터 클릭은 키보드 focus와 다릅니다. 클릭한 Field·Select·Textarea에는 caret이나 native 열림 상태만 남고 focus ring을 그리지 않습니다. ring은 `:focus-visible`을 통과한 키보드 탐색에만 표시합니다.
+포인터 클릭은 키보드 focus와 다릅니다. 클릭한 Field·Select·Textarea에는 caret이나 native 열림 상태만 남고 focus ring을 그리지 않습니다. ring은 React Aria의 입력 modality가 키보드로 판정한 포커스에만 표시합니다 — Tab으로 들어오거나 Shift+Tab으로 돌아온 경우이고, 텍스트 입력은 글자를 치는 것만으로는 ring이 생기지 않습니다. 클릭한 뒤에 누른 키도 키보드로 판정합니다: 클릭한 Select에서 키를 누르면(Escape로 목록을 닫을 때도) ring이 뜨고, 클릭한 텍스트 입력에서는 Escape를 누르면 ring이 뜹니다.
 
 ## 표준 hover 규칙
 
@@ -21,12 +21,16 @@ Atom이 hover·focus·selected·disabled에 어떻게 반응하는지 정합니�
 | primary `solid` | `accent.primary.solid` | `interaction.bgHover.onPrimarySolid` tint | keyboard ring | 검정 면은 더 어두워질 수 없어 한 단계 밝힘 |
 | neutral `Field`·`Select`·`Textarea` | `border.base` | `border.hover` | keyboard ring | 배경은 바꾸지 않음 |
 | pointer-focused neutral Form | `border.base` | `border.hover` | ring 없음 | 클릭한 입력은 경계를 바꾸지 않음 |
+| 비활성 `Field`·`Select`·`Textarea` | `border.base`, `opacity.disabled` | 없음 | 해당 없음 | `not-allowed` 커서. Field의 보기 버튼도 그려진 채 반응하지 않음 |
 | semantic Form (`info`·`success`·`warning`·`error`) | 해당 accent `ink` 경계 | 같은 경계 유지 | keyboard ring | 상태색 경계로 의미를 계속 표시 |
 | 선택 가능한 행·항목 | base 면 | `interaction.bgHover.onSurface` tint | keyboard ring 또는 selected state | selected 면이 hover보다 우선 |
 | Link | `interaction.link` 잉크, 밑줄(`underline="always"` 기본) | 밑줄 없이 시작한 Link(`underline="hover"`)만 가리킬 때 밑줄 | keyboard ring | 면을 만들지 않음 |
 | Badge·상태 점·정적 표시 | 그대로 | 없음 | 해당 없음 | 정보 표식에 hover를 추가하지 않음 |
 
 neutral Form의 `border.hover`는 `border.base`·`border.strong`보다 진하고 잉크보다 옅은 전용 경계 역할로, 입력 상자의 존재만 잠깐 강조합니다. semantic Form은 처음부터 의미 색을 쓰므로 같은 선을 한 번 더 올리지 않고 hover에서도 같은 경계를 유지합니다.
+
+[contract:atoms.field.frame]: #
+Field · Select의 wrapper와 Textarea 자신이 입력의 틀(`inputFrame`)입니다. 틀은 테두리 · 모서리 · 포커스 링 · 비활성을 지고, 색은 `fieldPaint`, 면은 Surface `fill`(기본 raised, 또는 sunken)이 입힙니다. 틀의 상태는 속성으로 말합니다 — `data-status`(`status`를 줬거나 오류 상태일 때의 error), `data-invalid`, `data-disabled`, `data-focus-visible`. 그래서 중립 틀의 경계는 포인터가 올라갈 수 있고 막히지 않은 틀에서만 `border.hover`로 오르고, status를 가진 틀은 같은 경계를 지키며, 비활성 틀은 `opacity.disabled`와 `not-allowed` 커서를 갖고 오르지 않습니다. 틀의 경계와 배경은 Motion `state`(130ms)로 전이합니다. Field의 지우기와 보기 버튼은 `ink.tertiary`로 서 있다가 포인터가 올라오면 `ink.primary`가 되고(`hover`, 100ms), 막힌 보기 버튼에는 `not-allowed` 커서만 남습니다. 틀의 stylesheet는 geometry만 갖고 `:hover` · `:focus-visible` · 포인터 포커스 표지를 스스로 쓰지 않습니다.
 
 ## Tint와 색 profile
 
@@ -50,7 +54,7 @@ Button · IconButton은 눌리는 동안 한 단계(`motion.press`의 변위, 1p
 focus ring은 패키지 전체가 하나의 스타일(`focusRing`)을 씁니다 — 색은 `interaction.focus`, 폭과 offset은 Shape의 `focus.width`·`focus.offset`(2px · 2px)입니다. Form wrapper가 focus의 주인이므로 안쪽 native control은 자기 outline을 끕니다. 링 주인이 없는 요소는 전역 baseline `:where(:focus-visible)`이 링만 그리고 요소의 모양은 바꾸지 않으므로, 링은 요소 자신의 곡률을 따릅니다([Shape](../foundations/shape.md#stroke--focus)). 전이 시간은 Motion의 역할이 정합니다. Button · IconButton은 속성 묶음마다 역할을 고릅니다 — hover tint와 테두리는 `hover`(100ms), 면(`background-color`)과 글자색은 `state`(130ms), 눌림은 `press`(100ms)이고, 정본은 [Motion](../foundations/motion.md)입니다. `prefers-reduced-motion: reduce`에서는 전이가 즉시 끝납니다.
 
 [contract:atoms.focus.ring]: #
-Button · IconButton · Link는 키보드 포커스를 `useFocusRing`(Pressable 안에서도 같은 것)으로 판정해 자기 요소에 `data-focus-visible`을 달고, 링은 그 속성에서 자신의 곡률로 그립니다 — 알약 Button의 링은 알약이고 Link의 링은 `radius.control`입니다. 포인터로 포커스한 요소에는 링이 없습니다. 로딩 중인 Button도 포커스를 받으므로 키보드가 닿으면 링을 그립니다.
+Button · IconButton · Link는 키보드 포커스를 `useFocusRing`(Pressable 안에서도 같은 것)으로 판정해 자기 요소에 `data-focus-visible`을 달고, 링은 그 속성에서 자신의 곡률로 그립니다 — 알약 Button의 링은 알약이고 Link의 링은 `radius.control`입니다. 포인터로 포커스한 요소에는 링이 없습니다. 로딩 중인 Button도 포커스를 받으므로 키보드가 닿으면 링을 그립니다. Field · Select · Textarea도 같은 판정을 쓰며 링 주인이 입력의 틀입니다: 안쪽 native control이 `useFocusRing`(텍스트 입력은 `textInput`)을 받고 틀이 `data-focus-visible`을 답니다. Textarea는 틀이 자기 자신입니다. Field의 지우기나 보기 버튼에서 Shift+Tab으로 input에 돌아오면 wrapper가 링을 다시 그리고, 버튼의 링은 버튼 자신의 곡률(`radius.control`)을 따릅니다.
 
 새 컴포넌트는 다음 질문에 답한 뒤 hover를 추가합니다.
 

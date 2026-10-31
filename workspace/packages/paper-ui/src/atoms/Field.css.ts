@@ -1,42 +1,28 @@
-import { tokens, CONTROL_SIZES, STATUSES, transition, focusRing } from "../tokens";
-import type { ControlSize, Status } from "../tokens";
-import { outlinedControlProfile } from "../tokens/color-recipes";
-import { controlGeometry } from "../internal/shape";
+import { CONTROL_SIZES, stateStyle, tokens, transition } from "../tokens";
+import type { ControlSize } from "../tokens";
+import { controlGeometry, geometry } from "../internal/shape";
 import { layered } from "../tokens/layers.css";
 
 const { style, styleVariants } = layered("components");
 
-// Field 는 input group — 래퍼가 면·테두리·포커스링·상태·크기를 지고, 안쪽 input 은
-// 투명·무테로 값만 담는다. leading/trailing 어도먼트(아이콘·$·단위·clear·비밀번호)가
-// input 양옆에 앉는다. 크기(height·paddingInline·fontSize)는 fieldSize 가 래퍼에 준다.
+// Field 는 input group — 래퍼가 틀(inputFrame: 테두리·모서리·포커스링·비활성)을 지고, 그 색은 fieldPaint,
+// 면은 Surface fill 이 입힌다. 안쪽 input 은 투명·무테로 값만 담고, leading/trailing 어도먼트(아이콘·$·단위)와
+// 액션(clear·비밀번호)이 input 양옆에 앉는다. 크기(height·paddingInline·fontSize)는 fieldSize 가 래퍼에 준다.
 export const fieldWrap = style({
-  color: outlinedControlProfile.ink,
-  borderColor: outlinedControlProfile.border,
   display: "flex",
   alignItems: "center",
   gap: tokens.shape.control.gap,
   width: "100%",
-  borderRadius: tokens.shape.radius.control,
-  borderWidth: tokens.shape.stroke.border,
-  borderStyle: "solid",
   cursor: "text",
-  transition: transition("state", "border-color", "background"),
-  selectors: {
-    // neutral hover는 배경을 흔들지 않고 전용 border.hover 선으로 형태를 가볍게 세운다.
-    '&:not([data-status]):hover:has(input:enabled)': {
-      borderColor: outlinedControlProfile.hoverBorder,
-    },
-    // keyboard focus — 안쪽 input 이 :focus-visible일 때만 래퍼 *바깥* 에 파란 링.
-    // 클릭은 caret과 edge만 남기고, Tab 탐색 위치에만 ring을 쓴다.
-    "&:not([data-pui-pointer-focus]):has(input:focus-visible)": focusRing,
-    "&:has(input:disabled)": { opacity: 0.5, cursor: "not-allowed" },
-  },
 });
 
 // 안쪽 input — 면·테두리·아웃라인 없음. 폰트·색은 래퍼에서 상속.
 //
 // 브라우저 기본 폼 스타일이 letter-spacing: normal 을 명시해 래퍼의 자간 상속을 끊을 수
 // 있으므로 안쪽 input 에서 이어 붙인다. placeholder 와 입력값이 같은 기준선으로 읽힌다.
+//
+// 브라우저가 지우기(검색 ×)와 보기(Edge 비밀번호)를 같은 일을 하는 자기 장치로 입력 안에 그리므로 숨긴다 —
+// 그 일의 주인은 Field 의 clearable 과 showPasswordToggle 이다. number 증감과 date 선택 장치는 브라우저에 남긴다.
 export const fieldInput = style({
   flex: 1,
   minWidth: 0,
@@ -44,10 +30,8 @@ export const fieldInput = style({
   // input box 경계에서 잘릴 수 있다. 입력면 높이 전체를 확보하고 줄상자는 내부에서 중앙에 둔다.
   height: "100%",
   border: "none",
-  // Native input은 overflow: clip이라 선택 highlight와 caret을 둥근 경계에서 잘라낸다.
-  // Field의 ring은 wrapper가 소유하므로 안쪽 입력 면은 직각 clipping box로 둔다.
-  borderRadius: 0,
   background: "transparent",
+  // ring의 주인은 래퍼다.
   outline: "none",
   font: "inherit",
   // control line-height(16)까지 물려받으면 브라우저 caret와 한글 fallback glyph가
@@ -58,9 +42,10 @@ export const fieldInput = style({
   padding: 0,
   margin: 0,
   selectors: {
-    "&::placeholder": { color: tokens.color.ink.tertiary },
-    // input 자체의 ring은 끈다. ring의 주인은 keyboard focus를 읽는 wrapper다.
-    "&:focus-visible": { outline: "none", borderRadius: 0 },
+    // 비활성 native input 의 기본 커서 대신 틀(inputFrame)의 not-allowed 를 받는다.
+    "&:disabled": { cursor: "inherit" },
+    "&::-webkit-search-cancel-button, &::-webkit-search-decoration": { appearance: "none", display: "none" },
+    "&::-ms-clear, &::-ms-reveal": { display: "none" },
   },
 });
 
@@ -74,38 +59,31 @@ export const fieldInputLeading = styleVariants(
   Object.fromEntries(CONTROL_SIZES.map((size) => [size, { lineHeight: tokens.typography.preset.field[size].inputLeading }])) as Record<ControlSize, { lineHeight: string }>,
 );
 
-// status — semantic Form은 accent ink 선으로 상태를 분명히 표시한다.
-export const fieldStatus = styleVariants(
-  Object.fromEntries(STATUSES.map((s) => [s, { borderColor: outlinedControlProfile.status[s] }])) as Record<Status, { borderColor: string }>,
-);
-
-// 어도먼트 — leading/trailing 슬롯(아이콘·$·단위). 흐린 잉크, 축소 안 됨.
+// 어도먼트 — leading/trailing 슬롯(아이콘·$·단위). 축소 안 됨. 색은 fieldAdornmentPaint.
 export const fieldAdornment = style({
   display: "inline-flex",
   alignItems: "center",
-  color: tokens.color.ink.secondary,
   flexShrink: 0,
 });
 
-// 액션 버튼 — clear(×)·비밀번호 보기(👁). 흐린 잉크, hover 때 또렷.
-export const fieldAction = style({
+// 액션 버튼 — clear(×)·비밀번호 보기(👁). 색은 fieldActionPaint(흐렸다가 hover 때 또렷).
+// 보이는 아이콘은 컨트롤 아이콘 크기 그대로이고, 누르는 자리는 보이지 않는 ::before 가 24px 까지 넓힌다.
+// 링은 버튼 자신의 곡률을 따른다.
+export const fieldAction = style([stateStyle.focusVisible, stateStyle.disabledCursor, {
+  position: "relative",
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
   flexShrink: 0,
-  appearance: "none",
-  border: "none",
-  background: "none",
-  padding: 0,
-  margin: 0,
-  cursor: "pointer",
-  color: tokens.color.ink.tertiary,
+  borderRadius: tokens.shape.radius.control,
   transition: transition("hover", "color"),
-  selectors: {
-    "&:hover": { color: tokens.color.ink.primary },
-    "&:focus-visible": { ...focusRing, borderRadius: tokens.shape.radius.control },
-  },
-});
+}]);
+
+// 액션의 보이지 않는 hit area — 아이콘이 최소 target 에 못 미친 만큼 사방으로. 형제 액션과 겹치지 않는다.
+export const fieldActionReach = styleVariants(
+  geometry.target.action,
+  (inset) => ({ selectors: { "&::before": { content: "''", position: "absolute", inset } } }),
+);
 
 // 정렬 축 — numeric 과 직교. 논리값(start·center·end)이라 RTL 도 따라간다. 우측정렬 숫자열 = numeric + end.
 export const fieldAlign = styleVariants({
@@ -113,13 +91,3 @@ export const fieldAlign = styleVariants({
   center: { textAlign: "center" },
   end: { textAlign: "end" },
 });
-
-// 알약 — 모서리를 높이의 절반까지. 검색창이 이 어휘의 본진이다(아이콘 + 둥근 입력).
-// 반경은 래퍼 하나에만 있고 포커스 링이 outline 이라, 링이 곡선을 저절로 따라간다.
-//
-// 여백은 안 건드린다. shape 은 실루엣 축이지 밀도 축이 아니라, 알약이라고 해서 컨트롤
-// 사다리(10·13·17)를 벗어나면 같은 size 의 형제와 글자 시작점이 갈린다.
-//
-// fieldWrap 뒤에 와서 같은 특정도를 순서로 이긴다(반경을 정하는 건 fieldWrap 뿐 —
-// fieldSize 는 height·padding·font 만, fieldStatus 는 borderColor 만 정한다).
-export const fieldPill = style({ borderRadius: tokens.shape.radius.full });

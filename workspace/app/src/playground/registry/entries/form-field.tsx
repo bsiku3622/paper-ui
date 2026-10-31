@@ -1,8 +1,7 @@
 import { useState } from "react";
 
-import { Button, Field, FormField, Stack, type FormFieldProps, type FormFieldState } from "@studio-baeks/paper-ui";
+import { Button, Field, FormField, Stack, type FormFieldProps } from "@studio-baeks/paper-ui";
 
-import { named } from "../jsx";
 import { boolControl, defineSpec, flag } from "../schema";
 import { formField } from "./examples.css";
 
@@ -28,9 +27,7 @@ export default defineSpec({
       disabled={flag(state, "disabled")}
       className={formField}
     >
-      {named('({ isInvalid }) => <Field type="email" status={isInvalid ? "error" : undefined} />', ({ isInvalid }: FormFieldState) => (
-        <Field type="email" status={isInvalid ? "error" : undefined} />
-      ))}
+      <Field type="email" />
     </FormField>
   ),
   Stage: ({ subject, harness }) => (
