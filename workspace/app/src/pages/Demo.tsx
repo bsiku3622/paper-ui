@@ -56,13 +56,13 @@ export const Demo = () => {
       <Inline gap="sm" className={s.topActions}><Field className={s.search} aria-label="전체 검색" placeholder="작업 검색..." leading={<Glyph name="search"/>} value={query} onChange={(event) => setQuery(event.target.value)}/><Button variant="soft" shape="pill" aria-label="계정 메뉴">재</Button></Inline>
     </Box>
     <Box className={s.layout}>
-      <Surface as="nav" elevation="sticky" className={s.sidebar} aria-label="주요 메뉴">
+      <Surface as="nav" elevation="sticky" className={s.sidebar} aria-label="작업 공간 메뉴">
         <Inline className={s.workspacePicker}><Badge fontSize="body" shape="rounded">S</Badge><Text variant="body">Studio Baeks</Text><Glyph name="chevron"/></Inline>
         <Stack gap="sm"><Text variant="body" ink="tertiary">WORKSPACE</Text><Button variant="ghost" className={s.navItem}><Glyph name="grid"/> 프로젝트 개요</Button><Button variant="ghost" className={s.navItem}><Glyph name="check"/> 내 작업 <Badge fontSize="body">4</Badge></Button><Button variant="ghost" className={s.navItem}><Glyph name="inbox"/> 받은 알림 <Badge fontSize="body">2</Badge></Button></Stack>
         <Stack gap="sm"><Text variant="body" ink="tertiary">PROJECTS</Text><Button variant="soft" className={s.navItem}><Glyph name="layers"/> 웹사이트 리뉴얼</Button><Button variant="ghost" className={s.navItem}><Glyph name="layers"/> 모바일 앱</Button><Button variant="ghost" className={s.navItem}><Glyph name="layers"/> 브랜드 정리</Button><Button variant="ghost" className={s.navItem}><Glyph name="plus"/> 프로젝트 추가</Button></Stack>
         <Box className={s.user}><Badge fontSize="body" shape="pill">재</Badge><Stack gap="xs"><Text variant="body">백재원</Text><Text variant="body" ink="tertiary">Studio Baeks</Text></Stack><IconButton aria-label="계정 옵션" variant="ghost"><Glyph name="more"/></IconButton></Box>
       </Surface>
-      <Stack as="main" className={s.main} gap="lg">
+      <Stack as="main" id="main" tabIndex={-1} className={s.main} gap="lg">
         <Inline className={s.breadcrumb}><Text variant="body" ink="tertiary">프로젝트</Text><Glyph name="chevron"/><Text variant="body">웹사이트 리뉴얼</Text></Inline>
         <Inline as="header" className={s.projectHeading} justify="between" align="center">
           <Stack gap="xs">

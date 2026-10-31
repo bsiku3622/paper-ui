@@ -1,19 +1,16 @@
-// 문서 — /docs/* 마크다운 사이트. 사이드바는 DOC_GROUPS 순서의 DOCS 이고, 활성 문서의
-// 본문은 번들에서 불러와 Prose 로 렌더한다. 문서는 레포의 docs/ 에서 곧바로 온다.
+// 문서 — /docs/* 마크다운 사이트. 활성 문서의 본문은 번들에서 불러와 Prose 로 렌더한다. 문서는 레포의
+// docs/ 에서 곧바로 오고, 목차와 본문 칸은 사이트 셸이 그린다.
 
 import { useEffect, useState } from "react";
-import { Link, Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { DOCS } from "virtual:paper-docs";
 
-import { Box, Stack, Surface, Text } from "@studio-baeks/paper-ui";
-import { tokens } from "@studio-baeks/paper-ui/tokens";
+import { Stack, Text } from "@studio-baeks/paper-ui";
 
 import { loadDocBody } from "../docs/content";
-import { docPath } from "../docs/links";
 import { Prose } from "../docs/Prose";
-import { SiteNav, NAV_HEIGHT } from "../site/chrome";
+import { PageHeader } from "../site/PageHeader";
 import { DOC_GROUPS } from "../site/site-map";
-import { docsColumns } from "../site/site.css";
 
 export const Docs = () => {
   const { pathname, hash } = useLocation();
@@ -40,41 +37,12 @@ export const Docs = () => {
   }, [body, hash]);
 
   if (!activeDoc) return <Navigate to="/docs" replace />;
+  if (body === null) return <Text variant="caption">불러오는 중…</Text>;
 
   return (
-    <Stack>
-      <SiteNav />
-      <Box maxWidth="container.content" width="full" className={docsColumns} style={{ display: "grid", marginInline: "auto", isolation: "isolate" }}>
-        <Surface as="nav" elevation="sticky" aria-label="문서 목차" style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, top: NAV_HEIGHT, alignSelf: "start", padding: tokens.shape.inset.lg, borderRight: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
-          <Stack gap="lg">
-            {DOC_GROUPS.map((group) => (
-              <Stack key={group.id} gap="xs">
-                {group.label ? <Text variant="label" ink="tertiary">{group.label}</Text> : null}
-                {DOCS.filter((doc) => doc.group === group.id).map((doc) => (
-                  <Link key={doc.slug || "overview"} to={docPath(doc.slug)} aria-current={slug === doc.slug ? "page" : undefined} style={{ display: "block", padding: `${tokens.shape.inset.sm} ${tokens.shape.inset.md}`, color: slug === doc.slug ? tokens.color.ink.primary : tokens.color.ink.secondary, textDecoration: "none" }}>
-                    {doc.title}
-                  </Link>
-                ))}
-              </Stack>
-            ))}
-          </Stack>
-        </Surface>
-
-        {/* 본문 */}
-        <Box paddingX="xl" paddingY="xl">
-          {body === null ? (
-            <Text variant="caption">불러오는 중…</Text>
-          ) : (
-            <Stack gap="xl">
-              <Stack gap="xs">
-                <Text variant="caption" ink="secondary">{DOC_GROUPS.find((group) => group.id === activeDoc.group)?.label || "Documentation"}</Text>
-                <Text as="h1" variant="title">{activeDoc.title}</Text>
-              </Stack>
-              <Prose file={activeDoc.file}>{body}</Prose>
-            </Stack>
-          )}
-        </Box>
-      </Box>
+    <Stack gap="xl">
+      <PageHeader group={DOC_GROUPS.find((group) => group.id === activeDoc.group)?.label || "Documentation"} name={activeDoc.title} />
+      <Prose file={activeDoc.file}>{body}</Prose>
     </Stack>
   );
 };

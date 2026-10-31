@@ -5,8 +5,8 @@ import { useParams } from "react-router-dom";
 
 import { Stack } from "@studio-baeks/paper-ui";
 
+import { PageHeader } from "../../site/PageHeader";
 import { FOUNDATIONS, type FoundationId } from "../../site/site-map";
-import { PlaygroundLayout, ReferenceHeading } from "../shell";
 import { ColorPage } from "./ColorPage";
 import { LayoutPage } from "./LayoutPage";
 import { MotionPage } from "./MotionPage";
@@ -27,11 +27,9 @@ export const Foundations = () => {
   const { id, label, summary } = FOUNDATIONS.find((foundation) => foundation.id === slug) ?? FOUNDATIONS[0];
   const Page = PAGES[id];
   return (
-    <PlaygroundLayout value={`foundations/${id}`}>
-      <Stack className={s.page} gap="xl">
-        <ReferenceHeading group="Foundations" name={label} description={`${summary} 실제 tokens.*에서 값을 읽으며 현재 테마에 따라 갱신됩니다.`} />
-        <Page />
-      </Stack>
-    </PlaygroundLayout>
+    <Stack className={s.page} gap="xl">
+      <PageHeader group="Foundations" name={label} description={`${summary} 실제 tokens.*에서 값을 읽으며 현재 테마에 따라 갱신됩니다.`} />
+      <Page />
+    </Stack>
   );
 };

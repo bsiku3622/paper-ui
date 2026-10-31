@@ -1,8 +1,8 @@
 // @vitest-environment node
 //
 // The repo's docs/ held to the docs runtime: every doc parses, DOC_GROUPS and the files agree one to
-// one, and every link between docs reaches an existing doc and heading. Whether an app link
-// (/playground/…) reaches a route is checked against the route table, which the shell owns.
+// one, and every link between docs reaches an existing doc and heading. An app link (/playground/…) has to
+// match the route table, which the shell owns, and a route that takes a parameter has to know the value.
 
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
@@ -11,9 +11,12 @@ import GithubSlugger from "github-slugger";
 import remarkGfm from "remark-gfm";
 import remarkParse from "remark-parse";
 import { unified } from "unified";
+import { matchRoutes } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 
 import { collectDocs } from "../../vite/paper-docs";
+import { routes } from "../routes";
+import { resolveHandle } from "../site/handle";
 import { DOC_GROUPS } from "../site/site-core";
 import { resolveDocHref } from "./links";
 import { parseDoc } from "./parse";
@@ -84,6 +87,23 @@ describe("docs/", () => {
         const ids = headingIds.get(slug);
         if (!ids) broken.push(`${doc.file}: ${url} points at no doc`);
         else if (hash && !ids.has(decodeURIComponent(hash))) broken.push(`${doc.file}: ${url} points at no heading`);
+      }
+    }
+    expect(broken).toEqual([]);
+  });
+
+  it("links to app routes that the route table has", async () => {
+    const docs = await collectDocs({ dir: DOCS_DIR, groups: DOC_GROUPS });
+    const broken: string[] = [];
+    for (const doc of docs) {
+      for (const url of linksOf(parseDoc(read(doc.file)).body)) {
+        const target = resolveDocHref(doc.file, url);
+        if (target.kind !== "app") continue;
+        const matches = matchRoutes(routes, new URL(target.path, "http://paper.test").pathname);
+        const leaf = matches?.at(-1);
+        // The catch-all sends an unknown path home, so reaching it means no route has the path.
+        if (!matches || !leaf || leaf.route.path === "*") broken.push(`${doc.file}: ${url} matches no route`);
+        else if (Object.keys(leaf.params).length > 0 && !resolveHandle(matches.map((match) => ({ handle: match.route.handle, params: match.params }))).title) broken.push(`${doc.file}: ${url} names nothing the route knows`);
       }
     }
     expect(broken).toEqual([]);

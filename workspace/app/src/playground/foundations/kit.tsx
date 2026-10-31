@@ -7,6 +7,7 @@ import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode }
 
 import { Stack, Surface, Text } from "@studio-baeks/paper-ui";
 
+import { SectionHeading } from "../../site/SectionHeading";
 import * as s from "./kit.css";
 
 type Align = keyof typeof s.align;
@@ -14,10 +15,7 @@ export type Column = { label: string; align?: Align };
 
 export const FoundationSection = ({ title, description, children }: { title: string; description: string; children: ReactNode }) => (
   <Stack as="section" className={s.section} gap="md">
-    <Stack gap="xs">
-      <Text as="h2" variant="heading">{title}</Text>
-      <Text variant="body" ink="secondary">{description}</Text>
-    </Stack>
+    <SectionHeading title={title} description={description} />
     {children}
   </Stack>
 );
