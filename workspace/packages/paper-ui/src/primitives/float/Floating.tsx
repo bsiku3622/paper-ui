@@ -3,7 +3,6 @@ import { createContext, forwardRef, useCallback, useContext, useEffect, useId, u
 import { useScopeFocus } from "../../internal/aria/focus";
 import { useAriaDismiss, useAriaModal, useAriaPosition } from "../../internal/aria/overlay";
 import { paperError } from "../../internal/errors";
-import { FormFieldContext } from "../../internal/form-field-context";
 import { joinClass } from "../../internal/joinClass";
 import { useMergedRef } from "../../internal/refs";
 import { registerPart, targetProps } from "../../internal/render-target";
@@ -174,9 +173,7 @@ const Content = forwardRef<HTMLDivElement, FloatingContentProps>(function Floati
   /* eslint-disable jsx-a11y/no-autofocus -- focus enters a floating panel the user just opened */
   return <Portal container={portalContainer}>
     <FocusScope contain={modal} restoreFocus={restoreFocus}>
-      <FormFieldContext.Provider value={null}>
-        <Panel {...props} autoFocus={autoFocus} forwardedRef={ref} />
-      </FormFieldContext.Provider>
+      <Panel {...props} autoFocus={autoFocus} forwardedRef={ref} />
     </FocusScope>
   </Portal>;
   /* eslint-enable jsx-a11y/no-autofocus */

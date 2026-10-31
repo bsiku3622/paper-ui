@@ -1,11 +1,37 @@
-import { forwardRef, useCallback, useContext, useEffect, useId, useLayoutEffect, useMemo, useRef, type AriaAttributes, type HTMLAttributes, type ReactNode } from "react";
+import { createContext, forwardRef, useCallback, useContext, useEffect, useId, useLayoutEffect, useMemo, useRef, type AriaAttributes, type HTMLAttributes, type ReactNode } from "react";
 
-import { FormFieldContext, type FormFieldContextValue, type FormFieldControlProps } from "../../internal/form-field-context";
 import { paperError } from "../../internal/errors";
 import { VALUE_ATTRIBUTE, stateAttributes, type Status } from "../../tokens";
+import { usePortalDepth } from "../a11y/Portal";
 import { Text } from "../Text";
 
 const useIsomorphicLayoutEffect = typeof document === "undefined" ? useEffect : useLayoutEffect;
+
+type FormFieldControlProps = {
+  id: string;
+  disabled?: true;
+  required?: true;
+  "aria-invalid"?: true;
+  "aria-describedby"?: string;
+};
+
+// What a FormField tells the one control inside it.
+type FormFieldContextValue = {
+  controlProps: FormFieldControlProps;
+  invalid: boolean;
+  /** A control announces itself; the field reports when a second one does. The returned function takes it back. */
+  claim: () => () => void;
+  portalDepth: number;
+};
+const FormFieldContext = createContext<FormFieldContextValue | null>(null);
+
+// The field around a control. A portal between them cuts it: a control in a panel opened from a field is not that
+// field's, though React context crosses the portal.
+const useFieldAround = (): FormFieldContextValue | null => {
+  const field = useContext(FormFieldContext);
+  const portalDepth = usePortalDepth();
+  return field?.portalDepth === portalDepth ? field : null;
+};
 
 export type FormFieldOptions = {
   id?: string;
@@ -71,7 +97,7 @@ export type FormFieldControlResult = {
 // reach the control: disabled and required add up, describedby is the control's own ids and then the field's, and
 // aria-invalid is the control's own word if it gave one, else error status or the field being invalid.
 export function useFormFieldControl({ id, disabled, required, "aria-invalid": explicit, "aria-describedby": describedBy, status }: FormFieldControlOptions = {}): FormFieldControlResult {
-  const field = useContext(FormFieldContext);
+  const field = useFieldAround();
   const claim = field?.claim;
   const own = field?.controlProps;
   const mismatch = id !== undefined && own !== undefined && id !== own.id;
@@ -113,7 +139,8 @@ export const FormField = forwardRef<HTMLDivElement, FormFieldProps>(function For
     return () => { claimed.current -= 1; };
   }, []);
   const { controlProps } = field;
-  const context = useMemo<FormFieldContextValue>(() => ({ controlProps, invalid, claim }), [controlProps, invalid, claim]);
+  const portalDepth = usePortalDepth();
+  const context = useMemo<FormFieldContextValue>(() => ({ controlProps, invalid, claim, portalDepth }), [controlProps, invalid, claim, portalDepth]);
   return <FormFieldContext.Provider value={context}>
     <div {...props} ref={ref} {...stateAttributes({ disabled, invalid, required })}>
       <Text as="label" variant="label" {...part("label")} {...field.labelProps}>{label}</Text>

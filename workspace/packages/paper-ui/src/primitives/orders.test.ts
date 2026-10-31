@@ -22,6 +22,10 @@ const EDGES: Record<string, readonly string[]> = {
   float: ["paint"],
 };
 
+// internal/ sits below the primitives, which makes it the way around the edges above. What second-order folders share
+// through it is general tools, named here. A capability's own state is not one: a shared module holds no context.
+const SHARED_INTERNAL = ["errors", "joinClass", "refs", "render-target", "useControllableState"];
+
 const walk = (dir: string): string[] =>
   readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const path = join(dir, entry.name);
@@ -86,6 +90,19 @@ describe("the second order", () => {
         .filter(({ folder }) => folder !== undefined && SECOND.includes(folder) && folder !== own && !(EDGES[own] ?? []).includes(folder));
     });
     expect(violations).toEqual([]);
+  });
+
+  it("[primitives.orders.second] shares only general tools through internal/, so a capability's state cannot slip around the edges", () => {
+    const users = new Map<string, Set<string>>();
+    for (const file of secondOrderFiles) {
+      for (const { from } of importsOf(file)) {
+        const module = relative(join(src, "internal"), resolve(dirname(file), from));
+        if (!module.startsWith("..")) users.set(module, (users.get(module) ?? new Set()).add(ownFolder(file)));
+      }
+    }
+    const shared = [...users].filter(([, folders]) => folders.size > 1).map(([module]) => module).sort();
+    expect(shared).toEqual([...SHARED_INTERNAL].sort());
+    for (const module of shared) expect(read(join(src, "internal", `${module}.ts`)), module).not.toMatch(/createContext/);
   });
 
   it("[primitives.orders.second] lets float reach paint for the scrim and nothing else", () => {
