@@ -22,6 +22,7 @@ playwright-report/
 .playwright/
 
 workspace/app/dist/
+workspace/app/.doc-snippets/
 
 # local work log — stays on the machine, never in the repo
 /logs.md

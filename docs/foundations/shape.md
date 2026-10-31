@@ -60,12 +60,15 @@ Box의 `padding` · `paddingX` · `paddingY`가 이 단계를 받습니다. 앱 
 
 모서리는 날만 죽입니다. 그래서 한 가족은 크기와 무관하게 한 값을 씁니다.
 
+<!-- generated:shape-radius -->
+<!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 | 역할 | 값 | 쓰는 곳 |
-|---|---|---|
+| --- | --- | --- |
 | `radius.control` | 4 | Button · Field · Select · Textarea · Badge, 포커스 링 |
 | `radius.selection` | 3 | Checkbox |
 | `radius.surface.sm / md / lg` | 4 / 6 / 8 | Surface의 `radius` prop |
 | `radius.full` | 999px | 알약, 원(Radio · Switch · Spinner) |
+<!-- /generated:shape-radius -->
 
 Surface의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값이 같아도 역할과 변수는 따로입니다.
 
@@ -80,27 +83,33 @@ Surface의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값
 ## Control
 
 [contract:foundations.shape.control-geometry]: #
-컨트롤에서 원본은 높이 하나입니다. 나머지는 높이와 컨트롤 글자 줄(Typography의 control preset이 읽는 글자 한 줄, 행간 16)에서 계산합니다. 입력값이 앉는 줄상자 `inputLeading` 20은 이 식의 입력이 아니라 caret 높이를 위한 값이라, 글자 줄 안쪽에서 중앙에 앉습니다.
+컨트롤 원본은 <!-- generated:shape-source --><!-- 이 블록은 생성됩니다 — pnpm docs:sync -->높이 사다리(`control.height`: sm 30 · md 32 · lg 36)와 button inset 배율(`control.buttonInsetRatio`: 1.4)이고, `anatomy`는 Badge 높이·inset(`anatomy.badge`)과 inline 점 · spinner 크기(`anatomy.inline`: 0.5em · 1em)입니다.<!-- /generated:shape-source --> 나머지는 높이와 컨트롤 글자 줄(Typography의 control preset이 읽는 글자 한 줄, 행간 16)에서 계산합니다. 입력값이 앉는 줄상자 `inputLeading` 20은 이 식의 입력이 아니라 caret 높이를 위한 값이라, 글자 줄 안쪽에서 중앙에 앉습니다.
 
+<!-- generated:shape-control -->
+<!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 | 역할 | sm | md | lg | 식 |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `control.height` | 30 | 32 | 36 | 원본 |
 | `control.inset.input` | 7 | 8 | 10 | (높이 − preset 글자 줄) / 2 — 입력값은 글자 줄 사방에 같은 여백 |
 | `control.inset.button` | 10 | 11 | 14 | (높이 − 버튼 글자 줄) / 2 × `buttonInsetRatio` 1.4, 1px로 반올림 — 라벨이 상자를 정의하므로 더 넓게 |
 | `selection.size` | 15 | 16 | 18 | 높이 / 2 |
 | `control.icon` | 16 | 18 | 20 | 높이를 따르는 icon 크기 (caption · body · subheading) |
 | `control.gap` | 8 | 8 | 8 | 아이콘과 라벨 사이, inset sm |
+<!-- /generated:shape-control -->
 
 컨트롤 안의 아이콘은 옆 글자가 아니라 컨트롤 높이를 따라 30 → 16, 32 → 18, 36 → 20으로 커집니다. 컨트롤 글자는 control preset(13 · 13 · 14)이라 어느 Text 역할과도 같지 않기 때문입니다. 같은 size의 Button · Field · Select는 같은 높이를 고르고, 글자는 Typography의 control preset에서 따로 고릅니다. `controlGeometry`(`internal/shape.ts`)는 크기가 있는 모든 Atom의 단일 진입점이고, stylesheet가 자기만의 크기 사다리를 만들지 않습니다. 항목은 button · iconButton(높이를 변으로 하는 정사각, 안쪽 여백 없음) · field · select · selectArrow · textarea · selection(선택 상자) · checkbox · radio · switch · badge · spinner · spinnerInline입니다. `control.icon`은 컨트롤 안 아이콘의 기본 크기입니다. 컨트롤 안의 Icon은 그 컨트롤이 정한 크기를 맥락(`IconSizeContext`)으로 받고, 명시한 `size`가 있으면 그것이 이깁니다.
 
 ## Sizing
 
+<!-- generated:shape-sizing -->
+<!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 | 역할 | 단계 | dp |
-|---|---|---|
+| --- | --- | --- |
 | `icon.size` | label · caption · body · subheading | 14 · 16 · 18 · 20 |
 | `dimension.width` | xs ~ xl | 72 · 108 · 160 · 240 · 360 |
 | `dimension.height` | xs ~ xl | 64 · 96 · 144 · 216 · 320 |
 | `measure` | xs ~ xl | 448 · 512 · 608 · 672 · 736 (28 ~ 46rem) |
+<!-- /generated:shape-sizing -->
 
 아이콘 artboard의 이름은 Text 역할 이름의 부분집합이라 타입으로 묶여 있고, 그 역할의 글자 옆에 놓는 크기를 뜻합니다. 컨트롤 안의 아이콘은 이 이름이 아니라 `control.icon`을 따릅니다. `dimension`은 Box의 `width="md"` 같은 이름 있는 크기이고, `measure`는 글 덩어리의 읽기 폭이라 Box에서는 `maxWidth="measure.md"`로 고릅니다. 이름 있는 크기는 모두 class가 됩니다.
 
@@ -133,7 +142,7 @@ coarse pointer에서 더 키우지 않습니다 — 촘촘한 목록에서 hit a
 | Textarea | 한 줄은 같은 size의 Field와 정확히 같은 높이입니다: block 여백 = (컨트롤 높이 − textarea 글자 줄) / 2 − 테두리. 최소 높이는 없고 높이는 `rows`(기본 4)가 정합니다 — 4줄은 sm 90 · md 92 · lg 96입니다. |
 | Select | 화살표는 trailing icon입니다. `control.icon` 크기의 Icon(레시피에 따로 둔 값이 없습니다)이 입력 inset 자리에 앉고, 값은 그보다 `control.gap`만큼 앞에서 멈춥니다 — Field의 leading icon을 거울로 비춘 구조입니다. |
 | Spinner | 지름은 `control.icon`, 링은 `stroke.emphasis`입니다. 글줄 안에 놓는 스피너(`spinner.inline`)는 라벨 글자(1em)를 따르고, Button의 loading 표식이 그 크기입니다. |
-| Badge | 높이 20 · 22 · 24와 inset 6 · 8 · 10은 규칙으로 나오지 않아 원본 anatomy에 둡니다. 점은 글자의 0.5em, 점과 글자 사이는 inset xs입니다. |
+| Badge | 높이와 inset은 규칙으로 나오지 않아 원본 `anatomy.badge`에 둡니다. 점은 `anatomy.inline`의 글자 0.5em이고, 점과 글자 사이는 inset xs입니다. |
 
 [contract:foundations.shape.switch-thumb]: #
 Switch의 손잡이는 꺼지면 트랙 끝에서 테만큼, 켜지면 반대쪽 끝에서 테만큼 떨어져 앉고 그 값은 논리 속성이 정합니다. 오른쪽에서 왼쪽으로 쓰는 문서에서는 두 끝이 서로 바뀝니다 — 켜진 손잡이가 트랙의 왼쪽 끝에서 테만큼 떨어집니다. 이는 별도 규칙 없이 같은 선언이 읽는 방향만 바뀐 결과이고, 테스트는 손잡이가 트랙의 양 끝에서 떨어진 거리를 읽습니다.

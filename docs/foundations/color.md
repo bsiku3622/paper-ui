@@ -26,7 +26,7 @@ Palette는 테마와 무관합니다. 테마를 바꿔도 ramp는 그대로이�
 
 `150`·`650`·`875`·`925` 같은 중간 단계는 앞뒤 기준점 사이를 보간해 만듭니다. 어느 두 기준점 사이의 어디쯤인지는 `NEUTRAL_BETWEEN`이 단계마다 적습니다. `925`는 다크의 raised 면처럼 950 바로 위에 떠야 하는 자리를 위해 있습니다. amber는 밝은 단계(90°)에서 노랑을 유지하다가 400부터 주황(65°)으로 넘어가고, 200·300의 chroma를 완만하게 올려 채도가 갑자기 튀지 않게 했습니다. 이 보정은 조립 코드의 분기가 아니라 `ACCENT_IDENTITIES.amber`의 `paleHue`와 `chromaRatio` 데이터입니다.
 
-Palette Token은 내부 이름입니다. 컴포넌트와 앱은 import하지 않고, 의미 역할만 고릅니다. 생성된 단계는 Playground [Color](/playground/foundations/color)의 Palette 행렬에서 확인합니다. 칩에 포인터를 올리면 단계와 HEX가 보입니다.
+Palette Token은 내부 이름입니다. 컴포넌트와 앱은 import하지 않고, 의미 역할만 고릅니다. 생성된 단계는 Playground [Color](/playground/foundations/color)에서 확인합니다. Palette 행렬은 accent의 단계 축(50 … 950)을 보여주고, neutral 0·875와 alpha 단계는 역할 카드에서 Palette Token 이름으로 나옵니다. 칩에 포인터를 올리면 HEX가 보입니다. OKLCH와 gamut의 검증은 palette 테스트가 맡습니다.
 
 ## 의미 역할
 
@@ -46,8 +46,10 @@ Palette Token은 내부 이름입니다. 컴포넌트와 앱은 import하지 않
 
 각 역할이 고르는 단계는 다음과 같습니다.
 
+<!-- generated:color-roles -->
+<!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 | 역할 | Light | Dark |
-|---|---|---|
+| --- | --- | --- |
 | `bg.canvas` | neutral.50 | neutral.950 |
 | `bg.raised` | neutral.0 | neutral.925 |
 | `bg.sunken` | neutral.100 | neutral.950 |
@@ -62,6 +64,7 @@ Palette Token은 내부 이름입니다. 컴포넌트와 앱은 import하지 않
 | `interaction.link` | blue.700 | blue.300 |
 | `overlay.scrim` | alpha30.neutral.950 | alpha60.neutral.950 |
 | `shadow.floating` · `lifted` | alpha10.neutral.950 · alpha10.neutral.950 | alpha60.neutral.950 · alpha45.neutral.950 |
+<!-- /generated:color-roles -->
 
 [contract:foundations.color.surface-ladder]: #
 면은 앞에서 뒤로 `raised` > `canvas` > `sunken` 순서로 물러납니다. 라이트는 세 단계가 모두 다르고, 다크는 두 단계입니다 — 페이지(`canvas`)가 이미 가장 깊은 단계라 `sunken`이 같은 neutral.950을 씁니다. 그래서 다크에서 canvas 위의 sunken 면은 면 색이 아니라 경계로 구분하고, raised 위에서는 두 모드 모두 물러나 보입니다. 이 순서는 `SURFACE_ORDER`에 선언되어 있고, 두 모드에서 명도가 앞에서 뒤로 줄어드는지와 모든 잉크가 모든 면 위에서 4.5:1 이상인지를 단위 테스트가 지킵니다.
@@ -103,7 +106,7 @@ Palette Token은 내부 이름입니다. 컴포넌트와 앱은 import하지 않
 
 ## 대비 계약
 
-글자는 4.5:1입니다. 컨트롤과 그 상태를 알리는 표식은 3:1입니다 — 선택 상자와 라디오의 경계, 스위치 트랙의 테와 켜진 트랙, 체크 면과 그 위의 표식, 포커스 링, 오류 경계. 선택 표식은 꺼져 있을 때 이 테가 유일한 단서이므로 테에 `ink.tertiary`를 씁니다. 3:1을 지키는 가장 옅은 기존 역할이고(라이트 #6b6b6d가 면 위에서 4.80~5.32, 다크 #98989a가 5.85~6.55), 경계 역할은 라이트에서 2.0을 넘지 못해 쓸 수 없습니다. 표식만을 위한 역할은 없습니다 — neutral.600 같은 원본 단계를 따로 드러내면 컨트롤 전용 색이나 Color 페이지의 새 행이 됩니다. 켜진 Switch는 primary solid 트랙과 `bg.raised` 손잡이이고, 켜짐은 면(최소 15:1)이 알립니다.
+글자는 4.5:1입니다. 컨트롤과 그 상태를 알리는 표식은 3:1입니다 — 선택 상자와 라디오의 경계, 스위치 트랙의 테와 켜진 트랙, 체크 면과 그 위의 표식, 포커스 링, 오류 경계. 선택 표식은 꺼져 있을 때 이 테가 유일한 단서이므로 테에 `ink.tertiary`를 씁니다. 3:1을 지키는 가장 옅은 기존 역할이고(라이트 `neutral.650`이 면 위에서 4.80~5.32, 다크 `neutral.500`이 5.85~6.55), 경계 역할은 라이트에서 2.0을 넘지 못해 쓸 수 없습니다. 표식만을 위한 역할은 없습니다 — neutral.600 같은 원본 단계를 따로 드러내면 컨트롤 전용 색이나 Color 페이지의 새 행이 됩니다. 켜진 Switch는 primary solid 트랙과 `bg.raised` 손잡이이고, 켜짐은 면(최소 15:1)이 알립니다.
 
 [contract:foundations.color.non-text-contrast]: #
 단위 테스트(`tokens/color.test.ts`)가 두 테마의 모든 면(raised · canvas · sunken) 위에서 표식의 꺼진 테(`ink.tertiary`), 켜진 면(`accent.primary.solid`), 포커스 링, 오류 테(`accent.error.ink`)가 3:1 이상임을, 꺼진 트랙이 켜진 트랙과 3:1 이상 갈리고 켜진 트랙 위의 손잡이(`bg.raised`)와 체크(`accent.primary.wash`)가 3:1 이상임을 지킵니다. 다크 `accent.ink`는 모든 다크 면 위에서 4.5:1 이상으로 라이트와 같고, hover · selected · active의 tint를 면에 깐 자리 위의 `ink.primary`도 4.5:1 이상입니다.
@@ -118,13 +121,16 @@ Windows 고대비처럼 OS가 색을 정하는 모드(`forced-colors: active`)�
 
 `primary`와 네 상태색은 같은 다섯 tone을 공유합니다. `primary`는 neutral이고, `info`·`success`·`warning`·`error`는 각각 blue·green·amber·red ramp에서 고릅니다. 이 시스템에는 `primaryColor`가 없습니다 — 1차 행동도 검정입니다.
 
+<!-- generated:color-tones -->
+<!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 | tone | 쓰는 곳 | Light | Dark |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `solid` | 채운 면, 상태 점 | 600 (primary 950) | 600 (primary 50) |
 | `wash` | solid 위 글자 | 50 (primary 0) | 50 (primary 950) |
 | `ink` | soft·hairline·ghost 위 글자와 의미색 글자 (링크는 `interaction.link`) | 700 (primary 900) | 300 (primary 100) |
 | `soft` | soft variant의 옅은 면 | 150 (primary 200) | 925 (primary 875) |
 | `subtle` | muted variant의 글자 | 700 (primary 700) | 400 (primary 500) |
+<!-- /generated:color-tones -->
 
 tone마다 고르는 단계는 `ACCENT_TONE_STEPS`(상태색)와 `PRIMARY_TONE_STEPS`(primary)의 [light, dark] 쌍입니다. 이 표를 벗어나는 조합은 `STATUS_EXCEPTIONS`에 status 이름으로 적고, pigment 이름으로는 분기하지 않습니다.
 
@@ -157,7 +163,7 @@ profile은 `accentProfile(accent, variant)`가 `{ face, ink, border, hover, sele
 ## 색을 바꿀 때
 
 1. `palette.ts`에서 OKLCH 기준점이나 alpha 단계를 고칩니다.
-2. Playground Color의 Palette 행렬에서 생성된 단계를 확인합니다. 칩에 포인터를 올리면 단계와 HEX가 보입니다. 앱 테마를 바꿔도 ramp가 같아야 합니다.
+2. Playground Color의 Palette 행렬에서 accent 단계를 확인하고, neutral 0·875와 alpha 단계는 역할 카드에서 봅니다. 칩에 포인터를 올리면 HEX가 보입니다. OKLCH와 gamut은 palette 테스트가 지킵니다. 앱 테마를 바꿔도 ramp가 같아야 합니다.
 3. 어떤 역할이 다른 단계를 써야 하면 `colors.ts`의 `COLOR_SELECTION`에서 그 역할의 경로만 고칩니다. 새 역할은 선택표에 leaf를 더하고 Playground Color의 `ROLE_NOTES`에 설명을 답니다. 설명이 빠지면 타입 검사가 막습니다.
 4. 컴포넌트에서는 의미 역할만 쓰고, light·dark 양쪽에서 확인합니다.
 

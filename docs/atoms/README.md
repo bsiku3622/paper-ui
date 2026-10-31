@@ -140,7 +140,7 @@ Checkbox · Radio · Switch의 `status`는 `error`뿐입니다(`ChoiceStatus`). 
 Checkbox의 `indeterminate`는 속성이 아니라 DOM 프로퍼티라 layout effect가 input에 직접 세웁니다. 넘어온 ref는 그대로 두므로 값이 바뀌어도 callback ref는 다시 불리지 않습니다.
 
 [contract:atoms.mark.target]: #
-선택 표식과 Field 액션은 보이는 크기와 별도로 24px hit area를 가집니다(WCAG 2.5.8). Checkbox · Radio는 상자 둘레로, Switch는 트랙 위아래로 넓어지는 보이지 않는 `::before`이고(가로는 트랙이 이미 충분합니다), 색을 칠하지 않습니다. 표식 중심에서 11.5px 안의 포인터는 그 표식에 닿고 14px 밖은 닿지 않습니다. 문장 안 Link는 inline 예외입니다.
+선택 표식과 Field 액션은 보이는 크기와 별도로 24px hit area를 가집니다(WCAG 2.5.8). Checkbox · Radio는 상자 둘레로, Switch는 트랙 위아래로 넓어지는 보이지 않는 `::before`이고(가로는 트랙이 이미 충분합니다), 색을 칠하지 않습니다. 표식 중심에서 hit area의 절반인 12px 안쪽의 포인터는 그 표식에 닿고 14px 밖은 닿지 않습니다. 문장 안 Link는 inline 예외입니다.
 
 Field · Select · Textarea는 React Aria의 입력 modality 하나로 키보드 포커스를 판정하고, 링을 그리는 틀(Field · Select는 wrapper, Textarea는 자기 자신)에 `data-focus-visible`을 답니다. 포인터 포커스에는 링이 없고 Tab이나 Shift+Tab으로 오면 2px 링이 틀에 뜹니다. Checkbox · Radio · Switch도 같은 판정을 쓰되 링 주인이 input 자신이라 자기 곡률로 링을 그리고, 비활성은 native `disabled`와 `data-disabled`로 `opacity.disabled`와 `not-allowed` 커서를 얻습니다. IconButton의 aria-label은 타입에서 필수이고, Badge의 점과 Select 화살표는 장식으로 숨깁니다. hover·focus·selected의 우선순위는 [상태와 피드백](states.md)에 있습니다.
 

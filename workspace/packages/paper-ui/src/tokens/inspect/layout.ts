@@ -3,3 +3,5 @@
 // package imports this directory.
 
 export { ELEVATION_NEST_LIMIT, LAYOUT_SOURCE } from "../layout";
+// A role in dp over what the stylesheet emits: the gaps and the gutter select from the Shape scale.
+export { resolveRole } from "../resolve-dp";

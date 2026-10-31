@@ -107,14 +107,17 @@ export const App = () => (
 토글 UI를 직접 만들 때는 `useTheme`을 씁니다. `theme`은 사용자의 선택(`system` 포함), `resolved`는 실제로 적용된 `light`/`dark`입니다.
 
 ```tsx
-import { Button, useTheme } from "@studio-baeks/paper-ui";
+import { Icon, IconButton, useTheme } from "@studio-baeks/paper-ui";
 
 const ThemeToggle = () => {
   const { resolved, setTheme } = useTheme();
+  const next = resolved === "dark" ? "light" : "dark";
   return (
-    <Button variant="ghost" onClick={() => setTheme(resolved === "dark" ? "light" : "dark")}>
-      {resolved === "dark" ? "라이트" : "다크"}
-    </Button>
+    <IconButton variant="hairline" aria-label={next === "dark" ? "다크 테마로 전환" : "라이트 테마로 전환"} onClick={() => setTheme(next)}>
+      <Icon>
+        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+      </Icon>
+    </IconButton>
   );
 };
 ```
@@ -123,15 +126,18 @@ const ThemeToggle = () => {
 
 ## 폰트
 
-서체는 Typography 계약의 일부입니다. 시스템은 서체 파일을 번들하지 않지만, 굵기 사다리(400 · 450 · 500 · 600 · 650 · 700)는 Pretendard Variable이 있다고 전제하고 세워져 있습니다. sans는 Pretendard를 맨 앞에 둡니다 — 라틴과 한글을 한 몸으로 그려 굵기가 균형을 잃지 않기 때문이고, `-apple-system`은 그 뒤 fallback입니다. mono는 OS의 등폭 서체(SF Mono·Cascadia)를 먼저 쓰고 한글은 D2Coding으로 떨어집니다. 앱에서 아래 두 스타일시트를 직접 불러오세요.
+서체는 Typography 계약의 일부입니다. 시스템은 서체 파일을 번들하지 않지만, 굵기 사다리(400 · 450 · 500 · 600 · 650 · 700)는 Pretendard Variable이 있다고 전제하고 세워져 있습니다. sans는 Pretendard를 맨 앞에 둡니다 — 라틴과 한글을 한 몸으로 그려 굵기가 균형을 잃지 않기 때문이고, `-apple-system`은 그 뒤 fallback입니다. mono는 OS의 등폭 서체(ui-monospace · SF Mono · Menlo · Consolas)를 먼저 쓰고 한글은 D2Coding으로 떨어집니다. 서체 스택의 정본은 [Typography](../foundations/typography.md#서체)에 있고, 앱에서는 아래 두 스타일시트를 직접 불러오세요.
 
 [contract:install.fonts.snippet-matches-app]: #
 아래 두 줄은 Pretendard(v1.3.9)와 D2Coding을 불러옵니다. 두 스타일시트 주소는 모두 버전을 고정합니다. D2Coding 저장소에는 release tag가 없어서 커밋으로 고정하고, 그 스타일시트가 가리키는 글꼴 파일은 저장소의 기본 브랜치를 따릅니다.
 
+<!-- generated:install-fonts -->
+<!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fonts-archive/D2Coding@5ac6fc6fada70f1d8a8561cec826722574c51a6e/D2Coding.css" />
 ```
+<!-- /generated:install-fonts -->
 
 [contract:install.fonts.stylesheets]: #
 두 주소는 패키지가 `FONT_STYLESHEETS`(`@studio-baeks/paper-ui/tokens`)로 공개하는 값과 같습니다. 이 사이트도 페이지에 정확히 이 두 스타일시트만 불러옵니다.

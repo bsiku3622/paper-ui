@@ -1,4 +1,4 @@
-// Label — 입력의 이름표. Text label 역할을 그대로 쓴다.
+// Label — 입력의 이름표. label 역할(sentence case semibold)을 그대로 쓴다.
 
 import { forwardRef, type LabelHTMLAttributes, type ReactNode } from "react";
 

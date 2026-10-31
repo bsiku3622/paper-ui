@@ -1,6 +1,6 @@
-// The inventory of the package: which names exist, in which category, in which order. The docs, the
-// Playground and the app's site map read this list, and inventory.test.ts holds it to the real exports.
-// It imports nothing, so a script or the app's site map can read it without loading a component.
+// The inventory of the package: which names exist, in which category, in which order. The app's site map, the
+// Playground and the docs generators (app/src/docs/generated) read this list, and inventory.test.ts holds it to the
+// real exports. It imports nothing, so a script can read it without loading a component.
 
 // The two orders of the Primitives. The first is the ground: its members do not lean on each other. The second
 // is Box plus one capability, and Atoms bundle them. A group belongs to the order that lists it.

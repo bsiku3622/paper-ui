@@ -1,8 +1,14 @@
+import { readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 
+import { parseDoc } from "./parse";
 import { Prose } from "./Prose";
+
+const DOCS_DIR = join(import.meta.dirname, "../../../../docs");
+const DOC_FILES = readdirSync(DOCS_DIR, { recursive: true, encoding: "utf-8" }).filter((path) => path.endsWith(".md")).map((path) => path.split("\\").join("/")).sort();
 
 const SOURCE = `## Links
 
@@ -40,5 +46,19 @@ describe("Prose", () => {
     const table = container.querySelector("[data-testid=prose] > [data-testid=prose-table] > table");
     expect(table?.querySelectorAll("tr")).toHaveLength(2);
     expect(container.querySelectorAll("table")).toHaveLength(1);
+  });
+
+  it("keeps the comments that mark a generated block out of the page", () => {
+    const { container } = render(<MemoryRouter><Prose file="atoms/README.md">{"before <!-- generated:x --><!-- note -->inside<!-- /generated:x --> after\n\n<!-- generated:y -->\n| a |\n| - |\n| b |\n<!-- /generated:y -->\n"}</Prose></MemoryRouter>);
+    expect(container.innerHTML).not.toMatch(/<!--|&lt;|generated|note/);
+    expect(container.querySelector("p")?.textContent).toBe("before inside after");
+    expect(container.querySelectorAll("tbody tr")).toHaveLength(1);
+  });
+
+  it.each(DOC_FILES)("shows no HTML comment from %s", (file) => {
+    const body = parseDoc(readFileSync(join(DOCS_DIR, file), "utf-8")).body;
+    const { container } = render(<MemoryRouter><Prose file={file}>{body}</Prose></MemoryRouter>);
+    expect(container.innerHTML).not.toMatch(/<!--|&lt;!--/);
+    expect(container.textContent).not.toContain("generated:");
   });
 });

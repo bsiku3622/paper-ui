@@ -1,7 +1,6 @@
 # paper-ui
 
-A design system for complex web apps. White and black carry the structure; colour
-appears only where it means something.
+A design system for complex web apps. White and black carry the structure; colour appears only where it means something.
 
 Quiet like ChatGPT (pale surfaces, near-invisible borders), dense enough for
 Atlassian, finished like SwiftUI.
@@ -81,11 +80,11 @@ in `<head>` with the same options the provider gets. With Vite:
 ```ts
 import { themeBootScript } from "@studio-baeks/paper-ui/theme-boot";
 
-// vite.config.ts → plugins
-{
+// vite.config.ts: add this plugin to `plugins`
+export const themeBoot = {
   name: "theme-boot",
   transformIndexHtml: () => [{ tag: "script", children: themeBootScript(), injectTo: "head-prepend" }],
-}
+};
 ```
 
 A subtree takes its own mode through `<Surface theme="light | dark | inverse">`.
@@ -121,18 +120,21 @@ and nothing else.
 
 ## What is in the box
 
-| Tier | Exports |
-|---|---|
+<!-- generated:inventory.package -->
+<!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
+|  | Exports |
+| --- | --- |
 | Primitives, first order | `Box · Text · Icon · FocusScope · VisuallyHidden · Portal · LiveRegion` (and `announce · clearAnnouncements`) |
 | Primitives, second order | `Surface · Paint · Pressable · Selectable · SelectableGroup · Floating · Draggable · Droppable · RovingFocus · FormField · Stack · Inline · Grid` |
 | Atoms | `Button · IconButton · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Spinner · Divider · Link` |
 | `/tokens` | `tokens`, and the vocabulary: one constant and one type for each axis (`ACCENTS` · `Accent`, `VARIANTS` · `Variant`, `SPACES` · `Space` …) |
+<!-- /generated:inventory.package -->
 
 The package stops at primitives and atoms. Product-specific compositions belong
 to the consuming app, where their structure and lifecycle can follow the product.
-Atoms are built on the Primitives and on shared recipes, and take their colour from the paint tier.
+Atoms are built on the Primitives and on shared recipes, and take their colour from the Paint primitives.
 `Box` also exposes typed dimension and overflow props; a named size (`md`, `measure.md`,
-`container.content`, `full`) and an overflow keyword become classes, so a consumer's
+`container.content`, `full`; the names `xs` to `xl` resolve to the Shape dimension tokens) and an overflow keyword become classes, so a consumer's
 className can override them, and only a CSS length that is not a name goes inline.
 Stack, Inline and Grid, not Box, take the `gap` family and share one `align` / `justify`
 vocabulary.
@@ -149,14 +151,21 @@ Shape is the system's call, not the caller's. What you choose is meaning:
 `size`, `status`, `accent`. Where a shape prop does exist it takes a closed
 vocabulary — `shape="pill"`, not `radius={10}`.
 
-Eight rules hold the rest together, and eslint enforces them rather than the
-documentation: no raw colour outside the token sources, source modules isolated
-behind the token barrel (an app uses the package through its exports and overrides
-a source with `sourceVars()` instead of naming its variable), no token read
-through an inline style, no number outside the token sources, every package rule
-inside a `pui` cascade layer, no internal class name in an app, no hand-named
-global class, and no `eslint-disable` comment that switches a `paper/*` rule off.
-The package build, prepublish and CI run those checks.
+```tsx
+import { Button, Field, Stack } from "@studio-baeks/paper-ui";
+
+export const Confirm = () => (
+  <Stack gap="md">
+    <Field aria-label="Email" status="error" />
+    <Button accent="error" size="md">Delete</Button>
+  </Stack>
+);
+```
+
+<!-- generated:rules.en -->
+<!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
+Eight rules hold the rest together, and eslint enforces them rather than the documentation: no raw colour outside the token sources, source modules isolated behind the token barrel (an app uses the package through its exports and overrides a source with `sourceVars()` instead of naming its variable), no token read through an inline style, no number outside the token sources, every package rule inside a `pui` cascade layer, no internal class name in an app, no hand-named global class, and no `eslint-disable` comment that switches a `paper/*` rule off. The package build, prepublish and CI run those checks.
+<!-- /generated:rules.en -->
 
 ## Documentation
 

@@ -13,7 +13,17 @@ import { Link } from "@studio-baeks/paper-ui";
 import { docPath, resolveDocHref } from "./links";
 import * as s from "./prose.css";
 
-const remarkPlugins = [remarkGfm];
+// A generated block sits between HTML comments (generated/markers.ts); they mark the source and are not page text.
+type Node = { type: string; value?: string; children?: Node[] };
+const isComment = ({ type, value }: Node) => type === "html" && /^<!--[\s\S]*-->$/.test(value?.trim() ?? "");
+const dropComments = (node: Node): void => {
+  if (!node.children) return;
+  node.children = node.children.filter((child) => !isComment(child));
+  node.children.forEach(dropComments);
+};
+const remarkDropComments = () => dropComments;
+
+const remarkPlugins = [remarkGfm, remarkDropComments];
 const rehypePlugins = [rehypeSlug];
 
 const componentsFor = (file: string): Components => ({

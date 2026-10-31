@@ -14,6 +14,11 @@ import { unified } from "unified";
 import { matchRoutes } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 
+import { DURATION, EASING, LOOP } from "@paper-ui/inspect/motion";
+import { LAYOUT_SOURCE } from "@paper-ui/inspect/layout";
+import { SHAPE_SOURCE } from "@paper-ui/inspect/shape";
+import { TYPOGRAPHY_SOURCE } from "@paper-ui/inspect/typography";
+
 import { collectDocs } from "../../vite/paper-docs";
 import { routes } from "../routes";
 import { resolveHandle } from "../site/handle";
@@ -107,5 +112,60 @@ describe("docs/", () => {
       }
     }
     expect(broken).toEqual([]);
+  });
+});
+
+// The prose of the docs, with the generated blocks and the code fences left out: a generated table states its
+// own values, and a fence is code, not prose.
+const GENERATED = /<!-- generated:[\w.-]+ -->[\s\S]*?<!-- \/generated:[\w.-]+ -->/g;
+const FENCE = /^```[\s\S]*?^```/gm;
+const proseOf = (markdown: string) => parseDoc(markdown).body.replace(GENERATED, "").replace(FENCE, "");
+const PROSE = FILES.map((file) => [file, proseOf(read(file))] as const);
+
+const PACKAGE_DIR = fileURLToPath(new URL("../../../packages/paper-ui/", import.meta.url));
+
+// Every number the sources state, in the units the docs write them: a length in dp or em, a duration in ms.
+const sourceNumbers = (): number[] => {
+  const numbers: number[] = [];
+  const visit = (value: unknown): void => {
+    if (typeof value === "number") numbers.push(Math.abs(value));
+    else if (typeof value === "string") for (const [match] of value.matchAll(/-?\d*\.?\d+/g)) numbers.push(Number(match));
+    else if (value && typeof value === "object") Object.values(value).forEach(visit);
+  };
+  [SHAPE_SOURCE, LAYOUT_SOURCE, TYPOGRAPHY_SOURCE, DURATION, EASING, LOOP].forEach(visit);
+  return numbers;
+};
+
+describe("docs metadata", () => {
+  it("the package description is the first sentence of the package README", () => {
+    const readme = readFileSync(join(PACKAGE_DIR, "README.md"), "utf-8");
+    const lead = readme.split(/\r?\n\r?\n/)[1]!.replace(/\s+/g, " ").trim();
+    const pkg = JSON.parse(readFileSync(join(PACKAGE_DIR, "package.json"), "utf-8")) as { description: string };
+    expect(pkg.description).toBe(lead);
+  });
+
+  it("the prose states no hex colour", () => {
+    const hits = PROSE.flatMap(([file, text]) => [...text.matchAll(/(?<![\w/&])#(?:[0-9a-fA-F]{3}){1,2}(?![\w-])/g)].map(([hex]) => `${file}: ${hex}`));
+    expect(hits).toEqual([]);
+  });
+
+  it("every unit literal the prose states (px · rem · em · ms) exists among the source values", () => {
+    const known = sourceNumbers();
+    const has = (value: number) => known.some((n) => Math.abs(n - value) < 1e-9);
+    const hits: string[] = [];
+    for (const [file, text] of PROSE) {
+      for (const [literal, number, unit] of text.matchAll(/(?<![\w.])(\d+(?:\.\d+)?)(px|rem|em|ms)\b/g)) {
+        const value = Number(number);
+        const ok = unit === "rem" ? has(value) || has(value * 16) : has(value);
+        if (!ok) hits.push(`${file}: ${literal}`);
+      }
+    }
+    expect(hits).toEqual([]);
+  });
+
+  it("the prose keeps none of the phrases the docs have already dropped", () => {
+    const STALE = ["variant='quiet'", 'variant="quiet"', "raw HTML above", "Cascadia", "mono·uppercase", "10·13·17", "inputPaddingX", "#2563eb"];
+    const hits = PROSE.flatMap(([file, text]) => STALE.filter((phrase) => text.includes(phrase)).map((phrase) => `${file}: ${phrase}`));
+    expect(hits).toEqual([]);
   });
 });

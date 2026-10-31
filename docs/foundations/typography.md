@@ -6,8 +6,10 @@ Typography도 세 단계입니다. 원본 수치인 **Typography Palette**, 그�
 
 ## Typography Palette — 원본
 
+<!-- generated:typography-palette -->
+<!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 | 축 | 값 |
-|---|---|
+| --- | --- |
 | `fontSize` | 12 · 13 · 14 · 16 · 20 · 24 · 32, 유동 단계 `hero` |
 | `leading` | 16 · 20 · 24 · 28 · 32 · 40, 단위 없는 `hero` 1.04 |
 | `weight` | `regular` 400 · `normal` 450 · `medium` 500 · `semibold` 600 · `strong` 650 · `bold` 700 |
@@ -16,6 +18,7 @@ Typography도 세 단계입니다. 원본 수치인 **Typography Palette**, 그�
 | `decoration` | `underlineOffset` 0.2em |
 | `monoSizeScale` | 0.95 |
 | `codeScale` | `inline` 0.85 · `compact` 0.8 |
+<!-- /generated:typography-palette -->
 
 크기와 행간은 실제 px 값을 이름으로 씁니다(`tokens.typography.palette.fontSize.14`). 서로 다른 단계 이름을 억지로 짝짓지 않기 위해서입니다. 450은 작은 sans 글자가 Retina에서 힘이 빠지지 않도록 둔 입력값용 보정이고, 650은 채워진 버튼처럼 강조가 필요한 라벨에 씁니다. 밑줄 offset은 글자의 장식이라 글자 크기(em)를 따릅니다. `codeScale`은 문장 속 코드가 둘러싼 글자에서 줄어드는 비율입니다.
 
@@ -36,8 +39,10 @@ mono는 위계가 아니라 **family 축**입니다. `<Text family="mono">`로 �
 
 ## 글자 역할
 
+<!-- generated:typography-roles -->
+<!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 | 역할 | 크기 / 행간 | 굵기 | 자간 | 기본 잉크 | 기본 태그 | 쓰는 곳 |
-|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- |
 | `hero` | 36–60 유동 / 1.04 | 700 | tighter | primary | h1 | 랜딩 헤드라인 |
 | `display` | 32 / 40 | 700 | tight | primary | h1 | 큰 제목 |
 | `title` | 24 / 32 | 700 | snug | primary | h1 | 페이지 제목 |
@@ -46,6 +51,7 @@ mono는 위계가 아니라 **family 축**입니다. `<Text family="mono">`로 �
 | `body` | 14 / 20 | 500 | normal | primary | p | 본문 (기본값) |
 | `caption` | 13 / 16 | 400 | normal | secondary | p | 보조 정보·메타 |
 | `label` | 12 / 16 | 600 | wide | secondary | span | 필드 라벨·표 머리·짧은 이름 |
+<!-- /generated:typography-roles -->
 
 본문은 14px입니다. 복잡한 웹앱의 표준 밀도라 16px 본문 variant는 두지 않습니다. 제목은 크기로 위계를 만들고, `label`은 대문자나 mono가 아닌 sentence case semibold입니다. `hero`는 크기가 뷰포트를 따라 자라는 유일한 역할입니다([Palette](#typography-palette--원본)).
 
@@ -95,13 +101,16 @@ body 요소는 body 역할 전체를 받습니다. 크기와 행간뿐 아니라
 
 조작 문구는 읽기 위계가 아니라 **컨트롤 크기**를 따릅니다. 같은 size의 Button·Field·Select가 같은 줄에 서면 글자 높이도 맞아야 하기 때문입니다. preset은 완성 class 하나로 제공되고, package의 Atom이 안에서 그 class를 고릅니다. 컨트롤을 직접 그리는 stylesheet는 `/tokens`의 `presetRule(preset, size, weight)`로 같은 선언을 가져옵니다.
 
+<!-- generated:typography-presets -->
+<!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 | preset | sm | md | lg | 쓰는 Atom |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `button.medium` | 13 / 16 · 500 | 13 / 16 · 500 | 14 / 16 · 500 | Button·IconButton (solid 외) |
 | `button.strong` | 13 / 16 · 650 | 13 / 16 · 650 | 14 / 16 · 650 | solid Button |
 | `field` | 13 / 16 · 450 · 입력 줄상자 20 | 13 / 16 · 450 · 입력 줄상자 20 | 14 / 16 · 450 · 입력 줄상자 20 | Field · Select |
 | `textarea` | 13 / 20 · 450 | 13 / 20 · 450 | 14 / 20 · 450 | Textarea |
-| `badge` | 12 / 16 · 500 (크기 무관) | | | Badge |
+| `badge` | 12 / 16 · 500 (크기 무관) |  |  | Badge |
+<!-- /generated:typography-presets -->
 
 컨트롤 글자 줄(행간 16)은 Shape이 컨트롤의 안쪽 여백을 계산하는 입력이기도 합니다 — 입력칸 inset은 (컨트롤 높이 − 16) / 2입니다. Badge 글자는 배지가 작아져도 12px에서 내려가지 않습니다. 밀도(높이)와 가독성(글자 크기)은 다른 축이기 때문입니다.
 

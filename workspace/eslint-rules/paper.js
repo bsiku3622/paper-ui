@@ -34,7 +34,7 @@ const pieces = (node, found = []) => {
 };
 const textOf = (node) => (node.type === "TemplateLiteral" ? node.quasis.map((part) => part.value.cooked ?? part.value.raw).join(" ") : node.value);
 
-// The package reads `tokens.color` in the paint tier and nowhere else: a part that needs a colour takes the class
+// The package reads `tokens.color` in the Paint primitives and nowhere else: a part that needs a colour takes the class
 // from there. A read is `tokens.color…` or `const { color } = tokens`.
 const PACKAGE_SRC = TOKEN_LAYER.replace(/\/tokens$/, "");
 const readsColorRoles = {

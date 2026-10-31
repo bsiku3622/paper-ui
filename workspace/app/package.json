@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && node scripts/docs/extract-snippets.mjs && tsc -p tsconfig.snippets.json",
+    "docs:sync": "UPDATE_DOCS=1 vitest --run src/docs/generated",
     "test": "vitest --run"
   },
   "dependencies": {

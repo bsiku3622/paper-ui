@@ -8,7 +8,7 @@
 // Motion 은 마지막 층이고 자기 길이를 갖지 않는다.
 //
 // paper-ui 는 조용한 밀도의 시스템 — 모션도 짧고 차분하다(100~200ms). 튀는 전이는
-// 없다. hover 는 거의 즉각, 상태 전이는 130ms, 떠오르는 overlay 만 살짝 길게.
+// 없다. hover 는 거의 즉각, 상태 전이는 base, 떠오르는 overlay 만 살짝 길게.
 //
 // 컴포넌트는 duration · easing · loop 원본에 닿지 않는다. 역할(role)을 고르고
 // transition(role, …속성) 으로 조립하거나, 조립된 class(styles/motion.css.ts) 를 쓴다.

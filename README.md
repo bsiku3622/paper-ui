@@ -5,7 +5,7 @@ A design system for complex web apps. White and black carry the structure; colou
 ```
 White and black are the whole base — their harmony is the skeleton of every
 screen. Colour (blue · green · amber · red) shows up only where it carries
-meaning: status, focus, links. The only hue that fills a surface is black.
+meaning: status, focus, links. Status colours fill a surface only when the surface is the status, like an error button; black is the everyday fill.
 
 Quiet like ChatGPT (pale surfaces, near-invisible borders), dense enough for
 Atlassian, finished like SwiftUI.
@@ -25,25 +25,28 @@ The seven principles behind every visual decision: **[docs/get-started/philosoph
 
 ## Structure
 
-The system stacks in three tiers, and the docs and the playground are organised the same way.
+The system stacks in three parts, and the docs and the playground are organised the same way.
 
-| Tier | | |
-|---|---|---|
+<!-- generated:inventory.en -->
+<!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
+| Part | Count | Exports |
+| --- | --- | --- |
 | Foundations | 5 systems | `Color → Typography → Shape → Layout → Motion` — each reads only the ones before it |
 | Primitives, first order | Element 1 | `Box` |
-| | Content 2 | `Text · Icon` |
-| | A11y 4 | `FocusScope · VisuallyHidden · Portal · LiveRegion` |
+|  | Content 2 | `Text · Icon` |
+|  | A11y 4 | `FocusScope · VisuallyHidden · Portal · LiveRegion` |
 | Primitives, second order | Paint 2 | `Surface · Paint` |
-| | Press 1 | `Pressable` |
-| | Select 2 | `Selectable · SelectableGroup` |
-| | Float 1 | `Floating` |
-| | Drag 2 | `Draggable · Droppable` |
-| | Focus 1 | `RovingFocus` |
-| | Field 1 | `FormField` |
-| | Layout 3 | `Stack · Inline · Grid` |
+|  | Press 1 | `Pressable` |
+|  | Select 2 | `Selectable · SelectableGroup` |
+|  | Float 1 | `Floating` |
+|  | Drag 2 | `Draggable · Droppable` |
+|  | Focus 1 | `RovingFocus` |
+|  | Field 1 | `FormField` |
+|  | Layout 3 | `Stack · Inline · Grid` |
 | Atoms | 13 | `Button · IconButton · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Spinner · Divider · Link` |
+<!-- /generated:inventory.en -->
 
-Atoms are built on the Primitives and on shared recipes: each stands on the Primitives that give it its element, its press or selection and its field relations, and takes its colour from the paint tier.
+Atoms are built on the Primitives and on shared recipes: each stands on the Primitives that give it its element, its press or selection and its field relations, and takes its colour from the Paint primitives.
 
 The theme is one attribute, `<html data-pui-theme>`, and one store per document. `PaperProvider` keeps the user's choice under `storageKey` (`pui-theme` by default), `themeBootScript` from `@studio-baeks/paper-ui/theme-boot` applies it before the first paint, and a subtree takes its own mode through `<Surface theme="light | dark | inverse">`.
 

@@ -40,9 +40,9 @@ Paper UI의 얼굴은 순백의 종이에 검정색 펜으로 그린 그림과 �
 
 #### 원칙 1. 색은 의미가 없으면 쓰지 않는다
 
-Paper UI가 쓰는 색은 blue(`#2563eb`), green(`#15803d`), amber(`#b45309`), red(`#dc2626`) 넷뿐입니다. 이 넷은 모두 의미에 묶여 각각 info, success, warning, error라는 뜻을 집니다. 그래서 화면에 색이 보인다는 것은 곧 그 자리에 어떤 상태·의미가 있다는 뜻입니다. blue는 여기에 더해 focus 링(`interaction.focus`)과 링크(`interaction.link`)까지 겸합니다.
+Paper UI가 쓰는 색은 blue · green · amber · red 넷뿐입니다. 이 넷은 모두 의미에 묶여 각각 info, success, warning, error라는 뜻을 집니다. 그래서 화면에 색이 보인다는 것은 곧 그 자리에 어떤 상태·의미가 있다는 뜻입니다. blue는 여기에 더해 focus 링(`interaction.focus`)과 링크(`interaction.link`)까지 겸합니다. 채움의 역할은 `accent.info.solid`처럼 부르고, 실제 값은 Playground Color에서 확인합니다.
 
-같은 이유로 Paper UI에는 `primaryColor`가 없습니다. 1차 액션(primary)조차 파랑이 아니라 검정(`primary.solid #26262b`)으로 채웁니다. 파랑 버튼이 매 화면에 등장하면 파랑은 더 이상 포인트가 아니라 배경이 되기 때문입니다. 일꾼은 검정이고, 색은 드물어야 눈에 들어옵니다. 브랜드가 고를 색이 없다는 것이 Paper UI의 주장입니다. 정체성은 색이 아니라 순백·검정·여백에서 나옵니다.
+같은 이유로 Paper UI에는 `primaryColor`가 없습니다. 1차 액션(primary)조차 파랑이 아니라 검정(`accent.primary.solid`)으로 채웁니다. 파랑 버튼이 매 화면에 등장하면 파랑은 더 이상 포인트가 아니라 배경이 되기 때문입니다. 일꾼은 검정이고, 색은 드물어야 눈에 들어옵니다. 브랜드가 고를 색이 없다는 것이 Paper UI의 주장입니다. 정체성은 색이 아니라 순백·검정·여백에서 나옵니다.
 
 면을 채우는 색도 같은 기준을 따릅니다. 검정은 중립의 일꾼이라 어떤 면이든 채우지만, status 색은 되돌릴 수 없는 액션의 빨간 버튼처럼 그 면이 곧 그 상태일 때만 채웁니다. 이때도 Paper UI는 solid로 꽉 채우는 것을 버튼·배지 같은 작은 요소에 한하고, 넓은 면은 soft(옅은 색 면)로 조용히 알립니다.
 
@@ -54,7 +54,7 @@ Paper UI가 쓰는 색은 blue(`#2563eb`), green(`#15803d`), amber(`#b45309`), r
 
 #### 원칙 2. 회색은 카드를 감싸지 않고 받친다
 
-회색(surface `sunken` `#f4f4f5`)은 카드를 감싸는 기본 래퍼가 아니라 콘텐츠를 받치는 바닥입니다. 흰 면은 얇은 헤어라인으로 서고, 회색은 펼쳐진 구역이나 hover, 작은 표식처럼 한 단 가라앉은 자리에 씁니다. Switch track은 일반 surface와 구분해 `control.track`을 사용합니다.
+회색(`bg.sunken`)은 카드를 감싸는 기본 래퍼가 아니라 콘텐츠를 받치는 바닥입니다. 흰 면은 얇은 헤어라인으로 서고, 회색은 펼쳐진 구역이나 hover, 작은 표식처럼 한 단 가라앉은 자리에 씁니다. Switch track은 일반 surface와 구분해 `control.track`을 사용합니다.
 
 개발자가 회색을 기본 래퍼로 쓰면 화면에 회색 박스가 쌓여 서로 물립니다. 그래서 규칙은 단순합니다. **회색 위에 회색을 얹지 않습니다.** 흰 캔버스, 그 위 흰 카드, 카드를 받치는 낮은 대비의 회색 면. 이 세 층이 섞이지 않을 때 복잡한 화면이 조용하게 읽힙니다.
 
@@ -72,7 +72,7 @@ Paper UI가 쓰는 색은 blue(`#2563eb`), green(`#15803d`), amber(`#b45309`), r
 
 복잡한 화면은 원래 정보가 많으므로 Paper UI는 밀도를 지킵니다. 본문은 14px(`body`)이고, 간격은 촘촘합니다. shadcn, Atlassian, Linear가 앉은 자리입니다. 개발자가 콘텐츠 사이트의 16px로 키우면 밀도가 풀려 대시보드가 블로그처럼 늘어집니다.
 
-Paper UI는 밀도를 다룰 때 두 어휘를 직교시킵니다. **Space**는 Box의 padding과 Stack·Inline·Grid의 gap을 7단(`xs`~`3xl`, `xl`까지는 4px 그리드)으로 정합니다. **ControlSize**는 Button·Field·Select 같은 단일 컨트롤의 크기를 3단(`sm 30`, `md 32`, `lg 36`)으로 정합니다. 간격은 세밀하게, 컨트롤 크기는 단순하게 유지합니다.
+Paper UI는 밀도를 다룰 때 두 어휘를 직교시킵니다. **Space**는 Box의 padding과 Stack·Inline·Grid의 gap을 하나의 길이 scale(`xs`~`3xl`)에서 고릅니다. **ControlSize**는 Button·Field·Select 같은 단일 컨트롤의 크기를 `sm` · `md` · `lg` 가운데서 고릅니다. 간격은 세밀하게, 컨트롤 크기는 단순하게 유지합니다.
 
 글자 크기는 컨트롤 크기와 따로 선택합니다. ControlSize는 geometry를 정하고, typography preset은 역할별 글자 스타일을 고릅니다. 컨트롤의 기본 md는 32px 높이와 13px 글자를 기준으로 둡니다.
 
@@ -94,7 +94,7 @@ Paper UI는 강조가 필요할 때 요소를 띄우지 않고 반대로 가라�
 
 #### 원칙 5. 시스템이 형태를 정한다
 
-고를 게 적을수록 화면은 저절로 일관된다는 신념 하에, Paper UI에서 개발자는 의미만 고르고 형태는 시스템이 정합니다. 개발자가 고르는 것은 status·kind·size 같은 의미의 축이고, radius·padding·weight·font-size 같은 형태 값은 토큰이 한 번에 결정합니다. 개발자가 컴포넌트를 쓸 때 정할 것이 적을수록 디자인 일관성은 저절로 지켜집니다.
+고를 게 적을수록 화면은 저절로 일관된다는 신념 하에, Paper UI에서 개발자는 의미만 고르고 형태는 시스템이 정합니다. 개발자가 고르는 것은 accent·variant·size 같은 의미의 축이고(입력은 status), radius·padding·weight·font-size 같은 형태 값은 토큰이 한 번에 결정합니다. 개발자가 컴포넌트를 쓸 때 정할 것이 적을수록 디자인 일관성은 저절로 지켜집니다.
 
 형태 prop이 아예 없다는 뜻은 아닙니다. Surface는 `radius`의 제한된 사다리를 제공하고, Button·Badge·Field·Select는 `shape="pill"`을 선택할 수 있습니다. 임의의 숫자 반경은 열지 않습니다. 토큰의 곡선만 사용해 화면 사이에 불필요한 차이를 막습니다.
 
@@ -102,21 +102,27 @@ Paper UI는 강조가 필요할 때 요소를 띄우지 않고 반대로 가라�
 
 | Do | Don't |
 |---|---|
-| 형태는 토큰이 정하고, 개발자는 status·kind·size 같은 의미만 고른다 | radius·padding·weight를 임의 값으로 받는 prop을 연다 |
+| 형태는 토큰이 정하고, 개발자는 accent·variant·size 같은 의미만 고른다 | radius·padding·weight를 임의 값으로 받는 prop을 연다 |
 | 상태는 status 한 축으로 받는다 | boolean(invalid·error)을 난립시킨다 |
 | 필요가 증명될 때만 더한다 (배포 후엔 두 번 이상 증거로) | "있으면 좋을 것 같아서" 컴포넌트를 늘린다 |
 
 #### 원칙 6. 빌드가 규칙을 지킨다
 
-앞의 약속은 문서만으로 지켜지지 않습니다. lint는 raw color와 token source import, package 스타일에서의 inline token 주입을 막습니다. paper-ui가 직접 정의한 lint 규칙(`paper/*`)은 `eslint-disable` 주석으로도 끌 수 없습니다. `eslint-plugin-jsx-a11y`는 유효하지 않은 role·aria, 대체텍스트 누락, 양수 tabindex 같은 정적 접근성 문제를 검사합니다. 이 검사들은 누군가 기억해서 돌리는 것이 아닙니다. 패키지 build는 lint와 typecheck를 통과해야 번들을 만들고, 배포 전 검사와 CI는 단위 테스트와 브라우저 테스트까지 같은 순서로 돌립니다. 런타임 동작은 제품 구현과 검토가 책임집니다.
+앞의 약속은 문서만으로 지켜지지 않습니다. 네 규칙이 막습니다 — `raw-color`는 색 리터럴을, `source-isolation`은 원본 import를, `inline-token`은 style로 토큰을 주입하는 것을, `source-numbers`는 원본 밖의 숫자를 막습니다([규칙 목록](../foundations/README.md#규칙은-빌드가-지킨다)). paper-ui가 직접 정의한 lint 규칙(`paper/*`)은 `eslint-disable` 주석으로도 끌 수 없습니다. `eslint-plugin-jsx-a11y`는 유효하지 않은 role·aria, 대체텍스트 누락, 양수 tabindex 같은 정적 접근성 문제를 검사합니다. 이 검사들은 누군가 기억해서 돌리는 것이 아닙니다. 패키지 build는 lint와 typecheck를 통과해야 번들을 만들고, 배포 전 검사와 CI는 단위 테스트와 브라우저 테스트까지 같은 순서로 돌립니다. 런타임 동작은 제품 구현과 검토가 책임집니다.
 
-Paper UI는 값을 한 곳에서만 정의합니다. 색·크기·시간은 `tokens/`에 정본이 있고, 같은 트리를 걷는 헬퍼가 CSS 변수와 TS 참조 객체를 만듭니다. Playground는 Palette와 Foundations를 보여주고, 이슈 트래커 데모는 primitives와 atoms를 실제 앱 조합 안에서 살펴보는 자리입니다.
+Paper UI는 값을 한 곳에서만 정의합니다. 색·크기·시간은 `tokens/`에 정본이 있고, 같은 트리를 걷는 헬퍼가 CSS 변수와 TS 참조 객체를 만듭니다. Playground는 Foundations·Primitives·Atoms를 보여주고, 이슈 트래커 데모는 primitives와 atoms를 실제 앱 조합 안에서 살펴보는 자리입니다.
 
 #### 원칙 7. 닫혀 있되, 막다른 길은 없다
 
 Paper UI는 기본적으로 닫혀 있습니다. 형태 값을 함부로 열지 않고(원칙 5), raw 값을 막습니다(원칙 6). 그러나 닫힌 시스템이 앱을 막다른 길에 가두면 개발자는 시스템과 싸우게 되고, 그 순간 시스템은 우회당합니다. 그래서 Paper UI는 벽 대신 typed 탈출구를 둡니다.
 
 개발자가 빠져나갈 통로는 넷입니다. 개발자는 `<Box as="button">`으로 Primitive의 시맨틱을 바꾸고, `tokens`를 import해 시스템 값에 직접 닿고, 공개 어휘(`Accent`·`Variant`·`SurfaceFill`·`Ink`)로 자기 컴포넌트의 prop을 시스템과 같은 값으로 닫고, 정말 일회성인 자리는 `style`로 처리합니다. 이 넷은 모두 타입이 지켜보는 통로라, 개발자는 벗어나되 어긋나지는 않습니다.
+
+```ts
+import type { Accent, Ink, SurfaceFill, Variant } from "@studio-baeks/paper-ui/tokens";
+
+export type Tone = { accent: Accent; variant: Variant; fill: SurfaceFill; ink: Ink };
+```
 
 다만 순서가 있습니다. 구조의 안전은 자유보다 앞서므로 **escape는 최후의 수단입니다.** 어떤 요구가 로컬 스타일을 부르면, 개발자는 먼저 그게 토큰이나 레이어로 표현될 자리인지 봅니다. 앞선 원칙들을 다 통과했는데도 답이 안 나오면, 그건 원칙이 부족한 게 아니라 요구가 아직 시스템으로 표현되지 않은 자리입니다. 개발자는 토큰이나 레이어를 확장하는 쪽을 먼저 보고, 그래도 안 되는 진짜 일회성만 escape로 엽니다.
 

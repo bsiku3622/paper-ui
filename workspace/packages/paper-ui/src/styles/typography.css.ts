@@ -13,7 +13,7 @@ const { style, styleVariants } = layered("utilities");
 export const textRoleClass = styleVariants(tokens.typography.role, (_, variant) => ({ ...typographyRule(variant), margin: 0 }));
 
 // family=mono — 역할 위에 교차하는 모디파이어. 서체를 등폭으로 바꾸고 mono 전용
-// 자간을 준다. sans 의 per-variant tracking(display -0.03em 등)을 그대로 얹으면 큰
+// 자간을 준다. sans 의 역할별 tracking을 그대로 얹으면 큰
 // 크기 mono 가 짓눌리므로 버리고, 대신 단일 값 -0.04em — SF Mono·D2Coding 은 advance 가
 // 넓어 UI 에서 벌어져 보여 조인다 (균일 적용이라 tabular 정렬은 유지). letter-spacing 은
 // 요소당 하나라 영어·한글을 한 런에서 따로 못 준다 — 코드·토큰(영어) 기준 단일값.

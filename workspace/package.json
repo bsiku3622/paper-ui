@@ -10,6 +10,8 @@
     "lint": "eslint . --max-warnings 0 && eslint . -c eslint.paper.config.js --quiet",
     "test": "node scripts/check-contracts.mjs && node --test eslint-rules/*.test.js scripts/*.test.mjs && pnpm -r test",
     "test:e2e": "playwright test",
+    "docs:sync": "pnpm --filter @paper-ui/app docs:sync",
+    "docs:check": "pnpm --filter @paper-ui/app typecheck && pnpm --filter @paper-ui/app exec vitest --run src/docs",
     "check": "pnpm lint && pnpm typecheck && pnpm test",
     "verify": "pnpm check && pnpm build && pnpm test:e2e"
   },
