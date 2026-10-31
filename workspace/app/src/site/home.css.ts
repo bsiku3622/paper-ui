@@ -58,7 +58,7 @@ export const mockupMain = style({ minWidth: 0 });
 // 필터 탭 — SelectableGroup 의 알약 Button 들이 나란히 선다.
 export const tabs = style({ display: "flex", gap: tokens.layout.gap.xs });
 
-// 사이드바 로고 칸. 반전 마크는 accent.primary 의 solid 면과 wash 글자(Paint)다.
+// 사이드바 로고 칸. 마크는 accent.primary 의 solid 면과 wash 글자(Paint)다.
 export const brandMark = style({
   display: "flex",
   alignItems: "center",

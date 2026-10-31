@@ -58,6 +58,15 @@ describe("Field", () => {
     }
   });
 
+  it("[atoms.field.actions] clear tells onClear before it gives the focus back, so the input has the focus last", () => {
+    const seen: (Element | null)[] = [];
+    render(<Field aria-label="이름" clearable defaultValue="값" onClear={() => seen.push(document.activeElement)} />);
+    const input = screen.getByLabelText("이름");
+    fireEvent.click(screen.getByRole("button", { name: "Clear" }));
+    expect(seen).toEqual([document.body]);
+    expect(document.activeElement).toBe(input);
+  });
+
   it("[atoms.field.actions] clear is a button named by clearLabel or the locale's word, that empties the value, tells onChange and onClear, and gives the focus back to the input", () => {
     const onClear = vi.fn();
     const onChange = vi.fn();

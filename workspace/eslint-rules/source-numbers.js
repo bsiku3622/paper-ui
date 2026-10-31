@@ -243,6 +243,16 @@ export const sourceNumbersRule = {
           const owner = node.object;
           if (owner.type === "MemberExpression" && !owner.computed && owner.property.name === "typography") report(node, "palette");
         };
+        // `const { palette } = tokens.typography` and `const { typography: { palette } } = tokens` read it too.
+        const names = (pattern, key) => pattern.properties.find((entry) => entry.type === "Property" && !entry.computed && entry.key.name === key);
+        visitors.VariableDeclarator = (node) => {
+          if (node.id.type !== "ObjectPattern" || !node.init) return;
+          const { init } = node;
+          const isTypography = init.type === "MemberExpression" && !init.computed && init.property.name === "typography";
+          if (isTypography && names(node.id, "palette")) report(node, "palette");
+          const nested = names(node.id, "typography");
+          if (nested?.value.type === "ObjectPattern" && names(nested.value, "palette")) report(node, "palette");
+        };
       }
     }
 

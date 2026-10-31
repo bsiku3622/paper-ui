@@ -3,7 +3,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { tokens } from "../../packages/paper-ui/src/tokens";
 import { pageErrors } from "../support/console";
 import { tab } from "../support/keyboard";
-import { expectStyle, profile } from "../support/style";
+import { colors, contrast, expectStyle, profile } from "../support/style";
 
 // /demo is the product the system is checked against: an issue tracker built from the Primitives, the Atoms and the
 // app's own compositions. It owns its landmarks (chrome 'none'), so these tests read it the way a user does.
@@ -15,19 +15,6 @@ const role = (variant: keyof typeof tokens.typography.role) => {
   return { fontSize: spec.size, fontWeight: spec.weight, lineHeight: spec.leading, letterSpacing: spec.tracking };
 };
 
-// The contrast ratio of two computed colours, as WCAG defines it.
-const luminance = (color: string) => {
-  const [r, g, b] = color.match(/[\d.]+/g)!.slice(0, 3).map((channel) => {
-    const value = Number(channel) / 255;
-    return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
-  });
-  return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
-};
-const contrast = (a: string, b: string) => {
-  const [light, dark] = [luminance(a), luminance(b)].sort((x, y) => y - x);
-  return (light! + 0.05) / (dark! + 0.05);
-};
-const colors = (target: Locator) => target.evaluate((element) => ({ background: getComputedStyle(element).backgroundColor, color: getComputedStyle(element).color }));
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/demo");
@@ -140,7 +127,7 @@ test("the toast's live region is there before any notice, and a notice goes into
   await expect(region).toBeEmpty();
 });
 
-test("avatars, day chips and the workspace mark keep the 14px pill a Badge made of them", async ({ page }) => {
+test("avatars, day chips and the workspace mark are 22px pills around a 14px label", async ({ page }) => {
   const avatar = page.getByRole("navigation", { name: "작업 공간 메뉴" }).getByText("재", { exact: true }).locator("..");
   await expectStyle(avatar, { fontSize: tokens.typography.role.body.size, height: "22px", paddingLeft: tokens.shape.inset.sm, paddingRight: tokens.shape.inset.sm, borderTopLeftRadius: tokens.shape.radius.full, ...profile("primary", "soft") });
   const mark = page.getByRole("navigation", { name: "작업 공간 메뉴" }).getByText("S", { exact: true }).locator("..");

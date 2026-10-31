@@ -43,6 +43,13 @@ const lines = (target: Locator) =>
   });
 
 test.describe("the body role", () => {
+  test("a docs heading renders like the Text role it stands for", async ({ page }) => {
+    await page.goto("/docs/get-started/philosophy");
+    const prose = page.getByTestId("prose");
+    await expectStyle(prose.locator("h2").first(), role("heading"));
+    await expectStyle(prose.locator("h3").first(), role("subheading"));
+  });
+
   test("[foundations.typography.body-role] a docs paragraph renders like a Text body, and so does a link outside any role", async ({ page }) => {
     await page.goto("/docs/primitives/content");
     const paragraph = page.getByTestId("prose").locator("p").first();

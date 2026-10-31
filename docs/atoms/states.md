@@ -54,7 +54,7 @@ Atom이 hover·focus·active·selected·disabled·invalid에 어떻게 반응하
 neutral Form의 `border.hover`는 `border.base`·`border.strong`보다 진하고 잉크보다 옅은 전용 경계 역할로, 입력 상자의 존재만 잠깐 강조합니다. semantic Form은 처음부터 의미 색을 쓰므로 같은 선을 한 번 더 올리지 않고 hover에서도 같은 경계를 유지합니다.
 
 [contract:atoms.field.frame]: #
-Field · Select의 wrapper와 Textarea 자신이 입력의 틀(`inputFrame`)입니다. 틀은 테두리 · 모서리 · 포커스 링 · 비활성을 지고, 색은 `fieldPaint`, 면은 Surface `fill`(기본 raised, 또는 sunken)이 입힙니다. 틀의 상태는 속성으로 말합니다 — `data-status`(`status`를 줬거나 오류 상태일 때의 error), `data-invalid`, `data-disabled`, `data-focus-visible`. 그래서 중립 틀의 경계는 포인터가 올라갈 수 있고 막히지 않은 틀에서만 `border.hover`로 오르고, status를 가진 틀은 같은 경계를 지키며, 비활성 틀은 `opacity.disabled`와 `not-allowed` 커서를 갖고 오르지 않습니다. 틀의 경계와 배경은 Motion `state`(130ms)로 전이합니다. Field의 지우기와 보기 버튼은 `ink.tertiary`로 서 있다가 포인터가 올라오면 `ink.primary`가 되고(`hover`, 100ms), 막힌 보기 버튼에는 `not-allowed` 커서만 남습니다. 틀의 stylesheet는 geometry만 갖고 `:hover` · `:focus-visible` · 포인터 포커스 표지를 스스로 쓰지 않습니다.
+Field · Select의 wrapper와 Textarea 자신이 입력의 틀(`inputFrame`)입니다. 틀은 테두리 · 모서리 · 포커스 링 · 비활성을 지고, 색은 `fieldPaint`, 면은 Surface `fill`(기본 raised, 또는 sunken)이 입힙니다. 틀의 상태는 속성으로 말합니다 — `data-status`(`status`를 줬거나 오류 상태일 때의 error), `data-invalid`, `data-disabled`, `data-focus-visible`. 그래서 중립 틀의 경계는 포인터가 올라갈 수 있고 막히지 않은 틀에서만 `border.hover`로 오르고, status를 가진 틀은 같은 경계를 지키며, 비활성 틀은 `opacity.disabled`와 `not-allowed` 커서를 갖고 오르지 않습니다. 틀의 경계와 배경은 Motion `state`(130ms)로 전이합니다. Field의 지우기와 보기 버튼은 `ink.tertiary`로 서 있다가 포인터가 올라오면 `ink.primary`가 되고(`hover`, 100ms), 막힌 보기 버튼에는 `not-allowed` 커서만 남습니다. 틀의 stylesheet는 geometry만 갖고 `:hover` · `:focus-visible` · 포인터 포커스 표지를 스스로 쓰지 않습니다. 틀은 prop과 FormField의 disabled만 읽고, 조상 `<fieldset disabled>`의 비활성은 읽지 않습니다.
 
 ## Tint와 색 profile
 
@@ -90,7 +90,7 @@ Button · IconButton은 눌리는 동안 한 단계(`motion.press`의 변위, 1p
 | Field | 틀(wrapper) | status가 없을 때만 `border.hover` | — | — | 틀이 `opacity.disabled` · `not-allowed`, 보기 버튼은 그려진 채 반응 없음 | `status` · `aria-invalid` → 상태 잉크 경계 | 경계 CanvasText, hover는 Highlight | 지우기 · 보기 버튼 24px |
 | Textarea | 자신 | Field와 같음 | — | — | Field와 같음 | Field와 같음 | Field와 같음 | 컨트롤 전체 |
 | Select | 틀(wrapper) | Field와 같음 | — | — | Field와 같음 | Field와 같음(`status` 있음) | Field와 같음 | 컨트롤 전체 |
-| Checkbox | 자신(상자 곡률) | 없음 — 라벨과 행이 맡음 | — | checked · indeterminate → primary solid 면 | `opacity.disabled` · `not-allowed` | `status="error"` → 꺼진 상자의 테가 error 잉크 | Canvas 면 · ButtonText 테, 켜지면 Highlight 면 · HighlightText 표식, 비활성은 GrayText | 24px hit area |
+| Checkbox | 자신(상자 곡률) | 없음 — 라벨과 행이 맡음 | — | checked · indeterminate → primary solid 면 | `opacity.disabled` · `not-allowed` | `status="error"`(`ChoiceStatus`) → 꺼진 상자의 테가 error 잉크 | Canvas 면 · ButtonText 테, 켜지면 Highlight 면 · HighlightText 표식, 비활성은 GrayText | 24px hit area |
 | Radio | 자신(원) | 없음 | — | checked → primary solid 테와 점 | Checkbox와 같음 | Checkbox와 같음 | Canvas 면 · ButtonText 테, 켜지면 Highlight 테와 점 | 24px hit area |
 | Switch | 자신(트랙) | 없음 | — | checked → primary solid 트랙 | Checkbox와 같음 | `status="error"` → 꺼진 트랙의 안쪽 테가 error 잉크 | ButtonFace 트랙 · ButtonText 테 · 손잡이, 켜지면 Highlight 트랙 · HighlightText 손잡이 | 트랙 위아래로 24px hit area |
 | Label | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 글자는 OS가 정함 | 해당 없음 |
@@ -155,12 +155,12 @@ forced colors에서 Badge는 면이 사라져도 1px 실선 테두리로 남습�
 | 열 | 테스트 |
 | --- | --- |
 | 링 주인 | `tests/atoms/focus.spec.ts`의 `atoms.focus.ring` — Button 계열, 입력 틀, 선택 표식이 키보드로만 링을 그리는지 |
-| hover | `tests/atoms/states.spec.ts`의 `atoms.button.tint` · `atoms.field.frame` · `atoms.mark.ring`(표식은 hover해도 테가 그대로) |
+| hover | `tests/atoms/states.spec.ts`의 `atoms.button.tint` · `atoms.field.frame` · `atoms.mark.ring`(표식은 hover해도 테가 그대로), `atoms.link.underline` |
 | active | `atoms.button.press` — 포인터와 Enter가 같은 1px 변위를 만듦 |
 | selected | `atoms.button.selected` · `atoms.button.tint` · `atoms.mark.ring` |
 | disabled | `atoms.button.disabled` · `atoms.field.frame` · `atoms.mark.disabled` |
 | invalid | `atoms/contract.test.tsx`의 `atoms.field.invalid` · `atoms.mark.invalid`, 오류 테 색은 `atoms.mark.ring` |
 | forced colors | `tests/atoms/forced-colors.spec.ts`의 `atoms.mark.forced-colors` · `atoms.button.forced-colors` · `atoms.field.forced-colors` · `atoms.label.forced-colors` · `atoms.link.forced-colors` · `atoms.badge.forced-colors` |
-| target | `atoms.mark.target`(표식), `foundations.shape.target-reach`(Field 액션), `atoms.button.target` |
+| target | `atoms.mark.target`(표식), `foundations.shape.target-reach`(Field 액션), `foundations.shape.control-geometry`(Button 높이와 정사각 IconButton) |
 | 대비 | `tokens/color.test.ts`의 `foundations.color.non-text-contrast`, `prefers-contrast: more`는 `atoms.mark.contrast-more` |
 | 상태 철자 | `styles/states.test.ts`의 `foundations.state.source-scan` — `:hover` · `:active` · `:focus-visible`은 상태 recipe와 paint 층에만, 상태 속성은 `tokens/state.ts`에만 있음 |

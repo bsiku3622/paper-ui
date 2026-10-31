@@ -219,7 +219,7 @@ const internalClassRule = {
 };
 
 // No eslint-disable comment names a paper rule and no `/* eslint */` comment configures one — an exception
-// is declared in eslint.config.js. Any other rule an eslint-disable comment switches off carries its reason
+// is declared in eslint-rules/manifest.js. Any other rule an eslint-disable comment switches off carries its reason
 // after `--`. Reports sit at column 0 of the comment's line: disable directives cover a line from column 1,
 // so no directive can hide its own report. A `/* eslint */` comment that also switches this rule off is out
 // of any rule's reach, because ESLint applies inline configuration before the rules run.
@@ -229,7 +229,7 @@ const noRuleDisableRule = {
     type: "problem",
     schema: [],
     messages: {
-      paper: "paper 규칙은 주석으로 끄지 않습니다. 예외는 eslint.config.js에 선언하세요.",
+      paper: "paper 규칙은 주석으로 끄지 않습니다. 예외는 eslint-rules/manifest.js에 선언하세요.",
       blanket: "규칙을 적지 않은 eslint-disable은 paper 규칙까지 끕니다. 끌 규칙과 `-- 이유`를 적으세요.",
       reason: "규칙을 끄는 주석에는 `-- 이유`를 적으세요.",
     },

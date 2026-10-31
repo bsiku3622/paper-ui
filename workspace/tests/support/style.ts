@@ -33,3 +33,19 @@ export const profile = (accent: Accent, variant: Variant): Style => {
   const spec = accentProfile(accent, variant);
   return { backgroundColor: spec.face, color: spec.ink, borderTopColor: spec.border };
 };
+
+// The contrast ratio of two computed colours, as WCAG defines it.
+const luminance = (color: string) => {
+  const [r, g, b] = color.match(/[\d.]+/g)!.slice(0, 3).map((channel) => {
+    const value = Number(channel) / 255;
+    return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
+};
+
+export const contrast = (a: string, b: string) => {
+  const [light, dark] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return (light! + 0.05) / (dark! + 0.05);
+};
+
+export const colors = (target: Locator) => target.evaluate((element) => ({ background: getComputedStyle(element).backgroundColor, color: getComputedStyle(element).color }));

@@ -186,7 +186,7 @@ export const panel = style([elevation.overlay, {
 
 안쪽 여백은 `tokens.shape.inset`, 형제 사이와 margin·위치 offset은 `tokens.layout.gap`에서 고르고, position·z·그림자는 `elevation` class 하나로 한 번에 붙입니다. `elevation`은 class 지도라 `/tokens`가 아니라 컴포넌트 entry(`@studio-baeks/paper-ui`)에서 나옵니다. 미디어 쿼리는 CSS 변수를 읽지 못하므로 `tokens.layout.breakpoint`는 `"48em"` 같은 값입니다. 사이드바 폭이나 그리드 트랙처럼 그 화면에만 있는 치수는 앱이 직접 씁니다.
 
-스타일을 고르는 순서는 하나입니다. 먼저 Primitive와 Atom의 prop으로 고릅니다. prop에 없는 정적인 값, 상태 selector, 미디어 쿼리는 `.css.ts`의 `style()`과 `styleVariants()`로 쓰고, 하위 요소는 `globalStyle(`${scoped} …`)`처럼 자기 class 아래의 selector로 고릅니다. 분기점은 `tokens.layout.breakpoint`, 페이지 틀은 `container.content`와 `layout.gutter`, 읽기 폭은 `shape.measure`에서 가져옵니다. inline style은 위치, 퍼센트, 항목마다 다른 표시 값처럼 실행 중에 정해지는 값에만 쓰고 토큰을 넣는 데 쓰지 않습니다. 이름을 손으로 지은 전역 class는 만들지 않고, 글자는 `Text` 역할이나 `typographyRule` · `codeRule` · `emphasisRule`로, 불투명도는 `tokens.color.opacity` 역할로 고릅니다. 앱이 직접 쓰는 길이는 폭, 높이, 그리드 트랙처럼 그 화면의 치수뿐입니다.
+스타일을 고르는 순서는 하나입니다. 먼저 Primitive와 Atom의 prop으로 고릅니다. prop에 없는 정적인 값, 상태 selector, 미디어 쿼리는 `.css.ts`의 `style()`과 `styleVariants()`로 쓰고, 하위 요소는 ``globalStyle(`${scoped} …`)``처럼 자기 class 아래의 selector로 고릅니다. 분기점은 `tokens.layout.breakpoint`, 페이지 틀은 `container.content`와 `layout.gutter`, 읽기 폭은 `shape.measure`에서 가져옵니다. inline style은 위치, 퍼센트, 항목마다 다른 표시 값처럼 실행 중에 정해지는 값에만 쓰고 토큰을 넣는 데 쓰지 않습니다. 이름을 손으로 지은 전역 class는 만들지 않고, 글자는 `Text` 역할이나 `typographyRule` · `codeRule` · `emphasisRule`로, 불투명도는 `tokens.color.opacity` 역할로 고릅니다. 앱이 직접 쓰는 길이는 폭, 높이, 그리드 트랙처럼 그 화면의 치수뿐입니다.
 
 ## 규칙은 빌드가 지킨다
 

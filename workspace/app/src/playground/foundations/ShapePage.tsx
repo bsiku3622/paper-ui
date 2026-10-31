@@ -3,6 +3,7 @@ import { tokens, CONTROL_SIZES, DIMENSIONS, ICON_SIZES, MEASURES, SPACES, type C
 import { SHAPE_RECIPES, SHAPE_SOURCE } from "@paper-ui/inspect/shape";
 
 import { Board, BoardGroup, BoardRow, Cell, Computed, FoundationSection, Ladder, MatrixCell, Meter, TokenCell, ValueCell, resolved } from "./kit";
+import { PlusIcon } from "../../compositions/icons";
 import { leafPaths, valueAt } from "./paths";
 import { TARGET_NOTES } from "./shape-roles";
 import * as s from "./foundations.css";
@@ -10,7 +11,7 @@ import * as s from "./foundations.css";
 const shape = tokens.shape;
 const r = SHAPE_RECIPES;
 const maxOf = (scale: Record<string, number>) => Math.max(...Object.values(scale));
-const Plus = () => <Icon size="caption"><path d="M12 5v14M5 12h14" /></Icon>;
+const Plus = () => <PlusIcon size="caption" />;
 
 const SOURCE_COLUMNS = [{ label: "Token" }, { label: "Specimen" }, { label: "Value", align: "end" as const }];
 const SOURCE_TEMPLATE = "minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr)";

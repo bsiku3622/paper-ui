@@ -66,6 +66,7 @@ test.describe("the selection marks", () => {
     expect(off.boxShadow).toContain(buttonText);
     expect(on.backgroundColor).toBe(highlight);
     expect((await painted(page.getByTestId("switch-md"), "::after")).backgroundColor).toBe(buttonText);
+    expect((await painted(page.getByTestId("switch-md"), "::after")).boxShadow).toBe("none");
     expect((await painted(page.getByTestId("switch-on"), "::after")).backgroundColor).toBe(highlightText);
   });
 
@@ -97,10 +98,11 @@ test.describe("the selection marks", () => {
 
   test("[atoms.mark.forced-colors] a disabled mark is GrayText, checked or not", async ({ page }) => {
     const gray = await system(page, "GrayText");
-    for (const id of ["checkbox-disabled", "checkbox-on-disabled", "radio-disabled", "radio-on-disabled"]) expect((await painted(page.getByTestId(id))).borderTopColor, id).toBe(gray);
+    for (const id of ["checkbox-disabled", "checkbox-on-disabled", "radio-disabled", "radio-on-disabled", "radio-error-disabled"]) expect((await painted(page.getByTestId(id))).borderTopColor, id).toBe(gray);
     expect((await painted(page.getByTestId("checkbox-on-disabled"))).backgroundColor).toBe(gray);
     expect((await painted(page.getByTestId("radio-on-disabled"), "::after")).backgroundColor).toBe(gray);
     expect((await painted(page.getByTestId("switch-disabled"))).boxShadow).toContain(gray);
+    expect((await painted(page.getByTestId("switch-error-disabled"))).boxShadow).toContain(gray);
     expect((await painted(page.getByTestId("switch-on-disabled"))).backgroundColor).toBe(gray);
   });
 

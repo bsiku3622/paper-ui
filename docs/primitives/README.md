@@ -27,7 +27,7 @@ Atom과 호출자 말고는 아무도 Press에 닿지 않습니다. 부품에 pr
 | Element | 1차 | Box | — | [Element](element.md) |
 | Content | 1차 | Text · Icon | — | [Content](content.md) |
 | A11y | 1차 | FocusScope · VisuallyHidden · Portal · LiveRegion | useFocusRing · useFocusWithin (함수 announce · clearAnnouncements) | [A11y](a11y.md) |
-| Paint | 2차 | Surface · Paint | — (class 함수 surfaceClass · paintClass, class 지도 elevation · presence · loop) | [Paint](paint.md) |
+| Paint | 2차 | Surface · Paint | — (class 함수 surfaceClass · paintClass, class 지도 elevation) | [Paint](paint.md) |
 | Press | 2차 | Pressable | usePressable | [Press](press.md) |
 | Select | 2차 | Selectable · SelectableGroup | useSelectable · useSelectableGroup | [Select](select.md) |
 | Float | 2차 | Floating | useFloating · useFloatingContext | [Float](float.md) |

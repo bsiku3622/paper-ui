@@ -123,5 +123,5 @@ export const FILE_NOTES: Record<string, string> = {
   "packages/paper-ui/src/primitives/index.ts": "유일한 배럴 — primitives/orders.test.ts가 폴더 사이의 길을 지킵니다",
   "packages/paper-ui/src/primitives/bare-button.css.ts": "부품이 쓰는 button reset",
   "packages/paper-ui/src/atoms/button-base.tsx": "Button과 IconButton의 몸 하나 — 내부 모듈",
-  "packages/paper-ui/src/atoms/input-control.ts": "입력 틀 셋의 FormField 관계 · 키보드 포커스 · 틀의 속성 — 내부 모듈",
+  "packages/paper-ui/src/atoms/input-control.ts": "입력 틀 셋과 선택 표식 셋의 FormField 관계 · 키보드 포커스 · 틀의 속성 — 내부 모듈",
 };

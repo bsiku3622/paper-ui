@@ -137,8 +137,8 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
     const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value")?.set;
     setter?.call(el, "");
     el.dispatchEvent(new Event("input", { bubbles: true }));
-    el.focus();
     onClear?.();
+    el.focus();
   };
 
   const isDisabled = controlProps.disabled === true;
