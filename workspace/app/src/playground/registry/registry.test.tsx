@@ -8,6 +8,7 @@ import * as vocabulary from "@studio-baeks/paper-ui/tokens";
 
 import { PLAYGROUND_NAV, slugOf } from "../../site/site-map";
 import { REGISTRY, codeOf, initialState, normalized, stateFromCode, type Control, type Entry, type State } from ".";
+import { parseOpeningTag } from "./jsx";
 
 const FILES = import.meta.glob("./entries/*.tsx", { eager: true });
 const SOURCES = import.meta.glob<string>("./entries/*.tsx", { query: "?raw", import: "default", eager: true });
@@ -88,12 +89,14 @@ describe("enum options", () => {
     }
   });
 
-  it("stay inside the vocabulary constant of a subset, and say why they leave values out", () => {
+  it("stay inside the vocabulary constant of a subset, plus the values it names beyond it, and say why they leave values out", () => {
     for (const { entry, control } of enums) {
       if (control.kind !== "enum" || control.source.kind !== "subset") continue;
       const all = vocabularyOf(control.source.name);
-      expect(control.options.length, `${entry.name}.${control.prop}`).toBeLessThan(all.length);
-      for (const option of control.options) expect(all, `${entry.name}.${control.prop} ${option}`).toContain(option);
+      const plus = control.source.plus ?? [];
+      for (const option of plus) expect(all, `${entry.name}.${control.prop} ${option}`).not.toContain(option);
+      expect(control.options.length - plus.length, `${entry.name}.${control.prop}`).toBeLessThan(all.length);
+      for (const option of control.options) expect([...all, ...plus], `${entry.name}.${control.prop} ${option}`).toContain(option);
       expect(control.source.reason, `${entry.name}.${control.prop}`).not.toBe("");
     }
   });
@@ -141,7 +144,10 @@ describe("code", () => {
       const own = entry.defaults[control.prop];
       if (own === undefined || control.kind !== "enum" || !control.options.includes(String(own))) continue;
       const state: State = { ...base(entry), [control.key]: String(own) };
-      expect(codeOf(entry, state, harnessOf(entry)), `${entry.name}.${control.prop}`).not.toContain(`${control.prop}=`);
+      // The element the control sets: a nested element of the example may state the same prop for its own reasons.
+      const tag = parseOpeningTag(codeOf(entry, state, harnessOf(entry)), control.target ?? entry.name);
+      expect(tag, `${entry.name}.${control.prop}`).toBeDefined();
+      expect(Object.keys(tag!.attrs), `${entry.name}.${control.prop}`).not.toContain(control.prop);
     }
   });
 

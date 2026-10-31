@@ -3,6 +3,8 @@
 
 import type { FocusEvent, ReactNode } from "react";
 
+import type { Space } from "../tokens";
+
 // ───── Press ──────────────────────────────────────────────────────────────────
 
 export type PointerType = "mouse" | "pen" | "touch" | "keyboard" | "virtual";
@@ -128,6 +130,8 @@ export type MoveDragOptions = CommonDragOptions & {
   defaultPosition?: DragPosition;
   onPositionChange?: (position: DragPosition) => void;
   axis?: "both" | "x" | "y";
+  /** How far an arrow key moves the box: a step of the gap scale, measured where the box stands. */
+  keyboardStep?: Space;
   onDragStart?: (event: MoveDragEvent) => void;
   onDragMove?: (event: MoveDragEvent) => void;
   onDragEnd?: (event: MoveDragEvent) => void;
@@ -152,3 +156,6 @@ export type Placement =
   | "bottom" | "bottom start" | "bottom end"
   | "start" | "start top" | "start bottom"
   | "end" | "end top" | "end bottom";
+
+// The side of its anchor a floating panel settled on, start and end by the anchor's direction.
+export type PlacementSide = "top" | "bottom" | "start" | "end";

@@ -81,6 +81,7 @@
     "@react-aria/interactions": "^3.28.1",
     "@react-aria/live-announcer": "^3.5.1",
     "@react-aria/overlays": "^3.32.1",
+    "@react-aria/utils": "^3.34.1",
     "@react-aria/visually-hidden": "^3.9.1"
   },
   "peerDependencies": {

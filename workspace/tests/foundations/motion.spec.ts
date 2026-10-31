@@ -49,6 +49,21 @@ const animationOf = (target: Locator) =>
     return { name: style.animationName, duration: parseFloat(style.animationDuration) * 1000, easing: style.animationTimingFunction, fill: style.animationFillMode, iterations: style.animationIterationCount };
   });
 
+// The Floating example of the Playground, opened from its trigger. A panel on the page is the node with its presentation.
+const openFloating = async (page: Page, presentation?: "modal") => {
+  await page.goto("/playground/floating");
+  if (presentation) await page.getByRole("combobox", { name: "presentation", exact: true }).selectOption(presentation);
+  await page.getByRole("button", { name: "설정 열기", exact: true }).click();
+  return page.locator("[data-presentation]");
+};
+
+// Chromium plays every animation of the page at a fraction of its speed, so a state that lasts 100ms can be looked at.
+const playbackRate = async (page: Page, rate: number) => {
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send("Animation.enable");
+  await cdp.send("Animation.setPlaybackRate", { playbackRate: rate });
+};
+
 type Row = { atom: string; target: (page: Page) => Locator; pseudo?: "::after"; properties: Record<string, MotionRole> };
 
 const BUTTON = { "border-color": "hover", background: "state", color: "state", transform: "press" } as const;
@@ -126,6 +141,64 @@ test.describe("with motion", () => {
     expect(await animationOf(page.getByRole("button", { name: "Saving" }).locator("span[aria-hidden]"))).toEqual(spin);
   });
 
+  test("[primitives.floating.presence] a popover rises in with the enter role, and a modal's scrim only fades in", async ({ page }) => {
+    await playbackRate(page, 0.1);
+    const popover = await openFloating(page);
+    await expect(popover).toHaveAttribute("data-presence", "entering");
+    const entering = await animationOf(popover);
+    expect(entering).toMatchObject({ easing: timing("enter").easing, fill: "none", iterations: "1" });
+    expect(entering.duration).toBeCloseTo(timing("enter").duration, 3);
+    expect(entering.name).not.toBe("none");
+    await playbackRate(page, 1);
+    await expect(popover).not.toHaveAttribute("data-presence", /.*/);
+    await page.keyboard.press("Escape");
+    await expect(popover).toHaveCount(0);
+
+    await playbackRate(page, 0.1);
+    await page.getByRole("combobox", { name: "presentation", exact: true }).selectOption("modal");
+    await page.getByRole("button", { name: "설정 열기", exact: true }).click();
+    const dialog = page.locator("[data-presentation=modal]");
+    const scrim = dialog.locator("xpath=..");
+    await expect(scrim).toHaveAttribute("data-presence", "entering");
+    await expect(dialog).toHaveAttribute("data-presence", "entering");
+    const fade = await animationOf(scrim);
+    expect(fade).toMatchObject({ easing: timing("enter").easing, fill: "none", iterations: "1" });
+    expect(fade.duration).toBeCloseTo(timing("enter").duration, 3);
+    expect(fade.name).not.toBe(entering.name);
+  });
+
+  test("[primitives.floating.presence] closing hides the panel from assistive technology at once, keeps it for the exit role, then removes it and gives focus back", async ({ page }) => {
+    const panel = await openFloating(page);
+    const trigger = page.getByRole("button", { name: "설정 열기", exact: true });
+    await expect(panel).toBeVisible();
+    await expect(panel).not.toHaveAttribute("data-presence", /.*/);
+    await playbackRate(page, 0.1);
+    await page.keyboard.press("Escape");
+    await expect(panel).toHaveAttribute("data-presence", "exiting");
+    await expect(panel).toHaveAttribute("aria-hidden", "true");
+    await expect(panel).toHaveAttribute("inert", /.*/);
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    const leaving = await animationOf(panel);
+    expect(leaving).toMatchObject({ easing: timing("exit").easing, fill: "forwards", iterations: "1" });
+    expect(leaving.duration).toBeCloseTo(timing("exit").duration, 3);
+    await playbackRate(page, 1);
+    await expect(panel).toHaveCount(0);
+    await expect(trigger).toBeFocused();
+  });
+
+  test("[primitives.floating.presence] a panel reopened while it is leaving is a new one: it enters again and takes focus", async ({ page }) => {
+    const panel = await openFloating(page);
+    await expect(panel).not.toHaveAttribute("data-presence", /.*/);
+    await playbackRate(page, 0.1);
+    await page.keyboard.press("Escape");
+    await expect(panel).toHaveAttribute("data-presence", "exiting");
+    await page.getByRole("button", { name: "설정 열기", exact: true }).click({ force: true });
+    await expect(panel).toHaveAttribute("data-presence", "entering");
+    await expect(panel).not.toHaveAttribute("aria-hidden", /.*/);
+    await playbackRate(page, 1);
+    await expect(page.getByRole("heading", { name: "설정", exact: true })).toBeFocused();
+  });
+
   test("[foundations.motion.roles] draws one row per role on the Motion page, in the vocabulary's order", async ({ page }) => {
     await openPlayground(page, "foundations/motion", "Motion");
     const rows = await page.locator("code").filter({ hasText: /^motion\.role\./ }).allTextContents();
@@ -184,6 +257,24 @@ test.describe("with reduced motion", () => {
       expect(animation.iterations, id).toBe("1");
     }
     expect((await frameOf(page.getByTestId("surface-exiting"), "end")).opacity).toBe("0");
+  });
+
+  test("[primitives.floating.presence] takes a Floating off the page at the first tick of its exit, not after the exit role's time", async ({ page }) => {
+    const panel = await openFloating(page);
+    await expect(panel).toBeVisible();
+    const frames = await panel.evaluate(async (element) => {
+      element.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+      let count = 0;
+      while (element.isConnected && count < 30) {
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+        count += 1;
+      }
+      return count;
+    });
+    // The exit animation is cut to one instant, which the browser ends on its next animation frames: two or three, by where the
+    // press falls in the frame and when the browser starts the animation. The exit role's own time would be six or more.
+    expect(frames).toBeLessThanOrEqual(3);
+    await expect(page.getByRole("button", { name: "설정 열기", exact: true })).toBeFocused();
   });
 
   test("[foundations.motion.reduced] turns the Spinner, the loading Button's spinner and the spin loop into the pulse", async ({ page }) => {

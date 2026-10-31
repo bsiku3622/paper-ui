@@ -16,7 +16,7 @@ export type VocabularyName = { [K in keyof typeof vocabulary]: (typeof vocabular
 // Where a select's options come from (D54). registry.test holds each kind to its claim.
 export type Source =
   | { kind: "vocabulary"; name: VocabularyName }
-  | { kind: "subset"; name: VocabularyName; reason: string }
+  | { kind: "subset"; name: VocabularyName; reason: string; plus?: readonly string[] }
   | { kind: "local"; reason: string }
   | { kind: "sample"; reason: string };
 
@@ -26,9 +26,15 @@ export const vocab = <N extends VocabularyName>(name: N): OptionSet<(typeof voca
   options: vocabulary[name],
   source: { kind: "vocabulary", name },
 });
-export const subset = <N extends VocabularyName, const T extends readonly (typeof vocabulary)[N][number][]>(name: N, options: T, reason: string): OptionSet<T[number]> => ({
-  options,
-  source: { kind: "subset", name, reason },
+// `plus` names the values of the prop that the vocabulary does not hold (a prop that takes a step or "none"); they come first.
+export const subset = <N extends VocabularyName, const T extends readonly (typeof vocabulary)[N][number][], const E extends string = never>(
+  name: N,
+  options: T,
+  reason: string,
+  plus: readonly E[] = [],
+): OptionSet<T[number] | E> => ({
+  options: [...plus, ...options],
+  source: { kind: "subset", name, reason, ...(plus.length > 0 ? { plus } : {}) },
 });
 // A union that belongs to one component, not to the shared vocabulary. The call names the prop and
 // fails typecheck while the list leaves a value of that prop's union out, so it is exhaustive.

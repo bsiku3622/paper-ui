@@ -33,7 +33,7 @@ export { useSelectable, type SelectableOptions, type SelectableResult, type Sele
 export { SelectableGroup, useSelectableGroup, type SelectableGroupProps, type SelectableGroupItemProps, type SelectableGroupOptions, type SelectableGroupResult, type SelectableGroupState } from "./select/SelectableGroup";
 
 // Float — position, z, dismissal.
-export { Floating, useFloating, useFloatingContext, type FloatingProps, type FloatingOptions, type FloatingResult, type FloatingTriggerProps, type FloatingContentProps, type FloatingContentState, type FloatingCloseProps } from "./float/Floating";
+export { Floating, useFloating, useFloatingContext, type FloatingProps, type FloatingOptions, type FloatingResult, type FloatingTriggerProps, type FloatingContentProps, type FloatingPopoverProps, type FloatingModalProps, type FloatingPresentation, type FloatingContentState, type FloatingCloseProps } from "./float/Floating";
 
 // Drag — move and transfer drag, and the drop target.
 export { Draggable, type DraggableProps, type DraggableHandleProps, type DraggableState } from "./drag/Draggable";
@@ -57,7 +57,7 @@ export { mergeProps, mergeRefs, composeEventHandlers } from "./composition";
 
 // The event and option types the Interaction and A11y primitives are declared with.
 export type {
-  PointerType, PressEvent, PressableOptions, FocusRingOptions, FocusWithinOptions, FocusScopeProps, Placement,
+  PointerType, PressEvent, PressableOptions, FocusRingOptions, FocusWithinOptions, FocusScopeProps, Placement, PlacementSide,
   DropOperation, DragItem, DragTypes, TextDropItem, FileDropItem, DirectoryDropItem, DropItem,
   DropEvent, DropEnterEvent, DropMoveEvent, DropExitEvent, DropActivateEvent, DroppableOptions, TransferDragEvent,
   DragPosition, MoveDragEvent, MoveDragOptions, TransferDragOptions, DraggableOptions,

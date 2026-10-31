@@ -24,7 +24,7 @@ const EDGES: Record<string, readonly string[]> = {
 
 // internal/ sits below the primitives, which makes it the way around the edges above. What second-order folders share
 // through it is general tools, named here. A capability's own state is not one: a shared module holds no context.
-const SHARED_INTERNAL = ["errors", "joinClass", "refs", "render-target", "useControllableState"];
+const SHARED_INTERNAL = ["errors", "joinClass", "measure", "refs", "render-target", "useControllableState"];
 
 const walk = (dir: string): string[] =>
   readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {

@@ -4,7 +4,7 @@ import { Button, Draggable, Inline, Stack, Text, type DraggableProps, type Dragg
 
 import { glyph } from "../demo";
 import { named } from "../jsx";
-import { boolControl, defineSpec, enumControl, flag, local, pick } from "../schema";
+import { boolControl, defineSpec, enumControl, flag, local, pick, subset } from "../schema";
 import { handle, moving, stage } from "./examples.css";
 
 const BODY = `({ position }) => (
@@ -27,8 +27,9 @@ export default defineSpec({
     boolControl<DraggableProps, "disabled">("disabled"),
     enumControl<DraggableProps, "activation">("activation", local<DraggableProps, "activation">()(["handle", "surface"], "Draggable's own two ways to start a drag"), { initial: "handle" }),
     enumControl<MoveDragOptions, "axis">("axis", local<MoveDragOptions, "axis">()(["both", "x", "y"], "the axes a move drag can be limited to"), { behaviorOnly: "the axis limits the pointer path, which a static render does not show" }),
+    enumControl<MoveDragOptions, "keyboardStep">("keyboardStep", subset("SPACES", ["xs", "sm", "md", "lg"], "xl and above are page distances, too far for one arrow press"), { behaviorOnly: "the step is how far an arrow key moves the box, which a static render does not show" }),
   ],
-  defaults: { disabled: false, activation: "surface", axis: "both" },
+  defaults: { disabled: false, activation: "surface", axis: "both", keyboardStep: "sm" },
   useHarness: () => {
     const [count, setCount] = useState(0);
     return { count, bump: () => setCount((value) => value + 1) };
@@ -41,6 +42,7 @@ export default defineSpec({
       disabled={flag(state, "disabled")}
       activation={pick<NonNullable<DraggableProps["activation"]>>(state, "activation")}
       axis={pick<NonNullable<MoveDragOptions["axis"]>>(state, "axis")}
+      keyboardStep={pick<NonNullable<MoveDragOptions["keyboardStep"]>>(state, "keyboardStep")}
     >
       {named(BODY, ({ position }: DraggableState) => (
         <Stack gap="sm">

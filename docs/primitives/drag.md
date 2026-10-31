@@ -31,7 +31,10 @@ Draggable은 기본 div이고 `as`로 다른 태그를 고릅니다. children �
 
 Draggable.Handle(`DraggableHandleProps`)은 부모 Draggable 내부에 있어야 하며 aria-label이 필수입니다. 기본은 native button이고 `as`로 다른 대상을 고를 수 있으며, `disabled`는 [공통 계약](README.md#공통-계약)의 투영을 따르고, Handle 자신의 `disabled`는 Draggable이 살아 있어도 그 Handle의 포인터와 키 입력을 모두 끕니다. Handle은 키보드 끌기를 React Aria의 press로 직접 다루므로 `Pressable`로 감싸지 않습니다(press 뒤에 click이 따라오면 끌기가 취소됩니다). Input 대상은 Handle, 측정과 이동 대상은 전체 Draggable입니다. Surface 모드도 자식 button·input·textarea·select·link·contenteditable·data-drag-ignore에서 시작한 입력은 이동으로 처리하지 않습니다. 내부 입력의 방향키도 부모를 이동시키지 않습니다.
 
-Move 모드는 position/defaultPosition/onPositionChange, axis=both/x/y, onDragStart/onDragMove/onDragEnd/onDragCancel을 받습니다. Event는 position·시작점 기준 delta·pointerType을 제공합니다. 컴포넌트는 CSS translate로 이동하고, hook 사용자는 position을 자신의 요소에 적용합니다. 방향키로 이동하고, 포인터 이동 중 Escape는 시작 좌표로 복귀하며 onDragCancel을 호출합니다. Disabled 전환도 진행 중인 move를 취소합니다.
+Move 모드는 position/defaultPosition/onPositionChange, axis=both/x/y, keyboardStep, onDragStart/onDragMove/onDragEnd/onDragCancel을 받습니다. Event는 position·시작점 기준 delta·pointerType을 제공합니다. 컴포넌트는 CSS translate로 이동하고, hook 사용자는 position을 자신의 요소에 적용합니다. 방향키로 이동하고, 포인터 이동 중 Escape는 시작 좌표로 복귀하며 onDragCancel을 호출합니다. Disabled 전환도 진행 중인 move를 취소합니다.
+
+[contract:primitives.draggable.keyboard-step]: #
+방향키 한 번은 `keyboardStep`만큼 움직입니다. `keyboardStep`은 gap 단계 이름(`xs` · `sm` · `md` · `lg` …)이고 기본은 `sm`(8)이며, 키를 누르는 때 Draggable 요소 자리에서 재어 픽셀로 바뀝니다 — 하위 트리가 gap scale을 덮으면 걸음도 따라갑니다. 포인터 이동은 단계와 무관하게 포인터가 간 만큼입니다.
 
 자유 이동은 layout 안의 visual offset입니다. 재정렬, 충돌 처리, snap, 경계 제한, 위치 저장은 제공하지 않으며 필요한 상위 조합이 결정합니다.
 
