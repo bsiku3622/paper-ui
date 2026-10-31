@@ -1,14 +1,14 @@
 // 컴포넌트 상세 — preview·controls·code 레이아웃. 전부 tokens.* (raw 값 없음).
 
-import { globalStyle, style } from "@vanilla-extract/css";
+import { globalStyle, style, styleVariants } from "@vanilla-extract/css";
 
-import { SURFACE_FILLS, focusRing, tokens } from "@studio-baeks/paper-ui/tokens";
+import { SURFACE_FILLS, codeRule, focusRing, tokens } from "@studio-baeks/paper-ui/tokens";
 
 import { narrow, navHeight } from "../site/shell.css";
 
 const BP = tokens.layout.breakpoint;
 
-globalStyle(".detail-body", {
+export const detailBody = style({
   display: "grid",
   gridTemplateColumns: `1fr ${tokens.shape.dimension.width.lg}`,
   gap: tokens.layout.gap.xl,
@@ -18,6 +18,9 @@ globalStyle(".detail-body", {
   },
 });
 
+// preview 와 코드의 칼럼. 줄어들 수 있어야 넓은 코드가 칼럼 안에서 스크롤한다.
+export const previewColumn = style({ minWidth: 0 });
+
 // Props 패널은 스크롤을 따라 헤더 아래에 머문다. 헤더가 정적인 좁은 폭에서는 본문 흐름에 놓인다.
 export const propsPanel = style({
   top: `calc(${navHeight} + ${tokens.layout.gap.xl})`,
@@ -25,8 +28,8 @@ export const propsPanel = style({
 });
 
 // preview 무대 — 세 surface와 control track 배경에서 가독성을 비교한다.
-globalStyle(".preview-frame", { position: "relative" });
-globalStyle(".preview-stage", {
+export const previewFrame = style({ position: "relative" });
+export const previewStage = style({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
@@ -37,35 +40,39 @@ globalStyle(".preview-stage", {
   overflow: "auto",
   isolation: "isolate",
 });
-globalStyle(".preview-stage--track", { background: tokens.color.control.track });
+export const previewStageTrack = style({ background: tokens.color.control.track });
 
-globalStyle(".preview-surface-switcher", {
+export const surfaceSwitcher = style({
   position: "absolute",
   top: tokens.layout.gap.sm,
   left: tokens.layout.gap.sm,
   display: "flex",
   gap: tokens.layout.gap.xs,
 });
-globalStyle(".preview-surface-button", {
-  display: "grid",
-  placeItems: "center",
-  width: tokens.shape.control.height.sm,
-  height: tokens.shape.control.height.sm,
-  padding: 0,
-  border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`,
-  borderRadius: tokens.shape.radius.control,
-  color: tokens.color.ink.primary,
-  cursor: "pointer",
-});
-for (const surface of SURFACE_FILLS) globalStyle(`.preview-surface-button[data-bg="${surface}"]`, { background: tokens.color.bg[surface] });
-globalStyle('.preview-surface-button[data-bg="track"]', { background: tokens.color.control.track });
-globalStyle('.preview-surface-button[aria-pressed="true"]', { borderColor: tokens.color.border.strong });
-globalStyle(".preview-surface-button:hover", { borderColor: tokens.color.border.hover });
-globalStyle(".preview-surface-button:focus-visible", focusRing);
+const PREVIEW_BACKGROUNDS = [...SURFACE_FILLS, "track"] as const;
+export const surfaceButton = styleVariants(
+  Object.fromEntries(PREVIEW_BACKGROUNDS.map((background) => [background, { background: background === "track" ? tokens.color.control.track : tokens.color.bg[background] }])) as Record<(typeof PREVIEW_BACKGROUNDS)[number], { background: string }>,
+  (face) => ({
+    display: "grid",
+    placeItems: "center",
+    width: tokens.shape.control.height.sm,
+    height: tokens.shape.control.height.sm,
+    padding: 0,
+    border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`,
+    borderRadius: tokens.shape.radius.control,
+    color: tokens.color.ink.primary,
+    cursor: "pointer",
+    ...face,
+    selectors: {
+      '&[aria-pressed="true"]': { borderColor: tokens.color.border.strong },
+      "&:hover": { borderColor: tokens.color.border.hover },
+      "&:focus-visible": focusRing,
+    },
+  }),
+);
 
-// 자체 면과 외곽 형상이 사용성의 일부인 미리보기(지금은 Draggable의 무대)는 카드에
-// 다시 가두지 않고 실제 페이지에 놓였을 때의 직각 silhouette를 그대로 평가한다.
-globalStyle(".preview-stage--flush", {
+// 자기 면과 외곽이 사용성의 일부인 미리보기(Draggable 무대)는 무대 테두리 안에 다시 가두지 않는다.
+export const previewStageFlush = style({
   justifyContent: "stretch",
   minHeight: "auto",
   padding: `${tokens.shape.control.height.lg} 0 0`,
@@ -73,7 +80,7 @@ globalStyle(".preview-stage--flush", {
   borderRadius: 0,
 });
 
-globalStyle(".code-block", {
+export const codeBlock = style({
   position: "relative",
   border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`,
   borderRadius: tokens.shape.radius.surface.md,
@@ -81,7 +88,7 @@ globalStyle(".code-block", {
   overflow: "hidden",
 });
 
-globalStyle(".code-editor", {
+export const codeEditor = style({
   display: "block",
   width: "100%",
   minHeight: tokens.shape.dimension.height.xl,
@@ -94,36 +101,28 @@ globalStyle(".code-editor", {
   outline: 0,
   background: "transparent",
   overflowX: "auto",
-  fontFamily: tokens.typography.palette.family.mono,
-  fontSize: tokens.typography.role.caption.size,
-  fontWeight: tokens.typography.palette.weight.normal,
+  ...codeRule("block"),
   fontStyle: "normal",
-  letterSpacing: tokens.typography.role.caption.tracking,
-  lineHeight: tokens.typography.role.body.leading,
   color: tokens.color.ink.primary,
   tabSize: 2,
 });
 
-globalStyle(".code-block--error", { borderColor: tokens.color.accent.error.soft });
-globalStyle(".code-block--editing", { background: tokens.color.bg.sunken });
-globalStyle(".code-error", { display: "block", paddingInline: tokens.shape.inset.lg, paddingBottom: tokens.shape.inset.sm });
+export const codeBlockError = style({ borderColor: tokens.color.accent.error.soft });
+export const codeBlockEditing = style({ background: tokens.color.bg.sunken });
+export const codeError = style({ display: "block", paddingInline: tokens.shape.inset.lg, paddingBottom: tokens.shape.inset.sm });
 
-globalStyle(".code-block pre", {
+globalStyle(`${codeBlock} pre`, {
   margin: 0,
   paddingBlock: tokens.shape.inset.xl,
   paddingInline: tokens.shape.inset.lg,
   overflowX: "auto",
-  fontFamily: tokens.typography.palette.family.mono,
-  fontSize: tokens.typography.role.caption.size,
-  fontWeight: tokens.typography.palette.weight.normal,
+  ...codeRule("block"),
   fontStyle: "normal",
-  letterSpacing: tokens.typography.role.caption.tracking,
-  lineHeight: tokens.typography.role.body.leading,
   color: tokens.color.ink.primary,
   tabSize: 2,
 });
 
-globalStyle(".code-actions", {
+export const codeActions = style({
   position: "absolute",
   top: tokens.layout.gap.sm,
   right: tokens.layout.gap.sm,
@@ -131,4 +130,4 @@ globalStyle(".code-actions", {
   alignItems: "center",
   gap: tokens.layout.gap.xs,
 });
-globalStyle(".code-edit", { minWidth: tokens.shape.control.height.sm });
+export const codeEdit = style({ minWidth: tokens.shape.control.height.sm });

@@ -132,6 +132,8 @@ light `warning`은 의도된 예외입니다. `STATUS_EXCEPTIONS.warning`이 lig
 
 상태 점은 두 가지입니다. 독립 상태 점은 accent `solid`를, 글자 옆에 붙는 점은 그 글자의 잉크를 씁니다.
 
+상태색은 상태에만 씁니다. 브랜드 라벨이나 팀 같은 분류는 상태가 아니므로 `primary`로 그립니다. 사람이나 작업 공간의 표식처럼 색이 면을 채우는 마크는 `accent.primary`의 `solid` 면과 `wash` 글자(옅게 하려면 `soft` 면과 `ink` 글자)이고, `ink`를 배경에 쓰거나 `bg`를 글자에 쓰는 교차로 반전 면을 만들지 않습니다. 진행 막대의 홈은 `control.track`, 채움은 accent의 `solid`입니다.
+
 ## Accent × variant
 
 Atom은 색을 직접 고르지 않고 `accent`와 `variant` 두 축을 말합니다. 이 조합이 어떤 tone을 쓰는지는 `tokens/color-recipes.ts`의 `VARIANT_RECIPE`가 한 곳에서 정하고, `accentProfile`과 Playground [Color](/playground/foundations/color)의 Accent × variant 표가 같은 표를 읽습니다.

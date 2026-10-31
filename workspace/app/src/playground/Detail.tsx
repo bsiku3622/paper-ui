@@ -14,10 +14,11 @@ import { Button, Field, IconButton, Inline, Select, Stack, Surface, Switch, Text
 import type { SurfaceFill } from "@studio-baeks/paper-ui/tokens";
 
 import { CheckIcon, CloseIcon, EditIcon } from "../compositions/icons";
+import { joinClass } from "../joinClass";
 import { PageHeader } from "../site/PageHeader";
 import { codeOf, entryBySlug, initialState, normalized, stateFromCode, type Control, type State } from "./registry";
 import type { Entry } from "./registry";
-import { propsPanel } from "./detail.css";
+import * as s from "./detail.css";
 
 const PREVIEW_SURFACES = ["raised", "canvas", "sunken"] as const satisfies readonly SurfaceFill[];
 const PREVIEW_BACKGROUNDS = [...PREVIEW_SURFACES, "track"] as const;
@@ -114,21 +115,21 @@ const CodeBlock = ({ code, onChange, error }: { code: string; onChange: (code: s
     );
   };
   return (
-    <div className={`code-block${editing ? " code-block--editing" : ""}${error ? " code-block--error" : ""}`}>
-      <div className="code-actions">
+    <div className={joinClass(s.codeBlock, editing && s.codeBlockEditing, error && s.codeBlockError)} data-testid="code-block">
+      <div className={s.codeActions}>
         <Button variant="hairline" size="sm" fontSize="label" onClick={copy}>{copied ? "복사됨" : "복사"}</Button>
         <IconButton
           variant="hairline"
           size="sm"
           aria-label={editing ? "코드 편집 닫기" : "코드 편집"}
-          className="code-edit"
+          className={s.codeEdit}
           onClick={() => setEditing((current) => !current)}
         >
           {editing ? <CloseIcon /> : <EditIcon />}
         </IconButton>
       </div>
-      {editing ? <textarea className="code-editor" value={code} onChange={(event) => onChange(event.currentTarget.value)} spellCheck={false} aria-label="컴포넌트 코드 편집" /> : <pre><code>{code}</code></pre>}
-      {error ? <Text variant="caption" ink="error" className="code-error">{error}</Text> : null}
+      {editing ? <textarea className={s.codeEditor} value={code} onChange={(event) => onChange(event.currentTarget.value)} spellCheck={false} aria-label="컴포넌트 코드 편집" /> : <pre><code>{code}</code></pre>}
+      {error ? <Text variant="caption" ink="error" className={s.codeError}>{error}</Text> : null}
     </div>
   );
 };
@@ -168,18 +169,18 @@ const DetailView = ({ entry }: { entry: Entry }) => {
     <Stack gap="xl">
       <PageHeader group={entry.part === "atoms" ? "Atoms" : `Primitives / ${entry.group}`} name={entry.name} description={entry.blurb} />
 
-      <div className="detail-body">
+      <div className={s.detailBody}>
         {/* preview + code */}
-        <Stack gap="md" style={{ minWidth: 0 }}>
-          <div className="preview-frame">
+        <Stack gap="md" className={s.previewColumn}>
+          <div className={s.previewFrame}>
             <div ref={probes} hidden>
               {[FOLDED.surface, FOLDED.into].map((surface) => <Surface key={surface} fill={surface} />)}
             </div>
-            <Surface fill={previewBackground === "track" ? undefined : previewBackground} className={`preview-stage${entry.preview === "flush" ? " preview-stage--flush" : ""}${previewBackground === "track" ? " preview-stage--track" : ""}`} data-preview-background={previewBackground}>
+            <Surface fill={previewBackground === "track" ? undefined : previewBackground} className={joinClass(s.previewStage, entry.preview === "flush" && s.previewStageFlush, previewBackground === "track" && s.previewStageTrack)} data-preview-background={previewBackground}>
               {Stage ? <Stage subject={subject} state={state} harness={harness} /> : subject}
             </Surface>
             <SelectableGroup
-              className="preview-surface-switcher"
+              className={s.surfaceSwitcher}
               aria-label="미리보기 배경"
               selectionRequired
               selectedValues={[previewBackground]}
@@ -192,8 +193,7 @@ const DetailView = ({ entry }: { entry: Entry }) => {
                 <SelectableGroup.Item
                   key={background}
                   value={background}
-                  className="preview-surface-button"
-                  data-bg={background}
+                  className={s.surfaceButton[background]}
                   aria-label={`${background} background`}
                   title={background === FOLDED.surface && folded ? FOLDED_TITLE : `${background} background`}
                 >
@@ -209,7 +209,7 @@ const DetailView = ({ entry }: { entry: Entry }) => {
         </Stack>
 
         {/* controls */}
-        <Surface fill="canvas" radius="md" padding="lg" elevation="sticky" border className={propsPanel}>
+        <Surface fill="canvas" radius="md" padding="lg" elevation="sticky" border className={s.propsPanel}>
           <Stack gap="lg">
             <Inline justify="between" align="center">
               <Text variant="label">Props</Text>

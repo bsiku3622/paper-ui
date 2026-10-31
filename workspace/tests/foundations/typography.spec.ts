@@ -45,7 +45,7 @@ const lines = (target: Locator) =>
 test.describe("the body role", () => {
   test("[foundations.typography.body-role] a docs paragraph renders like a Text body, and so does a link outside any role", async ({ page }) => {
     await page.goto("/docs/primitives/content");
-    const paragraph = page.locator(".md p").first();
+    const paragraph = page.getByTestId("prose").locator("p").first();
     await expect(paragraph).toBeVisible();
     await expectStyle(paragraph, role("body"));
     expect([await css(paragraph, "fontSize"), await css(paragraph, "fontWeight"), await css(paragraph, "lineHeight")]).toEqual(["14px", "500", "20px"]);
@@ -195,13 +195,13 @@ test.describe("fonts", () => {
 
   test("the body text is set in the web font once it has loaded", async ({ page }) => {
     await page.goto("/docs/primitives/content");
-    await expect(page.locator(".md p").first()).toBeVisible();
+    await expect(page.getByTestId("prose").locator("p").first()).toBeVisible();
     await page.evaluate(() => document.fonts.ready);
     const cdp = await page.context().newCDPSession(page);
     await cdp.send("DOM.enable");
     await cdp.send("CSS.enable");
     const { root } = await cdp.send("DOM.getDocument");
-    const { nodeId } = await cdp.send("DOM.querySelector", { nodeId: root.nodeId, selector: ".md p" });
+    const { nodeId } = await cdp.send("DOM.querySelector", { nodeId: root.nodeId, selector: "[data-testid=prose] p" });
     const { fonts } = await cdp.send("CSS.getPlatformFontsForNode", { nodeId });
     expect(fonts.map((font) => font.familyName)).toContain("Pretendard Variable");
   });
@@ -221,6 +221,51 @@ test.describe("fonts", () => {
       await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), path).toBe(true);
     }
+  });
+});
+
+test.describe("the docs, the Playground and the landing page take their type from roles", () => {
+  const prose = (page: Page) => page.getByTestId("prose");
+  const size = async (target: Locator) => parseFloat(await css(target, "fontSize"));
+
+  test("inline code is 0.85 of the paragraph around it and code in a table cell 0.8, in the mono family", async ({ page }) => {
+    await page.goto("/docs/atoms");
+    const paragraph = prose(page).locator("p").filter({ has: page.locator("code") }).first();
+    const inline = paragraph.locator("code").first();
+    expect(await size(inline) / (await size(paragraph))).toBeCloseTo(0.85, 3);
+    const cell = prose(page).locator("td").filter({ has: page.locator("code") }).first();
+    expect(await size(cell.locator("code").first()) / (await size(cell))).toBeCloseTo(0.8, 3);
+    for (const code of [inline, cell.locator("code").first()]) await expectStyle(code, { fontFamily: tokens.typography.palette.family.mono });
+  });
+
+  test("a docs code block is 13/20/400, a Playground code block and its editor 13/20/450", async ({ page }) => {
+    await page.goto("/docs/primitives/select");
+    const block = prose(page).locator("pre code").first();
+    expect([await css(block, "fontSize"), await css(block, "lineHeight"), await css(block, "fontWeight")]).toEqual(["13px", "20px", "400"]);
+
+    await page.goto("/playground/button");
+    const code = page.getByTestId("code-block").locator("pre");
+    await expect(code).toBeVisible();
+    expect([await css(code, "fontSize"), await css(code, "lineHeight"), await css(code, "fontWeight")]).toEqual(["13px", "20px", "450"]);
+    await page.getByRole("button", { name: "코드 편집" }).click();
+    const editor = page.getByRole("textbox", { name: "컴포넌트 코드 편집" });
+    expect([await css(editor, "fontSize"), await css(editor, "lineHeight"), await css(editor, "fontWeight")]).toEqual(["13px", "20px", "450"]);
+    await expectStyle(editor, { fontFamily: tokens.typography.palette.family.mono });
+  });
+
+  test("the landing headline is the hero role, its padding the section role and the footer logo the subdued opacity", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/");
+    const headline = page.getByRole("heading", { level: 1 });
+    await expectStyle(headline, { ...role("hero"), color: tokens.color.ink.primary });
+    expect([await css(headline, "fontSize"), await css(headline, "lineHeight"), await css(headline, "letterSpacing"), await css(headline, "fontWeight")]).toEqual(["60px", "62.4px", "-2.1px", "700"]);
+    // The period is part of the headline's ink: nothing inside it is coloured on its own.
+    await expect(headline.locator(":scope > :not(br)")).toHaveCount(0);
+    const hero = headline.locator("xpath=..");
+    await expectStyle(hero, { paddingTop: tokens.layout.section.start, paddingBottom: tokens.layout.section.end, maxWidth: tokens.shape.measure.xl });
+    await expectStyle(page.getByText("레이아웃은 Primitive로"), { maxWidth: tokens.shape.measure.md });
+    await expectStyle(page.locator("footer svg"), { opacity: tokens.color.opacity.subdued });
+    await expect(page.locator("footer svg")).toHaveCSS("opacity", "0.7");
   });
 });
 

@@ -133,13 +133,16 @@ describe("monoRule and codeRule", () => {
     });
   });
 
-  it("scales inline and compact code from the surrounding text and sets no letter-spacing", () => {
+  it("scales inline and compact code from the surrounding text and sets no letter-spacing or line breaking", () => {
     for (const kind of ["inline", "compact"] as const) {
       const rule = codeRule(kind);
       expect(rule.fontFamily, kind).toBe(TYPOGRAPHY.palette.family.mono);
       expect(rule.fontSize, kind).toBe(`calc(100% * ${TYPOGRAPHY.palette.codeScale[kind]})`);
       expect(rule, kind).not.toHaveProperty("letterSpacing");
       expect(rule, kind).not.toHaveProperty("lineHeight");
+      // A fragment breaks the way the text around it does, so a code cell never narrows its column.
+      expect(rule, kind).not.toHaveProperty("wordBreak");
+      expect(rule, kind).not.toHaveProperty("overflowWrap");
     }
     expect(value(TYPOGRAPHY.palette.codeScale.inline)).toBe("0.85");
     expect(value(TYPOGRAPHY.palette.codeScale.compact)).toBe("0.8");

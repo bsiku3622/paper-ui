@@ -236,7 +236,7 @@ test("[foundations.shape.focus-ring] the baseline draws the ring on an element w
 
   // A link in prose is the Link Atom, whose stylesheet declares the corner its ring follows.
   await page.goto("/docs/foundations/shape");
-  await expect(page.locator(".md a").first()).toHaveCSS("border-top-left-radius", "4px");
+  await expect(page.getByTestId("prose").locator("a").first()).toHaveCSS("border-top-left-radius", "4px");
   // So is the one on the Link page.
   await openPlayground(page, "link", "Link");
   await expect(page.getByRole("link", { name: "링크", exact: true })).toHaveCSS("border-top-left-radius", "4px");
