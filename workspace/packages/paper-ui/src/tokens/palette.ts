@@ -1,4 +1,4 @@
-// L0 — OKLCH palette source
+// OKLCH palette source
 //
 // Palette identity and color anchors live here. Semantic roles, CSS names, and component
 // vocabulary do not. This file assembles the completed palette by calling pure color-ladder

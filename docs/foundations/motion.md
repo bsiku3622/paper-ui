@@ -6,11 +6,14 @@ Motion은 위 네 시스템의 값이 시간에 따라 어떻게 바뀌는지를
 
 ## 원본
 
+<!-- generated:motion-source -->
+<!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 | 축 | 값 |
-|---|---|
+| --- | --- |
 | `duration` | `instant` 0ms · `reduced` 0.01ms · `fast` 100ms · `base` 130ms · `moderate` 200ms · `slow` 300ms |
 | `easing` | `linear` · `standard` (0.4, 0, 0.2, 1) · `decelerate` (0, 0, 0.2, 1) · `accelerate` (0.4, 0, 1, 1) · `overshoot` (0.22, 1, 0.36, 1) |
 | `loop` | `spin` 900ms linear · `pulse` 1400ms standard |
+<!-- /generated:motion-source -->
 
 `reduced`는 reduced-motion 환경에서 모든 전이에 거는 가장 작은 양수 duration입니다. `linear`는 반복 회전과 등속 진행에, `overshoot`은 떠오르는 overlay가 살짝 튀어 안착할 때 씁니다. `loop`는 전이와 별도인 반복입니다.
 
@@ -21,14 +24,17 @@ Motion은 위 네 시스템의 값이 시간에 따라 어떻게 바뀌는지를
 [contract:foundations.motion.roles]: #
 컴포넌트는 시간과 곡선을 따로 고르지 않고, 지금이 어떤 상황의 움직임인지(role)만 고릅니다. 역할은 아래 여섯이고, 각 역할을 쓰는 곳은 `MOTION_CONSUMERS`가 정합니다. 어휘는 `MOTION_ROLES`와 `MotionRole`로 나옵니다.
 
+<!-- generated:motion-roles -->
+<!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 | 역할 | duration | easing | 변위 | 상황 | 쓰는 곳 |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | `press` | fast | standard | `stroke.border` 만큼 아래로 | 버튼을 누르는 순간 | Button · IconButton |
-| `hover` | fast | standard | — | 포인터가 지나갈 때 바뀌는 hover tint·테두리·글자색 | Button · IconButton · Field |
+| `hover` | fast | standard | — | 포인터가 지나갈 때 바뀌는 hover tint·테두리·글자색 | Button · IconButton · Field · Surface |
 | `state` | base | standard | — | 켜짐·선택처럼 머무는 상태, 면·배경의 전이, 스위치 손잡이 | Button · IconButton · Field · Select · Textarea · Checkbox · Radio · Switch |
 | `enter` | moderate | overshoot | `gap.xs` · scale 0.99 | 떠오르는 overlay | Floating |
 | `exit` | fast | accelerate | — | 사라지는 overlay | Floating |
 | `theme` | instant | linear | — | 테마 전환 — 모드가 바뀌는 프레임에 모든 전이가 즉시 끝남 | PaperProvider · Surface |
+<!-- /generated:motion-roles -->
 
 [contract:foundations.motion.consumers]: #
 "쓰는 곳"에 적힌 Atom은 실제로 그 역할로 전이합니다. hover 반응에는 `hover`를, 켜진 채 머무는 상태와 면의 전이에는 `state`를 고릅니다. 한 요소가 둘을 함께 가질 수 있어서, Button은 hover tint(`--pui-state-tint`)와 테두리를 `hover`로, 배경색과 글자색을 `state`로, 눌림을 `press`로 전이합니다.
@@ -73,7 +79,7 @@ export const row = style({
 
 ## 앱에서
 
-앱도 시간과 곡선을 숫자로 쓰지 않습니다. 전이는 `transition(role, …속성)`으로, 등장과 반복은 `presence` · `loop` class로 고르고, 앱 stylesheet의 `transition` · `animation`에 `150ms`나 `cubic-bezier(…)`를 적으면 `paper/source-numbers`가 막습니다. 새 움직임이 필요하면 역할을 더하는 일이지 앱의 값을 더하는 일이 아닙니다.
+앱도 시간과 곡선을 숫자로 쓰지 않습니다. 전이는 `transition(role, …속성)`으로, 등장과 반복은 `presence` · `loop` class로 고르고, 앱 stylesheet의 `transition` · `animation`에 `130ms`나 `cubic-bezier(…)`를 적으면 `paper/source-numbers`가 막습니다. 새 움직임이 필요하면 역할을 더하는 일이지 앱의 값을 더하는 일이 아닙니다.
 
 ## Reduced motion
 

@@ -37,7 +37,7 @@ import { buildVarTree, em, keys, lengths, mapValues, rem } from "./helpers";
 
 const FAMILY = {
   sans: "'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  // 시스템 mono 를 앞에 — SF Mono(macOS)·Cascadia(Windows)는 x-height 가 커서
+  // 시스템 mono 를 앞에 — SF Mono(macOS)·Consolas(Windows)는 x-height 가 커서
   // Pretendard 옆에서 크기·무게가 맞는다. 라틴·숫자는 여기서 그린다. 한글은 이들에
   // 글리프가 없어 뒤의 CJK mono(D2Coding)로 떨어진다 — 한글도 등폭이 된다.
   // (Pretendard 는 proportional 이라 mono 스택에서 뺐다 — 넣으면 한글이 sans 로 샌다.

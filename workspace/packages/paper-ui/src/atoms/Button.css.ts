@@ -33,7 +33,7 @@ export const buttonFull = style({ width: "100%" });
 
 // size 3 단 — geometry만. Typography preset은 JSX에서 variant × size로 선택한다.
 // 버튼은 라벨이 상자를 정의하는 자리라 좌우가 넉넉해야 형태가 산다 — 입력류는 반대로
-// 상자가 먼저 있고 글자가 그 안에 놓여서, 가로를 더 좁게 가져간다(inputPaddingX).
+// 상자가 먼저 있고 글자가 그 안에 놓여서, 가로를 더 좁게 가져간다(control.inset.input).
 // 같은 높이에 서는 것과 각 역할의 글자 스타일은 별개 축이다.
 export const buttonSize = styleVariants(
   controlGeometry.button,

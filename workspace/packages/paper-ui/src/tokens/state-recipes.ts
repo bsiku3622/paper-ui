@@ -1,7 +1,7 @@
 // State recipes — how an element looks in each state, as plain style fragments. A stylesheet spreads the ones it
 // needs into its own rule, and every selector is built from tokens/state.ts, so a rule and the attribute a hook
 // writes cannot drift apart. Fragments never set a transition: the element joins the parts it uses with
-// transition(). A fragment that paints colour is spread by the paint tier and by callers outside the package.
+// transition(). A fragment that paints colour is spread by the Paint primitives and by callers outside the package.
 // Hover is CSS and only where a pointer can hover; a target that cannot take input never reacts.
 
 import { COLOR, OPACITY_VALUES, STATUSES, SYSTEM_COLORS } from "./colors";

@@ -2,7 +2,7 @@
 
 paper-ui는 복잡한 웹앱을 위한 디자인 시스템입니다. 순백과 검정이 골격이고, 색은 의미가 있을 때만 작게 얹습니다. Atlassian의 밀도, shadcn의 절제된 뉴트럴, ChatGPT의 조용함, SwiftUI의 단정한 마감을 한 결로 묶었습니다.
 
-시스템은 세 층으로 쌓입니다. **Foundations**가 화면의 모든 값을 정하고, **Primitives**가 그 값으로 바탕(1차)과 Box에 능력 하나를 더한 조각(2차)을 만들고, **Atoms**가 그 위에서 한 가지 역할을 하는 컨트롤이 됩니다. 문서와 Playground가 같은 순서로 나뉩니다.
+시스템은 세 계층으로 쌓입니다. **Foundations**가 화면의 모든 값을 정하고, **Primitives**가 그 값으로 바탕(1차)과 Box에 능력 하나를 더한 조각(2차)을 만들고, **Atoms**가 그 위에서 한 가지 역할을 하는 컨트롤이 됩니다. 문서와 Playground가 같은 순서로 나뉩니다.
 
 ```text
 Foundations   Color → Typography → Shape → Layout → Motion
@@ -16,11 +16,14 @@ Atoms         Button · Field · Select · Checkbox · Badge …
 
 ## 지도
 
+<!-- generated:docs-map -->
+<!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 - **시작하기** — [원칙](get-started/philosophy.md) · [설치](get-started/install.md) · [Theming](get-started/theming.md)
 - **Foundations** — [Overview](foundations/README.md) · [Color](foundations/color.md) · [Typography](foundations/typography.md) · [Shape](foundations/shape.md) · [Layout](foundations/layout.md) · [Motion](foundations/motion.md)
 - **Primitives** — [Overview](primitives/README.md) · 1차 [Element](primitives/element.md) · [Content](primitives/content.md) · [A11y](primitives/a11y.md) · 2차 [Paint](primitives/paint.md) · [Press](primitives/press.md) · [Select](primitives/select.md) · [Float](primitives/float.md) · [Drag](primitives/drag.md) · [Focus](primitives/focus.md) · [Field](primitives/field.md) · [Layout](primitives/layout.md)
 - **Atoms** — [Overview](atoms/README.md) · [States](atoms/states.md)
 - **Playground** — [Overview](/playground) · [Foundations](/playground/foundations/color) · [Primitives](/playground/box) · [Atoms](/playground/button)
+<!-- /generated:docs-map -->
 
 Playground의 [Overview](/playground)는 표본의 파생 색인입니다. 목록은 어휘에서 오고 캡션의 수치는 토큰에서 읽습니다. 컴포넌트 페이지의 코드는 화면에 그려진 그대로를 찍은 것입니다.
 

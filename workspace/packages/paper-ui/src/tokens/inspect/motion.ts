@@ -2,5 +2,5 @@
 // that pick from them. The Playground reads it as @paper-ui/inspect/motion and shows it; nothing in the
 // package imports this directory.
 
-export { DURATION, EASING, LOOP, LOOP_FRAMES, LOOP_REDUCED, MOTION, MOTION_ROLES } from "../motion";
+export { DURATION, EASING, LOOP, LOOP_FRAMES, LOOP_REDUCED, MOTION, MOTION_CONSUMERS, MOTION_ROLES } from "../motion";
 export type { Loop } from "../motion";

@@ -28,8 +28,8 @@ export const tokens = {
 } as const;
 
 // ───── 값 트리 · 타입 재수출 ────────────────────────────────────────────────
-// L2 semantic VALUES는 여기와 variables.ts만 조립한다. palette.ts가 OKLCH source를 보유하고
-// L1 color-ladder.ts의 순수 생성 함수로 coordinates/HEX를 완성한다. 소비처는 이 barrel만 사용한다.
+// 의미 VALUES는 여기와 variables.ts만 조립한다. palette.ts가 OKLCH source를 보유하고
+// color-ladder.ts의 순수 생성 함수가 coordinates/HEX를 완성한다. 소비처는 이 barrel만 사용한다.
 
 export * from "./vocabulary";
 

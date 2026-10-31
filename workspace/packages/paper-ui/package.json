@@ -2,7 +2,7 @@
   "name": "@studio-baeks/paper-ui",
   "version": "0.1.0",
   "type": "module",
-  "description": "paper-ui — a ledger for the screen. Paper, ink, and ruled lines.",
+  "description": "A design system for complex web apps. White and black carry the structure; colour appears only where it means something.",
   "license": "MIT",
   "author": "Jaewon Baek",
   "homepage": "https://github.com/bsiku3622/paper-ui",

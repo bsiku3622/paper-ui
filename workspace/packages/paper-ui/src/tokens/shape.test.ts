@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { dp as resolveDp } from "../../../../tests/support/dp";
+import { emittedDeclarations, resolveDp } from "./resolve-dp";
 import { controlGeometry } from "../internal/shape";
 import { SOURCE_VARIABLES, strokeRing, tokens } from "./index";
 import { walkValues } from "./helpers";
@@ -17,7 +17,7 @@ const { source, invariant, modes } = themeVariables();
 const declarations = new Map(Object.entries(source));
 
 // Roles read colours and shadow geometry as well; the light mode stands for the names every mode has.
-const resolvable = new Map([...declarations, ...Object.entries(invariant), ...Object.entries(modes.light.own), ...Object.entries(modes.light.ground)]);
+const resolvable = emittedDeclarations();
 
 // Resolves a role or recipe to dp at the default 16px root, the way the browser would.
 const dp = (expression: string) => resolveDp(expression, resolvable);
