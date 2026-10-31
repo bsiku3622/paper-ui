@@ -11,10 +11,11 @@ import { GeometryCase } from "./cases/geometry.js";
 import { LayersCase } from "./cases/layers.js";
 import { LayoutCase } from "./cases/layout.js";
 import { MotionCase } from "./cases/motion.js";
+import { PressCase } from "./cases/press.js";
 import { ThemeCase } from "./cases/theme.js";
 import { TypographyCase } from "./cases/typography.js";
 
-const CASES: Record<CaseName, ComponentType> = { geometry: GeometryCase, theme: ThemeCase, layers: LayersCase, layout: LayoutCase, elevation: ElevationCase, typography: TypographyCase, motion: MotionCase };
+const CASES: Record<CaseName, ComponentType> = { geometry: GeometryCase, theme: ThemeCase, layers: LayersCase, layout: LayoutCase, elevation: ElevationCase, typography: TypographyCase, motion: MotionCase, press: PressCase };
 
 const isCase = (name: string | null): name is CaseName => CASE_NAMES.some((known) => known === name);
 

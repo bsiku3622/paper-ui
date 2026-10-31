@@ -5,7 +5,6 @@ import { useAriaMove } from "../../internal/aria/move";
 import { useControllableState } from "../../internal/useControllableState";
 import { MARKER_ATTRIBUTE, stateAttributes, type StateAttributes } from "../../tokens";
 import { mergeProps } from "../composition";
-import { usePressable } from "../press/usePressable";
 import type { DraggableOptions, DragPosition, MoveDragOptions } from "../types";
 
 export type DraggableResult = {
@@ -105,7 +104,6 @@ export function useDraggable(options: DraggableOptions = {}): DraggableResult {
     disabled: disabled || mode !== "transfer",
     handle: activation === "handle",
   });
-  const dragButton = usePressable({ disabled: disabled || mode !== "transfer", onPress: native.startFromKeyboard });
   const moveInput: HTMLAttributes<HTMLElement> = disabled ? {} : {
     ...moveProps,
     onPointerDown(e) { if (!isChildControl(e)) moveProps.onPointerDown?.(e); },
@@ -113,10 +111,7 @@ export function useDraggable(options: DraggableOptions = {}): DraggableResult {
     onTouchStart(e) { if (!isChildControl(e)) moveProps.onTouchStart?.(e); },
     onKeyDown(e) { if (e.target === e.currentTarget) moveProps.onKeyDown?.(e); },
   };
-  // The button's ref is the press hook's own; the drag reads its element from dragProps, so it is left out.
-  const pressDom: HTMLAttributes<HTMLElement> & { ref?: unknown } = { ...dragButton.pressProps };
-  delete pressDom.ref;
-  const transferInput = mergeProps(native.dragProps, native.buttonProps, pressDom, {
+  const transferInput = mergeProps(native.dragProps, native.buttonProps, {
     onDragStart(e: React.DragEvent<HTMLElement>) {
       if (target.current && e.dataTransfer) e.dataTransfer.setDragImage(target.current, 0, 0);
     },
