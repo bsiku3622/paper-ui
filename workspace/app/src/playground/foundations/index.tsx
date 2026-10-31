@@ -1,7 +1,7 @@
 // Foundations — one inspector page per system. Every page follows its system's own build order:
 // source values, the roles that select from them, then the presets or recipes built from roles.
 
-import { useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 
 import { Stack } from "@studio-baeks/paper-ui";
 
@@ -24,7 +24,9 @@ const PAGES: Record<FoundationId, () => React.ReactElement> = {
 
 export const Foundations = () => {
   const { section: slug } = useParams<{ section: string }>();
-  const { id, label, summary } = FOUNDATIONS.find((foundation) => foundation.id === slug) ?? FOUNDATIONS[0];
+  const foundation = FOUNDATIONS.find(({ id }) => id === slug);
+  if (!foundation) return <Navigate to={`/playground/foundations/${FOUNDATIONS[0].id}`} replace />;
+  const { id, label, summary } = foundation;
   const Page = PAGES[id];
   return (
     <Stack className={s.page} gap="xl">

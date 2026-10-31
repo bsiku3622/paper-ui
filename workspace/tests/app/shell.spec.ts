@@ -57,6 +57,12 @@ test("a page's title is its name, and it follows a client-side navigation", asyn
   await expect(page).toHaveTitle("paper-ui");
   await page.goto("/docs/foundations/color");
   await expect(page).toHaveTitle("Color — paper-ui");
+  await page.goto("/docs");
+  await expect(page).toHaveTitle("Overview — paper-ui");
+  for (const [route, title] of [["/docs/foundations", "Foundations"], ["/docs/primitives", "Primitives"], ["/docs/atoms", "Atoms"]] as const) {
+    await page.goto(route);
+    await expect(page).toHaveTitle(`${title} Overview — paper-ui`);
+  }
   await page.goto("/playground/icon-button");
   await expect(page).toHaveTitle("IconButton — paper-ui");
   await page.goto("/playground/foundations/motion");

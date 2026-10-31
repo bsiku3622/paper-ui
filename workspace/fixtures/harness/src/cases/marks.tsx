@@ -37,6 +37,8 @@ export const MarksCase = () => (
       <Room><Radio aria-label="radio-on-disabled" name="disabled-on" disabled defaultChecked data-testid="radio-on-disabled" /></Room>
       <Room><Switch aria-label="switch-disabled" disabled data-testid="switch-disabled" /></Room>
       <Room><Switch aria-label="switch-on-disabled" disabled defaultChecked data-testid="switch-on-disabled" /></Room>
+      <Room><Radio aria-label="radio-error-disabled" name="error-disabled" status="error" disabled data-testid="radio-error-disabled" /></Room>
+      <Room><Switch aria-label="switch-error-disabled" status="error" disabled data-testid="switch-error-disabled" /></Room>
     </div>
     <div dir="rtl" style={{ display: "flex", flexWrap: "wrap" }}>
       <Room><Switch aria-label="switch-rtl-off" data-testid="switch-rtl-off" /></Room>

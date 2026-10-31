@@ -154,7 +154,8 @@ test("[guardrails.source-numbers.app-roles] the app reads no typography palette"
   for (const code of [
     "import { tokens } from '@studio-baeks/paper-ui/tokens';\nexport const bold = tokens.typography.palette.weight.bold;",
     "import { tokens } from '@studio-baeks/paper-ui/tokens';\nexport const X = () => <b style={{ fontWeight: tokens.typography.palette.weight.bold }} />;",
-    "import { tokens } from '@studio-baeks/paper-ui/tokens';\nconst { palette } = tokens.typography;\nexport const p = tokens.typography.palette;",
+    "import { tokens } from '@studio-baeks/paper-ui/tokens';\nconst { palette } = tokens.typography;\nexport const p = palette.weight.bold;",
+    "import { tokens } from '@studio-baeks/paper-ui/tokens';\nconst { typography: { palette } } = tokens;\nexport const p = palette.weight.bold;",
   ]) assert.equal(await flagged(code, APP_TSX), true, code);
   const read = "import { tokens } from '@studio-baeks/paper-ui/tokens';\nexport const p = tokens.typography.palette.fontSize;";
   assert.equal(await flagged(read, "app/src/playground/foundations/TypographyPage.tsx"), false);

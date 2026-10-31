@@ -2,7 +2,7 @@ import tseslint from "@typescript-eslint/eslint-plugin";
 import tsparser from "@typescript-eslint/parser";
 import reactHooks from "eslint-plugin-react-hooks";
 import jsxA11y from "eslint-plugin-jsx-a11y";
-import { ARIA_BOUNDARY } from "./eslint-rules/manifest.js";
+import { ARIA_BOUNDARY, ARIA_HOME } from "./eslint-rules/manifest.js";
 import paper from "./eslint-rules/paper.js";
 
 // Every boundary the paper rules guard is declared in eslint-rules/manifest.js; the blocks below only say
@@ -75,7 +75,7 @@ export default [
   // React Aria 는 패키지의 구현 세부라 import 가 모두 src/internal/aria 안에 산다. 경계의 패턴은 manifest 에 있다.
   {
     files: ["**/*.{js,mjs,cjs,ts,tsx}"],
-    ignores: ["packages/paper-ui/src/internal/aria/**"],
+    ignores: [`${ARIA_HOME}/**`],
     rules: { "no-restricted-imports": ["error", { patterns: [ARIA_BOUNDARY] }] },
   },
 

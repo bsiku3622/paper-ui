@@ -123,7 +123,7 @@ export const StepGrid = ({ steps, children, ...rest }: { steps: number; children
 );
 
 // A line set in one Palette value, named by the declarations that give it.
-export const FontSample = ({ font, className, children }: { font: CSSProperties; className?: string; children: ReactNode }) => (
+export const FontSample = ({ font, className, children }: { font: Pick<CSSProperties, "fontFamily" | "fontSize" | "fontWeight" | "lineHeight" | "letterSpacing" | "textDecoration" | "textUnderlineOffset">; className?: string; children: ReactNode }) => (
   <Text className={className} variant="body" ink="primary" style={font}>{children}</Text>
 );
 

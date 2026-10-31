@@ -3,11 +3,11 @@
 // with the variable that value is emitted under. A role is never overridden: it is an alias of a source
 // variable or a formula over one, so it follows the source on its own (docs/foundations/shape.md).
 
-import { keys, pathToCssVar, type VarTree } from "./helpers";
+import { pathToCssVar, type VarTree } from "./helpers";
 import { LAYOUT_VALUES } from "./layout";
 import { SHAPE_VALUES } from "./shape";
 import { TYPOGRAPHY_VALUES } from "./typography";
-import { themeVariables } from "./variables";
+import { SOURCE_VARIABLES } from "./variables";
 
 type DeepPartial<T> = { [K in keyof T]?: T[K] extends string ? string : DeepPartial<T[K]> };
 
@@ -20,7 +20,7 @@ export type SourceOverrides = DeepPartial<{
 
 type Declaration = `--pui-${string}`;
 
-const known = new Set<string>(keys(themeVariables().source));
+const known = new Set<string>(SOURCE_VARIABLES);
 
 export const sourceVars = (overrides: SourceOverrides): Record<Declaration, string> => {
   const vars: Record<Declaration, string> = {};

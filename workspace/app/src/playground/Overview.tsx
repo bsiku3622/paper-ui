@@ -11,7 +11,6 @@ import {
   Checkbox,
   Divider,
   Field,
-  Icon,
   IconButton,
   Inline,
   Label,
@@ -28,6 +27,7 @@ import {
 import { ACCENTS, CONTROL_SIZES, STATUSES, SURFACE_FILLS, TEXT_VARIANTS, VARIANTS, tokens, type ControlSize } from "@studio-baeks/paper-ui/tokens";
 
 import { Dot } from "../compositions/Dot";
+import { CloseIcon, InfoIcon, PlusIcon, SearchIcon, TrashIcon } from "../compositions/icons";
 import { PageHeader } from "../site/PageHeader";
 import { SectionHeading } from "../site/SectionHeading";
 import { Computed, px } from "./foundations/kit";
@@ -168,13 +168,13 @@ export const Overview = () => {
           <Button loading data-testid="btn-loading">저장 중</Button>
           <Button variant="soft" loading>불러오기</Button>
           <IconButton aria-label="추가" data-testid="btn-icononly">
-            <Icon><path d="M12 5v14M5 12h14" /></Icon>
+            <PlusIcon />
           </IconButton>
           <IconButton variant="hairline" aria-label="닫기">
-            <Icon><path d="M6 6l12 12M18 6 6 18" /></Icon>
+            <CloseIcon />
           </IconButton>
           <IconButton accent="error" aria-label="삭제">
-            <Icon><path d="M4 7h16M9 7V5h6v2M6 7l1 12h10l1-12" /></Icon>
+            <TrashIcon />
           </IconButton>
         </Spec>
         <Spec label="fullWidth">
@@ -208,7 +208,7 @@ export const Overview = () => {
         </Spec>
         <Spec label="Field 어도먼트 — 아이콘 · clear · 비밀번호 · prefix/suffix">
           <Box style={{ width: "12rem" }}>
-            <Field placeholder="검색" leading={<Icon size="caption"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon>} />
+            <Field placeholder="검색" leading={<SearchIcon size="caption" />} />
           </Box>
           <Box style={{ width: "12rem" }}>
             <Field defaultValue="지울 값" clearable data-testid="field-clearable" />
@@ -231,7 +231,7 @@ export const Overview = () => {
               clearable
               placeholder="작업 검색..."
               aria-label="작업 검색"
-              leading={<Icon size="body" aria-hidden><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon>}
+              leading={<SearchIcon size="body" aria-hidden />}
               trailing={<Surface as="kbd" fill="raised" border radius="sm" paddingX="xs"><Text variant="caption">⌘ K</Text></Surface>}
             />
           </Box>
@@ -272,7 +272,7 @@ export const Overview = () => {
         <Spec label="shape=pill — 검색 한 줄 (Field · Select · Button 같은 곡선)" testid="spec-pill-row">
           <Box style={{ width: "12rem" }}>
             <Field shape="pill" placeholder="검색" aria-label="검색" data-testid="field-pill"
-              leading={<Icon size="caption"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon>} />
+              leading={<SearchIcon size="caption" />} />
           </Box>
           <Box style={{ width: "8rem" }}>
             <Select shape="pill" data-testid="select-pill"><Select.Option value="a">전체</Select.Option></Select>
@@ -296,10 +296,7 @@ export const Overview = () => {
             <Radio name="mark" defaultChecked data-testid="mark-radio" />
             <Radio name="mark-off" data-testid="mark-radio-off" aria-label="꺼진 라디오" />
             <Switch defaultChecked data-testid="mark-switch" />
-            <Icon aria-label="정보" data-testid="mark-icon">
-              <circle cx="12" cy="12" r="9" />
-              <path d="M12 8h.01M12 11v5" />
-            </Icon>
+            <InfoIcon aria-label="정보" data-testid="mark-icon" />
             <Spinner data-testid="mark-spinner" />
             <Badge data-testid="mark-badge">배지</Badge>
             <Button size="sm" data-testid="mark-button">버튼</Button>
@@ -348,10 +345,7 @@ export const Overview = () => {
         <Spec label="Divider · Link · Icon">
           <Link href="#/" data-testid="link">링크</Link>
           <Divider orientation="vertical" />
-          <Icon aria-label="정보" data-testid="icon">
-            <circle cx="12" cy="12" r="9" />
-            <path d="M12 11v5M12 8h.01" />
-          </Icon>
+          <InfoIcon aria-label="정보" data-testid="icon" />
         </Spec>
       </Section>
 

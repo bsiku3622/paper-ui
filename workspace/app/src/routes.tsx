@@ -6,8 +6,15 @@ import { Navigate, type RouteObject } from "react-router-dom";
 import { DOCS } from "virtual:paper-docs";
 
 import type { SiteHandle } from "./site/handle";
-import { FOUNDATIONS, PLAYGROUND_NAV } from "./site/site-map";
+import { DOC_GROUPS, FOUNDATIONS, PLAYGROUND_NAV } from "./site/site-map";
 import { SiteLayout } from "./site/SiteLayout";
+
+// Every group's overview is a README headed Overview; in a tab or in history, its group tells them apart.
+const docTitle = (path: string) => {
+  const doc = DOCS.find(({ slug }) => slug === path);
+  const group = DOC_GROUPS.find(({ id }) => id !== "" && id === path);
+  return doc && group ? `${group.label} ${doc.title}` : doc?.title;
+};
 
 const Home = lazy(() => import("./pages/Home").then((m) => ({ default: m.Home })));
 const Demo = lazy(() => import("./pages/demo/Demo").then((m) => ({ default: m.Demo })));
@@ -49,7 +56,7 @@ export const routes: RouteObject[] = [
           { path: ":slug", element: <ComponentDetail />, handle: handle({ title: (params) => NAMES.get(params.slug ?? "") }) },
         ],
       },
-      { path: "docs/*", element: <Docs />, handle: handle({ sidebar: "docs", title: (params) => DOCS.find(({ slug }) => slug === (params["*"] ?? "").replace(/\/$/, ""))?.title }) },
+      { path: "docs/*", element: <Docs />, handle: handle({ sidebar: "docs", title: (params) => docTitle((params["*"] ?? "").replace(/\/$/, "")) }) },
       { path: "*", element: <Navigate to="/" replace /> },
     ],
   },

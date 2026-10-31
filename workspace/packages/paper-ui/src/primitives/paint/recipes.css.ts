@@ -39,6 +39,8 @@ const disabled = stateSelector("disabled");
 const checkedOrMixed = "&:is(:checked, :indeterminate)";
 // A Checkbox is unchecked when it is neither checked nor mixed. A Radio is never mixed: its :indeterminate means its group has no choice yet.
 const unchecked = "&:where(:not(:checked, :indeterminate))";
+// A Radio and a Switch have no mixed state. Zero specificity, so a disabled mark still wins over an error one.
+const off = "&:where(:not(:checked))";
 const forcedMark = markForcedProfile.checked;
 
 export const markPaint = styleVariants({
@@ -73,7 +75,7 @@ export const markPaint = styleVariants({
     selectors: {
       "&:checked": { borderColor: markProfile.checked.face },
       "&:checked::after": { backgroundColor: markProfile.checked.face },
-      [`&:not(:checked)${errored}`]: { borderColor: markProfile.invalid.ring },
+      [`${off}${errored}`]: { borderColor: markProfile.invalid.ring },
     },
     "@media": {
       [FORCED]: {
@@ -83,7 +85,7 @@ export const markPaint = styleVariants({
         selectors: {
           "&:checked": { borderColor: forcedMark.ring },
           "&:checked::after": { backgroundColor: forcedMark.ring },
-          [`&:not(:checked)${errored}`]: { borderColor: markForcedProfile.rest.ring },
+          [`${off}${errored}`]: { borderColor: markForcedProfile.rest.ring },
           [`&${disabled}`]: { borderColor: markForcedProfile.disabled.ring },
           [`&:checked${disabled}::after`]: { backgroundColor: markForcedProfile.disabled.ring },
         },
@@ -98,7 +100,7 @@ export const markPaint = styleVariants({
       // The ring fades out rather than leaving: a transparent shadow has something to fade to and paints nothing on the track's rim.
       "&:checked": { backgroundColor: markProfile.checked.face, boxShadow: strokeRing(markProfile.checked.ring) },
       "&:checked::after": { backgroundColor: markProfile.checked.knob },
-      [`&:not(:checked)${errored}`]: { boxShadow: strokeRing(markProfile.invalid.ring) },
+      [`${off}${errored}`]: { boxShadow: strokeRing(markProfile.invalid.ring) },
     },
     "@media": {
       [FORCED]: {
@@ -109,7 +111,7 @@ export const markPaint = styleVariants({
           "&::after": { backgroundColor: markForcedProfile.rest.knob },
           "&:checked": { backgroundColor: forcedMark.face, boxShadow: strokeRing(forcedMark.ring) },
           "&:checked::after": { backgroundColor: forcedMark.knob },
-          [`&:not(:checked)${errored}`]: { boxShadow: strokeRing(markForcedProfile.rest.ring) },
+          [`${off}${errored}`]: { boxShadow: strokeRing(markForcedProfile.rest.ring) },
           [`&${disabled}`]: { boxShadow: strokeRing(markForcedProfile.disabled.ring) },
           [`&:checked${disabled}`]: { backgroundColor: markForcedProfile.disabled.face, boxShadow: strokeRing(markForcedProfile.disabled.ring) },
         },

@@ -86,8 +86,6 @@ export const skipLink = style({
   paddingBlock: tokens.shape.inset.sm,
   paddingInline: tokens.shape.inset.md,
   borderRadius: tokens.shape.radius.control,
-  color: tokens.color.ink.primary,
-  textDecoration: "none",
 });
 
 // ── Sidebar and content ──────────────────────────────────────────────────────

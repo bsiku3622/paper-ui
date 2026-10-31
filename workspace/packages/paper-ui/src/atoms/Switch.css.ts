@@ -25,6 +25,8 @@ export const switchRoot = style([controlReset, {
       transition: transition("state", "inset-inline-start"),
     },
   },
+  // Under forced colours a mark is drawn from system colours alone, so the thumb casts nothing.
+  "@media": { "(forced-colors: active)": { selectors: { "&::after": { boxShadow: "none" } } } },
 }]);
 
 // size 3 단 — 트랙(w·h) · 손잡이(thumb) · 여백 · 켜짐 이동.

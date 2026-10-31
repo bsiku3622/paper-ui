@@ -11,7 +11,9 @@ const hooks = (group: PrimitiveGroup) => INVENTORY.primitives[group].hooks;
 const second = PRIMITIVE_ORDERS.second;
 const functionsOf = (group: PrimitiveGroup): readonly string[] => (INVENTORY.primitives[group] as { functions?: readonly string[] }).functions ?? [];
 const classFunctions = INVENTORY.classes.filter((name) => name.endsWith("Class"));
-const classMaps = INVENTORY.classes.filter((name) => !name.endsWith("Class"));
+// presence and loop are Motion's maps, written up in its own section; any other map stands in the Paint row.
+const MOTION_MAPS = new Set(["presence", "loop"]);
+const classMaps = INVENTORY.classes.filter((name) => !name.endsWith("Class") && !MOTION_MAPS.has(name));
 const primitiveCount = (Object.keys(INVENTORY.primitives) as PrimitiveGroup[]).reduce((sum, group) => sum + components(group).length, 0);
 
 type Format = (names: readonly string[]) => string;

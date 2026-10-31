@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 import { tokens } from "../../packages/paper-ui/src/tokens";
 import { tab } from "../support/keyboard";
-import { expectStyle, profile } from "../support/style";
+import { colors, contrast, expectStyle, profile } from "../support/style";
 
 test("[atoms.link.target] the hero Buttons that are links carry no underline, and the demo link is a Link with an arrow icon that underlines under the pointer", async ({ page }) => {
   await page.goto("/");
@@ -33,6 +33,17 @@ test("the brand label is a neutral badge, and the mockup's mark and current item
   await expectStyle(current, { backgroundColor: tokens.color.interaction.selected, color: tokens.color.ink.primary, fontWeight: tokens.typography.palette.weight.medium });
   await expectStyle(side.getByText("보드", { exact: true }), { fontWeight: tokens.typography.palette.weight.regular, color: tokens.color.ink.secondary });
 });
+
+for (const scheme of ["light", "dark"] as const) {
+  test(`the mockup's mark is a wash on the primary solid, readable at 4.5:1 (${scheme})`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme: scheme });
+    await page.goto("/");
+    const plate = page.getByTestId("home-mockup-side").getByText("S", { exact: true }).locator("..");
+    await expectStyle(plate, { backgroundColor: tokens.color.accent.primary.solid, color: tokens.color.accent.primary.wash });
+    const { background, color } = await colors(plate);
+    expect(contrast(background, color)).toBeGreaterThanOrEqual(4.5);
+  });
+}
 
 test("the mockup's filter is a roving group: one tab stop, arrow keys move focus, and aria-pressed says which is selected", async ({ page }) => {
   await page.goto("/");
