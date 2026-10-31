@@ -15,7 +15,7 @@ test("[guardrails.inline-token.no-token-style] a token reaches `style` through n
     'import * as ui from "../tokens"; export const X = () => <div style={{color:ui.tokens.color.ink.primary}} />;',
     'import {tokens} from "../tokens"; export const X = () => <div style={{color: String(tokens.color.ink.primary)}} />;',
     'import {useMemo} from "react"; import {tokens} from "../tokens"; export const X = () => <div style={useMemo(() => ({color: tokens.color.ink.primary}), [])} />;',
-    'import {focusRing} from "../internal/shape"; export const X = () => <div style={focusRing} />;',
+    'import {focusRing} from "../tokens"; export const X = () => <div style={focusRing} />;',
     'import {controlGeometry} from "../internal/shape"; export const X = () => <div style={controlGeometry.button.md} />;',
     'import {mergeProps} from "./composition"; import {tokens} from "../tokens"; export const props = (p) => mergeProps(p, {style: {color: tokens.color.ink.primary}});',
     'import {tokens} from "../tokens"; const color = (name) => tokens.color.ink[name]; export const X = ({name}) => <div style={{color: color(name)}} />;',

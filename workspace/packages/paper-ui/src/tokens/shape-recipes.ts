@@ -18,6 +18,10 @@ const trackHeight = controlSizes((size) => `calc(${selection.size[size]} + ${rim
 // shortfall, so it is never positive and a mark that already is one reaches nowhere.
 export const targetReach = (visual: string) => `calc((min(${visual}, ${SHAPE.target.min}) - ${SHAPE.target.min}) / 2)`;
 
+// An inset hairline drawn inside an element's own box, so it adds no size: the off Switch's ring, a
+// forced-colours mark, a selected face under increased contrast. It is the one box-shadow outside elevation.
+export const strokeRing = (color: string): string => `inset 0 0 0 ${stroke.border} ${color}`;
+
 export const SHAPE_RECIPES = {
   button: { spinner: ANATOMY.inline.spinner },
   badge: { height: ANATOMY.badge.height, inset: ANATOMY.badge.inset, gap: SPACE.xs, dot: ANATOMY.inline.dot },
@@ -57,7 +61,8 @@ export const SHAPE_RECIPES = {
       return `calc((${control.height[size]} - ${line}) / 2 - ${stroke.border})`;
     }),
   },
-  spinner: { size: control.icon, stroke: stroke.emphasis },
+  // The ring is a control icon tall; inline it follows the text it sits in.
+  spinner: { size: control.icon, inline: ANATOMY.inline.spinner, stroke: stroke.emphasis },
   // Marks smaller than a minimum target reach past their edge; each is the inset of its hit area.
   target: {
     selection: controlSizes((size) => targetReach(selection.size[size])),

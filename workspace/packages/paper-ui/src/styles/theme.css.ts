@@ -1,14 +1,13 @@
-// theme.css.ts — 문서 바탕(body · 포커스 링).
+// theme.css.ts — 문서 바탕(body).
 //
 // 변수는 tokens/variables.css.ts 가 굽는다. 여기는 그 변수를 읽어 문서에 얹는 규칙만 둔다.
 // component · resolver · app 은 tokens var() 만 본다.
 
 import { THEME_ATTRIBUTE, THEME_SWAP_ATTRIBUTE, tokens } from "../tokens";
-import { focusRing } from "../internal/shape";
 import { layered } from "../tokens/layers.css";
 import { typographyRule } from "../tokens/typography-recipes";
 
-// 문서 바탕(body · 포커스 링)은 pui.base, box-sizing 과 body margin 은
+// 문서 바탕(body)은 pui.base, box-sizing 과 body margin 은
 // 맨 앞의 pui.reset 에 든다.
 const reset = layered("reset");
 const base = layered("base");
@@ -39,11 +38,4 @@ const swapping = `:root[${THEME_SWAP_ATTRIBUTE}]`;
 base.globalStyle(`${swapping} *, ${swapping} *::before, ${swapping} *::after`, {
   transitionDuration: `${tokens.motion.role.theme.duration} !important`,
   transitionDelay: `${tokens.motion.role.theme.duration} !important`,
-});
-
-// 포커스는 interaction.focus로 통일 (Apple · Atlassian 시그니처). 색이 가장 작게,
-// 가장 자주 등장하는 포인트 자리.
-base.globalStyle(":focus-visible", {
-  ...focusRing,
-  borderRadius: tokens.shape.radius.control,
 });

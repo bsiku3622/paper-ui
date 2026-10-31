@@ -1,6 +1,6 @@
-import { tokens, transition } from "../tokens";
-import { outlinedControlProfile, outlinedControlHover } from "../tokens/color-recipes";
-import { controlGeometry, focusRing, geometry } from "../internal/shape";
+import { tokens, transition, focusRing } from "../tokens";
+import { outlinedControlProfile } from "../tokens/color-recipes";
+import { controlGeometry, geometry } from "../internal/shape";
 import { layered } from "../tokens/layers.css";
 
 const { style, styleVariants } = layered("components");
@@ -9,7 +9,9 @@ const { style, styleVariants } = layered("components");
 // 크기(padding·fontSize)는 size 축(textareaSize)이 정한다 — 컨트롤 높이·글자 사다리를
 // 공유하고, 여러 줄 입력에 필요한 세로 여백만 별도 축으로 보정한다.
 export const textareaRoot = style({
-  ...outlinedControlProfile,
+  background: outlinedControlProfile.face,
+  color: outlinedControlProfile.ink,
+  borderColor: outlinedControlProfile.border,
   width: "100%",
   // 줄 수가 높이를 정하므로(rows) 여기서 잡는 건 바닥뿐이다.
   minHeight: geometry.textarea.minHeight,
@@ -21,7 +23,7 @@ export const textareaRoot = style({
   selectors: {
     "&::placeholder": { color: tokens.color.ink.tertiary },
     '&:not([data-status]):hover:not(:disabled)': {
-      ...outlinedControlHover,
+      borderColor: outlinedControlProfile.hoverBorder,
     },
     // keyboard focus만 바깥 ring으로 알린다. 클릭은 caret과 edge만 남긴다.
     "&:focus-visible:not([data-pui-pointer-focus])": focusRing,

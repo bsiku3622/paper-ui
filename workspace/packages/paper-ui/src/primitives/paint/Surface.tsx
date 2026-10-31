@@ -9,10 +9,10 @@ import { joinClass } from "../../internal/joinClass";
 import { resolveFill } from "../../resolvers";
 import { elevation as elevationClass } from "../../styles/elevation.css";
 import { useThemeScope } from "../../theme/scope";
-import type { Elevation, SurfaceFill, SurfaceRadius, SurfaceTheme } from "../../tokens";
+import { stateAttributes, type Elevation, type SurfaceFill, type SurfaceRadius, type SurfaceTheme } from "../../tokens";
 import { Box, type BoxOwnProps } from "../Box";
 import type { PolymorphicComponent, PolymorphicProps } from "../polymorphic";
-import { surfaceBorder, surfaceRadius } from "./Surface.css";
+import { surfaceBorder, surfaceItem, surfaceRadius } from "./Surface.css";
 
 export type SurfaceOwnProps = BoxOwnProps & {
   // 면의 깊이 — canvas · raised · sunken. 테마가 있는 Surface 는 fill 을 안 줘도 그 테마의 canvas 를 깐다.
@@ -26,13 +26,18 @@ export type SurfaceOwnProps = BoxOwnProps & {
   // 이 면의 테마 — light · dark 는 고정, inverse 는 주변의 반대(라이트 위 어두운 판, 다크 위 밝은 판).
   // 안쪽 글자는 이 테마의 잉크를 받고, 이 Surface 자신의 포커스 링과 그림자는 바깥 지면의 모드를 따른다.
   theme?: SurfaceTheme;
+  // 면이 항목이 된다 — 포인터가 올라가면 중립 tint 가 뜨고, 눌리면 더 짙어지고, 선택되면 선택 tint 를 입는다. 눌림이 선택을 이기고
+  // 선택이 hover 를 이기며, 막힌 대상(disabled · aria-disabled · data-disabled)과 터치에는 hover 가 없다.
+  hoverable?: boolean;
+  // data-selected 를 단다. 색은 prop 이 아니라 그 속성을 읽는 CSS 가 입히므로, 선택된 모습은 hoverable 면이 얻는다.
+  selected?: boolean;
 };
 
 export type SurfaceProps<As extends ElementType = "div"> = PolymorphicProps<SurfaceOwnProps, As>;
 
 // theme 이 필요로 하는 context 를 뺀 나머지 — class 로 갈 수 있는 모든 것.
-export const surfaceClass = ({ fill, border, radius, elevation }: Pick<SurfaceOwnProps, "fill" | "border" | "radius" | "elevation">): string =>
-  joinClass(resolveFill(fill), border && surfaceBorder, radius && surfaceRadius[radius], elevation && elevationClass[elevation]);
+export const surfaceClass = ({ fill, border, radius, elevation, hoverable }: Pick<SurfaceOwnProps, "fill" | "border" | "radius" | "elevation" | "hoverable">): string =>
+  joinClass(resolveFill(fill), border && surfaceBorder, radius && surfaceRadius[radius], elevation && elevationClass[elevation], hoverable && surfaceItem);
 
 const SurfaceImpl = forwardRef<HTMLElement, Omit<SurfaceProps, "as" | "ref"> & { as?: ElementType }>(function Surface({
   fill,
@@ -40,6 +45,8 @@ const SurfaceImpl = forwardRef<HTMLElement, Omit<SurfaceProps, "as" | "ref"> & {
   radius,
   elevation,
   theme,
+  hoverable,
+  selected,
   className,
   ...rest
 }, ref) {
@@ -47,8 +54,9 @@ const SurfaceImpl = forwardRef<HTMLElement, Omit<SurfaceProps, "as" | "ref"> & {
   const node = (
     <Box
       ref={ref}
-      className={joinClass(surfaceClass({ fill: theme !== undefined ? (fill ?? "canvas") : fill, border, radius, elevation }), className)}
+      className={joinClass(surfaceClass({ fill: theme !== undefined ? (fill ?? "canvas") : fill, border, radius, elevation, hoverable }), className)}
       {...scope.attributes}
+      {...stateAttributes({ selected })}
       {...rest}
     />
   );

@@ -72,6 +72,8 @@ Palette Token은 내부 이름입니다. 컴포넌트와 앱은 import하지 않
 
 `opacity`는 팔레트 단계가 아니라 alpha 단계 하나를 값으로 씁니다. `disabled`는 alpha 50(0.5), `subdued`는 alpha 70(0.7)이고 어떤 테마에서도 같습니다. 선택표 밖에 있어서 위 표와 Playground Color에는 나오지 않습니다.
 
+`interaction`의 상태 역할은 뜻이 서로 다릅니다. `active`는 중립 항목이 눌리는 동안의 면, `selected`는 중립 항목이 선택된 면, `focus`는 입력이 향하는 자리 — 키보드 포커스 링과 drop 대상의 경계 — 입니다. 항목은 이 면을 `tokens/color-recipes.ts`의 `itemProfile`(hover는 `bgHover.onSurface`, 눌림은 `active`, 선택은 `selected`)에서 읽고, 눌림이 선택을, 선택이 hover를 이깁니다.
+
 링크의 색은 `interaction.link`입니다. 지금은 `accent.info.ink`와 같은 blue.700 · blue.300을 고르지만 뜻이 다른 역할입니다. info는 상태를 알리고 link는 눌러서 이동할 수 있다는 표시라, 상태색을 바꿔도 링크가 따라 움직이지 않습니다. 링크는 모든 면 위에서 4.5:1 이상입니다.
 
 ## 테마 스코프
@@ -97,6 +99,8 @@ Palette Token은 내부 이름입니다. 컴포넌트와 앱은 import하지 않
 | `border.base` · `strong` · `hover` | neutral.600 · 650 · 700 | neutral.600 · 500 · 400 |
 | `ink.tertiary` | neutral.700 | neutral.400 |
 
+선택된 면은 옅게 깔려 색만으로는 경계가 모자랄 수 있어, 이 모드에서는 선택된 중립 항목이 `ink.primary` 1px 안쪽 선(`strokeRing`)을 더 얻습니다. 선택을 색 하나에만 기대지 않게 하는 비색 단서입니다.
+
 forced-colors의 값은 OS가 정하므로, `SYSTEM_COLORS`가 그 시스템 색 이름(`Canvas` · `CanvasText` · `ButtonFace` · `ButtonText` · `Highlight` · `HighlightText` · `GrayText` · `LinkText`)만 적어 둡니다.
 
 ## Accent
@@ -121,15 +125,19 @@ light `warning`은 의도된 예외입니다. `STATUS_EXCEPTIONS.warning`이 lig
 
 Atom은 색을 직접 고르지 않고 `accent`와 `variant` 두 축을 말합니다. 이 조합이 어떤 tone을 쓰는지는 `tokens/color-recipes.ts`의 `VARIANT_RECIPE`가 한 곳에서 정하고, `accentProfile`과 Playground [Color](/playground/foundations/color)의 Accent × variant 표가 같은 표를 읽습니다.
 
-| variant | 면 | 글자 | hover |
-|---|---|---|---|
-| `solid` | `solid` | `wash` | `bgHover.onPrimarySolid`(primary) 또는 `onAccentSolid` tint |
-| `soft` | `soft` | `ink` | `bgHover.onSurface` tint |
-| `hairline` | `bg.raised` + `border.base` | `ink`(primary는 `ink.primary`) | `border.hover` |
-| `ghost` | 투명 | `ink` | `bgHover.onSurface` tint |
-| `muted` | 투명 | `subtle` | `bgHover.onSurface` tint |
+[contract:foundations.color.profile-shape]: #
 
-선택된 상태를 soft 면으로 알릴 수 있는 variant는 `SELECTABLE_VARIANTS`(`hairline` · `ghost` · `muted`)입니다. 면이 없거나 옅어서 선택된 모습이 따로 필요한 variant들입니다.
+| variant | 면 | 글자 | hover | selected |
+|---|---|---|---|---|
+| `solid` | `solid` | `wash` | `bgHover.onPrimarySolid`(primary) 또는 `onAccentSolid` tint | 없음 |
+| `soft` | `soft` | `ink` | `bgHover.onSurface` tint | 없음 |
+| `hairline` | `bg.raised` + `border.base` | `ink`(primary는 `ink.primary`) | `border.hover` | 그 accent의 `soft` 면, 경계는 투명 |
+| `ghost` | 투명 | `ink` | `bgHover.onSurface` tint | 그 accent의 `soft` 면 |
+| `muted` | 투명 | `subtle` | `bgHover.onSurface` tint | 그 accent의 `soft` 면, 글자는 `ink` |
+
+선택된 상태를 soft 면으로 알릴 수 있는 variant는 `SELECTABLE_VARIANTS`(`hairline` · `ghost` · `muted`)입니다. 면이 없거나 옅어서 선택된 모습이 따로 필요한 variant들이고, `solid`와 `soft`는 이미 면이 있어 selected가 없습니다. 선택은 `data-selected`나 `aria-current`가 알리고 `Paint`의 `selected`가 `data-selected`를 답니다. 선택된 면 위의 hover는 경계를 올리지 않고 tint만 얹습니다.
+
+profile은 `accentProfile(accent, variant)`가 `{ face, ink, border, hover, selected? }`로 돌려줍니다. `hover`는 `{ tint }`와 `{ border }` 중 하나뿐이라 variant마다 hover 표현이 정확히 하나이고, `selected`는 `SELECTABLE_VARIANTS`에만 있습니다. 같은 파일이 입력 상자(`outlinedControlProfile`: 면·잉크·경계·hover 경계·status별 경계), 중립 항목(`itemProfile`), 선택 표식(`markProfile`, OS가 색을 정하는 모드의 `markForcedProfile`)의 색도 데이터로 정합니다.
 
 `paintClass({ accent: "error", variant: "solid" })`는 `styles/color.css.ts`의 `accentVariantClass.error.solid`에 든 class를 고릅니다. 그 지도는 `ACCENTS × VARIANTS` 배열을 걸어 만들므로 조합이 빠지거나 어긋날 수 없고, 어휘 밖의 이름은 타입에서 걸립니다. class의 이름은 빌드가 짓습니다. 전역으로 약속된 이름이 없으니 앱은 이름을 문자열로 붙들지 않고 컴포넌트 prop으로 고릅니다. 면과 잉크는 색과 다른 축이라 `fillClass` · `inkClass`로 따로 갑니다. 글자와 아이콘의 `ink`는 `INKS`, 곧 Color의 `ink.*` 이름(`primary` · `secondary` · `tertiary`)과 상태 이름과 `inherit`입니다. hover는 `hoverable`을 준 컴포넌트에만 걸려, Badge처럼 누를 수 없는 표식에는 번지지 않습니다. 상태별 우선순위는 [상태와 피드백](../atoms/states.md)에 있습니다.
 

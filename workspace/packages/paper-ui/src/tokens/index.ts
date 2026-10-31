@@ -39,13 +39,15 @@ export { SOURCE_VARIABLES } from "./variables";
 export { ELEVATION_NEST_LIMIT } from "./layout";
 export { ELEVATION, elevationStack, elevationCast, elevationStyle } from "./elevation-recipes";
 
-export { STATUS_PALETTE } from "./colors";
+export { STATUS_PALETTE, SYSTEM_COLORS } from "./colors";
 export type { AccentToken } from "./colors";
 
 export { CONTROL_ICON } from "./shape";
+export { strokeRing } from "./shape-recipes";
 
 export { STATE_ATTRIBUTE, VALUE_ATTRIBUTE, MARKER_ATTRIBUTE, SELECTED_SELECTOR, ENABLED_SELECTOR, stateSelector, stateAttributes } from "./state";
 export type { StateAttributes } from "./state";
+export { focusRing, stateStyle, linkStyle, STATE_TINT, STATE_TINT_PROPERTY } from "./state-recipes";
 
 export { MOTION, MOTION_CONSUMERS, MOTION_LOOPS, MOTION_REDUCED, transition } from "./motion";
 

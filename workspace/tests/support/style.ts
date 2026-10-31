@@ -31,5 +31,5 @@ export const expectStyle = async (target: Locator, expected: Style) => {
 // What an accent × variant control paints, as computed style.
 export const profile = (accent: Accent, variant: Variant): Style => {
   const spec = accentProfile(accent, variant);
-  return { backgroundColor: spec.background, color: spec.color, borderTopColor: spec.borderColor };
+  return { backgroundColor: spec.face, color: spec.ink, borderTopColor: spec.border };
 };

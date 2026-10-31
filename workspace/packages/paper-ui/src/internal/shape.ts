@@ -6,16 +6,41 @@ import { SHAPE_RECIPES } from "../tokens/shape-recipes";
 
 export const geometry = SHAPE_RECIPES;
 
-// Each control picks its role here; no stylesheet patches a size ladder of its own.
-export const controlGeometry = {
-  button: controlSizes((size) => ({ height: tokens.shape.control.height[size], paddingInline: tokens.shape.control.inset.button[size] } satisfies StyleRule)),
-  field: controlSizes((size) => ({ height: tokens.shape.control.height[size], paddingInline: tokens.shape.control.inset.input[size] } satisfies StyleRule)),
-  select: controlSizes((size) => ({ height: tokens.shape.control.height[size], paddingInline: tokens.shape.control.inset.input[size], paddingInlineEnd: geometry.select.paddingEnd[size] } satisfies StyleRule)),
-  textarea: controlSizes((size) => ({ paddingInline: tokens.shape.control.inset.input[size], paddingBlock: geometry.textarea.paddingBlock[size] } satisfies StyleRule)),
-};
+const { height } = tokens.shape.control;
+const box = tokens.shape.selection.size;
 
-// The keyboard focus ring: Shape owns its width and offset, Color its ink.
-export const focusRing = {
-  outline: `${tokens.shape.focus.width} solid ${tokens.color.interaction.focus}`,
-  outlineOffset: tokens.shape.focus.offset,
-} satisfies StyleRule;
+// Each sized Atom picks its role here; no stylesheet patches a size ladder of its own.
+export const controlGeometry = {
+  button: controlSizes((size) => ({ height: height[size], paddingInline: tokens.shape.control.inset.button[size] } satisfies StyleRule)),
+  // A square the height of a control, with no inset: the label is an icon.
+  iconButton: controlSizes((size) => ({ height: height[size], width: height[size], paddingInline: 0 } satisfies StyleRule)),
+  field: controlSizes((size) => ({ height: height[size], paddingInline: tokens.shape.control.inset.input[size] } satisfies StyleRule)),
+  select: controlSizes((size) => ({ height: height[size], paddingInline: tokens.shape.control.inset.input[size], paddingInlineEnd: geometry.select.paddingEnd[size] } satisfies StyleRule)),
+  // The trailing arrow sits at the input inset.
+  selectArrow: controlSizes((size) => ({ insetInlineEnd: geometry.select.arrowInset[size] } satisfies StyleRule)),
+  textarea: controlSizes((size) => ({ paddingInline: tokens.shape.control.inset.input[size], paddingBlock: geometry.textarea.paddingBlock[size] } satisfies StyleRule)),
+  // The box Checkbox and Radio share, and what each draws inside it once checked.
+  selection: controlSizes((size) => ({ width: box[size], height: box[size] } satisfies StyleRule)),
+  checkbox: controlSizes((size) => ({
+    selectors: {
+      "&:checked::after": { width: geometry.checkbox.mark[size], height: geometry.checkbox.short[size] },
+      "&:indeterminate::after": { width: geometry.checkbox.dash.width[size] },
+    },
+  } satisfies StyleRule)),
+  radio: controlSizes((size) => ({
+    selectors: { "&:checked::after": { width: geometry.radio.dot[size], height: geometry.radio.dot[size] } },
+  } satisfies StyleRule)),
+  // The track, its thumb at the rim, and the thumb moved by its own width when checked.
+  switch: controlSizes((size) => ({
+    width: geometry.switch.width[size],
+    height: geometry.switch.height[size],
+    selectors: {
+      "&::after": { width: geometry.switch.thumb[size], height: geometry.switch.thumb[size], insetInlineStart: geometry.switch.inset },
+      "&:checked::after": { insetInlineStart: `calc(${geometry.switch.inset} + ${geometry.switch.travel[size]})` },
+    },
+  } satisfies StyleRule)),
+  badge: controlSizes((size) => ({ height: geometry.badge.height[size], paddingInline: geometry.badge.inset[size] } satisfies StyleRule)),
+  spinner: controlSizes((size) => ({ width: geometry.spinner.size[size], height: geometry.spinner.size[size] } satisfies StyleRule)),
+  // Inside a line of text the ring is as tall as the text.
+  spinnerInline: { width: geometry.spinner.inline, height: geometry.spinner.inline } satisfies StyleRule,
+};

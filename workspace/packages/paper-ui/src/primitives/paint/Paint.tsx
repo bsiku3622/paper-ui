@@ -8,7 +8,7 @@ import { forwardRef, type ElementType } from "react";
 
 import { joinClass } from "../../internal/joinClass";
 import { accentVariantClass, hoverGate } from "../../styles/color.css";
-import type { Accent, Variant } from "../../tokens";
+import { stateAttributes, type Accent, type Variant } from "../../tokens";
 import { Box, type BoxOwnProps } from "../Box";
 import type { PolymorphicComponent, PolymorphicProps } from "../polymorphic";
 
@@ -17,6 +17,8 @@ export type PaintOwnProps = BoxOwnProps & {
   variant?: Variant;
   // 포인터가 올라가면 hover 색이 뜨게 한다. 터치에는 hover 가 없고, 막힌 대상(disabled · aria-disabled · data-disabled)에는 뜨지 않는다.
   hoverable?: boolean;
+  // data-selected 를 단다. 선택된 면은 prop 이 아니라 그 속성을 읽는 CSS 가 입히고, 선택될 수 있는 variant(hairline · ghost · muted)만 면을 바꾼다.
+  selected?: boolean;
 };
 
 export type PaintProps<As extends ElementType = "div"> = PolymorphicProps<PaintOwnProps, As>;
@@ -29,10 +31,11 @@ const PaintImpl = forwardRef<HTMLElement, Omit<PaintProps, "as" | "ref"> & { as?
   accent,
   variant,
   hoverable,
+  selected,
   className,
   ...rest
 }, ref) {
-  return <Box ref={ref} className={joinClass(paintClass({ accent, variant, hoverable }), className)} {...rest} />;
+  return <Box ref={ref} className={joinClass(paintClass({ accent, variant, hoverable }), className)} {...stateAttributes({ selected })} {...rest} />;
 });
 
 export const Paint = PaintImpl as PolymorphicComponent<PaintOwnProps, "div">;

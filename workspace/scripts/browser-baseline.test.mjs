@@ -30,6 +30,7 @@ test("[install.browsers.baseline] the declared floor supports every required CSS
     "@media (prefers-contrast: more){:root{--pui-color-border-base:#000}}",
     ".g{overflow-x:clip}",
     ".h{min-width:fit-content}.i{height:max-content}",
+    "@property --t{syntax:'<color>';inherits:false;initial-value:transparent}",
     "@media (hover: hover){.j:hover{outline:0}}",
   ].join("");
   const result = checkStylesheet(css, floor);

@@ -2,7 +2,7 @@
 
 import { globalStyle } from "@vanilla-extract/css";
 
-import { SURFACE_FILLS, tokens } from "@studio-baeks/paper-ui/tokens";
+import { SURFACE_FILLS, focusRing, tokens } from "@studio-baeks/paper-ui/tokens";
 
 const BP = tokens.layout.breakpoint;
 
@@ -53,10 +53,7 @@ for (const surface of SURFACE_FILLS) globalStyle(`.preview-surface-button[data-b
 globalStyle('.preview-surface-button[data-bg="track"]', { background: tokens.color.control.track });
 globalStyle('.preview-surface-button[aria-pressed="true"]', { borderColor: tokens.color.border.strong });
 globalStyle(".preview-surface-button:hover", { borderColor: tokens.color.border.hover });
-globalStyle(".preview-surface-button:focus-visible", {
-  outline: `${tokens.shape.focus.width} solid ${tokens.color.interaction.focus}`,
-  outlineOffset: tokens.shape.focus.offset,
-});
+globalStyle(".preview-surface-button:focus-visible", focusRing);
 
 // 자체 면과 외곽 형상이 사용성의 일부인 미리보기(지금은 Draggable의 무대)는 카드에
 // 다시 가두지 않고 실제 페이지에 놓였을 때의 직각 silhouette를 그대로 평가한다.

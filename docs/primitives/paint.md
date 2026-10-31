@@ -4,10 +4,10 @@ Paint Primitive는 Box 위에 색을 얹는 길입니다. 색이 오는 곳은 �
 
 | 컴포넌트 | 공개 축 | 기본값 |
 | --- | --- | --- |
-| Surface | Box 전체 + `fill` canvas / raised / sunken · `border` · `radius` · `elevation` · `theme` | div. 면 · 테두리 · 모서리 · 높이는 모두 opt-in, 테마가 있으면 fill 없이도 그 모드의 canvas |
-| Paint | Box 전체 + `accent` · `variant` · `hoverable` | div. accent가 없으면 칠하지 않음 |
+| Surface | Box 전체 + `fill` canvas / raised / sunken · `border` · `radius` · `elevation` · `theme` · `hoverable` · `selected` | div. 면 · 테두리 · 모서리 · 높이는 모두 opt-in, 테마가 있으면 fill 없이도 그 모드의 canvas |
+| Paint | Box 전체 + `accent` · `variant` · `hoverable` · `selected` | div. accent가 없으면 칠하지 않음 |
 
-Atom이 이 층에 닿는 길은 class 함수 둘뿐입니다. `surfaceClass({ fill, border, radius, elevation })`는 theme을 뺀 Surface의 class를, `paintClass({ accent, variant, hoverable })`는 Paint의 class를 돌려줍니다. theme은 context가 필요해서 class만으로 만들 수 없습니다. 높이만 필요한 요소는 Surface를 거치지 않고 공개 class 지도 `elevation`(`@studio-baeks/paper-ui`)에서 tier의 class를 직접 받습니다. Surface의 `elevation` prop도 같은 지도입니다.
+Atom이 이 층에 닿는 길은 class 함수 둘뿐입니다. `surfaceClass({ fill, border, radius, elevation, hoverable })`는 theme을 뺀 Surface의 class를, `paintClass({ accent, variant, hoverable })`는 Paint의 class를 돌려줍니다. theme은 context가 필요해서 class만으로 만들 수 없습니다. 높이만 필요한 요소는 Surface를 거치지 않고 공개 class 지도 `elevation`(`@studio-baeks/paper-ui`)에서 tier의 class를 직접 받습니다. Surface의 `elevation` prop도 같은 지도입니다.
 
 ## Surface — 면
 
@@ -20,6 +20,8 @@ Surface는 Box가 놓인 종이입니다. 어떤 면 위에 있는지(fill), 경
 | `radius` | sm · md · lg · full (`SURFACE_RADII`) | Shape `radius.surface.*` · `radius.full` |
 | `elevation` | lifted · sticky · overlay · modal · toast (`ELEVATIONS`) | Layout `elevation` class — position과 z와 그림자를 함께 |
 | `theme` | light · dark · inverse (`SURFACE_THEMES`) | Color 모드 — 이 면과 안쪽만 그 모드. `inverse`는 주변 모드의 반대 |
+| `hoverable` | boolean | Color `interaction` — 면이 항목이 되어 hover · 눌림 · 선택이 중립 tint로 드러남 |
+| `selected` | boolean | `data-selected`만 답니다 — 색은 그 속성을 읽는 CSS가 입힘 |
 
 [contract:primitives.surface.classes]: #
 Surface의 `fill` · `border` · `radius` · `elevation`은 각자 지도 하나의 class가 되고, 주지 않은 축에는 class가 붙지 않습니다. `surfaceClass`는 같은 class를 theme만 빼고 돌려줍니다. `as`로 Stack · Inline · Grid 같은 primitive를 고르면 그 요소 하나가 면이 되어, `<Surface as={Stack} gap="md" fill="raised">`도 DOM 요소는 하나이고 Stack의 class와 prop이 그대로 남습니다. Box · Stack · Inline · Grid에 면 prop을 주면 타입이 막습니다.
@@ -29,8 +31,12 @@ Surface의 `fill` · `border` · `radius` · `elevation`은 각자 지도 하나
 
 여백과 곡률은 이름으로 짝을 맞추면 자연스럽습니다. 카드는 `padding="md" radius="md"`, 패널은 `padding="lg" radius="lg"`처럼 씁니다. `elevation`은 그림자만이 아니라 position과 쌓임 순서도 바꾸므로(`lifted`는 relative, `sticky`는 sticky), 실제로 겹쳐 떠 있는 면에만 줍니다. 그림자가 없는 `sticky`처럼 지면 위에 붙어 있어야 하는 면도 같은 prop으로 고르고, 지면에 붙은 면은 prop을 생략합니다.
 
+[contract:primitives.surface.item]: #
+`hoverable` Surface는 항목입니다. 포인터가 올라가면 `interaction.bgHover.onSurface` tint가, 눌리면(`:active` 또는 `data-active`) `interaction.active` tint가, 선택되면(`data-selected`나 `aria-current`) `interaction.selected` tint가 면 위에 겹치고, 눌림이 선택을, 선택이 hover를 이깁니다. hover는 `@media (hover: hover)` 안에서, 막힌 대상(disabled · `aria-disabled` · `data-disabled`)이 아닌 곳에만 뜨고, 막힌 항목은 어느 쪽에도 반응하지 않습니다. `selected` prop은 `data-selected`만 달 뿐 class를 바꾸지 않으므로, 선택된 모습은 `hoverable`로 항목이 된 면이 속성을 읽어 입습니다. 선택 tint 위의 글자는 `ink.primary`입니다.
+
 ```tsx
 <Surface as="section" fill="raised" border radius="lg" padding="lg">…</Surface>
+<Surface as="li" hoverable selected={current === id} padding="sm">…</Surface>
 <Surface as={Stack} theme="inverse" radius="md" padding="lg" gap="md">…</Surface>
 ```
 
@@ -43,6 +49,9 @@ Paint는 accent(의미)와 variant(시각 무게)를 고르면 그 조합의 색
 
 [contract:primitives.paint.hover]: #
 hover 색은 CSS가 그립니다. `hoverable` Paint는 `@media (hover: hover)` 안에서만, disabled · `aria-disabled` · `data-disabled`가 아닌 대상에만 tint를 입습니다. 터치는 hover가 없으므로 탭이 남기는 `:hover`로도 색이 뜨지 않고, 막힌 대상은 포인터가 올라와도 뜨지 않습니다. 어떤 컴포넌트도 hover 속성을 내보내지 않습니다. 표시용(Badge)은 `hoverable`을 주지 않아 색이 뜨지 않습니다.
+
+[contract:primitives.paint.selected]: #
+`selected`는 `data-selected`만 답니다. 선택된 면은 그 속성(또는 `aria-current`)을 읽는 CSS가 입히고, `hairline` · `ghost` · `muted`만 그 accent의 `soft` 면을 입습니다. `solid`와 `soft`는 이미 면이 있어 모습이 그대로입니다. 선택된 `hairline`은 경계가 투명해지고, 선택된 면 위의 hover는 경계를 올리지 않고 tint만 얹습니다.
 
 ```tsx
 <Paint accent="info" variant="soft" hoverable padding="md">…</Paint>

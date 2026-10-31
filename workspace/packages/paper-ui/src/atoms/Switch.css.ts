@@ -1,6 +1,6 @@
-import { focusRing, geometry } from "../internal/shape";
+import { geometry } from "../internal/shape";
 
-import { tokens, transition, elevationCast, elevationStack, CONTROL_SIZES, type ControlSize } from "../tokens";
+import { tokens, transition, focusRing, elevationCast, elevationStack, CONTROL_SIZES, type ControlSize } from "../tokens";
 import { layered } from "../tokens/layers.css";
 
 const { style, styleVariants } = layered("components");

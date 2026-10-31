@@ -47,7 +47,7 @@ globalStyle(".md h4", {
 });
 
 globalStyle(".md p", { margin: `0 0 ${tokens.layout.gap.lg}` });
-globalStyle(".md a", { color: tokens.color.interaction.link, textDecoration: "none" });
+globalStyle(".md a", { color: tokens.color.interaction.link, textDecoration: "none", borderRadius: tokens.shape.radius.control });
 globalStyle(".md a:hover", { textDecoration: "underline", textUnderlineOffset: tokens.typography.palette.decoration.underlineOffset });
 globalStyle(".md ul, .md ol", { margin: `0 0 ${tokens.layout.gap.lg}`, paddingLeft: tokens.shape.inset.xl });
 globalStyle(".md li", { margin: `${tokens.layout.gap.xs} 0` });
