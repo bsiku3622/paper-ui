@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type ButtonHTMLAttributes, ty
 
 import { useAriaDrag } from "../../internal/aria/dnd";
 import { useAriaMove } from "../../internal/aria/move";
+import { measureSpace } from "../../internal/measure";
 import { useControllableState } from "../../internal/useControllableState";
 import { MARKER_ATTRIBUTE, stateAttributes, type StateAttributes } from "../../tokens";
 import { mergeProps } from "../composition";
@@ -46,6 +47,7 @@ export function useDraggable(options: DraggableOptions = {}): DraggableResult {
   const distance = useRef({ x: 0, y: 0 });
   const active = useRef(false);
   const pointerType = useRef("mouse");
+  const step = useRef(1);
   const [isMoving, setMoving] = useState(false);
   current.current = position;
   const setPosition = useCallback((next: DragPosition) => {
@@ -77,13 +79,14 @@ export function useDraggable(options: DraggableOptions = {}): DraggableResult {
       origin.current = current.current;
       distance.current = { x: 0, y: 0 };
       pointerType.current = e.pointerType;
+      step.current = e.pointerType === "keyboard" && target.current ? measureSpace(movement.keyboardStep ?? "sm", target.current) : 1;
       active.current = true;
       setMoving(true);
       movement.onDragStart?.(event());
     },
     onMove(e) {
       if (!active.current || disabled) return;
-      distance.current = { x: distance.current.x + (movement.axis === "y" ? 0 : e.deltaX), y: distance.current.y + (movement.axis === "x" ? 0 : e.deltaY) };
+      distance.current = { x: distance.current.x + (movement.axis === "y" ? 0 : e.deltaX * step.current), y: distance.current.y + (movement.axis === "x" ? 0 : e.deltaY * step.current) };
       const next = { x: origin.current.x + distance.current.x, y: origin.current.y + distance.current.y };
       setPosition(next);
       movement.onDragMove?.(event());

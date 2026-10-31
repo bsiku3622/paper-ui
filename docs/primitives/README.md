@@ -100,7 +100,7 @@ DOM에 닿는 hook은 `{ <부분>Props, ...상태 }` 한 꼴로 돌려줍니다.
 | useRovingFocusItem | itemProps | data-roving-item(값은 항목의 value) |
 | useFormFieldControl | controlProps | id · disabled · required · aria-invalid · aria-describedby, 값이 있는 키만 |
 | FormField | (wrapper) | data-disabled · data-invalid · data-required, 부분은 data-part |
-| Floating.Content | (panel) | data-placement |
+| Floating.Content | (panel) | data-presentation · data-placement(popover) · data-presence(`entering` · `exiting`, 서 있는 동안은 없음) |
 
 이름도 한 규칙을 따릅니다. 입력에는 `is` · `should`를 붙이지 않고(`disabled` · `selected` · `flip` · `focusable` · `textInput` · `cancelOnPointerExit` · `closeOnInteractOutside`), 출력은 `is*`입니다(`isActive` · `isSelected` · `isOpen` · `isFocusVisible` · `isDragging` · `isDropTarget`). 제어 상태는 `x` · `defaultX` · `onXChange` 셋이 한 벌입니다. 공개 hook마다 `XOptions`와 `XResult`가 있고, `XState`는 children 함수가 받는 읽기 전용 스냅샷의 이름입니다. press · drop · drag · 포커스 이벤트의 타입(`PressEvent` · `DropEvent` · `TransferDragEvent` · `Placement` …)도 Paper가 선언해 `@studio-baeks/paper-ui`에서 내보냅니다.
 

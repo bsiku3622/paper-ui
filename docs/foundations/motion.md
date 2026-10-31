@@ -46,7 +46,7 @@ Motion은 위 네 시스템의 값이 시간에 따라 어떻게 바뀌는지를
 `transition(role, …속성)`은 속성마다 역할의 duration과 easing을 이어 붙인 transition 문자열입니다. `transition("hover", "color")`는 `color 100ms cubic-bezier(0.4, 0, 0.2, 1)`이고, 속성이 여럿이면 쉼표로 잇습니다. 한 요소의 속성이 서로 다른 역할을 따르면 `transition()`을 속성 묶음마다 불러 쉼표로 합칩니다. `/tokens`에서 `MOTION_CONSUMERS`와 함께 나옵니다.
 
 [contract:foundations.motion.compositions]: #
-`presence`는 면의 등장과 퇴장입니다. `presence.surface`는 `data-presence`가 `entering`이면 `enter` 역할로 떠오르며 나타나고(opacity와 변위·scale), `exiting`이면 `exit` 역할로 같은 변위만큼 가라앉으며 사라진 채 남습니다. `presence.scrim`은 같은 타이밍에 opacity만 바꿉니다. 속성을 다는 것은 Floating의 일입니다.
+`presence`는 면의 등장과 퇴장입니다. `presence.surface`는 `data-presence`가 `entering`이면 `enter` 역할로 떠오르며 나타나고(opacity와 변위·scale), `exiting`이면 `exit` 역할로 같은 변위만큼 가라앉으며 사라진 채 남습니다. `presence.scrim`은 같은 타이밍에 opacity만 바꿉니다. 속성을 다는 것은 Floating의 일입니다 — 열릴 때 panel(modal이면 scrim과 panel)에 `entering`을 달고, 닫히면 `exiting`을 달아 애니메이션이 끝날 때까지 mount해 둡니다([Float](../primitives/float.md#열고-닫는-움직임)).
 
 `loop`는 반복입니다. `loop.spin`은 900ms linear로 돌고, `loop.pulse`는 1400ms standard로 맥박칩니다. Spinner와 버튼의 로딩 표식은 `loop.spin`을 합성하며, 각자 keyframe을 갖지 않습니다.
 
@@ -74,7 +74,7 @@ export const row = style({
 ## Reduced motion
 
 [contract:foundations.motion.reduced]: #
-`prefers-reduced-motion: reduce`에서는 모든 transition과 유한한 animation이 즉시 끝납니다. `::before`와 `::after`도 같은 규칙을 받아 스위치 손잡이도 미끄러지지 않고 건너뜁니다. 컴포넌트가 따로 처리할 것은 없습니다.
+`prefers-reduced-motion: reduce`에서는 모든 transition과 유한한 animation이 즉시 끝납니다. `::before`와 `::after`도 같은 규칙을 받아 스위치 손잡이도 미끄러지지 않고 건너뜁니다. 컴포넌트가 따로 처리할 것은 없습니다. Floating은 퇴장도 한 순간에 끝나므로 닫는 즉시 내려갑니다.
 
 반복은 멈추지 않고 정해진 맥박으로 바뀝니다. `loop.spin`은 회전 대신 `loop.pulse`(opacity 1 → 0.25 → 1)로 진행 중임을 알립니다. 화면을 가로질러 도는 움직임만 걷어내고 기다리는 중이라는 신호는 남깁니다. 진행 상태는 움직임에만 기대지 않도록 Spinner가 `role="status"`와 레이블로도 전달합니다.
 

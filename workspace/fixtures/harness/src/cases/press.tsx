@@ -52,7 +52,7 @@ const PressedTrigger = () => {
   return (
     <Floating>
       <Pressable as={Floating.Trigger} data-testid="pressable-trigger" {...counted} onClick={onClick} onPress={onPress}>Pressable Trigger</Pressable>
-      <Floating.Content aria-label="Panel" anchored={false}>Panel</Floating.Content>
+      <Floating.Content aria-label="Panel">Panel</Floating.Content>
     </Floating>
   );
 };
@@ -67,7 +67,7 @@ const DivTrigger = () => {
   return (
     <Floating>
       <Floating.Trigger as="div" data-testid="div-trigger" {...counted} onClick={onClick}>Div Trigger</Floating.Trigger>
-      <Floating.Content aria-label="Div panel" anchored={false}><Floating.Close>Close</Floating.Close></Floating.Content>
+      <Floating.Content aria-label="Div panel"><Floating.Close>Close</Floating.Close></Floating.Content>
     </Floating>
   );
 };

@@ -28,12 +28,12 @@ type OptionBag = Partial<Omit<MoveDragOptions, "mode" | "onDragStart" | "onDragM
 type PropBag = OptionBag & { as?: ElementType; className?: string; style?: CSSProperties; children?: DraggableOwnProps["children"]; [attribute: string]: unknown };
 const DraggableImpl = forwardRef<HTMLElement, Omit<DraggableProps, "as" | "ref"> & { as?: ElementType }>(function Draggable(props, forwardedRef) {
   const {
-    as, mode = "move", activation = "surface", disabled = false, axis, position, defaultPosition, onPositionChange,
+    as, mode = "move", activation = "surface", disabled = false, axis, keyboardStep, position, defaultPosition, onPositionChange,
     onDragStart, onDragMove, onDragEnd, onDragCancel, getItems, getAllowedDropOperations,
     children, className, style, ...dom
   } = props as PropBag;
   const Tag = as ?? "div";
-  const drag = useDraggable({ mode, activation, disabled, axis, position, defaultPosition, onPositionChange, onDragStart, onDragMove, onDragEnd, onDragCancel, getItems, getAllowedDropOperations } as DraggableOptions);
+  const drag = useDraggable({ mode, activation, disabled, axis, keyboardStep, position, defaultPosition, onPositionChange, onDragStart, onDragMove, onDragEnd, onDragCancel, getItems, getAllowedDropOperations } as DraggableOptions);
   const ref = useMergedRef(forwardedRef, drag.dragProps.ref);
   const target = targetProps(Tag, { disabled, type: dom.type as string | undefined, href: dom.href, kind: "control" });
   // The surface is a group, or the one control of a transfer, and takes the Tab stop only when it starts the drag:

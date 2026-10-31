@@ -310,7 +310,7 @@ describe("field control", () => {
 
   it("[primitives.form-field.control] resets inside a Floating panel, so a control there has no relationship to the field", () => {
     render(<FormField label="Outer" description="Help" required disabled invalid>
-      <Floating defaultOpen><Floating.Content aria-label="Panel" anchored={false}><Field aria-label="inside" /></Floating.Content></Floating>
+      <Floating defaultOpen><Floating.Trigger>Open</Floating.Trigger><Floating.Content aria-label="Panel"><Field aria-label="inside" /></Floating.Content></Floating>
     </FormField>);
     const input = screen.getByLabelText("inside") as HTMLInputElement;
     expect(input.id).toBe("");

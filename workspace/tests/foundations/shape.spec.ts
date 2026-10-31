@@ -73,6 +73,54 @@ test("[foundations.override.rederives-roles] one source override in a subtree re
   await expect.poll(async () => (await metrics(page, "[aria-label=switch-md]", "::after")).transform).toBe("matrix(1, 0, 0, 1, -18, -9)");
 });
 
+test("[foundations.override.portal-carry] a Floating opened inside an overriding region draws its controls with the region's source, and one opened outside keeps the defaults", async ({ page }) => {
+  await mount(page);
+  await page.locator("#shape-fixture").evaluate((element) => {
+    element.style.setProperty("--pui-shape-control-height-md", "40px");
+    element.style.setProperty("--pui-shape-space-lg", "24px");
+  });
+  for (const [where, height, gutter] of [["inside", 40, 24], ["outside", 32, 16]] as const) {
+    for (const presentation of ["popover", "modal"] as const) {
+      const id = `${where}-${presentation}`;
+      await page.getByTestId(`${id}-trigger`).click();
+      await expect(page.getByTestId(id)).toBeVisible();
+      expect((await measure(page.getByTestId(`${id}-button`))).height, `${id} button`).toBe(height);
+      expect((await measure(page.getByTestId(`${id}-field`))).height, `${id} field`).toBe(height);
+      // The dialog's scrim keeps the page gutter from the dialog.
+      if (presentation === "modal") expect((await measure(page.getByTestId(id).locator("xpath=.."))).padding, `${id} scrim`).toBe(gutter);
+      await page.getByTestId(id).getByRole("button", { name: "Close" }).click();
+      await expect(page.locator("[data-presentation]")).toHaveCount(0);
+    }
+  }
+});
+
+for (const [where, height, gutter, gap] of [["inside", 40, 24, 12], ["outside", 32, 16, 8]] as const) {
+  for (const presentation of ["popover", "modal"] as const) {
+    for (const trigger of ["above", "below"] as const) {
+      for (const mount of ["page", "press"] as const) {
+        test(`[foundations.override.portal-carry] a panel already open when it mounts takes the source of its Trigger's region: ${where}, ${presentation}, Trigger ${trigger}, focus ${mount === "page" ? "on the page" : "in another region"}`, async ({ page }) => {
+          await openHarness(page, "carry", { where, presentation, trigger, mount });
+          if (mount === "press") {
+            await page.getByTestId("mount").focus();
+            await page.keyboard.press("Enter");
+          }
+          const panel = page.getByTestId("panel");
+          await expect(panel).toBeVisible();
+          expect((await measure(page.getByTestId("button"))).height).toBe(height);
+          expect((await measure(page.getByTestId("field"))).height).toBe(height);
+          if (presentation === "modal") {
+            expect((await measure(panel.locator("xpath=.."))).padding).toBe(gutter);
+          } else {
+            await expect(panel).not.toHaveAttribute("data-presence", /.*/);
+            const [from, to] = [(await page.getByTestId("trigger").boundingBox())!, (await panel.boundingBox())!];
+            expect(to.y - (from.y + from.height)).toBeCloseTo(gap, 1);
+          }
+        });
+      }
+    }
+  }
+}
+
 test("[foundations.shape.stroke-px] rem geometry scales together while edge strokes stay in CSS pixels", async ({ page }) => {
   await mount(page);
   await page.evaluate(() => { document.documentElement.style.fontSize = "20px"; });

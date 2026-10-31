@@ -110,6 +110,7 @@ describe("Portal scope", () => {
     render(
       <Surface theme="dark">
         <Floating defaultOpen>
+          <Floating.Trigger>Open</Floating.Trigger>
           <Floating.Content aria-label="Panel"><Mode id="panel" /></Floating.Content>
         </Floating>
       </Surface>,

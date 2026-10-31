@@ -68,6 +68,8 @@ test("[foundations.layout.elevation-nesting] the Floating example's popover stan
   // React Aria stacks an anchored panel at 100000; the tier decides instead.
   await expect(popover).toHaveCSS("z-index", z("overlay"));
   await expectStyle(popover, { boxShadow: ELEVATION.shadow.overlay });
+  // The panel rises into place first: Playwright's click retries on a moving target and its scrolling chases the panel, which a real mouse does not do.
+  await expect(popover).not.toHaveAttribute("data-presence", /.*/);
   await popover.getByRole("button", { name: "확인 창 열기", exact: true }).click();
   const confirm = page.getByRole("dialog", { name: "중첩 확인", exact: true });
   const scrim = confirm.locator("xpath=..");
@@ -82,7 +84,7 @@ test("[foundations.layout.elevation-nesting] the Floating example's popover stan
 
 test("[foundations.layout.elevation-nesting] a modal Floating stands at the modal tier, and one nested in it a nudge above", async ({ page }) => {
   await openPlayground(page, "floating", "Floating");
-  await page.getByRole("switch", { name: "modal", exact: true }).check();
+  await page.getByRole("combobox", { name: "presentation", exact: true }).selectOption("modal");
   await page.getByRole("button", { name: "설정 열기", exact: true }).click();
   const outer = page.getByRole("dialog", { name: "설정", exact: true });
   await expect(outer.locator("xpath=..")).toHaveCSS("z-index", z("modal"));

@@ -33,6 +33,9 @@ SHAPE_RECIPES   컴포넌트 anatomy: 역할과 원본 anatomy를 조합한 식 
 
 이 한 줄로 그 영역의 md 버튼 높이는 40, 입력 inset은 12, 버튼 inset은 17, 체크박스는 20, 스위치 트랙은 40×22가 됩니다. 역할 변수를 따로 구웠다면 `:root`에서 이미 계산이 끝나 이 재정의를 따라가지 못합니다.
 
+[contract:foundations.override.portal-carry]: #
+그 영역에서 연 Floating의 panel은 `<body>` 아래로 옮겨지지만 덮어쓴 원본을 잃지 않습니다. Portal의 root가 열린 자리와 container 사이에서 값이 다른 원본 변수(`SOURCE_VARIABLES`: Shape · mode와 무관한 Layout · Typography)만 얹어 옮기므로, 영역 안에서 연 popover와 dialog 속 컨트롤도 40이 되고 dialog의 scrim 여백도 영역의 gutter를 따릅니다. 처음부터 열려 있는 panel도 Trigger가 선 자리를 따르고, 영역 밖에서 연 것은 기본값 그대로입니다. 색 역할은 옮기지 않고, 모드는 테마 속성이 옮깁니다.
+
 패키지 안에서는 숫자를 원본 파일(`shape.ts` · `layout.ts` · `typography.ts` · `motion.ts`와 색 원본)에만 씁니다. recipe와 stylesheet에는 숫자가 없고, eslint `paper/source-numbers`가 패키지 전체에서 이를 막습니다.
 
 ## 길이 scale — inset

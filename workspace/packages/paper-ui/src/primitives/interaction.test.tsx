@@ -1,11 +1,20 @@
-import { createRef, type ReactElement, type ReactNode } from "react";
+import { createRef, useRef, useState, type ReactElement, type ReactNode } from "react";
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Box, Pressable, Selectable, Draggable, Droppable, RovingFocus, SelectableGroup, VisuallyHidden, useSelectableGroup, Floating, useFloating, useFloatingContext, useSelectable, usePressable, useFocusRing, useDraggable, useDroppable, mergeProps, mergeRefs, composeEventHandlers } from "./index";
+import { useAnchoredPosition } from "../internal/aria/overlay";
+import { stepProbe } from "../internal/measure.css";
 import { spaceClass } from "../styles/space.css";
 import { ELEVATION_NEST_LIMIT } from "../tokens";
 import * as floatingStyles from "./float/Floating.css";
-import { nestElevation, type FloatingElevation } from "./float/nestElevation";
+import { scrimPaint } from "./paint/recipes.css";
+import { nestElevation, type FloatingElevation, type FloatingPresentation } from "./float/nestElevation";
+
+// The adapter that places a popover is wrapped, so a test reads the distances it was given.
+vi.mock("../internal/aria/overlay", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../internal/aria/overlay")>();
+  return { ...actual, useAnchoredPosition: vi.fn(actual.useAnchoredPosition) };
+});
 
 describe("interaction primitives", () => {
   it("[primitives.pressable.one-click] Enter and Space each run the target's onClick once", () => {
@@ -500,17 +509,17 @@ describe("children snapshots", () => {
     }
     render(<Floating defaultOpen>
       <Floating.Trigger>Open</Floating.Trigger>
-      <Floating.Content aria-label="Panel" anchored={false}>
+      <Floating.Content aria-label="Panel">
         {(state) => { seen.push(state); return <CloseIt />; }}
       </Floating.Content>
     </Floating>);
-    expect(seen[0]).toEqual({ isOpen: true, presentation: "popover", placement: undefined, elevation: { tier: "overlay", rank: 0 } });
+    expect(seen.at(-1)).toMatchObject({ isOpen: true, presentation: "popover", placement: expect.stringMatching(/^(top|bottom|start|end)$/), elevation: { tier: "overlay", rank: 0 } });
     fireEvent.click(screen.getByText("Close it"));
     expect(screen.queryByText("Close it")).toBeNull();
     cleanup();
     seen.length = 0;
-    render(<Floating defaultOpen modal><Floating.Content aria-label="Dialog">{(state) => { seen.push(state); return "dialog"; }}</Floating.Content></Floating>);
-    expect(seen[0]).toMatchObject({ presentation: "modal", elevation: { tier: "modal", rank: 0 } });
+    render(<Floating defaultOpen><Floating.Content presentation="modal" aria-label="Dialog">{(state) => { seen.push(state); return "dialog"; }}</Floating.Content></Floating>);
+    expect(seen[0]).toEqual({ isOpen: true, presentation: "modal", placement: undefined, elevation: { tier: "modal", rank: 0 } });
   });
 });
 
@@ -685,12 +694,27 @@ describe("floating state", () => {
     expect(screen.getByText("false")).toBeTruthy();
   });
 
+  it("ignores a request for the state it is already in", () => {
+    const change = vi.fn();
+    function Example() {
+      const state = useFloating({ onOpenChange: change });
+      return <><button onClick={state.open}>Open</button><button onClick={state.close}>Close</button></>;
+    }
+    render(<Example />);
+    fireEvent.click(screen.getByText("Close"));
+    expect(change).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByText("Open"));
+    expect(change).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByText("Open"));
+    expect(change).toHaveBeenCalledTimes(1);
+  });
+
   it("lets a custom part open and close the Floating it stands in", () => {
     function Toggle() {
       const { isOpen, toggle } = useFloatingContext();
       return <button onClick={toggle}>{isOpen ? "Hide" : "Show"}</button>;
     }
-    render(<Floating><Toggle /><Floating.Content aria-label="Panel" anchored={false}>Body</Floating.Content></Floating>);
+    render(<Floating><Toggle /><Floating.Trigger>Anchor</Floating.Trigger><Floating.Content aria-label="Panel">Body</Floating.Content></Floating>);
     expect(screen.queryByText("Body")).toBeNull();
     fireEvent.click(screen.getByText("Show"));
     expect(screen.getByText("Body")).toBeTruthy();
@@ -711,12 +735,15 @@ describe("floating state", () => {
 });
 
 describe("floating dismissal", () => {
-  it.each([{ modal: true }, { modal: false }])("closes on focus leaving only when asked to (modal: $modal)", ({ modal }) => {
+  it.each([{ presentation: "modal" as const }, { presentation: "popover" as const }])("closes on focus leaving only when asked to ($presentation)", ({ presentation }) => {
     const ask = (closeOnBlur: boolean) => {
       const change = vi.fn();
       const view = render(<>
         <button>Outside</button>
-        <Floating open modal={modal} onOpenChange={change}><Floating.Content aria-label="Panel" anchored={false} closeOnBlur={closeOnBlur}><button>Inside</button></Floating.Content></Floating>
+        <Floating open onOpenChange={change}>
+          <Floating.Trigger>Anchor</Floating.Trigger>
+          <Floating.Content aria-label="Panel" presentation={presentation} closeOnBlur={closeOnBlur}><button>Inside</button></Floating.Content>
+        </Floating>
       </>);
       act(() => screen.getByText("Inside").focus());
       act(() => screen.getByText("Outside").focus());
@@ -729,21 +756,21 @@ describe("floating dismissal", () => {
 });
 
 describe("floating elevation", () => {
-  type Own = FloatingElevation["tier"];
+  type Own = FloatingPresentation;
   const stand = (own: Own, parent?: FloatingElevation) => nestElevation(parent, own);
 
   it("[primitives.floating.nesting] rises one rank inside the same tier and starts a higher tier at rank 0", () => {
-    expect(stand("overlay")).toEqual({ tier: "overlay", rank: 0 });
+    expect(stand("popover")).toEqual({ tier: "overlay", rank: 0 });
     expect(stand("modal")).toEqual({ tier: "modal", rank: 0 });
-    expect(stand("overlay", { tier: "overlay", rank: 0 })).toEqual({ tier: "overlay", rank: 1 });
-    expect(stand("overlay", { tier: "modal", rank: 2 })).toEqual({ tier: "modal", rank: 3 });
+    expect(stand("popover", { tier: "overlay", rank: 0 })).toEqual({ tier: "overlay", rank: 1 });
+    expect(stand("popover", { tier: "modal", rank: 2 })).toEqual({ tier: "modal", rank: 3 });
     expect(stand("modal", { tier: "overlay", rank: 4 })).toEqual({ tier: "modal", rank: 0 });
     expect(stand("modal", { tier: "modal", rank: 0 })).toEqual({ tier: "modal", rank: 1 });
   });
 
   it("[primitives.floating.nesting] holds a deep chain at the limit its tier allows", () => {
-    for (const tier of ["overlay", "modal"] as const) {
-      const chain = Array.from({ length: 12 }).reduce<FloatingElevation | undefined>((parent) => stand(tier, parent), undefined) as FloatingElevation;
+    for (const [presentation, tier] of [["popover", "overlay"], ["modal", "modal"]] as const) {
+      const chain = Array.from({ length: 12 }).reduce<FloatingElevation | undefined>((parent) => stand(presentation, parent), undefined) as FloatingElevation;
       expect(chain).toEqual({ tier, rank: ELEVATION_NEST_LIMIT });
     }
   });
@@ -752,10 +779,10 @@ describe("floating elevation", () => {
     render(
       <Floating defaultOpen>
         <Floating.Trigger>outer</Floating.Trigger>
-        <Floating.Content aria-label="popover" anchored={false}>
-          <Floating defaultOpen modal>
+        <Floating.Content aria-label="popover">
+          <Floating defaultOpen>
             <Floating.Trigger>inner</Floating.Trigger>
-            <Floating.Content aria-label="dialog">Inner</Floating.Content>
+            <Floating.Content presentation="modal" aria-label="dialog">Inner</Floating.Content>
           </Floating>
         </Floating.Content>
       </Floating>,
@@ -777,12 +804,12 @@ describe("floating elevation", () => {
 
   it("[primitives.floating.nesting] writes the rank of a panel nested inside its own tier", () => {
     render(
-      <Floating defaultOpen modal>
+      <Floating defaultOpen>
         <Floating.Trigger>outer</Floating.Trigger>
-        <Floating.Content aria-label="first">
-          <Floating defaultOpen modal>
+        <Floating.Content presentation="modal" aria-label="first">
+          <Floating defaultOpen>
             <Floating.Trigger>inner</Floating.Trigger>
-            <Floating.Content aria-label="second">Inner</Floating.Content>
+            <Floating.Content presentation="modal" aria-label="second">Inner</Floating.Content>
           </Floating>
         </Floating.Content>
       </Floating>,
@@ -791,5 +818,237 @@ describe("floating elevation", () => {
     const backdrop = (name: string) => screen.getByRole("dialog", { name, hidden: true }).parentElement!;
     expect(backdrop("first").style.getPropertyValue(rankProperty)).toBe("0");
     expect(backdrop("second").style.getPropertyValue(rankProperty)).toBe("1");
+  });
+});
+
+// jsdom lays nothing out, so a measuring probe reads the width the step it stands for would have in a browser.
+const WIDTHS: Record<string, number> = { [stepProbe.xs]: 4, [stepProbe.sm]: 8, [stepProbe.md]: 12, [stepProbe.lg]: 16, [stepProbe.gutter]: 16 };
+function layOutProbes() {
+  const rect = (width: number) => ({ x: 0, y: 0, top: 0, left: 0, right: width, bottom: 0, width, height: 0, toJSON: () => ({}) }) as DOMRect;
+  return vi.spyOn(Element.prototype, "getBoundingClientRect").mockImplementation(function (this: Element) {
+    return rect(WIDTHS[this.className] ?? 0);
+  });
+}
+
+describe("floating presentation", () => {
+  it("[primitives.floating.presentation] a popover needs a Trigger or an anchorRef: without either it logs once and renders nothing", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const view = render(<Floating defaultOpen><Floating.Content aria-label="Lone">Body</Floating.Content></Floating>);
+    expect(screen.queryByText("Body")).toBeNull();
+    view.rerender(<Floating defaultOpen><Floating.Content aria-label="Lone">Body</Floating.Content></Floating>);
+    expect(error).toHaveBeenCalledTimes(1);
+    expect(error.mock.calls[0]![0]).toBe("[paper-ui] Floating.Content (popover) needs Floating.Trigger or anchorRef.");
+    error.mockRestore();
+  });
+
+  it("[primitives.floating.presentation] a popover stands beside its anchorRef without a Trigger, and says what it is and where it settled", () => {
+    const anchor = createRef<HTMLButtonElement>();
+    render(<>
+      <button ref={anchor}>Anchor</button>
+      <Floating defaultOpen><Floating.Content aria-label="Beside" anchorRef={anchor}>Body</Floating.Content></Floating>
+    </>);
+    const panel = screen.getByRole("dialog", { name: "Beside" });
+    expect(panel.getAttribute("data-presentation")).toBe("popover");
+    expect(panel.getAttribute("data-placement")).toMatch(/^(top|bottom|start|end)$/);
+    expect(panel.hasAttribute("aria-modal")).toBe(false);
+    expect(panel.parentElement!.classList.contains(scrimPaint)).toBe(false);
+  });
+
+  it("[primitives.floating.presentation] a Trigger written below its Content still anchors the popover", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    render(<Floating defaultOpen><Floating.Content aria-label="Above">Body</Floating.Content><Floating.Trigger>Below</Floating.Trigger></Floating>);
+    expect(screen.getByRole("dialog", { name: "Above" }).getAttribute("data-placement")).toMatch(/^(top|bottom|start|end)$/);
+    expect(error).not.toHaveBeenCalled();
+    error.mockRestore();
+  });
+
+  it("[primitives.floating.presentation] an anchor mounted with the opening and written below the Content still anchors the popover", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    function Example() {
+      const anchor = useRef<HTMLSpanElement>(null);
+      const [open, setOpen] = useState(false);
+      return <>
+        <button onClick={() => setOpen(true)}>Open</button>
+        <Floating open={open}><Floating.Content aria-label="Late" anchorRef={anchor}>Body</Floating.Content></Floating>
+        {open && <span ref={anchor}>Anchor</span>}
+      </>;
+    }
+    render(<Example />);
+    fireEvent.click(screen.getByText("Open"));
+    expect(screen.getByRole("dialog", { name: "Late" }).getAttribute("data-placement")).toMatch(/^(top|bottom|start|end)$/);
+    expect(error).not.toHaveBeenCalled();
+    error.mockRestore();
+  });
+
+  it("[primitives.floating.presentation] a modal sets aria-modal, renders the scrim and has no anchor to place against", () => {
+    render(<Floating defaultOpen><Floating.Content presentation="modal" aria-label="Dialog">Body</Floating.Content></Floating>);
+    const panel = screen.getByRole("dialog", { name: "Dialog" });
+    expect(panel.getAttribute("aria-modal")).toBe("true");
+    expect(panel.getAttribute("data-presentation")).toBe("modal");
+    expect(panel.hasAttribute("data-placement")).toBe(false);
+    expect(panel.parentElement!.classList.contains(scrimPaint)).toBe(true);
+  });
+
+  it("[primitives.floating.presentation] a Floating inside a popover or a modal builds its elevation on the panel it stands in, not on its Root", () => {
+    render(
+      <Floating defaultOpen>
+        <Floating.Trigger>outer</Floating.Trigger>
+        <Floating.Content aria-label="first">
+          <Floating defaultOpen>
+            <Floating.Trigger>inner</Floating.Trigger>
+            <Floating.Content presentation="modal" aria-label="second">{(state) => `${state.elevation.tier} ${state.elevation.rank}`}</Floating.Content>
+          </Floating>
+        </Floating.Content>
+      </Floating>,
+    );
+    expect(screen.getByRole("dialog", { name: "second", hidden: true }).textContent).toBe("modal 0");
+  });
+});
+
+describe("floating geometry", () => {
+  const position = vi.mocked(useAnchoredPosition);
+  let rect: ReturnType<typeof layOutProbes>;
+  beforeEach(() => {
+    rect = layOutProbes();
+    position.mockClear();
+  });
+  afterEach(() => rect.mockRestore());
+
+  const open = (offset?: "none" | "xs" | "sm" | "md" | "lg") => render(
+    <Floating defaultOpen>
+      <Floating.Trigger>Open</Floating.Trigger>
+      <Floating.Content aria-label="Panel" offset={offset}>Body</Floating.Content>
+    </Floating>,
+  );
+
+  it("[primitives.floating.geometry] gives the adapter the step of the gap scale as the pixels it measures, sm unless told otherwise, and the gutter as the viewport padding", () => {
+    open();
+    expect(position.mock.lastCall![0]).toMatchObject({ offsetPx: 8, crossOffsetPx: 0, containerPaddingPx: 16 });
+    cleanup();
+    open("md");
+    expect(position.mock.lastCall![0]).toMatchObject({ offsetPx: 12 });
+    cleanup();
+    open("none");
+    expect(position.mock.lastCall![0]).toMatchObject({ offsetPx: 0 });
+  });
+
+  it("[primitives.floating.geometry] measures a step where the panel stands, so a subtree that overrides the scale moves it", () => {
+    const parents: Array<string | null> = [];
+    rect.mockImplementation(function (this: Element) {
+      if (this.className in WIDTHS) parents.push(this.parentElement!.getAttribute("role"));
+      const width = WIDTHS[this.className] ?? 0;
+      return { x: 0, y: 0, top: 0, left: 0, right: width, bottom: 0, width, height: 0, toJSON: () => ({}) } as DOMRect;
+    });
+    open();
+    expect(parents.length).toBeGreaterThan(0);
+    expect(new Set(parents)).toEqual(new Set(["dialog"]));
+  });
+
+  it("[primitives.draggable.keyboard-step] moves a Draggable by a step of the gap scale per arrow key, sm unless told otherwise", () => {
+    const change = vi.fn();
+    const { rerender } = render(<Draggable defaultPosition={{ x: 0, y: 0 }} activation="handle" onPositionChange={change}><Draggable.Handle aria-label="Move">Grip</Draggable.Handle></Draggable>);
+    const handle = screen.getByRole("button", { name: "Move" });
+    fireEvent.keyDown(handle, { key: "ArrowRight" });
+    fireEvent.keyUp(handle, { key: "ArrowRight" });
+    expect(change).toHaveBeenLastCalledWith({ x: 8, y: 0 });
+    rerender(<Draggable defaultPosition={{ x: 0, y: 0 }} keyboardStep="md" activation="handle" onPositionChange={change}><Draggable.Handle aria-label="Move">Grip</Draggable.Handle></Draggable>);
+    fireEvent.keyDown(handle, { key: "ArrowDown" });
+    fireEvent.keyUp(handle, { key: "ArrowDown" });
+    expect(change).toHaveBeenLastCalledWith({ x: 8, y: 12 });
+  });
+});
+
+describe("floating presence", () => {
+  // jsdom has no animations. Where a test needs one, an element reports an animation that runs until the test lets it finish.
+  const getAnimations = vi.fn((): unknown[] => []);
+  const hold = () => {
+    let finish!: () => void;
+    const finished = new Promise<void>((resolve) => { finish = resolve; });
+    getAnimations.mockImplementation(() => [{ playState: "running", finished }]);
+    return () => act(async () => { finish(); await finished; });
+  };
+  beforeEach(() => {
+    vi.stubGlobal("CSSTransition", class {});
+    getAnimations.mockImplementation(() => []);
+    Object.defineProperty(Element.prototype, "getAnimations", { configurable: true, value: getAnimations });
+  });
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    Reflect.deleteProperty(Element.prototype, "getAnimations");
+  });
+
+  const panelOf = () => document.querySelector<HTMLElement>("[data-presentation]")!;
+  const popover = () => (
+    <Floating>
+      <Floating.Trigger>Open</Floating.Trigger>
+      <Floating.Content aria-label="Panel">Body</Floating.Content>
+    </Floating>
+  );
+
+  it("[primitives.floating.presence] marks the panel entering until its animation ends, and carries no mark while it stands", async () => {
+    const settle = hold();
+    render(popover());
+    fireEvent.click(screen.getByText("Open"));
+    expect(panelOf().getAttribute("data-presence")).toBe("entering");
+    await settle();
+    expect(panelOf().hasAttribute("data-presence")).toBe(false);
+  });
+
+  it("[primitives.floating.presence] keeps a closing panel mounted but inert and hidden from assistive technology, and removes it once the exit has played", async () => {
+    render(popover());
+    fireEvent.click(screen.getByText("Open"));
+    await act(async () => {});
+    const settle = hold();
+    fireEvent.click(screen.getByText("Open"));
+    const panel = panelOf();
+    expect(panel.getAttribute("data-presence")).toBe("exiting");
+    expect(panel.getAttribute("aria-hidden")).toBe("true");
+    expect(panel.closest("[inert]")).not.toBeNull();
+    expect(screen.queryByRole("dialog")).toBeNull();
+    await settle();
+    expect(document.querySelector("[data-presentation]")).toBeNull();
+  });
+
+  it("[primitives.floating.presence] puts the exit on the scrim and the panel of a modal and hides the whole dialog at once", async () => {
+    render(<Floating><Floating.Trigger>Open</Floating.Trigger><Floating.Content presentation="modal" aria-label="Dialog">Body</Floating.Content></Floating>);
+    fireEvent.click(screen.getByText("Open"));
+    await act(async () => {});
+    const settle = hold();
+    fireEvent.click(screen.getByText("Open"));
+    const panel = panelOf();
+    const scrim = panel.parentElement!;
+    expect([scrim.getAttribute("data-presence"), panel.getAttribute("data-presence")]).toEqual(["exiting", "exiting"]);
+    expect(scrim.getAttribute("aria-hidden")).toBe("true");
+    expect(scrim.hasAttribute("inert")).toBe(true);
+    await settle();
+    expect(document.querySelector("[data-presentation]")).toBeNull();
+  });
+
+  it("[primitives.floating.presence] a panel reopened while it is leaving is a new one: shown again, entering, no longer inert", async () => {
+    render(popover());
+    fireEvent.click(screen.getByText("Open"));
+    await act(async () => {});
+    const settle = hold();
+    fireEvent.click(screen.getByText("Open"));
+    const leaving = panelOf();
+    expect(leaving.getAttribute("data-presence")).toBe("exiting");
+    fireEvent.click(screen.getByText("Open"));
+    const again = panelOf();
+    expect(again).not.toBe(leaving);
+    expect(leaving.isConnected).toBe(false);
+    expect(again.getAttribute("data-presence")).toBe("entering");
+    expect(again.hasAttribute("aria-hidden")).toBe(false);
+    expect(again.closest("[inert]")).toBeNull();
+    await settle();
+    expect(panelOf().hasAttribute("data-presence")).toBe(false);
+  });
+
+  it("[primitives.floating.presence] unmounts at once where nothing animates", () => {
+    Reflect.deleteProperty(Element.prototype, "getAnimations");
+    render(popover());
+    fireEvent.click(screen.getByText("Open"));
+    expect(panelOf()).not.toBeNull();
+    fireEvent.click(screen.getByText("Open"));
+    expect(document.querySelector("[data-presentation]")).toBeNull();
   });
 });

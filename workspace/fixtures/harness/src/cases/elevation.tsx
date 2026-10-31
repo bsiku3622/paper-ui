@@ -6,9 +6,9 @@ import { ELEVATIONS } from "@studio-baeks/paper-ui/tokens";
 export const ElevationCase = () => (
   <>
     {ELEVATIONS.map((tier) => <Surface key={tier} elevation={tier} data-testid={`tier-${tier}`}>{tier}</Surface>)}
-    <Floating defaultOpen modal={new URLSearchParams(window.location.search).has("modal")}>
+    <Floating defaultOpen>
       <Floating.Trigger data-testid="popover-trigger">Open</Floating.Trigger>
-      <Floating.Content aria-label="Popover" data-testid="popover">Popover</Floating.Content>
+      <Floating.Content aria-label="Popover" data-testid="popover" presentation={new URLSearchParams(window.location.search).has("modal") ? "modal" : "popover"}>Popover</Floating.Content>
     </Floating>
     <div className={elevation.toast} data-testid="toast" style={{ position: "fixed", inset: 0 }} />
   </>

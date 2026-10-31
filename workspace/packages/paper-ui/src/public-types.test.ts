@@ -8,9 +8,11 @@ import { fileURLToPath } from "node:url";
 import type { ComponentProps } from "react";
 import { describe, expect, expectTypeOf, it } from "vitest";
 
+import type { Space } from "./tokens";
+
 import {
   VisuallyHidden, useDraggable, useDroppable, useFloating, useFocusRing, useFocusWithin, useFormField, useFormFieldControl, usePressable, useRovingFocusItem, useSelectable, useSelectableGroup,
-  type DraggableProps, type DraggableResult, type DraggableState, type DroppableProps, type DroppableResult, type DroppableState, type FloatingContentProps, type FloatingContentState, type FloatingResult, type FocusRingResult, type FocusWithinResult, type FormFieldControlResult, type FormFieldResult, type PressEvent, type PressableOptions,
+  type DraggableProps, type DraggableResult, type DraggableState, type DroppableProps, type DroppableResult, type DroppableState, type FloatingContentProps, type FloatingContentState, type FloatingModalProps, type FloatingPopoverProps, type FloatingPresentation, type FloatingResult, type FocusRingResult, type FocusWithinResult, type FormFieldControlResult, type FormFieldResult, type PressEvent, type PressableOptions,
   type FormFieldProps, type FormFieldState, type PressableProps, type PressableResult, type PressableState, type RovingFocusItemResult, type RovingFocusProps, type RovingFocusState, type SelectableGroupProps,
   type SelectableGroupResult, type SelectableGroupState, type SelectableProps, type SelectableResult, type SelectableState,
 } from "./index";
@@ -70,6 +72,23 @@ describe("public types", () => {
     expectTypeOf<Snapshot<DroppableProps["children"]>>().toEqualTypeOf<DroppableState>();
     expectTypeOf<Snapshot<FloatingContentProps["children"]>>().toEqualTypeOf<FloatingContentState>();
     expectTypeOf<Snapshot<FormFieldProps["children"]>>().toEqualTypeOf<FormFieldState>();
+  });
+
+  it("[primitives.floating.presentation] types what a popover takes away from what a modal takes", () => {
+    expectTypeOf<NonNullable<FloatingContentProps["presentation"]>>().toEqualTypeOf<FloatingPresentation>();
+    expectTypeOf<NonNullable<FloatingPopoverProps["offset"]>>().toEqualTypeOf<Space | "none">();
+    expectTypeOf<NonNullable<FloatingPopoverProps["crossOffset"]>>().toEqualTypeOf<Space | "none">();
+    expectTypeOf<FloatingModalProps["presentation"]>().toEqualTypeOf<"modal">();
+    expectTypeOf<FloatingModalProps["offset"]>().toEqualTypeOf<undefined>();
+    expectTypeOf<FloatingModalProps["anchorRef"]>().toEqualTypeOf<undefined>();
+    expectTypeOf<FloatingPopoverProps["underlayClassName"]>().toEqualTypeOf<undefined>();
+    typeOnly(() => {
+      // @ts-expect-error a modal is not placed against an anchor
+      const modal: FloatingContentProps = { presentation: "modal", offset: "sm", children: null };
+      // @ts-expect-error an offset is a step of the gap scale or none, not a number of pixels
+      const pixels: FloatingContentProps = { offset: 8, children: null };
+      void [modal, pixels];
+    });
   });
 
   it("[primitives.hooks.result-shape] gives a DOM hook its part's props, with the ref and the state attributes", () => {

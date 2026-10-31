@@ -1,5 +1,6 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import { SHAPE_SOURCE } from "../../packages/paper-ui/src/tokens/shape";
 import { openHarness, openPlayground } from "../support/harness";
 import { tab } from "../support/keyboard";
 
@@ -216,7 +217,7 @@ test("[primitives.floating.portal] popover portals, anchors, dismisses and resto
 
 test("[primitives.floating.nesting] [primitives.floating.focus-restore] nested modal closes only the top panel, contains focus and restores each trigger", async ({ page }) => {
   await page.goto("/playground/floating");
-  await page.getByRole("switch", { name: "modal", exact: true }).check();
+  await page.getByRole("combobox", { name: "presentation", exact: true }).selectOption("modal");
   const trigger = page.getByRole("button", { name: "설정 열기", exact: true });
   await trigger.click();
   const outer = page.getByRole("dialog", { name: "설정", exact: true });
@@ -252,6 +253,76 @@ test("[primitives.floating.dismiss] outside dismissal can be disabled while Esca
   await dialog.getByRole("textbox", { name: "표시 이름", exact: true }).focus();
   await page.keyboard.press("Escape");
   await expect(dialog).toHaveCount(0);
+});
+
+// The distance from the trigger to the panel across the side the panel settled on, once it has stopped rising into place.
+const gapOf = async (trigger: Locator, panel: Locator) => {
+  await expect(panel).not.toHaveAttribute("data-presence", /.*/);
+  const [from, to] = [(await trigger.boundingBox())!, (await panel.boundingBox())!];
+  return (await panel.getAttribute("data-placement")) === "top" ? from.y - (to.y + to.height) : to.y - (from.y + from.height);
+};
+
+test("[primitives.floating.geometry] a popover keeps the sm gap from its trigger, and the step that offset names", async ({ page }) => {
+  await page.goto("/playground/floating");
+  const trigger = page.getByRole("button", { name: "설정 열기", exact: true });
+  const panel = page.getByRole("dialog", { name: "설정", exact: true });
+  // A closed panel is hidden from the role query as soon as it starts leaving; it is gone when it is out of the page.
+  const gone = page.locator("[data-presentation]");
+  await trigger.click();
+  await expect(panel).toBeVisible();
+  expect(await gapOf(trigger, panel)).toBeCloseTo(SHAPE_SOURCE.space.sm, 1);
+  await page.keyboard.press("Escape");
+  await expect(gone).toHaveCount(0);
+  await page.getByRole("combobox", { name: "offset", exact: true }).selectOption("md");
+  await trigger.click();
+  await expect(panel).toBeVisible();
+  expect(await gapOf(trigger, panel)).toBeCloseTo(SHAPE_SOURCE.space.md, 1);
+  await page.keyboard.press("Escape");
+  await expect(gone).toHaveCount(0);
+  await page.getByRole("combobox", { name: "offset", exact: true }).selectOption("none");
+  await trigger.click();
+  await expect(panel).toBeVisible();
+  expect(await gapOf(trigger, panel)).toBeCloseTo(0, 1);
+});
+
+test("[primitives.floating.geometry] a popover pushed against the viewport edge keeps the gutter from it", async ({ page }) => {
+  await page.goto("/playground/floating");
+  const trigger = page.getByRole("button", { name: "설정 열기", exact: true });
+  await trigger.evaluate((element) => { Object.assign(element.style, { position: "fixed", top: "120px", insetInlineEnd: "0" }); });
+  await trigger.click();
+  const panel = page.getByRole("dialog", { name: "설정", exact: true });
+  await expect(panel).toBeVisible();
+  await expect(panel).not.toHaveAttribute("data-presence", /.*/);
+  const right = await panel.evaluate((element) => element.getBoundingClientRect().right);
+  const edge = await page.evaluate(() => document.documentElement.clientWidth);
+  expect(edge - right).toBeCloseTo(SHAPE_SOURCE.space.lg, 1);
+});
+
+test("[primitives.floating.presentation] a popover says where it settled beside its trigger, and a modal is placed against nothing", async ({ page }) => {
+  await page.goto("/playground/floating");
+  await page.getByRole("button", { name: "설정 열기", exact: true }).click();
+  const panel = page.getByRole("dialog", { name: "설정", exact: true });
+  await expect(panel).toHaveAttribute("data-presentation", "popover");
+  await expect(panel).toHaveAttribute("data-placement", /^(top|bottom)$/);
+  await page.keyboard.press("Escape");
+  await expect(page.locator("[data-presentation]")).toHaveCount(0);
+  await page.getByRole("combobox", { name: "presentation", exact: true }).selectOption("modal");
+  await page.getByRole("button", { name: "설정 열기", exact: true }).click();
+  await expect(panel).toHaveAttribute("data-presentation", "modal");
+  await expect(panel).not.toHaveAttribute("data-placement", /.*/);
+});
+
+test("[primitives.draggable.keyboard-step] an arrow key moves the box by a step of the gap scale, sm unless keyboardStep names another", async ({ page }) => {
+  await openPlayground(page, "draggable", "Draggable");
+  const handle = page.getByRole("button", { name: "패널 이동", exact: true });
+  const position = page.getByTestId("position");
+  await handle.focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(position).toHaveText(`x: ${SHAPE_SOURCE.space.sm}, y: 0`);
+  await page.getByRole("combobox", { name: "keyboardStep", exact: true }).selectOption("md");
+  await handle.focus();
+  await page.keyboard.press("ArrowDown");
+  await expect(position).toHaveText(`x: ${SHAPE_SOURCE.space.sm}, y: ${SHAPE_SOURCE.space.md}`);
 });
 
 test("hook composition keeps press and focus behavior on one node", async ({ page }) => {
