@@ -206,3 +206,25 @@ test("[atoms.field.actions] the browser's cancel button and search decoration ar
   expect(ours.length).toBeGreaterThan(0);
   for (const { pseudo, nodeId } of ours) expect(await displayOf(nodeId), pseudo).toBe("none");
 });
+
+// The selection marks are their own ring owners: the input draws the ring on its own corner.
+test.describe("the selection marks", () => {
+  test.beforeEach(async ({ page }) => {
+    await openHarness(page, "marks");
+  });
+
+  for (const [id, corner] of [["checkbox-md", tokens.shape.radius.selection], ["radio-md", tokens.shape.radius.full], ["switch-md", tokens.shape.radius.full]] as const) {
+    test(`[atoms.focus.ring] ${id} shows its ring for the keyboard and not for the pointer, on its own corner`, async ({ page }) => {
+      const target = page.getByTestId(id);
+      await target.click();
+      await target.focus();
+      await expect(target).toBeFocused();
+      await expect(target).not.toHaveAttribute("data-focus-visible", /.*/);
+      await expectStyle(target, { outlineStyle: "none" });
+
+      await reachByKeyboard(page, target);
+      await expect(target).toHaveAttribute("data-focus-visible", "true");
+      await expectStyle(target, { ...ringOf, borderTopLeftRadius: corner });
+    });
+  }
+});

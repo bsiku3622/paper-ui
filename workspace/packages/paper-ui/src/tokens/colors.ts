@@ -11,6 +11,10 @@ import type { AccentPalette, AccentStep, AlphaStep, PaletteStep } from "./palett
 export const STATUSES = ["info", "success", "warning", "error"] as const;
 export type Status = (typeof STATUSES)[number];
 
+// The statuses a selection mark can show: it is either fine or in error.
+export const CHOICE_STATUSES = ["error"] as const satisfies readonly Status[];
+export type ChoiceStatus = (typeof CHOICE_STATUSES)[number];
+
 export const ACCENTS = ["primary", ...STATUSES] as const;
 export type Accent = (typeof ACCENTS)[number];
 

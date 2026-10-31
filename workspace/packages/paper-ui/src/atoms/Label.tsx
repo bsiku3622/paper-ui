@@ -1,6 +1,6 @@
 // Label — 입력의 이름표. Text label 역할을 그대로 쓴다.
 
-import type { LabelHTMLAttributes, ReactNode } from "react";
+import { forwardRef, type LabelHTMLAttributes, type ReactNode } from "react";
 
 import { Text } from "../primitives/Text";
 
@@ -9,8 +9,10 @@ export type LabelProps = Omit<LabelHTMLAttributes<HTMLLabelElement>, "className"
   className?: string;
 };
 
-export const Label = ({ children, className, ...rest }: LabelProps) => (
-  <Text as="label" variant="label" className={className} {...rest}>
-    {children}
-  </Text>
-);
+export const Label = forwardRef<HTMLLabelElement, LabelProps>(function Label({ children, className, ...rest }, ref) {
+  return (
+    <Text as="label" variant="label" ref={ref} className={className} {...rest}>
+      {children}
+    </Text>
+  );
+});

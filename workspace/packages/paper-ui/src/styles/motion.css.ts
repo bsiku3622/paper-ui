@@ -8,7 +8,7 @@
 
 import { keyframes } from "@vanilla-extract/css";
 
-import { MOTION, MOTION_LOOPS, MOTION_REDUCED } from "../tokens";
+import { MOTION, MOTION_LOOPS, MOTION_REDUCED, VALUE_ATTRIBUTE } from "../tokens";
 import { layered } from "../tokens/layers.css";
 
 const utilities = layered("utilities");
@@ -32,18 +32,20 @@ const vanish = keyframes({ to: hidden });
 const entering = `${enter.duration} ${enter.easing}`;
 const exiting = `${exit.duration} ${exit.easing} forwards`;
 
+const presenceOf = (state: "entering" | "exiting") => `&[${VALUE_ATTRIBUTE.presence}="${state}"]`;
+
 // 면(surface)은 opacity 와 함께 enter 변위만큼 떠오르고, 같은 변위로 가라앉는다. scrim 은 opacity 만.
 export const presence = utilities.styleVariants({
   surface: {
     selectors: {
-      '&[data-presence="entering"]': { animation: `${rise} ${entering}` },
-      '&[data-presence="exiting"]': { animation: `${sink} ${exiting}` },
+      [presenceOf("entering")]: { animation: `${rise} ${entering}` },
+      [presenceOf("exiting")]: { animation: `${sink} ${exiting}` },
     },
   },
   scrim: {
     selectors: {
-      '&[data-presence="entering"]': { animation: `${appear} ${entering}` },
-      '&[data-presence="exiting"]': { animation: `${vanish} ${exiting}` },
+      [presenceOf("entering")]: { animation: `${appear} ${entering}` },
+      [presenceOf("exiting")]: { animation: `${vanish} ${exiting}` },
     },
   },
 });

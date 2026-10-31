@@ -96,6 +96,7 @@ hover · 눌림 · 선택 · 비활성 · 키보드 포커스가 어떻게 보�
 | `stateStyle.tinted` · `item` | 면 위 tint — hover · 눌림 · 선택 |
 | `stateStyle.field` | 입력 상자의 status별 경계와 hover 경계 |
 | `stateStyle.dropTarget` | drop 대상의 경계 |
+| `stateStyle.hoverUnderline` | 가리킬 때만 뜨는 밑줄 — `underline="hover"`인 Link |
 | `linkStyle` | Link Atom을 그릴 수 없는 자리의 링크 — stylesheet가 닿는 `a` |
 
 [contract:foundations.state.recipes]: #
@@ -103,6 +104,9 @@ hover · 눌림 · 선택 · 비활성 · 키보드 포커스가 어떻게 보�
 
 [contract:foundations.state.tint-property]: #
 tint는 `--pui-state-tint` 하나입니다. `styles/states.css.ts`가 `<color>`, 상속 없음, 초기값 투명으로 등록해 전이할 수 있고, 규칙은 이 변수만 바꾸므로 면 색은 건드리지 않습니다. `@property`를 쓰지 못하는 브라우저에서는 tint는 뜨되 번지지 않습니다. 키보드 링의 baseline(`:where(:focus-visible)`)도 같은 파일에 있고, 그 규칙은 [Shape](shape.md#stroke--focus)가 정합니다.
+
+[contract:foundations.state.source-scan]: #
+상태가 적히는 곳은 정해져 있고, 패키지 소스 전체를 훑는 테스트(`styles/states.test.ts`)가 지킵니다. `:hover` · `:active` · `:focus-visible` selector는 상태 recipe(`tokens/state-recipes.ts`), 링 baseline(`styles/states.css.ts`), paint 층(`primitives/paint/`와 accent × variant 지도 `styles/color.css.ts`)에만 있고, 상태 · 값 · 표지 속성(`data-*`)의 철자는 `tokens/state.ts`에만 있습니다. 나머지는 recipe와 selector helper를 부르므로, 컴포넌트가 다는 이름과 stylesheet가 읽는 이름이 어긋날 수 없습니다.
 
 ## 공개 어휘
 
@@ -113,6 +117,7 @@ prop이 받는 닫힌 값의 집합을 **축**이라 부릅니다. 축마다 상
 | 짝 (상수 · 타입) | 정의 위치 | 쓰는 prop · tokens 경로 |
 |---|---|---|
 | `STATUSES` · `Status` | `tokens/colors.ts` | Field · Textarea · Select의 `status` |
+| `CHOICE_STATUSES` · `ChoiceStatus` | `tokens/colors.ts` | Checkbox · Radio · Switch의 `status` — `STATUSES`의 부분집합(`error`) |
 | `ACCENTS` · `Accent` | `tokens/colors.ts` | Button · IconButton · Badge의 `accent`, `tokens.color.accent.<accent>` |
 | `ACCENT_TONES` · `AccentTone` | `tokens/colors.ts` | `tokens.color.accent.<accent>.<tone>` |
 | `VARIANTS` · `Variant` | `tokens/color-recipes.ts` | Button · IconButton · Badge의 `variant` |

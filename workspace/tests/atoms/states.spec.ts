@@ -1,7 +1,8 @@
-import { expect, test, type Locator } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { tokens } from "../../packages/paper-ui/src/tokens";
 import { accentProfile, itemProfile } from "../../packages/paper-ui/src/tokens/color-recipes";
+import { strokeRing } from "../../packages/paper-ui/src/tokens/shape-recipes";
 import type { Accent, Variant } from "../../packages/paper-ui/src/tokens";
 import { openHarness } from "../support/harness";
 import { tab } from "../support/keyboard";
@@ -265,5 +266,104 @@ test.describe("on a pointer that cannot hover", () => {
       await settled(frame);
       await expectStyle(frame, { borderTopColor: tokens.color.border.base });
     }
+  });
+});
+
+// The selection marks, one to a room so a hit area never reaches into a neighbour's.
+test.describe("the selection marks", () => {
+  const { color } = tokens;
+  const ring = (ink: string) => ({ boxShadow: strokeRing(ink) });
+
+  test.beforeEach(async ({ page }) => {
+    await openHarness(page, "marks");
+  });
+
+  test("[atoms.mark.ring] an unchecked Checkbox and Radio rest in a tertiary ink ring over the raised face, a hover leaves it there, and a checked one wears the primary solid", async ({ page }) => {
+    for (const id of ["checkbox-md", "radio-md"]) {
+      const mark = page.getByTestId(id);
+      await page.mouse.move(0, 0);
+      await expectStyle(mark, { backgroundColor: color.bg.raised, borderTopColor: color.ink.tertiary });
+      await mark.hover();
+      await expectStyle(mark, { backgroundColor: color.bg.raised, borderTopColor: color.ink.tertiary });
+    }
+    await expectStyle(page.getByTestId("checkbox-on"), { backgroundColor: color.accent.primary.solid, borderTopColor: color.accent.primary.solid });
+    await expectStyle(page.getByTestId("checkbox-mixed"), { backgroundColor: color.accent.primary.solid, borderTopColor: color.accent.primary.solid });
+    await expectStyle(page.getByTestId("radio-on"), { borderTopColor: color.accent.primary.solid });
+  });
+
+  test("[atoms.mark.ring] an off Switch keeps its track inside a tertiary ink ring that is part of its own box, and an on one is the primary solid with no ring to show", async ({ page }) => {
+    const off = page.getByTestId("switch-md");
+    await expectStyle(off, { backgroundColor: color.control.track, ...ring(color.ink.tertiary) });
+    const box = await off.boundingBox();
+    expect(box!.width, "the ring adds no size").toBe(32);
+    expect(box!.height).toBe(18);
+    await expectStyle(page.getByTestId("switch-on"), { backgroundColor: color.accent.primary.solid, ...ring("transparent") });
+    await off.check();
+    await expectStyle(off, { backgroundColor: color.accent.primary.solid, ...ring("transparent") });
+    await off.uncheck();
+    await expectStyle(off, { backgroundColor: color.control.track, ...ring(color.ink.tertiary) });
+  });
+
+  test("[atoms.mark.ring] an error draws the unchecked ring in the error ink and leaves what is checked as it was", async ({ page }) => {
+    await expectStyle(page.getByTestId("checkbox-error"), { backgroundColor: color.bg.raised, borderTopColor: color.accent.error.ink });
+    await expectStyle(page.getByTestId("radio-error"), { borderTopColor: color.accent.error.ink });
+    await expectStyle(page.getByTestId("switch-error"), { backgroundColor: color.control.track, ...ring(color.accent.error.ink) });
+    await expectStyle(page.getByTestId("checkbox-error-on"), { backgroundColor: color.accent.primary.solid, borderTopColor: color.accent.primary.solid });
+    for (const id of ["checkbox-error", "radio-error", "switch-error"]) {
+      await expect(page.getByTestId(id)).toHaveAttribute("aria-invalid", "true");
+      await expect(page.getByTestId(id)).toHaveAttribute("data-status", "error");
+    }
+  });
+
+  test("[atoms.mark.disabled] a disabled mark, off or on, is dimmed by the opacity role and shows the not-allowed cursor", async ({ page }) => {
+    for (const id of ["checkbox-disabled", "checkbox-on-disabled", "radio-disabled", "radio-on-disabled", "switch-disabled", "switch-on-disabled"]) {
+      await expect(page.getByTestId(id)).toBeDisabled();
+      await expect(page.getByTestId(id)).toHaveAttribute("data-disabled", "true");
+      await expectStyle(page.getByTestId(id), { opacity: color.opacity.disabled, cursor: "not-allowed" });
+    }
+    for (const id of ["checkbox-md", "radio-md", "switch-md"]) await expectStyle(page.getByTestId(id), { opacity: "1", cursor: "pointer" });
+  });
+
+  // The hit area is a 24px square around the mark, so 11.5px from its centre is inside it for every mark and every size; the browser places the edge within a pixel,
+  // so 14px away is outside it.
+  const owner = (page: Page, x: number, y: number) =>
+    page.evaluate(([px, py]) => document.elementFromPoint(px!, py!)?.closest("input")?.getAttribute("data-testid") ?? null, [x, y]);
+
+  for (const kind of ["checkbox", "radio", "switch"]) {
+    test(`[atoms.mark.target] a pointer within 11.5px of a ${kind}'s centre hits it at every size, and one 14px off does not`, async ({ page }) => {
+      for (const size of ["sm", "md", "lg"]) {
+        const id = `${kind}-${size}`;
+        const mark = page.getByTestId(id);
+        await mark.scrollIntoViewIfNeeded();
+        const box = (await mark.boundingBox())!;
+        const [x, y] = [box.x + box.width / 2, box.y + box.height / 2];
+        for (const [dx, dy] of [[0, 0], [-11.5, 0], [11.5, 0], [0, -11.5], [0, 11.5]] as const) {
+          expect(await owner(page, x + dx, y + dy), `${id} at ${dx},${dy}`).toBe(id);
+        }
+        for (const [dx, dy] of [[0, -14], [0, 14]] as const) expect(await owner(page, x + dx, y + dy), `${id} at ${dx},${dy}`).not.toBe(id);
+        if (kind !== "switch") for (const dx of [-14, 14]) expect(await owner(page, x + dx, y), `${id} at ${dx},0`).not.toBe(id);
+      }
+    });
+  }
+
+  test("[atoms.mark.target] a press in the hit area outside the visible box toggles the mark", async ({ page }) => {
+    const box = (await page.getByTestId("checkbox-sm").boundingBox())!;
+    await page.mouse.click(box.x - 4, box.y + box.height / 2);
+    await expect(page.getByTestId("checkbox-sm")).toBeChecked();
+    const track = (await page.getByTestId("switch-sm").boundingBox())!;
+    await page.mouse.click(track.x + track.width / 2, track.y - 3);
+    await expect(page.getByTestId("switch-sm")).toBeChecked();
+  });
+
+  test("[atoms.divider.border] a Divider is one border wide, in the border role it is given, and takes up no more room than the line", async ({ page }) => {
+    const rule = (id: string) => page.getByTestId(id).evaluate((element) => {
+      const style = getComputedStyle(element);
+      return { height: element.getBoundingClientRect().height, width: element.getBoundingClientRect().width, top: style.borderTopWidth, topStyle: style.borderTopStyle, start: style.borderInlineStartWidth };
+    });
+    expect(await rule("divider")).toMatchObject({ height: 1, width: 160, top: "1px", topStyle: "solid" });
+    expect(await rule("divider-vertical")).toMatchObject({ width: 1, start: "1px" });
+    await expectStyle(page.getByTestId("divider"), { borderTopColor: color.border.base });
+    await expectStyle(page.getByTestId("divider-strong"), { borderTopColor: color.border.strong });
+    await expectStyle(page.getByTestId("divider-vertical"), { borderInlineStartColor: color.border.base });
   });
 });

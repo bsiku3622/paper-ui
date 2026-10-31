@@ -1,61 +1,29 @@
-import { geometry } from "../internal/shape";
+import { controlGeometry, geometry } from "../internal/shape";
 
-import { tokens, transition, focusRing, CONTROL_SIZES, type ControlSize } from "../tokens";
+import { transition } from "../tokens";
 import { layered } from "../tokens/layers.css";
 
 const { style, styleVariants } = layered("components");
 
-// 크기(변·틱·radius)는 size 축(checkboxSize)이 정한다. 색·틱 모양은 여기 고정.
+// 체크와 대시의 모양. 색은 markPaint.checkbox 가 입힌다. 둘 다 box 가운데에 앉는 ::after 이고, 크기는 size 축(checkboxSize)이 정한다.
 export const checkboxRoot = style({
-  appearance: "none",
-  margin: 0,
-  flexShrink: 0,
-  background: tokens.color.bg.raised,
-  borderWidth: tokens.shape.stroke.border,
-  borderStyle: "solid",
-  borderColor: tokens.color.border.strong,
-  cursor: "pointer",
-  display: "grid",
-  placeContent: "center",
-  transition: transition("state", "background", "border-color"),
+  borderRadius: geometry.checkbox.radius,
+  transition: transition("state", "background-color", "border-color"),
   selectors: {
-    "&:checked": { background: tokens.color.accent.primary.solid, borderColor: tokens.color.accent.primary.solid },
     "&:checked::after": {
       content: "''",
-      borderLeft: `${geometry.checkbox.stroke} solid ${tokens.color.accent.primary.wash}`,
-      borderBottom: `${geometry.checkbox.stroke} solid ${tokens.color.accent.primary.wash}`,
+      borderStyle: "solid",
+      borderWidth: `0 0 ${geometry.checkbox.stroke} ${geometry.checkbox.stroke}`,
       transform: geometry.checkbox.markTransform,
     },
     // indeterminate — 부분 선택. 체크 대신 가로 대시. 길이는 size 축(checkboxSize)이 체크의 긴 변으로 준다.
-    "&:indeterminate": { background: tokens.color.accent.primary.solid, borderColor: tokens.color.accent.primary.solid },
     "&:indeterminate::after": {
       content: "''",
       height: geometry.checkbox.dash.height,
       borderRadius: geometry.checkbox.dash.radius,
-      background: tokens.color.accent.primary.wash,
     },
-    "&:focus-visible": focusRing,
-    "&:disabled": { opacity: 0.45, cursor: "not-allowed" },
   },
 });
 
-// size 3 단 — 변(box) + 틱(mark 긴변·short 짧은변, 2:1)과 대시 길이. 모서리는 크기와 무관한 한 값.
-export const checkboxSize = styleVariants(
-  Object.fromEntries(
-    CONTROL_SIZES.map((s) => [
-      s,
-      {
-        width: tokens.shape.selection.size[s],
-        height: tokens.shape.selection.size[s],
-        borderRadius: geometry.checkbox.radius,
-        selectors: {
-          "&:checked::after": {
-            width: geometry.checkbox.mark[s],
-            height: geometry.checkbox.short[s],
-          },
-          "&:indeterminate::after": { width: geometry.checkbox.dash.width[s] },
-        },
-      },
-    ]),
-  ) as Record<ControlSize, object>,
-);
+// size 3 단 — 틱(mark 긴변·short 짧은변, 2:1)과 대시 길이. 변은 selectionSize 가 Radio 와 같이 준다. 모서리는 크기와 무관한 한 값.
+export const checkboxSize = styleVariants(controlGeometry.checkbox);

@@ -172,16 +172,16 @@ test("the Checkbox specimen follows its checked state from the surface to the pr
   await expectStyle(checkbox, { backgroundColor: tokens.color.accent.primary.solid });
   await checkbox.click();
   await expect(checkbox).not.toBeChecked();
-  await expectStyle(checkbox, { backgroundColor: tokens.color.bg.raised, borderTopColor: tokens.color.border.strong });
+  await expectStyle(checkbox, { backgroundColor: tokens.color.bg.raised, borderTopColor: tokens.color.ink.tertiary });
 });
 
-test("the marks stand at their boundaries and sizes, the off ones on the strong border", async ({ page }) => {
+test("the marks stand at their boundaries and sizes, the off ones in the tertiary ink ring", async ({ page }) => {
   await open(page);
   const marks = page.getByTestId("spec-marks");
   await expectStyle(marks.getByTestId("mark-checkbox"), { backgroundColor: tokens.color.accent.primary.solid });
-  await expectStyle(marks.getByTestId("mark-checkbox-off"), { backgroundColor: tokens.color.bg.raised, borderTopColor: tokens.color.border.strong });
+  await expectStyle(marks.getByTestId("mark-checkbox-off"), { backgroundColor: tokens.color.bg.raised, borderTopColor: tokens.color.ink.tertiary });
   await expectStyle(marks.getByTestId("mark-radio"), { borderTopColor: tokens.color.accent.primary.solid });
-  await expectStyle(marks.getByTestId("mark-radio-off"), { borderTopColor: tokens.color.border.strong });
+  await expectStyle(marks.getByTestId("mark-radio-off"), { borderTopColor: tokens.color.ink.tertiary });
   await expectStyle(marks.getByTestId("mark-switch"), { backgroundColor: tokens.color.accent.primary.solid });
   await expectStyle(marks.getByTestId("mark-icon"), { width: tokens.shape.icon.size.body, height: tokens.shape.icon.size.body });
   await expectStyle(marks.getByTestId("mark-spinner"), { width: tokens.shape.control.icon.md, height: tokens.shape.control.icon.md });

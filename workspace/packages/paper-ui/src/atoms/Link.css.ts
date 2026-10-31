@@ -1,4 +1,4 @@
-import { ENABLED_SELECTOR, stateStyle, tokens } from "../tokens";
+import { stateStyle, tokens } from "../tokens";
 import { layered } from "../tokens/layers.css";
 
 const { style, styleVariants } = layered("components");
@@ -15,8 +15,5 @@ export const linkRoot = style([stateStyle.focusVisible, {
 // 위치가 링크임을 말해 주는 단독 링크만 가리킬 때 긋는다(hover). 터치에는 hover 가 없다.
 export const linkUnderline = styleVariants({
   always: { textDecorationLine: "underline" },
-  hover: {
-    textDecorationLine: "none",
-    "@media": { "(hover: hover)": { selectors: { [`&:hover${ENABLED_SELECTOR}`]: { textDecorationLine: "underline" } } } },
-  },
+  hover: stateStyle.hoverUnderline,
 });

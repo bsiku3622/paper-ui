@@ -18,7 +18,7 @@ Primitive는 두 차수로 나뉩니다. **1차**는 바탕입니다 — Box · 
 Atom과 호출자 말고는 아무도 Press에 닿지 않습니다. 부품에 press가 필요하면 호출자가 `<Pressable as={Selectable}>`처럼 올리고, press 한 번이 늘 click 한 번이라([Press](press.md)) 그 요소의 press 장치는 하나입니다.
 
 [contract:primitives.orders.colour]: #
-색 규칙은 [Paint](paint.md) 층(`primitives/paint/`)에만 있습니다. `primitives/` 아래에서 `tokens.color`를 읽는 stylesheet는 그 폴더와 Icon의 잉크뿐이고, Box의 stylesheet도 읽지 않습니다.
+색 규칙은 [Paint](paint.md) 층(`primitives/paint/`)에만 있습니다. `primitives/` 아래에서 `tokens.color`를 읽는 stylesheet는 그 폴더와 Icon의 잉크뿐이고, Box의 stylesheet도 읽지 않습니다. Atom의 stylesheet(`atoms/`와 그 recipe)도 읽지 않고, 선택 표식 · 선 · 링크 · 스피너의 색은 그 폴더의 `recipes.css.ts`(`markPaint` · `linePaint` · `linkPaint` · `spinnerPaint`)에서 빌려 씁니다.
 
 | 분류 | 차수 | 컴포넌트 | Hook | 문서 |
 | --- | --- | --- | --- | --- |

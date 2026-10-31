@@ -1,9 +1,10 @@
 // The control inside an input frame — Field, Textarea and Select stand on the same two primitives and say the same
-// things about them, so the words are said here once: the FormField's relations and the one word for invalid
-// (useFormFieldControl), whether the keyboard put the focus there (useFocusRing), and what the frame shows of both.
+// things about them, and so do Checkbox, Radio and Switch, so the words are said here once: the FormField's relations and
+// the one word for invalid (useFormFieldControl), whether the keyboard put the focus there (useFocusRing), and what the
+// frame shows of both.
 //
-// The frame is the element that draws the border and the ring. For a Textarea that is the control itself; for Field and
-// Select it is the wrapper around the native control, which keeps the focus handlers and the controlProps.
+// The frame is the element that draws the border and the ring. For a Textarea or a selection mark that is the control
+// itself; for Field and Select it is the wrapper around the native control, which keeps the focus handlers and the controlProps.
 
 import { useFocusRing, useFormFieldControl, type FormFieldControlOptions } from "../primitives";
 import { VALUE_ATTRIBUTE, stateAttributes } from "../tokens";

@@ -291,7 +291,7 @@ export const Overview = () => {
           <Spec label="작은 표식 — 한 줄에 세웠을 때 (md)" testid="spec-marks">
             <Inline gap="lg" align="center">
               <Checkbox defaultChecked data-testid="mark-checkbox" />
-              {/* 꺼진 상태 — 경계가 유일한 단서인 자리라 대비 계약이 여기 걸린다. */}
+              {/* 꺼진 상태 — 경계가 유일한 단서인 자리라 비텍스트 대비 계약(3:1, color.md)이 여기 걸린다. tokens/color.test.ts 가 값을, overview.spec 이 이 표식들을 지킨다. */}
               <Checkbox data-testid="mark-checkbox-off" aria-label="꺼진 체크박스" />
               <Radio name="mark" defaultChecked data-testid="mark-radio" />
               <Radio name="mark-off" data-testid="mark-radio-off" aria-label="꺼진 라디오" />

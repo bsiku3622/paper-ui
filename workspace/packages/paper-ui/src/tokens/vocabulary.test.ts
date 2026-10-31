@@ -16,7 +16,7 @@ const keysOf = (tree: object): string[] => Object.keys(tree);
 describe("vocabulary", () => {
   it("[foundations.vocabulary.one-pair-per-axis] exports every constant once and nothing else", () => {
     expect(constants.map(([name]) => name).sort()).toEqual([
-      "ACCENTS", "ACCENT_TONES", "ALIGNS", "BORDER_LEVELS", "BREAKPOINTS", "COLOR_MODES", "CONTAINERS", "CONTROL_FONT_SIZES", "CONTROL_PRESETS", "CONTROL_SHAPES",
+      "ACCENTS", "ACCENT_TONES", "ALIGNS", "BORDER_LEVELS", "BREAKPOINTS", "CHOICE_STATUSES", "COLOR_MODES", "CONTAINERS", "CONTROL_FONT_SIZES", "CONTROL_PRESETS", "CONTROL_SHAPES",
       "CONTROL_SIZES", "DEPTHS", "DIMENSIONS", "DIVIDER_LEVELS", "ELEVATIONS", "EMPHASES", "ICON_SIZES", "INKS", "INK_LEVELS", "JUSTIFIES", "JUSTIFY_ITEMS", "LINK_UNDERLINES", "MEASURES", "MOTION_ROLES", "ORIENTATIONS",
       "SELECTABLE_VARIANTS", "SPACES", "STATE_NAMES", "STATUSES", "SURFACE_FILLS", "SURFACE_RADII", "SURFACE_THEMES", "TEXT_FAMILIES", "TEXT_VARIANTS", "THEME_PREFERENCES", "VARIANTS",
     ]);
@@ -40,6 +40,8 @@ describe("vocabulary", () => {
     expect(vocabulary.BORDER_LEVELS).toEqual(keysOf(COLOR_VALUES.border));
     expect(vocabulary.ACCENTS).toEqual(keysOf(COLOR_VALUES.accent));
     expect(vocabulary.STATUSES).toEqual(keysOf(STATUS_PALETTE));
+    expect(vocabulary.CHOICE_STATUSES).toEqual(["error"]);
+    for (const status of vocabulary.CHOICE_STATUSES) expect(vocabulary.STATUSES).toContain(status);
     expect(vocabulary.DEPTHS).toEqual(keysOf(COLOR_VALUES.shadow));
     for (const values of [COLOR_VALUES, COLOR_VALUES_DARK]) {
       for (const accent of vocabulary.ACCENTS) expect(vocabulary.ACCENT_TONES, accent).toEqual(keysOf(values.accent[accent]));
@@ -109,6 +111,7 @@ describe("vocabulary", () => {
 
   it("[foundations.vocabulary.one-pair-per-axis] types each constant and its type as one pair", () => {
     expectTypeOf<vocabulary.Status>().toEqualTypeOf<(typeof vocabulary.STATUSES)[number]>();
+    expectTypeOf<vocabulary.ChoiceStatus>().toEqualTypeOf<(typeof vocabulary.CHOICE_STATUSES)[number]>();
     expectTypeOf<vocabulary.Accent>().toEqualTypeOf<(typeof vocabulary.ACCENTS)[number]>();
     expectTypeOf<vocabulary.AccentTone>().toEqualTypeOf<(typeof vocabulary.ACCENT_TONES)[number]>();
     expectTypeOf<vocabulary.Variant>().toEqualTypeOf<(typeof vocabulary.VARIANTS)[number]>();

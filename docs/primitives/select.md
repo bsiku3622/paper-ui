@@ -50,7 +50,7 @@ const { pressProps } = usePressable({ onPress: toggle });
 return <button {...pressProps} {...selectProps} role="tab" type="button">홈</button>;
 ```
 
-이 기반은 role만 바꿀 뿐 위젯의 의미론을 대신하지 않습니다. Checkbox · Radio처럼 native 입력이 있는 위젯은 그 입력을 쓰고, 그룹 선택 정책은 [SelectableGroup](#selectablegroup)이나 상위 컴포넌트가 연결합니다. 각 Atom을 자동으로 이 button으로 바꾸지 않습니다. 선택의 색은 Select가 입히지 않습니다 — `data-selected`를 읽는 쪽이 입힙니다.
+이 기반은 role만 바꿀 뿐 위젯의 의미론을 대신하지 않습니다. Checkbox · Radio · Switch처럼 native 입력이 있는 위젯은 native 의미론을 지키고 `useFocusRing` · `useFormFieldControl` hook만 씁니다. 그룹 선택 정책은 [SelectableGroup](#selectablegroup)이나 상위 컴포넌트가 연결합니다. 선택의 색은 Select가 입히지 않습니다 — `data-selected`를 읽는 쪽이 입힙니다.
 
 ## SelectableGroup
 

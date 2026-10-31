@@ -1,5 +1,7 @@
-// What the Atoms of one family say alike. The input family (Field, Textarea, Select) is one frame around one native
-// control, and says the same about invalid, about where its attributes go and about the ring.
+// What the Atoms say alike. Every Atom gives its ref and native attributes to the semantic element and its className, style
+// and data-testid to the visible box. The input family (Field, Textarea, Select) is one frame around one native control, and
+// says the same about invalid, about where its attributes go and about the ring; the selection marks (Checkbox, Radio,
+// Switch) are their own frame and say the same about invalid.
 
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -8,9 +10,20 @@ import { createRef, type ReactElement } from "react";
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { FormField } from "../primitives";
+import { INVENTORY } from "../inventory";
+import { FormField, Icon, Text } from "../primitives";
+import { Badge } from "./Badge";
+import { Button } from "./Button";
+import { Checkbox } from "./Checkbox";
+import { Divider } from "./Divider";
 import { Field } from "./Field";
+import { IconButton } from "./IconButton";
+import { Label } from "./Label";
+import { Link } from "./Link";
+import { Radio } from "./Radio";
 import { Select } from "./Select";
+import { Spinner } from "./Spinner";
+import { Switch } from "./Switch";
 import { Textarea } from "./Textarea";
 
 afterEach(cleanup);
@@ -28,7 +41,7 @@ const INPUTS: Control[] = [
 ];
 
 // What a control says of itself, and what its frame says of it.
-const stateOf = (input: Control, element: ReactElement) => {
+const stateOf = (input: Pick<Control, "frame">, element: ReactElement) => {
   const view = render(element);
   const control = screen.getByLabelText("control");
   const frame = input.frame(control);
@@ -98,5 +111,139 @@ describe("the input family's stylesheets", () => {
       expect(read(file), file).not.toMatch(/tokens\.color\b|opacity\s*:|\b0\.[45]\b/);
     }
     for (const file of ["Textarea.css.ts", "Select.css.ts"]) expect(read(file), file).not.toMatch(/transition/);
+  });
+});
+
+// Every Atom, and where it sends what a caller gives it. `semantic` is the element the ref and the native attributes reach; `visible`
+// is the box that carries className, style and data-testid. They are one element for every Atom but Field and Select, whose
+// visible box is the frame around the native control.
+type Target = { name: string; element: (props: Record<string, unknown>) => ReactElement; semantic: (root: HTMLElement) => HTMLElement; visible: (semantic: HTMLElement) => HTMLElement };
+const same = (semantic: HTMLElement) => semantic;
+const TARGETS: Target[] = [
+  { name: "Button", element: (props) => <Button {...props}>B</Button>, semantic: (root) => root.querySelector("button")!, visible: same },
+  { name: "IconButton", element: (props) => <IconButton aria-label="i" {...props}><Icon><path d="M4 12h16" /></Icon></IconButton>, semantic: (root) => root.querySelector("button")!, visible: same },
+  { name: "Link", element: (props) => <Link href="#x" {...props}>L</Link>, semantic: (root) => root.querySelector("a")!, visible: same },
+  { name: "Field", element: (props) => <Field aria-label="f" {...props} />, semantic: (root) => root.querySelector("input")!, visible: parent },
+  { name: "Textarea", element: (props) => <Textarea aria-label="t" {...props} />, semantic: (root) => root.querySelector("textarea")!, visible: same },
+  { name: "Select", element: (props) => <Select aria-label="s" {...props}><Select.Option value="a">A</Select.Option></Select>, semantic: (root) => root.querySelector("select")!, visible: parent },
+  { name: "Checkbox", element: (props) => <Checkbox aria-label="c" {...props} />, semantic: (root) => root.querySelector("input")!, visible: same },
+  { name: "Radio", element: (props) => <Radio aria-label="r" {...props} />, semantic: (root) => root.querySelector("input")!, visible: same },
+  { name: "Switch", element: (props) => <Switch aria-label="w" {...props} />, semantic: (root) => root.querySelector("input")!, visible: same },
+  { name: "Label", element: (props) => <Label {...props}>L</Label>, semantic: (root) => root.querySelector("label")!, visible: same },
+  { name: "Badge", element: (props) => <Badge {...props}>B</Badge>, semantic: (root) => root.querySelector("span")!, visible: same },
+  { name: "Spinner", element: (props) => <Spinner {...props} />, semantic: (root) => root.querySelector("span")!, visible: same },
+  { name: "Divider", element: (props) => <Divider {...props} />, semantic: (root) => root.querySelector("hr")!, visible: same },
+];
+
+describe("every Atom", () => {
+  it("[atoms.contract.targets] is covered: the table names the 13 Atoms of the inventory, once each", () => {
+    expect(TARGETS.map((target) => target.name).sort()).toEqual([...INVENTORY.atoms].sort());
+  });
+
+  for (const target of TARGETS) {
+    it(`[atoms.contract.targets] ${target.name} gives its ref, id, data-* and aria-describedby to the semantic element, and className, style and data-testid to the visible box`, () => {
+      const ref = createRef<never>();
+      const view = render(target.element({ ref, id: "the-id", "data-x": "x", "aria-describedby": "help", className: "mine", style: { width: 77 }, "data-testid": "box" }));
+      const semantic = target.semantic(view.container);
+      const visible = screen.getByTestId("box");
+      expect(ref.current).toBe(semantic);
+      expect(visible).toBe(target.visible(semantic));
+      expect(semantic.id).toBe("the-id");
+      expect(semantic.getAttribute("data-x")).toBe("x");
+      expect(semantic.getAttribute("aria-describedby")).toContain("help");
+      expect(visible.classList.contains("mine")).toBe(true);
+      expect(visible.style.width).toBe("77px");
+      if (visible !== semantic) {
+        expect(semantic.hasAttribute("data-testid")).toBe(false);
+        expect(semantic.classList.contains("mine")).toBe(false);
+      }
+    });
+  }
+
+  it("[atoms.contract.targets] Select.Option and Select.Group give their ref, attributes, className, style and data-testid to the option and the optgroup", () => {
+    const option = createRef<HTMLOptionElement>();
+    const group = createRef<HTMLOptGroupElement>();
+    render(
+      <Select aria-label="s">
+        <Select.Group label="g" ref={group} data-x="group" id="group-id" className="mine-group" style={{ width: 77 }} data-testid="group">
+          <Select.Option value="a" ref={option} data-x="option" id="option-id" className="mine-option" style={{ width: 88 }} data-testid="option">A</Select.Option>
+        </Select.Group>
+      </Select>,
+    );
+    expect(option.current?.tagName).toBe("OPTION");
+    expect(option.current?.id).toBe("option-id");
+    expect(option.current?.getAttribute("data-x")).toBe("option");
+    expect(option.current?.classList.contains("mine-option")).toBe(true);
+    expect(option.current?.style.width).toBe("88px");
+    expect(option.current?.getAttribute("data-testid")).toBe("option");
+    expect(group.current?.tagName).toBe("OPTGROUP");
+    expect(group.current?.id).toBe("group-id");
+    expect(group.current?.getAttribute("data-x")).toBe("group");
+    expect(group.current?.classList.contains("mine-group")).toBe(true);
+    expect(group.current?.style.width).toBe("77px");
+    expect(group.current?.getAttribute("data-testid")).toBe("group");
+  });
+
+  it("[atoms.label.text-role] Label draws the same classes as the label role of Text, on a label element", () => {
+    const view = render(<><Label data-testid="label">L</Label><Text as="label" variant="label" data-testid="text">T</Text></>);
+    expect(view.getByTestId("label").tagName).toBe("LABEL");
+    expect(view.getByTestId("label").className).toBe(view.getByTestId("text").className);
+  });
+
+  it("[atoms.divider.border] Divider forwards its native attributes to the hr and draws its line with a border", () => {
+    const view = render(<Divider data-testid="line" id="rule" title="rule" aria-label="between" />);
+    const line = view.getByTestId("line");
+    expect(line.tagName).toBe("HR");
+    expect(line.id).toBe("rule");
+    expect(line.getAttribute("title")).toBe("rule");
+    expect(line.getAttribute("aria-label")).toBe("between");
+    expect(read("Divider.css.ts")).not.toMatch(/background/);
+  });
+});
+
+// A selection mark is its own frame: what its status and the field around it say reaches the input and what the input shows.
+type Mark = { name: string; control: (props: { status?: "error"; "aria-invalid"?: boolean }) => ReactElement };
+const MARKS: Mark[] = [
+  { name: "Checkbox", control: (props) => <Checkbox aria-label="control" {...props} /> },
+  { name: "Radio", control: (props) => <Radio aria-label="control" {...props} /> },
+  { name: "Switch", control: (props) => <Switch aria-label="control" {...props} /> },
+];
+
+describe("the selection marks", () => {
+  for (const mark of MARKS) {
+    const stateOfMark = (element: ReactElement) => stateOf({ frame: own }, element);
+
+    it(`[atoms.mark.invalid] ${mark.name} has the input family's invalid contract: the field being invalid, the error status and an explicit word each reach aria-invalid and the input`, () => {
+      expect(stateOfMark(<FormField label="L" invalid>{mark.control({})}</FormField>)).toEqual({ ariaInvalid: "true", status: "error", invalid: true });
+      expect(stateOfMark(<FormField label="L" invalid={false}>{mark.control({ status: "error" })}</FormField>)).toEqual({ ariaInvalid: "true", status: "error", invalid: true });
+      expect(stateOfMark(<FormField label="L" invalid>{mark.control({ status: "error" })}</FormField>)).toEqual({ ariaInvalid: "true", status: "error", invalid: true });
+      expect(stateOfMark(<FormField label="L">{mark.control({})}</FormField>)).toEqual({ ariaInvalid: null, status: null, invalid: false });
+      expect(stateOfMark(mark.control({}))).toEqual({ ariaInvalid: null, status: null, invalid: false });
+      expect(stateOfMark(mark.control({ status: "error", "aria-invalid": false }))).toEqual({ ariaInvalid: "false", status: "error", invalid: false });
+    });
+
+    it(`[atoms.mark.invalid] ${mark.name} keeps the field's description and error ids where they were`, () => {
+      render(<FormField label="L" invalid description="Help" error="Wrong">{mark.control({})}</FormField>);
+      const control = screen.getByLabelText("L");
+      expect(control.getAttribute("aria-describedby")).toBe(`${screen.getByText("Help").id} ${screen.getByText("Wrong").id}`);
+      expect(control.getAttribute("aria-invalid")).toBe("true");
+    });
+
+    it(`[atoms.mark.disabled] ${mark.name} tells its stylesheet it is disabled`, () => {
+      render(mark.control({}));
+      const control = screen.getByLabelText("control") as HTMLInputElement;
+      expect(control.hasAttribute("data-disabled")).toBe(false);
+      cleanup();
+      render(<FormField label="L" disabled>{mark.control({})}</FormField>);
+      const disabled = screen.getByLabelText("L") as HTMLInputElement;
+      expect(disabled.disabled).toBe(true);
+      expect(disabled.getAttribute("data-disabled")).toBe("true");
+    });
+  }
+
+  it("[atoms.mark.paint] hold geometry only: no colour, no opacity literal, no state selector and no pointer-focus flag in the stylesheets and the Atoms", () => {
+    for (const file of ["Checkbox.css.ts", "Radio.css.ts", "Switch.css.ts", "recipes/selection-control.css.ts", "Checkbox.tsx", "Radio.tsx", "Switch.tsx"]) {
+      expect(read(file), file).not.toMatch(/tokens\.color\b|opacity\s*:|\b0\.[45]\b|:hover|:focus-visible|pointer-?focus|useHover/i);
+    }
   });
 });

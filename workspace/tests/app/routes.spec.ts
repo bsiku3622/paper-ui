@@ -30,3 +30,16 @@ test("the docs sidebar lists the groups of DOC_GROUPS in order, one link per doc
   const labels = DOC_GROUPS.map((group) => group.label).filter(Boolean);
   expect((await sidebar.innerText()).split("\n").filter((line) => labels.includes(line))).toEqual(labels);
 });
+
+test("a table wider than the docs column scrolls inside its wrapper and leaves the page alone", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/docs/atoms/states");
+  const wrapper = page.locator(".md-table").filter({ hasText: "링 주인" }).first();
+  await expect(wrapper).toBeVisible();
+  const { pageOverflow, wrapperOverflow } = await wrapper.evaluate((element) => ({
+    pageOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    wrapperOverflow: element.scrollWidth - element.clientWidth,
+  }));
+  expect(pageOverflow).toBe(0);
+  expect(wrapperOverflow).toBeGreaterThan(0);
+});

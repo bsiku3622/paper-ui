@@ -19,7 +19,7 @@ test("[install.browsers.baseline] the declared floor supports every required CSS
   const css = [
     "@layer pui;@layer pui.components{",
     ".a:has(input:focus-visible){outline:2px solid}",
-    ".b:dir(rtl):checked::after{transform:translate(-1px,-50%)}",
+    ".b:checked::after{transform:translate(-1px,-50%)}",
     ".c{padding-inline:round(nearest,calc(var(--h) * 1.4),1px);inset-inline-end:0}",
     ":where(.d){translate:0 1px}",
     "}:root{color-scheme:light}",

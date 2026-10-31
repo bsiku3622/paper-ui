@@ -78,6 +78,14 @@ globalStyle(".principles-grid", {
   },
 });
 
+// ── 문서 격자 ────────────────────────────────────────────────────────────────
+// 사이드바 옆 본문 칸. 칸이 줄어들 수 있어야 넓은 표가 페이지를 밀지 않고 칸 안에서 스크롤한다.
+// md 아래에서는 사이드바 곁의 칸이 글을 읽을 폭에 못 미치므로 내용 폭을 지킨다.
+export const docsColumns = style({
+  gridTemplateColumns: `${tokens.shape.dimension.width.lg} minmax(0, 1fr)`,
+  "@media": { [narrow]: { gridTemplateColumns: `${tokens.shape.dimension.width.lg} 1fr` } },
+});
+
 // ── GNB theme toggle ─────────────────────────────────────────────────────────
 // Site navigation is app-owned; this class styles only its theme toggle button.
 

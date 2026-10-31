@@ -156,11 +156,20 @@ describe("state recipes", () => {
     expect(Object.keys(at(field, "selectors"))).toEqual(STATUSES.map((status) => `&[data-status="${status}"]`));
     for (const status of STATUSES) expect(at(field, "selectors")[`&[data-status="${status}"]`]).toEqual({ borderColor: outlinedControlProfile.status[status] });
     expect(at(field, "@media", "(hover: hover)", "selectors")[`&:hover${ENABLED}:not([data-status])`]).toEqual({ borderColor: outlinedControlProfile.hoverBorder });
+    // A forced palette reverts the rule above, so the Highlight rule has to match its specificity too.
+    const forcedHover = at(field, "@media", "(hover: hover) and (forced-colors: active)", "selectors");
+    for (const selector of [`&:hover${ENABLED}`, `&:hover${ENABLED}:not([data-status])`]) expect(forcedHover[selector]).toEqual({ borderColor: SYSTEM_COLORS.highlight });
   });
 
   it("[foundations.state.recipes] turns the border of a drop target to where the input is going", () => {
     expect(at(stateStyle.dropTarget, "selectors")["&[data-drop-target]"]).toEqual({ borderColor: color.interaction.focus });
     expect(at(forced(stateStyle.dropTarget), "(forced-colors: active)", "selectors")["&[data-drop-target]"]).toEqual({ borderColor: SYSTEM_COLORS.highlight });
+  });
+
+  it("[foundations.state.recipes] underlines only under a pointer that can hover, while the target is enabled", () => {
+    const { hoverUnderline } = stateStyle;
+    expect(hoverUnderline.textDecorationLine).toBe("none");
+    expect(at(hoverUnderline, "@media", "(hover: hover)", "selectors")[`&:hover${ENABLED}`]).toEqual({ textDecorationLine: "underline" });
   });
 
   it("[foundations.state.recipes] asks the system colours alone for anything it paints under forced colours", () => {

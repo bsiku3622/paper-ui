@@ -13,6 +13,7 @@ import { docPath } from "../docs/links";
 import { Prose } from "../docs/Prose";
 import { SiteNav, NAV_HEIGHT } from "../site/chrome";
 import { DOC_GROUPS } from "../site/site-map";
+import { docsColumns } from "../site/site.css";
 
 export const Docs = () => {
   const { pathname, hash } = useLocation();
@@ -43,7 +44,7 @@ export const Docs = () => {
   return (
     <Stack>
       <SiteNav />
-      <Box maxWidth="container.content" width="full" style={{ display: "grid", gridTemplateColumns: `${tokens.shape.dimension.width.lg} 1fr`, marginInline: "auto", isolation: "isolate" }}>
+      <Box maxWidth="container.content" width="full" className={docsColumns} style={{ display: "grid", marginInline: "auto", isolation: "isolate" }}>
         <Surface as="nav" elevation="sticky" aria-label="문서 목차" style={{ minHeight: `calc(100vh - ${NAV_HEIGHT})`, top: NAV_HEIGHT, alignSelf: "start", padding: tokens.shape.inset.lg, borderRight: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
           <Stack gap="lg">
             {DOC_GROUPS.map((group) => (

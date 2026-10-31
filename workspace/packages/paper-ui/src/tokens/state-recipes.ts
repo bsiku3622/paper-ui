@@ -33,6 +33,7 @@ const pressing = `&:is(:active, ${stateSelector("active")})${ENABLED_SELECTOR}`;
 // Hover is the weakest state, so its selector adds no specificity and every other state outranks it.
 const hovering = `&:where(:hover${ENABLED_SELECTOR})`;
 const hovered = `&:hover${ENABLED_SELECTOR}`;
+const hoveredNeutral = `${hovered}:not([${VALUE_ATTRIBUTE.status}])`;
 
 // The keyboard focus ring: Shape owns its width and offset, Color its ink.
 export const focusRing = {
@@ -89,9 +90,15 @@ export const stateStyle = {
       STATUSES.map((status) => [`&[${VALUE_ATTRIBUTE.status}="${status}"]`, { borderColor: outlinedControlProfile.status[status] }]),
     ),
     "@media": {
-      [HOVER]: { selectors: { [`${hovered}:not([${VALUE_ATTRIBUTE.status}])`]: { borderColor: outlinedControlProfile.hoverBorder } } },
-      [`${HOVER} and ${FORCED}`]: { selectors: { [hovered]: { borderColor: SYSTEM_COLORS.highlight } } },
+      [HOVER]: { selectors: { [hoveredNeutral]: { borderColor: outlinedControlProfile.hoverBorder } } },
+      // Both selectors: a forced palette reverts the rule above, so it must lose to this one on a frame with no status too.
+      [`${HOVER} and ${FORCED}`]: { selectors: { [hovered]: { borderColor: SYSTEM_COLORS.highlight }, [hoveredNeutral]: { borderColor: SYSTEM_COLORS.highlight } } },
     },
+  },
+  // An underline that shows only under a pointer that can hover, for a link that asks for it. Touch has no hover, so it never shows there.
+  hoverUnderline: {
+    textDecorationLine: "none",
+    "@media": { [HOVER]: { selectors: { [hovered]: { textDecorationLine: "underline" } } } },
   },
   // Where a drag may land: the border turns to where the input is going.
   dropTarget: {

@@ -20,17 +20,21 @@ export type IconProps = Omit<SVGProps<SVGSVGElement>, "size"> & {
   ink?: Ink;
   className?: string;
   "aria-label"?: string;
+  "aria-labelledby"?: string;
 };
 
+// A name makes the icon an image; without one it is decoration and hidden from assistive technology.
 export const Icon = forwardRef<SVGSVGElement, IconProps>(function Icon({ size, ink, children, className, ...rest }, ref) {
   const inherited = useContext(IconSizeContext);
+  const labelled = Boolean(rest["aria-label"] || rest["aria-labelledby"]);
   return (
   <svg
     ref={ref}
     focusable="false"
     viewBox="0 0 24 24"
     className={joinClass(iconRoot, iconSize[size ?? inherited ?? "body"], resolveInk(ink), className)}
-    aria-hidden={rest["aria-label"] || rest["aria-labelledby"] ? undefined : true}
+    role={labelled ? "img" : undefined}
+    aria-hidden={labelled ? undefined : true}
     {...rest}
   >
     {children}

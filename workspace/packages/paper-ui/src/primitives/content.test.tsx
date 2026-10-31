@@ -63,8 +63,23 @@ describe("Icon", () => {
     expect(has("explicit", "caption")).toBe(false);
   });
 
-  it("an externally labelled Icon stays in the accessibility tree", () => {
+  it("[primitives.icon.label] an aria-label makes the icon an image with that name", () => {
+    render(<Icon aria-label="Warning"><path d="M12 8v5" /></Icon>);
+    const image = screen.getByRole("img", { name: "Warning" });
+    expect(image.tagName.toLowerCase()).toBe("svg");
+    expect(image.getAttribute("aria-hidden")).toBeNull();
+  });
+
+  it("[primitives.icon.label] an aria-labelledby makes the icon an image named by the text it points at", () => {
     render(<><Text as="span" id="icon-name">Project icon</Text><Icon aria-labelledby="icon-name"><path d="M1 1h2" /></Icon></>);
-    expect(screen.getByLabelText("Project icon").getAttribute("aria-hidden")).not.toBe("true");
+    expect(screen.getByRole("img", { name: "Project icon" }).getAttribute("aria-hidden")).toBeNull();
+  });
+
+  it("[primitives.icon.label] an icon with no name is decoration: hidden from assistive technology, with no role", () => {
+    const view = render(<Icon data-testid="decor"><path d="M1 1h2" /></Icon>);
+    const icon = view.getByTestId("decor");
+    expect(icon.getAttribute("aria-hidden")).toBe("true");
+    expect(icon.hasAttribute("role")).toBe(false);
+    expect(screen.queryByRole("img")).toBeNull();
   });
 });
