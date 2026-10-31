@@ -1,4 +1,4 @@
-import { createContext, forwardRef, useCallback, useContext, useEffect, useId, useMemo, useRef, type HTMLAttributes, type ReactNode, type Ref, type RefObject } from "react";
+import { createContext, forwardRef, useCallback, useContext, useEffect, useId, useMemo, useRef, type ButtonHTMLAttributes, type HTMLAttributes, type MouseEvent, type ReactNode, type Ref, type RefObject } from "react";
 
 import { useScopeFocus } from "../../internal/aria/focus";
 import { useAriaDismiss, useAriaModal, useAriaPosition } from "../../internal/aria/overlay";
@@ -9,9 +9,9 @@ import { useControllableState } from "../../internal/useControllableState";
 import { VALUE_ATTRIBUTE } from "../../tokens";
 import { FocusScope } from "../a11y/focus";
 import { Portal } from "../a11y/Portal";
+import { bareButton } from "../bare-button.css";
 import { composeEventHandlers, mergeProps } from "../composition";
 import { scrimPaint } from "../paint/recipes.css";
-import { Pressable, type PressableProps } from "../press/Pressable";
 import type { Placement } from "../types";
 import * as styles from "./Floating.css";
 import { nestElevation, type FloatingElevation } from "./nestElevation";
@@ -54,12 +54,17 @@ function Root({ modal = false, children, ...options }: FloatingProps) {
   const contentId = useId();
   return <Context.Provider value={{ state, modal, triggerRef, contentId, elevation: nestElevation(parent?.elevation, modal ? "modal" : "overlay") }}>{children}</Context.Provider>;
 }
-export type FloatingTriggerProps = PressableProps;
-const Trigger = forwardRef<HTMLButtonElement, FloatingTriggerProps>(function FloatingTrigger({ onPress, ...props }, forwardedRef) {
+export type FloatingTriggerProps = ButtonHTMLAttributes<HTMLButtonElement>;
+const Trigger = forwardRef<HTMLButtonElement, FloatingTriggerProps>(function FloatingTrigger({ onClick, ...props }, forwardedRef) {
   const { state, triggerRef, contentId } = useContextValue();
   const ref = useMergedRef(triggerRef, forwardedRef);
-  return <Pressable {...props} ref={ref} aria-haspopup="dialog" aria-expanded={state.isOpen}
-    aria-controls={state.isOpen ? contentId : undefined} onPress={composeEventHandlers(onPress, state.toggle)} />;
+  // The Trigger is the opener focus returns to, and Safari leaves a clicked button unfocused.
+  const toggle = (event: MouseEvent<HTMLButtonElement>) => {
+    event.currentTarget.focus({ preventScroll: true });
+    state.toggle();
+  };
+  return <button {...mergeProps({ className: bareButton, type: "button" }, props)} ref={ref} aria-haspopup="dialog" aria-expanded={state.isOpen}
+    aria-controls={state.isOpen ? contentId : undefined} onClick={composeEventHandlers(onClick, toggle)} />;
 });
 export type FloatingContentProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "autoFocus" | "role" | "id"> & {
   children: ReactNode | ((state: FloatingResult) => ReactNode);
@@ -156,9 +161,9 @@ const Content = forwardRef<HTMLDivElement, FloatingContentProps>(function Floati
   </Portal>;
   /* eslint-enable jsx-a11y/no-autofocus */
 });
-export type FloatingCloseProps = PressableProps;
-const Close = forwardRef<HTMLButtonElement, FloatingCloseProps>(function FloatingClose({ onPress, ...props }, ref) {
+export type FloatingCloseProps = ButtonHTMLAttributes<HTMLButtonElement>;
+const Close = forwardRef<HTMLButtonElement, FloatingCloseProps>(function FloatingClose({ onClick, ...props }, ref) {
   const { state } = useContextValue();
-  return <Pressable {...props} ref={ref} onPress={composeEventHandlers(onPress, state.close)} />;
+  return <button {...mergeProps({ className: bareButton, type: "button" }, props)} ref={ref} onClick={composeEventHandlers(onClick, state.close)} />;
 });
 export const Floating = Object.assign(Root, { Trigger, Content, Close });

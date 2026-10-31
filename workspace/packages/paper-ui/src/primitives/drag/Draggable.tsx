@@ -3,8 +3,8 @@ import { createContext, forwardRef, useContext, type ButtonHTMLAttributes, type 
 import { paperError } from "../../internal/errors";
 import { joinClass } from "../../internal/joinClass";
 import { useMergedRef } from "../../internal/refs";
+import { bareButton } from "../bare-button.css";
 import { mergeProps } from "../composition";
-import { bareButton } from "../press/press.css";
 import type { DraggableOptions, MoveDragOptions, TransferDragOptions } from "../types";
 import { dragSurface } from "./drag.css";
 import { useDraggable, type DraggableResult } from "./useDraggable";

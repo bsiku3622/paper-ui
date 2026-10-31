@@ -44,5 +44,5 @@ export const INVENTORY = {
     "ELEVATIONS", "BREAKPOINTS", "CONTAINERS", "ALIGNS", "JUSTIFIES", "JUSTIFY_ITEMS", "ORIENTATIONS",
     "MOTION_ROLES",
   ],
-  polymorphic: ["Box", "Surface", "Paint", "Stack", "Inline", "Grid", "Text", "RovingFocus.Item", "Button"],
+  polymorphic: ["Box", "Surface", "Paint", "Pressable", "Stack", "Inline", "Grid", "Text", "RovingFocus.Item", "Button"],
 } as const;

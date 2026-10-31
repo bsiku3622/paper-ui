@@ -1,5 +1,5 @@
 import { createRef, type ReactNode } from "react";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { Box, Pressable, Selectable, Draggable, Droppable, SelectableGroup, useSelectableGroup, Floating, useFloating, useFloatingContext, useSelectable, usePressable, useFocusRing, useDraggable, useDroppable, mergeProps, mergeRefs, composeEventHandlers } from "./index";
 import { spaceClass } from "../styles/space.css";
@@ -18,6 +18,12 @@ describe("interaction primitives", () => {
       fireEvent.keyUp(button, { key });
       expect(click, JSON.stringify(key)).toHaveBeenCalledTimes(1);
     }
+  });
+
+  it("[primitives.pressable.one-click] Enter on a plain button is kept from the browser, so the click follows the press; a submit button keeps its own", () => {
+    render(<><Pressable>Plain</Pressable><Pressable type="submit">Send</Pressable></>);
+    expect(fireEvent.keyDown(screen.getByRole("button", { name: "Plain" }), { key: "Enter" })).toBe(false);
+    expect(fireEvent.keyDown(screen.getByRole("button", { name: "Send" }), { key: "Enter" })).toBe(true);
   });
 
   it("Pressable composes caller events and forwards the native button ref", () => {
@@ -114,11 +120,51 @@ describe("interaction primitives", () => {
     expect(typeof pressProps!.ref).toBe("function");
   });
 
-  it("[primitives.composition.compose-handlers] Selectable runs the caller's onPress before it asks for the change", () => {
+  it("[primitives.composition.compose-handlers] Selectable runs the caller's onClick before it asks for the change, and a preventDefault keeps it from toggling", () => {
     const calls: string[] = [];
-    render(<Selectable onPress={() => calls.push("press")} onSelectedChange={() => calls.push("change")}>Pick</Selectable>);
+    const view = render(<Selectable onClick={() => calls.push("click")} onSelectedChange={() => calls.push("change")}>Pick</Selectable>);
     fireEvent.click(screen.getByRole("button", { name: "Pick" }));
-    expect(calls).toEqual(["press", "change"]);
+    expect(calls).toEqual(["click", "change"]);
+    view.rerender(<Selectable onClick={(event) => { calls.push("cancel"); event.preventDefault(); }} onSelectedChange={() => calls.push("change")}>Pick</Selectable>);
+    fireEvent.click(screen.getByRole("button", { name: "Pick" }));
+    expect(calls).toEqual(["click", "change", "cancel"]);
+    expect(screen.getByRole("button", { name: "Pick" }).getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("[primitives.selectable.input-paths] <Pressable as={Selectable}> is one native button that toggles once, and a disabled one renders disabled and stays", () => {
+    const press = vi.fn();
+    const change = vi.fn();
+    const view = render(<Pressable as={Selectable} onPress={press} onSelectedChange={change}>Pick</Pressable>);
+    expect(screen.getAllByRole("button")).toHaveLength(1);
+    const button = screen.getByRole("button", { name: "Pick" });
+    expect(button.getAttribute("type")).toBe("button");
+    expect(button.getAttribute("aria-pressed")).toBe("false");
+    fireEvent.click(button);
+    expect(button.getAttribute("aria-pressed")).toBe("true");
+    expect(change.mock.calls).toEqual([[true]]);
+    expect(press).toHaveBeenCalledTimes(1);
+    view.rerender(<Pressable as={Selectable} disabled onPress={press} onSelectedChange={change}>Pick</Pressable>);
+    const disabled = screen.getByRole<HTMLButtonElement>("button", { name: "Pick" });
+    expect(disabled.disabled).toBe(true);
+    expect(disabled.getAttribute("data-disabled")).toBe("true");
+    fireEvent.click(disabled);
+    expect(change).toHaveBeenCalledTimes(1);
+    expect(press).toHaveBeenCalledTimes(1);
+  });
+
+  it("[primitives.floating.focus-restore] a bare Floating.Trigger focuses itself on click, and the caller's preventDefault keeps it closed", () => {
+    const change = vi.fn();
+    render(<Floating open={false} onOpenChange={change}><Floating.Trigger>Open</Floating.Trigger></Floating>);
+    const trigger = screen.getByRole("button", { name: "Open" });
+    expect(trigger.getAttribute("type")).toBe("button");
+    fireEvent.click(trigger);
+    expect(document.activeElement).toBe(trigger);
+    expect(change).toHaveBeenCalledWith(true);
+    cleanup();
+    const stay = vi.fn();
+    render(<Floating onOpenChange={stay}><Floating.Trigger onClick={(event) => event.preventDefault()}>Open</Floating.Trigger></Floating>);
+    fireEvent.click(screen.getByRole("button", { name: "Open" }));
+    expect(stay).not.toHaveBeenCalled();
   });
 
   it("[primitives.selectable.input-paths] Selectable owns uncontrolled state and never activates while disabled", () => {

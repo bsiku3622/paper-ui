@@ -1,4 +1,4 @@
-import { layered } from "../../tokens/layers.css";
+import { layered } from "../tokens/layers.css";
 
 const { style, globalStyle } = layered("components");
 

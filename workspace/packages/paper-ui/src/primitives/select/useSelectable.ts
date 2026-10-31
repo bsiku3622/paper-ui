@@ -1,7 +1,7 @@
 import { useControllableState } from "../../internal/useControllableState";
 import { stateAttributes, type StateAttributes } from "../../tokens";
 
-// State and aria only: the caller connects `toggle` to a press (Selectable does, with Pressable).
+// State and aria only: the caller connects `toggle` to a click or a press (Selectable does, on click).
 export type SelectableCurrent = "page" | "step" | "location" | "date" | "time" | true;
 export type SelectableOptions = {
   selected?: boolean;

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Pressable, mergeProps, usePressable } from "@studio-baeks/paper-ui";
+import { Floating, Pressable, Selectable, mergeProps, usePressable } from "@studio-baeks/paper-ui";
 
 const useCounts = () => {
   const [counts, setCounts] = useState({ clicks: 0, presses: 0 });
@@ -37,6 +37,26 @@ const SubmitTarget = () => {
   );
 };
 
+const BareSelectable = () => {
+  const { counted, onClick } = useCounts();
+  return <Selectable data-testid="selectable" {...counted} onClick={onClick}>Selectable</Selectable>;
+};
+
+const PressedSelectable = () => {
+  const { counted, onClick, onPress } = useCounts();
+  return <Pressable as={Selectable} data-testid="pressable-selectable" {...counted} onClick={onClick} onPress={onPress}>Pressable Selectable</Pressable>;
+};
+
+const PressedTrigger = () => {
+  const { counted, onClick, onPress } = useCounts();
+  return (
+    <Floating>
+      <Pressable as={Floating.Trigger} data-testid="pressable-trigger" {...counted} onClick={onClick} onPress={onPress}>Pressable Trigger</Pressable>
+      <Floating.Content aria-label="Panel" anchored={false}>Panel</Floating.Content>
+    </Floating>
+  );
+};
+
 // The elements a press lands on, each counting its clicks and presses in data attributes.
 export const PressCase = () => (
   <>
@@ -45,5 +65,8 @@ export const PressCase = () => (
     <RoleTarget />
     <LinkTarget />
     <SubmitTarget />
+    <BareSelectable />
+    <PressedSelectable />
+    <PressedTrigger />
   </>
 );
