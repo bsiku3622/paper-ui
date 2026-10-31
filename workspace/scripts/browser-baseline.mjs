@@ -47,7 +47,6 @@ export const FEATURES = [
   { name: "@layer", pattern: /@layer\b/, kind: "required", since: since("99", "99", "97", "15.4", "15.4") },
   { name: ":where()", pattern: /:where\(/, kind: "required", since: since("88", "88", "78", "14", "14") },
   { name: ":has()", pattern: /:has\(/, kind: "required", since: since("105", "105", "121", "15.4", "15.4") },
-  { name: ":dir()", pattern: /:dir\(/, kind: "required", since: since("120", "120", "49", "16.4", "16.4") },
   { name: "round()", pattern: /(?<![\w-])round\(/, kind: "required", since: since("125", "125", "118", "15.4", "15.4") },
   { name: ":focus-visible", pattern: /:focus-visible\b/, kind: "required", since: since("86", "86", "85", "15.4", "15.4") },
   { name: "translate", pattern: /(?<![\w-])translate\s*:/, kind: "required", since: since("104", "104", "72", "14.1", "14.5") },

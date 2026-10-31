@@ -2,8 +2,8 @@
 // in the file of its system (derived from the tree that authors it, or bound to it with `satisfies`),
 // and this file lists them all: the barrel and the `/tokens` entry both re-export it.
 
-export { STATUSES, ACCENTS, ACCENT_TONES, SURFACE_FILLS, INK_LEVELS, INKS, BORDER_LEVELS, DIVIDER_LEVELS, DEPTHS } from "./colors";
-export type { Status, Accent, AccentTone, SurfaceFill, InkLevel, Ink, BorderLevel, DividerLevel, Depth } from "./colors";
+export { STATUSES, CHOICE_STATUSES, ACCENTS, ACCENT_TONES, SURFACE_FILLS, INK_LEVELS, INKS, BORDER_LEVELS, DIVIDER_LEVELS, DEPTHS } from "./colors";
+export type { Status, ChoiceStatus, Accent, AccentTone, SurfaceFill, InkLevel, Ink, BorderLevel, DividerLevel, Depth } from "./colors";
 
 export { COLOR_MODES, THEME_PREFERENCES, SURFACE_THEMES } from "./color-modes";
 export type { ColorMode, ThemePreference, SurfaceTheme } from "./color-modes";

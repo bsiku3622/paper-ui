@@ -112,9 +112,10 @@ fixed, so geometry stays identical. D2Coding supplies Korean monospace glyphs.
 
 ## Browser support
 
-Chrome and Edge 125, Firefox 121 and Safari 16.4 (iOS included) or newer. `round()`,
-`:has()` and `:dir()` set that floor: button insets, the empty choice of a Select, and
-the Switch in right-to-left layouts depend on them. CSS features newer
+Chrome and Edge 125, Firefox 121 and Safari 16.4 (iOS included) or newer. `round()`
+sets the floor of Chrome and Edge and `:has()` that of Firefox: button insets and the empty
+choice of a Select depend on them. Safari's floor is the release that brought `@property`,
+which gives the hover tint its fade. CSS features newer
 than the floor are used only as enhancements, so a browser at the floor loses motion
 and nothing else.
 
@@ -129,7 +130,7 @@ and nothing else.
 
 The package stops at primitives and atoms. Product-specific compositions belong
 to the consuming app, where their structure and lifecycle can follow the product.
-Atoms render their own semantic elements; primitives provide layout and text.
+Atoms are built on the Primitives and on shared recipes, and take their colour from the paint tier.
 `Box` also exposes typed dimension and overflow props; a named size (`md`, `measure.md`,
 `container.content`, `full`) and an overflow keyword become classes, so a consumer's
 className can override them, and only a CSS length that is not a name goes inline.

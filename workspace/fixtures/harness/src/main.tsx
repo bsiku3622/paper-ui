@@ -11,13 +11,14 @@ import { ElevationCase } from "./cases/elevation.js";
 import { CarryCase, GeometryCase } from "./cases/geometry.js";
 import { LayersCase } from "./cases/layers.js";
 import { LayoutCase } from "./cases/layout.js";
+import { MarksCase } from "./cases/marks.js";
 import { MotionCase } from "./cases/motion.js";
 import { PressCase } from "./cases/press.js";
 import { StatesCase } from "./cases/states.js";
 import { ThemeCase } from "./cases/theme.js";
 import { TypographyCase } from "./cases/typography.js";
 
-const CASES: Record<CaseName, ComponentType> = { geometry: GeometryCase, carry: CarryCase, theme: ThemeCase, layers: LayersCase, layout: LayoutCase, elevation: ElevationCase, typography: TypographyCase, motion: MotionCase, press: PressCase, states: StatesCase, drag: DragCase };
+const CASES: Record<CaseName, ComponentType> = { geometry: GeometryCase, carry: CarryCase, theme: ThemeCase, layers: LayersCase, layout: LayoutCase, elevation: ElevationCase, typography: TypographyCase, motion: MotionCase, press: PressCase, states: StatesCase, marks: MarksCase, drag: DragCase };
 
 const isCase = (name: string | null): name is CaseName => CASE_NAMES.some((known) => known === name);
 

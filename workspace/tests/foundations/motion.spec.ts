@@ -77,10 +77,10 @@ const ATOM_TRANSITIONS: Row[] = [
   { atom: "Field", target: (page) => page.getByRole("button", { name: "Clear" }), properties: { color: "hover" } },
   { atom: "Select", target: (page) => page.getByLabel("Select", { exact: true }).locator(".."), properties: { "border-color": "state", "background-color": "state" } },
   { atom: "Textarea", target: (page) => page.getByLabel("Textarea", { exact: true }), properties: { "border-color": "state", "background-color": "state" } },
-  { atom: "Checkbox", target: (page) => page.getByRole("checkbox"), properties: { background: "state", "border-color": "state" } },
+  { atom: "Checkbox", target: (page) => page.getByRole("checkbox"), properties: { "background-color": "state", "border-color": "state" } },
   { atom: "Radio", target: (page) => page.getByRole("radio"), properties: { "border-color": "state" } },
-  { atom: "Switch", target: (page) => page.getByRole("switch"), properties: { background: "state" } },
-  { atom: "Switch", target: (page) => page.getByRole("switch"), pseudo: "::after", properties: { transform: "state" } },
+  { atom: "Switch", target: (page) => page.getByRole("switch"), properties: { "background-color": "state", "box-shadow": "state" } },
+  { atom: "Switch", target: (page) => page.getByRole("switch"), pseudo: "::after", properties: { "inset-inline-start": "state" } },
 ];
 
 const labelOf = (row: Row) => `${row.atom}${row.pseudo ? ` ${row.pseudo}` : ""}`;
@@ -215,8 +215,8 @@ test.describe("with motion", () => {
     const state = await transitionsOf(page.getByRole("switch", { name: "상태 전이 예시" }));
     expect(press.transform!.duration).toBeCloseTo(timing("press").duration, 3);
     expect(hover["border-color"]!.duration).toBeCloseTo(timing("hover").duration, 3);
-    expect(state.background!.duration).toBeCloseTo(timing("state").duration, 3);
-    expect(state.background!.easing).toBe(timing("state").easing);
+    expect(state["background-color"]!.duration).toBeCloseTo(timing("state").duration, 3);
+    expect(state["background-color"]!.easing).toBe(timing("state").easing);
   });
 
   test("[foundations.motion.compositions] shows the enter specimen rising 4px and the exit specimen playing its enter on load, then leaving and staying hidden", async ({ page }) => {

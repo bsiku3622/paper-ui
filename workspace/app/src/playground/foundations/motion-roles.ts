@@ -18,12 +18,12 @@ export const MOTION_NOTES: Record<MotionRole, string> = {
 export const roleNote = (role: MotionRole): string => [MOTION_NOTES[role], ...MOTION_CONSUMERS[role]].join(" · ");
 
 // The properties each transition role animates across its consumers, as the Atoms' stylesheets write them (state
-// is the union: Switch moves a thumb). enter and exit move a surface through presence, and theme
+// is the union: a Switch fades a ring and moves a thumb). enter and exit move a surface through presence, and theme
 // ends every transition at once, so they have no transition string.
 export const TRANSITION_PROPERTIES = {
   press: ["transform"],
   hover: [STATE_TINT_PROPERTY, "border-color", "color"],
-  state: ["background", "background-color", "color", "border-color", "transform"],
+  state: ["background-color", "color", "border-color", "box-shadow", "inset-inline-start"],
 } as const satisfies Partial<Record<MotionRole, readonly string[]>>;
 
 export const LOOP_NOTES: Record<Loop, { note: string; usedBy: string }> = {

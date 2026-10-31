@@ -5,7 +5,7 @@ Content Primitive는 화면에 읽히는 것 — 글자와 아이콘 — 을 그
 | 컴포넌트 | 공개 축 | 기본값 |
 | --- | --- | --- |
 | Text | `as` · variant · ink · family=sans/mono · numeric | variant=body, family=sans. 기본 태그는 hero·display·title=h1, heading=h2, subheading=h3, body·caption=p, label=span |
-| Icon | size=label/caption/body/subheading · ink · SVG children · className · aria-label | size=body(컨트롤 안에서는 그 컨트롤의 `control.icon`). artboard 14 / 16 / 18 / 20, viewBox 24, 기본 currentColor |
+| Icon | size=label/caption/body/subheading · ink · SVG children · className · aria-label · aria-labelledby | size=body(컨트롤 안에서는 그 컨트롤의 `control.icon`). artboard 14 / 16 / 18 / 20, viewBox 24, 기본 currentColor |
 
 ## Text
 
@@ -43,7 +43,10 @@ Content Primitive는 화면에 읽히는 것 — 글자와 아이콘 — 을 그
 [contract:primitives.icon.size-precedence]: #
 `size`를 주지 않으면 컨트롤 안에서는 그 컨트롤의 `control.icon`(Shape)을, 그 밖에서는 body를 씁니다. 컨트롤이 정한 크기는 맥락으로 건네져 안쪽 Icon이 받고, 명시한 `size`가 언제나 맥락을 이깁니다.
 
-`ink`를 주지 않으면 부모의 글자색(currentColor)을 따릅니다. `aria-label`이 있으면 이미지로 읽히고, 없으면 장식으로 보조 기술에서 숨겨집니다.
+`ink`를 주지 않으면 부모의 글자색(currentColor)을 따릅니다.
+
+[contract:primitives.icon.label]: #
+`aria-label`이나 `aria-labelledby`가 있으면 `role="img"`인 이름 있는 이미지가 되고, 둘 다 없으면 장식으로 보조 기술에서 숨겨집니다.
 
 ```tsx
 <Icon><path d="M12 5v14M5 12h14" /></Icon>

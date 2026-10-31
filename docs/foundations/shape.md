@@ -107,7 +107,7 @@ Surface의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값
 | `target.switchBlock` | targetReach(Switch 트랙 높이) | −3.5 | −3 | −2 |
 | `target.action` | targetReach(`control.icon`) | −4 | −3 | −2 |
 
-hit area를 갖는 Atom은 지금 Field의 지우기와 보기 버튼입니다. 버튼 안의 아이콘은 `control.icon` 그대로 그려지고, 보이지 않는 `::before`가 `target.action`만큼 사방으로 넓어져 24px 정사각이 됩니다. 나란한 두 버튼은 `control.gap` 8을 사이에 두므로 서로의 hit area를 침범하지 않습니다.
+hit area를 갖는 Atom은 Checkbox · Radio · Switch와 Field의 지우기와 보기 버튼입니다. 보이지 않는 `::before`가 표식 밖으로 넓어지고 색을 칠하지 않습니다. Field의 버튼 안 아이콘은 `control.icon` 그대로 그려지고 `::before`가 `target.action`만큼 사방으로 넓어져 24px 정사각이 됩니다. 나란한 두 버튼은 `control.gap` 8을 사이에 두므로 서로의 hit area를 침범하지 않습니다. Checkbox · Radio는 `target.selection`만큼 사방으로, Switch는 `target.switchBlock`만큼 트랙 위아래로 넓어지고 가로는 트랙 폭이 이미 24px 이상이라 그대로입니다. 상자는 테두리를 가져 `::before`가 padding box에서 놓이므로 테두리 한 줄만큼 더 멀리서 시작합니다.
 
 coarse pointer에서 더 키우지 않습니다 — 촘촘한 목록에서 hit area가 겹치면 탭이 엉뚱한 곳으로 가기 때문이고, 행 단위 hit area는 앱이 정합니다.
 
@@ -121,11 +121,14 @@ coarse pointer에서 더 키우지 않습니다 — 촘촘한 목록에서 hit a
 |---|---|
 | Checkbox | 모서리 `radius.selection`. 체크는 상자의 절반 너비·4분의 1 높이인 L자를 대각선으로 돌린 것이고, 돌리면 시각 무게가 아래 왼쪽으로 쏠려 자기 획의 ¼ · ½만큼 옮깁니다. indeterminate 대시는 체크의 긴 변 길이로 그은 둥근 끝 emphasis 선입니다. |
 | Radio | 점은 상자의 절반입니다. |
-| Switch | 트랙 폭 = 컨트롤 높이, 트랙 높이 = 선택 상자 + 테, 손잡이 = 선택 상자 − 테. 테는 `stroke.emphasis`라, 손잡이는 사방 2px 안쪽에 앉고 정확히 자기 폭만큼 이동합니다. RTL에서는 이동 방향을 뒤집습니다. |
+| Switch | 트랙 폭 = 컨트롤 높이, 트랙 높이 = 선택 상자 + 테, 손잡이 = 선택 상자 − 테. 테는 `stroke.emphasis`라, 손잡이는 사방 2px 안쪽에 앉고 정확히 자기 폭만큼 이동합니다. 손잡이는 `inset-inline-start`로 놓이고 켜지면 그 값에 이동 거리가 더해지는 논리 속성이라 RTL에서는 저절로 뒤집힙니다. 꺼진 트랙의 안쪽 테(`stroke.border`)는 박스 안에 그려져 크기를 늘리지 않습니다. |
 | Textarea | 한 줄은 같은 size의 Field와 정확히 같은 높이입니다: block 여백 = (컨트롤 높이 − textarea 글자 줄) / 2 − 테두리. 최소 높이는 없고 높이는 `rows`(기본 4)가 정합니다 — 4줄은 sm 90 · md 92 · lg 96입니다. |
 | Select | 화살표는 trailing icon입니다. `control.icon` 크기의 Icon(레시피에 따로 둔 값이 없습니다)이 입력 inset 자리에 앉고, 값은 그보다 `control.gap`만큼 앞에서 멈춥니다 — Field의 leading icon을 거울로 비춘 구조입니다. |
 | Spinner | 지름은 `control.icon`, 링은 `stroke.emphasis`입니다. 글줄 안에 놓는 스피너(`spinner.inline`)는 라벨 글자(1em)를 따르고, Button의 loading 표식이 그 크기입니다. |
 | Badge | 높이 20 · 22 · 24와 inset 6 · 8 · 10은 규칙으로 나오지 않아 원본 anatomy에 둡니다. 점은 글자의 0.5em, 점과 글자 사이는 inset xs입니다. |
+
+[contract:foundations.shape.switch-thumb]: #
+Switch의 손잡이는 꺼지면 트랙 끝에서 테만큼, 켜지면 반대쪽 끝에서 테만큼 떨어져 앉고 그 값은 논리 속성이 정합니다. 오른쪽에서 왼쪽으로 쓰는 문서에서는 두 끝이 서로 바뀝니다 — 켜진 손잡이가 트랙의 왼쪽 끝에서 테만큼 떨어집니다. 이는 별도 규칙 없이 같은 선언이 읽는 방향만 바뀐 결과이고, 테스트는 손잡이가 트랙의 양 끝에서 떨어진 거리를 읽습니다.
 
 링크 밑줄 offset은 글자의 장식이라 Typography(`typography.palette.decoration.underlineOffset`)가 소유합니다.
 

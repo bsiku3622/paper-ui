@@ -69,10 +69,11 @@ export const itemProfile = {
 };
 
 // The marks of Checkbox, Radio and Switch. The rest ring is the quietest ink that holds 3:1 on every surface;
-// the checked face and the mark on it are the primary accent's solid and wash.
+// the checked face and the mark on it are the primary accent's solid and wash. A checked Switch's ring is transparent:
+// painted in the face's colour it would thicken the track's anti-aliased edge.
 export const markProfile = {
   rest: { ring: COLOR.ink.tertiary, knob: COLOR.bg.raised, track: COLOR.control.track },
-  checked: { face: COLOR.accent.primary.solid, mark: COLOR.accent.primary.wash, knob: COLOR.bg.raised },
+  checked: { face: COLOR.accent.primary.solid, ring: "transparent", mark: COLOR.accent.primary.wash, knob: COLOR.bg.raised },
   invalid: { ring: COLOR.accent.error.ink },
 };
 

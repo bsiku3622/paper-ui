@@ -101,7 +101,18 @@ Palette Token은 내부 이름입니다. 컴포넌트와 앱은 import하지 않
 
 선택된 면은 옅게 깔려 색만으로는 경계가 모자랄 수 있어, 이 모드에서는 선택된 중립 항목이 `ink.primary` 1px 안쪽 선(`strokeRing`)을 더 얻습니다. 선택을 색 하나에만 기대지 않게 하는 비색 단서입니다.
 
-forced-colors의 값은 OS가 정하므로, `SYSTEM_COLORS`가 그 시스템 색 이름(`Canvas` · `CanvasText` · `ButtonFace` · `ButtonText` · `Highlight` · `HighlightText` · `GrayText` · `LinkText`)만 적어 둡니다.
+## 대비 계약
+
+글자는 4.5:1입니다. 컨트롤과 그 상태를 알리는 표식은 3:1입니다 — 선택 상자와 라디오의 경계, 스위치 트랙의 테와 켜진 트랙, 체크 면과 그 위의 표식, 포커스 링, 오류 경계. 선택 표식은 꺼져 있을 때 이 테가 유일한 단서이므로 테에 `ink.tertiary`를 씁니다. 3:1을 지키는 가장 옅은 기존 역할이고(라이트 #6b6b6d가 면 위에서 4.80~5.32, 다크 #98989a가 5.85~6.55), 경계 역할은 라이트에서 2.0을 넘지 못해 쓸 수 없습니다. 표식만을 위한 역할은 없습니다 — neutral.600 같은 원본 단계를 따로 드러내면 컨트롤 전용 색이나 Color 페이지의 새 행이 됩니다. 켜진 Switch는 primary solid 트랙과 `bg.raised` 손잡이이고, 켜짐은 면(최소 15:1)이 알립니다.
+
+[contract:foundations.color.non-text-contrast]: #
+단위 테스트(`tokens/color.test.ts`)가 두 테마의 모든 면(raised · canvas · sunken) 위에서 표식의 꺼진 테(`ink.tertiary`), 켜진 면(`accent.primary.solid`), 포커스 링, 오류 테(`accent.error.ink`)가 3:1 이상임을, 꺼진 트랙이 켜진 트랙과 3:1 이상 갈리고 켜진 트랙 위의 손잡이(`bg.raised`)와 체크(`accent.primary.wash`)가 3:1 이상임을 지킵니다. 다크 `accent.ink`는 모든 다크 면 위에서 4.5:1 이상으로 라이트와 같고, hover · selected · active의 tint를 면에 깐 자리 위의 `ink.primary`도 4.5:1 이상입니다.
+
+명시된 예외는 둘입니다. 하나는 입력 경계(`border.base`)입니다. 회색 선은 한 벌이라는 결정에 따라 컨트롤 전용 경계색을 두지 않으므로, 라벨 · placeholder · hover 경계 · 포커스 링이 입력의 존재를 보완하고 `prefers-contrast: more`에서 3:1로 오릅니다. 다른 하나는 옅게 깔린 selected 면(accent `soft`, `interaction.selected`)입니다. `aria-pressed` · `aria-current`와 `ink.primary`가 선택을 보완하고 `prefers-contrast: more`에서 `ink.primary` 안쪽 테를 얻습니다. selected · active 면 위의 글자는 `ink.primary`만 씁니다. 단위 테스트는 두 예외가 실제로 3:1 아래임을 확인해 목록이 거짓이 되지 않게 합니다.
+
+## Forced colors
+
+Windows 고대비처럼 OS가 색을 정하는 모드(`forced-colors: active`)에서는 대부분의 요소를 OS에 맡깁니다. 상태가 배경에만 기대는 자리 — 선택 표식, Spinner, selected 면 — 만 `forced-color-adjust: none`으로 빼고 시스템 색으로 직접 그립니다. 시스템 색 이름은 `SYSTEM_COLORS`(`Canvas` · `CanvasText` · `ButtonFace` · `ButtonText` · `Highlight` · `HighlightText` · `GrayText` · `LinkText`)만 적어 두고, 값은 OS가 정합니다. hover는 Highlight 경계, 비활성은 GrayText, 포커스 링은 Highlight입니다. 선택 표식은 Canvas 면과 ButtonText 테에서 켜지면 Highlight 면과 HighlightText 표식이 되고, Switch의 테는 같은 안쪽 테(`strokeRing`)로 ButtonText · Highlight를 그립니다. Divider는 background가 아니라 border로 그어 이 모드에서도 남습니다. 이 모드의 표식별 모습은 [States](../atoms/states.md#대비--forced-colors--prefers-contrast--target)에 있습니다.
 
 ## Accent
 

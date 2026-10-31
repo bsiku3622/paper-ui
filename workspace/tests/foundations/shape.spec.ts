@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { metrics as measure } from "../support/geometry";
 import { openHarness, openPlayground } from "../support/harness";
@@ -11,6 +11,13 @@ const mount = async (page: Page) => {
 };
 
 const metrics = (page: Page, selector: string, pseudo?: string) => measure(page.locator("#shape-fixture").locator(selector), pseudo);
+
+// How far a Switch's thumb stands from each physical end of its track. The thumb is a pseudo-element, which has no bounding box of its own,
+// so its edges are the offsets the browser resolved for it.
+const thumbEdges = (track: Locator) => track.evaluate((element) => {
+  const thumb = getComputedStyle(element, "::after");
+  return { left: parseFloat(thumb.left), right: parseFloat(thumb.right) };
+});
 
 test("[foundations.shape.control-geometry] [foundations.shape.recipe-geometry] all control sizes retain their geometry and optical marks", async ({ page }) => {
   await mount(page);
@@ -45,7 +52,8 @@ test("[foundations.shape.control-geometry] [foundations.shape.recipe-geometry] a
     expect(track.width).toBe([30, 32, 36][i]);
     expect(track.height).toBe([17, 18, 20][i]);
     expect(thumb.width).toBe([13, 14, 16][i]);
-    expect(thumb.inset).toBe(2);
+    // A checked thumb has travelled its own width past the rim.
+    expect(thumb.inset).toBe(2 + [13, 14, 16][i]!);
     expect((await metrics(page, `[data-testid=badge-${size}]`)).height).toBe([20, 22, 24][i]);
   }
 });
@@ -74,9 +82,11 @@ test("[foundations.override.rederives-roles] one source override in a subtree re
   expect((await metrics(page, "[data-testid=button-md]")).radius).toBe(9);
   expect((await metrics(page, "[data-testid=surface-corner]")).radius).toBe(3);
   // Focus width changes do not alter the switch rim or checkbox mark thickness.
-  expect((await metrics(page, "[aria-label=switch-md]", "::after")).inset).toBe(2);
+  // The thumb transitions to its new place when the roles under it move, so the offset is read once it has settled.
+  await expect.poll(async () => (await metrics(page, "[aria-label=switch-md]", "::after")).inset).toBe(2 + 18);
   await page.locator("#shape-fixture").evaluate((element: HTMLElement) => { element.dir = "rtl"; });
-  await expect.poll(async () => (await metrics(page, "[aria-label=switch-md]", "::after")).transform).toBe("matrix(1, 0, 0, 1, -18, -9)");
+  // Right to left, the checked thumb is at the track's left end: the rim from the left edge.
+  await expect.poll(() => thumbEdges(page.locator("#shape-fixture [aria-label=switch-md]"))).toEqual({ left: 2, right: 40 - 2 - 18 });
 });
 
 test("[foundations.override.portal-carry] a Floating opened inside an overriding region draws its controls with the region's source, and one opened outside keeps the defaults", async ({ page }) => {
@@ -158,7 +168,8 @@ test("[foundations.shape.stroke-px] rem geometry scales together while edge stro
   // The switch rim is an emphasis stroke, so it stays 2px while the track grows.
   expect((await metrics(page, "[aria-label=switch-md]")).height).toBe(22);
   expect((await metrics(page, "[aria-label=switch-md]", "::after")).width).toBe(18);
-  expect((await metrics(page, "[aria-label=switch-md]", "::after")).inset).toBe(2);
+  // The thumb transitions to its new place when the roles under it move, so the offset is read once it has settled.
+  await expect.poll(async () => (await metrics(page, "[aria-label=switch-md]", "::after")).inset).toBe(2 + 18);
   // (40 − 25) / 2 − 1: the textarea line still sits where a Field's would.
   expect((await metrics(page, "textarea[aria-label=textarea-md]")).blockPadding).toBe(6.5);
   await expect(page.locator("#shape-fixture [data-testid=button-md]")).toHaveCSS("border-top-width", "1px");
@@ -229,4 +240,19 @@ test("[foundations.shape.focus-ring] the baseline draws the ring on an element w
   // So is the one on the Link page.
   await openPlayground(page, "link", "Link");
   await expect(page.getByRole("link", { name: "링크", exact: true })).toHaveCSS("border-top-left-radius", "4px");
+});
+
+test("[foundations.shape.switch-thumb] a Switch's thumb sits the rim from its end when unchecked and the rim from the other end when checked, and the ends swap right to left", async ({ page }) => {
+  await openHarness(page, "marks");
+  const edges = (id: string) => thumbEdges(page.getByTestId(id));
+  for (const [size, [track, thumb]] of Object.entries({ sm: [30, 13], md: [32, 14], lg: [36, 16] }) as [string, [number, number]][]) {
+    const off = await edges(`switch-${size}`);
+    expect(off, `${size} unchecked, left to right`).toEqual({ left: 2, right: track - 2 - thumb });
+    await page.getByTestId(`switch-${size}`).evaluate((element: HTMLInputElement) => { element.checked = true; });
+    await expect.poll(() => edges(`switch-${size}`), `${size} checked, left to right`).toEqual({ left: track - 2 - thumb, right: 2 });
+  }
+  // Right to left, with no rule of its own: the same logical offsets read from the other end.
+  const [off, on] = [await edges("switch-rtl-off"), await edges("switch-rtl-on")];
+  expect(off).toEqual({ left: 32 - 2 - 14, right: 2 });
+  expect(on).toEqual({ left: 2, right: 32 - 2 - 14 });
 });

@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
 
 import { OKLCH_PALETTE, PALETTE_TOKENS } from "./palette";
-import { SURFACE_THEMES, COLOR_MODES, THEME_PREFERENCES } from "./color-modes";
+import { SURFACE_THEMES, COLOR_MODES, THEME_PREFERENCES, type ColorMode } from "./color-modes";
+import { markProfile } from "./color-recipes";
 import {
   ACCENTS, ACCENT_PALETTE, ACCENT_TONES, ACCENT_TONE_STEPS, BORDER_LEVELS, COLOR_CONTRAST_MORE, COLOR_SELECTION, COLOR_VALUES, COLOR_VALUES_BY_MODE,
   COLOR_VALUES_DARK, DEPTHS, GROUND_ROLES, OPACITY_ROLES, OPACITY_VALUES, PRIMARY_TONE_STEPS, STATUSES, STATUS_EXCEPTIONS, STATUS_PALETTE, SURFACE_FILLS,
-  SURFACE_ORDER, SYSTEM_COLORS, isGroundRole, paletteValue,
+  SURFACE_ORDER, SYSTEM_COLORS, COLOR, isGroundRole, paletteValue,
 } from "./colors";
 import { ACCENT_IDENTITIES, ACCENT_PALETTES, ACCENT_STEPS, ALPHA_OPACITY, ALPHA_STEPS, NEUTRAL_BASE_STEPS, NEUTRAL_BETWEEN, PALETTE_STEPS } from "./palette";
 
@@ -234,6 +235,80 @@ describe("color systems", () => {
   // Why Link's underline defaults to "always": the ink alone does not set a link apart from the sentence around it.
   it("[atoms.link.underline] keeps the link ink below 3:1 against body ink in both themes", () => {
     for (const values of [COLOR_VALUES, COLOR_VALUES_DARK]) expect(contrast(values.interaction.link, values.ink.primary)).toBeLessThan(3);
+  });
+});
+
+// The colour of an overlay laid over an opaque surface, as the eye sees it: both as #rrggbb, the overlay as #rrggbbaa.
+const over = (overlay: string, surface: string) => {
+  const alpha = parseInt(overlay.slice(7, 9), 16) / 255;
+  const mixed = [1, 3, 5].map((offset) => Math.round(parseInt(overlay.slice(offset, offset + 2), 16) * alpha + parseInt(surface.slice(offset, offset + 2), 16) * (1 - alpha)));
+  return `#${mixed.map((channel) => channel.toString(16).padStart(2, "0")).join("")}`;
+};
+
+// What a control or a mark must show against the surface behind it so that it is found (WCAG 1.4.11): 3:1.
+// Two things are documented exceptions and sit in docs/foundations/color.md: the outlined control's boundary (border.base) and the quiet selected faces.
+const NON_TEXT = 3;
+const EXCEPTIONS = ["border.base as the outlined-control boundary", "accent soft and interaction.selected as quiet selected faces"] as const;
+
+describe("non-text contrast", () => {
+  const surfaces = (mode: ColorMode) => Object.entries(COLOR_VALUES_BY_MODE[mode].bg);
+
+  it("[foundations.color.non-text-contrast] holds the selection marks' ring and every fill and ring they take to 3:1 on every surface, in both themes", () => {
+    for (const mode of COLOR_MODES) {
+      const values = COLOR_VALUES_BY_MODE[mode];
+      for (const [surface, background] of surfaces(mode)) {
+        const at = `${mode} on ${surface}`;
+        expect(contrast(values.ink.tertiary, background), `${at}: the rest ring (ink.tertiary)`).toBeGreaterThanOrEqual(NON_TEXT);
+        expect(contrast(values.accent.primary.solid, background), `${at}: the checked fill (accent.primary.solid)`).toBeGreaterThanOrEqual(NON_TEXT);
+        expect(contrast(values.interaction.focus, background), `${at}: the focus ring`).toBeGreaterThanOrEqual(NON_TEXT);
+        expect(contrast(values.accent.error.ink, background), `${at}: the error ring (accent.error.ink)`).toBeGreaterThanOrEqual(NON_TEXT);
+      }
+    }
+  });
+
+  it("[foundations.color.non-text-contrast] tells an off Switch's track from a checked one, and shows what sits on a checked mark", () => {
+    for (const mode of COLOR_MODES) {
+      const values = COLOR_VALUES_BY_MODE[mode];
+      expect(contrast(values.control.track, values.accent.primary.solid), `${mode}: off track against checked track`).toBeGreaterThanOrEqual(NON_TEXT);
+      expect(contrast(values.bg.raised, values.accent.primary.solid), `${mode}: the knob on a checked track`).toBeGreaterThanOrEqual(NON_TEXT);
+      expect(contrast(values.accent.primary.wash, values.accent.primary.solid), `${mode}: the check on its fill`).toBeGreaterThanOrEqual(NON_TEXT);
+    }
+  });
+
+  it("[foundations.color.non-text-contrast] keeps the dark accent ink readable as text, as the light one is", () => {
+    for (const [surface, background] of surfaces("dark")) {
+      for (const [name, accent] of Object.entries(COLOR_VALUES_DARK.accent)) expect(contrast(accent.ink, background), `dark ${name}.ink on ${surface}`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  it("[foundations.color.non-text-contrast] keeps ink.primary readable over the tints a state lays on a surface, in both themes", () => {
+    for (const mode of COLOR_MODES) {
+      const values = COLOR_VALUES_BY_MODE[mode];
+      for (const [surface, background] of surfaces(mode)) {
+        for (const [state, tint] of [["hover", values.interaction.bgHover.onSurface], ["selected", values.interaction.selected], ["active", values.interaction.active]] as const) {
+          expect(contrast(values.ink.primary, over(tint, background)), `${mode} ${state} over ${surface}`).toBeGreaterThanOrEqual(4.5);
+        }
+      }
+    }
+  });
+
+  it("[foundations.color.non-text-contrast] keeps the documented exceptions below 3:1, so the list is honest", () => {
+    expect(EXCEPTIONS).toHaveLength(2);
+    for (const mode of COLOR_MODES) {
+      const values = COLOR_VALUES_BY_MODE[mode];
+      for (const [surface, background] of surfaces(mode)) {
+        expect(contrast(values.border.base, background), `${mode} border.base on ${surface}`).toBeLessThan(NON_TEXT);
+        expect(contrast(values.accent.primary.soft, background), `${mode} accent soft on ${surface}`).toBeLessThan(NON_TEXT);
+        expect(contrast(over(values.interaction.selected, background), background), `${mode} selected over ${surface}`).toBeLessThan(NON_TEXT);
+      }
+    }
+  });
+
+  it("[foundations.color.non-text-contrast] names the ring of a mark as the quietest ink that holds the contrast: ink.tertiary", () => {
+    expect(markProfile.rest.ring).toBe(COLOR.ink.tertiary);
+    expect(markProfile.invalid.ring).toBe(COLOR.accent.error.ink);
+    expect(markProfile.checked.face).toBe(COLOR.accent.primary.solid);
+    expect(markProfile.rest.knob).toBe(COLOR.bg.raised);
   });
 });
 

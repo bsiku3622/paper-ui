@@ -1,5 +1,5 @@
-// Badge — 상태 한 낱말. Button 과 같은 accent 시스템(accent × variant)을 쓴다. 표시용이라
-// paintClass 에 hoverable 을 안 줘 hover 색이 뜨지 않는다.
+// Badge — 상태 한 낱말. Button 과 같은 accent 시스템(accent × variant)을 쓴다. Paint as="span" 에 서고, 표시용이라
+// hoverable 을 안 줘 hover 색이 뜨지 않는다.
 //   variant  soft(옅은 면, 기본) · solid(강조) · hairline · ghost · muted(accent subtle 보조 글자)
 //   dot      앞에 작은 색 점 — 상태 표시자
 //
@@ -11,7 +11,7 @@
 import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import { paintClass } from "../primitives/paint/Paint";
+import { Paint } from "../primitives/paint/Paint";
 import { resolveControlFontSize, resolvePreset } from "../resolvers";
 import type { Accent, ControlFontSize, ControlShape, ControlSize, Variant } from "../tokens";
 import { badgeRoot, badgeSize, badgeDot, badgePill } from "./Badge.css";
@@ -38,14 +38,16 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
   ref,
 ) {
   return (
-    <span
+    <Paint
+      as="span"
       ref={ref}
+      accent={accent}
+      variant={variant}
       className={joinClass(
         badgeRoot,
         badgeSize[size],
         resolvePreset("badge"),
         resolveControlFontSize(fontSize),
-        paintClass({ accent, variant }),
         shape === "pill" && badgePill,
         className,
       )}
@@ -53,6 +55,6 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
     >
       {dot ? <span className={badgeDot} aria-hidden /> : null}
       {children}
-    </span>
+    </Paint>
   );
 });

@@ -43,6 +43,8 @@ The system stacks in three tiers, and the docs and the playground are organised 
 | | Layout 3 | `Stack · Inline · Grid` |
 | Atoms | 13 | `Button · IconButton · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Spinner · Divider · Link` |
 
+Atoms are built on the Primitives and on shared recipes: each stands on the Primitives that give it its element, its press or selection and its field relations, and takes its colour from the paint tier.
+
 The theme is one attribute, `<html data-pui-theme>`, and one store per document. `PaperProvider` keeps the user's choice under `storageKey` (`pui-theme` by default), `themeBootScript` from `@studio-baeks/paper-ui/theme-boot` applies it before the first paint, and a subtree takes its own mode through `<Surface theme="light | dark | inverse">`.
 
 Every Foundations system writes its numbers once, in its source, and exposes roles that select from it: [docs/foundations](docs/foundations/README.md). Product-specific compositions are owned by consuming applications. The package exposes three kinds of names: components and hooks (Primitives and Atoms), `tokens` with its role

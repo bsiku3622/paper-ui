@@ -19,7 +19,7 @@ FormField는 label · 입력 · 설명 · 오류의 ID를 context로 연결합�
 </FormField>
 ```
 
-Field는 FormField가 invalid일 때 `aria-invalid`와 error 경계를 스스로 얻으므로 status를 따로 넘기지 않습니다. 입력의 `status`와 `aria-invalid`는 서로에게서 채워지고, 둘 중 하나만 주면 됩니다.
+Field는 FormField가 invalid일 때 `aria-invalid`와 error 경계를 스스로 얻으므로 status를 따로 넘기지 않습니다. 입력의 `status`와 `aria-invalid`는 서로에게서 채워지고, 둘 중 하나만 주면 됩니다. Checkbox · Radio · Switch는 `status`가 `error`뿐이지만 같은 규칙을 따릅니다.
 
 [contract:primitives.form-field.relations]: #
 FormField는 div에 label · children · description · error를 렌더링합니다. ClassName · style · ref는 wrapper를 가리키며 id 옵션은 입력 ID를 정합니다. 생략하면 useId로 고유 값을 만듭니다. label의 `htmlFor`는 그 ID를 가리키고, 입력은 id · disabled · required · aria-invalid · aria-describedby를 받습니다. Description은 존재할 때만, error는 invalid이며 존재할 때만 설명 ID에 포함합니다. 외부 aria-describedby도 중복 없이 유지합니다. 오류 해제 시 메시지와 참조를 함께 제거합니다.

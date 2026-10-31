@@ -126,7 +126,7 @@ describe("mark profile", () => {
     const { color } = tokens;
     expect(markProfile).toEqual({
       rest: { ring: color.ink.tertiary, knob: color.bg.raised, track: color.control.track },
-      checked: { face: color.accent.primary.solid, mark: color.accent.primary.wash, knob: color.bg.raised },
+      checked: { face: color.accent.primary.solid, ring: "transparent", mark: color.accent.primary.wash, knob: color.bg.raised },
       invalid: { ring: color.accent.error.ink },
     });
   });
