@@ -318,6 +318,22 @@ describe("field control", () => {
     for (const name of ["aria-describedby", "aria-invalid"]) expect(input.hasAttribute(name), name).toBe(false);
   });
 
+  it("[primitives.form-field.control] stops at any Portal, and a field inside the Portal holds its own control", () => {
+    render(<FormField label="Outer" required invalid>
+      <Portal><Field aria-label="alone" /></Portal>
+      <Portal><FormField label="Inner"><Field /></FormField></Portal>
+      <Field aria-label="near" />
+    </FormField>);
+    const alone = screen.getByLabelText("alone") as HTMLInputElement;
+    expect(alone.id).toBe("");
+    expect(alone.required).toBe(false);
+    expect(alone.hasAttribute("aria-invalid")).toBe(false);
+    const inner = screen.getByLabelText("Inner") as HTMLInputElement;
+    expect(inner.id).toBe((screen.getByText("Inner") as HTMLLabelElement).htmlFor);
+    expect(inner.required).toBe(false);
+    expect((screen.getByLabelText("near") as HTMLInputElement).required).toBe(true);
+  });
+
   it("[primitives.form-field.snapshot] hands a children function the field's state and renders a plain child as it is", () => {
     const view = render(<FormField label="L" disabled required>{({ isDisabled, isInvalid, isRequired }) => <p>{`${isDisabled} ${isInvalid} ${isRequired}`}</p>}</FormField>);
     expect(screen.getByText("true false true")).toBeTruthy();
