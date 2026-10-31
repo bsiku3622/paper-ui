@@ -23,7 +23,7 @@ export function useAriaPosition({ anchorRef, panelRef, isOpen, placement, offset
   offset: number;
   crossOffset: number;
   flip: boolean;
-}): { style: CSSProperties; placement: string | null } {
+}): { style: CSSProperties; placement: "top" | "bottom" | "left" | "right" | "center" | null } {
   const { overlayProps, placement: resolved } = useOverlayPosition({ targetRef: anchorRef, overlayRef: panelRef, isOpen, placement, offset, crossOffset, shouldFlip: flip });
   const style: CSSProperties = { ...overlayProps.style };
   delete style.zIndex;

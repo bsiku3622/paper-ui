@@ -83,7 +83,7 @@ export const App = () => (
 );
 ```
 
-`PaperProvider`가 고르는 설정은 하나뿐입니다 — 테마입니다. `defaultTheme`으로 `light`·`dark`·`system`(기본) 중 하나를 주고, `system`이면 OS 설정(`prefers-color-scheme`)을 따라갑니다. 사용자가 고른 값은 localStorage의 `storageKey`(기본 `pui-theme`)에 남아 다음 방문에 이깁니다. 첫 화면 전에 적용하는 부팅 스크립트와 저장 규칙은 [Theming](theming.md)에 있습니다.
+`PaperProvider`가 고르는 설정은 테마, 언어(`locale`), 문구(`messages`)입니다. `defaultTheme`으로 `light`·`dark`·`system`(기본) 중 하나를 주고, `system`이면 OS 설정(`prefers-color-scheme`)을 따라갑니다. 사용자가 고른 값은 localStorage의 `storageKey`(기본 `pui-theme`)에 남아 다음 방문에 이깁니다. 첫 화면 전에 적용하는 부팅 스크립트와 저장 규칙은 [Theming](theming.md)에 있습니다. `locale`은 Atom이 스스로 말하는 문구의 언어를 정하고, 줄 때만 `<html lang>`과 `<html dir>`에 씁니다. 주지 않으면 `<html lang>`을 읽을 뿐 `<html>`을 건드리지 않습니다([테마와 언어](../primitives/README.md#테마와-언어)).
 
 브랜드 색을 고르는 설정은 없습니다. 이 시스템엔 `primaryColor`가 없습니다 — 정체성이 색이 아니라 순백·검정·여백에서 나오기 때문입니다. 자세한 이유는 [원칙](philosophy.md)에 있습니다.
 

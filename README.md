@@ -19,8 +19,8 @@ The seven principles behind every visual decision: **[docs/get-started/philosoph
 - **Black is the workhorse.** Primary actions are black, not blue — a blue button
   on every screen stops being a point. Colour stays small.
 - **No `primaryColor`.** A brand has no colour to pick here; the identity is
-  white, black, and whitespace. The one thing the provider picks is the theme
-  (`light` · `dark` · `system`).
+  white, black, and whitespace. The provider picks the theme
+  (`light` · `dark` · `system`) and, when asked, the page's language.
 - **Core constraints and accessibility checks**, enforced by eslint.
 
 ## Structure
@@ -32,7 +32,7 @@ The system stacks in three tiers, and the docs and the playground are organised 
 | Foundations | 5 systems | `Color → Typography → Shape → Layout → Motion` — each reads only the ones before it |
 | Primitives, first order | Element 1 | `Box` |
 | | Content 2 | `Text · Icon` |
-| | A11y 3 | `FocusScope · VisuallyHidden · Portal` |
+| | A11y 4 | `FocusScope · VisuallyHidden · Portal · LiveRegion` |
 | Primitives, second order | Paint 2 | `Surface · Paint` |
 | | Press 1 | `Pressable` |
 | | Select 2 | `Selectable · SelectableGroup` |

@@ -1,7 +1,7 @@
-import { createRef, type ReactNode } from "react";
+import { createRef, type ReactElement, type ReactNode } from "react";
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { Box, Pressable, Selectable, Draggable, Droppable, SelectableGroup, useSelectableGroup, Floating, useFloating, useFloatingContext, useSelectable, usePressable, useFocusRing, useDraggable, useDroppable, mergeProps, mergeRefs, composeEventHandlers } from "./index";
+import { Box, Pressable, Selectable, Draggable, Droppable, RovingFocus, SelectableGroup, VisuallyHidden, useSelectableGroup, Floating, useFloating, useFloatingContext, useSelectable, usePressable, useFocusRing, useDraggable, useDroppable, mergeProps, mergeRefs, composeEventHandlers } from "./index";
 import { spaceClass } from "../styles/space.css";
 import { ELEVATION_NEST_LIMIT } from "../tokens";
 import * as floatingStyles from "./float/Floating.css";
@@ -21,9 +21,24 @@ describe("interaction primitives", () => {
   });
 
   it("[primitives.pressable.one-click] Enter on a plain button is kept from the browser, so the click follows the press; a submit button keeps its own", () => {
+    const platform = vi.spyOn(navigator, "platform", "get").mockReturnValue("MacIntel");
     render(<><Pressable>Plain</Pressable><Pressable type="submit">Send</Pressable></>);
-    expect(fireEvent.keyDown(screen.getByRole("button", { name: "Plain" }), { key: "Enter" })).toBe(false);
+    const plain = screen.getByRole("button", { name: "Plain" });
+    expect(fireEvent.keyDown(plain, { key: "Enter" })).toBe(false);
+    fireEvent.keyUp(plain, { key: "Enter" });
     expect(fireEvent.keyDown(screen.getByRole("button", { name: "Send" }), { key: "Enter" })).toBe(true);
+    expect(fireEvent.keyDown(plain, { key: "Enter", ctrlKey: true })).toBe(true);
+    platform.mockRestore();
+  });
+
+  it("[primitives.draggable.input-paths] a transfer handle switched off by itself takes no drag input", () => {
+    render(<Draggable mode="transfer" activation="handle" getItems={() => []}>
+      <Draggable.Handle aria-label="live" data-testid="live" />
+      <Draggable.Handle aria-label="off" data-testid="off" disabled />
+    </Draggable>);
+    expect(screen.getByTestId("live").getAttribute("draggable")).toBe("true");
+    expect(screen.getByTestId("off").getAttribute("draggable")).toBeNull();
+    expect(screen.getByTestId("off").getAttribute("data-disabled")).toBe("true");
   });
 
   it("Pressable composes caller events and forwards the native button ref", () => {
@@ -279,6 +294,226 @@ describe("interaction primitives", () => {
   });
 });
 
+// How each primitive that takes `as` shows it is disabled, over each kind of target (SI Target rule).
+describe("disabled targets", () => {
+  type Row = [name: string, element: (disabled: boolean) => ReactElement, how: "native" | "aria"];
+  const rows: Row[] = [
+    ["Pressable", (disabled) => <Pressable disabled={disabled}>x</Pressable>, "native"],
+    ["Pressable as div", (disabled) => <Pressable as="div" disabled={disabled}>x</Pressable>, "aria"],
+    ["Selectable", (disabled) => <Selectable disabled={disabled}>x</Selectable>, "native"],
+    ["Selectable as div", (disabled) => <Selectable as="div" disabled={disabled}>x</Selectable>, "aria"],
+    ["Selectable as Pressable", (disabled) => <Selectable as={Pressable} disabled={disabled}>x</Selectable>, "native"],
+    ["Pressable as Selectable", (disabled) => <Pressable as={Selectable} disabled={disabled}>x</Pressable>, "native"],
+    ["SelectableGroup.Item", (disabled) => <SelectableGroup><SelectableGroup.Item value="a" disabled={disabled}>x</SelectableGroup.Item></SelectableGroup>, "native"],
+    ["SelectableGroup.Item as div", (disabled) => <SelectableGroup><SelectableGroup.Item as="div" value="a" disabled={disabled}>x</SelectableGroup.Item></SelectableGroup>, "aria"],
+    ["RovingFocus.Item", (disabled) => <RovingFocus><RovingFocus.Item value="a" disabled={disabled}>x</RovingFocus.Item></RovingFocus>, "native"],
+    ["RovingFocus.Item as div", (disabled) => <RovingFocus><RovingFocus.Item as="div" value="a" disabled={disabled}>x</RovingFocus.Item></RovingFocus>, "aria"],
+    ["RovingFocus.Item as Pressable", (disabled) => <RovingFocus><RovingFocus.Item as={Pressable} value="a" disabled={disabled}>x</RovingFocus.Item></RovingFocus>, "native"],
+    ["Floating.Trigger", (disabled) => <Floating><Floating.Trigger disabled={disabled}>x</Floating.Trigger></Floating>, "native"],
+    ["Floating.Trigger as div", (disabled) => <Floating><Floating.Trigger as="div" disabled={disabled}>x</Floating.Trigger></Floating>, "aria"],
+    ["Floating.Close", (disabled) => <Floating><Floating.Close disabled={disabled}>x</Floating.Close></Floating>, "native"],
+    ["Floating.Close as div", (disabled) => <Floating><Floating.Close as="div" disabled={disabled}>x</Floating.Close></Floating>, "aria"],
+    ["Draggable", (disabled) => <Draggable disabled={disabled}>x</Draggable>, "aria"],
+    ["Draggable as section", (disabled) => <Draggable as="section" disabled={disabled}>x</Draggable>, "aria"],
+    ["Draggable as button", (disabled) => <Draggable as="button" disabled={disabled}>x</Draggable>, "native"],
+    ["Draggable as Pressable", (disabled) => <Draggable as={Pressable} disabled={disabled}>x</Draggable>, "native"],
+    ["Draggable transfer as button", (disabled) => <Draggable as="button" mode="transfer" getItems={() => []} disabled={disabled}>x</Draggable>, "native"],
+    ["Draggable.Handle", (disabled) => <Draggable activation="handle"><Draggable.Handle aria-label="Move" disabled={disabled}>x</Draggable.Handle></Draggable>, "native"],
+    ["Draggable.Handle as div", (disabled) => <Draggable activation="handle"><Draggable.Handle as="div" aria-label="Move" disabled={disabled}>x</Draggable.Handle></Draggable>, "aria"],
+    ["Draggable.Handle transfer", (disabled) => <Draggable mode="transfer" activation="handle" getItems={() => []} disabled={disabled}><Draggable.Handle aria-label="Move">x</Draggable.Handle></Draggable>, "native"],
+    ["Droppable", (disabled) => <Droppable disabled={disabled}>x</Droppable>, "aria"],
+    ["Droppable as button", (disabled) => <Droppable as="button" disabled={disabled}>x</Droppable>, "native"],
+    ["Droppable as Pressable", (disabled) => <Droppable as={Pressable} disabled={disabled}>x</Droppable>, "native"],
+  ];
+  // The element that carries the state: the last one of the tree that says what it is.
+  const target = (view: { container: HTMLElement }) => [...view.container.querySelectorAll<HTMLElement>("button, div, section")].reverse().find((element) => element.textContent === "x")!;
+
+  it("[primitives.target.projection] marks every disabled target with data-disabled and disables it the way its element allows", () => {
+    for (const [name, element, how] of rows) {
+      const enabled = render(element(false));
+      const on = target(enabled);
+      expect(on.hasAttribute("data-disabled"), `${name} enabled`).toBe(false);
+      expect(on.hasAttribute("aria-disabled") && on.getAttribute("aria-disabled") !== "false", `${name} enabled`).toBe(false);
+      expect((on as HTMLButtonElement).disabled === true, `${name} enabled`).toBe(false);
+      enabled.unmount();
+      const disabled = render(element(true));
+      const off = target(disabled);
+      expect(off.getAttribute("data-disabled"), name).toBe("true");
+      if (how === "native") {
+        expect((off as HTMLButtonElement).disabled, name).toBe(true);
+        expect(off.hasAttribute("aria-disabled"), name).toBe(false);
+      } else expect(off.getAttribute("aria-disabled"), name).toBe("true");
+      disabled.unmount();
+    }
+  });
+
+  it("[primitives.target.projection] gives <Selectable as='div'> the role of a button, a place in the Tab order and the aria that announces its state", () => {
+    render(<Selectable as="div">Pick</Selectable>);
+    const div = screen.getByText("Pick");
+    expect([div.getAttribute("role"), div.tabIndex, div.getAttribute("aria-pressed")]).toEqual(["button", 0, "false"]);
+    fireEvent.click(div);
+    expect(div.getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("[primitives.target.projection] gives a Selectable and a SelectableGroup.Item over a div the keys of a button", () => {
+    render(<>
+      <Selectable as="div">pick</Selectable>
+      <SelectableGroup selectionMode="multiple"><SelectableGroup.Item as="div" value="a">item</SelectableGroup.Item></SelectableGroup>
+    </>);
+    for (const name of ["pick", "item"]) {
+      const element = screen.getByText(name);
+      expect(fireEvent.keyDown(element, { key: "Enter" }), name).toBe(false);
+      expect(element.getAttribute("aria-pressed"), name).toBe("true");
+      expect(fireEvent.keyDown(element, { key: " " }), name).toBe(false);
+      expect(element.getAttribute("aria-pressed"), name).toBe("false");
+      expect(fireEvent.keyDown(element, { key: "Enter", repeat: true }), name).toBe(false);
+      expect(element.getAttribute("aria-pressed"), `${name} after a held key`).toBe("false");
+      expect(fireEvent.keyDown(element, { key: "a" }), name).toBe(true);
+      expect(element.getAttribute("aria-pressed"), name).toBe("false");
+    }
+  });
+
+  it("[primitives.target.projection] opens a Floating from a Trigger over a div on Enter, and closes it from a Close over a div on Space", () => {
+    render(<Floating>
+      <Floating.Trigger as="div">open</Floating.Trigger>
+      <Floating.Content aria-label="Panel"><Floating.Close as="div">close</Floating.Close></Floating.Content>
+    </Floating>);
+    fireEvent.keyDown(screen.getByText("open"), { key: "Enter" });
+    expect(screen.getByRole("dialog", { name: "Panel" })).toBeTruthy();
+    fireEvent.keyDown(screen.getByText("close"), { key: " " });
+    expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
+  it("[primitives.target.projection] leaves the keys alone on a disabled target, on what is inside the target, and when the caller prevents them", () => {
+    const change = vi.fn();
+    const open = vi.fn();
+    render(<>
+      <Selectable as="div" disabled onSelectedChange={change}>off</Selectable>
+      <Selectable as="div" onSelectedChange={change}><input aria-label="Edit" /></Selectable>
+      <Selectable as="div" onSelectedChange={change} onKeyDown={(event) => event.preventDefault()}>kept</Selectable>
+      <Floating onOpenChange={open}><Floating.Trigger as="div" disabled>closed</Floating.Trigger></Floating>
+    </>);
+    for (const key of ["Enter", " "]) {
+      expect(fireEvent.keyDown(screen.getByText("off"), { key }), key).toBe(true);
+      expect(fireEvent.keyDown(screen.getByLabelText("Edit"), { key }), key).toBe(true);
+      fireEvent.keyDown(screen.getByText("kept"), { key });
+      expect(fireEvent.keyDown(screen.getByText("closed"), { key }), key).toBe(true);
+    }
+    expect(change).not.toHaveBeenCalled();
+    expect(open).not.toHaveBeenCalled();
+  });
+
+  it("[primitives.target.projection] keeps Enter on a Pressable or a Draggable.Handle over a div to its own machinery, one activation and no second click", () => {
+    const click = vi.fn();
+    const press = vi.fn();
+    render(<Pressable as="div" onClick={click} onPress={press}>press</Pressable>);
+    fireEvent.keyDown(screen.getByText("press"), { key: "Enter" });
+    fireEvent.keyUp(screen.getByText("press"), { key: "Enter" });
+    expect([press.mock.calls.length, click.mock.calls.length]).toEqual([1, 1]);
+    click.mockClear();
+    render(<Draggable activation="handle"><Draggable.Handle as="div" aria-label="Move" onClick={click}>grip</Draggable.Handle></Draggable>);
+    fireEvent.keyDown(screen.getByText("grip"), { key: "Enter" });
+    expect(click).not.toHaveBeenCalled();
+  });
+
+  it("[primitives.target.projection] keeps a disabled Selectable, Trigger and Close from acting, over a div as over a button", () => {
+    const change = vi.fn();
+    const open = vi.fn();
+    render(<>
+      <Selectable as="div" disabled onSelectedChange={change}>pick</Selectable>
+      <Floating onOpenChange={open}><Floating.Trigger as="div" disabled onClick={() => open("click")}>trigger</Floating.Trigger></Floating>
+    </>);
+    fireEvent.click(screen.getByText("pick"));
+    fireEvent.click(screen.getByText("trigger"));
+    expect(change).not.toHaveBeenCalled();
+    expect(open).not.toHaveBeenCalled();
+  });
+
+  it("[primitives.target.projection] leaves a disabled Draggable's content live and its Tab stop to the drag it starts", () => {
+    const click = vi.fn();
+    render(<Draggable disabled data-testid="drag"><button type="button" onClick={click}>inner</button></Draggable>);
+    fireEvent.click(screen.getByText("inner"));
+    expect(click).toHaveBeenCalledTimes(1);
+    expect(screen.getByTestId("drag").hasAttribute("tabindex")).toBe(false);
+    cleanup();
+    render(<Draggable data-testid="drag">x</Draggable>);
+    expect([screen.getByTestId("drag").getAttribute("role"), screen.getByTestId("drag").tabIndex]).toEqual(["group", 0]);
+  });
+
+  it("[primitives.target.projection] leaves a disabled Droppable's content live: it takes no drop and nothing else", () => {
+    const click = vi.fn();
+    render(<Droppable disabled data-testid="drop"><button type="button" onClick={click}>inner</button></Droppable>);
+    fireEvent.click(screen.getByText("inner"));
+    expect(click).toHaveBeenCalledTimes(1);
+    expect(screen.getByTestId("drop").getAttribute("aria-disabled")).toBe("true");
+  });
+
+  it("[primitives.target.projection] leaves aria-disabled on the props of useDraggable and useDroppable, for the element a hook's user builds", () => {
+    function Probe() {
+      const { dragProps } = useDraggable({ disabled: true });
+      const { dropProps } = useDroppable({ disabled: true });
+      return <><button type="button" {...dragProps}>drag</button><button type="button" {...dropProps}>drop</button></>;
+    }
+    render(<Probe />);
+    for (const name of ["drag", "drop"]) expect(screen.getByText(name).getAttribute("aria-disabled"), name).toBe("true");
+  });
+
+  it("[primitives.target.projection] disables a VisuallyHidden as a region: a button natively, a span only by data-disabled", () => {
+    render(<><VisuallyHidden as="button" disabled>native</VisuallyHidden><VisuallyHidden disabled>plain</VisuallyHidden></>);
+    const native = screen.getByText("native") as HTMLButtonElement;
+    expect([native.disabled, native.getAttribute("data-disabled")]).toEqual([true, "true"]);
+    const plain = screen.getByText("plain");
+    expect(plain.getAttribute("data-disabled")).toBe("true");
+    for (const attribute of ["disabled", "role", "tabindex", "aria-disabled"]) expect(plain.hasAttribute(attribute), attribute).toBe(false);
+  });
+});
+
+describe("children snapshots", () => {
+  it("[primitives.snapshots.children] hands Draggable and Droppable children whether they are disabled", () => {
+    render(<>
+      <Draggable disabled>{({ isDisabled, isDragging }) => `drag ${isDisabled} ${isDragging}`}</Draggable>
+      <Droppable>{({ isDisabled, isDropTarget }) => `drop ${isDisabled} ${isDropTarget}`}</Droppable>
+      <Droppable disabled>{({ isDisabled }) => `drop ${isDisabled}`}</Droppable>
+    </>);
+    expect(screen.getByText("drag true false")).toBeTruthy();
+    expect(screen.getByText("drop false false")).toBeTruthy();
+    expect(screen.getByText("drop true")).toBeTruthy();
+  });
+
+  it("[primitives.snapshots.children] hands a SelectableGroup's children its selection and whether it is disabled", () => {
+    const group = (disabled: boolean) => <SelectableGroup defaultSelectedValues={["b"]} disabled={disabled}>
+      {({ selectedValues, isDisabled }) => <><p>{`${selectedValues.join(",")} ${isDisabled}`}</p><SelectableGroup.Item value="a">A</SelectableGroup.Item><SelectableGroup.Item value="b">B</SelectableGroup.Item></>}
+    </SelectableGroup>;
+    const view = render(group(false));
+    expect(screen.getByText("b false")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "A" }));
+    expect(screen.getByText("a false")).toBeTruthy();
+    view.rerender(group(true));
+    expect(screen.getByText("a true")).toBeTruthy();
+  });
+
+  it("[primitives.snapshots.children] hands Floating.Content children the panel's state, and a part inside closes it with useFloatingContext", () => {
+    const seen: unknown[] = [];
+    function CloseIt() {
+      const { close } = useFloatingContext();
+      return <button type="button" onClick={close}>Close it</button>;
+    }
+    render(<Floating defaultOpen>
+      <Floating.Trigger>Open</Floating.Trigger>
+      <Floating.Content aria-label="Panel" anchored={false}>
+        {(state) => { seen.push(state); return <CloseIt />; }}
+      </Floating.Content>
+    </Floating>);
+    expect(seen[0]).toEqual({ isOpen: true, presentation: "popover", placement: undefined, elevation: { tier: "overlay", rank: 0 } });
+    fireEvent.click(screen.getByText("Close it"));
+    expect(screen.queryByText("Close it")).toBeNull();
+    cleanup();
+    seen.length = 0;
+    render(<Floating defaultOpen modal><Floating.Content aria-label="Dialog">{(state) => { seen.push(state); return "dialog"; }}</Floating.Content></Floating>);
+    expect(seen[0]).toMatchObject({ presentation: "modal", elevation: { tier: "modal", rank: 0 } });
+  });
+});
+
 describe("selectable groups", () => {
   it("[primitives.selectable-group.single] shares exclusive selection and keeps arrow navigation independent of selection", () => {
     render(<SelectableGroup defaultSelectedValues={["a"]} selectionRequired><SelectableGroup.Item value="a">A</SelectableGroup.Item><SelectableGroup.Item value="b">B</SelectableGroup.Item></SelectableGroup>);
@@ -319,6 +554,24 @@ describe("selectable groups", () => {
     expect(change).toHaveBeenLastCalledWith(["a", "b"]);
     view.rerender(<SelectableGroup selectionMode="multiple" onSelectedValuesChange={change}><SelectableGroup.Item value="a">A</SelectableGroup.Item></SelectableGroup>);
     expect(change).toHaveBeenLastCalledWith(["a"]);
+  });
+
+  it("[primitives.roving-focus.registry] refuses a duplicate value in a group, and removing it keeps the original's selection and place in the Tab order", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const group = (duplicate: boolean) => <SelectableGroup defaultSelectedValues={["a"]}>
+      <SelectableGroup.Item value="a">first</SelectableGroup.Item><SelectableGroup.Item value="b">B</SelectableGroup.Item>{duplicate && <SelectableGroup.Item value="a">second</SelectableGroup.Item>}
+    </SelectableGroup>;
+    const view = render(group(true));
+    expect(error).toHaveBeenCalledTimes(1);
+    expect(screen.getAllByRole("button").filter((item) => item.tabIndex === 0)).toHaveLength(1);
+    view.rerender(group(false));
+    const first = screen.getByText("first");
+    expect(first.getAttribute("aria-pressed")).toBe("true");
+    expect(first.tabIndex).toBe(0);
+    act(() => first.focus());
+    fireEvent.keyDown(first, { key: "ArrowRight" });
+    expect(document.activeElement).toBe(screen.getByText("B"));
+    error.mockRestore();
   });
 
   it("controlled groups request a change without taking ownership", () => {

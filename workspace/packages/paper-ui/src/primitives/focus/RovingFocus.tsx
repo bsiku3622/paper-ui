@@ -1,39 +1,59 @@
-import { createContext, forwardRef, useCallback, useContext, useLayoutEffect, useRef, useState, type ComponentPropsWithoutRef, type ElementType, type HTMLAttributes, type KeyboardEvent, type ReactElement, type Ref, type RefCallback } from "react";
+import { createContext, forwardRef, useCallback, useContext, useLayoutEffect, useMemo, useRef, useState, type ComponentPropsWithoutRef, type ElementType, type HTMLAttributes, type KeyboardEvent, type ReactElement, type ReactNode, type Ref, type RefCallback } from "react";
+import { directionOf } from "../../internal/direction";
 import { paperError } from "../../internal/errors";
+import { registerPart, targetProps } from "../../internal/render-target";
 import { useMergedRef } from "../../internal/refs";
 import { useControllableState } from "../../internal/useControllableState";
 import { MARKER_ATTRIBUTE, VALUE_ATTRIBUTE, type Orientation } from "../../tokens";
-import { composeEventHandlers } from "../composition";
+import { composeEventHandlers, mergeProps } from "../composition";
 
 type Entry = { value: string; element: HTMLElement; disabled: boolean };
-const sortEntries = (entries: Entry[]) => entries.filter((entry) => !entry.disabled && entry.element.isConnected)
-  .sort((a, b) => a.element === b.element ? 0 : a.element.compareDocumentPosition(b.element) & 2 ? 1 : -1);
-export type RovingFocusProps = HTMLAttributes<HTMLDivElement> & {
+const inDocumentOrder = (a: Entry, b: Entry) => a.element === b.element ? 0 : a.element.compareDocumentPosition(b.element) & 2 ? 1 : -1;
+// Every item that is still in the document, in document order; the ones a key can land on are the enabled among them.
+const connected = (entries: readonly Entry[]) => entries.filter((entry) => entry.element.isConnected).sort(inDocumentOrder);
+const enabled = (entries: readonly Entry[]) => connected(entries).filter((entry) => !entry.disabled);
+
+export type RovingFocusState = { currentValue: string | undefined; isDisabled: boolean };
+export type RovingFocusProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "dir"> & {
   orientation?: Orientation | "both";
+  /** Written to the element only when given; without it the group reads the direction it inherits. */
   dir?: "ltr" | "rtl";
   loop?: boolean;
   disabled?: boolean;
   currentValue?: string | null;
   defaultCurrentValue?: string;
   onCurrentValueChange?: (value: string) => void;
+  children?: ReactNode | ((state: RovingFocusState) => ReactNode);
 };
 type Context = {
   current: string | undefined;
   disabled: boolean;
+  /** Every registered item, or undefined until the first one registers. */
+  entries: readonly Entry[] | undefined;
+  /** The registry is the only list of items; a second item with a value already registered is refused. */
   register: (entry: Entry) => () => void;
   activate: (value: string) => void;
   navigate: (event: KeyboardEvent<HTMLElement>, value: string) => void;
 };
 const RovingContext = createContext<Context | null>(null);
 
+/** The values of every item in the group, in document order, disabled ones included; undefined before any item has registered. */
+export function useRovingValues(): readonly string[] | undefined {
+  const context = useContext(RovingContext);
+  if (!context) throw paperError("RovingFocus values must be read inside <RovingFocus>.");
+  const { entries } = context;
+  return useMemo(() => entries && [...new Set(connected(entries).map((entry) => entry.value))], [entries]);
+}
+
 export const RovingFocusRoot = forwardRef<HTMLDivElement, RovingFocusProps>(function RovingFocus({
-  orientation = "horizontal", dir = "ltr", loop = false, disabled = false,
+  orientation = "horizontal", dir, loop = false, disabled = false,
   currentValue, defaultCurrentValue, onCurrentValueChange, children, ...props
 }, forwardedRef) {
   const root = useRef<HTMLDivElement>(null);
   const rootRef = useMergedRef(root, forwardedRef);
-  const [entries, setEntries] = useState<Entry[]>([]);
+  const [entries, setEntries] = useState<readonly Entry[] | undefined>();
   const registry = useRef<Entry[]>([]);
+  const reported = useRef(new Set<string>());
   const [requested, setRequested] = useControllableState<string | null | undefined>({
     value: currentValue,
     defaultValue: defaultCurrentValue,
@@ -42,14 +62,21 @@ export const RovingFocusRoot = forwardRef<HTMLDivElement, RovingFocusProps>(func
   const mounted = useRef(false);
   const restore = useRef<number | null>(null);
   const focused = useRef<{ value: string; index: number } | null>(null);
-  const ordered = sortEntries(entries);
-  const current = ordered.find((entry) => entry.value === requested)?.value ?? ordered[0]?.value;
+  const reachable = enabled(entries ?? []);
+  const current = reachable.find((entry) => entry.value === requested)?.value ?? reachable[0]?.value;
   const activate = (value: string) => {
-    focused.current = { value, index: sortEntries(registry.current).findIndex((entry) => entry.value === value) };
+    focused.current = { value, index: enabled(registry.current).findIndex((entry) => entry.value === value) };
     setRequested(value);
   };
   const register = useCallback((entry: Entry) => {
-    registry.current = [...registry.current.filter((item) => item.value !== entry.value), entry];
+    if (registry.current.some((item) => item.value === entry.value && item.element.isConnected)) {
+      if (process.env.NODE_ENV !== "production" && !reported.current.has(entry.value)) {
+        reported.current.add(entry.value);
+        console.error(paperError(`RovingFocus value '${entry.value}' is registered twice.`).message);
+      }
+      return () => {};
+    }
+    registry.current = [...registry.current, entry];
     setEntries(registry.current);
     return () => {
       if (focused.current?.value === entry.value) {
@@ -65,23 +92,24 @@ export const RovingFocusRoot = forwardRef<HTMLDivElement, RovingFocusProps>(func
   }, []);
   useLayoutEffect(() => {
     if (restore.current === null || !mounted.current) {
-      if (focused.current) focused.current.index = sortEntries(registry.current).findIndex((entry) => entry.value === focused.current?.value);
+      if (focused.current) focused.current.index = enabled(registry.current).findIndex((entry) => entry.value === focused.current?.value);
       return;
     }
     const index = restore.current;
     restore.current = null;
     const active = root.current?.ownerDocument.activeElement;
     if (active && active !== root.current?.ownerDocument.body && !root.current?.contains(active)) return;
-    const items = sortEntries(registry.current);
+    const items = enabled(registry.current);
     focused.current = null;
     (items[Math.max(0, Math.min(index, items.length - 1))]?.element ?? root.current)?.focus();
   });
   const navigate = (event: KeyboardEvent<HTMLElement>, value: string) => {
     if (disabled || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || event.target !== event.currentTarget) return;
+    const rtl = directionOf(event.currentTarget) === "rtl";
     let step = 0;
     if (orientation !== "vertical") {
-      if (event.key === "ArrowRight") step = dir === "rtl" ? -1 : 1;
-      if (event.key === "ArrowLeft") step = dir === "rtl" ? 1 : -1;
+      if (event.key === "ArrowRight") step = rtl ? -1 : 1;
+      if (event.key === "ArrowLeft") step = rtl ? 1 : -1;
     }
     if (orientation !== "horizontal") {
       if (event.key === "ArrowDown") step = 1;
@@ -90,19 +118,19 @@ export const RovingFocusRoot = forwardRef<HTMLDivElement, RovingFocusProps>(func
     if (!step && event.key !== "Home" && event.key !== "End") return;
     event.preventDefault();
     event.stopPropagation();
-    const items = sortEntries(registry.current);
+    const items = enabled(registry.current);
     const index = items.findIndex((entry) => entry.value === value);
     let next = event.key === "Home" ? 0 : event.key === "End" ? items.length - 1 : index + step;
     next = loop ? (next + items.length) % items.length : Math.max(0, Math.min(next, items.length - 1));
     const target = items[next];
     target?.element.focus();
   };
-  return <RovingContext.Provider value={{ current, disabled, register, activate, navigate }}>
+  return <RovingContext.Provider value={{ current, disabled, entries, register, activate, navigate }}>
     <div tabIndex={-1} {...props} ref={rootRef} dir={dir} {...{ [VALUE_ATTRIBUTE.orientation]: orientation }}
       onBlur={(event) => {
         props.onBlur?.(event);
         if (!event.relatedTarget || !event.currentTarget.contains(event.relatedTarget as Node)) focused.current = null;
-      }}>{children}</div>
+      }}>{typeof children === "function" ? children({ currentValue: current, isDisabled: disabled }) : children}</div>
   </RovingContext.Provider>;
 });
 
@@ -125,8 +153,10 @@ export function useRovingFocusItem<Element extends HTMLElement = HTMLElement>({ 
   const ref = useCallback((node: Element | null) => setElement(node), []);
   const { register } = context;
   const isDisabled = disabled || context.disabled;
-  useLayoutEffect(() => element ? register({ value, element, disabled: isDisabled }) : undefined, [element, value, isDisabled, register]);
-  const isCurrent = !isDisabled && context.current === value;
+  const entry = useMemo<Entry | null>(() => element && { value, element, disabled: isDisabled }, [element, value, isDisabled]);
+  useLayoutEffect(() => entry ? register(entry) : undefined, [entry, register]);
+  // An item the registry refused (a second one with the same value) is never the Tab stop, so the group keeps one.
+  const isCurrent = !isDisabled && entry !== null && context.entries?.includes(entry) === true && context.current === value;
   return {
     itemProps: {
       ref,
@@ -143,17 +173,19 @@ export type RovingFocusItemProps<As extends ElementType = "button"> = RovingFocu
   as?: As;
   ref?: Ref<HTMLElement>;
 } & Omit<ComponentPropsWithoutRef<As>, keyof RovingFocusItemOptions | "as" | "ref" | "tabIndex">;
+// A native button by default. Another tag is rendered as it is, without a role: a roving item that is not a button
+// takes its role from the caller. A component goes through targetProps, as every `as` does.
 const Item = forwardRef<HTMLElement, RovingFocusItemProps<ElementType>>(function RovingFocusItem({ as, value, disabled, onFocus, onKeyDown, ...props }, ref) {
   const context = useContext(RovingContext);
-  const isDisabled = disabled || context?.disabled;
+  const isDisabled = disabled || context?.disabled || false;
   const { itemProps } = useRovingFocusItem({ value, disabled });
   const mergedRef = useMergedRef(itemProps.ref, ref);
   const Tag = as ?? "button";
-  const nativeDisabled = typeof Tag !== "string" || ["button", "input", "select", "textarea"].includes(Tag);
-  return <Tag {...props} {...itemProps} ref={mergedRef}
-    type={Tag === "button" ? props.type ?? "button" : props.type}
-    disabled={nativeDisabled ? isDisabled : undefined} aria-disabled={isDisabled || undefined}
+  const { type, href } = props as { type?: string; href?: string };
+  const target = targetProps(Tag, { disabled: isDisabled, type, href, kind: "control" });
+  delete target.role;
+  return <Tag {...mergeProps(target, props, itemProps)} ref={mergedRef}
     onFocus={composeEventHandlers(onFocus, itemProps.onFocus)} onKeyDown={composeEventHandlers(onKeyDown, itemProps.onKeyDown)} />;
 }) as <As extends ElementType = "button">(props: RovingFocusItemProps<As>) => ReactElement;
 
-export const RovingFocus = Object.assign(RovingFocusRoot, { Item });
+export const RovingFocus = Object.assign(RovingFocusRoot, { Item: registerPart(Item) });

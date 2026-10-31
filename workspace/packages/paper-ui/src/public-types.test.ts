@@ -9,9 +9,10 @@ import type { ComponentProps } from "react";
 import { describe, expect, expectTypeOf, it } from "vitest";
 
 import {
-  VisuallyHidden, useDraggable, useDroppable, useFloating, useFocusRing, useFocusWithin, useFormField, usePressable, useRovingFocusItem, useSelectable, useSelectableGroup,
-  type DraggableResult, type DroppableResult, type FloatingResult, type FocusRingResult, type FocusWithinResult, type FormFieldResult, type PressEvent, type PressableOptions,
-  type PressableProps, type PressableResult, type RovingFocusItemResult, type SelectableGroupResult, type SelectableResult,
+  VisuallyHidden, useDraggable, useDroppable, useFloating, useFocusRing, useFocusWithin, useFormField, useFormFieldControl, usePressable, useRovingFocusItem, useSelectable, useSelectableGroup,
+  type DraggableProps, type DraggableResult, type DraggableState, type DroppableProps, type DroppableResult, type DroppableState, type FloatingContentProps, type FloatingContentState, type FloatingResult, type FocusRingResult, type FocusWithinResult, type FormFieldControlResult, type FormFieldResult, type PressEvent, type PressableOptions,
+  type FormFieldProps, type FormFieldState, type PressableProps, type PressableResult, type PressableState, type RovingFocusItemResult, type RovingFocusProps, type RovingFocusState, type SelectableGroupProps,
+  type SelectableGroupResult, type SelectableGroupState, type SelectableProps, type SelectableResult, type SelectableState,
 } from "./index";
 
 // The hooks are called only to be type-checked, never run.
@@ -56,6 +57,19 @@ describe("public types", () => {
     expectTypeOf<ReturnType<typeof useFocusWithin>>().toEqualTypeOf<FocusWithinResult>();
     expectTypeOf<ReturnType<typeof useRovingFocusItem>>().toEqualTypeOf<RovingFocusItemResult>();
     expectTypeOf<ReturnType<typeof useFormField>>().toEqualTypeOf<FormFieldResult>();
+    expectTypeOf<ReturnType<typeof useFormFieldControl>>().toEqualTypeOf<FormFieldControlResult>();
+  });
+
+  it("[primitives.snapshots.children] names the snapshot each children function receives", () => {
+    type Snapshot<Children> = Parameters<Extract<Children, (state: never) => unknown>>[0];
+    expectTypeOf<Snapshot<PressableProps["children"]>>().toEqualTypeOf<PressableState>();
+    expectTypeOf<Snapshot<SelectableProps["children"]>>().toEqualTypeOf<SelectableState>();
+    expectTypeOf<Snapshot<SelectableGroupProps["children"]>>().toEqualTypeOf<SelectableGroupState>();
+    expectTypeOf<Snapshot<RovingFocusProps["children"]>>().toEqualTypeOf<RovingFocusState>();
+    expectTypeOf<Snapshot<DraggableProps["children"]>>().toEqualTypeOf<DraggableState>();
+    expectTypeOf<Snapshot<DroppableProps["children"]>>().toEqualTypeOf<DroppableState>();
+    expectTypeOf<Snapshot<FloatingContentProps["children"]>>().toEqualTypeOf<FloatingContentState>();
+    expectTypeOf<Snapshot<FormFieldProps["children"]>>().toEqualTypeOf<FormFieldState>();
   });
 
   it("[primitives.hooks.result-shape] gives a DOM hook its part's props, with the ref and the state attributes", () => {
@@ -95,7 +109,7 @@ describe("the React Aria boundary", () => {
 
   it("[primitives.aria.boundary] keeps the adapters in one folder, one file per concern", () => {
     const adapters = readdirSync(join(src, "internal", "aria")).sort();
-    expect(adapters).toEqual(["dnd.ts", "focus.tsx", "move.ts", "overlay.ts", "portal.tsx", "press.ts", "visually-hidden.ts"]);
+    expect(adapters).toEqual(["dnd.ts", "focus.tsx", "i18n.tsx", "live.ts", "move.ts", "overlay.ts", "portal.tsx", "press.ts", "visually-hidden.ts"]);
     const importing = adapters.filter((file) => ARIA.test(readFileSync(join(src, "internal", "aria", file), "utf8")));
     expect(importing).toEqual(adapters);
   });

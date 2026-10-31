@@ -1,11 +1,19 @@
 import { StrictMode } from "react";
-import { act, render, renderHook, waitFor } from "@testing-library/react";
+import { act, render, renderHook, screen, waitFor } from "@testing-library/react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { useLocale, useMessages } from "../internal/locale";
 import { THEME_ATTRIBUTE } from "../tokens";
 import { PaperProvider } from "./PaperProvider";
 import { useResolvedTheme, useTheme, type ThemeControl } from "./context";
+
+// Every locale the React Aria adapter was given.
+const hosted = vi.hoisted(() => ({ locales: [] as string[] }));
+vi.mock("../internal/aria/i18n", async (importOriginal) => {
+  const original = await importOriginal<typeof import("../internal/aria/i18n")>();
+  return { LocaleHost: (props: Parameters<typeof original.LocaleHost>[0]) => { hosted.locales.push(props.locale); return original.LocaleHost(props); } };
+});
 
 const root = document.documentElement;
 
@@ -28,6 +36,9 @@ const memoryStorage = () => {
 };
 
 beforeEach(() => {
+  root.removeAttribute("lang");
+  root.removeAttribute("dir");
+  hosted.locales.length = 0;
   vi.stubGlobal("localStorage", memoryStorage());
   vi.spyOn(window, "requestAnimationFrame").mockImplementation(() => 0);
   vi.spyOn(console, "warn").mockImplementation(() => {});
@@ -198,5 +209,119 @@ describe("the stylesheet warning", () => {
     render(<Fresh storageKey={null} />).unmount();
     expect(warn).toHaveBeenCalledTimes(1);
     expect(warn.mock.calls[0]?.[0]).toContain("styles.css");
+  });
+});
+
+describe("locale", () => {
+  const Probe = ({ id = "probe" }: { id?: string }) => {
+    const messages = useMessages();
+    return <output data-testid={id}>{`${useLocale()}|${messages.clear}|${messages.showPassword}|${messages.loading}`}</output>;
+  };
+  const probe = (id = "probe") => screen.getByTestId(id).textContent;
+
+  it("[primitives.locale.resolution] takes the Provider's locale, else <html lang>, else English", () => {
+    mockMedia(false);
+    const view = render(<Probe />);
+    expect(probe()).toBe("en|Clear|Show password|Loading");
+    view.unmount();
+    root.setAttribute("lang", "ko");
+    const fromHtml = render(<Probe />);
+    expect(probe()).toBe("ko|지우기|비밀번호 보기|불러오는 중");
+    fromHtml.unmount();
+    render(<PaperProvider storageKey={null} locale="en-GB"><Probe /></PaperProvider>);
+    expect(probe()).toBe("en-GB|Clear|Show password|Loading");
+  });
+
+  it("[primitives.locale.resolution] renders under a tag Intl would reject: an underscore reads as a dash, anything else as English", () => {
+    root.setAttribute("lang", "ko_KR");
+    const fromHtml = render(<PaperProvider storageKey={null}><Probe /></PaperProvider>);
+    expect(probe()).toBe("ko-KR|지우기|비밀번호 보기|불러오는 중");
+    fromHtml.unmount();
+    root.setAttribute("lang", "x-klingon");
+    const garbage = render(<PaperProvider storageKey={null}><Probe /></PaperProvider>);
+    expect(probe()).toBe("en|Clear|Show password|Loading");
+    garbage.unmount();
+    root.removeAttribute("lang");
+    const given = render(<PaperProvider storageKey={null} locale="ar_EG"><Probe /></PaperProvider>);
+    expect(probe()).toContain("ar-EG|");
+    expect([root.getAttribute("lang"), root.getAttribute("dir")]).toEqual(["ar-EG", "rtl"]);
+    given.unmount();
+    render(<PaperProvider storageKey={null} locale="not a tag"><Probe /></PaperProvider>);
+    expect(probe()).toContain("en|");
+    expect([root.getAttribute("lang"), root.getAttribute("dir")]).toEqual(["en", "ltr"]);
+  });
+
+  it("[primitives.locale.resolution] follows <html lang> while no Provider sets a locale", async () => {
+    render(<PaperProvider storageKey={null}><Probe /></PaperProvider>);
+    expect(probe()).toContain("en|");
+    act(() => root.setAttribute("lang", "ko"));
+    await waitFor(() => expect(probe()).toContain("ko|"));
+  });
+
+  it("[primitives.locale.resolution] lets a Provider inside another keep the locale and the words it does not set", () => {
+    mockMedia(false);
+    render(
+      <PaperProvider storageKey={null} locale="ko" messages={{ clear: "비우기" }}>
+        <PaperProvider storageKey={null} messages={{ loading: "기다리는 중" }}><Probe /></PaperProvider>
+      </PaperProvider>,
+    );
+    expect(probe()).toBe("ko|비우기|비밀번호 보기|기다리는 중");
+  });
+
+  it("[primitives.locale.messages] picks the catalog of the locale's language, English for any other, and lets the Provider override a key", () => {
+    mockMedia(false);
+    const catalogs: Array<[string, string]> = [["ko", "지우기"], ["ko-KR", "지우기"], ["en", "Clear"], ["en-US", "Clear"], ["fr", "Clear"], ["fr-CA", "Clear"]];
+    for (const [locale, clear] of catalogs) {
+      const view = render(<PaperProvider storageKey={null} locale={locale}><Probe /></PaperProvider>);
+      expect(probe().split("|")[1], locale).toBe(clear);
+      view.unmount();
+    }
+    render(<PaperProvider storageKey={null} locale="fr" messages={{ showPassword: "Voir le mot de passe" }}><Probe /></PaperProvider>);
+    expect(probe()).toBe("fr|Clear|Voir le mot de passe|Loading");
+  });
+
+  it("[primitives.locale.document] writes <html lang> and <html dir> only when a locale is passed, and gives them back", () => {
+    mockMedia(false);
+    render(<PaperProvider storageKey={null}><Probe /></PaperProvider>).unmount();
+    expect([root.hasAttribute("lang"), root.hasAttribute("dir")]).toEqual([false, false]);
+    root.setAttribute("lang", "ja");
+    const kept = render(<PaperProvider storageKey={null}><Probe /></PaperProvider>);
+    expect([root.getAttribute("lang"), root.hasAttribute("dir")]).toEqual(["ja", false]);
+    kept.unmount();
+    const ar = render(<PaperProvider storageKey={null} locale="ar"><Probe /></PaperProvider>);
+    expect([root.getAttribute("lang"), root.getAttribute("dir")]).toEqual(["ar", "rtl"]);
+    ar.rerender(<PaperProvider storageKey={null} locale="ko"><Probe /></PaperProvider>);
+    expect([root.getAttribute("lang"), root.getAttribute("dir")]).toEqual(["ko", "ltr"]);
+    ar.unmount();
+    expect([root.getAttribute("lang"), root.hasAttribute("dir")]).toEqual(["ja", false]);
+  });
+
+  it("[primitives.locale.document] survives StrictMode's second mount", () => {
+    mockMedia(false);
+    const view = render(<StrictMode><PaperProvider storageKey={null} locale="he"><Probe /></PaperProvider></StrictMode>);
+    expect([root.getAttribute("lang"), root.getAttribute("dir")]).toEqual(["he", "rtl"]);
+    view.unmount();
+    expect([root.hasAttribute("lang"), root.hasAttribute("dir")]).toEqual([false, false]);
+  });
+
+  it("[primitives.locale.resolution] hands the React Aria adapter the locale in force", () => {
+    mockMedia(false);
+    render(<PaperProvider storageKey={null} locale="ko"><Probe /></PaperProvider>).unmount();
+    expect(new Set(hosted.locales)).toEqual(new Set(["ko"]));
+    hosted.locales.length = 0;
+    render(<PaperProvider storageKey={null}><Probe /></PaperProvider>).unmount();
+    expect(new Set(hosted.locales)).toEqual(new Set(["en"]));
+    hosted.locales.length = 0;
+    root.setAttribute("lang", "ko");
+    render(<PaperProvider storageKey={null}><Probe /></PaperProvider>).unmount();
+    expect(new Set(hosted.locales)).toEqual(new Set(["ko"]));
+  });
+
+  it("[primitives.locale.resolution] answers a server render with the locale it was given, else English, and writes nothing", () => {
+    mockMedia(false);
+    root.setAttribute("lang", "ko");
+    expect(renderToStaticMarkup(<PaperProvider storageKey={null} locale="ko"><Probe /></PaperProvider>)).toContain("ko|지우기");
+    expect(renderToStaticMarkup(<PaperProvider storageKey={null}><Probe /></PaperProvider>)).toContain("en|Clear");
+    expect(root.getAttribute("lang")).toBe("ko");
   });
 });

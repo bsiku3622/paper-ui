@@ -59,7 +59,7 @@ export const App = () => (
 );
 ```
 
-The provider takes exactly one setting: the theme. Pass `defaultTheme` as
+The provider chooses the theme, and, when asked, the language. Pass `defaultTheme` as
 `light`, `dark`, or `system` (the default, which follows
 `prefers-color-scheme`). A choice the user makes is kept in localStorage under
 `storageKey` (`pui-theme` by default; `null` stores nothing) and wins on the
@@ -67,6 +67,13 @@ next visit. For a toggle of your own, `useTheme()` returns the user's own choice
 (`theme`, which may be `system`) alongside the `resolved` value that is actually
 applied. `<html data-pui-theme>` is the one truth for the mode: any theme manager
 may write it, and `useResolvedTheme()` reads it with or without a provider.
+
+`locale` (a BCP 47 tag) and `messages` set the language of the words Atoms say for
+themselves. The locale is the one given, else `<html lang>`, else `en`; Paper never
+reads the browser's language. `messages` overrides the catalog key by key
+(`clear`, `showPassword`, `loading`; English and Korean ship). `<html lang>` and
+`<html dir>` are written only when a `locale` is passed, and put back when the
+provider goes.
 
 To apply the stored or OS theme before the first paint, put the boot script first
 in `<head>` with the same options the provider gets. With Vite:
@@ -115,7 +122,7 @@ and nothing else.
 
 | Tier | Exports |
 |---|---|
-| Primitives, first order | `Box · Text · Icon · FocusScope · VisuallyHidden · Portal` |
+| Primitives, first order | `Box · Text · Icon · FocusScope · VisuallyHidden · Portal · LiveRegion` (and `announce · clearAnnouncements`) |
 | Primitives, second order | `Surface · Paint · Pressable · Selectable · SelectableGroup · Floating · Draggable · Droppable · RovingFocus · FormField · Stack · Inline · Grid` |
 | Atoms | `Button · IconButton · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Spinner · Divider · Link` |
 | `/tokens` | `tokens`, and the vocabulary: one constant and one type for each axis (`ACCENTS` · `Accent`, `VARIANTS` · `Variant`, `SPACES` · `Space` …) |

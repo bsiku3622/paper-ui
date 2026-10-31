@@ -1,11 +1,13 @@
-import { createContext, forwardRef, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createContext, forwardRef, useContext, useEffect, useRef, type ElementType, type ReactNode } from "react";
 
 import { paperError } from "../../internal/errors";
+import { registerPart } from "../../internal/render-target";
 import { useMergedRef } from "../../internal/refs";
 import { useControllableState } from "../../internal/useControllableState";
 import { composeEventHandlers } from "../composition";
-import { RovingFocus, useRovingFocusItem, type RovingFocusProps } from "../focus/RovingFocus";
-import { Selectable, type SelectableProps } from "./Selectable";
+import { RovingFocus, useRovingFocusItem, useRovingValues, type RovingFocusProps } from "../focus/RovingFocus";
+import type { PolymorphicComponent, PolymorphicProps } from "../polymorphic";
+import { Selectable, type SelectableOwnProps } from "./Selectable";
 
 export type SelectableGroupOptions = {
   selectionMode?: "single" | "multiple";
@@ -57,32 +59,37 @@ export function useSelectableGroup({ selectionMode = "single", selectedValues, d
   };
   return { selectedValues: normalized, isValueSelected: (value) => normalized.includes(value), setValueSelected, toggleValue: (value) => setValueSelected(value, !current.current.includes(value)) };
 }
-type GroupContext = SelectableGroupResult & { disabled: boolean; register: (value: string) => () => void };
+type GroupContext = SelectableGroupResult & { disabled: boolean };
 const Context = createContext<GroupContext | null>(null);
-export type SelectableGroupProps = Omit<RovingFocusProps, "onChange"> & Omit<SelectableGroupOptions, "values">;
-const Root = forwardRef<HTMLDivElement, SelectableGroupProps>(function SelectableGroup({ selectionMode, selectedValues, defaultSelectedValues, onSelectedValuesChange, selectionRequired, disabled = false, children, ...props }, ref) {
-  const [values, setValues] = useState<string[] | undefined>();
-  const register = useRef((value: string) => {
-    setValues((previous) => [...new Set([...(previous ?? []), value])]);
-    return () => setValues((previous) => previous?.filter((item) => item !== value));
-  }).current;
-  const state = useSelectableGroup({ selectionMode, selectedValues, defaultSelectedValues, onSelectedValuesChange, selectionRequired, disabled, values });
-  return <Context.Provider value={{ ...state, disabled, register }}>
-    <RovingFocus {...props} ref={ref} role={props.role ?? "group"} disabled={disabled}
-      defaultCurrentValue={props.defaultCurrentValue ?? (selectedValues ?? defaultSelectedValues)?.[0]}>{children}</RovingFocus>
+export type SelectableGroupState = { selectedValues: string[]; isDisabled: boolean };
+export type SelectableGroupProps = Omit<RovingFocusProps, "onChange" | "children"> & Omit<SelectableGroupOptions, "values"> & {
+  children?: ReactNode | ((state: SelectableGroupState) => ReactNode);
+};
+// The group's selection is read against the items the RovingFocus registry holds, so it has no list of its own.
+function GroupState({ children, ...options }: Omit<SelectableGroupOptions, "values"> & { disabled: boolean; children: SelectableGroupProps["children"] }) {
+  const state = useSelectableGroup({ ...options, values: useRovingValues() });
+  return <Context.Provider value={{ ...state, disabled: options.disabled }}>
+    {typeof children === "function" ? children({ selectedValues: state.selectedValues, isDisabled: options.disabled }) : children}
   </Context.Provider>;
+}
+const Root = forwardRef<HTMLDivElement, SelectableGroupProps>(function SelectableGroup({ selectionMode, selectedValues, defaultSelectedValues, onSelectedValuesChange, selectionRequired, disabled = false, children, ...props }, ref) {
+  return <RovingFocus {...props} ref={ref} role={props.role ?? "group"} disabled={disabled}
+    defaultCurrentValue={props.defaultCurrentValue ?? (selectedValues ?? defaultSelectedValues)?.[0]}>
+    <GroupState {...{ selectionMode, selectedValues, defaultSelectedValues, onSelectedValuesChange, selectionRequired, disabled }}>{children}</GroupState>
+  </RovingFocus>;
 });
-export type SelectableGroupItemProps = Omit<SelectableProps, "selected" | "defaultSelected" | "onSelectedChange" | "tabIndex"> & { value: string };
-const Item = forwardRef<HTMLButtonElement, SelectableGroupItemProps>(function SelectableGroupItem({ value, disabled, onFocus, onKeyDown, ...props }, ref) {
+export type SelectableGroupItemOwnProps = Omit<SelectableOwnProps, "selected" | "defaultSelected" | "onSelectedChange"> & { value: string };
+export type SelectableGroupItemProps<As extends ElementType = "button"> = PolymorphicProps<SelectableGroupItemOwnProps, As>;
+const Part = Selectable as ElementType;
+const ItemImpl = forwardRef<HTMLElement, Omit<SelectableGroupItemProps, "as" | "ref"> & { as?: ElementType }>(function SelectableGroupItem({ value, disabled, onFocus, onKeyDown, ...props }, ref) {
   const context = useContext(Context);
   if (!context) throw paperError("SelectableGroup.Item must be used inside <SelectableGroup>.");
   const isDisabled = disabled || context.disabled;
-  const { register } = context;
-  useLayoutEffect(() => register(value), [register, value]);
-  const { itemProps } = useRovingFocusItem<HTMLButtonElement>({ value, disabled: isDisabled });
+  const { itemProps } = useRovingFocusItem({ value, disabled: isDisabled });
   const mergedRef = useMergedRef(itemProps.ref, ref);
-  return <Selectable {...props} {...itemProps} ref={mergedRef} disabled={isDisabled}
-    selected={context.isValueSelected(value)} onSelectedChange={(next) => context.setValueSelected(value, next)}
+  return <Part {...props} {...itemProps} ref={mergedRef} disabled={isDisabled}
+    selected={context.isValueSelected(value)} onSelectedChange={(next: boolean) => context.setValueSelected(value, next)}
     onFocus={composeEventHandlers(onFocus, itemProps.onFocus)} onKeyDown={composeEventHandlers(onKeyDown, itemProps.onKeyDown)} />;
 });
+const Item = registerPart(ItemImpl) as PolymorphicComponent<SelectableGroupItemOwnProps, "button">;
 export const SelectableGroup = Object.assign(Root, { Item });

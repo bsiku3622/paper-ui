@@ -16,6 +16,7 @@ const CLICKS_BY_ITSELF = "button, input, a[href], area[href], summary";
 // Enter on a Mac is kept back too, for a plain button: the browser would click it as the key goes down, and a
 // click that moves focus (a Floating.Trigger opening its panel) would take the key-up away from the pressed
 // element and lose its press. The click follows the press, as it does for Space and on every other platform.
+// Ctrl+Enter stays with the browser: it is the Mac's context-menu shortcut.
 export function useAriaPress(
   { disabled, cancelOnPointerExit, allowTextSelection, onPress, ...options }: PressableOptions,
   ref: RefObject<HTMLElement | null>,

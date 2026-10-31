@@ -3,6 +3,7 @@
 import { forwardRef, useCallback, type InputHTMLAttributes } from "react";
 
 import { joinClass } from "../internal/joinClass";
+import { useFormFieldControl } from "../primitives/field/FormField";
 import type { ControlSize } from "../tokens";
 import { checkboxRoot, checkboxSize } from "./Checkbox.css";
 
@@ -15,9 +16,10 @@ export type CheckboxProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type" |
 };
 
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Checkbox(
-  { size = "md", indeterminate, className, ...rest },
+  { size = "md", indeterminate, className, id, disabled, required, "aria-invalid": ariaInvalid, "aria-describedby": describedBy, ...rest },
   ref,
 ) {
+  const { controlProps } = useFormFieldControl({ id, disabled, required, "aria-invalid": ariaInvalid, "aria-describedby": describedBy });
   // indeterminate 는 속성이 아니라 프로퍼티라 element 에 직접 세운다. 넘어온 ref 도 함께 채운다.
   const setRef = useCallback(
     (el: HTMLInputElement | null) => {
@@ -28,5 +30,5 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
     [ref, indeterminate],
   );
 
-  return <input type="checkbox" ref={setRef} className={joinClass(checkboxRoot, checkboxSize[size], className)} {...rest} />;
+  return <input type="checkbox" ref={setRef} className={joinClass(checkboxRoot, checkboxSize[size], className)} {...rest} {...controlProps} />;
 });

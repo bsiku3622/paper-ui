@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Button, Field, FormField, Stack, type FormFieldProps } from "@studio-baeks/paper-ui";
+import { Button, Field, FormField, Stack, type FormFieldProps, type FormFieldState } from "@studio-baeks/paper-ui";
 
 import { named } from "../jsx";
 import { boolControl, defineSpec, flag } from "../schema";
@@ -28,8 +28,8 @@ export default defineSpec({
       disabled={flag(state, "disabled")}
       className={formField}
     >
-      {named('({ controlProps }) => <Field {...controlProps} type="email" status={invalid ? "error" : undefined} />', ({ controlProps }) => (
-        <Field {...controlProps} type="email" status={invalid ? "error" : undefined} />
+      {named('({ isInvalid }) => <Field type="email" status={isInvalid ? "error" : undefined} />', ({ isInvalid }: FormFieldState) => (
+        <Field type="email" status={isInvalid ? "error" : undefined} />
       ))}
     </FormField>
   ),

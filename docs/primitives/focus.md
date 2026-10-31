@@ -4,12 +4,12 @@ Focus Primitive는 그룹 하나에 Tab 정지 하나를 두는 탐색을 맡는
 
 | 컴포넌트 | Hook | 책임 | 기본값 |
 | --- | --- | --- | --- |
-| RovingFocus | useRovingFocusItem | orientation, dir, loop, disabled, currentValue 계열 | horizontal / ltr / loop=false. 하나의 Tab 진입점과 DOM focus 이동 |
+| RovingFocus | useRovingFocusItem | orientation, dir, loop, disabled, currentValue 계열, children(노드 또는 스냅샷 함수) | horizontal / dir 상속 / loop=false. 하나의 Tab 진입점과 DOM focus 이동 |
 
 ## 그룹 focus 탐색
 
 [contract:primitives.roving-focus.tab-stop]: #
-RovingFocus는 등록한 항목 중 하나만 Tab 진입점으로 유지합니다. 방향키로 실제 DOM focus를 옮기며 Tab은 그룹 밖으로 나갑니다. FocusScope의 contain과는 다른 동작입니다. Item은 native button이며 as로 다른 요소나 ref를 전달하는 컴포넌트를 지정합니다.
+RovingFocus는 등록한 항목 중 하나만 Tab 진입점으로 유지합니다. 방향키로 실제 DOM focus를 옮기며 Tab은 그룹 밖으로 나갑니다. FocusScope의 contain과는 다른 동작입니다. Item은 native button이며 as로 다른 요소나 ref를 전달하는 컴포넌트를 지정합니다. button이 아닌 태그는 role 없이 그대로 그려지므로 role은 쓰는 쪽이 줍니다. 컴포넌트는 [공통 계약](README.md#공통-계약)의 투영을 따릅니다.
 
 Toolbar의 비활성 항목을 건너뛰고 양 끝에서 순환하는 예시입니다.
 
@@ -24,11 +24,17 @@ Toolbar의 비활성 항목을 건너뛰고 양 끝에서 순환하는 예시입
 | Root 옵션 | 기본값 | 계약 |
 | --- | --- | --- |
 | orientation | horizontal | horizontal / vertical / both |
-| dir | ltr | ltr / rtl; 가로 방향 결정 |
+| dir | 상속 | ltr / rtl; 줄 때만 DOM에 쓰고, 생략하면 페이지에서 물려받은 방향으로 가로 방향 결정 |
 | loop | false | 끝에서 반대쪽으로 순환 |
 | disabled | false | 그룹 탐색과 기본 Item 비활성화 |
 | currentValue / defaultCurrentValue | 첫 활성 항목 | controlled / uncontrolled Tab 진입점 |
 | onCurrentValueChange | 없음 | focus된 항목의 value 전달 |
+
+[contract:primitives.roving-focus.direction]: #
+`dir`은 줄 때만 DOM에 쓰고, 가로 방향키는 항목이 서 있는 자리의 방향을 따릅니다 — 가장 가까운 `dir` 속성(`ltr` · `rtl`), 없으면 계산된 `direction`, 그것도 없으면 `ltr`입니다. 그래서 `dir="rtl"`인 조상이나 `<html dir="rtl">` 아래에서는 `dir`을 주지 않아도 ArrowLeft가 다음 항목으로 갑니다. 명시한 `dir`은 물려받은 방향보다 앞섭니다.
+
+[contract:primitives.roving-focus.registry]: #
+등록은 RovingFocus root 하나가 가진 항목 목록이 유일한 정본입니다. 이미 등록된 value로 다른 항목이 오면 등록을 거절하고(개발 오류 한 번, 먼저 등록된 쪽이 이깁니다) 거절된 항목은 Tab 진입점이 되지 않으므로 Tab 정지는 늘 하나입니다. 중복 항목을 떼어도 원래 항목의 탐색과 선택은 그대로입니다. SelectableGroup은 같은 목록을 읽어 선택값을 정리합니다. children 함수는 `{ currentValue, isDisabled }`(`RovingFocusState`)를 받습니다.
 
 [contract:primitives.roving-focus.keys]: #
 [contract:primitives.roving-focus.removal]: #

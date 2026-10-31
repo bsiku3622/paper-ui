@@ -8,5 +8,8 @@ const { style, globalStyle } = layered("components");
 export const dragSurface = style({});
 globalStyle(`:where(${dragSurface})`, { touchAction: "none", cursor: "grab" });
 globalStyle(`:where(${dragSurface}${stateSelector("dragging")})`, { cursor: "grabbing" });
-globalStyle(`:where(${dragSurface}:disabled)`, { cursor: "not-allowed" });
-globalStyle(`:where(${dragSurface}[aria-disabled="true"])`, { cursor: "default" });
+globalStyle(`:where(${dragSurface}${stateSelector("disabled")})`, { cursor: "not-allowed" });
+
+// A drop target has no affordance of its own while it is enabled; a disabled one shows that it takes nothing.
+export const dropSurface = style({});
+globalStyle(`:where(${dropSurface}${stateSelector("disabled")})`, { cursor: "not-allowed" });

@@ -14,6 +14,7 @@ import { forwardRef, type TextareaHTMLAttributes } from "react";
 import { joinClass } from "../internal/joinClass";
 import { resolveControlFontSize, resolvePreset } from "../resolvers";
 import type { ControlFontSize, ControlSize, Status } from "../tokens";
+import { useFormFieldControl } from "../primitives";
 import { fieldStatus } from "./Field.css";
 import { textareaRoot, textareaSize } from "./Textarea.css";
 
@@ -26,13 +27,13 @@ export type TextareaProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "c
 };
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function Textarea(
-  { status, size = "md", fontSize, className, onPointerDown, onBlur, ...rest },
+  { status, size = "md", fontSize, className, onPointerDown, onBlur, id, disabled, required, "aria-invalid": ariaInvalid, "aria-describedby": describedBy, ...rest },
   ref,
 ) {
+  const { controlProps } = useFormFieldControl({ id, disabled, required, "aria-invalid": ariaInvalid, "aria-describedby": describedBy, status });
   return (
     <textarea
       ref={ref}
-      aria-invalid={status === "error" || undefined}
       data-status={status}
       onPointerDown={(event) => {
         event.currentTarget.dataset.puiPointerFocus = "true";
@@ -44,6 +45,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
       }}
       className={joinClass(textareaRoot, textareaSize[size], resolvePreset("textarea", size), resolveControlFontSize(fontSize), status && fieldStatus[status], className)}
       {...rest}
+      {...controlProps}
     />
   );
 });

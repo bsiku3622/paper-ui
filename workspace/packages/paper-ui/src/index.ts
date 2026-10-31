@@ -47,6 +47,7 @@ export { presence, loop } from "./styles/motion.css";
 // Theme — the Provider and the hooks; the boot script is the entry "theme-boot"
 export { PaperProvider, useTheme, useResolvedTheme } from "./theme";
 export type { PaperProviderProps, ThemeControl } from "./theme";
+export type { PaperMessages } from "./internal/messages";
 
 // Inventory — every name above by category and order, as data
 export { INVENTORY, PRIMITIVE_ORDERS, PRIMITIVE_GROUPS } from "./inventory";

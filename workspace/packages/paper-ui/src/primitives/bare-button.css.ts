@@ -1,3 +1,4 @@
+import { stateSelector } from "../tokens";
 import { layered } from "../tokens/layers.css";
 
 const { style, globalStyle } = layered("components");
@@ -10,4 +11,4 @@ globalStyle(`:where(${bareButton})`, {
   color: "inherit", font: "inherit", letterSpacing: "inherit", textAlign: "inherit",
   cursor: "pointer",
 });
-globalStyle(`:where(${bareButton}:disabled)`, { cursor: "not-allowed" });
+globalStyle(`:where(${bareButton}${stateSelector("disabled")})`, { cursor: "not-allowed" });

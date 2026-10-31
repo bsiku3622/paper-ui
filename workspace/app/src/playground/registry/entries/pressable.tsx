@@ -8,7 +8,7 @@ import { control } from "./examples.css";
 
 export default defineSpec({
   name: "Pressable",
-  blurb: "Native button의 입력을 press 이벤트로 통합합니다. Paper의 색·크기를 고르지 않고 active·focus-visible 상태를 제공합니다. `as`로 Selectable·Floating.Trigger 같은 부품에 press를 올립니다.",
+  blurb: "Native button의 입력을 press 이벤트로 통합합니다. Paper의 색·크기를 고르지 않고 active·focus-visible 상태를 제공합니다. as로 Selectable·Floating.Trigger 같은 부품에 press를 올립니다.",
   controls: [boolControl<PressableProps, "disabled">("disabled")],
   defaults: { disabled: false },
   useHarness: () => {

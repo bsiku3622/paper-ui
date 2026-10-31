@@ -10,7 +10,7 @@ const exported = pkg as unknown as Record<string, unknown>;
 const primitives = Object.values(INVENTORY.primitives);
 const components: readonly string[] = [...primitives.flatMap((group) => group.components), ...INVENTORY.atoms];
 const functions: readonly string[] = [
-  ...primitives.flatMap((group) => group.hooks),
+  ...primitives.flatMap((group) => [...group.hooks, ...("functions" in group ? group.functions : [])]),
   ...Object.values(INVENTORY.utilities).flat(),
 ];
 const classes: readonly string[] = INVENTORY.classes;
