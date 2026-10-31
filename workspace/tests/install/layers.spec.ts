@@ -51,6 +51,9 @@ test("[install.layers.every-rule-layered] every package rule sits in a pui subla
     };
     for (const sheet of Array.from(document.styleSheets)) {
       if (sheet.href?.endsWith("/consumer-first.css")) continue;
+      // React Aria puts one rule of its own in the head the first time something is pressed (touch-action, in an
+      // anonymous layer). It is not the package's.
+      if ((sheet.ownerNode as Element | null)?.id === "react-aria-pressable-style") continue;
       walk(sheet.cssRules, []);
     }
     return { outside, filled: [...filled] };

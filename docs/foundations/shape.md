@@ -122,7 +122,7 @@ coarse pointer에서 더 키우지 않습니다 — 촘촘한 목록에서 hit a
 | Switch | 트랙 폭 = 컨트롤 높이, 트랙 높이 = 선택 상자 + 테, 손잡이 = 선택 상자 − 테. 테는 `stroke.emphasis`라, 손잡이는 사방 2px 안쪽에 앉고 정확히 자기 폭만큼 이동합니다. RTL에서는 이동 방향을 뒤집습니다. |
 | Textarea | 한 줄은 같은 size의 Field와 정확히 같은 높이입니다: block 여백 = (컨트롤 높이 − textarea 글자 줄) / 2 − 테두리. 최소 높이는 `dimension.height.sm`입니다. |
 | Select | 화살표는 trailing icon입니다. `control.icon` 크기의 Icon이 입력 inset 자리에 앉고, 값은 그보다 `control.gap`만큼 앞에서 멈춥니다 — Field의 leading icon을 거울로 비춘 구조입니다. |
-| Spinner | 지름은 `control.icon`, 링은 `stroke.emphasis`입니다. 글줄 안에 놓는 스피너(`spinner.inline`)는 라벨 글자(1em)를 따릅니다. |
+| Spinner | 지름은 `control.icon`, 링은 `stroke.emphasis`입니다. 글줄 안에 놓는 스피너(`spinner.inline`)는 라벨 글자(1em)를 따르고, Button의 loading 표식이 그 크기입니다. |
 | Badge | 높이 20 · 22 · 24와 inset 6 · 8 · 10은 규칙으로 나오지 않아 원본 anatomy에 둡니다. 점은 글자의 0.5em, 점과 글자 사이는 inset xs입니다. |
 
 링크 밑줄 offset은 글자의 장식이라 Typography(`typography.palette.decoration.underlineOffset`)가 소유합니다.

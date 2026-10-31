@@ -2,11 +2,12 @@ import { forwardRef, type AnchorHTMLAttributes, type ReactElement } from "react"
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import { Paint, Pressable, Selectable } from "../primitives";
-import { registerPart, targetProps } from "./render-target";
+import { Floating, Paint, Pressable, Selectable } from "../primitives";
+import { registerAtom, registerPart, targetProps } from "./render-target";
 
-// A Paper part and a foreign component, as targets.
+// A Paper part, a pressable Atom and a foreign component, as targets.
 const Part = registerPart(() => null);
+const AtomTarget = registerAtom(() => null);
 const Foreign = () => null;
 
 const keys = (props: object) => Object.keys(props).sort();
@@ -48,12 +49,31 @@ describe("targetProps", () => {
     for (const tag of ["span", "div", "a"] as const) expect(keys(targetProps(tag, { kind: "region", disabled: true })), tag).toEqual(["data-disabled"]);
   });
 
+  it("[primitives.target.projection] blocks a middle click as well as a click, so a disabled link opens no new tab", () => {
+    render(<a data-testid="link" href="#target" {...targetProps("a", { kind: "control", disabled: true, href: "#target" })}>Link</a>);
+    const link = screen.getByTestId("link");
+    expect(fireEvent(link, new MouseEvent("auxclick", { bubbles: true, cancelable: true, button: 1 }))).toBe(false);
+    expect(fireEvent.click(link)).toBe(false);
+    const foreign = targetProps(Foreign, { kind: "control", disabled: true });
+    expect(foreign.onAuxClickCapture).toBe(foreign.onClickCapture);
+  });
+
   it("[primitives.target.projection] keeps a focusable control in the Tab order, blocked by aria-disabled instead of the platform", () => {
     expect(targetProps("button", { kind: "control", disabled: true, focusable: true })).toMatchObject({ type: "button", "aria-disabled": true, "data-disabled": "true" });
     expect(targetProps("button", { kind: "control", disabled: true, focusable: true })).not.toHaveProperty("disabled");
     expect(targetProps("div", { kind: "control", disabled: true, focusable: true })).toMatchObject({ tabIndex: 0, "aria-disabled": true });
-    expect(targetProps(Part, { kind: "control", disabled: true, focusable: true })).toEqual({ disabled: true, focusable: true, "data-disabled": "true" });
+    expect(targetProps(Part, { kind: "control", disabled: true, focusable: true })).toMatchObject({ "aria-disabled": true, "data-disabled": "true" });
+    expect(targetProps(Part, { kind: "control", disabled: true, focusable: true })).not.toHaveProperty("disabled");
+    expect(targetProps(Part, { kind: "control", disabled: true, focusable: true })).not.toHaveProperty("focusable");
     expect(targetProps(Foreign, { kind: "control", disabled: true, focusable: true })).toMatchObject({ tabIndex: 0, "aria-disabled": true });
+  });
+
+  it("[primitives.target.projection] projects a pressable Atom like a Paper part", () => {
+    // Asking for an Atom's projection is the mistake the next describe pins, so the message is not wanted here.
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    expect(targetProps(AtomTarget, { kind: "control", disabled: true })).toEqual({ disabled: true, "data-disabled": "true" });
+    expect(targetProps(AtomTarget, { kind: "control", disabled: true, focusable: true })).toMatchObject({ "aria-disabled": true, "data-disabled": "true" });
+    error.mockRestore();
   });
 
   it("[primitives.target.projection] gives a button's keys only to a tag that stands in for one, only when asked and only while enabled", () => {
@@ -69,6 +89,26 @@ describe("targetProps", () => {
   it("[primitives.target.projection] carries no key without a value", () => {
     const cases = [targetProps("button", { kind: "control" }), targetProps("div", { kind: "control", disabled: true }), targetProps(Part, { kind: "control" }), targetProps(Foreign, { kind: "region" })];
     for (const props of cases) expect(Object.values(props).every((value) => value !== undefined)).toBe(true);
+  });
+});
+
+describe("an Atom as a target", () => {
+  it("[primitives.target.projection] tells a developer once that a behaviour was given an Atom, and that the Atom takes the part instead", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const Pressed = registerAtom(forwardRef<HTMLButtonElement, { children?: string }>(function Pressed({ children }, ref) { return <button ref={ref}>{children}</button>; }));
+    const view = render(<Floating><Floating.Trigger as={Pressed}>Open</Floating.Trigger></Floating>);
+    expect(error).toHaveBeenCalledTimes(1);
+    expect(String(error.mock.calls[0]?.[0])).toBe("[paper-ui] An Atom is not a target for a behaviour. Give the Atom the part instead: <Button as={Floating.Trigger}>, not <Floating.Trigger as={Button}>.");
+    view.rerender(<Floating><Floating.Trigger as={Pressed}>Open</Floating.Trigger></Floating>);
+    expect(error).toHaveBeenCalledTimes(1);
+    error.mockRestore();
+  });
+
+  it("[primitives.target.projection] says nothing of a part given a part, a tag or a foreign component", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    render(<><Pressable as={Selectable}>a</Pressable><Pressable as="div">b</Pressable><Pressable as={Foreign}>c</Pressable></>);
+    expect(error).not.toHaveBeenCalled();
+    error.mockRestore();
   });
 });
 

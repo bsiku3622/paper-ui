@@ -84,8 +84,8 @@ describe("parseOpeningTag", () => {
   });
 
   it("finds a name only where it ends: Floating is not Floating.Content", () => {
-    const code = '<Floating.Content dismissable={false}><Floating modal>';
-    expect(parseOpeningTag(code, "Floating")?.attrs).toEqual({ modal: true });
+    const code = '<Floating.Content dismissable={false}><Floating defaultOpen>';
+    expect(parseOpeningTag(code, "Floating")?.attrs).toEqual({ defaultOpen: true });
     expect(parseOpeningTag(code, "Floating.Content")?.attrs).toEqual({ dismissable: false });
   });
 

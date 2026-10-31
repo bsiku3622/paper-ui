@@ -83,7 +83,7 @@ export type MotionRole = (typeof MOTION_ROLES)[number];
 // 역할을 쓰는 곳. 문서와 Playground 가 이 목록을 읽는다.
 export const MOTION_CONSUMERS = {
   press: ["Button", "IconButton"],
-  hover: ["Button", "IconButton", "Field"],
+  hover: ["Button", "IconButton", "Field", "Surface"],
   state: ["Button", "IconButton", "Field", "Select", "Textarea", "Checkbox", "Radio", "Switch"],
   enter: ["Floating"],
   exit: ["Floating"],

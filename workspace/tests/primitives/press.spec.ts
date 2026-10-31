@@ -89,6 +89,27 @@ for (const [name, platform] of Object.entries(PLATFORMS)) {
       });
     }
 
+    for (const key of ["Enter", "Space"]) {
+      test(`[primitives.pressable.one-click] ${key} on a Button is one click, and on <Button as={Selectable}> and <Button as={Floating.Trigger}> one more of what the part does`, async ({ page }) => {
+        const button = page.getByTestId("atom-button");
+        await button.focus();
+        await page.keyboard.press(key);
+        await expect(button).toHaveAttribute("data-clicks", "1");
+
+        const selectable = page.getByTestId("atom-selectable");
+        await selectable.focus();
+        await page.keyboard.press(key);
+        await flipped(selectable);
+
+        const trigger = page.getByTestId("atom-trigger");
+        await trigger.focus();
+        await page.keyboard.press(key);
+        await expect(trigger).toHaveAttribute("aria-expanded", "true");
+        await expect(trigger).toHaveAttribute("data-clicks", "1");
+        await expect(page.getByRole("dialog", { name: "Atom panel" })).toBeVisible();
+      });
+    }
+
     test("[primitives.pressable.one-click] Enter on a link is one press and one click", async ({ page }) => {
       const link = page.getByTestId("link");
       await link.focus();
@@ -135,6 +156,16 @@ test.describe("with other inputs", () => {
     await flipped(target);
   });
 
+  test("[primitives.pressable.one-click] a mouse click on a Button, and on a Button over a part, is one click", async ({ page }) => {
+    await page.getByTestId("atom-button").click();
+    await expect(page.getByTestId("atom-button")).toHaveAttribute("data-clicks", "1");
+    await page.getByTestId("atom-selectable").click();
+    await flipped(page.getByTestId("atom-selectable"));
+    await page.getByTestId("atom-trigger").click();
+    await expect(page.getByTestId("atom-trigger")).toHaveAttribute("aria-expanded", "true");
+    await expect(page.getByTestId("atom-trigger")).toHaveAttribute("data-clicks", "1");
+  });
+
   test("[primitives.pressable.one-click] a disabled target gets neither", async ({ page }) => {
     const disabled = page.getByTestId("disabled");
     await disabled.click({ force: true });
@@ -151,6 +182,14 @@ test.describe("by touch", () => {
     const button = page.getByTestId("button");
     await button.tap();
     await once(button);
+  });
+
+  test("[primitives.pressable.one-click] a tap on a Button, and on a Button over a Selectable, is one click", async ({ page }) => {
+    await openHarness(page, "press");
+    await page.getByTestId("atom-button").tap();
+    await expect(page.getByTestId("atom-button")).toHaveAttribute("data-clicks", "1");
+    await page.getByTestId("atom-selectable").tap();
+    await flipped(page.getByTestId("atom-selectable"));
   });
 
   test("[primitives.pressable.one-click] a tap flips <Pressable as={Selectable}> once with one press", async ({ page }) => {

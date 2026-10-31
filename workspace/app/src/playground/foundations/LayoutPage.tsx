@@ -92,7 +92,7 @@ export const LayoutPage = () => {
           </BoardGroup>
           <BoardGroup label="Page">
             <BoardRow>
-              <TokenCell name="layout.gutter" note="페이지 가장자리와 내용 사이, 모달 scrim의 안쪽 = space.lg" />
+              <TokenCell name="layout.gutter" note="페이지 가장자리와 내용 사이, 모달 scrim의 안쪽, 팝오버가 뷰포트에 닿을 때 남기는 여백 = space.lg" />
               <Cell><div className={s.gutterFrame}><span /></div></Cell>
               <ValueCell>{resolved(layout.gutter)}</ValueCell>
             </BoardRow>

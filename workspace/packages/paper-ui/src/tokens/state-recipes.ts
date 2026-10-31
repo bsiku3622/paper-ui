@@ -64,7 +64,7 @@ export const stateStyle = {
     selectors: { [pressing]: { transform: `translateY(${MOTION.press.offset})` } },
   },
   tinted,
-  // A neutral item. Pressed outranks selected, selected outranks hover, and a disabled item answers to none of them.
+  // A neutral item. Pressed outranks selected, selected outranks hover. A disabled item answers to neither the pointer nor the press, and it keeps the selected tint.
   item: {
     ...tinted,
     selectors: {
@@ -100,7 +100,7 @@ export const stateStyle = {
   },
 } as const;
 
-// A link wherever it is drawn without the Link Atom, as in prose. Flat, so a global rule can spread it.
+// A link drawn where the Link Atom cannot be rendered, such as an anchor a stylesheet reaches. Flat, so a global rule can spread it.
 export const linkStyle = {
   color: COLOR.interaction.link,
   textDecorationLine: "underline",

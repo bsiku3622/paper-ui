@@ -24,14 +24,14 @@ Motion은 위 네 시스템의 값이 시간에 따라 어떻게 바뀌는지를
 | 역할 | duration | easing | 변위 | 상황 | 쓰는 곳 |
 |---|---|---|---|---|---|
 | `press` | fast | standard | `stroke.border` 만큼 아래로 | 버튼을 누르는 순간 | Button · IconButton |
-| `hover` | fast | standard | — | 포인터가 지나갈 때 바뀌는 테두리·글자색 | Button · IconButton · Field |
+| `hover` | fast | standard | — | 포인터가 지나갈 때 바뀌는 hover tint·테두리·글자색 | Button · IconButton · Field |
 | `state` | base | standard | — | 켜짐·선택처럼 머무는 상태, 면·배경의 전이, 스위치 손잡이 | Button · IconButton · Field · Select · Textarea · Checkbox · Radio · Switch |
 | `enter` | moderate | overshoot | `gap.xs` · scale 0.99 | 떠오르는 overlay | Floating |
 | `exit` | fast | accelerate | — | 사라지는 overlay | Floating |
 | `theme` | instant | linear | — | 테마 전환 — 모드가 바뀌는 프레임에 모든 전이가 즉시 끝남 | PaperProvider · Surface |
 
 [contract:foundations.motion.consumers]: #
-"쓰는 곳"에 적힌 Atom은 실제로 그 역할로 전이합니다. hover 반응에는 `hover`를, 켜진 채 머무는 상태와 면의 전이에는 `state`를 고릅니다. 한 요소가 둘을 함께 가질 수 있어서, Button은 테두리를 `hover`로, 배경과 글자색을 `state`로, 눌림을 `press`로 전이합니다.
+"쓰는 곳"에 적힌 Atom은 실제로 그 역할로 전이합니다. hover 반응에는 `hover`를, 켜진 채 머무는 상태와 면의 전이에는 `state`를 고릅니다. 한 요소가 둘을 함께 가질 수 있어서, Button은 hover tint(`--pui-state-tint`)와 테두리를 `hover`로, 배경색과 글자색을 `state`로, 눌림을 `press`로 전이합니다.
 
 포커스에는 역할이 없습니다. 포커스 링은 키보드가 닿는 자리를 알리는 신호라 지연 없이 나타나야 하므로, 아무것도 포커스에서 전이하지 않습니다.
 
@@ -48,7 +48,7 @@ Motion은 위 네 시스템의 값이 시간에 따라 어떻게 바뀌는지를
 [contract:foundations.motion.compositions]: #
 `presence`는 면의 등장과 퇴장입니다. `presence.surface`는 `data-presence`가 `entering`이면 `enter` 역할로 떠오르며 나타나고(opacity와 변위·scale), `exiting`이면 `exit` 역할로 같은 변위만큼 가라앉으며 사라진 채 남습니다. `presence.scrim`은 같은 타이밍에 opacity만 바꿉니다. 속성을 다는 것은 Floating의 일입니다 — 열릴 때 panel(modal이면 scrim과 panel)에 `entering`을 달고, 닫히면 `exiting`을 달아 애니메이션이 끝날 때까지 mount해 둡니다([Float](../primitives/float.md#열고-닫는-움직임)).
 
-`loop`는 반복입니다. `loop.spin`은 900ms linear로 돌고, `loop.pulse`는 1400ms standard로 맥박칩니다. Spinner와 버튼의 로딩 표식은 `loop.spin`을 합성하며, 각자 keyframe을 갖지 않습니다.
+`loop`는 반복입니다. `loop.spin`은 900ms linear로 돌고, `loop.pulse`는 1400ms standard로 맥박칩니다. Spinner와 버튼의 로딩 표식(같은 Spinner입니다)은 `loop.spin`을 합성하며, 각자 keyframe을 갖지 않습니다.
 
 `presence`와 `loop`는 class 지도라 `/tokens`가 아니라 컴포넌트 entry(`@studio-baeks/paper-ui`)에서 나옵니다. keyframe은 `styles/motion.css.ts` 한 곳에만 있습니다.
 
@@ -76,7 +76,7 @@ export const row = style({
 [contract:foundations.motion.reduced]: #
 `prefers-reduced-motion: reduce`에서는 모든 transition과 유한한 animation이 즉시 끝납니다. `::before`와 `::after`도 같은 규칙을 받아 스위치 손잡이도 미끄러지지 않고 건너뜁니다. 컴포넌트가 따로 처리할 것은 없습니다. Floating은 퇴장도 한 순간에 끝나므로 닫는 즉시 내려갑니다.
 
-반복은 멈추지 않고 정해진 맥박으로 바뀝니다. `loop.spin`은 회전 대신 `loop.pulse`(opacity 1 → 0.25 → 1)로 진행 중임을 알립니다. 화면을 가로질러 도는 움직임만 걷어내고 기다리는 중이라는 신호는 남깁니다. 진행 상태는 움직임에만 기대지 않도록 Spinner가 `role="status"`와 레이블로도 전달합니다.
+반복은 멈추지 않고 정해진 맥박으로 바뀝니다. `loop.spin`은 회전 대신 `loop.pulse`(opacity 1 → 0.25 → 1)로 진행 중임을 알립니다. 화면을 가로질러 도는 움직임만 걷어내고 기다리는 중이라는 신호는 남깁니다. 진행 상태는 움직임에만 기대지 않도록 Spinner가 `role="progressbar"`와 레이블로도 전달합니다.
 
 이 정책은 레이어에서 갈립니다. `presence`와 `loop`는 `pui.utilities`에, 모든 요소에 거는 즉시 끝내기 규칙은 `pui.components`에 있습니다. 반복의 reduced 형태와 즉시 끝내기 규칙은 둘 다 `!important`이고, `!important`는 레이어 순서가 뒤집혀 앞선 레이어가 이기므로 반복의 맥박이 즉시 끝내기 규칙에 지지 않습니다. `presence`는 `!important`가 아니라서 즉시 끝내기 규칙에 지고 바로 끝납니다. 앱의 `!important`는 두 규칙 모두에 집니다.
 

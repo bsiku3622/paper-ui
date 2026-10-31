@@ -1,13 +1,13 @@
 // The Motion inspector's notes: what the page says about values it cannot derive a reason for. Each map is
 // keyed by its source, so a role or loop added there fails typecheck until it has a note.
 
-import { MOTION_CONSUMERS, type MotionRole } from "@studio-baeks/paper-ui/tokens";
+import { MOTION_CONSUMERS, STATE_TINT_PROPERTY, type MotionRole } from "@studio-baeks/paper-ui/tokens";
 
 import type { Loop } from "../../../../packages/paper-ui/src/tokens/motion";
 
 export const MOTION_NOTES: Record<MotionRole, string> = {
   press: "누르는 순간 1px 내려앉음",
-  hover: "테두리·글자색의 짧은 반응",
+  hover: "hover tint·테두리·글자색의 짧은 반응",
   state: "켜짐·선택 같은 상태 전이",
   enter: "떠오르는 overlay — 살짝 튀어 안착",
   exit: "사라질 때는 짧게 가속",
@@ -22,7 +22,7 @@ export const roleNote = (role: MotionRole): string => [MOTION_NOTES[role], ...MO
 // ends every transition at once, so they have no transition string.
 export const TRANSITION_PROPERTIES = {
   press: ["transform"],
-  hover: ["border-color", "color"],
+  hover: [STATE_TINT_PROPERTY, "border-color", "color"],
   state: ["background", "background-color", "color", "border-color", "box-shadow", "transform"],
 } as const satisfies Partial<Record<MotionRole, readonly string[]>>;
 

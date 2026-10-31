@@ -21,6 +21,8 @@ test("[foundations.shape.control-geometry] [foundations.shape.recipe-geometry] a
     expect(button.padding).toBe([10, 11, 14][i]);
     const icon = await metrics(page, `[data-testid=icon-${size}]`);
     expect(icon.width).toBe(icon.height);
+    // An Icon with no size of its own follows the control it sits in.
+    expect((await metrics(page, `[data-testid=icon-${size}] svg`)).width).toBe([16, 18, 20][i]);
     const field = await metrics(page, `[data-testid=field-${size}]`);
     expect(field.height).toBe(button.height);
     expect(field.padding).toBe([7, 8, 10][i]);
@@ -192,10 +194,10 @@ test("[foundations.shape.focus-ring] the baseline draws the ring on an element w
   await expect(probe).toHaveCSS("outline-offset", "2px");
   await expect(probe).toHaveCSS("border-top-left-radius", "0px");
 
-  // A link in prose is rounded by the rule that styles it, so its ring is still a rounded one.
+  // A link in prose is the Link Atom, whose stylesheet declares the corner its ring follows.
   await page.goto("/docs/foundations/shape");
   await expect(page.locator(".md a").first()).toHaveCSS("border-top-left-radius", "4px");
-  // So is the Link Atom, whose stylesheet declares the corner its ring follows.
+  // So is the one on the Link page.
   await openPlayground(page, "link", "Link");
   await expect(page.getByRole("link", { name: "링크", exact: true })).toHaveCSS("border-top-left-radius", "4px");
 });

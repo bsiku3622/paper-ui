@@ -1,6 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { INVENTORY } from "../../packages/paper-ui/src/inventory";
+import { STATE_TINT_PROPERTY } from "../../packages/paper-ui/src/tokens";
 import { MOTION, MOTION_CONSUMERS, MOTION_ROLES, type MotionRole } from "../../packages/paper-ui/src/tokens/motion";
 import { openHarness, openPlayground } from "../support/harness";
 
@@ -66,7 +67,7 @@ const playbackRate = async (page: Page, rate: number) => {
 
 type Row = { atom: string; target: (page: Page) => Locator; pseudo?: "::after"; properties: Record<string, MotionRole> };
 
-const BUTTON = { "border-color": "hover", background: "state", color: "state", transform: "press" } as const;
+const BUTTON = { [STATE_TINT_PROPERTY]: "hover", "border-color": "hover", "background-color": "state", color: "state", transform: "press" } as const;
 
 // What each Atom in MOTION_CONSUMERS transitions, and with which role.
 const ATOM_TRANSITIONS: Row[] = [
@@ -137,7 +138,7 @@ test.describe("with motion", () => {
     expect(spin).toMatchObject({ duration: 900, easing: "linear", iterations: "infinite" });
     expect(pulse).toMatchObject({ duration: 1400, easing: timing("state").easing, iterations: "infinite" });
     expect(spin.name).not.toBe(pulse.name);
-    expect(await animationOf(page.getByRole("status", { name: "Spinner" }))).toEqual(spin);
+    expect(await animationOf(page.getByRole("progressbar", { name: "Spinner" }))).toEqual(spin);
     expect(await animationOf(page.getByRole("button", { name: "Saving" }).locator("span[aria-hidden]"))).toEqual(spin);
   });
 
@@ -259,7 +260,7 @@ test.describe("with reduced motion", () => {
     expect((await frameOf(page.getByTestId("surface-exiting"), "end")).opacity).toBe("0");
   });
 
-  test("[primitives.floating.presence] takes a Floating off the page at the first tick of its exit, not after the exit role's time", async ({ page }) => {
+  test("[primitives.floating.presence] takes a Floating off the page within a few frames of its exit, not after the exit role's time", async ({ page }) => {
     const panel = await openFloating(page);
     await expect(panel).toBeVisible();
     const frames = await panel.evaluate(async (element) => {
@@ -281,7 +282,7 @@ test.describe("with reduced motion", () => {
     await openHarness(page, "motion");
     const pulse = await animationOf(page.getByTestId("loop-pulse"));
     expect(pulse).toMatchObject({ duration: 1400, iterations: "infinite" });
-    for (const target of [page.getByTestId("loop-spin"), page.getByRole("status", { name: "Spinner" }), page.getByRole("button", { name: "Saving" }).locator("span[aria-hidden]")]) {
+    for (const target of [page.getByTestId("loop-spin"), page.getByRole("progressbar", { name: "Spinner" }), page.getByRole("button", { name: "Saving" }).locator("span[aria-hidden]")]) {
       expect(await animationOf(target)).toEqual(pulse);
     }
   });
@@ -290,6 +291,6 @@ test.describe("with reduced motion", () => {
     await openPlayground(page, "foundations/motion", "Motion");
     const pulse = await animationOf(page.getByText("motion.loop.pulse", { exact: true }).locator("xpath=../following-sibling::div[1]/span"));
     expect(pulse).toMatchObject({ duration: 1400, iterations: "infinite" });
-    expect(await animationOf(page.getByRole("status", { name: "회전 반복 예시" }))).toEqual(pulse);
+    expect(await animationOf(page.getByRole("progressbar", { name: "회전 반복 예시" }))).toEqual(pulse);
   });
 });

@@ -1,8 +1,15 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import { tokens } from "../../packages/paper-ui/src/tokens";
+import { accentProfile } from "../../packages/paper-ui/src/tokens/color-recipes";
 import { SHAPE_SOURCE } from "../../packages/paper-ui/src/tokens/shape";
 import { openHarness, openPlayground } from "../support/harness";
 import { tab } from "../support/keyboard";
+import { expectStyle } from "../support/style";
+
+// The tint a hoverable Paint lays over its face, as the computed background image.
+const tint = (color: string) => ({ backgroundImage: `linear-gradient(${color}, ${color})` });
+const solid = accentProfile("primary", "solid");
 
 const dragBy = async (page: Page, locator: ReturnType<Page["locator"]>, x: number, y: number, release = true) => {
   await locator.scrollIntoViewIfNeeded();
@@ -31,6 +38,20 @@ test("[primitives.pressable.input-paths] press normalizes mouse, Enter, and Spac
   await expect(button).toBeDisabled();
 });
 
+test("[atoms.button.target] the Floating example's trigger and close are hairline Buttons at control height, and still open and close the panel", async ({ page }) => {
+  await openPlayground(page, "floating", "Floating");
+  const trigger = page.getByRole("button", { name: "설정 열기", exact: true });
+  await expectStyle(trigger, { height: tokens.shape.control.height.md, borderTopStyle: "solid", borderTopWidth: tokens.shape.stroke.border, borderTopColor: accentProfile("primary", "hairline").border });
+  await trigger.click();
+  const dialog = page.getByRole("dialog", { name: "설정", exact: true });
+  await expect(dialog).toBeVisible();
+  const close = page.getByRole("button", { name: "설정 닫기", exact: true });
+  await expectStyle(close, { height: tokens.shape.control.height.md, borderTopStyle: "solid", borderTopWidth: tokens.shape.stroke.border });
+  await close.click();
+  await expect(dialog).toBeHidden();
+  await expect(trigger).toBeFocused();
+});
+
 test("[primitives.selectable.input-paths] selection survives press releases and follows keyboard input", async ({ page }) => {
   await openPlayground(page, "selectable", "Selectable");
   const button = page.getByTestId("select-example");
@@ -44,19 +65,22 @@ test("[primitives.selectable.input-paths] selection survives press releases and 
 test("[primitives.paint.hover] a hoverable Paint takes its tint under a pointer that can hover, and a blocked one does not", async ({ page }) => {
   await openPlayground(page, "paint", "Paint");
   const element = page.getByTestId("paint-example");
+  // Without hoverable there is no tint layer to take, whatever the pointer does.
   await expect(element).toHaveCSS("background-image", "none");
-  // Without hoverable the tint is never taken.
   await element.hover();
   await expect(element).toHaveCSS("background-image", "none");
   await page.getByRole("switch", { name: "hoverable", exact: true }).check();
-  await element.hover();
-  await expect(element).not.toHaveCSS("background-image", "none");
   await page.mouse.move(0, 0);
-  await expect(element).toHaveCSS("background-image", "none");
+  await expectStyle(element, tint("transparent"));
+  await element.hover();
+  if (!("tint" in solid.hover)) throw new Error("a solid face answers a hover with a tint");
+  await expectStyle(element, tint(solid.hover.tint));
+  await page.mouse.move(0, 0);
+  await expectStyle(element, tint("transparent"));
   // A target that is blocked does not take it either.
   await page.getByRole("switch", { name: "aria-disabled", exact: true }).check();
   await element.hover();
-  await expect(element).toHaveCSS("background-image", "none");
+  await expectStyle(element, tint("transparent"));
 });
 
 test.describe("on a pointer that cannot hover", () => {
@@ -69,7 +93,7 @@ test.describe("on a pointer that cannot hover", () => {
     const element = page.getByTestId("paint-example");
     await page.getByRole("switch", { name: "hoverable", exact: true }).check();
     await element.tap();
-    await expect(element).toHaveCSS("background-image", "none");
+    await expectStyle(element, tint("transparent"));
   });
 });
 

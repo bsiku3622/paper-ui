@@ -126,7 +126,7 @@ describe("state recipes", () => {
     expect(at(stateStyle.press, "selectors")[`&:is(:active, [data-active])${ENABLED}`]).toEqual({ transform: `translateY(${motion.role.press.offset})` });
   });
 
-  it("[foundations.state.recipes] tints a neutral item: pressed over selected over hover, and none of them on a disabled item", () => {
+  it("[foundations.state.recipes] tints a neutral item: pressed over selected over hover, and a disabled item answers to neither the pointer nor the press", () => {
     const { item } = stateStyle;
     const selectors = at(item, "selectors");
     const selected = `&${SELECTED_SELECTOR}`;

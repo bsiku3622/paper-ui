@@ -5,7 +5,7 @@
 // 만들어지니 조합이 빠질 수 없고, 어휘 밖의 이름은 타입에서 걸린다. 이 파일은 resolver 를
 // import 하지 않는다 — 지도가 아래, resolver 가 위다.
 
-import { tokens, ACCENTS, STATUSES, VARIANTS, ENABLED_SELECTOR, SELECTED_SELECTOR, type Accent, type Ink, type Status, type Variant } from "../tokens";
+import { tokens, ACCENTS, STATUSES, VARIANTS, ENABLED_SELECTOR, SELECTED_SELECTOR, STATE_TINT_PROPERTY, SYSTEM_COLORS, stateStyle, strokeRing, type Accent, type Ink, type Status, type Variant } from "../tokens";
 import { layered } from "../tokens/layers.css";
 import { accentProfile, itemProfile } from "../tokens/color-recipes";
 
@@ -35,38 +35,46 @@ export const inkClass = utilities.styleVariants(INK_COLOR, (color) => ({ color }
 
 // ───── accent × variant — Paint 와 그 위의 Atom(Button · Badge)의 색 ───────
 //
-// hover 는 hoverGate 가 함께 있을 때만 문다 — 눌리는 것(Button)만 gate 를 붙이고,
-// 표시용(Badge)에는 안 붙여 hover 색이 뜨지 않는다. gate 는 paintClass({ hoverable }) 말고는
-// 닿는 길이 없다(primitives/paint 밖에서는 import 하지 않는다). 터치는 hover 가 없으므로
-// `(hover: hover)` 안에서만, 눌릴 수 있는 대상(disabled · aria-disabled · data-disabled 가 아닌)에만 문다.
+// 면은 backgroundColor 이다. 눌리는 것(hoverGate)은 그 위에 tint 한 겹(--pui-state-tint)이 더 깔려, 상태가 면을 바꾸지 않고
+// tint 만 옮긴다 — 전이가 면 위에서 합성되어 어느 면 위든 한 단계 어두워지고, hairline 은 대신 경계가 한 단계 진해진다.
+// hover 는 hoverGate 가 함께 있을 때만 문다 — 눌리는 것(Button)만 gate 를 붙이고, 표시용(Badge)에는 안 붙여
+// 면 위에 tint 층도 hover 색도 없다. gate 는 paintClass({ hoverable }) 말고는 닿는 길이 없다(primitives/paint 밖에서는
+// import 하지 않는다). 터치는 hover 가 없으므로 `(hover: hover)` 안에서만, 눌릴 수 있는 대상(disabled · aria-disabled ·
+// data-disabled 가 아닌)에만 물고, 가장 약한 상태라 특정도를 더하지 않는다. 선택은 data-selected 나 aria-current 가 알린다.
 
 export const hoverGate = components.style({});
 
-const tintLayer = (tint: string) => `linear-gradient(0deg, ${tint}, ${tint})`;
+const FORCED = "(forced-colors: active)";
+const withTint = (tint: string) => ({ vars: { [STATE_TINT_PROPERTY]: tint } });
+const gated = `&.${hoverGate}`;
+const hovering = `&:where(.${hoverGate}:hover${ENABLED_SELECTOR})`;
+const selected = `&${SELECTED_SELECTOR}`;
 
 const accentClass = (accent: Accent, variant: Variant): string => {
   const spec = accentProfile(accent, variant);
-  // 중립: base 색은 두고 tint 레이어(backgroundImage)만 얹는다 — 어느 면 위든 합성돼 어두워진다.
-  // 색·검정 solid 도 같은 방식으로 한 단계 반응하고, hairline 은 경계가 한 단계 진해진다.
-  const hover = "tint" in spec.hover ? { backgroundImage: tintLayer(spec.hover.tint) } : { borderColor: spec.hover.border };
-  const gated = `&.${hoverGate}:hover${ENABLED_SELECTOR}`;
+  const hover = "tint" in spec.hover ? withTint(spec.hover.tint) : { borderColor: spec.hover.border };
+  const face = spec.selected;
   return components.style({
-    background: spec.face,
+    backgroundColor: spec.face,
     color: spec.ink,
     borderColor: spec.border,
-    // 선택은 data-selected 나 aria-current 가 알린다. 선택된 면은 hover 로 경계가 올라오지 않고, 면 위에 tint 만 얹는다.
-    ...(spec.selected
-      ? { selectors: { [`&${SELECTED_SELECTOR}`]: { backgroundColor: spec.selected.face, color: spec.selected.ink, borderColor: spec.selected.border } } }
-      : {}),
+    // 선택된 면은 hover 로 경계가 올라오지 않고, 면 위에 tint 만 얹는다.
+    selectors: {
+      [gated]: stateStyle.tinted,
+      ...(face ? { [selected]: { backgroundColor: face.face, color: face.ink, borderColor: face.border } } : {}),
+    },
     "@media": {
       "(hover: hover)": {
-        selectors: {
-          [gated]: hover,
-          ...(spec.selected
-            ? { [`&.${hoverGate}${SELECTED_SELECTOR}:hover${ENABLED_SELECTOR}`]: { backgroundImage: tintLayer(itemProfile.hoverTint), borderColor: spec.selected.border } }
-            : {}),
-        },
+        selectors: { [hovering]: hover, ...(face ? { [`${selected}:where(.${hoverGate}:hover${ENABLED_SELECTOR})`]: withTint(itemProfile.hoverTint) } : {}) },
       },
+      [`(hover: hover) and ${FORCED}`]: { selectors: { [hovering]: { borderColor: SYSTEM_COLORS.highlight } } },
+      // 선택된 면은 색만으로 알리지 않는다: 고대비에서는 Highlight 면, 더 높은 대비에서는 잉크 머리카락 선이 더해진다.
+      ...(face
+        ? {
+            [FORCED]: { selectors: { [selected]: { forcedColorAdjust: "none", backgroundColor: SYSTEM_COLORS.highlight, backgroundImage: "none", color: SYSTEM_COLORS.highlightText, borderColor: SYSTEM_COLORS.highlight } } },
+            "(prefers-contrast: more)": { selectors: { [selected]: { boxShadow: strokeRing(tokens.color.ink.primary) } } },
+          }
+        : {}),
     },
   });
 };

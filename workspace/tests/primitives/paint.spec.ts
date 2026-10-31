@@ -1,12 +1,21 @@
 import { expect, test } from "@playwright/test";
 
-import { tokens } from "../../packages/paper-ui/src/tokens";
+import { STATE_TINT_PROPERTY, tokens } from "../../packages/paper-ui/src/tokens";
 import { accentProfile, itemProfile } from "../../packages/paper-ui/src/tokens/color-recipes";
+import { MOTION } from "../../packages/paper-ui/src/tokens/motion";
 import { openPlayground } from "../support/harness";
 import { expectStyle } from "../support/style";
 
 // The tint an item lays over its face, as the computed background image.
 const tint = (color: string) => ({ backgroundImage: `linear-gradient(${color}, ${color})` });
+
+test("[primitives.surface.item] a hoverable Surface fades its tint over the hover role", async ({ page }) => {
+  await openPlayground(page, "surface", "Surface");
+  await page.getByRole("switch", { name: "hoverable", exact: true }).check();
+  const surface = page.getByTestId("surface-example");
+  await expect(surface).toHaveCSS("transition-property", STATE_TINT_PROPERTY);
+  await expect(surface).toHaveCSS("transition-duration", `${parseFloat(MOTION.hover.duration) / 1000}s`);
+});
 
 test("[primitives.surface.item] a hoverable Surface tints under the pointer and when pressed, and a selected one keeps its own tint under hover", async ({ page }) => {
   await openPlayground(page, "surface", "Surface");
@@ -46,10 +55,9 @@ test("[primitives.paint.selected] a selected ghost or hairline Paint wears its a
   await expect(paint).toHaveAttribute("data-selected", "true");
   const selected = rest.selected!;
   await paint.hover();
-  await expectStyle(paint, { backgroundColor: selected.face, color: selected.ink, borderTopColor: selected.border });
-  await expect(paint).not.toHaveCSS("background-image", "none");
+  await expectStyle(paint, { backgroundColor: selected.face, color: selected.ink, borderTopColor: selected.border, ...tint(itemProfile.hoverTint) });
   await page.mouse.move(0, 0);
-  await expectStyle(paint, { backgroundColor: selected.face, color: selected.ink, borderTopColor: selected.border, backgroundImage: "none" });
+  await expectStyle(paint, { backgroundColor: selected.face, color: selected.ink, borderTopColor: selected.border, ...tint("transparent") });
   // A variant with a face of its own has no selected look.
   await page.getByRole("combobox", { name: "variant", exact: true }).selectOption("solid");
   const solid = accentProfile("info", "solid");

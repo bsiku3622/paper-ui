@@ -4,7 +4,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
-import { MOTION_CONSUMERS, MOTION_ROLES } from "@studio-baeks/paper-ui/tokens";
+import { MOTION_CONSUMERS, MOTION_ROLES, STATE_TINT_PROPERTY } from "@studio-baeks/paper-ui/tokens";
 
 import { COLOR_SELECTION } from "../../../../packages/paper-ui/src/tokens/colors";
 import { LOOP } from "../../../../packages/paper-ui/src/tokens/motion";
@@ -101,9 +101,11 @@ describe("Motion inspector", () => {
   it("lists the properties each role drives in the package stylesheets", () => {
     const root = fileURLToPath(new URL("../../../../packages/paper-ui/src", import.meta.url));
     const driven: Record<string, string[]> = {};
+    // A property is a quoted CSS name, or the registered tint property by its constant.
+    const property = /"([^"]+)"|(STATE_TINT_PROPERTY)/g;
     for (const file of readdirSync(root, { recursive: true, encoding: "utf8" }).filter((name) => name.endsWith(".css.ts"))) {
-      for (const [, role = "", properties = ""] of readFileSync(`${root}/${file}`, "utf8").matchAll(/\btransition\("(\w+)"((?:,\s*"[^"]+")+)\)/g)) {
-        for (const [, property = ""] of properties.matchAll(/"([^"]+)"/g)) (driven[role] ??= []).push(property);
+      for (const [, role = "", properties = ""] of readFileSync(`${root}/${file}`, "utf8").matchAll(/\btransition\("(\w+)"((?:,\s*(?:"[^"]+"|STATE_TINT_PROPERTY))+)\)/g)) {
+        for (const [, name = "", constant] of properties.matchAll(property)) (driven[role] ??= []).push(constant ? STATE_TINT_PROPERTY : name);
       }
     }
     expect(Object.keys(driven).sort()).toEqual(Object.keys(TRANSITION_PROPERTIES).sort());

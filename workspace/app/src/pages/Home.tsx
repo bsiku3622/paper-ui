@@ -1,7 +1,7 @@
 // Paper UI landing page. Product-level compositions stay local to this app.
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 
 import {
   Badge,
@@ -9,6 +9,7 @@ import {
   Button,
   Field,
   Inline,
+  Link,
   Stack,
   Surface,
   Text,
@@ -154,10 +155,10 @@ export const Home = () => (
 
           {/* Both actions navigate, so Button renders the router link directly. */}
           <Inline gap="sm" style={{ marginTop: tokens.layout.gap.xl }}>
-            <Button as={Link} to="/docs" size="lg" shape="pill" style={{ textDecoration: "none" }}>
+            <Button as={RouterLink} to="/docs" size="lg" shape="pill">
               문서 읽기
             </Button>
-            <Button as={Link} to="/playground" size="lg" variant="hairline" shape="pill" style={{ textDecoration: "none" }}>
+            <Button as={RouterLink} to="/playground" size="lg" variant="hairline" shape="pill">
               Playground 살펴보기
             </Button>
           </Inline>
@@ -168,8 +169,8 @@ export const Home = () => (
 
         <Inline gap="sm" align="center" wrap style={{ paddingBlock: tokens.shape.inset.xl }}>
           <Text variant="caption" ink="secondary">갤러리가 아니라 실제 화면(이슈 트래커)으로 검증합니다.</Text>
-          <Link to="/demo" style={{ textDecoration: "none" }}>
-            <Text variant="caption" as="span" style={{ fontWeight: tokens.typography.palette.weight.medium }}>데모 열기 →</Text>
+          <Link as={RouterLink} to="/demo" underline="hover">
+            <Text variant="caption" as="span" ink="inherit" style={{ fontWeight: tokens.typography.palette.weight.medium }}>데모 열기 →</Text>
           </Link>
         </Inline>
 
@@ -178,9 +179,9 @@ export const Home = () => (
           <Inline justify="between" align="center" wrap gap="md">
             <Logo height={18} style={{ opacity: 0.7 }} />
             <Inline gap="md" wrap align="center">
-              <Link to="/docs/get-started/philosophy" style={{ textDecoration: "none" }}><Text variant="caption" as="span" ink="secondary">원칙</Text></Link>
-              <Link to="/docs/foundations" style={{ textDecoration: "none" }}><Text variant="caption" as="span" ink="secondary">Foundations</Text></Link>
-              <Link to="/docs" style={{ textDecoration: "none" }}><Text variant="caption" as="span" ink="secondary">문서</Text></Link>
+              <RouterLink to="/docs/get-started/philosophy" style={{ textDecoration: "none" }}><Text variant="caption" as="span" ink="secondary">원칙</Text></RouterLink>
+              <RouterLink to="/docs/foundations" style={{ textDecoration: "none" }}><Text variant="caption" as="span" ink="secondary">Foundations</Text></RouterLink>
+              <RouterLink to="/docs" style={{ textDecoration: "none" }}><Text variant="caption" as="span" ink="secondary">문서</Text></RouterLink>
               <Text variant="caption" ink="tertiary" as="span">© Studio Baeks</Text>
             </Inline>
           </Inline>

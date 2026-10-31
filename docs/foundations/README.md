@@ -96,7 +96,7 @@ hover · 눌림 · 선택 · 비활성 · 키보드 포커스가 어떻게 보�
 | `stateStyle.tinted` · `item` | 면 위 tint — hover · 눌림 · 선택 |
 | `stateStyle.field` | 입력 상자의 status별 경계와 hover 경계 |
 | `stateStyle.dropTarget` | drop 대상의 경계 |
-| `linkStyle` | Link Atom 밖에서 그리는 링크 — prose의 `a` |
+| `linkStyle` | Link Atom을 그릴 수 없는 자리의 링크 — stylesheet가 닿는 `a` |
 
 [contract:foundations.state.recipes]: #
 조각은 plain 객체이고 `/tokens`로 나갑니다. 어떤 조각도 transition을 정하지 않아, 요소가 쓰는 속성에 맞춰 `transition()`으로 직접 묶습니다. 색을 칠하는 조각(`tinted` · `item` · `field` · `dropTarget`)은 paint 층과 패키지 밖의 앱이 spread하고, forced-colors에서 칠하는 색은 시스템 색(`SYSTEM_COLORS`)뿐입니다. 우선순위는 비활성 > 눌림 > 선택 > hover입니다. hover는 포인터가 올라갈 수 있는 환경(`@media (hover: hover)`)에서 막히지 않은 대상에만 뜨고, 가장 약한 상태라 selector에 특정도를 더하지 않습니다.

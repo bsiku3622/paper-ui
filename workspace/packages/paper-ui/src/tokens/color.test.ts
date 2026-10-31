@@ -230,6 +230,11 @@ describe("color systems", () => {
       for (const surface of Object.values(values.bg)) expect(contrast(values.interaction.link, surface)).toBeGreaterThanOrEqual(4.5);
     }
   });
+
+  // Why Link's underline defaults to "always": the ink alone does not set a link apart from the sentence around it.
+  it("[atoms.link.underline] keeps the link ink below 3:1 against body ink in both themes", () => {
+    for (const values of [COLOR_VALUES, COLOR_VALUES_DARK]) expect(contrast(values.interaction.link, values.ink.primary)).toBeLessThan(3);
+  });
 });
 
 describe("color modes", () => {
