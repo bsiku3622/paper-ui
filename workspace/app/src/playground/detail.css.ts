@@ -1,8 +1,10 @@
 // 컴포넌트 상세 — preview·controls·code 레이아웃. 전부 tokens.* (raw 값 없음).
 
-import { globalStyle } from "@vanilla-extract/css";
+import { globalStyle, style } from "@vanilla-extract/css";
 
 import { SURFACE_FILLS, focusRing, tokens } from "@studio-baeks/paper-ui/tokens";
+
+import { narrow, navHeight } from "../site/shell.css";
 
 const BP = tokens.layout.breakpoint;
 
@@ -14,6 +16,12 @@ globalStyle(".detail-body", {
   "@media": {
     [`screen and (max-width: ${BP.md})`]: { gridTemplateColumns: "1fr" },
   },
+});
+
+// Props 패널은 스크롤을 따라 헤더 아래에 머문다. 헤더가 정적인 좁은 폭에서는 본문 흐름에 놓인다.
+export const propsPanel = style({
+  top: `calc(${navHeight} + ${tokens.layout.gap.xl})`,
+  "@media": { [narrow]: { position: "static" } },
 });
 
 // preview 무대 — 세 surface와 control track 배경에서 가독성을 비교한다.

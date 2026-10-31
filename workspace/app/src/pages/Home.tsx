@@ -14,12 +14,13 @@ import {
   Surface,
   Text,
 } from "@studio-baeks/paper-ui";
-import { tokens, type Status } from "@studio-baeks/paper-ui/tokens";
+import type { Status } from "@studio-baeks/paper-ui/tokens";
 
 import { Dot } from "../compositions/Dot";
-import { SiteNav } from "../site/chrome";
+import { ArrowRightIcon } from "../compositions/icons";
 import { Logo } from "../site/Logo";
-import "../site/home.css";
+import * as s from "../site/home.css";
+import { navLink } from "../site/shell.css";
 
 type Issue = { id: string; key: string; title: string; who: string; status: Status; label: string };
 
@@ -54,19 +55,19 @@ const AppMockup = () => {
       <div className="home-mockup-bar">
         <Inline gap="xs">
           {[0, 1, 2].map((i) => (
-            <Surface key={i} fill="sunken" radius="full" style={{ width: "0.6rem", height: "0.6rem" }} />
+            <Surface key={i} fill="sunken" radius="full" width="0.6rem" height="0.6rem" />
           ))}
         </Inline>
-        <Surface fill="canvas" radius="full" paddingX="sm" style={{ marginInline: "auto", border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
+        <Surface fill="canvas" radius="full" border paddingX="sm" style={{ marginInline: "auto" }}>
           <Text variant="caption" as="span" ink="tertiary">app.studio-baeks.dev / issues</Text>
         </Surface>
       </div>
 
       <div className="home-mockup-body">
-        <aside className="home-mockup-side">
-          <Inline gap="sm" align="center" style={{ paddingInline: tokens.shape.inset.sm }}>
-            <Box style={{ width: "1.5rem", height: "1.5rem", borderRadius: tokens.shape.radius.control, background: tokens.color.ink.primary, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Text variant="caption" as="span" style={{ color: tokens.color.bg.canvas, fontWeight: tokens.typography.palette.weight.bold }}>S</Text>
+        <div className="home-mockup-side">
+          <Inline gap="sm" align="center" paddingX="sm">
+            <Box className={s.brandMark}>
+              <Text variant="caption" as="span" className={s.brandInitial}>S</Text>
             </Box>
             <Text variant="subheading" as="span">Studio</Text>
           </Inline>
@@ -89,9 +90,9 @@ const AppMockup = () => {
               </Inline>
             ))}
           </Stack>
-        </aside>
+        </div>
 
-        <main className="home-mockup-main">
+        <div className="home-mockup-main">
           {/* 제목 줄과 필터 줄은 **한 덩어리**다 — 사이에 선이 없으니 각자 여백을 갖는 두
               밴드일 이유가 없다. 따로 두면 12(위) / 20(사이) / 9(아래) 로 리듬이 어긋나고,
               선이 없어진 순간 그게 "제목이 위로 붙은" 인상으로 드러난다. */}
@@ -99,7 +100,7 @@ const AppMockup = () => {
             <Inline align="center" justify="between" gap="sm">
               <Text variant="heading" as="h3">이슈</Text>
               <Inline gap="sm" align="center">
-                <Box style={{ width: "12rem" }}>
+                <Box width="12rem">
                   <Field placeholder="검색…" aria-label="검색" />
                 </Box>
                 <Button>새 이슈</Button>
@@ -114,79 +115,77 @@ const AppMockup = () => {
             </Inline>
           </Stack>
 
-          <Box style={{ padding: tokens.shape.inset.md }}>
-            <Box as="table" style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
-              <Box as="thead"><Box as="tr">{["키", "이슈", "담당", "상태"].map((label) => <Box as="th" key={label} style={{ padding: tokens.shape.inset.sm, color: tokens.color.ink.tertiary, borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>{label}</Box>)}</Box></Box>
+          <Box padding="md">
+            <Box as="table" className={s.table}>
+              <Box as="thead"><Box as="tr">{["키", "이슈", "담당", "상태"].map((label) => <Box as="th" key={label} className={s.headCell}>{label}</Box>)}</Box></Box>
               <Box as="tbody">{ISSUES.map((issue) => <Box as="tr" key={issue.id}>
-                <Box as="td" style={{ padding: tokens.shape.inset.sm, borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}><Text variant="caption" family="mono" as="span" ink="secondary">{issue.key}</Text></Box>
-                <Box as="td" style={{ padding: tokens.shape.inset.sm, borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>{issue.title}</Box>
-                <Box as="td" style={{ padding: tokens.shape.inset.sm, borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}><Text variant="caption" as="span" ink="secondary">{issue.who}</Text></Box>
-                <Box as="td" style={{ padding: tokens.shape.inset.sm, borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}><Badge accent={issue.status}>{issue.label}</Badge></Box>
+                <Box as="td" className={s.cell}><Text variant="caption" family="mono" as="span" ink="secondary">{issue.key}</Text></Box>
+                <Box as="td" className={s.cell}>{issue.title}</Box>
+                <Box as="td" className={s.cell}><Text variant="caption" as="span" ink="secondary">{issue.who}</Text></Box>
+                <Box as="td" className={s.cell}><Badge accent={issue.status}>{issue.label}</Badge></Box>
               </Box>)}</Box>
             </Box>
           </Box>
-        </main>
+        </div>
       </div>
     </Surface>
   );
 };
 
 export const Home = () => (
-  <Stack>
-    <SiteNav />
-
-    <Box paddingX="xl">
-      <Box data-testid="home-column" maxWidth="container.content" width="full" style={{ marginInline: "auto", isolation: "isolate" }}>
-        {/* ── Hero ─────────────────────────────────────────────── */}
-        <div className="home-hero">
-          <Inline gap="sm" align="center" style={{ marginBottom: tokens.layout.gap.lg }}>
-            <Badge accent="info">Studio Baeks</Badge>
-            <Text variant="caption" ink="secondary">Design System · v0.1.0</Text>
-          </Inline>
-
-          <Text as="h1" variant="display" className="home-headline">
-            복잡한 웹앱을 위한<br />
-            조용한 바탕<span className="home-dot">.</span>
-          </Text>
-
-          <Text variant="body" as="p" ink="secondary" className="home-sub">
-            레이아웃은 Primitive로, 상호작용은 Atom으로 시작합니다. 색은 의미가 있을 때만 쓰고, 순백 위에 부드럽게.
-          </Text>
-
-          {/* Both actions navigate, so Button renders the router link directly. */}
-          <Inline gap="sm" style={{ marginTop: tokens.layout.gap.xl }}>
-            <Button as={RouterLink} to="/docs" size="lg" shape="pill">
-              문서 읽기
-            </Button>
-            <Button as={RouterLink} to="/playground" size="lg" variant="hairline" shape="pill">
-              Playground 살펴보기
-            </Button>
-          </Inline>
-        </div>
-
-        {/* ── 완전한 앱 목업 ──────────────────────────────────────── */}
-        <AppMockup />
-
-        <Inline gap="sm" align="center" wrap style={{ paddingBlock: tokens.shape.inset.xl }}>
-          <Text variant="caption" ink="secondary">갤러리가 아니라 실제 화면(이슈 트래커)으로 검증합니다.</Text>
-          <Link as={RouterLink} to="/demo" underline="hover">
-            <Text variant="caption" as="span" ink="inherit" style={{ fontWeight: tokens.typography.palette.weight.medium }}>데모 열기 →</Text>
-          </Link>
+  <Box paddingX="xl">
+    <Box data-testid="home-column" maxWidth="container.content" width="full" style={{ marginInline: "auto", isolation: "isolate" }}>
+      {/* ── Hero ─────────────────────────────────────────────── */}
+      <div className="home-hero">
+        <Inline gap="sm" align="center" className={s.heroMeta}>
+          <Badge accent="info">Studio Baeks</Badge>
+          <Text variant="caption" ink="secondary">{`Design System · v${__PAPER_UI_VERSION__}`}</Text>
         </Inline>
 
-        {/* ── 푸터 ────────────────────────────────────────────────── */}
-        <Box as="footer" style={{ borderTop: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`, marginTop: tokens.layout.gap.lg, paddingBlock: `${tokens.shape.inset.xl} ${tokens.shape.inset["2xl"]}` }}>
-          <Inline justify="between" align="center" wrap gap="md">
-            <Logo height={18} style={{ opacity: 0.7 }} />
-            <Inline gap="md" wrap align="center">
-              <RouterLink to="/docs/get-started/philosophy" style={{ textDecoration: "none" }}><Text variant="caption" as="span" ink="secondary">원칙</Text></RouterLink>
-              <RouterLink to="/docs/foundations" style={{ textDecoration: "none" }}><Text variant="caption" as="span" ink="secondary">Foundations</Text></RouterLink>
-              <RouterLink to="/docs" style={{ textDecoration: "none" }}><Text variant="caption" as="span" ink="secondary">문서</Text></RouterLink>
-              <Text variant="caption" ink="tertiary" as="span">© Studio Baeks</Text>
-            </Inline>
+        <Text as="h1" variant="display" className="home-headline">
+          복잡한 웹앱을 위한<br />
+          조용한 바탕<span className="home-dot">.</span>
+        </Text>
+
+        <Text variant="body" as="p" ink="secondary" className="home-sub">
+          레이아웃은 Primitive로, 상호작용은 Atom으로 시작합니다. 색은 의미가 있을 때만 쓰고, 순백 위에 부드럽게.
+        </Text>
+
+        {/* Both actions navigate, so Button renders the router link directly. */}
+        <Inline gap="sm" className={s.heroActions}>
+          <Button as={RouterLink} to="/docs" size="lg" shape="pill">
+            문서 읽기
+          </Button>
+          <Button as={RouterLink} to="/playground" size="lg" variant="hairline" shape="pill">
+            Playground 살펴보기
+          </Button>
+        </Inline>
+      </div>
+
+      {/* ── 완전한 앱 목업 ──────────────────────────────────────── */}
+      <Box as="figure" className={s.figure}>
+        <AppMockup />
+
+        <Inline as="figcaption" gap="sm" align="center" wrap paddingY="xl">
+          <Text variant="caption" ink="secondary">갤러리가 아니라 실제 화면(이슈 트래커)으로 검증합니다.</Text>
+          <Link as={RouterLink} to="/demo" underline="hover">
+            <Text variant="caption" as="span" ink="inherit" className={s.demoLink}>데모 열기<ArrowRightIcon size="label" className={s.demoArrow} /></Text>
+          </Link>
+        </Inline>
+      </Box>
+
+      {/* ── 푸터 ────────────────────────────────────────────────── */}
+      <Box as="footer" className={s.footer}>
+        <Inline justify="between" align="center" wrap gap="md">
+          <Logo height={18} style={{ opacity: 0.7 }} />
+          <Inline gap="md" wrap align="center">
+            <RouterLink to="/docs/get-started/philosophy" className={navLink.plain}><Text variant="caption" as="span" ink="secondary">원칙</Text></RouterLink>
+            <RouterLink to="/docs/foundations" className={navLink.plain}><Text variant="caption" as="span" ink="secondary">Foundations</Text></RouterLink>
+            <RouterLink to="/docs" className={navLink.plain}><Text variant="caption" as="span" ink="secondary">문서</Text></RouterLink>
+            <Text variant="caption" ink="tertiary" as="span">© Studio Baeks</Text>
           </Inline>
-        </Box>
+        </Inline>
       </Box>
     </Box>
-  </Stack>
+  </Box>
 );

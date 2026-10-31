@@ -92,7 +92,8 @@ test("FocusScope contains focus and restores the opener", async ({ page }) => {
 test("hidden content names the button and a focusable skip link becomes visible", async ({ page }) => {
   await openPlayground(page, "visually-hidden", "VisuallyHidden");
   await expect(page.getByRole("button", { name: "새 항목 추가", exact: true })).toBeVisible();
-  const skip = page.getByRole("link", { name: "본문으로 건너뛰기", exact: true });
+  // The page has a skip link of its own, outside <main>; this is the specimen's.
+  const skip = page.getByRole("main").getByRole("link", { name: "본문으로 건너뛰기", exact: true });
   await skip.focus();
   await expect(skip).toBeFocused();
   const clipped = await skip.evaluate((node) => getComputedStyle(node.parentElement!).position);

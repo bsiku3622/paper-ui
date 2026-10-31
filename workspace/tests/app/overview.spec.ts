@@ -23,7 +23,7 @@ const boxStyle = async (control: Locator, expected: Style) => expectStyle(contro
 const open = async (page: Page) => {
   const errors = pageErrors(page);
   await page.goto("/playground");
-  await expect(page.getByRole("heading", { level: 1, name: "Playground" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Overview" })).toBeVisible();
   return errors;
 };
 

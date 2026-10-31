@@ -2,19 +2,19 @@ import "@studio-baeks/paper-ui/styles.css";
 
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
 import { PaperProvider } from "@studio-baeks/paper-ui";
 
-import { App } from "./App";
+import { routes } from "./routes";
 import { THEME } from "./theme";
+
+const router = createBrowserRouter(routes, { basename: import.meta.env.BASE_URL });
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <BrowserRouter>
-      <PaperProvider {...THEME}>
-        <App />
-      </PaperProvider>
-    </BrowserRouter>
+    <PaperProvider {...THEME}>
+      <RouterProvider router={router} />
+    </PaperProvider>
   </StrictMode>,
 );

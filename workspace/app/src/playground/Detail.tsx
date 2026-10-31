@@ -10,14 +10,14 @@
 import { useEffect, useRef, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 
-import { Button, Field, Icon, IconButton, Inline, Select, Stack, Surface, Switch, Text, SelectableGroup, useResolvedTheme } from "@studio-baeks/paper-ui";
-import { tokens, type SurfaceFill } from "@studio-baeks/paper-ui/tokens";
+import { Button, Field, IconButton, Inline, Select, Stack, Surface, Switch, Text, SelectableGroup, useResolvedTheme } from "@studio-baeks/paper-ui";
+import type { SurfaceFill } from "@studio-baeks/paper-ui/tokens";
 
-import { PlaygroundLayout, ReferenceHeading } from "./shell";
-import { NAV_HEIGHT } from "../site/chrome";
+import { CheckIcon, CloseIcon, EditIcon } from "../compositions/icons";
+import { PageHeader } from "../site/PageHeader";
 import { codeOf, entryBySlug, initialState, normalized, stateFromCode, type Control, type State } from "./registry";
 import type { Entry } from "./registry";
-import "./detail.css";
+import { propsPanel } from "./detail.css";
 
 const PREVIEW_SURFACES = ["raised", "canvas", "sunken"] as const satisfies readonly SurfaceFill[];
 const PREVIEW_BACKGROUNDS = [...PREVIEW_SURFACES, "track"] as const;
@@ -124,7 +124,7 @@ const CodeBlock = ({ code, onChange, error }: { code: string; onChange: (code: s
           className="code-edit"
           onClick={() => setEditing((current) => !current)}
         >
-          <Icon>{editing ? <path d="m6 6 12 12M18 6 6 18" /> : <path d="m14.7 6.3 3 3M4 20l4.2-.9L19.2 8a2.1 2.1 0 0 0-3-3L5.2 16.1 4 20Z" />}</Icon>
+          {editing ? <CloseIcon /> : <EditIcon />}
         </IconButton>
       </div>
       {editing ? <textarea className="code-editor" value={code} onChange={(event) => onChange(event.currentTarget.value)} spellCheck={false} aria-label="컴포넌트 코드 편집" /> : <pre><code>{code}</code></pre>}
@@ -165,8 +165,8 @@ const DetailView = ({ entry }: { entry: Entry }) => {
   };
 
   return (
-    <Stack gap="xl" style={{ maxWidth: "52rem" }}>
-      <ReferenceHeading group={entry.part === "atoms" ? "Atoms" : `Primitives / ${entry.group}`} name={entry.name} description={entry.blurb} />
+    <Stack gap="xl">
+      <PageHeader group={entry.part === "atoms" ? "Atoms" : `Primitives / ${entry.group}`} name={entry.name} description={entry.blurb} />
 
       <div className="detail-body">
         {/* preview + code */}
@@ -197,7 +197,7 @@ const DetailView = ({ entry }: { entry: Entry }) => {
                   aria-label={`${background} background`}
                   title={background === FOLDED.surface && folded ? FOLDED_TITLE : `${background} background`}
                 >
-                  {previewBackground === background ? <Icon size="caption"><path d="m5 12 4 4L19 6" /></Icon> : null}
+                  {previewBackground === background ? <CheckIcon size="caption" /> : null}
                 </SelectableGroup.Item>
               ))}
             </SelectableGroup>
@@ -209,7 +209,7 @@ const DetailView = ({ entry }: { entry: Entry }) => {
         </Stack>
 
         {/* controls */}
-        <Surface fill="canvas" radius="md" padding="lg" elevation="sticky" style={{ top: `calc(${NAV_HEIGHT} + ${tokens.layout.gap.xl})`, border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }}>
+        <Surface fill="canvas" radius="md" padding="lg" elevation="sticky" border className={propsPanel}>
           <Stack gap="lg">
             <Inline justify="between" align="center">
               <Text variant="label">Props</Text>
@@ -240,10 +240,6 @@ export const ComponentDetail = () => {
   const { slug = "" } = useParams();
   const entry = entryBySlug(slug);
   if (!entry) return <Navigate to="/playground" replace />;
-  return (
-    <PlaygroundLayout value={entry.slug}>
-      {/* key=slug — 컴포넌트가 바뀌면 상태를 새로 시작 */}
-      <DetailView entry={entry} key={entry.slug} />
-    </PlaygroundLayout>
-  );
+  // key=slug — 컴포넌트가 바뀌면 상태를 새로 시작
+  return <DetailView entry={entry} key={entry.slug} />;
 };

@@ -148,10 +148,8 @@ test("[foundations.layout.elevation-nesting] a previewed Surface at the toast ti
 
 test("[foundations.layout.elevation-nesting] a sticky rail that rides up under the GNB at the end of a page stays under it", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 400 });
-  const rails = [
-    { path: "/docs/primitives/float", heading: "Float", anchor: () => page.getByRole("navigation", { name: "문서 목차" }) },
-    { path: "/playground/button", heading: "Button", anchor: () => page.getByText("Props", { exact: true }) },
-  ];
+  // The sidebars are not here: they scroll inside themselves (tests/app/shell.spec.ts), so they never ride up.
+  const rails = [{ path: "/playground/button", heading: "Button", anchor: () => page.getByText("Props", { exact: true }) }];
   for (const { path, heading, anchor } of rails) {
     await page.goto(path);
     await expect(page.getByRole("heading", { name: heading, exact: true }).first()).toBeVisible();

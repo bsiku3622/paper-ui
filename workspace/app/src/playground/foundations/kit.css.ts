@@ -12,7 +12,7 @@ import { leafPaths, valueAt, type LeafPaths } from "./paths";
 const line = `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`;
 const spanAll = { gridColumn: "1 / -1", display: "grid", gridTemplateColumns: "subgrid", alignItems: "center", minWidth: 0 } as const;
 
-export const page = style({ width: "100%", maxWidth: tokens.layout.container.content, marginInline: "auto", minWidth: 0 });
+export const page = style({ minWidth: 0 });
 export const section = style({ minWidth: 0 });
 export const board = style({ minWidth: 0, maxWidth: "100%", overflowX: "auto" });
 export const grid = style({ display: "grid", columnGap: tokens.layout.gap.md, alignItems: "center" });

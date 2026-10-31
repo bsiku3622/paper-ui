@@ -6,7 +6,7 @@
 // 실제 화면에서 함께 서는 모습을 증명한다(개별 카드 나열 아님). paper 정체성인
 // "갤러리가 아니라 실제 화면으로 검증" 과 같은 결.
 
-import { globalStyle } from "@vanilla-extract/css";
+import { globalStyle, style } from "@vanilla-extract/css";
 
 import { emphasisRule, stateSelector, tokens } from "@studio-baeks/paper-ui/tokens";
 
@@ -133,4 +133,41 @@ globalStyle(".home-facts", {
   flexWrap: "wrap",
   gap: tokens.layout.gap.md,
   alignItems: "baseline",
+});
+
+// ── 스코프 있는 부품 — 이름이 전역에 나가지 않는다 ─────────────────────────────────
+const line = `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`;
+
+// 히어로 위의 한 줄과 CTA 줄의 바깥 간격.
+export const heroMeta = style({ marginBottom: tokens.layout.gap.lg });
+export const heroActions = style({ marginTop: tokens.layout.gap.xl });
+
+// 목업과 그 캡션을 하나로 묶는 figure — 브라우저 기본 margin 을 걷는다.
+export const figure = style({ margin: 0 });
+
+// 목업 사이드바의 로고 칸.
+export const brandMark = style({
+  width: "1.5rem",
+  height: "1.5rem",
+  borderRadius: tokens.shape.radius.control,
+  background: tokens.color.ink.primary,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+});
+export const brandInitial = style({ color: tokens.color.bg.canvas, fontWeight: tokens.typography.palette.weight.bold });
+
+// 목업 이슈 표.
+export const table = style({ width: "100%", borderCollapse: "collapse", textAlign: "left" });
+export const cell = style({ padding: tokens.shape.inset.sm, borderBottom: line });
+export const headCell = style([cell, { color: tokens.color.ink.tertiary }]);
+
+// "데모 열기" 링크의 굵기와, 그 뒤 화살표.
+export const demoLink = style({ ...emphasisRule("medium") });
+export const demoArrow = style({ verticalAlign: "text-bottom", marginInlineStart: tokens.layout.gap.xs });
+
+export const footer = style({
+  borderTop: line,
+  marginTop: tokens.layout.gap.lg,
+  paddingBlock: `${tokens.shape.inset.xl} ${tokens.shape.inset["2xl"]}`,
 });

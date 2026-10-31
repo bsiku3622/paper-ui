@@ -8,6 +8,7 @@ import { ACCENTS, ACCENT_TONES, VARIANTS, type ColorMode } from "@studio-baeks/p
 import { VARIANT_RECIPE } from "../../../../packages/paper-ui/src/tokens/color-recipes";
 import { ACCENT_PALETTE } from "../../../../packages/paper-ui/src/tokens/colors";
 import { ACCENT_PALETTES, ACCENT_STEPS, PALETTE_TOKENS } from "../../../../packages/paper-ui/src/tokens/palette";
+import { SectionHeading } from "../../site/SectionHeading";
 import { GROUPS, ROLE_NOTES, formatPalettePath, hexAt, rolesOf, selectionAt } from "./color-roles";
 import { Chip, StepGrid, Swatch } from "./kit";
 import type { ChipRole } from "./kit.css";
@@ -35,10 +36,6 @@ const ColorValue = ({ path, mode, compact = false }: { path: ChipRole; mode: Col
 
 const TokenPill = ({ token }: { token: string }) => (
   <Surface as="code" className={s.token} fill="sunken" radius="sm" paddingX="sm" paddingY="xs"><Text as="span" variant="caption" family="mono">{token}</Text></Surface>
-);
-
-const SectionHeading = ({ title, description }: { title: string; description: string }) => (
-  <Stack gap="xs"><Text variant="heading">{title}</Text><Text variant="body" ink="secondary">{description}</Text></Stack>
 );
 
 const ColorGroup = ({ title, description, branches }: (typeof GROUPS)[number]) => {
