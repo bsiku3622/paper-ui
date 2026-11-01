@@ -100,10 +100,10 @@ export default [
   },
 
   // ── 규칙 3 — inline style 로 토큰 주입 금지 ─────────────────────────────
-  // .ts/.tsx 는 토큰·internal·styles·패키지에서 온 값을 `style` 로 넘기지 않는다. 실행 중에 정해지는 값을 만드는
-  // 모듈(위치·눌림 style·원본 변수 운반)은 manifest 의 RUNTIME_STYLE 에 이유와 함께 선언한다.
+  // .ts/.tsx 는 패키지와 상대 모듈에서 온 값을 `style` 로 넘기지 않고, DOM style 에도 쓰지 않는다. 실행 중에 정해지는 값을
+  // 만드는 모듈(위치·눌림 style·원본 변수 운반)은 manifest 의 RUNTIME_STYLE 에 이유와 함께 선언한다.
   {
-    files: ["packages/paper-ui/src/**/*.{ts,tsx}", "app/src/**/*.tsx"],
+    files: ["packages/paper-ui/src/**/*.{ts,tsx}", "app/src/**/*.{ts,tsx}"],
     ignores: ["**/*.test.{ts,tsx}", "**/*.css.ts"],
     plugins: { paper },
     rules: { "paper/inline-token": "error" },
@@ -135,11 +135,11 @@ export default [
     rules: { "paper/layered-styles": "error" },
   },
 
-  // ── 규칙 6 — 앱과 테스트는 패키지 내부 class 이름을 쓰지 않는다 ───────────────
-  // 공유 축의 class 는 패키지의 typed map 이 고른다. 앱과 테스트가 `pui-` 이름을 문자열로 알면 그 이름이
-  // 약속이 되어 버린다. 변수(--pui-*)와 속성(data-pui-*)은 이름을 따로 약속하므로 통과한다.
+  // ── 규칙 6 — 패키지 내부 class 이름을 문자열로 쓰지 않는다 ───────────────
+  // 공유 축의 class 는 패키지의 typed map 이 고른다. 패키지 · 앱 · fixture · 테스트가 `pui-` 이름을 문자열로 알면 그
+  // 이름이 약속이 되어 버린다. 변수(--pui-*)와 속성(data-pui-*)은 이름을 따로 약속하므로 통과한다.
   {
-    files: ["app/src/**/*.{ts,tsx}", "tests/**/*.{ts,tsx}"],
+    files: ["packages/paper-ui/src/**/*.{ts,tsx}", "app/src/**/*.{ts,tsx}", "fixtures/**/*.{ts,tsx}", "tests/**/*.{ts,tsx}"],
     plugins: { paper },
     rules: { "paper/internal-class": "error" },
   },

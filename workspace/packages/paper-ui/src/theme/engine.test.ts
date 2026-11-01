@@ -216,7 +216,7 @@ describe("themeBootScript", () => {
     mockMedia(true);
     const getItem = store({ [THEME_STORAGE_KEY]: "dark" });
     expect(boot()).toBe("dark");
-    expect(getItem).toHaveBeenCalledWith("pui-theme");
+    expect(getItem).toHaveBeenCalledWith(THEME_STORAGE_KEY);
     store({});
     expect(boot()).toBe("dark");
   });

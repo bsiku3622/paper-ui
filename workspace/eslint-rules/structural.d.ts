@@ -15,6 +15,10 @@ export const STYLE_CATEGORIES: Readonly<Record<StyleCategory, readonly string[]>
 
 export function categoryOf(property: string): StyleCategory | undefined;
 
+export function isStyleProperty(key: string): boolean;
+
+export function isUnit(unit: string): boolean;
+
 export function isStructural(number: { property?: string; value: number; unit?: string; operator?: "/" | "*" }): boolean;
 
 export function isKeyframeSelector(selector: string): boolean;

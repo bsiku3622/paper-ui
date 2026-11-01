@@ -2,7 +2,7 @@ import path from "node:path";
 
 import { COLOR_OWNERS, GLOBAL_SELECTOR_FILES, RUNTIME_STYLE, TOKEN_LAYER, isInside, isTestFile, workspacePath } from "./manifest.js";
 import { sourceIsolationRule } from "./source-isolation.js";
-import { sourceNumbersRule } from "./source-numbers.js";
+import { calledFunction, heldBy, isStyleDeclaration, picked, returnsOf, sourceNumbersRule } from "./source-numbers.js";
 
 // A colour written by hand: a HEX (also url-encoded) or a colour function. Any string, template or key.
 const rawColor = /(?:#|%23)(?:[\da-f]{8}|[\da-f]{6}|[\da-f]{4}|[\da-f]{3})\b|\b(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color|color-mix)\s*\(/i;
@@ -13,25 +13,11 @@ const namedColors = new Set(("aliceblue antiquewhite aqua aquamarine azure beige
 // SYSTEM_COLORS, never by its keyword. The spelling is read as written, so `canvas` the Surface fill stays a word.
 const systemColors = new Set("Canvas CanvasText LinkText VisitedText ActiveText ButtonFace ButtonText ButtonBorder Field FieldText Highlight HighlightText SelectedItem SelectedItemText Mark MarkText GrayText AccentColor AccentColorText".split(" "));
 
-const QUOTED_WRAPPERS = new Set(["TSAsExpression", "TSSatisfiesExpression", "TSNonNullExpression", "TSTypeAssertion"]);
+const QUOTED_WRAPPERS = new Set(["TSAsExpression", "TSSatisfiesExpression", "TSNonNullExpression", "TSTypeAssertion", "ChainExpression"]);
+// What ends a word in a value, on either side of a template's placeholder.
+const WORD_END = /(?:^|[\s,()/])$/;
+const WORD_START = /^(?:$|[\s,()/])/;
 
-// The string pieces a value is made of, through wrappers, conditionals, logicals, templates, concatenations,
-// arrays and the arguments of a call. A piece is a string literal or a template's text.
-const pieces = (node, found = []) => {
-  if (!node) return found;
-  if (QUOTED_WRAPPERS.has(node.type)) return pieces(node.expression, found);
-  switch (node.type) {
-    case "Literal": if (typeof node.value === "string") found.push(node); break;
-    case "TemplateLiteral": found.push(node); node.expressions.forEach((expression) => pieces(expression, found)); break;
-    case "ConditionalExpression": pieces(node.consequent, found); pieces(node.alternate, found); break;
-    case "LogicalExpression":
-    case "BinaryExpression": pieces(node.left, found); pieces(node.right, found); break;
-    case "ArrayExpression": node.elements.forEach((element) => pieces(element, found)); break;
-    case "CallExpression": node.arguments.forEach((argument) => pieces(argument, found)); break;
-    default:
-  }
-  return found;
-};
 const textOf = (node) => (node.type === "TemplateLiteral" ? node.quasis.map((part) => part.value.cooked ?? part.value.raw).join(" ") : node.value);
 
 // The package reads `tokens.color` in the Paint primitives and nowhere else: a part that needs a colour takes the class
@@ -52,11 +38,44 @@ const rawColorRule = {
   create(context) {
     const file = workspacePath(context.filename);
     const ownership = isInside(file, PACKAGE_SRC) && !isInside(file, TOKEN_LAYER) && !isTestFile(file) && !COLOR_OWNERS.some((owner) => isInside(file, owner));
+    const source = context.sourceCode;
     const reported = new WeakSet();
     const flag = (node, messageId, data) => {
       if (reported.has(node)) return;
       reported.add(node);
       context.report({ node, messageId, data });
+    };
+    // The string pieces a value is made of, through wrappers, conditionals, logicals, templates, concatenations,
+    // arrays, the arguments of a call, and the same-file name, table or function it reads. A piece is a string
+    // literal or a template's text.
+    const pieces = (node, found = [], seen = new Set()) => {
+      if (!node || seen.has(node)) return found;
+      seen.add(node);
+      const read = (child) => pieces(child, found, seen);
+      if (QUOTED_WRAPPERS.has(node.type)) return read(node.expression);
+      switch (node.type) {
+        case "Literal": if (typeof node.value === "string") found.push(node); break;
+        case "TemplateLiteral":
+          found.push(node);
+          // A name run into the text around it is part of a longer word: `${ramp}.700` is a path, not a colour.
+          node.expressions.forEach((expression, index) => {
+            if (WORD_END.test(node.quasis[index].value.cooked ?? "") && WORD_START.test(node.quasis[index + 1].value.cooked ?? "")) read(expression);
+          });
+          break;
+        case "ConditionalExpression": read(node.consequent); read(node.alternate); break;
+        case "LogicalExpression":
+        case "BinaryExpression": read(node.left); read(node.right); break;
+        case "ArrayExpression": node.elements.forEach(read); break;
+        case "ObjectExpression": node.properties.forEach((entry) => read(entry.type === "SpreadElement" ? entry.argument : entry.value)); break;
+        case "CallExpression": read(calledFunction(source, node)); node.arguments.forEach(read); break;
+        case "ArrowFunctionExpression":
+        case "FunctionExpression":
+        case "FunctionDeclaration": returnsOf(source, node).forEach(read); break;
+        case "Identifier": heldBy(source, node).forEach(read); break;
+        case "MemberExpression": picked(source, node).forEach(read); break;
+        default:
+      }
+      return found;
     };
     // A keyword in the value of a colour-capable key.
     const checkKeyword = (value) => {
@@ -83,18 +102,23 @@ const rawColorRule = {
   },
 };
 
-// A package .ts/.tsx file never hands a token to `style`: a token is applied by a `.css.ts` className. The rule
-// reports a JSX `style` attribute, or an object property keyed `style`, whose value reaches a binding imported
-// from the token layer (src/tokens), the stylesheets (src/styles), the internals (src/internal) or the package
-// itself. "Reaches" follows what the value is made of: a declarator's initialiser and destructuring, a variable's
-// later assignments, member chains, a call's callee and arguments, the bodies of the functions it holds, and
-// conditional, logical, binary, template, spread and TypeScript-wrapper nodes. No call is opaque and no name is
-// listed; a `throw` is not followed, since what a function throws is never the value it returns. The declared runtime modules (RUNTIME_STYLE in the manifest, each with its reason) are untracked: what they
-// compute is a value of the moment — an anchored position, an Aria press style, a carried source variable.
+// A .ts/.tsx file never hands a token to `style`: a token is applied by a `.css.ts` className. The rule reports a
+// JSX `style` attribute, an object property keyed `style`, or a write to a DOM style declaration (`el.style.width =`,
+// `el.style.setProperty()`, `Object.assign(el.style, …)`, `el.setAttribute("style", …)`) whose value reaches a binding
+// imported from the package itself or from any relative module: what a sibling helper returns is not read, so it is
+// taken to hold a token. "Reaches" follows what the value is made of: a declarator's initialiser and destructuring,
+// a variable's later assignments, member chains, a call's callee and arguments, the bodies of the functions it holds,
+// and conditional, logical, binary, template, spread and TypeScript-wrapper nodes. No call is opaque and no name is
+// listed; a `throw` is not followed, since what a function throws is never the value it returns. Two kinds of module
+// are untracked. A stylesheet exports the class and variable names it generates, unless it sits in the directories
+// that hold token values and their maps (src/tokens, src/styles, src/internal). The declared runtime modules
+// (RUNTIME_STYLE in the manifest, each with its reason) compute a value of the moment: an anchored position, an Aria
+// press style, a carried source variable.
 const TRACKED_DIRECTORIES = ["tokens", "styles", "internal"];
 const PACKAGE_IMPORT = /^@studio-baeks\/paper-ui/;
 const SOURCE_ROOT = /^(.*[\\/]packages[\\/]paper-ui[\\/]src)[\\/]/;
 const TYPE_WRAPPERS = new Set(["TSAsExpression", "TSSatisfiesExpression", "TSNonNullExpression", "TSTypeAssertion", "TSInstantiationExpression"]);
+const STYLESHEET = /\.css(?:\.ts)?$/;
 
 const modulePath = (entry) => entry.replace(/\/\*\*$/, "").replace(/(?:\.css)?\.tsx?$/, "");
 const RUNTIME_MODULES = Object.keys(RUNTIME_STYLE).map(modulePath);
@@ -111,10 +135,12 @@ const inlineTokenRule = {
 
     const isTracked = (specifier) => {
       if (PACKAGE_IMPORT.test(specifier)) return true;
-      if (!root || !specifier.startsWith(".")) return false;
+      if (!specifier.startsWith(".")) return false;
+      const stylesheet = STYLESHEET.test(specifier);
+      if (!root) return !stylesheet;
       const inside = path.relative(root, path.resolve(path.dirname(context.filename), specifier)).split(path.sep).join("/");
-      if (inside.startsWith("..") || !TRACKED_DIRECTORIES.includes(inside.split("/")[0])) return false;
-      return !RUNTIME_MODULES.some((module) => inside === module || inside.startsWith(`${module}/`));
+      if (RUNTIME_MODULES.some((module) => inside === module || inside.startsWith(`${module}/`))) return false;
+      return !stylesheet || TRACKED_DIRECTORIES.includes(inside.split("/")[0]);
     };
 
     const reaches = (node, seen = new Set()) => {
@@ -152,12 +178,24 @@ const inlineTokenRule = {
     };
 
     const check = (node, value) => { if (reaches(value)) context.report({ node, messageId: "inline" }); };
+    const isCallTo = (call, object, name) => call.callee.type === "MemberExpression" && !call.callee.computed && call.callee.property.name === name && (!object || (call.callee.object.type === "Identifier" && call.callee.object.name === object));
     return {
       JSXAttribute(node) {
         if (node.name.name === "style" && node.value?.type === "JSXExpressionContainer") check(node, node.value.expression);
       },
       Property(node) {
         if (node.parent.type === "ObjectExpression" && !node.computed && (node.key.name ?? node.key.value) === "style") check(node, node.value);
+      },
+      // `el.style.width = value`, `el.style[name] = value`, and the whole declaration: `el.style = value`.
+      AssignmentExpression(node) {
+        const { left } = node;
+        if (left.type === "MemberExpression" && (isStyleDeclaration(source, left.object) || isStyleDeclaration(source, left))) check(node, node.right);
+      },
+      CallExpression(node) {
+        const [first, ...rest] = node.arguments;
+        if (isCallTo(node, undefined, "setProperty") && isStyleDeclaration(source, node.callee.object)) node.arguments.forEach((argument) => check(node, argument));
+        else if (isCallTo(node, "Object", "assign") && first && isStyleDeclaration(source, first)) rest.forEach((argument) => check(node, argument));
+        else if (isCallTo(node, undefined, "setAttribute") && first?.type === "Literal" && first.value === "style") rest.forEach((argument) => check(node, argument));
       },
     };
   },
@@ -202,17 +240,74 @@ const layeredStylesRule = {
   },
 };
 
-// An app or a test never writes the name of a package class. Shared axes reach their class through the
-// package's typed maps, so a `pui-` string is a name the package no longer promises. `--pui-*` variables and
-// `data-pui-*` attributes pass: the character before the prefix is `-` there. A template literal counts each
-// placeholder as a letter, so `pui-${name}-dot` is read as a class name too.
+// Nobody writes the name of a package class. Shared axes reach their class through the package's typed maps, so a
+// `pui-` string is a name the package does not promise. `--pui-*` variables and `data-pui-*` attributes pass: the
+// character before the prefix is `-` there. A template literal counts each placeholder as a letter, so
+// `pui-${name}-dot` is read as a class name too, and a regular expression is read by its pattern.
+//
+// Inside the package a `pui-` name can be something other than a class, and where it sits says so: an element's id
+// (`id:`, `id=`, `htmlFor=`, or a binding named …Id), a stored key (a binding named …KEY or …Key, or the first argument
+// of a storage call), or the absence a negative assertion states. A selector (`.pui-x`) and a binding that a class
+// position reads are still classes. An app, a fixture or a spec has no such names of its own.
 const internalClass = /(^|[^-\w])pui-[a-z]/;
+const SELECTOR_NAME = /\.pui-[a-z]/;
+const CLASS_KEYS = new Set(["className", "class"]);
+const ID_KEYS = new Set(["id", "htmlFor"]);
+const ID_OR_KEY_BINDING = /(?:^id|Id|_ID|^key|Key|_KEY)$/;
+const STORAGE_OBJECTS = new Set(["localStorage", "sessionStorage"]);
+const SEE_THROUGH = new Set(["LogicalExpression", "ConditionalExpression", "JSXExpressionContainer", ...QUOTED_WRAPPERS]);
 const internalClassRule = {
   meta: { type: "problem", schema: [], messages: { internal: "패키지 내부 class 이름을 문자열로 쓰지 않습니다. 공유 축은 컴포넌트 prop 으로 고릅니다." } },
   create(context) {
-    const check = (node, value) => { if (internalClass.test(value)) context.report({ node, messageId: "internal" }); };
+    const source = context.sourceCode;
+    const file = workspacePath(context.filename);
+    const ownNames = isInside(file, PACKAGE_SRC);
+
+    const propertyName = (member) => (member?.type === "MemberExpression" && !member.computed ? member.property.name : undefined);
+    // Does a binding reach where a class goes: a className, a class list, or another name that does?
+    const readsAsClass = (declarator, seen = new Set()) => {
+      if (seen.has(declarator)) return false;
+      seen.add(declarator);
+      const reads = source.getDeclaredVariables(declarator)[0]?.references.filter((reference) => !reference.init) ?? [];
+      return reads.some((reference) => {
+        for (let at = reference.identifier, up = at.parent; up; at = up, up = up.parent) {
+          if (up.type === "JSXAttribute") return CLASS_KEYS.has(up.name.name);
+          if (up.type === "Property") return up.value === at && CLASS_KEYS.has(up.key.name ?? up.key.value);
+          if (up.type === "AssignmentExpression") return up.right === at && CLASS_KEYS.has(propertyName(up.left));
+          if (up.type === "VariableDeclarator") return up.init === at && readsAsClass(up, seen);
+          if (up.type === "CallExpression" && propertyName(up.callee?.object) === "classList") return true;
+          if (up.type.endsWith("Statement") || up.type.endsWith("FunctionExpression")) return false;
+        }
+        return false;
+      });
+    };
+    const saysOtherwise = (node) => {
+      let at = node;
+      while (SEE_THROUGH.has(at.parent?.type)) at = at.parent;
+      const up = at.parent;
+      switch (up?.type) {
+        case "VariableDeclarator": return up.id.type === "Identifier" && ID_OR_KEY_BINDING.test(up.id.name) && !readsAsClass(up);
+        case "Property": return up.value === at && !up.computed && ID_KEYS.has(up.key.name ?? up.key.value);
+        case "JSXAttribute": return ID_KEYS.has(up.name.name);
+        case "CallExpression": {
+          if (!up.arguments.includes(at)) return false;
+          const { callee } = up;
+          if (propertyName(callee?.object) === "not" && isTestFile(file)) return true;
+          return up.arguments[0] === at && callee.type === "MemberExpression" && STORAGE_OBJECTS.has(callee.object.name);
+        }
+        default: return false;
+      }
+    };
+    const check = (node, value) => {
+      if (!internalClass.test(value)) return;
+      if (ownNames && !SELECTOR_NAME.test(value) && saysOtherwise(node)) return;
+      context.report({ node, messageId: "internal" });
+    };
     return {
-      Literal(node) { if (typeof node.value === "string") check(node, node.value); },
+      Literal(node) {
+        if (typeof node.value === "string") check(node, node.value);
+        else if (node.regex) check(node, node.regex.pattern);
+      },
       TemplateLiteral(node) { check(node, node.quasis.map((part) => part.value.cooked ?? part.value.raw).join("x")); },
     };
   },
