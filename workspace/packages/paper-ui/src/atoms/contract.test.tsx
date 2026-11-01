@@ -22,6 +22,7 @@ import { Field } from "./Field";
 import { IconButton } from "./IconButton";
 import { Label } from "./Label";
 import { Link } from "./Link";
+import { Marker } from "./Marker";
 import { Radio } from "./Radio";
 import { Select } from "./Select";
 import { Spinner } from "./Spinner";
@@ -135,6 +136,7 @@ const TARGETS: Target[] = [
   { name: "Badge", element: (props) => <Badge {...props}>B</Badge>, semantic: (root) => root.querySelector("span")!, visible: same },
   { name: "Spinner", element: (props) => <Spinner {...props} />, semantic: (root) => root.querySelector("span")!, visible: same },
   { name: "Divider", element: (props) => <Divider {...props} />, semantic: (root) => root.querySelector("hr")!, visible: same },
+  { name: "Marker", element: (props) => <Marker {...props}>M</Marker>, semantic: (root) => root.querySelector("mark")!, visible: same },
 ];
 
 // The axes an Atom names, with each at the default the table gives: the two draw the same classes.
@@ -154,6 +156,7 @@ const DEFAULTS: Array<[name: string, plain: ReactElement, explicit: ReactElement
 const STANDS_ON: Record<string, readonly string[]> = {
   "button-base.tsx": ["Pressable", 'motion="press"', "useSelectable", "paintClass"],
   "Link.tsx": ["useFocusRing", "linkPaint"],
+  "Marker.tsx": ["markerPaint"],
   "Field.tsx": ["inputFrame", "fieldPaint", "<Icon", "<Pressable", "as={Selectable}"],
   "Textarea.tsx": ["inputFrame", "fieldPaint"],
   "Select.tsx": ["inputFrame", "fieldPaint", "<Icon"],

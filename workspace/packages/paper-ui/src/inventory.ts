@@ -26,7 +26,7 @@ export const INVENTORY = {
     Field: { components: ["FormField"], hooks: ["useFormField", "useFormFieldControl"] },
     Layout: { components: ["Stack", "Inline", "Grid"], hooks: [] },
   },
-  atoms: ["Button", "IconButton", "Field", "Textarea", "Select", "Checkbox", "Switch", "Radio", "Label", "Badge", "Spinner", "Divider", "Link"],
+  atoms: ["Button", "IconButton", "Field", "Textarea", "Select", "Checkbox", "Switch", "Radio", "Label", "Badge", "Spinner", "Divider", "Link", "Marker"],
   anatomy: { Select: ["Option", "Group"] },
   utilities: {
     Composition: ["mergeProps", "mergeRefs", "composeEventHandlers"],

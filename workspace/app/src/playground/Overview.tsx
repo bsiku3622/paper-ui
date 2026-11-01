@@ -15,6 +15,7 @@ import {
   Inline,
   Label,
   Link,
+  Marker,
   Radio,
   Select,
   Spinner,
@@ -346,6 +347,9 @@ export const Overview = () => {
           <Link href="#/" data-testid="link">링크</Link>
           <Divider orientation="vertical" />
           <InfoIcon aria-label="정보" data-testid="icon" />
+        </Spec>
+        <Spec label="Marker">
+          <Text variant="body">문장 속 낱말에 <Marker>칠</Marker>을 깝니다</Text>
         </Spec>
       </Section>
 

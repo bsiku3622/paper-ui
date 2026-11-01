@@ -160,6 +160,7 @@ coarse pointer에서 더 키우지 않습니다 — 촘촘한 목록에서 hit a
 | Textarea | 한 줄은 같은 size의 Field와 정확히 같은 높이입니다: block 여백 = (컨트롤 높이 − textarea 글자 줄) / 2 − 테두리. 최소 높이는 없고 높이는 `rows`(기본 4)가 정합니다 — 4줄은 sm 90 · md 92 · lg 96입니다. |
 | Select | 화살표는 trailing icon입니다. `control.icon` 크기의 Icon(레시피에 따로 둔 값이 없습니다)이 입력 inset 자리에 앉고, 값은 그보다 `control.gap`만큼 앞에서 멈춥니다 — Field의 leading icon을 거울로 비춘 구조입니다. |
 | Spinner | 지름은 `control.icon`, 링은 `stroke.emphasis`입니다. 글줄 안에 놓는 스피너(`spinner.inline`)는 라벨 글자(1em)를 따르고, Button의 loading 표식이 그 크기입니다. |
+| Marker | 띠의 높이와 줄 상자 안의 자리, 글자 밖으로 나가는 길이는 규칙으로 나오지 않아 원본 `anatomy.marker`에 둡니다. |
 | Badge | 높이와 inset은 규칙으로 나오지 않아 원본 `anatomy.badge`에 둡니다. 점은 `anatomy.inline`의 글자 0.5em이고, 점과 글자 사이는 inset xs입니다. |
 
 [contract:foundations.shape.switch-thumb]: #

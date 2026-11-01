@@ -110,6 +110,7 @@ Button · IconButton은 눌리는 동안 한 단계(`motion.press`의 변위, 1p
 | Spinner | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 링 GrayText, 호 CanvasText | 해당 없음 |
 | Divider | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | border라 CanvasText로 남음 | 해당 없음 |
 | Link | 자신(`radius.control`) | `underline="hover"`면 밑줄이 뜸 | — | — | 링크에는 disabled가 없음 | — | LinkText | inline 예외 |
+| Marker | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | OS의 Mark · MarkText | 해당 없음 |
 
 ## Focus와 transition
 
@@ -138,6 +139,9 @@ forced colors에서 Label의 글자는 OS가 정한 CanvasText입니다.
 
 [contract:atoms.link.forced-colors]: #
 forced colors에서 Link는 OS가 정한 LinkText입니다.
+
+[contract:atoms.marker.forced-colors]: #
+forced colors에서 Marker는 OS가 정한 Mark 면과 MarkText 글자이고, 띠를 그리는 이미지는 없어집니다.
 
 [contract:atoms.badge.forced-colors]: #
 forced colors에서 Badge는 면이 사라져도 1px 실선 테두리로 남습니다. 평소에 테두리가 투명한 variant도 같습니다.

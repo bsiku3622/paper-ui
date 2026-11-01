@@ -41,7 +41,7 @@ paper-ui/
 workspace/packages/paper-ui/src/
   index.ts                     entry `.` — 컴포넌트 · hook · Provider (`"use client"`). 공개 이름을 한 곳에 다 적은 목록이고 `export *`가 없습니다
   inventory.ts                 이름 · 분류 · 순서의 정본 — import가 없고 inventory.test가 export와 대조합니다
-  atoms/                       Atom 13개 — 한 가지 역할의 컨트롤, 모두 Primitive 위에 섭니다
+  atoms/                       Atom 14개 — 한 가지 역할의 컨트롤, 모두 Primitive 위에 섭니다
     button-base.tsx            Button과 IconButton의 몸 하나 — 내부 모듈
     input-control.ts           입력 틀 셋과 선택 표식 셋의 FormField 관계 · 키보드 포커스 · 틀의 속성 — 내부 모듈
     recipes/                   Atom이 함께 쓰는 형태와 상태 조각(input-frame · selection-control) — 색은 없고, 색은 primitives/paint/recipes.css.ts에서 옵니다
@@ -311,7 +311,7 @@ Foundations → Primitives → Atoms
 | Field (2차) | 1 | `FormField` |
 | Layout (2차) | 3 | `Stack · Inline · Grid` |
 | Provider | 3 | `PaperProvider · useTheme · useResolvedTheme` — 테마 엔진의 entry이고 문서당 저장소 하나에 붙습니다. `locale` · `messages`로 언어도 정합니다. 첫 화면 전에 모드를 정하는 `themeBootScript`는 `/theme-boot`에서 나갑니다 |
-| Atoms | 13 | `Button · IconButton · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Spinner · Divider · Link` |
+| Atoms | 14 | `Button · IconButton · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Spinner · Divider · Link · Marker` |
 <!-- /generated:inventory.agents -->
 
 Primitive·Atom 인벤토리의 정본은 `packages/paper-ui/src/inventory.ts`입니다(`PRIMITIVE_ORDERS`가 두 차수의 분류를, `PRIMITIVE_GROUPS`가 그 파생 순서를 정합니다). `inventory.test.ts`가 `.` entry의 실제 export와 1:1로 대조하고, 앱의 사이트 지도(`app/src/site/site-map.ts`)가 Playground 목록(Foundations → Primitives → Atoms)을 거기서 파생합니다. 위 표는 그 목록을 옮긴 것이므로 인벤토리를 바꾸면 표도 함께 고칩니다.

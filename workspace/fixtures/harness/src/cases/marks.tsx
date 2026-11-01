@@ -1,4 +1,4 @@
-import { Badge, Button, Checkbox, Divider, Label, Radio, Spinner, Switch } from "@studio-baeks/paper-ui";
+import { Badge, Button, Checkbox, Divider, Label, Marker, Radio, Spinner, Switch, Text } from "@studio-baeks/paper-ui";
 import type { CSSProperties, ReactNode } from "react";
 
 const SIZES = ["sm", "md", "lg"] as const;
@@ -40,6 +40,9 @@ export const MarksCase = () => (
       <Room><Radio aria-label="radio-error-disabled" name="error-disabled" status="error" disabled data-testid="radio-error-disabled" /></Room>
       <Room><Switch aria-label="switch-error-disabled" status="error" disabled data-testid="switch-error-disabled" /></Room>
     </div>
+    <Text as="p" variant="heading" data-testid="marker-line" style={{ width: 120 }}>
+      다시 <Marker data-testid="marker">여러 줄로 넘어가는 형광펜</Marker> 문장
+    </Text>
     <div dir="rtl" style={{ display: "flex", flexWrap: "wrap" }}>
       <Room><Switch aria-label="switch-rtl-off" data-testid="switch-rtl-off" /></Room>
       <Room><Switch aria-label="switch-rtl-on" defaultChecked data-testid="switch-rtl-on" /></Room>

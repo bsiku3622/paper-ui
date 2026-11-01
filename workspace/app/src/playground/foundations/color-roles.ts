@@ -32,6 +32,8 @@ export const ROLE_NOTES: Record<RolePath, string> = {
   "overlay.scrim": "모달 뒤를 어둡게 누르는 면",
   "shadow.floating": "떠 있는 층(overlay · modal · toast) 그림자의 색",
   "shadow.lifted": "살짝 들린 층(lifted) 그림자의 색",
+  "marker.fill": "형광펜의 칠",
+  "marker.ink": "칠 위 글자, 두 모드 모두 어두운 잉크",
 };
 
 export const GROUPS: { title: string; description: string; branches: Branch[] }[] = [
@@ -41,6 +43,7 @@ export const GROUPS: { title: string; description: string; branches: Branch[] }[
   { title: "Border", description: "구조를 나누는 경계와 강조입니다.", branches: ["border"] },
   { title: "Interaction", description: "상태 tint, 키보드 포커스, 링크입니다.", branches: ["interaction"] },
   { title: "Overlay · Shadow", description: "모달 scrim과 그림자의 색입니다. 그림자의 모양과 층은 Layout의 elevation이 정합니다.", branches: ["overlay", "shadow"] },
+  { title: "Marker", description: "형광펜입니다. 장식이고 상태를 말하지 않습니다.", branches: ["marker"] },
 ];
 
 // The Palette Token a role selects, as the cards name it.

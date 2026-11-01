@@ -1,6 +1,6 @@
 # Overview
 
-Atom은 한 가지 역할을 하는 완성 컨트롤입니다. Primitive 위에서 Foundations의 역할을 골라 그리고, 앱은 Atom을 조합해 화면을 만듭니다. 패키지는 13개를 공개합니다.
+Atom은 한 가지 역할을 하는 완성 컨트롤입니다. Primitive 위에서 Foundations의 역할을 골라 그리고, 앱은 Atom을 조합해 화면을 만듭니다. 패키지는 14개를 공개합니다.
 
 ## 공통 축
 
@@ -43,6 +43,7 @@ Atom은 같은 축 몇 개로 말합니다. 축의 값은 모두 Foundations에�
 | Badge | accent · variant · size · fontSize · dot · shape · ref | primary / soft / md / rounded. `Paint as="span"`이고 표시용이라 hover 없음. 높이 20 · 22 · 24, 글자 12 고정 |
 | Spinner | size(sm · md · lg · inline) · ink(inherit) · label · decorative | md, label은 locale 문구('불러오는 중' · 'Loading'), role=progressbar. 지름 16 · 18 · 20, inline은 글자만큼. decorative는 aria-hidden |
 | Divider | orientation=horizontal/vertical · level=base/strong · ref · native hr props | horizontal / base. `Box as="hr"` + aria-orientation. 선은 border로 긋고 level은 선의 색(`border.base` · `border.strong`), 두께는 border stroke |
+| Marker | native 속성 · ref | mark. 칠은 `marker.fill`, 글자는 `marker.ink`이고 글자의 크기와 굵기는 둘러싼 글자를 따름 |
 | Link | as · underline(always · hover) · native anchor props | a, `interaction.link` 잉크, 늘 밑줄(`always`), 단독 링크는 hover 때만(`hover`). 라우터의 Link는 `as`로 받음 |
 
 [contract:atoms.select.anatomy]: #
@@ -61,6 +62,7 @@ Atom은 Primitive와 hook, 공용 recipe 위에 서고, native control이 있는
 | --- | --- | --- |
 | Button · IconButton | `Pressable as={대상}`(부품도 대상일 뿐입니다) · `motion="press"` · `useSelectable` | `paintClass` |
 | Link | 자기 대상 태그 · `useFocusRing` | `linkPaint` |
+| Marker | native `mark` | `markerPaint` |
 | Field · Textarea · Select | `useFormFieldControl` · `useFocusRing`(`atoms/input-control.ts`) · 입력 틀 `inputFrame` · Icon · 액션은 Pressable, 비밀번호 토글은 `Pressable as={Selectable}` | `fieldPaint` |
 | Checkbox · Radio · Switch | native input · `useFocusRing` · `useFormFieldControl`(`atoms/input-control.ts`) | `markPaint` |
 | Label | Text | Text label 역할의 잉크 |
@@ -77,6 +79,17 @@ Button · IconButton · Link에는 `as`가 있습니다(`<Button as={RouterLink}
 
 [contract:atoms.button.target]: #
 Button과 IconButton은 늘 [Pressable](../primitives/press.md) 하나로 그려지고, `as`는 그 Pressable의 대상입니다. 태그든 라우터 Link든 행동 부품이든 눌림 장치는 그 요소에 한 벌만 얹힙니다. Atom의 모습을 행동에 입히는 길은 `<Button as={부품}>`이 하나뿐이고 — `<Button as={Floating.Trigger}>` · `<Button as={Floating.Close}>` · `<Button as={Selectable}>` · `<Button as={SelectableGroup.Item}>` — 부품의 동작(열기, 선택)은 그대로 한 번만 일어납니다. 이 길에서는 부품의 prop을 그대로 씁니다. `<Button as={Pressable}>`은 Pressable 하나를 그립니다. 반대 방향인 `<Floating.Trigger as={Button}>`은 한 요소에 press 장치가 둘이 되므로 개발 모드 오류이고, `<Button as={Draggable.Handle}>`도 오류입니다(손잡이의 키보드 끌기는 손잡이에 닿는 click을 취소로 읽습니다). 비활성 링크 대상은 이동하지 않습니다.
+
+## Marker
+
+[contract:atoms.marker.element]: #
+Marker는 형광펜입니다. 문장 안의 `mark` 요소 하나를 그리고, ref와 className과 native 속성을 그 요소가 받습니다. 글자의 크기와 굵기는 둘러싼 글자를 따르므로 `Text` 안에 그대로 놓습니다.
+
+[contract:atoms.marker.band]: #
+칠은 글자 상자 전체가 아니라 줄 상자를 지나는 띠입니다. 높이와 자리는 원본 `anatomy.marker`에 있습니다. 줄이 넘어가면 줄마다 띠가 이어지고, 띠가 글자 밖으로 조금 나간 만큼 margin이 되돌려 낱말의 자리는 문장 그대로입니다.
+
+[contract:atoms.marker.decoration]: #
+Marker는 장식입니다. 포커스를 받지 않고 상태를 말하지 않습니다. 선택 · 오류 같은 신호에는 쓰지 않습니다. 라임과 흰 면의 대비가 1.09:1이라 칠만으로는 경계가 보이지 않기 때문입니다.
 
 ## Button · IconButton · Spinner · Link
 
@@ -112,6 +125,7 @@ Field · Textarea · Select는 `ref`와 native 속성을 안쪽 native control�
 | --- | --- | --- | --- |
 | Button · IconButton | 선택한 root element | 같은 root | 같은 root |
 | Link | 선택한 root element(기본 a) | 같은 root | 같은 root |
+| Marker | mark | 같은 mark | 같은 mark |
 | Spinner | span | 같은 span | 같은 span |
 | Field | 안쪽 input | 보이는 div wrapper | wrapper |
 | Select | 안쪽 select | 보이는 span wrapper | wrapper |

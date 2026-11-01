@@ -108,6 +108,14 @@ test.describe("the selection marks", () => {
     expect((await painted(page.getByTestId("switch-on-disabled"))).backgroundColor).toBe(gray);
   });
 
+  test("[atoms.marker.forced-colors] a Marker is the OS's Mark pair, with no image over it", async ({ page }) => {
+    const { Mark: mark, MarkText: markText } = await systems(page, "Mark", "MarkText");
+    const painted_ = await painted(page.getByTestId("marker"));
+    expect(painted_.backgroundColor).toBe(mark);
+    expect(painted_.color).toBe(markText);
+    await expect(page.getByTestId("marker")).toHaveCSS("background-image", "none");
+  });
+
   test("[atoms.mark.forced-colors] an error mark keeps the system ring, since the colour is not the author's to choose", async ({ page }) => {
     const buttonText = await system(page, "ButtonText");
     expect((await painted(page.getByTestId("checkbox-error"))).borderTopColor).toBe(buttonText);

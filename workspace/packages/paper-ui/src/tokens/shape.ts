@@ -62,6 +62,8 @@ export const SHAPE_SOURCE = {
     checkbox: { markShift: { x: 0.25, y: -0.5 } },
     // Marks sized against the text they sit in (em).
     inline: { dot: 0.5, spinner: 1 },
+    // The highlighter's band: its height and where it sits in the line box (%), and how far past the glyphs it runs (em).
+    marker: { height: 80, position: 67, overrun: 0.08 },
   },
 } as const;
 
@@ -95,6 +97,7 @@ export const SHAPE_VALUES = {
     badge: { height: lengths(s.anatomy.badge.height), inset: lengths(s.anatomy.badge.inset) },
     checkbox: { markShift: { x: String(s.anatomy.checkbox.markShift.x), y: String(s.anatomy.checkbox.markShift.y) } },
     inline: lengths(s.anatomy.inline, em),
+    marker: { height: `${s.anatomy.marker.height}%`, position: `${s.anatomy.marker.position}%`, overrun: em(s.anatomy.marker.overrun) },
   },
 } as const;
 
