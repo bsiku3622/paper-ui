@@ -1,7 +1,7 @@
 /// <reference types="vitest/config" />
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { defaultClientConditions, defineConfig } from "vite";
+import { defaultClientConditions, defaultServerConditions, defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
 
@@ -32,6 +32,9 @@ export default defineConfig({
     ],
     conditions: ["paper-ui-source", ...defaultClientConditions],
   },
+  // A test file that runs in node resolves through the server conditions, and the source condition has to be there
+  // too: dist does not exist on a clean checkout, and when it does exist it may be older than the source.
+  ssr: { resolve: { conditions: ["paper-ui-source", ...defaultServerConditions] } },
   server: { fs: { allow: [workspace, docs] } },
   test: { environment: "jsdom", globals: true },
 });
