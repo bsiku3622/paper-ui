@@ -344,6 +344,36 @@ test.describe("the docs, the Playground and the landing page take their type fro
 
 test.describe("what line breaking leaves to the shell", () => {
   const overflow = (page: Page) => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  // When the page overflows, what is past its edge: elements and text runs outside any clipping box, and boxes whose
+  // content is wider than they are. An overflow can happen on one platform only, so the failure has to name it.
+  const pastTheEdge = (page: Page) =>
+    page.evaluate(() => {
+      const edge = document.documentElement.clientWidth;
+      const clipped = (node: Node) => {
+        for (let parent = node.parentElement; parent && parent !== document.body; parent = parent.parentElement) {
+          if (getComputedStyle(parent).overflowX !== "visible") return true;
+        }
+        return false;
+      };
+      const name = (element: Element) => `${element.tagName.toLowerCase()}.${element.getAttribute("class")?.split(/\s+/)[0] ?? ""}`;
+      const found: string[] = [];
+      for (const element of document.body.querySelectorAll("*")) {
+        if (clipped(element)) continue;
+        const { left, right } = element.getBoundingClientRect();
+        if (right > edge) found.push(`box ${name(element)} ${left.toFixed(2)}..${right.toFixed(2)}`);
+        if (element.scrollWidth > element.clientWidth && element.clientWidth > 0) found.push(`wider ${name(element)} ${element.clientWidth}<${element.scrollWidth}`);
+      }
+      const texts = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      const range = document.createRange();
+      while (texts.nextNode()) {
+        const text = texts.currentNode;
+        if (!text.textContent?.trim() || clipped(text)) continue;
+        range.selectNodeContents(text);
+        const { right } = range.getBoundingClientRect();
+        if (right > edge) found.push(`text "${text.textContent.trim().slice(0, 24)}" ..${right.toFixed(2)} in ${name(text.parentElement!)}`);
+      }
+      return `edge ${edge}; ${found.join("; ") || "nothing measurable"}`;
+    });
 
   test("nothing overflows horizontally at 390 on the landing page or the demo", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
@@ -387,7 +417,8 @@ test.describe("what line breaking leaves to the shell", () => {
       else await expect(label).toBeVisible();
       const box = (await search.boundingBox())!;
       expect(box.x + box.width, `${width}: the search stays inside the viewport`).toBeLessThanOrEqual(width);
-      expect(await overflow(page), `${width}: no overflow`).toBeLessThanOrEqual(0);
+      const over = await overflow(page);
+      expect(over, `${width}: no overflow${over > 0 ? ` (${await pastTheEdge(page)})` : ""}`).toBeLessThanOrEqual(0);
     }
   });
 });
