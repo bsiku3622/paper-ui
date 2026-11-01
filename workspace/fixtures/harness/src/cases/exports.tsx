@@ -1,5 +1,5 @@
 import {
-  Badge, Box, Button, Checkbox, Divider, Draggable, Droppable, Field, Floating, FocusScope, FormField, Grid, Icon, IconButton, INVENTORY, PRIMITIVE_GROUPS, PRIMITIVE_ORDERS, Inline, Label, Link, LiveRegion, Paint, PaperProvider, Portal, Pressable,
+  Badge, Box, Button, Checkbox, Divider, Draggable, Droppable, Field, Floating, FocusScope, FormField, Grid, Icon, IconButton, INVENTORY, PRIMITIVE_GROUPS, PRIMITIVE_ORDERS, Inline, Label, Link, Marker, LiveRegion, Paint, PaperProvider, Portal, Pressable,
   Radio, RovingFocus, Select, Selectable, SelectableGroup, Spinner, Stack, Surface, Switch, Text, Textarea, VisuallyHidden,
   announce, clearAnnouncements, composeEventHandlers, elevation, loop, mergeProps, mergeRefs, paintClass, presence, surfaceClass,
   useDraggable, useDroppable, useFloating, useFloatingContext, useFocusRing, useFocusWithin, useFormField, useFormFieldControl, usePressable, useResolvedTheme, useRovingFocusItem, useSelectable, useSelectableGroup, useTheme,
@@ -69,6 +69,7 @@ const COMPONENTS: Record<ComponentName, ReactNode> = {
   Spinner: <Spinner />,
   Divider: <Divider />,
   Link: <Link href="#link">Link</Link>,
+  Marker: <Marker>Marker</Marker>,
 };
 
 const Probe = ({ name, children }: { name: string; children?: ReactNode }) => <div data-export={name}>{children}</div>;

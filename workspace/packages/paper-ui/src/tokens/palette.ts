@@ -97,7 +97,10 @@ const accent = Object.fromEntries(ACCENT_PALETTES.map((name) => [
 
 // Complete theme-independent OKLCH palette. Semantic systems select from these coordinates' HEX
 // companions; changing the active theme never changes this source ramp.
-export const OKLCH_PALETTE = { neutral, accent };
+// The highlighter: one pigment and no ramp, because it is laid behind text and never becomes a surface or a state.
+const MARKER: Oklch = [0.962, 0.187, 113];
+
+export const OKLCH_PALETTE = { neutral, accent, marker: MARKER };
 
 type NeutralPalette = Record<PaletteStep, PaletteToken>;
 type AccentRamp = Record<AccentStep, PaletteToken>;
@@ -115,4 +118,4 @@ const alphaTokens = Object.fromEntries(ALPHA_STEPS.map((step) => [`alpha${step}`
   },
 }])) as AlphaPalette;
 
-export const PALETTE_TOKENS = { neutral: neutralTokens, accent: accentTokens, ...alphaTokens };
+export const PALETTE_TOKENS = { neutral: neutralTokens, accent: accentTokens, marker: toPaletteToken(MARKER), ...alphaTokens };

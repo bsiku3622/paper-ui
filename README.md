@@ -43,7 +43,7 @@ The system stacks in three parts, and the docs and the playground are organised 
 |  | Focus 1 | `RovingFocus` |
 |  | Field 1 | `FormField` |
 |  | Layout 3 | `Stack · Inline · Grid` |
-| Atoms | 13 | `Button · IconButton · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Spinner · Divider · Link` |
+| Atoms | 14 | `Button · IconButton · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Spinner · Divider · Link · Marker` |
 <!-- /generated:inventory.en -->
 
 Atoms are built on the Primitives and on shared recipes: each stands on the Primitives that give it its element, its press or selection and its field relations, and takes its colour from the Paint primitives.

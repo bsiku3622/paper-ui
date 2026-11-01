@@ -34,14 +34,16 @@ export const STATUS_PALETTE = {
 export const ACCENT_PALETTE: Record<Accent, "neutral" | AccentPalette> = { primary: "neutral", ...STATUS_PALETTE };
 
 // A palette token, named by where it sits in the generated palette: a neutral step, an accent ramp
-// step, or a neutral alpha end point.
+// step, a neutral alpha end point, or the marker's one pigment.
 export type PalettePath =
   | `neutral.${PaletteStep}`
   | `${AccentPalette}.${AccentStep}`
-  | `alpha${AlphaStep}.neutral.${"0" | "950"}`;
+  | `alpha${AlphaStep}.neutral.${"0" | "950"}`
+  | "marker";
 
 export const paletteValue = (path: PalettePath): PaletteToken => {
   const [head, second, third] = path.split(".") as [string, string, string?];
+  if (head === "marker") return PALETTE_TOKENS.marker;
   if (head === "neutral") return PALETTE_TOKENS.neutral[second as PaletteStep];
   if (head.startsWith("alpha")) return PALETTE_TOKENS[head as `alpha${AlphaStep}`].neutral[third as "0" | "950"];
   return PALETTE_TOKENS.accent[head as AccentPalette][second as AccentStep];
@@ -142,6 +144,11 @@ const selection = (mode: ColorMode) => {
       floating: pick("alpha10.neutral.950", "alpha60.neutral.950"),
       lifted: pick("alpha10.neutral.950", "alpha45.neutral.950"),
     },
+    // The highlighter. The pigment is as bright as paper, so the ink on it stays dark in both modes.
+    marker: {
+      fill: pick("marker", "marker"),
+      ink: pick("neutral.950", "neutral.950"),
+    },
   };
 };
 
@@ -210,6 +217,8 @@ export const SYSTEM_COLORS = {
   highlightText: "HighlightText",
   grayText: "GrayText",
   linkText: "LinkText",
+  mark: "Mark",
+  markText: "MarkText",
 } as const;
 
 type DeepPartial<T> = { [K in keyof T]?: T[K] extends string ? string : DeepPartial<T[K]> };

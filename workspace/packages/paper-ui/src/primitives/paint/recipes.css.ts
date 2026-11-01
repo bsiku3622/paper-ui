@@ -120,6 +120,16 @@ export const markPaint = styleVariants({
   },
 });
 
+// The highlighter: its pigment, laid as an image so the band keeps its own height, and the ink on it. It is decoration and
+// says no state, so under forced colours the OS's Mark pair stands in for both.
+const pigment = tokens.color.marker.fill;
+export const markerPaint = style({
+  backgroundColor: "transparent",
+  backgroundImage: `linear-gradient(${pigment}, ${pigment})`,
+  color: tokens.color.marker.ink,
+  "@media": { [FORCED]: { forcedColorAdjust: "none", backgroundColor: SYSTEM_COLORS.mark, backgroundImage: "none", color: SYSTEM_COLORS.markText } },
+});
+
 // A link's ink. Where it is underlined is the Link's own anatomy.
 export const linkPaint = style({ color: tokens.color.interaction.link });
 

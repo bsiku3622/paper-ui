@@ -183,6 +183,11 @@
         "lg": 7
       }
     },
+    "marker": {
+      "height": "80%",
+      "position": "67%",
+      "overrun": "0.08em"
+    },
     "spinner": {
       "size": {
         "sm": 16,

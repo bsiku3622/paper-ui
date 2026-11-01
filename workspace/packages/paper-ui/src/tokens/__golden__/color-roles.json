@@ -44,7 +44,9 @@
     "interaction.link": "blue.700 #194ec5",
     "overlay.scrim": "alpha30.neutral.950 #1111134d",
     "shadow.floating": "alpha10.neutral.950 #1111131a",
-    "shadow.lifted": "alpha10.neutral.950 #1111131a"
+    "shadow.lifted": "alpha10.neutral.950 #1111131a",
+    "marker.fill": "marker #f4ff53",
+    "marker.ink": "neutral.950 #111113"
   },
   "dark": {
     "bg.canvas": "neutral.950 #111113",
@@ -91,7 +93,9 @@
     "interaction.link": "blue.300 #9cbeff",
     "overlay.scrim": "alpha60.neutral.950 #11111399",
     "shadow.floating": "alpha60.neutral.950 #11111399",
-    "shadow.lifted": "alpha45.neutral.950 #11111373"
+    "shadow.lifted": "alpha45.neutral.950 #11111373",
+    "marker.fill": "marker #f4ff53",
+    "marker.ink": "neutral.950 #111113"
   },
   "opacity": {
     "alpha": {

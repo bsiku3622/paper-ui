@@ -148,7 +148,7 @@ Under `prefers-contrast: more` the `pui.theme` selectors redeclare the border ro
 | --- | --- |
 | Primitives, first order | `Box · Text · Icon · FocusScope · VisuallyHidden · Portal · LiveRegion` (and `announce · clearAnnouncements`) |
 | Primitives, second order | `Surface · Paint · Pressable · Selectable · SelectableGroup · Floating · Draggable · Droppable · RovingFocus · FormField · Stack · Inline · Grid` |
-| Atoms | `Button · IconButton · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Spinner · Divider · Link` |
+| Atoms | `Button · IconButton · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Spinner · Divider · Link · Marker` |
 | `/tokens` | `tokens`, and the vocabulary: one constant and one type for each axis (`ACCENTS` · `Accent`, `VARIANTS` · `Variant`, `SPACES` · `Space` …) |
 <!-- /generated:inventory.package -->
 

@@ -77,6 +77,7 @@ export { Badge, type BadgeProps } from "./atoms/Badge";
 export { Checkbox, type CheckboxProps } from "./atoms/Checkbox";
 export { Divider, type DividerProps } from "./atoms/Divider";
 export { Link, type LinkProps } from "./atoms/Link";
+export { Marker, type MarkerProps } from "./atoms/Marker";
 export { Select, type SelectProps, type SelectOptionProps, type SelectGroupProps } from "./atoms/Select";
 export { Textarea, type TextareaProps } from "./atoms/Textarea";
 export { Switch, type SwitchProps } from "./atoms/Switch";

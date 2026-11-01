@@ -47,7 +47,7 @@ export const PRESET_USES: Record<PresetName, string> = {
 // Directories of the two source trees the AGENTS tree names, each with its note. A directory without a note
 // fails generated.test.ts, so the tree cannot grow a folder nobody described.
 export const DIR_NOTES: Record<string, string> = {
-  "packages/paper-ui/src/atoms": "Atom 13개 — 한 가지 역할의 컨트롤, 모두 Primitive 위에 섭니다",
+  "packages/paper-ui/src/atoms": "Atom 14개 — 한 가지 역할의 컨트롤, 모두 Primitive 위에 섭니다",
   "packages/paper-ui/src/atoms/recipes": "Atom이 함께 쓰는 형태와 상태 조각(input-frame · selection-control) — 색은 없고, 색은 primitives/paint/recipes.css.ts에서 옵니다",
   "packages/paper-ui/src/internal": "패키지 안쪽 도구 — 밖으로 나가지 않습니다",
   "packages/paper-ui/src/internal/aria": "React Aria 어댑터 — `@react-aria/*`를 import하는 유일한 자리",

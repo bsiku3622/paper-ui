@@ -52,6 +52,7 @@ Palette Token은 내부 이름입니다. 컴포넌트와 앱은 import하지 않
 | Overlay | `overlay.<role>` | `scrim` |
 | Shadow | `shadow.<depth>` | `floating` · `lifted` |
 | Opacity | `opacity.<role>` | `disabled` · `subdued` |
+| Marker | `marker.<role>` | `fill` · `ink` |
 
 각 역할이 고르는 단계는 다음과 같습니다.
 
@@ -75,6 +76,8 @@ Palette Token은 내부 이름입니다. 컴포넌트와 앱은 import하지 않
 | `interaction.link` | blue.700 | blue.300 |
 | `overlay.scrim` | alpha30.neutral.950 | alpha60.neutral.950 |
 | `shadow.floating` · `lifted` | alpha10.neutral.950 · alpha10.neutral.950 | alpha60.neutral.950 · alpha45.neutral.950 |
+| `marker.fill` | marker | marker |
+| `marker.ink` | neutral.950 | neutral.950 |
 <!-- /generated:color-roles -->
 
 [contract:foundations.color.surface-ladder]: #
@@ -84,6 +87,9 @@ Palette Token은 내부 이름입니다. 컴포넌트와 앱은 import하지 않
 `control.track`은 Switch 트랙과 진행 막대의 홈처럼 컨트롤 안에 박힌 면입니다. `bg` 밖에 따로 둔 이유는 컨트롤의 세부가 일반 페이지 면으로 번지지 않게 하기 위해서입니다. 포커스 링의 색은 `interaction.focus`가 갖고, 두께와 offset은 [Shape](shape.md)이, 그림자의 기하는 [Layout](layout.md)의 elevation이 갖습니다.
 
 [contract:foundations.color.shadow-depths]: #
+[contract:foundations.color.marker]: #
+`marker`는 형광펜 하나의 역할입니다. `fill`은 Palette의 안료 하나(`marker`)이고 램프가 없습니다. 면이나 상태로 넓어지지 않는 색이기 때문입니다. 이 안료는 종이만큼 밝아서 그 위 글자 `ink`는 두 모드 모두 어두운 `neutral.950`이고, 대비는 16:1을 넘습니다.
+
 그림자의 색은 층 이름이 아니라 깊이로 부릅니다. `floating`은 팝오버·대화상자·알림처럼 떠 있는 층의 그림자 색이고, `lifted`는 살짝 들린 층의 그림자 색입니다. 라이트에서는 두 값이 같고 다크에서만 갈립니다(60 대 45). 이 시스템에서 "overlay"는 떠 있는 층(Floating · elevation `overlay` · `overlay.scrim`)만 가리키고, 면 위에 얹는 상태 wash는 tint라고 부릅니다.
 
 [contract:foundations.color.opacity]: #

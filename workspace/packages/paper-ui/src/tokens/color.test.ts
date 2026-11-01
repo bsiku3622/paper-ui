@@ -105,7 +105,7 @@ describe("color systems", () => {
       typeof tree === "string" ? paletteValue(tree as Parameters<typeof paletteValue>[0]) : Object.fromEntries(Object.entries(tree as object).map(([key, value]) => [key, resolve(value)]));
     expect(COLOR_VALUES).toEqual(resolve(COLOR_SELECTION.light));
     expect(COLOR_VALUES_DARK).toEqual(resolve(COLOR_SELECTION.dark));
-    expect(Object.keys(COLOR_SELECTION.light)).toEqual(["bg", "control", "ink", "border", "accent", "interaction", "overlay", "shadow"]);
+    expect(Object.keys(COLOR_SELECTION.light)).toEqual(["bg", "control", "ink", "border", "accent", "interaction", "overlay", "shadow", "marker"]);
     expect(Object.keys(COLOR_SELECTION.light.interaction).at(-1)).toBe("link");
   });
 
@@ -314,7 +314,7 @@ describe("what the Color page says", () => {
 
   it("[foundations.color.role-paths] groups the roles under the paths the table names", () => {
     const groups = Object.fromEntries(Object.entries(COLOR_VALUES).map(([group, tree]) => [group, Object.keys(tree as object)]));
-    expect(Object.keys(groups).sort()).toEqual(["accent", "bg", "border", "control", "ink", "interaction", "overlay", "shadow"]);
+    expect(Object.keys(groups).sort()).toEqual(["accent", "bg", "border", "control", "ink", "interaction", "marker", "overlay", "shadow"]);
     expect(groups.bg).toEqual([...SURFACE_FILLS]);
     expect(groups.control).toEqual(["track"]);
     expect(groups.ink).toEqual(["primary", "secondary", "tertiary"]);
@@ -325,6 +325,7 @@ describe("what the Color page says", () => {
     expect(Object.keys(COLOR_VALUES.interaction.bgHover)).toEqual(["onSurface", "onPrimarySolid", "onAccentSolid"]);
     expect(groups.overlay).toEqual(["scrim"]);
     expect(groups.shadow).toEqual(["floating", "lifted"]);
+    expect(groups.marker).toEqual(["fill", "ink"]);
     expect(Object.keys(OPACITY_ROLES)).toEqual(["disabled", "subdued"]);
   });
 

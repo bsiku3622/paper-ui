@@ -59,6 +59,7 @@ export const SHAPE_RECIPES = {
       return `calc((${control.height[size]} - ${line}) / 2 - ${stroke.border})`;
     }),
   },
+  marker: ANATOMY.marker,
   // The ring is a control icon tall; inline it follows the text it sits in.
   spinner: { size: control.icon, inline: ANATOMY.inline.spinner, stroke: stroke.emphasis },
   // Marks smaller than a minimum target reach past their edge; each is the inset of its hit area.
