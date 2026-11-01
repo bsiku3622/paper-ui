@@ -8,7 +8,7 @@
 import { Suspense } from "react";
 import { Outlet, ScrollRestoration } from "react-router-dom";
 
-import { Box, Text, VisuallyHidden, surfaceClass } from "@studio-baeks/paper-ui";
+import { Box, Link, Text, VisuallyHidden, surfaceClass } from "@studio-baeks/paper-ui";
 
 import { DocsNav } from "../docs/DocsNav";
 import { PlaygroundNav } from "../playground/PlaygroundNav";
@@ -19,7 +19,7 @@ import * as s from "./shell.css";
 // Hidden until its link has focus, then a raised plate at the top left, at the toast tier so nothing covers it.
 const SkipLink = () => (
   <VisuallyHidden focusable className={`${surfaceClass({ fill: "raised", border: true, elevation: "toast" })} ${s.skipLink}`}>
-    <a href="#main" className={s.navLink.plain}>본문으로 건너뛰기</a>
+    <Link href="#main" underline="hover" className={s.navLink.plain}>본문으로 건너뛰기</Link>
   </VisuallyHidden>
 );
 

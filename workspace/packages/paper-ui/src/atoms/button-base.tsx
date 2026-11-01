@@ -4,7 +4,7 @@
 // 태그든 라우터 Link 든 그냥 대상이고, 눌림 장치는 그 위에 한 벌만 얹힌다. Atom 의 모양을 행동에 입히는 길은
 // <Button as={부품}> 이고, 반대(<부품 as={Button}>)는 개발 오류다(internal/render-target).
 //
-// 눌림의 모습(1px · 커서 · 비활성)은 Pressable 의 motion="press", 색은 paintClass, 선택은 useSelectable 이 정하고
+// 눌림의 모습(변위 · 커서 · 비활성)은 Pressable 의 motion="press", 색은 paintClass, 선택은 useSelectable 이 정하고
 // 이 모듈은 크기와 글자와 로딩만 더한다.
 
 import { forwardRef, useEffect, useRef, type ElementType, type HTMLAttributes, type ReactNode } from "react";

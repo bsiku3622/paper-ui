@@ -1,5 +1,5 @@
 import { stateStyle, tokens, transition } from "../tokens";
-import { controlGeometry, geometry } from "../internal/shape";
+import { controlGeometry } from "../internal/shape";
 import { layered } from "../tokens/layers.css";
 
 const { style, styleVariants } = layered("components");
@@ -33,7 +33,7 @@ export const fieldInput = style({
   // ring의 주인은 래퍼다.
   outline: "none",
   font: "inherit",
-  // control line-height(16)까지 물려받으면 브라우저 caret와 한글 fallback glyph가
+  // control line-height까지 물려받으면 브라우저 caret와 한글 fallback glyph가
   // 한 줄 상자에 눌려 위아래가 잘릴 수 있다. 입력 줄상자는 fieldInputLeading 이 따로 주고 래퍼 안에서
   // 중앙 정렬해 caret 높이만 확보한다.
   letterSpacing: "inherit",
@@ -53,7 +53,7 @@ export const fieldSize = styleVariants(
   controlGeometry.field,
 );
 
-// 입력값이 앉는 줄상자. preset 의 글자 줄(16)은 Shape 의 안쪽 여백이 읽는 값이라, caret 의 높이는 따로 둔다.
+// 입력값이 앉는 줄상자. preset 의 글자 줄은 Shape 의 안쪽 여백이 읽는 값이라, caret 의 높이는 따로 둔다.
 export const fieldInputLeading = styleVariants(
   controlGeometry.fieldInput,
 );
@@ -66,7 +66,7 @@ export const fieldAdornment = style({
 });
 
 // 액션 버튼 — clear(×)·비밀번호 보기(👁). 색은 fieldActionPaint(흐렸다가 hover 때 또렷).
-// 보이는 아이콘은 컨트롤 아이콘 크기 그대로이고, 누르는 자리는 보이지 않는 ::before 가 24px 까지 넓힌다.
+// 보이는 아이콘은 컨트롤 아이콘 크기 그대로이고, 누르는 자리는 보이지 않는 ::before 가 최소 target 까지 넓힌다.
 // 링은 버튼 자신의 곡률을 따른다.
 export const fieldAction = style([stateStyle.focusVisible, stateStyle.disabledCursor, {
   position: "relative",
@@ -79,10 +79,7 @@ export const fieldAction = style([stateStyle.focusVisible, stateStyle.disabledCu
 }]);
 
 // 액션의 보이지 않는 hit area — 아이콘이 최소 target 에 못 미친 만큼 사방으로. 형제 액션과 겹치지 않는다.
-export const fieldActionReach = styleVariants(
-  geometry.target.action,
-  (inset) => ({ selectors: { "&::before": { content: "''", position: "absolute", inset } } }),
-);
+export const fieldActionReach = styleVariants(controlGeometry.fieldActionReach);
 
 // 정렬 축 — numeric 과 직교. 논리값(start·center·end)이라 RTL 도 따라간다. 우측정렬 숫자열 = numeric + end.
 export const fieldAlign = styleVariants({

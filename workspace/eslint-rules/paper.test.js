@@ -42,6 +42,16 @@ test("[guardrails.internal-class.no-class-names] the package, an app, a fixture 
     ['expect(el.className).toContain("pui-gap-md");', "packages/paper-ui/src/primitives/probe.test.tsx"],
     ['expect(el.className).toMatch(/pui-gap-md/);', "packages/paper-ui/src/primitives/probe.test.tsx"],
     ['expect(el.className).toMatch(/pui-gap-md/);', "tests/primitives/probe.spec.ts"],
+    // A concatenation that starts a class name.
+    ['export const X = ({ n }) => <div className={"pui-" + n} />;', "app/src/pages/Probe.tsx"],
+    ['await page.locator(".pui-" + n).click();', "tests/primitives/probe.spec.ts"],
+    ['export const name = "pui-" + n;', "packages/paper-ui/src/atoms/Probe.tsx"],
+    ['export const name = `pui-` + n;', "fixtures/harness/src/probe.ts"],
+    ['export const name = "home pui-" + n;', "app/src/pages/Probe.tsx"],
+    ['export const name = "home " + "pui-" + n;', "app/src/pages/Probe.tsx"],
+    ['export const selector = ".pui-" + n;', "packages/paper-ui/src/atoms/Probe.tsx"],
+    ['const fooId = "pui-" + n; export const X = () => <div className={fooId} />;', "packages/paper-ui/src/atoms/Probe.tsx"],
+    ['const controlId = "pui-" + n;', "app/src/pages/Probe.tsx"],
     // A binding named for an id or a key is still a class where a class position reads it, and in a selector.
     ['const fooId = "pui-foo"; export const X = () => <div className={fooId} />;', "packages/paper-ui/src/atoms/Probe.tsx"],
     ['const fooKey = "pui-foo"; export const props = { className: `${fooKey} other` };', "packages/paper-ui/src/atoms/Probe.tsx"],
@@ -65,7 +75,11 @@ test("[guardrails.internal-class.no-class-names] the package, an app, a fixture 
     ['export const selector = "[data-pui-theme]";', "tests/foundations/probe.spec.ts"],
     ['export const X = () => <div data-pui-theme="dark" style={{ "--pui-x": 0 }} />;', "fixtures/harness/src/cases/probe.tsx"],
     ['export const attribute = "data-pui-status"; export const variable = "--pui-color";', "packages/paper-ui/src/atoms/Probe.tsx"],
+    ['export const variable = "--pui-" + name; export const attribute = "data-pui-" + name;', "app/src/pages/Probe.tsx"],
+    ['export const other = "pui" + n; export const after = n + "-pui-"; export const sum = 1 + n;', "app/src/pages/Probe.tsx"],
+    ['await page.locator("[data-pui-" + n + "]").click();', "tests/primitives/probe.spec.ts"],
     // In the package a `pui-` name that is not a class says so by where it sits.
+    ['const controlId = "pui-" + n;', "packages/paper-ui/src/primitives/field/FormField.tsx"],
     ['export const controlId = (id, generatedId) => { const controlId = id ?? `pui-field-${generatedId}`; return { id: controlId, htmlFor: controlId }; };', "packages/paper-ui/src/primitives/field/FormField.tsx"],
     ['export const THEME_STORAGE_KEY = "pui-theme";', "packages/paper-ui/src/theme/engine.ts"],
     ['expect(source).not.toContain("pui-state-tint");', "packages/paper-ui/src/styles/states.test.ts"],

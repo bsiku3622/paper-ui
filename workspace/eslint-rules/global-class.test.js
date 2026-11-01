@@ -49,3 +49,7 @@ test("[guardrails.global-class.scoped-selectors] an element or :root selector is
   // The rule reads app stylesheets; the package's own are layered-styles' business.
   assert.equal(await flagged(`${head}globalStyle(".md", { margin: 0 });`, "packages/paper-ui/src/atoms/Probe.css.ts"), false);
 });
+
+test("[guardrails.global-class.scoped-selectors] an import under another name is still the same call", async () => {
+  assert.equal(await flagged('import { globalStyle as g } from "@vanilla-extract/css";\ng("p", { margin: 0 });', SHEET), true);
+});

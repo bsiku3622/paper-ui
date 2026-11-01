@@ -104,8 +104,8 @@ Button · IconButton은 눌리는 동안 한 단계(`motion.press`의 변위, 1p
 | Textarea | 자신 | Field와 같음 | — | — | Field와 같음 | Field와 같음 | Field와 같음 | 컨트롤 전체 |
 | Select | 틀(wrapper) | Field와 같음 | — | — | Field와 같음 | Field와 같음(`status` 있음) | Field와 같음 | 컨트롤 전체 |
 | Checkbox | 자신(상자 곡률) | 없음 — 라벨과 행이 맡음 | — | checked · indeterminate → primary solid 면 | `opacity.disabled` · `not-allowed` | `status="error"`(`ChoiceStatus`) → 꺼진 상자의 테가 error 잉크 | Canvas 면 · ButtonText 테, 켜지면 Highlight 면 · HighlightText 표식, 비활성은 GrayText | 24px hit area |
-| Radio | 자신(원) | 없음 | — | checked → primary solid 테와 점 | Checkbox와 같음 | Checkbox와 같음 | Canvas 면 · ButtonText 테, 켜지면 Highlight 테와 점 | 24px hit area |
 | Switch | 자신(트랙) | 없음 | — | checked → primary solid 트랙 | Checkbox와 같음 | `status="error"` → 꺼진 트랙의 안쪽 테가 error 잉크 | ButtonFace 트랙 · ButtonText 테 · 손잡이, 켜지면 Highlight 트랙 · HighlightText 손잡이 | 트랙 위아래로 24px hit area |
+| Radio | 자신(원) | 없음 | — | checked → primary solid 테와 점 | Checkbox와 같음 | Checkbox와 같음 | Canvas 면 · ButtonText 테, 켜지면 Highlight 테와 점 | 24px hit area |
 | Label | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 글자는 OS가 정함 | 해당 없음 |
 | Badge | 포커스 없음 | 없음 — `hoverable`을 주지 않아 hover 색이 없음 | 없음 | 없음 | 해당 없음 | 해당 없음 | 테두리로 남음, 점은 CanvasText | 해당 없음 |
 | Spinner | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 링 GrayText, 호 CanvasText | 해당 없음 |

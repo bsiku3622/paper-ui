@@ -69,16 +69,14 @@ export const brand = style({ gridArea: "brand", display: "inline-flex" });
 export const headerNav = style({ gridArea: "nav" });
 export const headerTools = style({ gridArea: "tools", justifySelf: "end" });
 
-// A link of the chrome. `bar` is a link of the navigation bar; `plain` carries no mark of its own, for a
-// brand or a link set in a Text.
+// How a Link of the chrome is inked. `bar` is a link of the navigation bar; `plain` is the brand and the skip link.
 export const navLink = styleVariants({
   bar: {
     padding: `${tokens.shape.inset.xs} ${tokens.shape.inset.sm}`,
     color: tokens.color.ink.secondary,
-    textDecoration: "none",
     selectors: { '&[aria-current="page"]': { color: tokens.color.ink.primary } },
   },
-  plain: { color: tokens.color.ink.primary, textDecoration: "none" },
+  plain: { color: tokens.color.ink.primary },
 });
 
 // The first Tab on every page. It appears at the top left once it has focus.

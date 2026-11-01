@@ -1,4 +1,4 @@
-import { controlGeometry, geometry } from "../internal/shape";
+import { controlGeometry } from "../internal/shape";
 
 import { tokens, transition, elevationCast, elevationStack } from "../tokens";
 import { layered } from "../tokens/layers.css";
@@ -36,7 +36,4 @@ export const switchRoot = style([controlReset, {
 export const switchSize = styleVariants(controlGeometry.switch);
 
 // 트랙 위아래로 보이지 않는 hit area 가 최소 target 까지 넓어진다. 가로는 트랙이 이미 충분하다.
-export const switchReach = styleVariants(
-  geometry.target.switchBlock,
-  (inset) => ({ selectors: { "&::before": { content: "''", position: "absolute", insetBlock: inset, insetInline: 0 } } }),
-);
+export const switchReach = styleVariants(controlGeometry.switchReach);

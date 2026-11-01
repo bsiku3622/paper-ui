@@ -239,7 +239,7 @@ describe("controlGeometry is the one size entry of every sized Atom", () => {
 
   it("[foundations.shape.control-geometry] [foundations.shape.geometry-entry] names a rule for every control size in each entry", () => {
     expect(Object.keys(controlGeometry)).toEqual([
-      "button", "iconButton", "field", "fieldInput", "select", "selectArrow", "textarea", "selection", "checkbox", "radio", "switch", "badge", "spinner", "spinnerInline",
+      "button", "iconButton", "field", "fieldInput", "select", "selectArrow", "textarea", "selection", "checkbox", "radio", "switch", "selectionReach", "switchReach", "fieldActionReach", "badge", "spinner", "spinnerInline",
     ]);
     for (const [name, entry] of Object.entries(controlGeometry)) {
       if (name !== "spinnerInline") expect(Object.keys(entry), name).toEqual([...CONTROL_SIZES]);

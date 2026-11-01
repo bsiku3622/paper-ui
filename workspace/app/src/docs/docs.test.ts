@@ -165,15 +165,27 @@ describe("docs metadata", () => {
     expect(hits).toEqual([]);
   });
 
-  it("the Atom table follows the inventory's order", () => {
-    const text = readFileSync(join(DOCS_DIR, "atoms/README.md"), "utf-8");
-    const table = text.slice(text.indexOf("[contract:atoms.contract.axes]: #"), text.indexOf("[contract:atoms.contract.stands-on]: #"));
-    const rows = [...table.matchAll(/^\| (\w+) \|/gm)].map((match) => match[1]).slice(1);
-    expect(rows).toEqual([...INVENTORY.atoms]);
+  it("the Atom tables follow the inventory's order", () => {
+    const rowsAfter = (file: string, marker: string) => {
+      const text = readFileSync(join(DOCS_DIR, file), "utf-8");
+      const lines = text.slice(text.indexOf(marker)).split("\n");
+      const table = lines.slice(lines.findIndex((line) => line.startsWith("|")));
+      const rows = table.slice(0, table.findIndex((line) => !line.startsWith("|")));
+      return rows.flatMap((line) => /^\| (\w+) \|/.exec(line)?.[1] ?? []).slice(1);
+    };
+    expect(rowsAfter("atoms/README.md", "[contract:atoms.contract.axes]: #")).toEqual([...INVENTORY.atoms]);
+    expect(rowsAfter("atoms/states.md", "[contract:atoms.states.atom-table]: #")).toEqual([...INVENTORY.atoms]);
+  });
+
+  it("the word tone keeps one meaning: no type takes the name, in a doc's code or its text", () => {
+    const hits = FILES.filter((file) => read(file).includes("type Tone ="));
+    expect(hits).toEqual([]);
+    const recipes = readFileSync(fileURLToPath(new URL("../../../packages/paper-ui/src/tokens/color-recipes.ts", import.meta.url)), "utf-8");
+    expect(recipes).not.toContain("wash·soft는 각각");
   });
 
   it("the prose keeps none of the phrases the docs have already dropped", () => {
-    const STALE = ["variant='quiet'", 'variant="quiet"', "raw HTML above", "Cascadia", "mono·uppercase", "10·13·17", "inputPaddingX", "#2563eb", "네 규칙", "type Tone =", "wash·soft는 각각"];
+    const STALE = ["variant='quiet'", 'variant="quiet"', "raw HTML above", "Cascadia", "mono·uppercase", "10·13·17", "inputPaddingX", "#2563eb", "네 규칙"];
     const hits = PROSE.flatMap(([file, text]) => STALE.filter((phrase) => text.includes(phrase)).map((phrase) => `${file}: ${phrase}`));
     expect(hits).toEqual([]);
   });

@@ -22,7 +22,7 @@ export const ROLE_ALIASES = {
 } as const;
 
 export const ROLE_FORMULAS = {
-  "control.inset.input": { rule: "(control.height − 컨트롤 글자 줄) / 2", note: "입력값 줄상자 사방에 같은 여백" },
+  "control.inset.input": { rule: "(control.height − 컨트롤 글자 줄) / 2", note: "입력값 글자 줄 사방에 같은 여백" },
   "control.inset.button": { rule: `round(nearest, (control.height − 버튼 글자 줄) / 2 × ${SHAPE_SOURCE.control.buttonInsetRatio}, 1px)`, note: "라벨이 상자를 정의하므로 더 넓게" },
 } as const;
 

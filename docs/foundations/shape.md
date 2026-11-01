@@ -111,7 +111,7 @@ Surface의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값
 <!-- /generated:shape-control -->
 
 [contract:foundations.shape.geometry-entry]: #
-컨트롤 안의 아이콘은 옆 글자가 아니라 컨트롤 높이를 따라 30 → 16, 32 → 18, 36 → 20으로 커집니다. 컨트롤 글자는 control preset(13 · 13 · 14)이라 어느 Text 역할과도 같지 않기 때문입니다. 같은 size의 Button · Field · Select는 같은 높이를 고르고, 글자는 Typography의 control preset에서 따로 고릅니다. `controlGeometry`(`internal/shape.ts`)는 크기가 있는 모든 Atom의 단일 진입점이고, stylesheet가 자기만의 크기 사다리를 만들지 않습니다. 항목은 button · iconButton(높이를 변으로 하는 정사각, 안쪽 여백 없음) · field · select · selectArrow · textarea · selection(선택 상자) · checkbox · radio · switch · badge · spinner · spinnerInline입니다. `control.icon`은 컨트롤 안 아이콘의 기본 크기입니다. 컨트롤 안의 Icon은 그 컨트롤이 정한 크기를 맥락(`IconSizeContext`)으로 받고, 명시한 `size`가 있으면 그것이 이깁니다.
+컨트롤 안의 아이콘은 옆 글자가 아니라 컨트롤 높이를 따라 커집니다(`control.icon`). 컨트롤 글자는 control preset이라 어느 Text 역할과도 같지 않기 때문입니다. 같은 size의 Button · Field · Select는 같은 높이를 고르고, 글자는 Typography의 control preset에서 따로 고릅니다. `controlGeometry`(`internal/shape.ts`)는 크기가 있는 모든 Atom의 단일 진입점이고, stylesheet가 자기만의 크기 사다리를 만들지 않습니다. 항목은 button · iconButton(높이를 변으로 하는 정사각, 안쪽 여백 없음) · field · select · selectArrow · textarea · selection(선택 상자) · checkbox · radio · switch · badge · spinner · spinnerInline입니다. `control.icon`은 컨트롤 안 아이콘의 기본 크기입니다. 컨트롤 안의 Icon은 그 컨트롤이 정한 크기를 맥락(`IconSizeContext`)으로 받고, 명시한 `size`가 있으면 그것이 이깁니다.
 
 ## Sizing
 

@@ -38,6 +38,11 @@ test("the sidebar lists the Playground in the inventory's order, with Utilities 
   expect(text.indexOf("Utilities")).toBeLessThan(text.indexOf("Atoms"));
 });
 
+test("a component page titles its sections with headings, like the Overview and the Foundations pages", async ({ page }) => {
+  await page.goto("/playground/button");
+  for (const name of ["코드", "Props"]) await expect(page.getByRole("heading", { level: 2, name, exact: true })).toBeVisible();
+});
+
 test("every sidebar page opens on its own name and marks itself current, without an error", async ({ page }) => {
   test.setTimeout(120_000);
   const errors = pageErrors(page);

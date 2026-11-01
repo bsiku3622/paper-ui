@@ -190,6 +190,115 @@ test("[guardrails.source-numbers.structural-only] a number passed to a function 
   assert.equal(await flagged(mapped("{ sm: 8, md: 16 }", "(value) => ({ gap: value })"), APP_CSS), true);
 });
 
+test("[guardrails.source-numbers.structural-only] a parameter of a same-file function whose body calls a style API reads what its calls hand it, in the package and in the app", async () => {
+  for (const [lines, property] of [
+    ["const f = (o: number) => style({ opacity: o }); f(0.5);", "opacity"],
+    ["function f(o) { return style({ opacity: o }); } f(0.5);", "a declaration"],
+    ["const f = (o) => { const rule = style({ opacity: o }); return rule; }; f(0.5);", "a statement"],
+    ["const f = (o) => { globalStyle('a', { opacity: o }); }; f(0.5);", "no return"],
+    ["const inner = (o) => style({ opacity: o }); const outer = (o) => inner(o); outer(0.5);", "handed on"],
+    ["const f = ({ o }) => style({ opacity: o }); f({ o: 0.5 });", "a pattern"],
+    ["const f = (a) => style({ opacity: a.o }); f({ o: 0.5 });", "a member"],
+    ["const f = (o) => style({ opacity: o }); const g = f; g(0.5);", "an alias"],
+    ["const f = (o) => style({ opacity: o }); f(1); f(0.5);", "the second call"],
+    ["const f = (o) => style({ opacity: o }); f(...[0.5]);", "a spread"],
+    ["const f = (o = 0.5) => style({ opacity: o }); f();", "a default"],
+    ["const t = (s, m) => style({ fontSize: s, transition: m }); t('14px', 'color 150ms ease');", "two parameters"],
+    ["const t = (m) => style({ transition: m }); t('color var(--x) ease');", "an easing"],
+  ]) {
+    const code = `import { globalStyle, style } from "@vanilla-extract/css";\n${lines}`;
+    assert.equal(await flagged(code, PACKAGE_CSS), true, `package ${property}: ${lines}`);
+    assert.equal(await flagged(code, APP_CSS), true, `app ${property}: ${lines}`);
+  }
+  const code = (lines) => `import { style } from "@vanilla-extract/css";\nimport { tokens } from "@studio-baeks/paper-ui/tokens";\n${lines}`;
+  for (const lines of [
+    "const f = (o) => style({ opacity: o }); f(1); f(0);",
+    "const f = (o) => style({ opacity: o }); export const g = f;",
+    "const f = (n) => style({ opacity: 0 }); f(0.5);",
+    "const f = (o) => o * 2; f(0.5);",
+    "const pad = (n) => style({ padding: n }); pad(tokens.shape.inset.md);",
+    "const pad = (n) => style({ padding: tokens.shape.inset[n] }); pad('2xl');",
+    "const pick = (a, b) => style({ padding: a, gridArea: 'x' }); pick(0, 13);",
+  ]) {
+    assert.equal(await flagged(code(lines), PACKAGE_CSS), false, `package ${lines}`);
+    assert.equal(await flagged(code(lines), APP_CSS), false, `app ${lines}`);
+  }
+  assert.equal(await flagged(code("const pad = (n) => style({ padding: n }); pad(13);"), APP_CSS), true);
+  // The property it reaches decides: the app states its own dimension through a helper.
+  assert.equal(await flagged(code("const w = (n) => style({ width: n }); w(13);"), APP_CSS), false);
+  assert.equal(await flagged(code("const w = (n) => style({ width: n }); w(13);"), PACKAGE_CSS), true);
+  // JSX and a DOM write are style positions the same way.
+  for (const lines of [
+    "const mk = (p) => <div style={{ padding: p }} />; export const a = mk(13);",
+    "const Inner = ({ p }) => <div style={{ padding: p }} />; export const X = () => <Inner p={13} />;",
+    "const Inner = (props) => <div style={{ padding: props.p }} />; export const X = () => <Inner p={13} />;",
+    "const set = (el, p) => { el.style.padding = p; }; set(el, '16px');",
+  ]) assert.equal(await flagged(lines, APP_TSX), true, lines);
+  for (const lines of [
+    "const Inner = ({ p, q }) => <div style={{ padding: p }} data-q={q} />; export const X = () => <Inner p='md' q={13} />;",
+    "const Inner = (props) => <div style={{ padding: props.p }} />; export const X = () => <Inner p='md' q={13} />;",
+    "const Inner = ({ p }) => <div data-p={p} />; export const X = () => <Inner p={13} />;",
+  ]) assert.equal(await flagged(lines, APP_TSX), false, lines);
+});
+
+test("[guardrails.source-numbers.structural-only] a `.map` or `.forEach` callback's parameter reads the literal entries it runs over", async () => {
+  for (const lines of [
+    "[13, 14].map((n) => style({ padding: n }));",
+    "[13].forEach((n) => { globalStyle('a', { padding: n }); });",
+    "[13].flatMap((n) => [style({ padding: n })]);",
+    "const SIZES = [13, 14]; SIZES.map((n) => style({ padding: n }));",
+    "const SIZES = [13, 14] as const; SIZES.map((n) => style({ padding: n }));",
+    "[[13]].map(([n]) => style({ padding: n }));",
+    "[{ p: 13 }].map(({ p }) => style({ padding: p }));",
+    "[{ p: 13 }].map((o) => style({ padding: o.p }));",
+    "const make = (n) => style({ padding: n }); [13].map(make);",
+    "Object.values({ a: 13 }).map((n) => style({ padding: n }));",
+    "Object.entries({ a: 13 }).map(([, n]) => style({ padding: n }));",
+    "const list = (sizes) => sizes.map((n) => style({ padding: n })); list([13]);",
+    "for (const n of [13, 14]) style({ padding: n });",
+    "[13].filter(Boolean).map((n) => style({ padding: n }));",
+    "export const probe = style([13].map((n) => ({ padding: n })));",
+  ]) {
+    const code = `import { globalStyle, style } from "@vanilla-extract/css";\n${lines}`;
+    assert.equal(await flagged(code, PACKAGE_CSS), true, `package ${lines}`);
+    assert.equal(await flagged(code, APP_CSS), true, `app ${lines}`);
+  }
+  for (const lines of [
+    "[0, 1].map((n) => style({ opacity: n }));",
+    "[13, 14].map(() => style({ gap: 0 }));",
+    "[13, 14].map((_, index) => style({ gap: 0, gridArea: `a${index}` }));",
+    "[13, 14].map((n) => String(n));",
+    "Object.entries({ a: 13 }).map(([name]) => style({ gridArea: name }));",
+    "Object.keys({ a: 13 }).map((name) => style({ gridArea: name }));",
+    "import { SPACES, tokens } from '@studio-baeks/paper-ui/tokens'; SPACES.map((step) => style({ gap: tokens.layout.gap[step] }));",
+  ]) {
+    const code = `import { style } from "@vanilla-extract/css";\n${lines}`;
+    assert.equal(await flagged(code, PACKAGE_CSS), false, `package ${lines}`);
+    assert.equal(await flagged(code, APP_CSS), false, `app ${lines}`);
+  }
+  // The property it reaches decides.
+  assert.equal(await flagged(css("[218].map((n) => ({ width: n }))"), APP_CSS), false);
+  assert.equal(await flagged("import { style } from '@vanilla-extract/css';\n[218, 58].map((n) => style({ width: n }));", APP_CSS), false);
+  assert.equal(await flagged("import { style } from '@vanilla-extract/css';\n[218, 58].map((n) => style({ width: n }));", PACKAGE_CSS), true);
+});
+
+test("[guardrails.source-numbers.structural-only] an imported style API is read by its original name", async () => {
+  for (const code of [
+    "import { style as s } from '@vanilla-extract/css'; s({ padding: 13 });",
+    "import { style as s } from '@vanilla-extract/css'; const pad = (n) => s({ padding: n }); pad(13);",
+    "import { globalStyle as g } from '@vanilla-extract/css'; g('a', { padding: 13 });",
+    "import { styleVariants as v } from '@vanilla-extract/css'; v({ sm: 13 }, (n) => ({ padding: n }));",
+    "import { keyframes as k } from '@vanilla-extract/css'; k({ '25%': { opacity: 0 } });",
+  ]) {
+    assert.equal(await flagged(code, APP_CSS), true, code);
+  }
+  for (const code of [
+    "import { style as s } from '@vanilla-extract/css'; s({ padding: tokens.shape.inset.md, opacity: 1 });",
+    "import { pad as style } from './pad'; style({ padding: 13 });",
+    "import { pad } from './pad'; pad({ padding: 13 });",
+  ]) assert.equal(await flagged(code, APP_CSS), false, code);
+});
+
 test("[guardrails.source-numbers.structural-only] in the package a style-keyed object literal is a style position wherever it is written", async () => {
   const PLAIN = ["packages/paper-ui/src/internal/probe.ts", "packages/paper-ui/src/atoms/recipes/probe.ts", "packages/paper-ui/src/primitives/probe.ts", "packages/paper-ui/src/theme/probe.ts", "packages/paper-ui/src/atoms/Probe.tsx", "packages/paper-ui/src/atoms/Probe.css.ts"];
   for (const code of [
@@ -288,6 +397,11 @@ test("[guardrails.source-numbers.media-keys] a query key is followed through tab
     ["const w = 760;", "{ '@media': { [`(max-width: ${w}px)`]: { gap: 0 } } }"],
     ["const w = '760px';", "{ '@media': { [`(max-width: ${w})`]: { gap: 0 } } }"],
     ["const w = '760px';", "{ '@media': { ['(max-width: ' + w + ')']: { gap: 0 } } }"],
+    ["const q = (n = 760) => `(max-width: ${n}px)`;", "{ '@media': { [q()]: { gap: 0 } } }"],
+    ["const q = ({ n = 760 } = {}) => `(max-width: ${n}px)`;", "{ '@media': { [q()]: { gap: 0 } } }"],
+    ["import { tokens } from '@studio-baeks/paper-ui/tokens';\nconst q = (w = tokens.layout.breakpoint.md) => `(max-width: ${w})`;", "{ '@media': { [q('760px')]: { gap: 0 } } }"],
+    ["const rule = (q) => ({ '@media': { [q]: { gap: 0 } } });", "rule('(max-width: 760px)')"],
+    ["const rule = (block) => ({ '@media': block });", "rule({ '(max-width: 760px)': { gap: 0 } })"],
     ["import { q } from './queries';", "{ '@media': { [q(760)]: { gap: 0 } } }"],
     ["import { Q } from './queries';", "{ '@media': { [Q]: { gap: 0 } } }"],
     ["import { Q } from './queries';", "{ '@media': { [Q.narrow]: { gap: 0 } } }"],
@@ -316,6 +430,8 @@ test("[guardrails.source-numbers.media-keys] a query key is followed through tab
     [`${BP}\nconst { layout: { breakpoint: bp } } = tokens;`, "{ '@media': { [`(max-width: ${bp.md})`]: { gap: 0 } } }"],
     [`${BP}\nconst BP = tokens.layout.breakpoint;`, "{ '@media': { [`(max-width: ${BP[size]})`]: { gap: 0 } } }"],
     [`${BP}\nconst q = (w) => \`(max-width: \${w})\`;`, "{ '@media': { [q(tokens.layout.breakpoint.md)]: { gap: 0 } } }"],
+    [`${BP}\nconst q = (w = tokens.layout.breakpoint.md) => \`(max-width: \${w})\`;`, "{ '@media': { [q()]: { gap: 0 } } }"],
+    [`${BP}\nconst q = (w = tokens.layout.breakpoint.md) => \`(max-width: \${w})\`;`, "{ '@media': { [q(tokens.layout.breakpoint.sm)]: { gap: 0 } } }"],
     [`${BP}\nconst M = { a: \`(max-width: \${tokens.layout.breakpoint.md})\` };`, "{ '@media': { [M.a]: { gap: 0 } } }"],
     ["const M = { a: '(hover: hover)', b: '(max-width: 760px)' };", "{ '@media': { [M.a]: { gap: 0 } } }"],
     ["const FORCED = '(forced-colors: active)';", "{ '@media': { [FORCED]: { gap: 0 }, [`(hover: hover) and ${FORCED}`]: { gap: 0 } } }"],

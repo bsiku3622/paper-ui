@@ -2,7 +2,7 @@ import path from "node:path";
 
 import { COLOR_OWNERS, GLOBAL_SELECTOR_FILES, RUNTIME_STYLE, TOKEN_LAYER, isInside, isTestFile, workspacePath } from "./manifest.js";
 import { sourceIsolationRule } from "./source-isolation.js";
-import { calledFunction, heldBy, isStyleDeclaration, picked, returnsOf, sourceNumbersRule } from "./source-numbers.js";
+import { STYLE_CALLS, calledFunction, calleeName, domStyleWrites, givenTo, heldBy, memberKeys, patternPath, picked, returnsOf, rootOf, sourceNumbersRule, variableOf } from "./source-numbers.js";
 
 // A colour written by hand: a HEX (also url-encoded) or a colour function. Any string, template or key.
 const rawColor = /(?:#|%23)(?:[\da-f]{8}|[\da-f]{6}|[\da-f]{4}|[\da-f]{3})\b|\b(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color|color-mix)\s*\(/i;
@@ -45,9 +45,16 @@ const rawColorRule = {
       reported.add(node);
       context.report({ node, messageId, data });
     };
+    const readPairs = (list, read) => {
+      const readPair = (pair) => read(pair?.type === "ArrayExpression" ? pair.elements[1] : pair);
+      const callback = list?.type === "CallExpression" && calleeName(source, list) === "map" ? list.arguments[0] : undefined;
+      if (callback?.type.endsWith("FunctionExpression")) returnsOf(source, callback).forEach(readPair);
+      else if (list?.type === "ArrayExpression") list.elements.forEach(readPair);
+      else read(list);
+    };
     // The string pieces a value is made of, through wrappers, conditionals, logicals, templates, concatenations,
-    // arrays, the arguments of a call, and the same-file name, table or function it reads. A piece is a string
-    // literal or a template's text.
+    // arrays, the arguments of a call, and the same-file name, table or function it reads, down to what the file hands
+    // a parameter. A piece is a string literal or a template's text.
     const pieces = (node, found = [], seen = new Set()) => {
       if (!node || seen.has(node)) return found;
       seen.add(node);
@@ -67,12 +74,23 @@ const rawColorRule = {
         case "BinaryExpression": read(node.left); read(node.right); break;
         case "ArrayExpression": node.elements.forEach(read); break;
         case "ObjectExpression": node.properties.forEach((entry) => read(entry.type === "SpreadElement" ? entry.argument : entry.value)); break;
-        case "CallExpression": read(calledFunction(source, node)); node.arguments.forEach(read); break;
+        case "CallExpression":
+          // The first of each pair is a key: `Object.fromEntries(RAMPS.map((name) => [name, …]))`.
+          if (calleeName(source, node) === "fromEntries") { readPairs(node.arguments[0], read); break; }
+          // A same-file function's parameters read what each call hands them, where the function uses them.
+          if (calledFunction(source, node)) read(calledFunction(source, node));
+          else node.arguments.forEach(read);
+          break;
         case "ArrowFunctionExpression":
         case "FunctionExpression":
         case "FunctionDeclaration": returnsOf(source, node).forEach(read); break;
-        case "Identifier": heldBy(source, node).forEach(read); break;
-        case "MemberExpression": picked(source, node).forEach(read); break;
+        case "Identifier": heldBy(source, node).forEach(read); givenTo(source, variableOf(source, node)).forEach(read); break;
+        case "MemberExpression": {
+          picked(source, node).forEach(read);
+          const root = rootOf(node);
+          if (root.type === "Identifier") givenTo(source, variableOf(source, root), memberKeys(node)).forEach(read);
+          break;
+        }
         default:
       }
       return found;
@@ -84,6 +102,27 @@ const rawColorRule = {
         if (word) flag(piece, "named", { word });
       }
     };
+    const isBlock = (node) => (QUOTED_WRAPPERS.has(node.type) ? isBlock(node.expression) : node.type === "ObjectExpression");
+    // A key takes a colour by its name. A key read from the file is that text; one that cannot be read is a custom property.
+    const takesColor = (property) => {
+      const under = property.parent.parent;
+      if (under?.type === "Property" && (under.key.name ?? under.key.value) === "vars") return true;
+      if (!property.computed) return colorProperty.test(String(property.key.name ?? property.key.value ?? ""));
+      const names = pieces(property.key);
+      return names.length > 0 ? names.some((name) => colorProperty.test(textOf(name))) : !isBlock(property.value);
+    };
+    // A DOM style write, by the property it sets; a write that names none may set a colour.
+    const checkWrite = ({ property, value }) => {
+      if (value && !isBlock(value) && (property === undefined || property === "cssText" || colorProperty.test(property))) checkKeyword(value);
+    };
+    // What goes into a function the rule cannot read, in a style call, may be what comes out. A same-file function says
+    // what it does with its parameters.
+    const checkHanded = (node) => {
+      if (QUOTED_WRAPPERS.has(node?.type)) return checkHanded(node.expression);
+      if (node?.type === "CallExpression") { if (!calledFunction(source, node)) checkKeyword(node); }
+      else if (node?.type === "ArrayExpression") node.elements.forEach(checkHanded);
+      else if (node?.type === "ObjectExpression") node.properties.forEach((entry) => { if (entry.type === "SpreadElement") checkHanded(entry.argument); });
+    };
     return {
       ...(ownership ? {
         MemberExpression(node) { if (readsColorRoles.MemberExpression(node)) flag(node, "owner"); },
@@ -92,7 +131,12 @@ const rawColorRule = {
       Literal(node) { if (typeof node.value === "string" && rawColor.test(node.value)) flag(node, "raw"); },
       TemplateLiteral(node) { if (rawColor.test(textOf(node))) flag(node, "raw"); },
       Property(node) {
-        if (node.parent.type === "ObjectExpression" && colorProperty.test(String(node.key.name ?? node.key.value ?? ""))) checkKeyword(node.value);
+        if (node.parent.type === "ObjectExpression" && takesColor(node)) checkKeyword(node.value);
+      },
+      AssignmentExpression(node) { domStyleWrites(source, node).forEach(checkWrite); },
+      CallExpression(node) {
+        domStyleWrites(source, node).forEach(checkWrite);
+        if (STYLE_CALLS.has(calleeName(source, node))) node.arguments.forEach(checkHanded);
       },
       JSXAttribute(node) {
         if (node.value?.type === "JSXExpressionContainer" && colorProperty.test(String(node.name.name))) checkKeyword(node.value.expression);
@@ -108,7 +152,8 @@ const rawColorRule = {
 // imported from the package itself or from any relative module: what a sibling helper returns is not read, so it is
 // taken to hold a token. "Reaches" follows what the value is made of: a declarator's initialiser and destructuring,
 // a variable's later assignments, member chains, a call's callee and arguments, the bodies of the functions it holds,
-// and conditional, logical, binary, template, spread and TypeScript-wrapper nodes. No call is opaque and no name is
+// a parameter to what the file hands it (a call's argument, a JSX prop, an entry of a `.map` or a `.forEach`), and
+// conditional, logical, binary, template, spread and TypeScript-wrapper nodes. No call is opaque and no name is
 // listed; a `throw` is not followed, since what a function throws is never the value it returns. Two kinds of module
 // are untracked. A stylesheet exports the class and variable names it generates, unless it sits in the directories
 // that hold token values and their maps (src/tokens, src/styles, src/internal). The declared runtime modules
@@ -143,12 +188,23 @@ const inlineTokenRule = {
       return !stylesheet || TRACKED_DIRECTORIES.includes(inside.split("/")[0]);
     };
 
-    const reaches = (node, seen = new Set()) => {
+    // `keys` is what is read off the value: `props.width`, or `const { width } = props`.
+    const reaches = (node, seen = new Set(), keys = []) => {
       if (!node || seen.has(node)) return false;
       seen.add(node);
-      if (node.type === "Identifier") return identifierReaches(node, seen);
-      if (TYPE_WRAPPERS.has(node.type)) return reaches(node.expression, seen);
+      if (node.type === "Identifier") return identifierReaches(node, seen, keys);
+      if (TYPE_WRAPPERS.has(node.type)) return reaches(node.expression, seen, keys);
       if (node.type.startsWith("TS") || node.type === "ThrowStatement") return false;
+      if (node.type === "MemberExpression") {
+        // A chain off a name reads that name by its keys, and whatever a computed key is made of.
+        const computed = [];
+        let root = node;
+        while (root.type === "MemberExpression" || TYPE_WRAPPERS.has(root.type)) {
+          if (root.computed) computed.push(root.property);
+          root = root.type === "MemberExpression" ? root.object : root.expression;
+        }
+        if (root.type === "Identifier") return identifierReaches(root, seen, [...memberKeys(node), ...keys]) || computed.some((property) => reaches(property, seen));
+      }
       return (source.visitorKeys[node.type] ?? []).some((key) => {
         if (((key === "key" && node.type === "Property") || (key === "property" && node.type === "MemberExpression")) && !node.computed) return false;
         const children = node[key];
@@ -156,18 +212,20 @@ const inlineTokenRule = {
       });
     };
 
-    const identifierReaches = (identifier, seen) => {
+    const identifierReaches = (identifier, seen, keys = []) => {
       let scope = source.getScope(identifier);
       while (scope && !scope.set.has(identifier.name)) scope = scope.upper;
       const variable = scope?.set.get(identifier.name);
       if (!variable) return false;
       const defined = variable.defs.some((def) => {
         if (def.type === "ImportBinding") return def.parent.importKind !== "type" && def.node.importKind !== "type" && isTracked(def.parent.source.value);
-        if (def.type === "Variable") return reaches(def.node.init, seen);
+        if (def.type === "Variable") return reaches(def.node.init, seen, [...(patternPath(def.node.id, identifier.name) ?? []), ...keys]);
         if (def.type === "FunctionName") return reaches(def.node.body, seen);
         return false;
       });
       if (defined) return true;
+      // What the file hands a parameter.
+      if (givenTo(source, variable, keys).some((given) => reaches(given, seen))) return true;
       // Later assignments: `value = tokens.x` and `value.color = tokens.x`.
       return variable.references.some((reference) => {
         if (reference.writeExpr) return reaches(reference.writeExpr, seen);
@@ -178,7 +236,7 @@ const inlineTokenRule = {
     };
 
     const check = (node, value) => { if (reaches(value)) context.report({ node, messageId: "inline" }); };
-    const isCallTo = (call, object, name) => call.callee.type === "MemberExpression" && !call.callee.computed && call.callee.property.name === name && (!object || (call.callee.object.type === "Identifier" && call.callee.object.name === object));
+    const checkWrites = (node) => domStyleWrites(source, node).forEach(({ value }) => check(node, value));
     return {
       JSXAttribute(node) {
         if (node.name.name === "style" && node.value?.type === "JSXExpressionContainer") check(node, node.value.expression);
@@ -186,17 +244,8 @@ const inlineTokenRule = {
       Property(node) {
         if (node.parent.type === "ObjectExpression" && !node.computed && (node.key.name ?? node.key.value) === "style") check(node, node.value);
       },
-      // `el.style.width = value`, `el.style[name] = value`, and the whole declaration: `el.style = value`.
-      AssignmentExpression(node) {
-        const { left } = node;
-        if (left.type === "MemberExpression" && (isStyleDeclaration(source, left.object) || isStyleDeclaration(source, left))) check(node, node.right);
-      },
-      CallExpression(node) {
-        const [first, ...rest] = node.arguments;
-        if (isCallTo(node, undefined, "setProperty") && isStyleDeclaration(source, node.callee.object)) node.arguments.forEach((argument) => check(node, argument));
-        else if (isCallTo(node, "Object", "assign") && first && isStyleDeclaration(source, first)) rest.forEach((argument) => check(node, argument));
-        else if (isCallTo(node, undefined, "setAttribute") && first?.type === "Literal" && first.value === "style") rest.forEach((argument) => check(node, argument));
-      },
+      AssignmentExpression: checkWrites,
+      CallExpression: checkWrites,
     };
   },
 };
@@ -243,7 +292,8 @@ const layeredStylesRule = {
 // Nobody writes the name of a package class. Shared axes reach their class through the package's typed maps, so a
 // `pui-` string is a name the package does not promise. `--pui-*` variables and `data-pui-*` attributes pass: the
 // character before the prefix is `-` there. A template literal counts each placeholder as a letter, so
-// `pui-${name}-dot` is read as a class name too, and a regular expression is read by its pattern.
+// `pui-${name}-dot` is read as a class name too, a `+` whose left side ends in `pui-` likewise, and a regular expression
+// is read by its pattern.
 //
 // Inside the package a `pui-` name can be something other than a class, and where it sits says so: an element's id
 // (`id:`, `id=`, `htmlFor=`, or a binding named …Id), a stored key (a binding named …KEY or …Key, or the first argument
@@ -255,7 +305,13 @@ const CLASS_KEYS = new Set(["className", "class"]);
 const ID_KEYS = new Set(["id", "htmlFor"]);
 const ID_OR_KEY_BINDING = /(?:^id|Id|_ID|^key|Key|_KEY)$/;
 const STORAGE_OBJECTS = new Set(["localStorage", "sessionStorage"]);
-const SEE_THROUGH = new Set(["LogicalExpression", "ConditionalExpression", "JSXExpressionContainer", ...QUOTED_WRAPPERS]);
+const SEE_THROUGH = new Set(["LogicalExpression", "ConditionalExpression", "BinaryExpression", "JSXExpressionContainer", ...QUOTED_WRAPPERS]);
+// The text a concatenation's left side ends in.
+const trailingText = (node) => {
+  if (node.type === "Literal") return typeof node.value === "string" ? node.value : "";
+  if (node.type === "TemplateLiteral") return node.quasis.at(-1).value.cooked ?? "";
+  return node.type === "BinaryExpression" && node.operator === "+" ? trailingText(node.right) : "";
+};
 const internalClassRule = {
   meta: { type: "problem", schema: [], messages: { internal: "패키지 내부 class 이름을 문자열로 쓰지 않습니다. 공유 축은 컴포넌트 prop 으로 고릅니다." } },
   create(context) {
@@ -309,6 +365,7 @@ const internalClassRule = {
         else if (node.regex) check(node, node.regex.pattern);
       },
       TemplateLiteral(node) { check(node, node.quasis.map((part) => part.value.cooked ?? part.value.raw).join("x")); },
+      BinaryExpression(node) { if (node.operator === "+") check(node, `${trailingText(node.left)}x`); },
     };
   },
 };
@@ -412,7 +469,7 @@ const globalClassRule = {
     const mayName = GLOBAL_SELECTOR_FILES.includes(file);
     return {
       CallExpression(call) {
-        const name = call.callee.type === "Identifier" ? call.callee.name : undefined;
+        const name = calleeName(source, call);
         if (name === "globalStyle" && !mayName && startsWithText(call.arguments[0], resolve)) context.report({ node: call.arguments[0], messageId: "selector", data: { files: GLOBAL_SELECTOR_FILES.join(" · ") } });
         else if (GLOBAL_NAMES.has(name) && !mayName) context.report({ node: call, messageId: "name", data: { name } });
       },

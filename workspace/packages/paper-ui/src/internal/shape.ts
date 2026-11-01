@@ -39,6 +39,17 @@ export const controlGeometry = {
       "&:checked::after": { insetInlineStart: `calc(${geometry.switch.inset} + ${geometry.switch.travel[size]})` },
     },
   } satisfies StyleRule)),
+  // A hit area past what is drawn, on an invisible pseudo-element placed from the padding box, so a bordered mark starts
+  // a border further out.
+  selectionReach: controlSizes((size) => ({
+    selectors: { "&::before": { content: "''", position: "absolute", inset: `calc(${geometry.target.selection[size]} - ${tokens.shape.stroke.border})` } },
+  } satisfies StyleRule)),
+  switchReach: controlSizes((size) => ({
+    selectors: { "&::before": { content: "''", position: "absolute", insetBlock: geometry.target.switchBlock[size], insetInline: 0 } },
+  } satisfies StyleRule)),
+  fieldActionReach: controlSizes((size) => ({
+    selectors: { "&::before": { content: "''", position: "absolute", inset: geometry.target.action[size] } },
+  } satisfies StyleRule)),
   badge: controlSizes((size) => ({ height: geometry.badge.height[size], paddingInline: geometry.badge.inset[size] } satisfies StyleRule)),
   spinner: controlSizes((size) => ({ width: geometry.spinner.size[size], height: geometry.spinner.size[size] } satisfies StyleRule)),
   // Inside a line of text the ring is as tall as the text.
