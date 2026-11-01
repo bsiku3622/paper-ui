@@ -1,7 +1,9 @@
+import type { HTMLAttributes } from "react";
+
 import { Box, Text, type BoxProps } from "@studio-baeks/paper-ui";
 import { CONTAINERS, DIMENSIONS, MEASURES } from "@studio-baeks/paper-ui/tokens";
 
-import { defineSpec, enumControl, local, pick, sample, vocab } from "../schema";
+import { defineSpec, enumControl, local, pick, sample, vocab, type Control } from "../schema";
 import { boxSample } from "./examples.css";
 
 const KEYWORDS = ["full", "fit", "min-content", "max-content"] as const;
@@ -13,23 +15,28 @@ const heights = () => sample([...DIMENSIONS, ...KEYWORDS], "height takes any CSS
 const OVERFLOWS = ["visible", "hidden", "clip", "scroll", "auto"] as const;
 const OVERFLOW_REASON = "Box's own overflow keywords, which are all it takes";
 
+// Every axis Box takes on top of a div's attributes: one added there fails typecheck here until it has a control.
+type BoxAxis = Exclude<keyof BoxProps, keyof HTMLAttributes<HTMLDivElement> | "as" | "ref" | "key">;
+
+const CONTROLS: Record<BoxAxis, Control> = {
+  padding: enumControl<BoxProps, "padding">("padding", vocab("SPACES")),
+  paddingX: enumControl<BoxProps, "paddingX">("paddingX", vocab("SPACES")),
+  paddingY: enumControl<BoxProps, "paddingY">("paddingY", vocab("SPACES")),
+  width: enumControl<BoxProps, "width">("width", widths(), { initial: "md" }),
+  minWidth: enumControl<BoxProps, "minWidth">("minWidth", widths()),
+  maxWidth: enumControl<BoxProps, "maxWidth">("maxWidth", widths()),
+  height: enumControl<BoxProps, "height">("height", heights()),
+  minHeight: enumControl<BoxProps, "minHeight">("minHeight", heights()),
+  maxHeight: enumControl<BoxProps, "maxHeight">("maxHeight", heights()),
+  overflow: enumControl<BoxProps, "overflow">("overflow", local<BoxProps, "overflow">()(OVERFLOWS, OVERFLOW_REASON)),
+  overflowX: enumControl<BoxProps, "overflowX">("overflowX", local<BoxProps, "overflowX">()(OVERFLOWS, OVERFLOW_REASON)),
+  overflowY: enumControl<BoxProps, "overflowY">("overflowY", local<BoxProps, "overflowY">()(OVERFLOWS, OVERFLOW_REASON)),
+};
+
 export default defineSpec({
   name: "Box",
   blurb: "바탕이 되는 칸입니다. padding을 얹고, width·height·min/max·overflow로 box model을 정합니다. 이름 있는 크기(dimension, measure, container, 키워드)는 class가 되고, 그 밖의 CSS 길이만 화면 고유 layout을 위해 inline으로 갑니다. 면·테두리·모서리·높이·테마는 Surface가, 색은 Paint가 맡으므로 Box에는 어떤 색도 없고, flex·position·gap 책임도 열지 않습니다.",
-  controls: [
-    enumControl<BoxProps, "padding">("padding", vocab("SPACES")),
-    enumControl<BoxProps, "paddingX">("paddingX", vocab("SPACES")),
-    enumControl<BoxProps, "paddingY">("paddingY", vocab("SPACES")),
-    enumControl<BoxProps, "width">("width", widths(), { initial: "md" }),
-    enumControl<BoxProps, "minWidth">("minWidth", widths()),
-    enumControl<BoxProps, "maxWidth">("maxWidth", widths()),
-    enumControl<BoxProps, "height">("height", heights()),
-    enumControl<BoxProps, "minHeight">("minHeight", heights()),
-    enumControl<BoxProps, "maxHeight">("maxHeight", heights()),
-    enumControl<BoxProps, "overflow">("overflow", local<BoxProps, "overflow">()(OVERFLOWS, OVERFLOW_REASON)),
-    enumControl<BoxProps, "overflowX">("overflowX", local<BoxProps, "overflowX">()(OVERFLOWS, OVERFLOW_REASON)),
-    enumControl<BoxProps, "overflowY">("overflowY", local<BoxProps, "overflowY">()(OVERFLOWS, OVERFLOW_REASON)),
-  ],
+  controls: Object.values(CONTROLS),
   defaults: {},
   subject: (state) => (
     <Box

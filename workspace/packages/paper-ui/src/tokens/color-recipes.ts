@@ -2,7 +2,7 @@
 
 import { COLOR, STATUSES, SYSTEM_COLORS, type Accent, type AccentTone, type Status } from "./colors";
 
-// `solid`은 pigment 자체, wash·soft는 각각 가벼운 면이다. `muted`는 Ghost형 투명 면에
+// `solid`은 pigment 자체, `soft`는 가벼운 면, wash 는 solid 면 위 글자다. `muted`는 Ghost형 투명 면에
 // 선택된 accent의 subtle tone을 전경으로 쓰는 보조 variant다.
 export const VARIANTS = [
   "solid",

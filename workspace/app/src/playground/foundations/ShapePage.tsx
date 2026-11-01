@@ -1,11 +1,11 @@
-import { Badge, Button, Checkbox, Field, Icon, Radio, Select, Spinner, Switch, Textarea } from "@studio-baeks/paper-ui";
+import { Badge, Button, Checkbox, Field, Icon, Marker, Radio, Select, Spinner, Switch, Text, Textarea } from "@studio-baeks/paper-ui";
 import { tokens, CONTROL_SIZES, DIMENSIONS, ICON_SIZES, MEASURES, SPACES, type ControlSize } from "@studio-baeks/paper-ui/tokens";
 import { SHAPE_RECIPES, SHAPE_SOURCE } from "@paper-ui/inspect/shape";
 
 import { Board, BoardGroup, BoardRow, Cell, Computed, FoundationSection, Ladder, MatrixCell, Meter, TokenCell, ValueCell, resolved } from "./kit";
 import { PlusIcon } from "../../compositions/icons";
 import { leafPaths, valueAt } from "./paths";
-import { TARGET_NOTES } from "./shape-roles";
+import { ROLE_ALIASES, ROLE_FORMULAS, TARGET_NOTES } from "./shape-roles";
 import * as s from "./foundations.css";
 
 const shape = tokens.shape;
@@ -126,6 +126,11 @@ const ShapeSource = () => (
         <ValueCell>{SHAPE_SOURCE.anatomy.checkbox.markShift.x} · {String(SHAPE_SOURCE.anatomy.checkbox.markShift.y).replace("-", "−")}</ValueCell>
       </BoardRow>
       <BoardRow>
+        <TokenCell name="shape.anatomy.marker.height · position · overrun" note="칠의 높이, 글자 상자 안 위치, 좌우로 넘는 길이" />
+        <Cell><Text as="span" variant="body"><Marker>칠</Marker></Text></Cell>
+        <ValueCell>{SHAPE_SOURCE.anatomy.marker.height}% · {SHAPE_SOURCE.anatomy.marker.position}% · {n(SHAPE_SOURCE.anatomy.marker.overrun, "em")}</ValueCell>
+      </BoardRow>
+      <BoardRow>
         <TokenCell name="shape.anatomy.inline.dot" note="글자에 붙는 상태 점" />
         <Cell><Badge accent="info" dot>진행</Badge></Cell>
         <ValueCell>{n(SHAPE_SOURCE.anatomy.inline.dot, "em")}</ValueCell>
@@ -141,29 +146,35 @@ const ShapeSource = () => (
 
 const sizes = (role: Record<ControlSize, string>) => CONTROL_SIZES.map((size) => role[size]);
 
+const ALIAS_VALUES: Record<keyof typeof ROLE_ALIASES, readonly string[]> = {
+  inset: SPACES.map((step) => shape.inset[step]),
+  radius: leafPaths(SHAPE_SOURCE.radius).map((name) => valueAt(shape.radius, name) as string),
+  "control.height": sizes(shape.control.height),
+  "control.icon": sizes(shape.control.icon),
+  "control.gap": [shape.control.gap],
+  target: [shape.target.min],
+};
+
+const FORMULA_VALUES: Record<keyof typeof ROLE_FORMULAS, readonly string[]> = {
+  "control.inset.input": sizes(shape.control.inset.input),
+  "control.inset.button": sizes(shape.control.inset.button),
+  "selection.size": sizes(shape.selection.size),
+};
+
 const ShapeRoles = () => (
   <Board columns={ROLE_COLUMNS} template={ROLE_TEMPLATE} minWidth="36rem">
     <BoardGroup label="Alias — 원본 변수를 그대로 가리킵니다">
-      {([
-        ["shape.inset.xs ~ 3xl", "= shape.space 같은 단계", SPACES.map((step) => shape.inset[step])],
-        ["shape.radius.*", "= shape.radius 원본", leafPaths(SHAPE_SOURCE.radius).map((name) => valueAt(shape.radius, name) as string)],
-        ["shape.control.height", "= 원본 사다리", sizes(shape.control.height)],
-        ["shape.control.icon", "= icon caption · body · subheading", sizes(shape.control.icon)],
-        ["shape.control.gap", "= shape.space.sm", [shape.control.gap]],
-        ["shape.target.min", "= shape.target 원본", [shape.target.min]],
-      ] as const).map(([name, rule, values]) => (
-        <BoardRow key={name}>
-          <TokenCell name={name} />
-          <Cell><span className={s.rule}>{rule}</span></Cell>
-          <ValueCell><Ladder values={[...values]} /></ValueCell>
+      {(Object.keys(ROLE_ALIASES) as (keyof typeof ROLE_ALIASES)[]).map((role) => (
+        <BoardRow key={role}>
+          <TokenCell name={ROLE_ALIASES[role].name} />
+          <Cell><span className={s.rule}>{ROLE_ALIASES[role].rule}</span></Cell>
+          <ValueCell><Ladder values={[...ALIAS_VALUES[role]]} /></ValueCell>
         </BoardRow>
       ))}
     </BoardGroup>
     <BoardGroup label="Formula — 쓰이는 요소에서 계산되어, 원본을 덮으면 따라 바뀝니다">
       {([
-        ["shape.control.inset.input", "(control.height − 컨트롤 글자 줄) / 2", sizes(shape.control.inset.input), "입력값 줄상자 사방에 같은 여백"],
-        ["shape.control.inset.button", `round(nearest, (control.height − 버튼 글자 줄) / 2 × ${SHAPE_SOURCE.control.buttonInsetRatio}, 1px)`, sizes(shape.control.inset.button), "라벨이 상자를 정의하므로 더 넓게"],
-        ["shape.selection.size", "control.height / 2", sizes(shape.selection.size), "그래서 스위치 트랙 폭 = 컨트롤 높이"],
+        ...(Object.keys(ROLE_FORMULAS) as (keyof typeof ROLE_FORMULAS)[]).map((role) => [`shape.${role}`, ROLE_FORMULAS[role].rule, FORMULA_VALUES[role], ROLE_FORMULAS[role].note] as const),
         ["targetReach(shape.selection.size)", "(min(표식, target.min) − target.min) / 2", sizes(r.target.selection), "최소 크기에 못 미치는 표식 밖으로 hit area가 뻗는 거리 — Switch 트랙과 Field 액션도 같은 식"],
       ] as const).map(([name, rule, values, note]) => (
         <BoardRow key={name}>

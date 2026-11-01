@@ -1,11 +1,12 @@
 import { Text, elevation, useResolvedTheme } from "@studio-baeks/paper-ui";
 import { tokens, BREAKPOINTS, ELEVATIONS, SPACES, type Depth, type Elevation } from "@studio-baeks/paper-ui/tokens";
-import { ELEVATION_NEST_LIMIT, LAYOUT_SOURCE } from "@paper-ui/inspect/layout";
+import { ELEVATION_NEST_LIMIT, LAYOUT, LAYOUT_SOURCE } from "@paper-ui/inspect/layout";
 
 import { Board, BoardGroup, BoardRow, Cell, Computed, FoundationSection, Meter, TokenCell, ValueCell, mediaValue, resolved } from "./kit";
 import * as s from "./foundations.css";
 
 const layout = tokens.layout;
+const gutterStep = SPACES.find((step) => LAYOUT.gap[step] === LAYOUT.gutter);
 const maxBreakpoint = Math.max(...Object.values(LAYOUT_SOURCE.breakpoint));
 const geometry = (layers: readonly (readonly number[])[]) => layers.map((layer) => layer.join(" ")).join(", ");
 
@@ -105,7 +106,7 @@ export const LayoutPage = () => {
           </BoardGroup>
           <BoardGroup label="Page">
             <BoardRow>
-              <TokenCell name="layout.gutter" note="페이지 가장자리와 내용 사이, 모달 scrim의 안쪽, 팝오버가 뷰포트에 닿을 때 남기는 여백 = space.lg" />
+              <TokenCell name="layout.gutter" note={`페이지 가장자리와 내용 사이, 모달 scrim의 안쪽, 팝오버가 뷰포트에 닿을 때 남기는 여백 = space.${gutterStep}`} />
               <Cell><div className={s.gutterFrame}><span /></div></Cell>
               <ValueCell>{resolved(layout.gutter)}</ValueCell>
             </BoardRow>

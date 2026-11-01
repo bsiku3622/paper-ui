@@ -194,7 +194,7 @@ describe("every Atom", () => {
     for (const file of ["Checkbox.tsx", "Radio.tsx", "Switch.tsx"]) expect(read(file), file).not.toMatch(/useSelectable/);
   });
 
-  it("[atoms.contract.targets] [atoms.contract.target-table] is covered: the table names the 13 Atoms of the inventory, once each", () => {
+  it("[atoms.contract.targets] [atoms.contract.target-table] is covered: the table names the Atoms of the inventory, once each", () => {
     expect(TARGETS.map((target) => target.name).sort()).toEqual([...INVENTORY.atoms].sort());
   });
 

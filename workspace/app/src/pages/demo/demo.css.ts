@@ -1,5 +1,5 @@
 import { globalStyle, style } from "@vanilla-extract/css";
-import { tokens, typographyRule } from "@studio-baeks/paper-ui/tokens";
+import { STATE_TINT_PROPERTY, stateStyle, tokens, transition, typographyRule } from "@studio-baeks/paper-ui/tokens";
 
 import { DEMO_LAYOUT, DEMO_MEDIA, px } from "./layout";
 
@@ -7,7 +7,7 @@ const compact = `screen and (max-width: ${tokens.layout.breakpoint.sm})`;
 const line = `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`;
 
 export const topbar = style({ height: 58, display: "flex", alignItems: "center", justifyContent: "space-between", padding: `0 ${tokens.shape.inset.xl}`, borderBottom: line, background: tokens.color.bg.raised });
-export const brand = style({ gap: tokens.layout.gap.sm });
+export const brand = style({ gap: tokens.layout.gap.sm, color: "inherit", textDecoration: "none" });
 export const brandMark = style({ width: tokens.shape.control.height.sm, height: tokens.shape.control.height.sm, display: "grid", placeItems: "center", borderRadius: tokens.shape.radius.control });
 export const topActions = style({ gap: tokens.layout.gap.sm, "@media": { [compact]: { flex: "1 1 auto", minWidth: 0, justifyContent: "flex-end" } } });
 export const search = style({ width: 245, "@media": { [compact]: { width: "auto", flex: "1 1 auto", minWidth: 0 } } });
@@ -44,7 +44,8 @@ export const taskTable = style({ width: "100%", borderCollapse: "collapse", text
 globalStyle(`${taskTable} th`, { ...typographyRule("label"), height: tokens.shape.control.height.lg, padding: `0 ${tokens.shape.inset.md}`, color: tokens.color.ink.tertiary, borderBottom: line });
 globalStyle(`${taskTable} td`, { height: 60, padding: `${tokens.shape.inset.sm} ${tokens.shape.inset.md}`, borderBottom: line });
 globalStyle(`${taskTable} tbody tr:last-child td`, { borderBottom: 0 });
-globalStyle(`${taskTable} tbody tr:hover`, { background: tokens.color.interaction.bgHover.onSurface });
+// A row answers like any item: the state recipe's tint, only where a pointer can hover.
+export const taskRow = style([stateStyle.item, { transition: transition("hover", STATE_TINT_PROPERTY) }]);
 export const empty = style({ display: "block", padding: tokens.shape.inset.xl, textAlign: "center" });
 export const tableFooter = style({ padding: `${tokens.shape.inset.sm} ${tokens.shape.inset.md}`, borderTop: line });
 export const rightRail = style({

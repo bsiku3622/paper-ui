@@ -18,7 +18,7 @@ const useIsomorphicLayoutEffect = typeof document === "undefined" ? useEffect : 
 
 export type CheckboxProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "className" | "size"> & {
   status?: ChoiceStatus;
-  // 크기 3 단 (sm·md·lg). 변 15·16·18. 큰 폼에서 라벨과 함께 커진다.
+  // 크기 3 단 (sm·md·lg). 큰 폼에서 라벨과 함께 커진다.
   size?: ControlSize;
   // 부분 선택 — "전체 선택"의 일부만 켜진 상태. DOM 프로퍼티라 ref 로만 세운다.
   indeterminate?: boolean;

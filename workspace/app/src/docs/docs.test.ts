@@ -14,6 +14,8 @@ import { unified } from "unified";
 import { matchRoutes } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 
+import { INVENTORY } from "@studio-baeks/paper-ui";
+
 import { DURATION, EASING, LOOP } from "@paper-ui/inspect/motion";
 import { LAYOUT_SOURCE } from "@paper-ui/inspect/layout";
 import { SHAPE_SOURCE } from "@paper-ui/inspect/shape";
@@ -163,8 +165,15 @@ describe("docs metadata", () => {
     expect(hits).toEqual([]);
   });
 
+  it("the Atom table follows the inventory's order", () => {
+    const text = readFileSync(join(DOCS_DIR, "atoms/README.md"), "utf-8");
+    const table = text.slice(text.indexOf("[contract:atoms.contract.axes]: #"), text.indexOf("[contract:atoms.contract.stands-on]: #"));
+    const rows = [...table.matchAll(/^\| (\w+) \|/gm)].map((match) => match[1]);
+    expect(rows).toEqual([...INVENTORY.atoms]);
+  });
+
   it("the prose keeps none of the phrases the docs have already dropped", () => {
-    const STALE = ["variant='quiet'", 'variant="quiet"', "raw HTML above", "Cascadia", "mono·uppercase", "10·13·17", "inputPaddingX", "#2563eb"];
+    const STALE = ["variant='quiet'", 'variant="quiet"', "raw HTML above", "Cascadia", "mono·uppercase", "10·13·17", "inputPaddingX", "#2563eb", "네 규칙", "type Tone =", "wash·soft는 각각"];
     const hits = PROSE.flatMap(([file, text]) => STALE.filter((phrase) => text.includes(phrase)).map((phrase) => `${file}: ${phrase}`));
     expect(hits).toEqual([]);
   });

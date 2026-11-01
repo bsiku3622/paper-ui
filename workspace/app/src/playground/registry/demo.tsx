@@ -5,7 +5,12 @@ import { Icon, Surface, Text } from "@studio-baeks/paper-ui";
 import { named } from "./jsx";
 
 export const glyph = {
-  grip: <Icon size="caption"><path d="M9 5h.01M9 12h.01M9 19h.01M15 5h.01M15 12h.01M15 19h.01" /></Icon>,
+  grip: (
+    <Icon size="caption">
+      <circle cx="9" cy="6" r="1" /><circle cx="9" cy="12" r="1" /><circle cx="9" cy="18" r="1" />
+      <circle cx="15" cy="6" r="1" /><circle cx="15" cy="12" r="1" /><circle cx="15" cy="18" r="1" />
+    </Icon>
+  ),
   plus: <Icon><path d="M12 5v14M5 12h14" /></Icon>,
   search: <Icon size="caption"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></Icon>,
   info: [<circle key="ring" cx="12" cy="12" r="9" />, <path key="mark" d="M12 11v5M12 8h.01" />],

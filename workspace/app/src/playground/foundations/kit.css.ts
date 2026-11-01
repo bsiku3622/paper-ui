@@ -88,7 +88,7 @@ export const travelDot = style({
   borderRadius: tokens.shape.radius.full,
   background: tokens.color.accent.primary.solid,
   transitionProperty: "inset-inline-start",
-  selectors: { [`${travelTrack}:hover &`]: { insetInlineStart: `calc(100% - ${dot})` } },
+  "@media": { "(hover: hover)": { selectors: { [`${travelTrack}:hover &`]: { insetInlineStart: `calc(100% - ${dot})` } } } },
 });
 
 // An easing as its curve on a 64 × 32 plot.

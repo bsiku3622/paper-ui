@@ -4,7 +4,7 @@ import { boolControl, defineSpec, enumControl, flag, pick, textControl, vocab, w
 
 export default defineSpec({
   name: "Switch",
-  blurb: "켬·끔 토글입니다. 즉시 적용되는 설정 자리에 씁니다. 켜지면 검정 트랙이 되고, 꺼진 트랙은 옅은 테를 두릅니다. 색이 아니라 primary입니다.",
+  blurb: "켬·끔 토글입니다. 즉시 적용되는 설정 자리에 씁니다. 켜진 트랙은 primary의 solid 면이고, 꺼진 트랙은 옅은 테를 두릅니다.",
   controls: [
     boolControl<SwitchProps, "checked">("checked", true),
     enumControl<SwitchProps, "status">("status", vocab("CHOICE_STATUSES")),

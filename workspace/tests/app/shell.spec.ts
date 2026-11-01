@@ -88,6 +88,8 @@ test("the Demo is a product of its own: its header is the banner and its stack i
   await expect(skip).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(main(page)).toBeFocused();
+  await header(page).getByRole("link", { name: "fieldnote" }).click();
+  await expect(page).toHaveURL(/\/$/);
 });
 
 test("the first Tab shows the skip link at the top left, and Enter moves focus to the main landmark", async ({ page }) => {
@@ -159,6 +161,17 @@ test("the sidebars are one frame: Docs, the Playground, and every page body fill
     widths[route] = Math.round(column);
   }
   expect(new Set(Object.values(widths)).size, JSON.stringify(widths)).toBe(1);
+});
+
+test("Home's content starts where the header's content starts, at every width", async ({ page }) => {
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    await settled(page);
+    const brand = await header(page).getByRole("link").first().boundingBox();
+    const hero = await page.getByTestId("home-column").locator("> *").first().boundingBox();
+    expect(Math.round(hero!.x), `${width}`).toBe(Math.round(brand!.x));
+  }
 });
 
 test("the head of a Docs page and of a Playground page is a crumb above the title", async ({ page }) => {

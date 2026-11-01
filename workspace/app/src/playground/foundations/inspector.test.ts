@@ -4,7 +4,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
-import { MOTION_CONSUMERS, MOTION_ROLES, STATE_TINT_PROPERTY } from "@studio-baeks/paper-ui/tokens";
+import { MOTION_CONSUMERS, MOTION_ROLES, STATE_TINT_PROPERTY, tokens } from "@studio-baeks/paper-ui/tokens";
 
 import { COLOR_SELECTION, PALETTE_TOKENS } from "@paper-ui/inspect/color";
 import { LOOP } from "@paper-ui/inspect/motion";
@@ -13,7 +13,7 @@ import { TYPOGRAPHY_SOURCE } from "@paper-ui/inspect/typography";
 import { GROUPS, ROLE_NOTES, formatPalettePath, hexAt, rolesOf, selectionAt } from "./color-roles";
 import { LOOP_NOTES, MOTION_NOTES, TRANSITION_PROPERTIES, roleNote, roleRange } from "./motion-roles";
 import { leafPaths } from "./paths";
-import { TARGET_NOTES } from "./shape-roles";
+import { ROLES_ON_SOURCE_BOARD, ROLE_ALIASES, ROLE_FORMULAS, TARGET_NOTES } from "./shape-roles";
 import { CODE_SCALE_NOTES, PRESET_NOTES, PRESET_PATHS, SIZE_LEADING } from "./typography-roles";
 
 const NON_ACCENT = Object.fromEntries(Object.entries(COLOR_SELECTION.light).filter(([branch]) => branch !== "accent")) as Omit<typeof COLOR_SELECTION.light, "accent">;
@@ -78,6 +78,14 @@ describe("Shape inspector", () => {
   it("notes every target value the source has, and only those", () => {
     expect(Object.keys(TARGET_NOTES)).toEqual(Object.keys(SHAPE_SOURCE.target));
     for (const [name, note] of Object.entries(TARGET_NOTES)) expect(note.length, name).toBeGreaterThan(0);
+  });
+
+  it("shows every role in tokens.shape on a board, and no role that isn't there", () => {
+    const shown: readonly string[] = [...Object.keys(ROLE_ALIASES), ...Object.keys(ROLE_FORMULAS), ...ROLES_ON_SOURCE_BOARD];
+    const under = (path: string, role: string) => path === role || path.startsWith(`${role}.`);
+    const roles = leafPaths(tokens.shape);
+    expect(roles.filter((path) => !shown.some((role) => under(path, role)))).toEqual([]);
+    expect(shown.filter((role) => !roles.some((path) => under(path, role)))).toEqual([]);
   });
 });
 

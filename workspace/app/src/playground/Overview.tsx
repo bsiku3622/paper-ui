@@ -80,7 +80,7 @@ export const Overview = () => {
           {TEXT_VARIANTS.map((v) => (
             <Fragment key={v}>
               <Inline gap="lg" align="baseline">
-                <Box style={{ width: "6rem" }}>
+                <Box width="6rem">
                   <Text variant="caption" as="span">{v}</Text>
                 </Box>
                 <Text variant={v} as="span" data-testid={`text-${v}`}>
@@ -89,7 +89,7 @@ export const Overview = () => {
               </Inline>
               {MONO_DEMO[v] && (
                 <Inline gap="lg" align="baseline">
-                  <Box style={{ width: "6rem" }}>
+                  <Box width="6rem">
                     <Text variant="caption" as="span" ink="tertiary">{v} · mono</Text>
                   </Box>
                   <Text variant={v} family="mono" as="span" data-testid={v === "body" ? "text-mono" : undefined}>
@@ -106,7 +106,7 @@ export const Overview = () => {
         <Spec label="fill — 면의 깊이 (Surface 의 구조 축, 색 아님)">
           {SURFACE_FILLS.map((s) => (
             <Surface key={s} fill={s} border radius="md" padding="lg" data-testid={`swatch-paper-${s}`}
-              style={{ minWidth: "5rem" }}>
+              minWidth="5rem">
               <Text variant="caption" as="span">{s}</Text>
             </Surface>
           ))}
@@ -179,7 +179,7 @@ export const Overview = () => {
           </IconButton>
         </Spec>
         <Spec label="fullWidth">
-          <Box style={{ width: "20rem" }}>
+          <Box width="20rem">
             <Button fullWidth data-testid="btn-fullwidth">가로 꽉 (폼·모바일)</Button>
           </Box>
         </Spec>
@@ -196,36 +196,36 @@ export const Overview = () => {
       <Section id="sec-form" title="Field · Label · Select · Checkbox">
         {/* 정렬 표본 — Field 와 Button 이 같은 높이/기준선에 앉는가 */}
         <Spec label="정렬 (Field ⇄ Button, 같은 baseline)" testid="spec-align">
-          <Box style={{ width: "16rem" }}>
+          <Box width="16rem">
             <Field placeholder="검색…" aria-label="검색" data-testid="align-field" />
           </Box>
           <Button data-testid="align-button">실행</Button>
         </Spec>
         <Spec label="Field status">
-          <Box style={{ width: "12rem" }}><Field placeholder="기본" data-testid="field-default" /></Box>
-          <Box style={{ width: "12rem" }}><Field placeholder="에러" status="error" data-testid="field-invalid" /></Box>
-          <Box style={{ width: "12rem" }}><Field placeholder="성공" status="success" /></Box>
-          <Box style={{ width: "12rem" }}><Field placeholder="비활성" disabled /></Box>
+          <Box width="12rem"><Field placeholder="기본" data-testid="field-default" /></Box>
+          <Box width="12rem"><Field placeholder="에러" status="error" data-testid="field-invalid" /></Box>
+          <Box width="12rem"><Field placeholder="성공" status="success" /></Box>
+          <Box width="12rem"><Field placeholder="비활성" disabled /></Box>
         </Spec>
         <Spec label="Field 어도먼트 — 아이콘 · clear · 비밀번호 · prefix/suffix">
-          <Box style={{ width: "12rem" }}>
+          <Box width="12rem">
             <Field placeholder="검색" leading={<SearchIcon size="caption" />} />
           </Box>
-          <Box style={{ width: "12rem" }}>
+          <Box width="12rem">
             <Field defaultValue="지울 값" clearable data-testid="field-clearable" />
           </Box>
-          <Box style={{ width: "12rem" }}>
+          <Box width="12rem">
             <Field type="password" showPasswordToggle defaultValue="secret" data-testid="field-password" />
           </Box>
-          <Box style={{ width: "9rem" }}>
+          <Box width="9rem">
             <Field numeric align="end" placeholder="0" leading="$" />
           </Box>
-          <Box style={{ width: "9rem" }}>
+          <Box width="9rem">
             <Field numeric align="end" placeholder="0" trailing="kg" />
           </Box>
         </Spec>
         <Spec label="Field recessed — sunken surface · leading icon · trailing shortcut">
-          <Box style={{ width: "22rem" }}>
+          <Box width="22rem">
             <Field
               type="search"
               fill="sunken"
@@ -238,17 +238,17 @@ export const Overview = () => {
           </Box>
         </Spec>
         <Spec label="Select">
-          <Box style={{ width: "12rem" }}>
+          <Box width="12rem">
             <Select data-testid="select"><Select.Option value="">선택하세요</Select.Option><Select.Option value="a">옵션 A</Select.Option><Select.Option value="b">옵션 B</Select.Option></Select>
           </Box>
         </Spec>
         {/* size 정렬 — Field·Select·Button 이 같은 사다리라 나란히 두면 높이가 맞는다 */}
         {CONTROL_SIZES.map((size) => (
           <Spec key={size} label={`size ${size} — ${SIZE_NAMES[size]} ${px(tokens.shape.control.height[size])}${size === "md" ? ` · radius ${px(tokens.shape.radius.control)}` : ""}`} testid={`spec-size-${size}`}>
-            <Box style={{ width: "10rem" }}>
+            <Box width="10rem">
               {size === "sm" ? <Field size={size} defaultValue="11.25" trailing="pt" aria-label={`field ${size}`} /> : <Field size={size} placeholder="Field" aria-label={`field ${size}`} />}
             </Box>
-            <Box style={{ width: "9rem" }}>
+            <Box width="9rem">
               <Select size={size} aria-label={`select ${size}`}><Select.Option value="a">{size === "sm" ? "본명조" : "Select"}</Select.Option></Select>
             </Box>
             <Button size={size}>Button</Button>
@@ -262,20 +262,20 @@ export const Overview = () => {
           testid="spec-control-base"
         >
           <Button variant="hairline" size="md" data-testid="base-button">hairline</Button>
-          <Box style={{ width: "9rem" }}><Field size="md" placeholder="Field" aria-label="field base" data-testid="base-field" /></Box>
-          <Box style={{ width: "9rem" }}><Select size="md" data-testid="base-select"><Select.Option value="a">Select</Select.Option></Select></Box>
-          <Box style={{ width: "12rem" }}><Textarea size="md" placeholder="Textarea" aria-label="textarea base" data-testid="base-textarea" /></Box>
+          <Box width="9rem"><Field size="md" placeholder="Field" aria-label="field base" data-testid="base-field" /></Box>
+          <Box width="9rem"><Select size="md" data-testid="base-select"><Select.Option value="a">Select</Select.Option></Select></Box>
+          <Box width="12rem"><Textarea size="md" placeholder="Textarea" aria-label="textarea base" data-testid="base-textarea" /></Box>
         </Spec>
         {/* 알약은 컨트롤 어휘 하나다 — Button·Field·Select 가 같은 곡선을 든다. 검색
             한 줄에 셋이 나란히 서는 게 이 어휘가 있는 이유고, 여백은 안 움직인다
             (shape 은 실루엣 축이지 밀도 축이 아니다).
             Textarea 에는 없다 — 알약은 "높이의 절반" 이라 한 줄짜리에서만 성립한다. */}
         <Spec label="shape=pill — 검색 한 줄 (Field · Select · Button 같은 곡선)" testid="spec-pill-row">
-          <Box style={{ width: "12rem" }}>
+          <Box width="12rem">
             <Field shape="pill" placeholder="검색" aria-label="검색" data-testid="field-pill"
               leading={<SearchIcon size="caption" />} />
           </Box>
-          <Box style={{ width: "8rem" }}>
+          <Box width="8rem">
             <Select shape="pill" data-testid="select-pill"><Select.Option value="a">전체</Select.Option></Select>
           </Box>
           <Button shape="pill" data-testid="button-pill-row">검색</Button>
@@ -304,12 +304,12 @@ export const Overview = () => {
           </Inline>
         </Spec>
         <Spec label="Label · Field — 화면에서 필요한 조합을 구성합니다">
-          <Stack gap="xs" style={{ width: "16rem" }}>
+          <Stack gap="xs" width="16rem">
             <Label htmlFor="playground-name">이름</Label>
             <Field id="playground-name" placeholder="입력" data-testid="formfield-field" />
             <Text variant="caption" ink="secondary">공백 없이 입력하세요</Text>
           </Stack>
-          <Stack gap="xs" style={{ width: "16rem" }}>
+          <Stack gap="xs" width="16rem">
             <Label htmlFor="playground-amount">금액</Label>
             <Field id="playground-amount" numeric align="end" status="error" placeholder="0" />
             <Text variant="caption" ink="error">숫자만 입력하세요</Text>
