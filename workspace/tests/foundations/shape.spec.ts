@@ -73,7 +73,7 @@ test("[foundations.override.rederives-roles] [foundations.shape.radius-separate]
   await mount(page);
   type Paper = { __paper: { sourceVars: (overrides: SourceOverrides) => Record<string, string> } };
   const overrides: SourceOverrides = {
-    shape: { control: { height: { md: "40px" } }, radius: { control: "9px", surface: { sm: "3px" } }, focus: { width: "5px" }, space: { md: "20px" } },
+    shape: { control: { height: { md: "40px" } }, selection: { size: { md: "20px" } }, radius: { control: "9px", surface: { sm: "3px" } }, focus: { width: "5px" }, space: { md: "20px" } },
     // The field's glyph line is what the input inset subtracts from the control height.
     typography: { palette: { leading: { "16": "20px" } } },
   };
@@ -84,7 +84,7 @@ test("[foundations.override.rederives-roles] [foundations.shape.radius-separate]
   const { control, selection } = tokens.shape;
   const dp = (role: string) => roleDp(role, vars);
   const rim = SHAPE_SOURCE.stroke.emphasis;
-  // control height 40 and a 20 glyph line → input inset (40 − 20) / 2 = 10, button the source's ratio of that, selection 20.
+  // control height 40 and a 20 glyph line → input inset (40 − 20) / 2 = 10, button the source's ratio of that. The marks follow their own source, 20 here.
   expect(dp(control.height.md)).toBe(40);
   expect((await metrics(page, "[data-testid=button-md]")).height).toBe(40);
   expect((await metrics(page, "[data-testid=button-md]")).padding).toBe(dp(control.inset.button.md));
@@ -144,6 +144,60 @@ test("[foundations.override.source-paths-only] window.__paper.sourceVars names t
     }
   });
   expect(refusal).toContain("shape.inset.lg");
+});
+
+test.describe("the plain CSS form of an override", () => {
+  // Everything the page warns about while it mounts a Provider with these params.
+  const warningsOf = async (page: Page, params: Record<string, string> = {}) => {
+    const warnings: string[] = [];
+    page.on("console", (message) => {
+      if (message.type() === "warning" && message.text().startsWith("[paper-ui] ")) warnings.push(message.text());
+    });
+    await openHarness(page, "provider", params);
+    await expect(page.getByTestId("mounted")).toBeVisible();
+    // The Provider's effects have run by the next task.
+    await page.evaluate(() => new Promise((resolve) => setTimeout(resolve, 0)));
+    return warnings;
+  };
+
+  test("[foundations.override.unknown-warning] a Provider warns once of a name the package does not emit, however deep the rule, and of nothing else", async ({ page }) => {
+    const css = `
+      .a { --pui-shape-control-height-huge: 1px; --pui-shape-control-height-md: 40px; }
+      @media (min-width: 1px) { .b { --pui-layout-gutter: 1px; --pui-layout-shadow-floating-0: 0 0 0 0; } }
+      @layer mine { .c { --pui-typography-role-body-size: 1px; --pui-color-ink-primary: red; --mine: 1; } }
+    `;
+    const warnings = await warningsOf(page, { css });
+    await expect.poll(() => warnings.length).toBe(1);
+    for (const name of ["--pui-shape-control-height-huge", "--pui-layout-gutter", "--pui-typography-role-body-size"]) expect(warnings[0]).toContain(name);
+    for (const name of ["--pui-shape-control-height-md", "--pui-layout-shadow-floating-0", "--pui-color-ink-primary", "--mine"]) expect(warnings[0]).not.toContain(name);
+  });
+
+  test("[foundations.override.unknown-warning] the package's own stylesheet raises nothing, and neither do overrides that name a source", async ({ page }) => {
+    const warnings = await warningsOf(page, { css: ".a { --pui-shape-control-height-md: 40px; }" });
+    expect(warnings).toEqual([]);
+  });
+
+  test("[foundations.override.unknown-warning] an inline style is not read", async ({ page }) => {
+    const warnings = await warningsOf(page, { custom: "--pui-shape-inline-only" });
+    expect(await page.getByTestId("inline").evaluate((element) => getComputedStyle(element).getPropertyValue("--pui-shape-inline-only"))).toBe("1px");
+    expect(warnings).toEqual([]);
+  });
+
+  test("[foundations.override.unknown-warning] a sheet of another origin is skipped without an error, though it is on the page", async ({ page }) => {
+    const sheet = "https://styles.example/unknown.css";
+    await page.route(sheet, (route) => route.fulfill({ contentType: "text/css", body: ".x { --pui-shape-cross-origin: 1px; }" }));
+    const warnings = await warningsOf(page, { sheet });
+    const refused = await page.evaluate((href) => {
+      const loaded = [...document.styleSheets].find((candidate) => candidate.href === href);
+      try {
+        return loaded ? loaded.cssRules.length : "missing";
+      } catch (error) {
+        return (error as Error).name;
+      }
+    }, sheet);
+    expect(refused).toBe("SecurityError");
+    expect(warnings).toEqual([]);
+  });
 });
 
 test("[foundations.override.portal-carry] a Floating opened inside an overriding region draws its controls with the region's source, and one opened outside keeps the defaults", async ({ page }) => {
@@ -228,11 +282,12 @@ test("[foundations.shape.stroke-px] rem geometry scales together while edge stro
   const height = SHAPE_SOURCE.control.height.md * ratio;
   const line = TYPOGRAPHY_SOURCE.leading[PRESET_SPEC.textarea.md.leading] * ratio;
   const { emphasis: rim, border } = SHAPE_SOURCE.stroke;
-  const thumb = height / 2 - rim;
+  const mark = SHAPE_SOURCE.selection.size.md * ratio;
+  const thumb = mark - rim;
   expect((await metrics(page, "[data-testid=button-md]")).height).toBeCloseTo(height, 2);
-  expect((await metrics(page, "[aria-label=switch-md]")).width).toBeCloseTo(height, 2);
+  expect((await metrics(page, "[aria-label=switch-md]")).width).toBeCloseTo(mark * 2, 2);
   // The switch rim is an emphasis stroke, so it stays as it is while the track grows.
-  expect((await metrics(page, "[aria-label=switch-md]")).height).toBeCloseTo(height / 2 + rim, 2);
+  expect((await metrics(page, "[aria-label=switch-md]")).height).toBeCloseTo(mark + rim, 2);
   expect((await metrics(page, "[aria-label=switch-md]", "::after")).width).toBeCloseTo(thumb, 2);
   // The thumb transitions to its new place when the roles under it move, so the offset is read once it has settled.
   await expect.poll(async () => (await metrics(page, "[aria-label=switch-md]", "::after")).inset).toBeCloseTo(rim + thumb, 2);

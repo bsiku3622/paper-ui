@@ -35,7 +35,7 @@ export const EASING = {
   standard: "cubic-bezier(0.4, 0, 0.2, 1)", // 대부분의 상태 전이
   decelerate: "cubic-bezier(0, 0, 0.2, 1)", // 등장 (끝에서 부드럽게 멈춤)
   accelerate: "cubic-bezier(0.4, 0, 1, 1)", // 퇴장
-  overshoot: "cubic-bezier(0.22, 1, 0.36, 1)", // 떠오르는 overlay (살짝 튀어 안착)
+  overshoot: "cubic-bezier(0.22, 1, 0.36, 1)", // 떠오르는 overlay (이름과 달리 목표를 지나치지 않는다 — 빠르게 떠서 부드럽게 멈춘다)
 } as const;
 
 // ───── loop — 반복 (spinner 등, 전이와 별도 축) ─────────────────────────────
@@ -83,7 +83,7 @@ export type MotionRole = (typeof MOTION_ROLES)[number];
 // 역할을 쓰는 곳. 문서와 Playground 가 이 목록을 읽는다.
 export const MOTION_CONSUMERS = {
   press: ["Button", "IconButton"],
-  hover: ["Button", "IconButton", "Field", "Surface"],
+  hover: ["Button", "IconButton", "Field", "Select", "Textarea", "Surface"],
   state: ["Button", "IconButton", "Field", "Select", "Textarea", "Checkbox", "Radio", "Switch"],
   enter: ["Floating"],
   exit: ["Floating"],

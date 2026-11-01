@@ -24,8 +24,7 @@ export const ROLE_ALIASES = {
 export const ROLE_FORMULAS = {
   "control.inset.input": { rule: "(control.height − 컨트롤 글자 줄) / 2", note: "입력값 줄상자 사방에 같은 여백" },
   "control.inset.button": { rule: `round(nearest, (control.height − 버튼 글자 줄) / 2 × ${SHAPE_SOURCE.control.buttonInsetRatio}, 1px)`, note: "라벨이 상자를 정의하므로 더 넓게" },
-  "selection.size": { rule: "control.height / 2", note: "그래서 스위치 트랙 폭 = 컨트롤 높이" },
 } as const;
 
 // Roles the source board already lists under their own names.
-export const ROLES_ON_SOURCE_BOARD = ["stroke", "focus", "icon", "dimension", "measure"] as const;
+export const ROLES_ON_SOURCE_BOARD = ["stroke", "focus", "selection", "icon", "dimension", "measure"] as const;

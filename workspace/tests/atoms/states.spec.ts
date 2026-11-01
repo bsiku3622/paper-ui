@@ -102,6 +102,17 @@ test("[atoms.button.disabled] [atoms.states.atom-table] [atoms.states.priority] 
   await expect(page.getByTestId("disabled-link-button")).toHaveAttribute("tabindex", "-1");
 });
 
+test("[atoms.link.target] a Link drawn as a button looks like the Link: none of the browser's button chrome, and the same letters, ink and underline", async ({ page }) => {
+  await openHarness(page, "states");
+  const anchor = page.getByTestId("link");
+  const button = page.getByTestId("link-as-button");
+  await expect(button).toHaveAttribute("type", "button");
+  const LOOK = ["color", "fontFamily", "fontSize", "fontWeight", "fontStyle", "lineHeight", "letterSpacing", "textDecorationLine", "textDecorationColor", "textUnderlineOffset", "cursor", "backgroundColor", "backgroundImage", "borderTopWidth", "borderTopStyle", "paddingTop", "paddingLeft", "marginTop", "marginLeft", "textAlign", "borderTopLeftRadius"] as const;
+  const look = (target: Locator) => target.evaluate((element, names) => Object.fromEntries(names.map((name) => [name, getComputedStyle(element)[name]])), LOOK);
+  expect(await look(button)).toEqual(await look(anchor));
+  await expect(button).toHaveCSS("appearance", "none");
+});
+
 test("[atoms.button.as-link] a Button drawn as a link wears no underline of the browser's, which its own stylesheet takes off", async ({ page }) => {
   await expect(page.getByTestId("link-button")).toHaveCSS("text-decoration-line", "none");
 });

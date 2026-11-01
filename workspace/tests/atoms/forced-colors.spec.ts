@@ -204,6 +204,49 @@ test.describe("the display Atoms", () => {
       expect(line.color).not.toBe("rgba(0, 0, 0, 0)");
     });
   }
+
+  test("[atoms.badge.forced-colors] a Badge's dot stays drawn, in CanvasText", async ({ page }) => {
+    await openHarness(page, "accents");
+    const { Canvas, CanvasText } = await systems(page, "Canvas", "CanvasText");
+    const dot = await painted(page.getByTestId("badge-dot").locator("span"));
+    expect(dot.backgroundColor).toBe(CanvasText);
+    expect(dot.backgroundColor).not.toBe(Canvas);
+  });
+});
+
+// A face is all these two have, and a forced palette paints a face away. The app's compositions keep theirs in system colours.
+test.describe("the app's compositions", () => {
+  test.skip(({ contextOptions }) => !isForced({ contextOptions }), "forced colours are emulated only by chromium-forced-colors");
+
+  const face = (target: Locator) => target.evaluate((element) => getComputedStyle(element).backgroundColor);
+
+  test("a Dot stays drawn, in CanvasText", async ({ page }) => {
+    await page.goto("/playground");
+    const { Canvas, CanvasText } = await systems(page, "Canvas", "CanvasText");
+    const dot = page.getByTestId("dot-info");
+    await expect(dot).toBeVisible();
+    expect(await face(dot)).toBe(CanvasText);
+    expect(await face(dot)).not.toBe(Canvas);
+  });
+
+  test("an ink Dot stays drawn as a status Dot does", async ({ page }) => {
+    await page.goto("/");
+    const { CanvasText } = await systems(page, "CanvasText");
+    const dot = page.getByTestId("home-mockup-side").getByText("보드", { exact: true }).locator("> *").first();
+    await expect(dot).toBeVisible();
+    expect(await face(dot)).toBe(CanvasText);
+  });
+
+  test("a ProgressBar keeps a track and a fill that can be told apart, on a Canvas they can be told from", async ({ page }) => {
+    await page.goto("/demo");
+    const { Canvas, CanvasText, GrayText } = await systems(page, "Canvas", "CanvasText", "GrayText");
+    const bar = page.getByRole("progressbar", { name: "스프린트 진행률" });
+    await expect(bar).toBeVisible();
+    expect(await face(bar)).toBe(GrayText);
+    expect(await face(bar.locator("> *"))).toBe(CanvasText);
+    expect(GrayText).not.toBe(Canvas);
+    expect(CanvasText).not.toBe(GrayText);
+  });
 });
 
 // Increased contrast is a different media query from forced colours: the page here is not under forced colours, only asking for more contrast.

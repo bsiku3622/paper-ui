@@ -29,7 +29,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(function Radio(
       ref={ref}
       className={joinClass(selectionBox, markPaint.radio, radioRoot, selectionSize[size], selectionReach[size], radioSize[size], className)}
       {...frameProps}
-      {...mergeProps(focusHandlers, rest, controlProps)}
+      {...mergeProps(rest, focusHandlers, controlProps)}
     />
   );
 });

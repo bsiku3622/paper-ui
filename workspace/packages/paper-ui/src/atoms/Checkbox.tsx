@@ -43,7 +43,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
       ref={setRef}
       className={joinClass(selectionBox, markPaint.checkbox, checkboxRoot, selectionSize[size], selectionReach[size], checkboxSize[size], className)}
       {...frameProps}
-      {...mergeProps(focusHandlers, rest, controlProps)}
+      {...mergeProps(rest, focusHandlers, controlProps)}
     />
   );
 });

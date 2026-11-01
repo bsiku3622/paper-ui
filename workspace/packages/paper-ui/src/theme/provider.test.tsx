@@ -226,6 +226,40 @@ describe("the stylesheet warning", () => {
   });
 });
 
+describe("the source variable check", () => {
+  const withUnknownName = () => {
+    const sheet = document.createElement("style");
+    sheet.textContent = ".dense { --pui-shape-nope: 1px; }";
+    document.head.append(sheet);
+    return sheet;
+  };
+  const toldAbout = () => vi.mocked(console.warn).mock.calls.filter(([message]) => String(message).includes("--pui-shape-nope"));
+
+  it("[foundations.override.unknown-warning] runs once, at the first Provider's mount in development", async () => {
+    mockMedia(false);
+    vi.resetModules();
+    const { PaperProvider: Fresh } = await import("./PaperProvider");
+    const sheet = withUnknownName();
+    render(<Fresh storageKey={null} />).unmount();
+    render(<Fresh storageKey={null} />).unmount();
+    expect(toldAbout()).toHaveLength(1);
+    expect(toldAbout()[0]![0]).toMatch(/^\[paper-ui\] /);
+    sheet.remove();
+  });
+
+  it("[foundations.override.unknown-warning] does not run in production", async () => {
+    mockMedia(false);
+    vi.resetModules();
+    vi.stubEnv("NODE_ENV", "production");
+    const { PaperProvider: Fresh } = await import("./PaperProvider");
+    const sheet = withUnknownName();
+    render(<Fresh storageKey={null} />).unmount();
+    expect(toldAbout()).toEqual([]);
+    sheet.remove();
+    vi.unstubAllEnvs();
+  });
+});
+
 describe("locale", () => {
   const Probe = ({ id = "probe" }: { id?: string }) => {
     const messages = useMessages();

@@ -36,8 +36,8 @@ Atom은 같은 축 몇 개로 말합니다. 축의 값은 모두 Foundations에�
 | Field | status · size · fill · fontSize · shape · numeric · align · leading / trailing · clearable · clearLabel · showPasswordToggle · showPasswordLabel · onClear | 중립 / md / raised / rounded, type=text. wrapper가 면·높이·상태·포커스를 소유. 지우기와 보기 버튼의 이름은 locale 문구이고 label prop으로 바꿈. 브라우저의 search 취소 ×와 Edge 비밀번호 보기 장치는 Field가 소유해 숨기고, number 증감·date 선택 장치는 브라우저에 남음 |
 | Textarea | status · size · fill · fontSize · rows · native textarea props | 중립 / md / raised, 기본 4줄. rows가 높이를 정하고(최소 높이 없음) 한 줄 = 같은 size Field, 세로 resize. pill 없음 |
 | Select | status · size · fill · fontSize · shape · children · native select props | 중립 / md / raised / rounded. native select와 Option·Group, multiple 없음. 화살표는 trailing Icon. className · style · data-testid는 wrapper |
-| Checkbox | status · size · indeterminate · native input props | md. 상자 = 컨트롤 높이의 절반, 체크는 그 절반. 꺼진 경계는 `ink.tertiary` 테이고 `status="error"`면 error 잉크. 24px hit area |
-| Switch | status · size · native input props | md. input type=checkbox + role=switch. 트랙 폭 = 컨트롤 높이. 꺼진 트랙은 `ink.tertiary` 안쪽 테를 두름. 손잡이는 `inset-inline-start`로 움직여 RTL에서 저절로 뒤집힘 |
+| Checkbox | status · size · indeterminate · native input props | md. 상자는 `selection.size`, 체크는 그 절반. 꺼진 경계는 `ink.tertiary` 테이고 `status="error"`면 error 잉크. 24px hit area |
+| Switch | status · size · native input props | md. input type=checkbox + role=switch. 트랙 폭 = 상자의 2배. 꺼진 트랙은 `ink.tertiary` 안쪽 테를 두름. 손잡이는 `inset-inline-start`로 움직여 RTL에서 저절로 뒤집힘 |
 | Radio | status · size · native input props | md. Checkbox와 같은 상자, 점은 상자의 절반. name·선택은 호출자가 조립. 한 묶음의 Radio는 모두 같은 `status`를 줌 |
 | Label | children · ref · native label props | Text의 label 역할 그대로. htmlFor 또는 내부 control로 연결 |
 | Badge | accent · variant · size · fontSize · dot · shape · ref | primary / soft / md / rounded. `Paint as="span"`이고 표시용이라 hover 없음. 높이는 Shape의 배지 사다리, 글자는 크기와 무관하게 고정 |
@@ -109,7 +109,7 @@ Spinner는 혼자 서면 `role="progressbar"`와 `aria-label`을 갖습니다. �
 Link는 늘 밑줄을 긋습니다(`underline="always"`). 문장 안 링크는 색만으로 본문과 3:1이 되지 않아 밑줄이 링크임을 알리는 단서입니다. 메뉴처럼 위치가 링크임을 말해 주는 단독 링크만 `underline="hover"`로 가리킬 때 긋습니다. 터치에는 hover가 없습니다. 문서 페이지의 본문 링크도 Link Atom으로 그려져 같은 규칙을 따릅니다.
 
 [contract:atoms.link.target]: #
-Link는 `as`로 라우터의 Link 같은 컴포넌트를 받아 태그 하나만 그립니다. 키보드 포커스는 `useFocusRing`이 판정해 링크 자신에 `data-focus-visible`을 달고, 링은 링크 자신의 곡률(`radius.control`)을 따릅니다.
+Link는 `as`로 라우터의 Link 같은 컴포넌트를 받아 태그 하나만 그립니다. `as="button"`이면 `type="button"`과 Pressable이 쓰는 button reset을 받아, 브라우저의 버튼 모습 없이 링크와 같은 글자 · 잉크 · 밑줄로 그려집니다. 키보드 포커스는 `useFocusRing`이 판정해 링크 자신에 `data-focus-visible`을 달고, 링은 링크 자신의 곡률(`radius.control`)을 따릅니다.
 
 ## ref와 스타일 대상
 

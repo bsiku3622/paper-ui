@@ -19,11 +19,12 @@ export function useFocusRing(options: FocusRingOptions = {}): FocusRingResult {
 }
 
 export type FocusWithinResult = {
-  focusWithinProps: HTMLAttributes<HTMLElement>;
+  /** Spread on the element that holds the focus somewhere inside. Carries `data-focus-within`. */
+  focusWithinProps: HTMLAttributes<HTMLElement> & StateAttributes<"focusWithin">;
   isFocusWithin: boolean;
 };
 export function useFocusWithin({ onFocusWithinChange, ...options }: FocusWithinOptions = {}): FocusWithinResult {
   const [isFocusWithin, setFocusWithin] = useState(false);
   const { focusWithinProps } = useAriaFocusWithin({ ...options, onFocusWithinChange: (value) => { setFocusWithin(value); onFocusWithinChange?.(value); } });
-  return { focusWithinProps, isFocusWithin };
+  return { focusWithinProps: { ...focusWithinProps, ...stateAttributes({ focusWithin: isFocusWithin }) }, isFocusWithin };
 }

@@ -152,6 +152,7 @@ describe("public types", () => {
     expectTypeOf<DroppableResult["dropProps"]>().toHaveProperty("ref");
     expectTypeOf<DroppableResult["dropProps"]>().toHaveProperty("data-drop-target");
     expectTypeOf<FocusRingResult["focusProps"]>().toHaveProperty("data-focus-visible");
+    expectTypeOf<FocusWithinResult["focusWithinProps"]>().toHaveProperty("data-focus-within");
     expectTypeOf<RovingFocusItemResult["itemProps"]>().toHaveProperty("ref");
     expectTypeOf<SelectableResult>().not.toHaveProperty("pressProps");
     expectTypeOf<SelectableResult["selectProps"]>().toHaveProperty("data-selected");

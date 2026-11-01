@@ -2,7 +2,7 @@
 // each specimen only arranges the token it shows.
 import { globalStyle, style, styleVariants, type ComplexStyleRule } from "@vanilla-extract/css";
 
-import { CONTROL_SIZES, ELEVATIONS, SPACES, codeRule, focusRing, monoRule, presetRule, tokens, type ControlSize } from "@studio-baeks/paper-ui/tokens";
+import { SYSTEM_COLORS, CONTROL_SIZES, ELEVATIONS, SPACES, codeRule, focusRing, monoRule, presetRule, tokens, type ControlSize } from "@studio-baeks/paper-ui/tokens";
 
 import { bar } from "./kit.css";
 import type { PresetPath } from "./typography-roles";
@@ -72,7 +72,7 @@ globalStyle(`${gutterFrame} > span`, { flex: 1 });
 // Motion
 const dot = shape.inset.md;
 export const easingSpecimen = style({ display: "grid", gridTemplateColumns: `${shape.dimension.width.xs} 1fr`, alignItems: "center", gap: layout.gap.md });
-export const pulseDot = style({ display: "inline-block", width: dot, height: dot, borderRadius: shape.radius.full, background: color.accent.info.solid });
+export const pulseDot = style({ display: "inline-block", width: dot, height: dot, borderRadius: shape.radius.full, background: color.accent.info.solid, "@media": { "(forced-colors: active)": { forcedColorAdjust: "none", background: SYSTEM_COLORS.canvasText } } });
 export const presence = style({ display: "flex", alignItems: "center", gap: layout.gap.md, isolation: "isolate" });
 export const themeSwap = style({ display: "flex", alignItems: "center", gap: layout.gap.md });
 export const presenceIdle = style({ visibility: "hidden" });

@@ -1,7 +1,8 @@
 import { expect, test, type Locator } from "@playwright/test";
 
 import { ELEVATION, ELEVATION_NEST_LIMIT } from "../../packages/paper-ui/src/tokens";
-import { BREAKPOINTS, ELEVATIONS, LAYOUT_SOURCE, type Elevation } from "../../packages/paper-ui/src/tokens/layout";
+import { BREAKPOINTS, ELEVATIONS, LAYOUT_SOURCE, LAYOUT_VALUES, type Elevation } from "../../packages/paper-ui/src/tokens/layout";
+import type { SourceOverrides } from "../../packages/paper-ui/src/tokens/overrides";
 import { px } from "../support/geometry";
 import { openHarness, openPlayground } from "../support/harness";
 import { expectStyle } from "../support/style";
@@ -41,6 +42,27 @@ test("[foundations.layout.breakpoint-em] a breakpoint follows the browser's defa
   await expect(page.locator("html")).toHaveCSS("font-size", px(FONT));
   await expect(sidebar).toBeHidden();
   await expect(column).toHaveCSS("max-width", px(content * ratio));
+});
+
+test("[foundations.override.rederives-roles] a Layout source override in a subtree, named by sourceVars, moves a Box's container width and a Surface's tier z there and nowhere else", async ({ page }) => {
+  await openHarness(page, "overrides");
+  const box = page.getByTestId("container-box");
+  const surface = page.getByTestId("overlay-surface");
+  await page.setViewportSize({ width: LAYOUT_SOURCE.container.content + 200, height: 720 });
+  await expect(box).toHaveCSS("width", px(LAYOUT_SOURCE.container.content));
+  await expect(surface).toHaveCSS("z-index", z("overlay"));
+
+  type Paper = { __paper: { sourceVars: (overrides: SourceOverrides) => Record<string, string> } };
+  const vars = await page.evaluate(() => (window as unknown as Paper).__paper.sourceVars({ layout: { container: { content: "600px" }, elevation: { overlay: { z: "33" } } } }));
+  expect(vars).toEqual({ "--pui-layout-container-content": "600px", "--pui-layout-elevation-overlay-z": "33" });
+  await page.getByTestId("override-region").evaluate((element, declarations) => {
+    for (const [name, value] of Object.entries(declarations)) element.style.setProperty(name, value);
+  }, vars);
+  await expect(box).toHaveCSS("width", "600px");
+  await expect(surface).toHaveCSS("z-index", "33");
+  // Above the region the source is what it was.
+  const outside = await page.locator("body").evaluate((element, names) => names.map((name) => getComputedStyle(element).getPropertyValue(name).trim()), Object.keys(vars));
+  expect(outside).toEqual([LAYOUT_VALUES.container.content, LAYOUT_VALUES.elevation.overlay.z]);
 });
 
 test("[foundations.layout.elevation-unit] a Surface in block flow takes its tier's position, z and shadow together", async ({ page }) => {

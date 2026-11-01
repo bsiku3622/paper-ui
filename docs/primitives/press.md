@@ -4,15 +4,18 @@ Press Primitive는 누르기를 맡는 2차 primitive입니다. 마우스 · 터
 
 | 컴포넌트 | Hook | 책임 | 기본값 |
 | --- | --- | --- | --- |
-| Pressable | usePressable | onPress lifecycle, disabled, focusable, motion, native button props | native button, type=button, motion none. active / focus-visible 상태 |
+| Pressable | usePressable | onPress lifecycle, disabled, focusable, motion, native button props | native button, type=button, motion none. active / focus-visible 상태, 키보드 링 |
 
 ## Press
 
 [contract:primitives.pressable.input-paths]: #
-Pressable은 onPress·onPressStart·onPressEnd·onPressUp·onPressChange와 disabled를 받고, 그 밖에 preventFocusOnPress · cancelOnPointerExit · allowTextSelection을 고를 수 있습니다. usePressable은 같은 옵션만 받고(ref 인자는 없습니다) pressProps·isActive를 반환합니다. Press 이벤트(`PressEvent`)는 마우스·터치·키보드·보조 기술의 입력을 공통 계약으로 전달하고, 한 요소가 처리하면 부모로 올라가지 않습니다 — 받지 않으려면 `continuePropagation()`을 부릅니다. 마우스·터치로 누른 요소는 누름이 끝날 때 focus를 받습니다(Safari는 눌린 button에 focus를 주지 않으므로 Paper가 맞춥니다). `preventFocusOnPress`가 이를 끕니다. Bare button은 Paper의 색·크기·variant를 선택하지 않습니다.
+Pressable은 onPress·onPressStart·onPressEnd·onPressUp·onPressChange와 disabled를 받고, 그 밖에 preventFocusOnPress · cancelOnPointerExit · allowTextSelection을 고를 수 있습니다. usePressable은 같은 옵션만 받고(ref 인자는 없습니다) pressProps·isActive를 반환합니다. Press 이벤트(`PressEvent`)는 마우스·터치·키보드·보조 기술의 입력을 공통 계약으로 전달하고, 한 요소가 처리하면 부모로 올라가지 않습니다 — 받지 않으려면 `continuePropagation()`을 부릅니다([부모로 올라가는 이벤트](#부모로-올라가는-이벤트)). 마우스·터치로 누른 요소는 누름이 끝날 때 focus를 받습니다(Safari는 눌린 button에 focus를 주지 않으므로 Paper가 맞춥니다). `preventFocusOnPress`가 이를 끕니다. Bare button은 Paper의 색·크기·variant를 선택하지 않습니다.
 
 [contract:primitives.pressable.state]: #
 Pressable의 children 함수는 isActive·isFocused·isFocusVisible·isDisabled를 받습니다. 상태는 data-active·data-focused·data-focus-visible·data-disabled에도 반영합니다. 눌리는 동안의 순간 상태는 `active`라고 부릅니다 — `pressed`는 선택을 알리는 aria-pressed만 뜻합니다. 소비 앱은 data 속성에 연결된 class 스타일을 작성합니다. hover는 상태로 노출하지 않습니다 — hover 색은 CSS의 몫이고, 눌리는 자리에 색을 입히는 [Paint](paint.md#paint--accent--variant)의 `hoverable`이 그립니다.
+
+[contract:primitives.pressable.ring]: #
+Pressable은 키보드 포커스를 `useFocusRing`으로 스스로 판정하고 링도 그 판정(`data-focus-visible`)에서 스스로 그립니다. 그래서 포인터로 포커스한 Pressable에는 링이 없고, 브라우저의 `:focus-visible` 판단과 갈리지 않습니다. `as`에 부품을 주면(`<Pressable as={Selectable}>`) 그 요소의 링도 Pressable이 맡습니다. 판정이 없는 부품과 요소는 전역 baseline(`:where(:focus-visible)`)이 링을 그립니다.
 
 [contract:primitives.pressable.motion]: #
 `motion`은 누르는 동안의 모습을 고릅니다. 기본 `none`은 아무것도 입히지 않고, `press`는 눌리는 동안 대상을 눌림 한 단계(`motion.press`의 변위)만큼 내려앉히고 포인터 커서를 주며 비활성 대상에 비활성의 모습(흐림 · `not-allowed`)을 줍니다. 마우스와 키보드의 눌림이 모두 `:active`와 `data-active`로 같은 모습을 얻으므로 Enter도 포인터처럼 내려앉습니다. 이 class는 색도 전이도 정하지 않습니다 — 전이는 요소가 `transition()`으로 묶고, 색은 [Paint](paint.md)가 입힙니다. usePressable은 같은 `motion`을 받아 `pressProps`의 className에 싣습니다. Button · IconButton이 `motion="press"`를 씁니다.
@@ -40,6 +43,37 @@ Atom의 모습을 행동에 입히는 길도 같은 `as`이고 방향은 하나�
 const { pressProps, isActive } = usePressable({ onPress: save });
 
 return <button {...pressProps} type="button">{isActive ? "저장 중…" : "저장"}</button>;
+```
+
+## 부모로 올라가는 이벤트
+
+[contract:primitives.pressable.propagation]: #
+Pressable과 그 위에 선 Button · IconButton은 React Aria의 동작을 그대로 따릅니다. 요소가 누름을 처리하면 그 입력을 나른 DOM 이벤트의 일부가 요소에서 멈춥니다. 멈춘 이벤트는 부모의 React handler(`onClick` · `onPointerDown` · `onMouseDown` …)에도, `document`에 bubble 단계로 단 native listener에도 닿지 않습니다. capture 단계의 listener(`document`의 capture, 부모의 `onClickCapture`)는 모두 듣습니다. 일반 `<button>`은 아무것도 멈추지 않습니다.
+
+| 입력 | 부모와 `document`의 bubble에 닿음 | 멈춤 |
+| --- | --- | --- |
+| 마우스 · 터치 | `pointerup` · `mouseup` | `pointerdown` · `mousedown` · `click` |
+| 키보드(Enter · Space) | `click` · `keyup` | `keydown` |
+| `element.click()`(보조 기술) | 없음 | `click` |
+
+그래서 행 전체를 누르는 카드의 `onClick`이나 `document`의 바깥 클릭 listener는, 그대로 두면 마우스로 누른 Button 위에서 듣지 못합니다.
+
+[contract:primitives.pressable.propagation-way-out]: #
+통과시키려면 요소의 press 콜백에서 `continuePropagation()`을 부릅니다. `onPress` · `onPressEnd` · `onPressUp`에서 부르면 `click`이, `onPressStart`에서 부르면 마우스 · 터치의 `pointerdown`과 키보드의 `keydown`이 올라갑니다. `element.click()`의 `click`은 네 콜백 어디서 불러도 올라갑니다. `mousedown`은 어느 콜백에서 불러도 올라가지 않으므로 `pointerdown`을 듣거나 capture 단계에서 듣습니다. 바깥 클릭처럼 요소를 고칠 수 없는 listener는 capture로 답니다. Button · IconButton의 타입에는 press 콜백이 없으므로 `<Button as={Pressable} onPress={…}>`로 답니다.
+
+행 전체를 누르는 카드 안의 Pressable과 Button이 click을 올려 보내는 예시입니다.
+
+```tsx
+import { Button, Pressable, Surface, type PressEvent } from "@studio-baeks/paper-ui";
+
+const passOn = (event: PressEvent) => event.continuePropagation();
+
+export const Row = ({ onOpen }: { onOpen: () => void }) => (
+  <Surface onClick={onOpen}>
+    <Pressable onPress={passOn}>행 안의 버튼</Pressable>
+    <Button as={Pressable} onPress={passOn}>행 안의 Button</Button>
+  </Surface>
+);
 ```
 
 [contract:primitives.pressable.hook-bare]: #

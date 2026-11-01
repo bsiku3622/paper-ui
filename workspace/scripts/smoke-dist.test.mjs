@@ -3,7 +3,7 @@ import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 
-import { CONSUMERS, SERVER_ENTRIES, boundaryProblems, consumerManifest, hasClientDirective, loadedFiles, serverImport, specifiersOf } from "./smoke-dist.mjs";
+import { CONSUMERS, CONSUMER_WORKSPACE, SERVER_ENTRIES, boundaryProblems, consumerManifest, hasClientDirective, loadedFiles, serverImport, specifiersOf } from "./smoke-dist.mjs";
 
 // A built package as a map of path → text.
 const built = (files) => (path) => {
@@ -86,4 +86,14 @@ test("[install.entry.tokens-server-safe] describes a consumer that installs the 
     assert.deepEqual(Object.keys({ ...manifest.dependencies, ...manifest.devDependencies }).filter((name) => name.includes("vanilla-extract")), []);
   }
   assert.deepEqual(CONSUMERS.map(({ react }) => react), [19, 18]);
+});
+
+test("[install.setup.consumer-build] builds its consumer with the React plugin alone and the workspace file the install page gives, and the page names the plugin an app's .css.ts needs", () => {
+  const manifest = consumerManifest({ react: 19, range: "^19.0.0", tarball: "/tmp/paper.tgz" });
+  assert.deepEqual(Object.keys({ ...manifest.dependencies, ...manifest.devDependencies }).filter((name) => /plugin|vanilla-extract/.test(name)), ["@vitejs/plugin-react"]);
+  const config = readFileSync(new URL("../fixtures/harness/vite.config.dist.ts", import.meta.url), "utf8");
+  assert.match(config, /plugins: \[react\(\)\]/);
+  const page = readFileSync(new URL("../../docs/get-started/install.md", import.meta.url), "utf8");
+  assert.ok(page.includes(`\`\`\`yaml\n${CONSUMER_WORKSPACE}\`\`\``), "the page gives the workspace file the smoke writes");
+  assert.ok(page.includes("plugins: [react(), vanillaExtractPlugin()]"), "the page gives the plugin for an app's own .css.ts");
 });

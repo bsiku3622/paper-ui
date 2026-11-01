@@ -55,3 +55,6 @@ export const themeVariables = () => {
 // The variables an element can carry that no mode changes. A portal copies the ones that differ from
 // its container, and an override names only these.
 export const SOURCE_VARIABLES = keys(themeVariables().source);
+
+// The Layout variables a mode sets: the shadow geometry. Emitted, but not a source an element carries across modes.
+export const LAYOUT_MODE_VARIABLES = keys(themeVariables().modes.light.ground).filter((name) => name.startsWith(`${pathToCssVar(["layout"])}-`));

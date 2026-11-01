@@ -5,7 +5,7 @@ import { tokens, type TextVariant } from "../../packages/paper-ui/src/tokens";
 import { OPACITY_VALUES } from "../../packages/paper-ui/src/tokens/colors";
 import { LAYOUT_SOURCE } from "../../packages/paper-ui/src/tokens/layout";
 import { SHAPE_RECIPES } from "../../packages/paper-ui/src/tokens/shape-recipes";
-import { CODE_SPEC, CONTROL_SIZES, FONT_STYLESHEETS, PRESET_SPEC, ROLE_SPEC, TEXT_VARIANTS, TYPOGRAPHY_SOURCE } from "../../packages/paper-ui/src/tokens/typography";
+import { CODE_SPEC, CONTROL_SIZES, FONT_STYLESHEETS, PRESET_SPEC, ROLE_SPEC, TEXT_VARIANTS, TYPOGRAPHY, TYPOGRAPHY_SOURCE } from "../../packages/paper-ui/src/tokens/typography";
 import { pageErrors } from "../support/console";
 import { metrics, px, roleDp } from "../support/geometry";
 import { openHarness } from "../support/harness";
@@ -304,7 +304,7 @@ test.describe("the docs, the Playground and the landing page take their type fro
     expect(await size(inline) / (await size(paragraph))).toBeCloseTo(TYPOGRAPHY_SOURCE.codeScale.inline, 3);
     const cell = prose(page).locator("td").filter({ has: page.locator("code") }).first();
     expect(await size(cell.locator("code").first()) / (await size(cell))).toBeCloseTo(TYPOGRAPHY_SOURCE.codeScale.compact, 3);
-    for (const code of [inline, cell.locator("code").first()]) await expectStyle(code, { fontFamily: tokens.typography.palette.family.mono });
+    for (const code of [inline, cell.locator("code").first()]) await expectStyle(code, { fontFamily: TYPOGRAPHY.palette.family.mono });
   });
 
   test("[foundations.typography.code-rule] a Playground code block and its editor are the code block's size, line and weight, and a docs code block is the same at the regular weight", async ({ page }) => {
@@ -322,7 +322,7 @@ test.describe("the docs, the Playground and the landing page take their type fro
     await page.getByRole("button", { name: "코드 편집" }).click();
     const editor = page.getByRole("textbox", { name: "컴포넌트 코드 편집" });
     expect([await css(editor, "fontSize"), await css(editor, "lineHeight"), await css(editor, "fontWeight")]).toEqual([fontSize, lineHeight, weight]);
-    await expectStyle(editor, { fontFamily: tokens.typography.palette.family.mono });
+    await expectStyle(editor, { fontFamily: TYPOGRAPHY.palette.family.mono });
   });
 
   test("the landing headline is the hero role, its padding the section role and the footer logo the subdued opacity", async ({ page }) => {

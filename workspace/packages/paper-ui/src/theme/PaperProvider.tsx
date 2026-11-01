@@ -16,12 +16,15 @@ import type { PaperMessages } from "../internal/messages";
 import { isStylesheetLoaded, type ColorMode, type ThemePreference } from "../tokens";
 import { ThemeControlContext, type ThemeControl } from "./context";
 import { THEME_STORAGE_KEY } from "./engine";
+import { warnUnknownSourceVariables } from "./source-check";
 import { getThemeStore } from "./store";
 
 const useIsomorphicLayoutEffect = typeof document === "undefined" ? useEffect : useLayoutEffect;
 
 // An app that leaves out styles.css sees an unstyled page with no error; say so once in development.
 let stylesheetWarned = false;
+// The plain CSS form of a source override is read once, at the first mount.
+let sourcesChecked = false;
 
 export type PaperProviderProps = {
   // The theme before the user has chosen. A stored choice wins.
@@ -46,6 +49,12 @@ export const PaperProvider = ({ defaultTheme = "system", storageKey = THEME_STOR
     if (process.env.NODE_ENV === "production" || stylesheetWarned || isStylesheetLoaded(document.documentElement)) return;
     stylesheetWarned = true;
     console.warn('[paper-ui] The stylesheet is not loaded. Import "@studio-baeks/paper-ui/styles.css" once at the app entry.');
+  }, []);
+
+  useEffect(() => {
+    if (process.env.NODE_ENV === "production" || sourcesChecked) return;
+    sourcesChecked = true;
+    warnUnknownSourceVariables(document);
   }, []);
 
   // A server render has not read <html>: it answers with the default, and light for system.

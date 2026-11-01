@@ -99,4 +99,7 @@ export const Document = ({ children }: { children: React.ReactNode }) => (
 ## 전환은 즉시
 
 [contract:foundations.theme.swap-instant]: #
-모드가 바뀌는 프레임 동안 `<html>`이 `data-pui-theme-swap` 속성을 달고, 그동안 모든 요소의 transition은 즉시 끝납니다(Motion의 `theme` 역할). 그래서 버튼·입력·스위치가 페이지보다 늦게 따라 바뀌지 않습니다. Provider가 쓸 때뿐 아니라 Surface의 `theme`이나 Floating이 여는 층의 모드가 바뀔 때도 같고, 페이지에 있는 다른 라이브러리의 transition도 그 프레임에는 멈춥니다.
+모드가 바뀌는 프레임 동안 `<html>`이 `data-pui-theme-swap` 속성을 달고, 그동안 모든 요소의 transition은 즉시 끝납니다(Motion의 `theme` 역할). 그래서 버튼·입력·스위치가 페이지보다 늦게 따라 바뀌지 않습니다. Provider가 쓸 때뿐 아니라 Surface의 `theme`이나 Floating이 여는 층의 모드가 바뀔 때도 같고, 외부 테마 관리자가 속성을 쓸 때와 Provider가 따라가는 OS 설정이 바뀔 때도 같습니다. 페이지에 있는 다른 라이브러리의 transition도 그 프레임에는 멈춥니다.
+
+[contract:foundations.theme.swap-limit]: #
+`PaperProvider`가 없는 페이지에는 묶지 못하는 전환이 둘 있습니다. OS 설정이 바뀌면 `<html>`에 속성이 없으므로 스타일시트의 미디어 쿼리가 모드를 곧바로 바꾸고, Chromium과 WebKit은 그 변화를 스타일을 다시 계산한 뒤에야 스크립트에 알립니다. 그리고 테마를 읽는 컴포넌트(`useResolvedTheme`, Surface의 `theme`, 열린 Portal)도 없는 페이지에서는 밖에서 속성을 써도 듣는 쪽이 없습니다. 두 경우 모두 면은 곧바로 바뀌고 컨트롤은 자기 transition만큼 늦게 따라옵니다. 이 전환까지 묶으려면 `PaperProvider`를 둡니다 — Provider가 있으면 `<html>`에 늘 속성이 있어 모드를 바꾸는 것은 Provider의 쓰기이고, 그 쓰기가 전환을 묶습니다.

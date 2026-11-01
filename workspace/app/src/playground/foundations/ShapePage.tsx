@@ -87,6 +87,15 @@ const ShapeSource = () => (
         <ValueCell>{SHAPE_SOURCE.control.buttonInsetRatio}</ValueCell>
       </BoardRow>
     </BoardGroup>
+    <BoardGroup label="Selection — Checkbox와 Radio의 상자. 스위치 트랙 폭은 이 값의 2배이고, 컨트롤 높이와 따로 움직입니다">
+      {CONTROL_SIZES.map((size) => (
+        <BoardRow key={size}>
+          <TokenCell name={`shape.selection.size.${size}`} />
+          <Cell><Checkbox size={size} defaultChecked aria-label={`selection ${size}`} /></Cell>
+          <ValueCell>{resolved(shape.selection.size[size])}</ValueCell>
+        </BoardRow>
+      ))}
+    </BoardGroup>
     <BoardGroup label="Icon — 옆에 서는 Text 역할 이름">
       {ICON_SIZES.map((size) => (
         <BoardRow key={size}>
@@ -158,7 +167,6 @@ const ALIAS_VALUES: Record<keyof typeof ROLE_ALIASES, readonly string[]> = {
 const FORMULA_VALUES: Record<keyof typeof ROLE_FORMULAS, readonly string[]> = {
   "control.inset.input": sizes(shape.control.inset.input),
   "control.inset.button": sizes(shape.control.inset.button),
-  "selection.size": sizes(shape.selection.size),
 };
 
 const ShapeRoles = () => (

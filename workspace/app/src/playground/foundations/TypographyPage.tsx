@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 
 import { Text } from "@studio-baeks/paper-ui";
 import { tokens, CONTROL_SIZES, TEXT_VARIANTS, type ControlSize, type TextVariant } from "@studio-baeks/paper-ui/tokens";
+import { TYPOGRAPHY } from "@paper-ui/inspect/typography";
 
 import { Board, BoardGroup, BoardRow, FoundationSection, FontSample, MatrixCell, TokenCell, ValueCell, px, resolved } from "./kit";
 import { valueAt } from "./paths";
@@ -11,7 +12,7 @@ import * as s from "./foundations.css";
 const SPECIMEN = "Aa 가나다 0123";
 
 type PaletteGroup = { key: string; label: string; rows: { name: string; value: string; font: CSSProperties; sample?: React.ReactNode }[] };
-const palette = tokens.typography.palette;
+const palette = TYPOGRAPHY.palette;
 const entries = <T extends Record<string, string>>(values: T) => Object.entries(values) as [string, string][];
 
 const PALETTE_GROUPS: PaletteGroup[] = [

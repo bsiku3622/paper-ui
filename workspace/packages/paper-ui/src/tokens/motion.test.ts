@@ -101,6 +101,14 @@ describe("Motion roles", () => {
   });
 });
 
+describe("The easings", () => {
+  it("[foundations.motion.easing-settles] keeps overshoot's y values at 1 or below, so the curve never passes its target", () => {
+    const [, y1, , y2] = /^cubic-bezier\((.+)\)$/.exec(EASING.overshoot)![1]!.split(",").map(Number);
+    expect(y1).toBeLessThanOrEqual(1);
+    expect(y2).toBeLessThanOrEqual(1);
+  });
+});
+
 describe("transition()", () => {
   it("[foundations.motion.transition] assembles a property with its role's duration and easing", () => {
     expect(transition("hover", "color")).toBe(`color ${MOTION.hover.duration} ${MOTION.hover.easing}`);

@@ -1,11 +1,11 @@
-import { stateStyle, tokens } from "../tokens";
+import { linkStyle, stateStyle, tokens } from "../tokens";
 import { layered } from "../tokens/layers.css";
 
 const { style, styleVariants } = layered("components");
 
 // 링크의 형태. 색은 primitives/paint/recipes.css.ts 의 linkPaint 가 입힌다.
 export const linkRoot = style([stateStyle.focusVisible, {
-  textUnderlineOffset: tokens.typography.palette.decoration.underlineOffset,
+  textUnderlineOffset: linkStyle.textUnderlineOffset,
   // The ring follows the link's own corners; the baseline ring leaves them alone.
   borderRadius: tokens.shape.radius.control,
   cursor: "pointer",

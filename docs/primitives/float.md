@@ -41,7 +41,7 @@ Content role은 dialog / alertdialog이며 기본값은 dialog입니다. aria-la
 | --- | --- | --- |
 | presentation | popover | `popover`(앵커 곁) 또는 `modal`(scrim 위 가운데) |
 | dismissable | true | 바깥 pointer 조작으로 닫기 |
-| keyboardDismissDisabled | false | true이면 Escape 닫기 해제 |
+| keyboardDismissDisabled | false | true이면 Escape 닫기 해제. Escape는 포커스가 panel 안에 있을 때만 듣습니다 |
 | closeOnBlur | false | focus 이탈 시 닫기 요청 |
 | autoFocus / restoreFocus | true / true | 진입 / 해제 후 복원 |
 | initialFocusRef | 없음 | 내부의 명시적 focus 대상 |
@@ -59,7 +59,7 @@ Content role은 dialog / alertdialog이며 기본값은 dialog입니다. aria-la
 [contract:primitives.floating.initial-focus]: #
 [contract:primitives.floating.portal-container]: #
 [contract:primitives.floating.open-from-start]: #
-초기 focus는 initialFocusRef, 첫 내부 대상, 대상이 없는 경우 Content 순서입니다. 제목에 명시적으로 이동하려면 tabIndex=-1을 제공해주세요. AutoFocus=false이면 자동 이동을 하지 않습니다. Portal의 root가 열린 자리의 theme를 다시 걸어, 옮겨진 내용도 Paper의 해석된 theme를 유지합니다. 열린 자리(Trigger)가 덮어쓴 Shape · Layout · Typography 원본도 같은 root에 얹혀 옮겨지므로, 간격을 좁힌 영역에서 연 panel 안의 컨트롤도 그 영역의 크기로 그려집니다([Shape](../foundations/shape.md#원본--역할--recipe)). `portalContainer`는 DOM을 붙일 자리만 정하며, 테마와 원본은 어디에 붙여도 열린 자리의 것입니다. 처음부터 열려 있는 panel(`defaultOpen`이나 처음부터 참인 `open`)은 페이지가 commit된 다음, 그려지기 전에 섭니다. 그래서 Trigger를 Content 위에 쓰든 아래에 쓰든, focus가 어디에 있든 그 Trigger의 원본을 받고 첫 화면부터 그 자리에 놓입니다. 다만 첫 render의 부모 effect에는 panel이 아직 없으므로, 처음 focus는 `initialFocusRef`로 정해주세요.
+초기 focus는 initialFocusRef, 첫 내부 대상, 대상이 없는 경우 Content 순서입니다. 제목에 명시적으로 이동하려면 tabIndex=-1을 제공해주세요. AutoFocus=false이면 자동 이동을 하지 않습니다. Portal의 root가 열린 자리의 theme를 다시 걸어, 옮겨진 내용도 Paper의 해석된 theme를 유지합니다. 열린 자리의 방향도 같은 root가 옮겨, panel의 배치와 안쪽의 방향키가 같은 방향을 읽습니다([Portal](a11y.md#portal)). 열린 자리(Trigger)가 덮어쓴 Shape · Layout · Typography 원본도 같은 root에 얹혀 옮겨지므로, 간격을 좁힌 영역에서 연 panel 안의 컨트롤도 그 영역의 크기로 그려집니다([Shape](../foundations/shape.md#원본--역할--recipe)). `portalContainer`는 DOM을 붙일 자리만 정하며, 테마와 원본은 어디에 붙여도 열린 자리의 것입니다. 처음부터 열려 있는 panel(`defaultOpen`이나 처음부터 참인 `open`)은 페이지가 commit된 다음, 그려지기 전에 섭니다. 그래서 Trigger를 Content 위에 쓰든 아래에 쓰든, focus가 어디에 있든 그 Trigger의 원본을 받고 첫 화면부터 그 자리에 놓입니다. 다만 첫 render의 부모 effect에는 panel이 아직 없으므로, 처음 focus는 `initialFocusRef`로 정해주세요.
 
 ## 열고 닫는 움직임
 
@@ -69,4 +69,4 @@ Content가 열리면 panel(modal이면 scrim과 panel)이 Motion의 `enter` 역�
 [contract:primitives.floating.nesting]: #
 [contract:primitives.floating.focus-restore]: #
 [contract:primitives.floating.dismiss]: #
-Modal은 React Aria의 focus containment·배경 inert·스크롤 잠금을 사용합니다. 중첩 Floating은 안쪽부터 Escape를 처리하고 각 이전 대상을 복원합니다. 중첩은 elevation의 nudge로 반영합니다 — 같은 tier의 panel 위에 열린 panel은 한 걸음씩 올라가고(`ELEVATION_NEST_LIMIT`번까지) 다음 tier에 닿지 않으며, 더 높은 tier 위에서 연 panel은 그 tier를 따릅니다. 그래서 popover 위에서 연 modal의 scrim이 그 popover를 덮고, modal 위에서 연 popover는 그 scrim 위에 섭니다. React Aria가 배치한 panel의 z는 쓰지 않습니다. 마지막 모달 해제 시 배경과 스크롤을 복원합니다. Dismissable과 Escape는 독립적입니다. 모두 끄면 명시적인 닫기 수단을 제공해야 합니다. 호출 버튼 제거 후의 제품별 목적지와 라우팅은 소비자가 결정합니다.
+Modal은 React Aria의 focus containment·배경 inert·스크롤 잠금을 사용합니다. 중첩 Floating은 안쪽부터 Escape를 처리하고 각 이전 대상을 복원합니다. 중첩은 elevation의 nudge로 반영합니다 — 같은 tier의 panel 위에 열린 panel은 한 걸음씩 올라가고(`ELEVATION_NEST_LIMIT`번까지) 다음 tier에 닿지 않으며, 더 높은 tier 위에서 연 panel은 그 tier를 따릅니다. 그래서 popover 위에서 연 modal의 scrim이 그 popover를 덮고, modal 위에서 연 popover는 그 scrim 위에 섭니다. React Aria가 배치한 panel의 z는 쓰지 않습니다. 마지막 모달 해제 시 배경과 스크롤을 복원합니다. Dismissable과 Escape는 독립적입니다. 모두 끄면 명시적인 닫기 수단을 제공해야 합니다. Escape는 포커스가 panel 안에 있을 때만 듣습니다 — 듣는 자리가 panel 자신이기 때문입니다. modal은 포커스를 가두므로 언제나 듣지만, `autoFocus={false}`로 포커스 없이 연 popover(코치마크처럼)는 페이지에서 누른 Escape로 닫히지 않습니다. 그런 panel을 Escape로 닫으려면 앱이 `document`에 listener를 달아 닫습니다. 호출 버튼 제거 후의 제품별 목적지와 라우팅은 소비자가 결정합니다.

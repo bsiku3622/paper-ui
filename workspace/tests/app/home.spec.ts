@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 import { tokens } from "../../packages/paper-ui/src/tokens";
+import { TYPOGRAPHY } from "../../packages/paper-ui/src/tokens/typography";
 import { tab } from "../support/keyboard";
 import { colors, contrast } from "../support/contrast";
 import { expectStyle, profile } from "../support/style";
@@ -35,13 +36,13 @@ test("the brand label is a neutral badge, and the mockup's mark and current item
   const side = page.getByTestId("home-mockup-side");
   const mark = side.getByText("S", { exact: true });
   await expectStyle(mark.locator(".."), { backgroundColor: tokens.color.accent.primary.solid, color: tokens.color.accent.primary.wash });
-  await expectStyle(mark, { color: tokens.color.accent.primary.wash, fontWeight: tokens.typography.palette.weight.bold });
+  await expectStyle(mark, { color: tokens.color.accent.primary.wash, fontWeight: TYPOGRAPHY.palette.weight.bold });
 
   const current = side.locator("[data-selected]");
   await expect(current).toHaveCount(1);
   await expect(current).toHaveText("이슈");
-  await expectStyle(current, { backgroundColor: tokens.color.interaction.selected, color: tokens.color.ink.primary, fontWeight: tokens.typography.palette.weight.medium });
-  await expectStyle(side.getByText("보드", { exact: true }), { fontWeight: tokens.typography.palette.weight.regular, color: tokens.color.ink.secondary });
+  await expectStyle(current, { backgroundColor: tokens.color.interaction.selected, color: tokens.color.ink.primary, fontWeight: TYPOGRAPHY.palette.weight.medium });
+  await expectStyle(side.getByText("보드", { exact: true }), { fontWeight: TYPOGRAPHY.palette.weight.regular, color: tokens.color.ink.secondary });
 });
 
 for (const scheme of ["light", "dark"] as const) {

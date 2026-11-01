@@ -128,9 +128,10 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
   const [innerHasValue, setInnerHasValue] = useState(() => String(defaultValue ?? "").length > 0);
   const hasValue = value !== undefined ? String(value).length > 0 : innerHasValue;
 
+  // 호출자가 먼저 — 내부 추적은 호출자가 남긴 값을 읽는다.
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (value === undefined) setInnerHasValue(e.currentTarget.value.length > 0);
     onChange?.(e);
+    if (value === undefined) setInnerHasValue(e.currentTarget.value.length > 0);
   };
 
   // native setter + input 이벤트로 controlled·uncontrolled 양쪽에서 onChange 를 발화시킨다.
@@ -176,7 +177,7 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
           defaultValue={defaultValue}
           onChange={handleChange}
           className={joinClass(fieldInput, fieldPlaceholderPaint, fieldInputLeading[size], align && fieldAlign[align])}
-          {...mergeProps(focusHandlers, rest, controlProps)}
+          {...mergeProps(rest, focusHandlers, controlProps)}
         />
         {showClear ? (
           <Pressable className={actionClass} onPress={clear} aria-label={clearLabel ?? messages.clear}>

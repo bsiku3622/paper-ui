@@ -9,6 +9,7 @@
 import { forwardRef, type ElementType, type ReactElement, type ReactNode } from "react";
 
 import { joinClass } from "../internal/joinClass";
+import { bareButton } from "../primitives/bare-button.css";
 import { mergeProps } from "../primitives/composition";
 import { useFocusRing } from "../primitives/a11y/focus";
 import type { PolymorphicProps } from "../primitives/polymorphic";
@@ -24,6 +25,7 @@ type LinkOwn = {
 };
 
 // `as` 는 라우터의 Link 같은 컴포넌트도 받는다 — 나머지 prop 은 그 대상의 것 그대로(as={RouterLink} 면 to).
+// as="button" 은 type="button" 과 Pressable 의 button reset 을 받아 링크와 같은 모습이 된다.
 export type LinkProps<As extends ElementType = "a"> = PolymorphicProps<LinkOwn, As>;
 
 const LinkImpl = forwardRef<HTMLElement, Omit<LinkProps, "as" | "ref"> & { as?: ElementType }>(function Link(
@@ -32,7 +34,8 @@ const LinkImpl = forwardRef<HTMLElement, Omit<LinkProps, "as" | "ref"> & { as?: 
 ) {
   const Tag = as ?? "a";
   const { focusProps } = useFocusRing();
-  return <Tag ref={ref} className={joinClass(linkPaint, linkRoot, linkUnderline[underline], className)} {...mergeProps(focusProps, rest)} />;
+  const isButton = Tag === "button";
+  return <Tag ref={ref} className={joinClass(isButton && bareButton, linkPaint, linkRoot, linkUnderline[underline], className)} {...mergeProps(isButton ? { type: "button" } : null, rest, focusProps)} />;
 });
 
 export const Link = LinkImpl as <As extends ElementType = "a">(props: LinkProps<As>) => ReactElement;

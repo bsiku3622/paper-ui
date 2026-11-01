@@ -4,12 +4,13 @@ import { layered } from "../../tokens/layers.css";
 const { style } = layered("components");
 
 // The frame an input group draws around its value: the outline, the corner and the ring when the keyboard asks
-// for one. Its colour is fieldPaint, and its face the Surface fill the Atom is given.
+// for one. Its colour is fieldPaint, and its face the Surface fill the Atom is given. The border rises on hover, so
+// it moves on the hover role as a Button's does; the face stays on state.
 export const inputFrame = style([stateStyle.focusVisible, stateStyle.disabled, {
   borderWidth: tokens.shape.stroke.border,
   borderStyle: "solid",
   borderRadius: tokens.shape.radius.control,
-  transition: transition("state", "border-color", "background-color"),
+  transition: [transition("hover", "border-color"), transition("state", "background-color")].join(", "),
 }]);
 
 // A pill takes its corners from the height. It follows inputFrame, so the same specificity is won by order.

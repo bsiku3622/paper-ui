@@ -31,18 +31,6 @@ export const readRootMode = (doc: Document = document): ColorMode => {
   return osModeQuery(doc)?.matches ? "dark" : "light";
 };
 
-// Calls back when the root's mode can have changed: its attribute is written, or the OS preference moves.
-export const subscribeRootMode = (doc: Document, onChange: () => void): (() => void) => {
-  const observer = new MutationObserver(onChange);
-  observer.observe(doc.documentElement, { attributes: true, attributeFilter: [THEME_ATTRIBUTE] });
-  const query = osModeQuery(doc);
-  query?.addEventListener("change", onChange);
-  return () => {
-    observer.disconnect();
-    query?.removeEventListener("change", onChange);
-  };
-};
-
 // While a mode is being swapped, <html> carries the swap attribute so nothing transitions between the
 // two. Holds are counted per document; the attribute stays until the last one is released.
 const holds = new WeakMap<Document, number>();
@@ -65,6 +53,25 @@ export const holdTransitions = (doc: Document = document): (() => void) => {
     };
     if (view) view.requestAnimationFrame(settle);
     else settle();
+  };
+};
+
+// Calls back when the root's mode can have changed: its attribute is written, or the OS preference moves. Either can
+// come from outside the store, so each holds transitions for its frame. A mutation record arrives before the next style
+// update, so a write is held. Chromium and WebKit report a media query's change after that update: with no attribute on
+// <html> the stylesheet has already flipped, which is the limit docs/get-started/theming.md states.
+export const subscribeRootMode = (doc: Document, onChange: () => void): (() => void) => {
+  const changed = () => {
+    holdTransitions(doc)();
+    onChange();
+  };
+  const observer = new MutationObserver(changed);
+  observer.observe(doc.documentElement, { attributes: true, attributeFilter: [THEME_ATTRIBUTE] });
+  const query = osModeQuery(doc);
+  query?.addEventListener("change", changed);
+  return () => {
+    observer.disconnect();
+    query?.removeEventListener("change", changed);
   };
 };
 

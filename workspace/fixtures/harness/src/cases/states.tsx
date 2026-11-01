@@ -39,6 +39,7 @@ export const StatesCase = () => (
     <IconButton aria-label="Disabled icon" disabled data-testid="disabled-icon-button">{glyph}</IconButton>
     <IconButton aria-label="Pill icon" shape="pill" data-testid="pill-icon-button">{glyph}</IconButton>
     <Link href="#target" data-testid="link">Link</Link>
+    <Link as="button" data-testid="link-as-button">Link as button</Link>
     <Link href="#target" underline="hover" data-testid="link-hover">Hover link</Link>
     <Link href="#target" underline="hover" aria-disabled data-testid="link-hover-disabled">Blocked hover link</Link>
     <Submits />

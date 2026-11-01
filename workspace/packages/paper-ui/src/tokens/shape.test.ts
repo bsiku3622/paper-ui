@@ -38,7 +38,7 @@ const expected = {
   // A button's label defines its box, so its inset is the input inset widened by the ratio and snapped to a pixel.
   buttonInset: (size: ControlSize) => Math.round(((source_.control.height[size] - lineOf(PRESET_SPEC.button.medium[size].leading)) / 2) * source_.control.buttonInsetRatio),
   icon: (size: ControlSize) => source_.icon[CONTROL_ICON[size]],
-  selection: (size: ControlSize) => source_.control.height[size] / 2,
+  selection: (size: ControlSize) => source_.selection.size[size],
   thumb: (size: ControlSize) => expected.selection(size) - source_.stroke.emphasis,
   trackHeight: (size: ControlSize) => expected.selection(size) + source_.stroke.emphasis,
   // One row of a textarea is a control tall: the padding is what the control height leaves around its line and border.
@@ -77,7 +77,7 @@ describe("Shape is source → role → recipe", () => {
     walkValues(tokens.layout, [], (_path, value) => resolve(value));
     walkValues(SHAPE_RECIPES, [], (_path, value) => resolve(value));
     // Roles have no variables of their own.
-    expect([...declarations.keys()].some((name) => /^--pui-shape-(inset|selection)-/.test(name))).toBe(false);
+    expect([...declarations.keys()].some((name) => /^--pui-shape-inset-/.test(name))).toBe(false);
   });
 
   it("[foundations.override.source-paths-only] lists the source variables once, and no mode changes any of them", () => {
@@ -119,12 +119,12 @@ describe("Shape is source → role → recipe", () => {
     for (const size of CONTROL_SIZES) expect(lineOf(PRESET_SPEC.field[size].inputLeading)).toBeGreaterThan(lineOf(PRESET_SPEC.field[size].leading));
   });
 
-  it("[foundations.shape.recipe-geometry] derives selection marks and the switch from the control height", () => {
+  it("[foundations.shape.recipe-geometry] derives selection marks and the switch from the mark's own ladder", () => {
     expect(bySize(tokens.shape.selection.size)).toEqual(each(expected.selection));
     expect(bySize(SHAPE_RECIPES.checkbox.mark)).toEqual(each((size) => expected.selection(size) / 2));
     expect(bySize(SHAPE_RECIPES.checkbox.short)).toEqual(each((size) => expected.selection(size) / 4));
     expect(bySize(SHAPE_RECIPES.radio.dot)).toEqual(each((size) => expected.selection(size) / 2));
-    expect(SHAPE_RECIPES.switch.width).toBe(tokens.shape.control.height);
+    expect(bySize(SHAPE_RECIPES.switch.width)).toEqual(each((size) => expected.selection(size) * 2));
     expect(bySize(SHAPE_RECIPES.switch.height)).toEqual(each(expected.trackHeight));
     expect(bySize(SHAPE_RECIPES.switch.thumb)).toEqual(each(expected.thumb));
     expect(SHAPE_RECIPES.switch.travel).toBe(SHAPE_RECIPES.switch.thumb);
@@ -194,15 +194,14 @@ describe("what the Shape page says", () => {
     }
   });
 
-  it("[foundations.override.worked-example] says what one source override derives to: 40 tall, inset 12 and 17, a 20 box and a 40 by 22 track", () => {
+  it("[foundations.override.worked-example] says what one source override derives to: 40 tall, inset 12 and 17, while the marks keep their own ladder", () => {
     const overridden = new Map([...resolvable, ["--pui-shape-control-height-md", "40px"]]);
     const at = (role: string) => resolveDp(role, overridden);
     expect(at(tokens.shape.control.height.md)).toBe(40);
     expect(at(tokens.shape.control.inset.input.md)).toBe(12);
     expect(at(tokens.shape.control.inset.button.md)).toBe(17);
-    expect(at(tokens.shape.selection.size.md)).toBe(20);
-    expect(at(SHAPE_RECIPES.switch.width.md)).toBe(40);
-    expect(at(SHAPE_RECIPES.switch.height.md)).toBe(22);
+    expect(at(tokens.shape.selection.size.md)).toBe(SHAPE_SOURCE.selection.size.md);
+    expect(at(SHAPE_RECIPES.switch.width.md)).toBe(SHAPE_SOURCE.selection.size.md * 2);
   });
 
   it("[foundations.shape.inset-scale] climbs the 4dp grid to xl and an 8dp flow past it", () => {
@@ -240,7 +239,7 @@ describe("controlGeometry is the one size entry of every sized Atom", () => {
 
   it("[foundations.shape.control-geometry] [foundations.shape.geometry-entry] names a rule for every control size in each entry", () => {
     expect(Object.keys(controlGeometry)).toEqual([
-      "button", "iconButton", "field", "select", "selectArrow", "textarea", "selection", "checkbox", "radio", "switch", "badge", "spinner", "spinnerInline",
+      "button", "iconButton", "field", "fieldInput", "select", "selectArrow", "textarea", "selection", "checkbox", "radio", "switch", "badge", "spinner", "spinnerInline",
     ]);
     for (const [name, entry] of Object.entries(controlGeometry)) {
       if (name !== "spinnerInline") expect(Object.keys(entry), name).toEqual([...CONTROL_SIZES]);

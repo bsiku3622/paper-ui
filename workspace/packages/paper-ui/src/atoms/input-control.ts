@@ -20,7 +20,7 @@ export function useInputControl({ textInput, ...options }: InputControlOptions) 
   const { focusProps, isFocusVisible } = useFocusRing({ textInput });
   return {
     controlProps,
-    // Spread on the native control, ahead of its own props.
+    // Merged on the native control after the caller's props, so the caller's handler runs first.
     focusHandlers: { onFocus: focusProps.onFocus, onBlur: focusProps.onBlur },
     // Spread on the frame: the status it draws (error while invalid), and the states its stylesheet reads.
     frameProps: {

@@ -8,7 +8,7 @@
 // 구조 —
 //   TYPOGRAPHY_SOURCE          fontSize · weight · leading · tracking · family 원본값 (dp · em)
 //   TYPOGRAPHY_VALUES          원본을 굽는 트리 → --pui-typography-palette-* (tokens/variables.css.ts)
-//   TYPOGRAPHY                 tokens.typography = palette · role · preset 의 var() 참조
+//   TYPOGRAPHY                 palette · role · preset 의 var() 참조 — 공개되는 tokens.typography 는 role · preset 뿐이다
 //   ROLE_SPEC · PRESET_SPEC    역할과 preset 이 Palette 에서 고르는 값
 //   CODE_SPEC                  코드 블록이 Palette 에서 고르는 값
 //   FONT_STYLESHEETS           서체를 불러오는 주소

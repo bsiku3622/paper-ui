@@ -90,6 +90,9 @@ export const consumerManifest = ({ react, range, tarball }) => ({
   },
 });
 
+// What pnpm 11 needs of a Vite app to finish its first install; docs/get-started/install.md gives the same lines.
+export const CONSUMER_WORKSPACE = "allowBuilds:\n  esbuild: true\n";
+
 // React 19 as a caret range; React 18 at the floor of the peer range, so the lowest React the package claims runs.
 export const CONSUMERS = [
   { react: 19, range: "^19.0.0", port: Number(process.env.E2E_DIST_PORT_19 ?? 41741) },
@@ -136,7 +139,7 @@ const main = () => {
     mkdirSync(dir);
     for (const path of ["index.html", "public", "src", "vite.config.dist.ts", "tsconfig.bundler.json", "tsconfig.node16.json"]) cpSync(join(harnessDir, path), join(dir, path), { recursive: true });
     writeFileSync(join(dir, "package.json"), `${JSON.stringify(consumerManifest({ react, range, tarball }), null, 2)}\n`);
-    writeFileSync(join(dir, "pnpm-workspace.yaml"), "allowBuilds:\n  esbuild: true\n");
+    writeFileSync(join(dir, "pnpm-workspace.yaml"), CONSUMER_WORKSPACE);
     run("pnpm", ["install", "--prefer-offline"], { cwd: dir });
     for (const config of ["tsconfig.bundler.json", "tsconfig.node16.json"]) run("pnpm", ["exec", "tsc", "-p", config], { cwd: dir });
     run("pnpm", ["exec", "vite", "build", "-c", "vite.config.dist.ts"], { cwd: dir });

@@ -20,7 +20,7 @@ Primitive는 두 차수로 나뉩니다. **1차**는 바탕입니다 — Box · 
 Atom과 호출자 말고는 아무도 Press에 닿지 않습니다. 부품에 press가 필요하면 호출자가 `<Pressable as={Selectable}>`처럼 올리고, press 한 번이 늘 click 한 번이라([Press](press.md)) 그 요소의 press 장치는 하나입니다.
 
 [contract:primitives.orders.colour]: #
-색 규칙은 [Paint](paint.md) 층(`primitives/paint/`)에만 있습니다. `primitives/` 아래에서 `tokens.color`를 읽는 stylesheet는 그 폴더와 Icon의 잉크뿐이고, Box의 stylesheet도 읽지 않습니다. Atom의 stylesheet(`atoms/`와 그 recipe)도 읽지 않고, 선택 표식 · 선 · 링크 · 스피너의 색은 그 폴더의 `recipes.css.ts`(`markPaint` · `linePaint` · `linkPaint` · `spinnerPaint`)에서 빌려 씁니다.
+색 규칙은 [Paint](paint.md) 층(`primitives/paint/`)에만 있습니다. `primitives/` 아래에서 `tokens.color`를 읽는 stylesheet는 그 폴더와 Icon의 잉크뿐이고, Box의 stylesheet도 읽지 않습니다. Atom의 stylesheet(`atoms/`와 그 recipe)도 읽지 않고, 선택 표식 · 점 · 선 · 링크 · 스피너의 색은 그 폴더의 `recipes.css.ts`(`markPaint` · `dotPaint` · `linePaint` · `linkPaint` · `spinnerPaint`)에서 빌려 씁니다.
 
 <!-- generated:inventory.primitives -->
 <!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
@@ -113,6 +113,7 @@ DOM에 닿는 hook은 `{ <부분>Props, ...상태 }` 한 꼴로 돌려줍니다.
 | --- | --- | --- |
 | usePressable | pressProps | data-active · data-disabled |
 | useFocusRing | focusProps | data-focused · data-focus-visible |
+| useFocusWithin | focusWithinProps | data-focus-within |
 | useSelectable | selectProps | role이 정하는 aria 속성 하나 · data-selected |
 | useDraggable | dragProps · handleProps | data-dragging · data-disabled, dragProps에 aria-disabled |
 | useDroppable | dropProps | data-drop-target · data-disabled · aria-disabled |
@@ -136,6 +137,7 @@ DOM에 닿는 hook은 `{ <부분>Props, ...상태 }` 한 꼴로 돌려줍니다.
 | data-active | 누르는 동안 | Pressable · usePressable |
 | data-focused | focus가 있는 동안 | Pressable · useFocusRing |
 | data-focus-visible | focus를 보여줘야 하는 동안(키보드로 옮긴 focus) | Pressable · useFocusRing, 그리고 링을 그리는 Atom의 틀(Field · Select의 wrapper, Textarea 자신) |
+| data-focus-within | focus가 요소 안에 있는 동안 | useFocusWithin |
 | data-selected | 선택된 동안 | Selectable · SelectableGroup.Item · useSelectable |
 | data-disabled | 비활성인 동안 | [공통 계약](#공통-계약)의 투영을 따르는 모든 부품과 VisuallyHidden · FormField · usePressable · useDraggable · useDroppable |
 | data-invalid | `invalid`인 동안 | FormField, 그리고 오류인 Field · Textarea · Select의 틀 |
@@ -185,7 +187,7 @@ const { focusProps } = useFocusRing();
 `mergeRefs(...refs)`는 callback ref와 object ref를 한 callback으로 모아 같은 DOM에 연결합니다. 해제될 때 callback ref는 null로 호출되고, cleanup을 돌려준 callback ref는 null 대신 그 cleanup이 실행됩니다.
 
 [contract:primitives.composition.compose-handlers]: #
-`composeEventHandlers(caller, internal)`은 caller와 내부 동작을 잇는 유일한 규칙입니다. caller가 먼저 실행되고, `defaultPrevented`를 가진 취소할 수 있는 이벤트에서 caller가 preventDefault했을 때만 internal을 건너뜁니다. Selectable의 `onClick`은 `onSelectedChange`보다 먼저 실행되고 `preventDefault()`를 부르면 선택이 바뀌지 않으며, Floating.Trigger와 Close의 `onClick`도 열기·닫기보다 먼저 실행되어 같은 규칙으로 취소됩니다. RovingFocus.Item과 SelectableGroup.Item의 `onFocus` · `onKeyDown`도 이 규칙을 씁니다. PressEvent는 취소할 수 없는 알림이라 `onPress`에는 취소가 없고, 취소는 `onClick`에서 합니다. Focus 이벤트의 preventDefault는 브라우저의 실제 focus 이동을 취소하지 않습니다.
+`composeEventHandlers(caller, internal)`은 caller와 내부 동작을 잇는 유일한 규칙입니다. caller가 먼저 실행되고, `defaultPrevented`를 가진 취소할 수 있는 이벤트에서 caller가 preventDefault했을 때만 internal을 건너뜁니다. Selectable의 `onClick`은 `onSelectedChange`보다 먼저 실행되고 `preventDefault()`를 부르면 선택이 바뀌지 않으며, Floating.Trigger와 Close의 `onClick`도 열기·닫기보다 먼저 실행되어 같은 규칙으로 취소됩니다. RovingFocus.Item과 SelectableGroup.Item의 `onFocus` · `onKeyDown`도 이 규칙을 씁니다. PressEvent는 취소할 수 없는 알림이라 `onPress`에는 취소가 없고, 취소는 `onClick`에서 합니다. Focus 이벤트의 preventDefault는 브라우저의 실제 focus 이동을 취소하지 않습니다. 그래서 입력 Atom(Field · Textarea · Select · Checkbox · Radio · Switch)의 `onFocus` · `onBlur`도 caller가 먼저 실행되고, 그 뒤의 포커스 판정은 이미 일어난 이동을 적는 일이라 preventDefault로 건너뛰지 않습니다. Field의 `onChange`도 caller가 먼저 실행되고, 지우기 버튼을 정하는 값은 caller가 남긴 값입니다.
 
 ## 패키지가 멈추는 곳
 

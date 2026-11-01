@@ -168,7 +168,7 @@ describe("docs metadata", () => {
   it("the Atom table follows the inventory's order", () => {
     const text = readFileSync(join(DOCS_DIR, "atoms/README.md"), "utf-8");
     const table = text.slice(text.indexOf("[contract:atoms.contract.axes]: #"), text.indexOf("[contract:atoms.contract.stands-on]: #"));
-    const rows = [...table.matchAll(/^\| (\w+) \|/gm)].map((match) => match[1]);
+    const rows = [...table.matchAll(/^\| (\w+) \|/gm)].map((match) => match[1]).slice(1);
     expect(rows).toEqual([...INVENTORY.atoms]);
   });
 

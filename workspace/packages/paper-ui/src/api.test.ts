@@ -280,6 +280,11 @@ describe("the version gate", () => {
     expect(refusals({ released: releasedAt("none"), changelog: notes("0.1.0"), surface: surfaceWith("0.1.0", ["A"]) })).toEqual([]);
   });
 
+  it("[install.api.bump-required] says in the changelog that 0.1.0 is the first release and that nothing before it was published", () => {
+    const changelog = readFileSync(CHANGELOG, "utf8");
+    expect(changelog).toMatch(/^## 0\.1\.0\n\nFirst release\. Nothing before it was published: the earlier commits on `origin\/main` that also carried the version `0\.1\.0` were never released/m);
+  });
+
   it("[install.api.bump-required] refuses to change the surface of a released version, even with a changelog entry", () => {
     const released = releasedAt("same", surfaceWith("0.1.0", ["A", "B"]));
     expect(refusals({ released, changelog: notes("0.1.0"), surface: surfaceWith("0.1.0", ["A", "B"]) })).toEqual([]);

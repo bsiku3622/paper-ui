@@ -213,9 +213,9 @@ describe("color systems", () => {
 });
 
 // What a control or a mark must show against the surface behind it so that it is found (WCAG 1.4.11): 3:1.
-// Two things are documented exceptions and sit in docs/foundations/color.md: the outlined control's boundary (border.base) and the quiet selected faces.
+// Three things are documented exceptions and sit in docs/foundations/color.md: the outlined control's boundary (border.base), the quiet selected faces and an off Switch's knob.
 const NON_TEXT = 3;
-const EXCEPTIONS = ["border.base as the outlined-control boundary", "accent soft and interaction.selected as quiet selected faces"] as const;
+const EXCEPTIONS = ["border.base as the outlined-control boundary", "accent soft and interaction.selected as quiet selected faces", "bg.raised as the knob on an off Switch's control.track"] as const;
 
 describe("non-text contrast", () => {
   const surfaces = (mode: ColorMode) => Object.entries(COLOR_VALUES_BY_MODE[mode].bg);
@@ -260,7 +260,7 @@ describe("non-text contrast", () => {
   });
 
   it("[foundations.color.non-text-contrast] [foundations.color.non-text-exceptions] keeps the documented exceptions below 3:1, so the list is honest", () => {
-    expect(EXCEPTIONS).toHaveLength(2);
+    expect(EXCEPTIONS).toHaveLength(3);
     for (const mode of COLOR_MODES) {
       const values = COLOR_VALUES_BY_MODE[mode];
       for (const [surface, background] of surfaces(mode)) {
@@ -268,6 +268,23 @@ describe("non-text contrast", () => {
         expect(contrast(values.accent.primary.soft, background), `${mode} accent soft on ${surface}`).toBeLessThan(NON_TEXT);
         expect(contrast(over(values.interaction.selected, background), background), `${mode} selected over ${surface}`).toBeLessThan(NON_TEXT);
       }
+    }
+  });
+
+  it("[foundations.color.non-text-exceptions] holds the off Switch's knob on its track to the ratios the page gives, and the ring that makes up for it to 3:1", () => {
+    expect(markProfile.rest.knob).toBe(COLOR.bg.raised);
+    expect(markProfile.rest.track).toBe(COLOR.control.track);
+    const colorDoc = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "../../../../../docs/foundations/color.md"), "utf8");
+    const [, light, dark] = /꺼진 Switch의 손잡이입니다[^\n]*?라이트 ([\d.]+):1, 다크 ([\d.]+):1/.exec(colorDoc)!;
+    const ratio = (mode: ColorMode) => contrast(COLOR_VALUES_BY_MODE[mode].bg.raised, COLOR_VALUES_BY_MODE[mode].control.track);
+    expect(ratio("light").toFixed(2)).toBe("1.26");
+    expect(ratio("dark").toFixed(2)).toBe("1.68");
+    expect(ratio("light").toFixed(2)).toBe(light);
+    expect(ratio("dark").toFixed(2)).toBe(dark);
+    for (const mode of COLOR_MODES) {
+      const values = COLOR_VALUES_BY_MODE[mode];
+      expect(ratio(mode), `${mode}: the knob is below the contract, so the list is honest`).toBeLessThan(NON_TEXT);
+      expect(contrast(values.ink.tertiary, values.control.track), `${mode}: the ring on the track`).toBeGreaterThanOrEqual(NON_TEXT);
     }
   });
 

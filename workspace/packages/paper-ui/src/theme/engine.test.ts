@@ -96,6 +96,19 @@ describe("subscribeRootMode", () => {
     expect(onChange).toHaveBeenCalledTimes(2);
   });
 
+  it("[foundations.theme.swap-instant] holds transitions for a write it did not make and for an OS change, before it calls back", async () => {
+    const media = mockMedia(false);
+    const held: boolean[] = [];
+    const unsubscribe = subscribeRootMode(document, () => held.push(root.hasAttribute(THEME_SWAP_ATTRIBUTE)));
+    root.setAttribute(THEME_ATTRIBUTE, "dark");
+    expect(held).toEqual([]);
+    await vi.waitFor(() => expect(held).toEqual([true]));
+    root.removeAttribute(THEME_SWAP_ATTRIBUTE);
+    media.set(true);
+    expect(held).toEqual([true, true]);
+    unsubscribe();
+  });
+
   it("[foundations.theme.root-attribute] ignores other attributes of <html>", async () => {
     mockMedia(false);
     const onChange = vi.fn();

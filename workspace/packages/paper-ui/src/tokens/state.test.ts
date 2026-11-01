@@ -9,14 +9,15 @@ import { tokens } from "./index";
 import * as publicEntry from "./public";
 import { strokeRing } from "./shape-recipes";
 import { STATE_TINT, STATE_TINT_PROPERTY, focusRing, linkStyle, stateStyle } from "./state-recipes";
+import { TYPOGRAPHY } from "./typography";
 import {
   ENABLED_SELECTOR, MARKER_ATTRIBUTE, SELECTED_SELECTOR, STATE_ATTRIBUTE, STATE_NAMES, VALUE_ATTRIBUTE, stateAttributes, stateSelector,
   type StateName,
 } from "./state";
 
 describe("state vocabulary", () => {
-  it("[primitives.state.active-not-pressed] [atoms.states.names] [atoms.states.vocabulary] names the nine states, with no hover and no 'pressed'", () => {
-    expect([...STATE_NAMES]).toEqual(["active", "focused", "focusVisible", "selected", "disabled", "invalid", "required", "dragging", "dropTarget"]);
+  it("[primitives.state.active-not-pressed] [atoms.states.names] [atoms.states.vocabulary] names the ten states, with no hover and no 'pressed'", () => {
+    expect([...STATE_NAMES]).toEqual(["active", "focused", "focusVisible", "focusWithin", "selected", "disabled", "invalid", "required", "dragging", "dropTarget"]);
     expect(STATE_NAMES).not.toContain("hovered");
     expect(STATE_NAMES).not.toContain("pressed");
     expect(Object.values(STATE_ATTRIBUTE).every((attribute) => attribute.startsWith("data-"))).toBe(true);
@@ -25,7 +26,7 @@ describe("state vocabulary", () => {
 
   it("[atoms.states.names] writes each state of the table under its attribute", () => {
     expect(STATE_ATTRIBUTE).toEqual({
-      active: "data-active", focused: "data-focused", focusVisible: "data-focus-visible", selected: "data-selected", disabled: "data-disabled",
+      active: "data-active", focused: "data-focused", focusVisible: "data-focus-visible", focusWithin: "data-focus-within", selected: "data-selected", disabled: "data-disabled",
       invalid: "data-invalid", required: "data-required", dragging: "data-dragging", dropTarget: "data-drop-target",
     });
   });
@@ -193,7 +194,7 @@ describe("state recipes", () => {
 
   it("[foundations.state.recipes] [foundations.state.fragments] never sets a transition, and leaves a link as flat declarations", () => {
     for (const [name, fragment] of Object.entries(stateStyle)) expect(valuesOf(fragment, "transition"), name).toEqual([]);
-    expect(linkStyle).toEqual({ color: color.interaction.link, textDecorationLine: "underline", textUnderlineOffset: tokens.typography.palette.decoration.underlineOffset });
+    expect(linkStyle).toEqual({ color: color.interaction.link, textDecorationLine: "underline", textUnderlineOffset: TYPOGRAPHY.palette.decoration.underlineOffset });
   });
 
   it("[foundations.state.recipes] spells no state attribute itself: every selector is built from tokens/state.ts", () => {

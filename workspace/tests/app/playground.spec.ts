@@ -158,6 +158,21 @@ test("the preview background switch is one group with one choice", async ({ page
   await expect(group.getByRole("button", { pressed: true })).toHaveCount(1);
 });
 
+test("the preview background swatches draw their ring from Pressable: for the keyboard and not for the pointer", async ({ page }) => {
+  await openPlayground(page, "button", "Button");
+  const group = page.getByRole("group", { name: "미리보기 배경" });
+  const sunken = group.getByRole("button", { name: "sunken background" });
+  await sunken.click();
+  await expect(sunken).toBeFocused();
+  await expect(sunken).not.toHaveAttribute("data-focus-visible", /.*/);
+  await expect(sunken).toHaveCSS("outline-style", "none");
+  await page.keyboard.press("ArrowRight");
+  const track = group.getByRole("button", { name: "track background" });
+  await expect(track).toBeFocused();
+  await expect(track).toHaveAttribute("data-focus-visible", "true");
+  await expect(track).toHaveCSS("outline-style", "solid");
+});
+
 test("the Theme page shows the hooks: the scope's resolved theme and the page's own", async ({ page }) => {
   await openPlayground(page, "theme", "Theme");
   await expect(page.getByText("useResolvedTheme(): dark", { exact: true })).toBeVisible();

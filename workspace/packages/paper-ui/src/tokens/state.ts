@@ -8,6 +8,7 @@ export const STATE_ATTRIBUTE = {
   active: "data-active",
   focused: "data-focused",
   focusVisible: "data-focus-visible",
+  focusWithin: "data-focus-within",
   selected: "data-selected",
   disabled: "data-disabled",
   invalid: "data-invalid",

@@ -3,7 +3,7 @@
 // The store keeps the user's preference (light · dark · system) and writes the mode it resolves to onto
 // <html>. <html>'s attribute stays the truth: the store reads the mode back from it, so a write by the boot
 // script or by another theme manager is seen at once and is never reverted. Every write the store makes
-// holds transitions, so the mode changes in one frame.
+// holds transitions, and so does the subscription for a write it did not make, so the mode changes in one frame.
 
 import { THEME_ATTRIBUTE, type ColorMode, type ThemePreference } from "../tokens";
 import { THEME_STORAGE_KEY, holdTransitions, isThemePreference, osModeQuery, readRootMode, resolvePreference, subscribeRootMode } from "./engine";

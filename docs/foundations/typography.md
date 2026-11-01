@@ -3,7 +3,7 @@
 Typography는 서체·크기·굵기·행간·자간을 정하는 시스템입니다. 컴포넌트는 크기를 숫자로 고르지 않고 **역할**로 고릅니다 — 페이지 제목인지, 본문인지, 짧은 이름인지. Color 다음 층이라, 역할마다 기본 잉크를 Color에서 가져옵니다.
 
 [contract:foundations.typography.palette-only]: #
-Typography도 세 단계입니다. 원본 수치인 **Typography Palette**, 그것을 조합한 **글자 역할**, 반복되는 컨트롤 글자를 묶은 **Control preset**입니다. 역할과 preset은 Palette의 변수를 조합할 뿐, 숫자를 새로 쓰지 않습니다. 토큰 경로는 Palette가 `tokens.typography.palette`, 역할이 `tokens.typography.role`, preset이 `tokens.typography.preset`입니다. 이 값들을 화면에 적용하는 선언은 한 곳, `tokens/typography-recipes.ts`가 만듭니다([역할을 적용하는 단위](#역할을-적용하는-단위)).
+Typography도 세 단계입니다. 원본 수치인 **Typography Palette**, 그것을 조합한 **글자 역할**, 반복되는 컨트롤 글자를 묶은 **Control preset**입니다. 역할과 preset은 Palette의 변수를 조합할 뿐, 숫자를 새로 쓰지 않습니다. 공개 토큰 경로는 역할의 `tokens.typography.role`과 preset의 `tokens.typography.preset`입니다. Palette는 공개 트리에 없고 CSS 변수(`--pui-typography-palette-*`)로만 구워지며, 패키지 안쪽은 `tokens/typography.ts`에서, Playground의 Typography inspector는 `@paper-ui/inspect/typography`로 읽습니다. 이 값들을 화면에 적용하는 선언은 한 곳, `tokens/typography-recipes.ts`가 만듭니다([역할을 적용하는 단위](#역할을-적용하는-단위)).
 
 ## Typography Palette — 원본
 
@@ -24,7 +24,7 @@ Typography도 세 단계입니다. 원본 수치인 **Typography Palette**, 그�
 <!-- /generated:typography-palette -->
 
 [contract:foundations.typography.palette-names]: #
-크기와 행간은 실제 px 값을 이름으로 씁니다(`tokens.typography.palette.fontSize.14`). 서로 다른 단계 이름을 억지로 짝짓지 않기 위해서입니다. 450은 작은 sans 글자가 Retina에서 힘이 빠지지 않도록 둔 입력값용 보정이고, 650은 채워진 버튼처럼 강조가 필요한 라벨에 씁니다. 밑줄 offset은 글자의 장식이라 글자 크기(em)를 따릅니다. `codeScale`은 문장 속 코드가 둘러싼 글자에서 줄어드는 비율입니다.
+크기와 행간은 실제 px 값을 이름으로 씁니다(`fontSize.14`). 서로 다른 단계 이름을 억지로 짝짓지 않기 위해서입니다. 450은 작은 sans 글자가 Retina에서 힘이 빠지지 않도록 둔 입력값용 보정이고, 650은 채워진 버튼처럼 강조가 필요한 라벨에 씁니다. 밑줄 offset은 글자의 장식이라 글자 크기(em)를 따릅니다. `codeScale`은 문장 속 코드가 둘러싼 글자에서 줄어드는 비율입니다.
 
 [contract:foundations.typography.hero-fluid]: #
 **고정 사다리의 선언된 예외는 `hero` 하나입니다.** `hero`의 크기는 뷰포트 폭을 따라 36px과 60px 사이에서 자라는 `clamp(2.25rem, 6vw, 3.75rem)`이고, 행간은 px이 아니라 단위 없는 비율 1.04입니다. 랜딩 첫 화면의 헤드라인처럼 화면 폭에 따라 크기가 달라져야 하는 한 자리만 이 예외를 씁니다. 다른 모든 크기와 행간은 px 고정값입니다.
@@ -143,6 +143,6 @@ Field의 입력값은 글자 줄(16)이 아니라 preset의 `inputLeading`(20) �
 
 ## 앱에서
 
-앱이 글자를 고르는 길은 역할입니다. 컴포넌트에서는 `Text`의 `variant` · `ink` · `family` · `numeric`으로, stylesheet에서는 `typographyRule(variant, { family })`와 `codeRule` · `presetRule` · `emphasisRule`로 고르고, 값을 직접 읽어야 하는 자리는 `tokens.typography.role.<variant>`(`size` · `weight` · `leading` · `tracking`)와 `tokens.typography.preset.<preset>`입니다. `fontSize` · `fontWeight` · `lineHeight` · `letterSpacing`에 숫자나 단위 값을 적지 않고, Palette(`tokens.typography.palette`)는 읽지 않습니다. 굵기 하나만 바꾸는 강조는 `emphasisRule`, 코드는 `codeRule`입니다. eslint `paper/source-numbers`의 앱 범위가 이를 막고, Palette를 보여 주는 Typography inspector만 예외입니다. 컨트롤 글자 크기를 한 단계 바꾸는 탈출구는 컨트롤의 `fontSize` prop입니다.
+앱이 글자를 고르는 길은 역할입니다. 컴포넌트에서는 `Text`의 `variant` · `ink` · `family` · `numeric`으로, stylesheet에서는 `typographyRule(variant, { family })`와 `codeRule` · `presetRule` · `emphasisRule`로 고르고, 값을 직접 읽어야 하는 자리는 `tokens.typography.role.<variant>`(`size` · `weight` · `leading` · `tracking`)와 `tokens.typography.preset.<preset>`입니다. `fontSize` · `fontWeight` · `lineHeight` · `letterSpacing`에 숫자나 단위 값을 적지 않습니다. 굵기 하나만 바꾸는 강조는 `emphasisRule`, 코드는 `codeRule`, 링크의 밑줄 offset은 `linkStyle`입니다. eslint `paper/source-numbers`의 앱 범위가 값을 막고, Palette는 공개 트리에 없어 앱이 읽을 경로가 없습니다. Palette를 보여 주는 Typography inspector만 `@paper-ui/inspect/typography`로 읽습니다. 컨트롤 글자 크기를 한 단계 바꾸는 탈출구는 컨트롤의 `fontSize` prop입니다.
 
 Playground [Typography](/playground/foundations/typography)에서 Palette·역할·preset을 실제 글자로 볼 수 있습니다.

@@ -34,6 +34,34 @@ import "@studio-baeks/paper-ui/styles.css";
 [contract:install.styles.provider-warning]: #
 컴포넌트와 `PaperProvider`는 CSS를 import하지 않습니다. 그래서 이 줄을 빠뜨린 앱은 스타일 없는 화면을 받습니다. 개발 중에는 `PaperProvider`가 스타일시트가 없다는 경고를 콘솔에 한 번 남깁니다.
 
+## 빌드 도구
+
+[contract:install.setup.consumer-build]: #
+배포본은 완성된 JS와 CSS를 담고 있어 패키지만 쓰는 앱에는 번들러 플러그인이 필요 없습니다. Vite 앱이라면 React 플러그인으로 충분합니다. pnpm 11에서는 Vite가 쓰는 esbuild의 빌드 스크립트가 막혀 첫 `pnpm install`이 `ERR_PNPM_IGNORED_BUILDS`로 실패합니다. paper-ui와 상관없이 Vite 앱이면 생기는 일이고, `pnpm-workspace.yaml`에 허용을 적으면 지나갑니다.
+
+```yaml
+allowBuilds:
+  esbuild: true
+```
+
+앱이 자기 stylesheet를 `.css.ts`로 쓸 때만([원본 덮어쓰기](#원본-덮어쓰기)의 예시처럼) vanilla-extract를 직접 설치합니다.
+
+```bash
+pnpm add -D @vanilla-extract/css @vanilla-extract/vite-plugin
+```
+
+그리고 Vite 설정에서 플러그인을 켭니다.
+
+```ts
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
+
+export default defineConfig({ plugins: [react(), vanillaExtractPlugin()] });
+```
+
+플러그인 없이 `.css.ts`를 불러오면 빌드는 지나가지만 화면을 여는 순간 vanilla-extract 오류(`Styles were unable to be assigned to a file`)가 납니다.
+
 ## 우선순위
 
 [contract:install.layers.every-rule-layered]: #
@@ -97,6 +125,19 @@ export const dense = style({
 ```
 
 경로는 `shape` · `layout` · `typography` 원본에서 시작하고, 역할의 경로는 타입이 막고 모르는 경로는 실행 때 던집니다. 결과는 React의 `style`에도 그대로 들어갑니다. 그 영역에서 연 Floating의 panel도 덮어쓴 원본을 따라갑니다. 색 역할은 이 길로 덮어쓰지 않습니다 — 색은 테마 스코프가 정합니다([테마](theming.md)).
+
+[contract:install.overrides.ground-roles]: #
+포커스 링 색(`--pui-color-interaction-focus`), 그림자 색(`--pui-color-shadow-*`), 그림자 기하(`--pui-layout-shadow-*`)는 지면 역할이라 패키지가 테마 스코프의 자식마다 다시 선언합니다(`[data-pui-theme=…] > *`). 그래서 바꾸려면 그 자식까지 닿는 규칙을 써야 합니다. `:root`에만 쓰면 `<html>`에 모드가 있는 페이지(Provider나 부팅 스크립트를 쓰는 페이지)에서는 `<body>`가 다시 선언해 링에도 그림자에도 닿지 않습니다. `<html>`에 모드가 없는 페이지와 `<body>`, 영역의 wrapper에 쓴 규칙은 그 아래의 페이지에는 닿지만 테마 Surface의 자식과 Floating의 panel에는 닿지 않습니다. 모두에 닿는 규칙은 아래 하나이고, 레이어 밖에 두면 특정도와 상관없이 패키지의 선언을 이깁니다.
+
+```css
+:root,
+[data-pui-theme] > * {
+  --pui-color-interaction-focus: rebeccapurple;
+  --pui-color-shadow-floating: rebeccapurple;
+}
+```
+
+선택자에 모드를 적으면(`[data-pui-theme="dark"] > *`) 그 모드의 스코프 안에서만 바뀝니다. 지면의 모드를 따라 값을 나누고 싶을 때 씁니다.
 
 ## 실행 환경
 
@@ -202,4 +243,4 @@ const ThemeToggle = () => {
 패키지가 내보내는 이름은 `packages/paper-ui/api/surface.json`에 기록됩니다. 네 entry의 값과 타입 이름, `tokens`의 leaf 경로, 스타일시트가 내는 CSS 변수와 레이어의 이름, 버전이 들어 있고, `api.test.ts`가 소스에서 계산한 값과 같은지 확인합니다. 이름이 생기거나 사라지거나 옮겨 가면 같은 변경에서 `pnpm api:update`로 기록을 고치고, 그 diff가 리뷰에서 API 변경으로 읽힙니다.
 
 [contract:install.api.bump-required]: #
-이미 낸 버전의 기록(`api/released/<버전>.json`)은 바꿀 수 없고, `pnpm api:update`는 그 버전의 이름을 바꾸려는 시도를 거부합니다. 새 버전은 변경에 맞게 올라야 합니다 — 0.x에서는 이름이 사라지거나 바뀌면 minor, 더하기만 하면 patch이고, 1.0 이후에는 각각 major와 minor입니다. 새 버전은 `CHANGELOG.md`에 `## <버전>` 제목도 가져야 합니다. 발행 직전(`prepublishOnly`)에 그 버전의 기록이 `api/released/`에 남습니다. pre-release(`x.y.z-alpha` · `x.y.z-beta` · `x.y.z-rc.n`)의 기록도 똑같이 고정되지만 다음 버전에 이름을 약속하지 않으므로, bump는 마지막 정식 버전에서 잽니다.
+이미 낸 버전의 기록(`api/released/<버전>.json`)은 바꿀 수 없고, `pnpm api:update`는 그 버전의 이름을 바꾸려는 시도를 거부합니다. 새 버전은 변경에 맞게 올라야 합니다 — 0.x에서는 이름이 사라지거나 바뀌면 minor, 더하기만 하면 patch이고, 1.0 이후에는 각각 major와 minor입니다. 새 버전은 `CHANGELOG.md`에 `## <버전>` 제목도 가져야 합니다. 발행 직전(`prepublishOnly`)에 그 버전의 기록이 `api/released/`에 남습니다. pre-release(`x.y.z-alpha` · `x.y.z-beta` · `x.y.z-rc.n`)의 기록도 똑같이 고정되지만 다음 버전에 이름을 약속하지 않으므로, bump는 마지막 정식 버전에서 잽니다. 이 검사는 첫 발행부터 잽니다. `api/released/`가 비어 있는 동안에는 잴 기준이 없어 `pnpm api:update`가 기록을 그대로 고칩니다. 지금 버전 0.1.0이 그 첫 발행입니다.

@@ -8,7 +8,7 @@ export const MOTION_NOTES: Record<MotionRole, string> = {
   press: "누르는 순간 stroke.border 두께만큼 내려앉음",
   hover: "hover tint·테두리·글자색의 짧은 반응",
   state: "켜짐·선택 같은 상태 전이",
-  enter: "떠오르는 overlay — 살짝 튀어 안착",
+  enter: "떠오르는 overlay — 빠르게 떠서 부드럽게 안착",
   exit: "사라질 때는 짧게 가속",
   theme: "테마 전환 — 컨트롤도 페이지와 같은 프레임에 바뀜",
 };
@@ -17,8 +17,9 @@ export const MOTION_NOTES: Record<MotionRole, string> = {
 export const roleNote = (role: MotionRole): string => [MOTION_NOTES[role], ...MOTION_CONSUMERS[role]].join(" · ");
 
 // The properties each transition role animates across its consumers, as the Atoms' stylesheets write them (state
-// is the union: a Switch fades a ring and moves a thumb). enter and exit move a surface through presence, and theme
-// ends every transition at once, so they have no transition string.
+// is the union: a Switch fades a ring and moves a thumb, and a mark turns its border with its face, while a Button's
+// and an input frame's border rise on hover). enter and exit move a surface through presence, and theme ends every
+// transition at once, so they have no transition string.
 export const TRANSITION_PROPERTIES = {
   press: ["transform"],
   hover: [STATE_TINT_PROPERTY, "border-color", "color"],

@@ -12,6 +12,7 @@ import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import { joinClass } from "../internal/joinClass";
 import { Paint } from "../primitives/paint/Paint";
+import { dotPaint } from "../primitives/paint/recipes.css";
 import { resolveControlFontSize, resolvePreset } from "../resolvers";
 import type { Accent, ControlFontSize, ControlShape, ControlSize, Variant } from "../tokens";
 import { badgeRoot, badgeSize, badgeDot, badgePill } from "./Badge.css";
@@ -53,7 +54,7 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
       )}
       {...rest}
     >
-      {dot ? <span className={badgeDot} aria-hidden /> : null}
+      {dot ? <span className={joinClass(badgeDot, dotPaint)} aria-hidden /> : null}
       {children}
     </Paint>
   );

@@ -7,7 +7,7 @@ import { pathToCssVar, type VarTree } from "./helpers";
 import { LAYOUT_VALUES } from "./layout";
 import { SHAPE_VALUES } from "./shape";
 import { TYPOGRAPHY_VALUES } from "./typography";
-import { SOURCE_VARIABLES } from "./variables";
+import { LAYOUT_MODE_VARIABLES, SOURCE_VARIABLES } from "./variables";
 
 type DeepPartial<T> = { [K in keyof T]?: T[K] extends string ? string : DeepPartial<T[K]> };
 
@@ -38,3 +38,11 @@ export const sourceVars = (overrides: SourceOverrides): Record<Declaration, stri
   walk(overrides, []);
   return vars;
 };
+
+const SOURCE_SYSTEM = /^--pui-(?:shape|layout|typography)-/;
+const emitted = new Set<string>([...SOURCE_VARIABLES, ...LAYOUT_MODE_VARIABLES]);
+
+// The names among these that read as a source of Shape, Layout or Typography and that the stylesheet does not emit:
+// a typo or a role, and declaring one does nothing. For the check of the plain CSS form (theme/source-check.ts).
+export const unknownSourceVariables = (names: Iterable<string>): string[] =>
+  [...new Set(names)].filter((name) => SOURCE_SYSTEM.test(name) && !emitted.has(name)).sort();

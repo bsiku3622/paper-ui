@@ -22,7 +22,7 @@ export type PressEvent = {
   y: number;
   /** The key that triggered a keyboard press. */
   key?: string;
-  /** A press stops at the element that handles it; a handler that declines it lets a parent take it. */
+  /** A press stops at the element that handles it, and so does the DOM event that carried it; a handler that declines it lets a parent take both. See docs/primitives/press.md for which events. */
   continuePropagation(): void;
 };
 

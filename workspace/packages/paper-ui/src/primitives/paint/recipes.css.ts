@@ -130,6 +130,12 @@ export const markerPaint = style({
   "@media": { [FORCED]: { forcedColorAdjust: "none", backgroundColor: SYSTEM_COLORS.mark, backgroundImage: "none", color: SYSTEM_COLORS.markText } },
 });
 
+// The dot beside a Badge's letters takes their ink. A background is painted away under forced colours, so the dot keeps the OS's text colour there.
+export const dotPaint = style({
+  background: "currentColor",
+  "@media": { [FORCED]: { forcedColorAdjust: "none", background: SYSTEM_COLORS.canvasText } },
+});
+
 // A link's ink. Where it is underlined is the Link's own anatomy.
 export const linkPaint = style({ color: tokens.color.interaction.link });
 

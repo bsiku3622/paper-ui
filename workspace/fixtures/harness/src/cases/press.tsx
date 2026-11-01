@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, type ReactNode, type SyntheticEvent } from "react";
 
-import { Button, Floating, Pressable, Selectable, mergeProps, usePressable } from "@studio-baeks/paper-ui";
+import { Button, Floating, Pressable, Selectable, mergeProps, usePressable, type PressEvent } from "@studio-baeks/paper-ui";
 
 const useCounts = () => {
   const [counts, setCounts] = useState({ clicks: 0, presses: 0 });
@@ -104,6 +104,47 @@ const LoggedTarget = ({ id, ...options }: { id: string; cancelOnPointerExit?: bo
   );
 };
 
+// A parent that writes down the React events that reach it, in order, on its own element: writing them there is no state
+// of React's, so the writing cannot change what a press does.
+const write = (name: string, attribute = "data-log") => (event: SyntheticEvent<HTMLElement>) => {
+  const log = event.currentTarget.getAttribute(attribute);
+  event.currentTarget.setAttribute(attribute, log ? `${log} ${name}` : name);
+};
+const Parent = ({ id, children }: { id: string; children: ReactNode }) => (
+  <div
+    role="presentation"
+    data-testid={`parent-${id}`}
+    onPointerDown={write("pointerdown")}
+    onMouseDown={write("mousedown")}
+    onPointerUp={write("pointerup")}
+    onMouseUp={write("mouseup")}
+    onClick={write("click")}
+    onKeyDown={write("keydown")}
+    onKeyUp={write("keyup")}
+    onPointerDownCapture={write("pointerdown", "data-captured")}
+    onMouseDownCapture={write("mousedown", "data-captured")}
+    onClickCapture={write("click", "data-captured")}
+  >
+    {children}
+  </div>
+);
+const declines = (event: PressEvent) => event.continuePropagation();
+
+// What each kind of target lets through to a parent: a plain button for comparison, then a Pressable and a Button as they
+// come, then a Pressable that declines the press in one callback at a time, and a Button that declines it.
+const Propagation = () => (
+  <>
+    <Parent id="plain"><button type="button" data-testid="from-plain">Plain</button></Parent>
+    <Parent id="pressable"><Pressable data-testid="from-pressable">Pressable</Pressable></Parent>
+    <Parent id="button"><Button data-testid="from-button">Button</Button></Parent>
+    <Parent id="start"><Pressable data-testid="from-start" onPressStart={declines}>Declines at start</Pressable></Parent>
+    <Parent id="up"><Pressable data-testid="from-up" onPressUp={declines}>Declines at up</Pressable></Parent>
+    <Parent id="end"><Pressable data-testid="from-end" onPressEnd={declines}>Declines at end</Pressable></Parent>
+    <Parent id="press"><Pressable data-testid="from-press" onPress={declines}>Declines at press</Pressable></Parent>
+    <Parent id="declines-button"><Button as={Pressable} data-testid="from-declines-button" onPressStart={declines} onPress={declines}>Button that declines</Button></Parent>
+  </>
+);
+
 // The elements a press lands on, each counting its clicks and presses in data attributes.
 export const PressCase = () => (
   <>
@@ -123,5 +164,6 @@ export const PressCase = () => (
     <AtomButton />
     <AtomSelectable />
     <AtomTrigger />
+    <Propagation />
   </>
 );

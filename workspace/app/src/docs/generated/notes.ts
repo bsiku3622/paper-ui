@@ -119,6 +119,7 @@ export const FILE_NOTES: Record<string, string> = {
   "packages/paper-ui/src/theme/context.ts": "모드와 제어의 context(`useTheme`)",
   "packages/paper-ui/src/theme/scope.ts": "스코프 모드(`useThemeScope` · `usePortalScope`)",
   "packages/paper-ui/src/theme/source-carry.ts": "Portal이 옮기는 열린 자리의 원본 덮어쓰기",
+  "packages/paper-ui/src/theme/source-check.ts": "일반 CSS로 쓴 원본 덮어쓰기의 개발 중 검사",
   "packages/paper-ui/src/theme/boot.ts": "entry `/theme-boot`",
   "packages/paper-ui/src/primitives/bare-button.css.ts": "부품이 쓰는 button reset",
   "packages/paper-ui/src/atoms/button-base.tsx": "Button과 IconButton의 몸 하나 — 내부 모듈",

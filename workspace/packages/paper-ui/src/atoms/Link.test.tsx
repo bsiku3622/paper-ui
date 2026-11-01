@@ -4,6 +4,7 @@ import { createRef, forwardRef, type AnchorHTMLAttributes } from "react";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, expectTypeOf, it } from "vitest";
 
+import { bareButton } from "../primitives/bare-button.css";
 import { LINK_UNDERLINES } from "../tokens";
 import { Link, type LinkProps } from "./Link";
 import { linkUnderline } from "./Link.css";
@@ -36,6 +37,15 @@ describe("Link", () => {
     // @ts-expect-error the router link needs its `to`
     const missing = <Link as={Router}>길</Link>;
     expect(missing).toBeTruthy();
+  });
+
+  it("[atoms.link.target] as a button, carries the button reset and type=button, which a caller may still set; only a button does", () => {
+    render(<><Link as="button" data-testid="plain">버튼</Link><Link as="button" type="submit" data-testid="submit">제출</Link><Link href="#a" data-testid="anchor">링크</Link></>);
+    expect(screen.getByTestId("plain").getAttribute("type")).toBe("button");
+    expect(screen.getByTestId("plain").className.split(" ")).toContain(bareButton);
+    expect(screen.getByTestId("submit").getAttribute("type")).toBe("submit");
+    expect(screen.getByTestId("anchor").hasAttribute("type")).toBe(false);
+    expect(screen.getByTestId("anchor").className.split(" ")).not.toContain(bareButton);
   });
 
   it("[atoms.link.target] marks the keyboard focus on its own element, and not a pointer focus", () => {

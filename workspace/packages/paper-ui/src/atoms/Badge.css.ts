@@ -21,12 +21,11 @@ export const badgeRoot = style({
 // badgeRoot 뒤에 와서 같은 특정도를 순서로 이긴다.
 export const badgePill = style({ borderRadius: tokens.shape.radius.full });
 
-// 상태 점 — 글자색(currentColor)을 따라 배지와 한 색. em 이라 size 에 비례.
+// 상태 점의 형태. 색은 dotPaint 가 입힌다. em 이라 size 에 비례.
 export const badgeDot = style({
   width: geometry.badge.dot,
   height: geometry.badge.dot,
   borderRadius: tokens.shape.radius.full,
-  background: "currentColor",
   flexShrink: 0,
 });
 
