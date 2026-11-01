@@ -7,6 +7,7 @@ import { bareButton } from "../bare-button.css";
 import { mergeProps } from "../composition";
 import type { PolymorphicComponent, PolymorphicProps } from "../polymorphic";
 import type { PressableOptions } from "../types";
+import { pressRing } from "./press.css";
 import { usePressable } from "./usePressable";
 
 export type PressableState = { isActive: boolean; isFocused: boolean; isFocusVisible: boolean; isDisabled: boolean };
@@ -31,7 +32,7 @@ const PressableImpl = forwardRef<HTMLElement, Omit<PressableProps, "as" | "ref">
   const { type, href } = rest as { type?: string; href?: string };
   const target = targetProps(Tag, { disabled, focusable, type, href, kind: "control" });
   const bare = Tag === "button" ? { className: bareButton } : undefined;
-  return <Tag {...mergeProps(bare, target, rest, pressProps, focusProps)} ref={ref}>
+  return <Tag {...mergeProps(bare, { className: pressRing }, target, rest, pressProps, focusProps)} ref={ref}>
     {typeof children === "function" ? children(state) : children}
   </Tag>;
 });

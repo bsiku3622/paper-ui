@@ -13,6 +13,7 @@ Atom이 hover·focus·active·selected·disabled·invalid에 어떻게 반응하
 | --- | --- | --- |
 | `active` | `data-active` | 눌리는 동안의 순간 상태. `pressed`는 `aria-pressed`만 뜻하고 이 이름과 겹치지 않습니다 |
 | `focused` · `focusVisible` | `data-focused` · `data-focus-visible` | 포커스가 있음 · 키보드가 포커스를 줬음(링이 그려지는 때) |
+| `focusWithin` | `data-focus-within` | 포커스가 요소 안에 있음 |
 | `selected` | `data-selected` | 선택됨. 현재 항목의 `aria-current`도 같은 선택으로 읽습니다 |
 | `disabled` | `data-disabled` | 입력을 받지 않음. 막힌 대상은 늘 이 속성을 답니다 |
 | `invalid` | `data-invalid` | 오류 상태 |
@@ -64,7 +65,7 @@ Atom이 hover·focus·active·selected·disabled·invalid에 어떻게 반응하
 neutral Form의 `border.hover`는 `border.base`·`border.strong`보다 진하고 잉크보다 옅은 전용 경계 역할로, 입력 상자의 존재만 잠깐 강조합니다. semantic Form은 처음부터 의미 색을 쓰므로 같은 선을 한 번 더 올리지 않고 hover에서도 같은 경계를 유지합니다.
 
 [contract:atoms.field.frame]: #
-Field · Select의 wrapper와 Textarea 자신이 입력의 틀(`inputFrame`)입니다. 틀은 테두리 · 모서리 · 포커스 링 · 비활성을 지고, 색은 `fieldPaint`, 면은 Surface `fill`(기본 raised, 또는 sunken)이 입힙니다. 틀의 상태는 속성으로 말합니다 — `data-status`(`status`를 줬거나 오류 상태일 때의 error), `data-invalid`, `data-disabled`, `data-focus-visible`. 그래서 중립 틀의 경계는 포인터가 올라갈 수 있고 막히지 않은 틀에서만 `border.hover`로 오르고, status를 가진 틀은 같은 경계를 지키며, 비활성 틀은 `opacity.disabled`와 `not-allowed` 커서를 갖고 오르지 않습니다. 틀의 경계와 배경은 Motion `state`(130ms)로 전이합니다. Field의 지우기와 보기 버튼은 `ink.tertiary`로 서 있다가 포인터가 올라오면 `ink.primary`가 되고(`hover`, 100ms), 막힌 보기 버튼에는 `not-allowed` 커서만 남습니다. 틀의 stylesheet는 geometry만 갖고 `:hover` · `:focus-visible` · 포인터 포커스 표지를 스스로 쓰지 않습니다. 틀은 prop과 FormField의 disabled만 읽고, 조상 `<fieldset disabled>`의 비활성은 읽지 않습니다.
+Field · Select의 wrapper와 Textarea 자신이 입력의 틀(`inputFrame`)입니다. 틀은 테두리 · 모서리 · 포커스 링 · 비활성을 지고, 색은 `fieldPaint`, 면은 Surface `fill`(기본 raised, 또는 sunken)이 입힙니다. 틀의 상태는 속성으로 말합니다 — `data-status`(`status`를 줬거나 오류 상태일 때의 error), `data-invalid`, `data-disabled`, `data-focus-visible`. 그래서 중립 틀의 경계는 포인터가 올라갈 수 있고 막히지 않은 틀에서만 `border.hover`로 오르고, status를 가진 틀은 같은 경계를 지키며, 비활성 틀은 `opacity.disabled`와 `not-allowed` 커서를 갖고 오르지 않습니다. 틀의 경계는 Button의 경계처럼 Motion `hover`(100ms)로, 배경은 `state`(130ms)로 전이합니다. Field의 지우기와 보기 버튼은 `ink.tertiary`로 서 있다가 포인터가 올라오면 `ink.primary`가 되고(`hover`, 100ms), 막힌 보기 버튼에는 `not-allowed` 커서만 남습니다. 틀의 stylesheet는 geometry만 갖고 `:hover` · `:focus-visible` · 포인터 포커스 표지를 스스로 쓰지 않습니다. 틀은 prop과 FormField의 disabled만 읽고, 조상 `<fieldset disabled>`의 비활성은 읽지 않습니다.
 
 ## Tint와 색 profile
 
@@ -106,7 +107,7 @@ Button · IconButton은 눌리는 동안 한 단계(`motion.press`의 변위, 1p
 | Radio | 자신(원) | 없음 | — | checked → primary solid 테와 점 | Checkbox와 같음 | Checkbox와 같음 | Canvas 면 · ButtonText 테, 켜지면 Highlight 테와 점 | 24px hit area |
 | Switch | 자신(트랙) | 없음 | — | checked → primary solid 트랙 | Checkbox와 같음 | `status="error"` → 꺼진 트랙의 안쪽 테가 error 잉크 | ButtonFace 트랙 · ButtonText 테 · 손잡이, 켜지면 Highlight 트랙 · HighlightText 손잡이 | 트랙 위아래로 24px hit area |
 | Label | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 글자는 OS가 정함 | 해당 없음 |
-| Badge | 포커스 없음 | 없음 — `hoverable`을 주지 않아 hover 색이 없음 | 없음 | 없음 | 해당 없음 | 해당 없음 | 테두리로 남음 | 해당 없음 |
+| Badge | 포커스 없음 | 없음 — `hoverable`을 주지 않아 hover 색이 없음 | 없음 | 없음 | 해당 없음 | 해당 없음 | 테두리로 남음, 점은 CanvasText | 해당 없음 |
 | Spinner | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 링 GrayText, 호 CanvasText | 해당 없음 |
 | Divider | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | border라 CanvasText로 남음 | 해당 없음 |
 | Link | 자신(`radius.control`) | `underline="hover"`면 밑줄이 뜸 | — | — | 링크에는 disabled가 없음 | — | LinkText | inline 예외 |
@@ -114,16 +115,16 @@ Button · IconButton은 눌리는 동안 한 단계(`motion.press`의 변위, 1p
 
 ## Focus와 transition
 
-focus ring은 패키지 전체가 하나의 스타일(`focusRing`)을 씁니다 — 색은 `interaction.focus`, 폭과 offset은 Shape의 `focus.width`·`focus.offset`(2px · 2px)입니다. Form wrapper가 focus의 주인이므로 안쪽 native control은 자기 outline을 끕니다. 링 주인이 없는 요소는 전역 baseline `:where(:focus-visible)`이 링만 그리고 요소의 모양은 바꾸지 않으므로, 링은 요소 자신의 곡률을 따릅니다([Shape](../foundations/shape.md#stroke--focus)). 전이 시간은 Motion의 역할이 정합니다. Button · IconButton은 속성 묶음마다 역할을 고릅니다 — hover tint와 테두리는 `hover`(100ms), 면(`background-color`)과 글자색은 `state`(130ms), 눌림은 `press`(100ms)이고, 정본은 [Motion](../foundations/motion.md)입니다. `prefers-reduced-motion: reduce`에서는 전이가 즉시 끝납니다.
+focus ring은 패키지 전체가 하나의 스타일(`focusRing`)을 씁니다 — 색은 `interaction.focus`, 폭과 offset은 Shape의 `focus.width`·`focus.offset`(2px · 2px)입니다. Form wrapper가 focus의 주인이므로 안쪽 native control은 자기 outline을 끕니다. Pressable은 자기 판정에서 링을 그립니다([Press](../primitives/press.md#press)). 링 주인이 없는 요소는 전역 baseline `:where(:focus-visible)`이 링만 그리고 요소의 모양은 바꾸지 않으므로, 링은 요소 자신의 곡률을 따릅니다([Shape](../foundations/shape.md#stroke--focus)). 전이 시간은 Motion의 역할이 정합니다. Button · IconButton은 속성 묶음마다 역할을 고릅니다 — hover tint와 테두리는 `hover`(100ms), 면(`background-color`)과 글자색은 `state`(130ms), 눌림은 `press`(100ms)이고, 정본은 [Motion](../foundations/motion.md)입니다. `prefers-reduced-motion: reduce`에서는 전이가 즉시 끝납니다.
 
 [contract:atoms.focus.ring]: #
 Button · IconButton · Link는 키보드 포커스를 `useFocusRing`(Pressable 안에서도 같은 것)으로 판정해 자기 요소에 `data-focus-visible`을 달고, 링은 그 속성에서 자신의 곡률로 그립니다 — 알약 Button의 링은 알약이고 Link의 링은 `radius.control`입니다. 포인터로 포커스한 요소에는 링이 없습니다. 로딩 중인 Button도 포커스를 받으므로 키보드가 닿으면 링을 그립니다. Field · Select · Textarea도 같은 판정을 쓰며 링 주인이 입력의 틀입니다: 안쪽 native control이 `useFocusRing`(텍스트 입력은 `textInput`)을 받고 틀이 `data-focus-visible`을 답니다. Textarea는 틀이 자기 자신입니다. Field의 지우기나 보기 버튼에서 Shift+Tab으로 input에 돌아오면 wrapper가 링을 다시 그리고, 버튼의 링은 버튼 자신의 곡률(`radius.control`)을 따릅니다. Checkbox · Radio · Switch도 같은 판정을 쓰고 링 주인이 input 자신이라, 링이 상자 · 원 · 트랙의 곡률을 따릅니다.
 
 ## 대비 · forced colors · prefers-contrast · target
 
-글자는 4.5:1, 컨트롤과 그 상태를 알리는 표식은 3:1을 지킵니다 — 선택 표식의 테, Switch 트랙의 테와 켜진 트랙, 켜진 면과 그 위의 표식, 포커스 링, 오류 테. 명시된 예외 둘(입력 경계, 옅은 selected 면)과 그 보완은 [대비 계약](../foundations/color.md#대비-계약)에 있고, 수치는 단위 테스트가 두 테마에서 지킵니다.
+글자는 4.5:1, 컨트롤과 그 상태를 알리는 표식은 3:1을 지킵니다 — 선택 표식의 테, Switch 트랙의 테와 켜진 트랙, 켜진 면과 그 위의 표식, 포커스 링, 오류 테. 명시된 예외 셋(입력 경계, 옅은 selected 면, 꺼진 Switch의 손잡이)과 그 보완은 [대비 계약](../foundations/color.md#대비-계약)에 있고, 수치는 단위 테스트가 두 테마에서 지킵니다.
 
-OS가 색을 정하는 모드(`forced-colors: active`)에서는 대부분의 요소를 OS에 맡깁니다. 상태가 배경에만 기대는 자리 — 선택 표식, Spinner, selected 면 — 만 `forced-color-adjust: none`으로 빼고 시스템 색(`SYSTEM_COLORS`)으로 직접 그립니다. hover는 Highlight 경계, 비활성은 GrayText, 포커스 링은 Highlight이고, Divider는 border라 그대로 남습니다([Color](../foundations/color.md#forced-colors)). 오류는 이 모드에서 색을 고르지 못하므로 `aria-invalid`와 오류 문구가 알립니다.
+OS가 색을 정하는 모드(`forced-colors: active`)에서는 대부분의 요소를 OS에 맡깁니다. 상태가 배경에만 기대는 자리 — 선택 표식, Spinner, selected 면, Badge의 점 — 만 `forced-color-adjust: none`으로 빼고 시스템 색(`SYSTEM_COLORS`)으로 직접 그립니다. hover는 Highlight 경계, 비활성은 GrayText, 포커스 링은 Highlight이고, Divider는 border라 그대로 남습니다([Color](../foundations/color.md#forced-colors)). 오류는 이 모드에서 색을 고르지 못하므로 `aria-invalid`와 오류 문구가 알립니다.
 
 [contract:atoms.mark.forced-colors]: #
 forced colors에서 꺼진 Switch는 ButtonFace 트랙을 ButtonText 테와 손잡이가 두르고 켜진 Switch는 Highlight 트랙과 HighlightText 손잡이이며, Checkbox는 Canvas 면과 ButtonText 테에서 켜지거나 부분 선택이면 Highlight 면과 HighlightText 체크 · 대시, Radio는 켜지면 Highlight 테와 점입니다. 비활성 표식은 켜져 있든 아니든 GrayText이고, Spinner의 호와 링은 서로 다른 색(CanvasText · GrayText)이며 Divider는 1px 실선으로 남습니다.
@@ -144,7 +145,7 @@ forced colors에서 Link는 OS가 정한 LinkText입니다.
 forced colors에서 Marker는 OS가 정한 Mark 면과 MarkText 글자이고, 띠를 그리는 이미지는 없어집니다.
 
 [contract:atoms.badge.forced-colors]: #
-forced colors에서 Badge는 면이 사라져도 1px 실선 테두리로 남습니다. 평소에 테두리가 투명한 variant도 같습니다.
+forced colors에서 Badge는 면이 사라져도 1px 실선 테두리로 남습니다. 평소에 테두리가 투명한 variant도 같습니다. 앞에 붙는 점은 면뿐이라 CanvasText로 직접 그려 남깁니다.
 
 [contract:atoms.mark.contrast-more]: #
 `prefers-contrast: more`에서는 경계 역할(`border.*`)과 `ink.tertiary`가 한 단계 짙은 팔레트 값으로 올라 `border.base`가 raised 면과 3:1이 되고, 옅은 selected 면은 `ink.primary` 1px 안쪽 테를 얻습니다.

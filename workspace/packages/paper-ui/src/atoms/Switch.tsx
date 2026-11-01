@@ -29,7 +29,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(function Switch(
       ref={ref}
       className={joinClass(markPaint.switch, switchRoot, switchSize[size], switchReach[size], className)}
       {...frameProps}
-      {...mergeProps(focusHandlers, rest, controlProps)}
+      {...mergeProps(rest, focusHandlers, controlProps)}
     />
   );
 });

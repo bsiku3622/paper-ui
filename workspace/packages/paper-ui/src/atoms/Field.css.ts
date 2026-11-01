@@ -1,5 +1,4 @@
-import { CONTROL_SIZES, stateStyle, tokens, transition } from "../tokens";
-import type { ControlSize } from "../tokens";
+import { stateStyle, tokens, transition } from "../tokens";
 import { controlGeometry, geometry } from "../internal/shape";
 import { layered } from "../tokens/layers.css";
 
@@ -56,7 +55,7 @@ export const fieldSize = styleVariants(
 
 // 입력값이 앉는 줄상자. preset 의 글자 줄(16)은 Shape 의 안쪽 여백이 읽는 값이라, caret 의 높이는 따로 둔다.
 export const fieldInputLeading = styleVariants(
-  Object.fromEntries(CONTROL_SIZES.map((size) => [size, { lineHeight: tokens.typography.preset.field[size].inputLeading }])) as Record<ControlSize, { lineHeight: string }>,
+  controlGeometry.fieldInput,
 );
 
 // 어도먼트 — leading/trailing 슬롯(아이콘·$·단위). 축소 안 됨. 색은 fieldAdornmentPaint.

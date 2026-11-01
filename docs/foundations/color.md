@@ -113,7 +113,7 @@ Palette Token은 내부 이름입니다. 컴포넌트와 앱은 import하지 않
 스코프 안에서는 세 가지가 달라집니다. 스코프 요소 자신이 그 모드의 고유 역할(면·잉크·경계·accent …)과 `color-scheme`을 갖습니다. 상속되는 글자색 `ink.primary`를 스코프마다 다시 선언하므로, 스코프 안의 글자는 바깥 모드가 아니라 스코프의 모드를 따릅니다(특정도가 0이라 class가 정한 색은 그대로 이깁니다). 그리고 지면 역할은 스코프의 자식부터 그 모드로 바뀝니다.
 
 [contract:foundations.theme.ground-roles]: #
-지면 역할은 요소 바깥, 그 요소가 서 있는 지면에 그려지는 값입니다 — 포커스 링 색(`interaction.focus`), 그림자 색(`shadow.*`), 그림자 기하(`--pui-layout-shadow-<depth>-<i>`). 그래서 어두운 스코프 요소가 드리우는 그림자와 포커스 링은 바깥 지면의 모드로 그려지고, 그 안의 자식이 드리우는 것은 스코프의 모드로 그려집니다. 그림자는 변수 하나로 구워 두지 않고 쓰이는 요소에서 기하 변수와 그림자 색을 이어 붙이므로([Layout](layout.md)), 스코프가 어느 쪽을 바꿔도 따라옵니다.
+지면 역할은 요소 바깥, 그 요소가 서 있는 지면에 그려지는 값입니다 — 포커스 링 색(`interaction.focus`), 그림자 색(`shadow.*`), 그림자 기하(`--pui-layout-shadow-<depth>-<i>`). 그래서 어두운 스코프 요소가 드리우는 그림자와 포커스 링은 바깥 지면의 모드로 그려지고, 그 안의 자식이 드리우는 것은 스코프의 모드로 그려집니다. 그림자는 변수 하나로 구워 두지 않고 쓰이는 요소에서 기하 변수와 그림자 색을 이어 붙이므로([Layout](layout.md)), 스코프가 어느 쪽을 바꿔도 따라옵니다. 이 역할을 앱에서 바꾸는 규칙은 [Installation](../get-started/install.md#원본-덮어쓰기)에 있습니다.
 
 ## 대비 모드
 
@@ -138,12 +138,12 @@ Palette Token은 내부 이름입니다. 컴포넌트와 앱은 import하지 않
 단위 테스트(`tokens/color.test.ts`)가 두 테마의 모든 면(raised · canvas · sunken) 위에서 표식의 꺼진 테(`ink.tertiary`), 켜진 면(`accent.primary.solid`), 포커스 링, 오류 테(`accent.error.ink`)가 3:1 이상임을, 꺼진 트랙이 켜진 트랙과 3:1 이상 갈리고 켜진 트랙 위의 손잡이(`bg.raised`)와 체크(`accent.primary.wash`)가 3:1 이상임을 지킵니다. 다크 `accent.ink`는 모든 다크 면 위에서 4.5:1 이상으로 라이트와 같고, hover · selected · active의 tint를 면에 깐 자리 위의 `ink.primary`도 4.5:1 이상입니다.
 
 [contract:foundations.color.non-text-exceptions]: #
-명시된 예외는 둘입니다. 하나는 입력 경계(`border.base`)입니다. 회색 선은 한 벌이라는 결정에 따라 컨트롤 전용 경계색을 두지 않으므로, 라벨 · placeholder · hover 경계 · 포커스 링이 입력의 존재를 보완하고 `prefers-contrast: more`에서 3:1로 오릅니다. 다른 하나는 옅게 깔린 selected 면(accent `soft`, `interaction.selected`)입니다. `aria-pressed` · `aria-current`와 `ink.primary`가 선택을 보완하고 `prefers-contrast: more`에서 `ink.primary` 안쪽 테를 얻습니다. selected · active 면 위의 글자는 `ink.primary`만 씁니다. 단위 테스트는 두 예외가 실제로 3:1 아래임을 확인해 목록이 거짓이 되지 않게 합니다.
+명시된 예외는 셋입니다. 첫째는 입력 경계(`border.base`)입니다. 회색 선은 한 벌이라는 결정에 따라 컨트롤 전용 경계색을 두지 않으므로, 라벨 · placeholder · hover 경계 · 포커스 링이 입력의 존재를 보완하고 `prefers-contrast: more`에서 3:1로 오릅니다. 둘째는 옅게 깔린 selected 면(accent `soft`, `interaction.selected`)입니다. `aria-pressed` · `aria-current`와 `ink.primary`가 선택을 보완하고 `prefers-contrast: more`에서 `ink.primary` 안쪽 테를 얻습니다. selected · active 면 위의 글자는 `ink.primary`만 씁니다. 셋째는 꺼진 Switch의 손잡이입니다. `control.track` 위의 `bg.raised` 손잡이는 라이트 1.26:1, 다크 1.68:1입니다. 트랙의 `ink.tertiary` 안쪽 테가 3:1로 컨트롤을 알리고 켜진 트랙이 꺼진 트랙과 3:1 이상 갈리므로, 켜짐과 꺼짐은 트랙이 말하고 손잡이의 자리가 보탭니다. 단위 테스트는 세 예외가 실제로 3:1 아래임을 확인해 목록이 거짓이 되지 않게 합니다.
 
 ## Forced colors
 
 [contract:foundations.color.forced-colors]: #
-Windows 고대비처럼 OS가 색을 정하는 모드(`forced-colors: active`)에서는 대부분의 요소를 OS에 맡깁니다. 상태가 배경에만 기대는 자리 — 선택 표식, Spinner, selected 면 — 만 `forced-color-adjust: none`으로 빼고 시스템 색으로 직접 그립니다. 시스템 색 이름은 `SYSTEM_COLORS`(`Canvas` · `CanvasText` · `ButtonFace` · `ButtonText` · `Highlight` · `HighlightText` · `GrayText` · `LinkText`)만 적어 두고, 값은 OS가 정합니다. hover는 Highlight 경계, 비활성은 GrayText, 포커스 링은 Highlight입니다. 선택 표식은 Canvas 면과 ButtonText 테에서 켜지면 Highlight 면과 HighlightText 표식이 되고, Switch의 테는 같은 안쪽 테(`strokeRing`)로 ButtonText · Highlight를 그립니다. Divider는 background가 아니라 border로 그어 이 모드에서도 남습니다. 이 모드의 표식별 모습은 [States](../atoms/states.md#대비--forced-colors--prefers-contrast--target)에 있습니다.
+Windows 고대비처럼 OS가 색을 정하는 모드(`forced-colors: active`)에서는 대부분의 요소를 OS에 맡깁니다. 상태가 배경에만 기대는 자리 — 선택 표식, Spinner, selected 면, Badge의 점 — 만 `forced-color-adjust: none`으로 빼고 시스템 색으로 직접 그립니다. 시스템 색 이름은 `SYSTEM_COLORS`(`Canvas` · `CanvasText` · `ButtonFace` · `ButtonText` · `Highlight` · `HighlightText` · `GrayText` · `LinkText`)만 적어 두고, 값은 OS가 정합니다. hover는 Highlight 경계, 비활성은 GrayText, 포커스 링은 Highlight입니다. 선택 표식은 Canvas 면과 ButtonText 테에서 켜지면 Highlight 면과 HighlightText 표식이 되고, Switch의 테는 같은 안쪽 테(`strokeRing`)로 ButtonText · Highlight를 그립니다. Divider는 background가 아니라 border로 그어 이 모드에서도 남습니다. 이 모드의 표식별 모습은 [States](../atoms/states.md#대비--forced-colors--prefers-contrast--target)에 있습니다.
 
 ## Accent
 

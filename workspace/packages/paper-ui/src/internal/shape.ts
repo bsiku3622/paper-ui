@@ -13,6 +13,8 @@ export const controlGeometry = {
   // A square the height of a control, with no inset: the label is an icon.
   iconButton: controlSizes((size) => ({ height: height[size], width: height[size], paddingInline: 0 } satisfies StyleRule)),
   field: controlSizes((size) => ({ height: height[size], paddingInline: tokens.shape.control.inset.input[size] } satisfies StyleRule)),
+  // The line box a Field's value sits in: taller than the glyph line the inset reads, for the caret.
+  fieldInput: controlSizes((size) => ({ lineHeight: tokens.typography.preset.field[size].inputLeading } satisfies StyleRule)),
   select: controlSizes((size) => ({ height: height[size], paddingInline: tokens.shape.control.inset.input[size], paddingInlineEnd: geometry.select.paddingEnd[size] } satisfies StyleRule)),
   // The trailing arrow sits at the input inset.
   selectArrow: controlSizes((size) => ({ insetInlineEnd: geometry.select.arrowInset[size] } satisfies StyleRule)),

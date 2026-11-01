@@ -38,10 +38,13 @@ export const dense = style({ vars: sourceVars({ shape: { control: { height: { md
 ```
 
 [contract:foundations.override.worked-example]: #
-이 한 줄로 그 영역의 md 버튼 높이는 40, 입력 inset은 12, 버튼 inset은 17, 체크박스는 20, 스위치 트랙은 40×22가 됩니다. 역할 변수를 따로 구웠다면 `:root`에서 이미 계산이 끝나 이 재정의를 따라가지 못합니다.
+이 한 줄로 그 영역의 md 버튼 높이는 40, 입력 inset은 12, 버튼 inset은 17이 됩니다. 체크박스와 스위치는 자기 사다리(`selection.size`)를 따르므로 그대로입니다. 역할 변수를 따로 구웠다면 `:root`에서 이미 계산이 끝나 이 재정의를 따라가지 못합니다.
 
 [contract:foundations.override.source-paths-only]: #
-`sourceVars()`는 원본 트리의 경로를 그 값이 방출되는 변수 이름으로 바꿔 돌려줍니다. 경로는 원본을 그대로 따라 `shape` · `layout` · `typography` 셋에서 시작하고, 역할의 경로(`shape.inset`)는 타입이 막고 모르는 경로는 실행 때 던집니다. 돌려주는 이름은 언제나 모드와 무관하게 구워지는 원본 변수(`SOURCE_VARIABLES`)의 부분집합이라, 같은 값을 Floating의 panel이 따라 옮깁니다. 결과는 vanilla-extract의 `vars`와 React의 `style`에 그대로 들어갑니다. 변수를 일반 CSS에 직접 적을 수도 있지만 그 형태(`.dense { --pui-shape-control-height-md: 40px }`)는 검사받지 않습니다 — 이름은 Playground [Shape](/playground/foundations/shape)의 원본 표에 나옵니다. 앱과 fixture는 `--pui-` 이름을 문자열로 쓰지 않고 이 함수를 부릅니다(`paper/source-isolation`).
+`sourceVars()`는 원본 트리의 경로를 그 값이 방출되는 변수 이름으로 바꿔 돌려줍니다. 경로는 원본을 그대로 따라 `shape` · `layout` · `typography` 셋에서 시작하고, 역할의 경로(`shape.inset`)는 타입이 막고 모르는 경로는 실행 때 던집니다. 돌려주는 이름은 언제나 모드와 무관하게 구워지는 원본 변수(`SOURCE_VARIABLES`)의 부분집합이라, 같은 값을 Floating의 panel이 따라 옮깁니다. 결과는 vanilla-extract의 `vars`와 React의 `style`에 그대로 들어갑니다. 변수를 일반 CSS에 직접 적을 수도 있습니다(`.dense { --pui-shape-control-height-md: 40px }`). 이 형태는 타입도 `sourceVars()`도 검사하지 못합니다 — 이름은 Playground [Shape](/playground/foundations/shape)의 원본 표에 나옵니다. 앱과 fixture는 `--pui-` 이름을 문자열로 쓰지 않고 이 함수를 부릅니다(`paper/source-isolation`).
+
+[contract:foundations.override.unknown-warning]: #
+일반 CSS의 오타나 역할 이름은 아무 일도 하지 않고 조용히 지나가므로, 개발 중에는 `PaperProvider`가 처음 마운트될 때 문서의 스타일시트를 한 번 읽어 `--pui-shape-*` · `--pui-layout-*` · `--pui-typography-*` 선언 가운데 패키지가 내지 않는 이름을 `[paper-ui] ` 경고 하나로 알립니다. `@layer` · `@media` 안의 규칙, 중첩 규칙, `@import`한 시트와 `adoptedStyleSheets`까지 읽습니다. 보지 못하는 것도 있습니다. 인라인 `style`과 스크립트가 `setProperty`로 쓴 값은 읽지 않고, 브라우저가 읽지 못하게 하는 다른 출처의 시트는 건너뛰며, 마운트 뒤에 들어온 시트와 Shadow DOM 안의 시트는 보지 않습니다. 프로덕션 빌드와 Provider가 없는 페이지에서는 돌지 않습니다.
 
 [contract:foundations.override.portal-carry]: #
 그 영역에서 연 Floating의 panel은 `<body>` 아래로 옮겨지지만 덮어쓴 원본을 잃지 않습니다. Portal의 root가 열린 자리와 container 사이에서 값이 다른 원본 변수(`SOURCE_VARIABLES`: Shape · mode와 무관한 Layout · Typography)만 얹어 옮기므로, 영역 안에서 연 popover와 dialog 속 컨트롤도 40이 되고 dialog의 scrim 여백도 영역의 gutter를 따릅니다. 처음부터 열려 있는 panel도 Trigger가 선 자리를 따르고, 영역 밖에서 연 것은 기본값 그대로입니다. 색 역할은 옮기지 않고, 모드는 테마 속성이 옮깁니다.
@@ -91,7 +94,7 @@ Surface의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값
 ## Control
 
 [contract:foundations.shape.control-geometry]: #
-컨트롤 원본은 <!-- generated:shape-source --><!-- 이 블록은 생성됩니다 — pnpm docs:sync -->높이 사다리(`control.height`: sm 30 · md 32 · lg 36)와 button inset 배율(`control.buttonInsetRatio`: 1.4)이고, `anatomy`는 Badge 높이·inset(`anatomy.badge`)과 체크의 보정 비율(`anatomy.checkbox.markShift`: x 0.25 · y -0.5, `stroke.emphasis`의 배수)과 inline 점 · spinner 크기(`anatomy.inline`: 0.5em · 1em)입니다.<!-- /generated:shape-source --> 나머지는 높이와 컨트롤 글자 줄(Typography의 control preset이 읽는 글자 한 줄, 행간 16)에서 계산합니다. 입력값이 앉는 줄상자 `inputLeading` 20은 이 식의 입력이 아니라 caret 높이를 위한 값이라, 글자 줄 안쪽에서 중앙에 앉습니다.
+컨트롤 원본은 <!-- generated:shape-source --><!-- 이 블록은 생성됩니다 — pnpm docs:sync -->높이 사다리(`control.height`: sm 30 · md 32 · lg 36)와 button inset 배율(`control.buttonInsetRatio`: 1.4), 표식 사다리(`selection.size`: sm 15 · md 16 · lg 18)이고, `anatomy`는 Badge 높이·inset(`anatomy.badge`)과 체크의 보정 비율(`anatomy.checkbox.markShift`: x 0.25 · y -0.5, `stroke.emphasis`의 배수)과 inline 점 · spinner 크기(`anatomy.inline`: 0.5em · 1em)입니다.<!-- /generated:shape-source --> 나머지는 높이와 컨트롤 글자 줄(Typography의 control preset이 읽는 글자 한 줄, 행간 16)에서 계산합니다. 입력값이 앉는 줄상자 `inputLeading` 20은 이 식의 입력이 아니라 caret 높이를 위한 값이라, 글자 줄 안쪽에서 중앙에 앉습니다.
 
 [contract:foundations.shape.control-table]: #
 
@@ -102,7 +105,7 @@ Surface의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값
 | `control.height` | 30 | 32 | 36 | 원본 |
 | `control.inset.input` | 7 | 8 | 10 | (높이 − preset 글자 줄) / 2 — 입력값은 글자 줄 사방에 같은 여백 |
 | `control.inset.button` | 10 | 11 | 14 | (높이 − 버튼 글자 줄) / 2 × `buttonInsetRatio` 1.4, 1px로 반올림 — 라벨이 상자를 정의하므로 더 넓게 |
-| `selection.size` | 15 | 16 | 18 | 높이 / 2 |
+| `selection.size` | 15 | 16 | 18 | 원본 — Checkbox와 Radio의 상자. 컨트롤 높이와 따로 움직입니다 |
 | `control.icon` | 16 | 18 | 20 | 높이를 따르는 icon 크기 (caption · body · subheading) |
 | `control.gap` | 8 | 8 | 8 | 아이콘과 라벨 사이, inset sm |
 <!-- /generated:shape-control -->
@@ -156,7 +159,7 @@ coarse pointer에서 더 키우지 않습니다 — 촘촘한 목록에서 hit a
 |---|---|
 | Checkbox | 모서리 `radius.selection`. 체크는 상자의 절반 너비·4분의 1 높이인 L자를 대각선으로 돌린 것이고, 돌리면 시각 무게가 아래 왼쪽으로 쏠려 자기 획(`stroke.emphasis`)의 배수만큼 옮깁니다. 그 배수는 원본 `anatomy.checkbox.markShift`(x ¼ · y −½)입니다. indeterminate 대시는 체크의 긴 변 길이로 그은 둥근 끝 emphasis 선입니다. |
 | Radio | 점은 상자의 절반입니다. |
-| Switch | 트랙 폭 = 컨트롤 높이, 트랙 높이 = 선택 상자 + 테, 손잡이 = 선택 상자 − 테. 테는 `stroke.emphasis`라, 손잡이는 사방 2px 안쪽에 앉고 정확히 자기 폭만큼 이동합니다. 손잡이는 `inset-inline-start`로 놓이고 켜지면 그 값에 이동 거리가 더해지는 논리 속성이라 RTL에서는 저절로 뒤집힙니다. 꺼진 트랙의 안쪽 테(`stroke.border`)는 박스 안에 그려져 크기를 늘리지 않습니다. |
+| Switch | 트랙 폭 = 선택 상자 × 2, 트랙 높이 = 선택 상자 + 테, 손잡이 = 선택 상자 − 테. 테는 `stroke.emphasis`라, 손잡이는 사방 2px 안쪽에 앉고 정확히 자기 폭만큼 이동합니다. 손잡이는 `inset-inline-start`로 놓이고 켜지면 그 값에 이동 거리가 더해지는 논리 속성이라 RTL에서는 저절로 뒤집힙니다. 꺼진 트랙의 안쪽 테(`stroke.border`)는 박스 안에 그려져 크기를 늘리지 않습니다. |
 | Textarea | 한 줄은 같은 size의 Field와 정확히 같은 높이입니다: block 여백 = (컨트롤 높이 − textarea 글자 줄) / 2 − 테두리. 최소 높이는 없고 높이는 `rows`(기본 4)가 정합니다 — 4줄은 sm 90 · md 92 · lg 96입니다. |
 | Select | 화살표는 trailing icon입니다. `control.icon` 크기의 Icon(레시피에 따로 둔 값이 없습니다)이 입력 inset 자리에 앉고, 값은 그보다 `control.gap`만큼 앞에서 멈춥니다 — Field의 leading icon을 거울로 비춘 구조입니다. |
 | Spinner | 지름은 `control.icon`, 링은 `stroke.emphasis`입니다. 글줄 안에 놓는 스피너(`spinner.inline`)는 라벨 글자(1em)를 따르고, Button의 loading 표식이 그 크기입니다. |
@@ -166,7 +169,7 @@ coarse pointer에서 더 키우지 않습니다 — 촘촘한 목록에서 hit a
 [contract:foundations.shape.switch-thumb]: #
 Switch의 손잡이는 꺼지면 트랙 끝에서 테만큼, 켜지면 반대쪽 끝에서 테만큼 떨어져 앉고 그 값은 논리 속성이 정합니다. 오른쪽에서 왼쪽으로 쓰는 문서에서는 두 끝이 서로 바뀝니다 — 켜진 손잡이가 트랙의 왼쪽 끝에서 테만큼 떨어집니다. 이는 별도 규칙 없이 같은 선언이 읽는 방향만 바뀐 결과이고, 테스트는 손잡이가 트랙의 양 끝에서 떨어진 거리를 읽습니다.
 
-링크 밑줄 offset은 글자의 장식이라 Typography(`typography.palette.decoration.underlineOffset`)가 소유합니다.
+링크 밑줄 offset은 글자의 장식이라 Typography의 Palette(`decoration.underlineOffset`)가 소유하고, 앱에는 `linkStyle`로 나갑니다.
 
 ## 앱에서
 

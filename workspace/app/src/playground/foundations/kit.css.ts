@@ -5,7 +5,7 @@
 // (AGENTS.md); the display parts at the end of the file are shared by every page.
 import { createVar, globalStyle, style, styleVariants } from "@vanilla-extract/css";
 
-import { tokens } from "@studio-baeks/paper-ui/tokens";
+import { SYSTEM_COLORS, tokens } from "@studio-baeks/paper-ui/tokens";
 
 import { leafPaths, valueAt, type LeafPaths } from "./paths";
 
@@ -88,7 +88,10 @@ export const travelDot = style({
   borderRadius: tokens.shape.radius.full,
   background: tokens.color.accent.primary.solid,
   transitionProperty: "inset-inline-start",
-  "@media": { "(hover: hover)": { selectors: { [`${travelTrack}:hover &`]: { insetInlineStart: `calc(100% - ${dot})` } } } },
+  "@media": {
+    "(hover: hover)": { selectors: { [`${travelTrack}:hover &`]: { insetInlineStart: `calc(100% - ${dot})` } } },
+    "(forced-colors: active)": { forcedColorAdjust: "none", background: SYSTEM_COLORS.canvasText },
+  },
 });
 
 // An easing as its curve on a 64 × 32 plot.

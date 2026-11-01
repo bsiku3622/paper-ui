@@ -47,7 +47,7 @@ const SelectRoot = forwardRef<HTMLSelectElement, SelectProps>(function SelectRoo
       className={joinClass(inputFrame, fieldPaint, selectEmptyPaint, selectWrap, resolveFill(fill), selectSize[size], resolvePreset("field", size), resolveControlFontSize(fontSize), shape === "pill" && inputFramePill, className)}
       {...frameProps}
     >
-      <select ref={ref} className={selectRoot} {...mergeProps(focusHandlers, rest, controlProps)}>
+      <select ref={ref} className={selectRoot} {...mergeProps(rest, focusHandlers, controlProps)}>
         {children}
       </select>
       <Icon size={CONTROL_ICON[size]} className={joinClass(selectArrow, selectArrowPaint, selectArrowSize[size])}><path d="m6 9 6 6 6-6" /></Icon>

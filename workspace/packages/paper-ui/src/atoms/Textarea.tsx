@@ -42,7 +42,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
       rows={rows}
       className={joinClass(inputFrame, fieldPaint, fieldPlaceholderPaint, textareaRoot, resolveFill(fill), textareaSize[size], resolvePreset("textarea", size), resolveControlFontSize(fontSize), className)}
       {...frameProps}
-      {...mergeProps(focusHandlers, rest, controlProps)}
+      {...mergeProps(rest, focusHandlers, controlProps)}
     />
   );
 });

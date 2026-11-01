@@ -36,7 +36,7 @@ Toolbar의 비활성 항목을 건너뛰고 양 끝에서 순환하는 예시입
 `dir`은 줄 때만 DOM에 쓰고, 가로 방향키는 항목이 서 있는 자리의 방향을 따릅니다 — 가장 가까운 `dir` 속성(`ltr` · `rtl`), 없으면 계산된 `direction`, 그것도 없으면 `ltr`입니다. 그래서 `dir="rtl"`인 조상이나 `<html dir="rtl">` 아래에서는 `dir`을 주지 않아도 ArrowLeft가 다음 항목으로 갑니다. 명시한 `dir`은 물려받은 방향보다 앞섭니다.
 
 [contract:primitives.roving-focus.registry]: #
-등록은 RovingFocus root 하나가 가진 항목 목록이 유일한 정본입니다. 이미 등록된 value로 다른 항목이 오면 등록을 거절하고(개발 오류 한 번, 먼저 등록된 쪽이 이깁니다) 거절된 항목은 Tab 진입점이 되지 않으므로 Tab 정지는 늘 하나입니다. 중복 항목을 떼어도 원래 항목의 탐색과 선택은 그대로입니다. SelectableGroup은 같은 목록을 읽어 선택값을 정리합니다. children 함수는 `{ currentValue, isDisabled }`(`RovingFocusState`)를 받습니다.
+등록은 RovingFocus root 하나가 가진 항목 목록이 유일한 정본입니다. 이미 등록된 value로 다른 항목이 오면 등록을 거절하고(개발 오류 한 번, 먼저 등록된 쪽이 이깁니다) 거절된 항목은 Tab 진입점이 되지 않으므로 Tab 정지는 늘 하나입니다. 중복 항목을 떼어도 원래 항목의 탐색과 선택은 그대로이고, 먼저 등록된 쪽이 떠나면 거절된 항목이 그 value를 이어받아 남은 항목의 Tab 정지와 선택이 사라지지 않습니다. `disabled`만 바뀐 항목은 떠난 것이 아니라서 자리를 지킵니다. SelectableGroup은 같은 목록을 읽어 선택값을 정리합니다. children 함수는 `{ currentValue, isDisabled }`(`RovingFocusState`)를 받습니다.
 
 [contract:primitives.roving-focus.keys]: #
 [contract:primitives.roving-focus.removal]: #

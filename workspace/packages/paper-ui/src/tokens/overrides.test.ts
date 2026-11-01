@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { sourceVars, type SourceOverrides } from "./overrides";
-import { SOURCE_VARIABLES } from "./variables";
+import { sourceVars, unknownSourceVariables, type SourceOverrides } from "./overrides";
+import { SOURCE_VARIABLES, themeVariables } from "./variables";
 
 describe("source overrides", () => {
   it("[foundations.override.source-paths-only] answers with the variable each source path is emitted under", () => {
@@ -32,5 +32,20 @@ describe("source overrides", () => {
     expect(() => sourceVars(color)).toThrow("color.ink.primary");
     expect(() => sourceVars({ shape: { control: { height: { huge: "1px" } } } } as SourceOverrides)).toThrow("shape.control.height.huge");
     expect(() => sourceVars({ shape: { control: { height: { md: 40 } } } } as unknown as SourceOverrides)).toThrow("shape.control.height.md");
+  });
+});
+
+describe("the names a stylesheet can mean", () => {
+  it("[foundations.override.unknown-warning] knows every variable the stylesheet emits: a mode's shadow geometry as well as the sources", () => {
+    const { source, invariant, modes, contrastMore } = themeVariables();
+    const names = [source, invariant, modes.light.own, modes.light.ground, modes.dark.own, modes.dark.ground, contrastMore.light, contrastMore.dark].flatMap((declarations) => Object.keys(declarations));
+    expect(names).toContain("--pui-layout-shadow-floating-0");
+    expect(unknownSourceVariables(names)).toEqual([]);
+  });
+
+  it("[foundations.override.unknown-warning] picks out the names of Shape, Layout and Typography the stylesheet does not emit, once each and in order", () => {
+    expect(unknownSourceVariables(["--pui-typography-role-body-size", "--pui-shape-control-height-xl", "--pui-layout-gutter", "--pui-shape-control-height-xl", "--pui-color-nope", "--pui-state-tint", "--mine"])).toEqual([
+      "--pui-layout-gutter", "--pui-shape-control-height-xl", "--pui-typography-role-body-size",
+    ]);
   });
 });

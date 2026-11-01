@@ -10,7 +10,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 
-import { Button, Field, IconButton, Inline, Select, Stack, Surface, Switch, Text, SelectableGroup, useResolvedTheme } from "@studio-baeks/paper-ui";
+import { Button, Field, IconButton, Inline, Pressable, Select, Stack, Surface, Switch, Text, SelectableGroup, useResolvedTheme } from "@studio-baeks/paper-ui";
 import { SURFACE_FILLS, type SurfaceFill } from "@studio-baeks/paper-ui/tokens";
 
 import { CheckIcon, CloseIcon, EditIcon } from "../compositions/icons";
@@ -193,7 +193,8 @@ const DetailView = ({ entry }: { entry: Entry }) => {
               }}
             >
               {PREVIEW_BACKGROUNDS.map((background) => (
-                <SelectableGroup.Item
+                <Pressable
+                  as={SelectableGroup.Item}
                   key={background}
                   value={background}
                   className={s.surfaceButton[background]}
@@ -201,7 +202,7 @@ const DetailView = ({ entry }: { entry: Entry }) => {
                   title={background === FOLDED.surface && folded ? FOLDED_TITLE : `${background} background`}
                 >
                   {previewBackground === background ? <CheckIcon size="caption" /> : null}
-                </SelectableGroup.Item>
+                </Pressable>
               ))}
             </SelectableGroup>
           </div>

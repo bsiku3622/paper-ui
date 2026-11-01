@@ -29,6 +29,14 @@ describe("Typography source is data", () => {
     });
   });
 
+  it("[foundations.typography.palette-only] leaves the palette out of the public tree: tokens.typography is the roles and the presets", () => {
+    expect(Object.keys(tokens.typography).sort()).toEqual(["preset", "role"]);
+    expect(tokens.typography.role).toBe(TYPOGRAPHY.role);
+    expect(tokens.typography.preset).toBe(TYPOGRAPHY.preset);
+    // The variables stay: an override names them, and the roles and presets are built on them.
+    expect(emitted.has("--pui-typography-palette-font-size-14")).toBe(true);
+  });
+
   it("[foundations.typography.palette-only] builds each role and preset from palette variables", () => {
     const leaves: string[] = [];
     walkValues(TYPOGRAPHY.role, [], (_path, value) => leaves.push(value));

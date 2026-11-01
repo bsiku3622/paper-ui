@@ -1,6 +1,9 @@
-import { expect, test, type Locator } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import { tokens } from "../../packages/paper-ui/src/tokens";
 import { openHarness } from "../support/harness";
+import { tab } from "../support/keyboard";
+import { expectStyle } from "../support/style";
 
 const once = async (target: Locator) => {
   await expect(target).toHaveAttribute("data-presses", "1");
@@ -262,5 +265,186 @@ test.describe("by touch", () => {
     await target.tap();
     await expect(target).toHaveAttribute("aria-pressed", "true");
     await once(target);
+  });
+});
+
+test.describe("the keyboard ring", () => {
+  const ring = {
+    outlineStyle: "solid",
+    outlineWidth: tokens.shape.focus.width,
+    outlineOffset: tokens.shape.focus.offset,
+    outlineColor: tokens.color.interaction.focus,
+  };
+
+  test.beforeEach(async ({ page }) => {
+    await openHarness(page, "press");
+  });
+
+  test("[primitives.pressable.ring] a bare Pressable draws its ring from its own judgement of the keyboard, and not for the pointer", async ({ page }) => {
+    const target = page.getByTestId("button");
+    await target.click();
+    await target.focus();
+    await expect(target).toBeFocused();
+    await expect(target).not.toHaveAttribute("data-focus-visible", /.*/);
+    await expectStyle(target, { outlineStyle: "none" });
+
+    await page.getByTestId("selects").focus();
+    await tab(page);
+    await expect(target).toBeFocused();
+    await expect(target).toHaveAttribute("data-focus-visible", "true");
+    await expectStyle(target, ring);
+
+    // With the judgement gone the ring goes, though the browser's heuristic still matches: the baseline no longer draws here.
+    const heuristic = await target.evaluate((element) => {
+      element.removeAttribute("data-focus-visible");
+      return element.matches(":focus-visible");
+    });
+    expect(heuristic).toBe(true);
+    await expectStyle(target, { outlineStyle: "none" });
+  });
+
+  test("[primitives.pressable.ring] a part with no judge of its own keeps the baseline, and <Pressable as={part}> takes the ring over", async ({ page }) => {
+    const bare = page.getByTestId("selectable");
+    await page.getByTestId("submit").focus();
+    await tab(page);
+    await expect(bare).toBeFocused();
+    await expect(bare).not.toHaveAttribute("data-focus-visible", /.*/);
+    await expectStyle(bare, ring);
+
+    const pressed = page.getByTestId("pressable-selectable");
+    await tab(page);
+    await expect(pressed).toBeFocused();
+    await expect(pressed).toHaveAttribute("data-focus-visible", "true");
+    await expectStyle(pressed, ring);
+  });
+});
+
+test.describe("what a press lets through to a parent", () => {
+  const TARGETS = ["pressable", "button"];
+
+  // Listeners on document, as an outside-click handler has them: one set in the bubble phase, one in capture.
+  const listen = (page: Page) =>
+    page.evaluate(() => {
+      const heard = { bubble: [] as string[], capture: [] as string[] };
+      for (const name of ["pointerdown", "mousedown", "pointerup", "mouseup", "click", "keydown", "keyup"]) {
+        document.addEventListener(name, () => heard.bubble.push(name));
+        document.addEventListener(name, () => heard.capture.push(name), true);
+      }
+      Object.assign(window, { heard });
+    });
+  const onDocument = (page: Page) => page.evaluate(() => (window as unknown as { heard: { bubble: string[]; capture: string[] } }).heard);
+  const clear = (page: Page) => page.evaluate(() => { const { heard } = window as unknown as { heard: { bubble: string[]; capture: string[] } }; heard.bubble.length = 0; heard.capture.length = 0; });
+  // Sorted where the order is the engine's and not the contract.
+  const set = (names: string[] | string | null) => (typeof names === "string" ? names.split(" ") : names ?? []).filter(Boolean).sort();
+  const parent = (page: Page, id: string) => page.getByTestId(`parent-${id}`);
+  const heardBy = async (page: Page, id: string) => ({ react: set(await parent(page, id).getAttribute("data-log")), captured: set(await parent(page, id).getAttribute("data-captured")) });
+
+  const press = {
+    mouse: (target: Locator) => target.click(),
+    Enter: async (target: Locator) => { await target.focus(); await target.page().keyboard.press("Enter"); },
+    Space: async (target: Locator) => { await target.focus(); await target.page().keyboard.press("Space"); },
+    "element.click()": (target: Locator) => target.evaluate((element: HTMLElement) => element.click()),
+  };
+  const POINTER = ["click", "mousedown", "mouseup", "pointerdown", "pointerup"];
+  const KEYS = ["click", "keydown", "keyup"];
+
+  test.beforeEach(async ({ page }) => {
+    await openHarness(page, "press");
+    await listen(page);
+  });
+
+  test("[primitives.pressable.propagation] a plain button hides nothing, for comparison", async ({ page }) => {
+    await press.mouse(page.getByTestId("from-plain"));
+    expect((await heardBy(page, "plain")).react).toEqual(POINTER);
+    expect(set((await onDocument(page)).bubble)).toEqual(POINTER);
+  });
+
+  for (const id of TARGETS) {
+    test(`[primitives.pressable.propagation] a mouse press on a ${id} lets pointerup and mouseup through; pointerdown, mousedown and click reach only a capture listener`, async ({ page }) => {
+      await press.mouse(page.getByTestId(`from-${id}`));
+      const { react, captured } = await heardBy(page, id);
+      expect(react).toEqual(["mouseup", "pointerup"]);
+      expect(captured).toEqual(["click", "mousedown", "pointerdown"]);
+      const { bubble, capture } = await onDocument(page);
+      expect(set(bubble)).toEqual(["mouseup", "pointerup"]);
+      expect(set(capture)).toEqual(POINTER);
+    });
+
+    for (const key of ["Enter", "Space"] as const) {
+      test(`[primitives.pressable.propagation] ${key} on a ${id} lets click and keyup through; keydown reaches only a capture listener`, async ({ page }) => {
+        await press[key](page.getByTestId(`from-${id}`));
+        expect((await heardBy(page, id)).react).toEqual(["click", "keyup"]);
+        const { bubble, capture } = await onDocument(page);
+        expect(set(bubble)).toEqual(["click", "keyup"]);
+        expect(set(capture)).toEqual(KEYS);
+      });
+    }
+
+    test(`[primitives.pressable.propagation] element.click() on a ${id} stops at the target; only a capture listener hears it`, async ({ page }) => {
+      await press["element.click()"](page.getByTestId(`from-${id}`));
+      const { react, captured } = await heardBy(page, id);
+      expect(react).toEqual([]);
+      expect(captured).toEqual(["click"]);
+      const { bubble, capture } = await onDocument(page);
+      expect(bubble).toEqual([]);
+      expect(capture).toEqual(["click"]);
+    });
+  }
+
+  for (const id of ["up", "end", "press"]) {
+    test(`[primitives.pressable.propagation-way-out] continuePropagation() in onPress${id === "press" ? "" : id[0]!.toUpperCase() + id.slice(1)} lets the click through, from a mouse and from element.click()`, async ({ page }) => {
+      const target = page.getByTestId(`from-${id}`);
+      await press.mouse(target);
+      expect((await heardBy(page, id)).react).toEqual(["click", "mouseup", "pointerup"]);
+      expect(set((await onDocument(page)).bubble)).toEqual(["click", "mouseup", "pointerup"]);
+      await parent(page, id).evaluate((element) => element.removeAttribute("data-log"));
+      await clear(page);
+      await press["element.click()"](target);
+      expect((await heardBy(page, id)).react).toEqual(["click"]);
+      expect((await onDocument(page)).bubble).toEqual(["click"]);
+    });
+  }
+
+  test("[primitives.pressable.propagation-way-out] continuePropagation() in onPressStart lets pointerdown through from a mouse and keydown from a key, and leaves the click and mousedown stopped", async ({ page }) => {
+    const target = page.getByTestId("from-start");
+    await press.mouse(target);
+    expect((await heardBy(page, "start")).react).toEqual(["mouseup", "pointerdown", "pointerup"]);
+    expect(set((await onDocument(page)).bubble)).toEqual(["mouseup", "pointerdown", "pointerup"]);
+    await parent(page, "start").evaluate((element) => element.removeAttribute("data-log"));
+    await press.Enter(target);
+    expect((await heardBy(page, "start")).react).toEqual(KEYS);
+  });
+
+  test("[primitives.pressable.propagation-way-out] continuePropagation() in onPressStart lets the click of element.click() through", async ({ page }) => {
+    await press["element.click()"](page.getByTestId("from-start"));
+    expect((await heardBy(page, "start")).react).toEqual(["click"]);
+    expect((await onDocument(page)).bubble).toEqual(["click"]);
+  });
+
+  test("[primitives.pressable.propagation-way-out] nothing lets mousedown through: a Button that declines at every step still keeps it", async ({ page }) => {
+    await press.mouse(page.getByTestId("from-declines-button"));
+    const { react, captured } = await heardBy(page, "declines-button");
+    expect(react).toEqual(["click", "mouseup", "pointerdown", "pointerup"]);
+    expect(captured).toContain("mousedown");
+    expect(set((await onDocument(page)).capture)).toContain("mousedown");
+    expect(set((await onDocument(page)).bubble)).not.toContain("mousedown");
+  });
+
+  test.describe("by touch", () => {
+    test.use({ hasTouch: true });
+
+    test("[primitives.pressable.propagation] a tap lets through what a mouse press does", async ({ page }) => {
+      await page.getByTestId("from-pressable").tap();
+      expect((await heardBy(page, "pressable")).react).toEqual(["mouseup", "pointerup"]);
+      expect(set((await onDocument(page)).bubble)).toEqual(["mouseup", "pointerup"]);
+      expect(set((await onDocument(page)).capture)).toEqual(POINTER);
+    });
+
+    test("[primitives.pressable.propagation-way-out] continuePropagation() lets a tap's pointerdown through from onPressStart, and its click from onPress", async ({ page }) => {
+      await page.getByTestId("from-start").tap();
+      expect((await heardBy(page, "start")).react).toEqual(["mouseup", "pointerdown", "pointerup"]);
+      await page.getByTestId("from-press").tap();
+      expect((await heardBy(page, "press")).react).toEqual(["click", "mouseup", "pointerup"]);
+    });
   });
 });

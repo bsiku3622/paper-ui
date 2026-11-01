@@ -37,9 +37,9 @@ export const SHAPE_RECIPES = {
     dash: { width: half, height: stroke.emphasis, radius: radius.full },
   },
   radio: { dot: half },
-  // Track = one control wide and the thumb plus a rim tall, so the thumb travels its own width.
+  // Track = two marks wide and the thumb plus a rim tall, so the thumb travels its own width.
   switch: {
-    width: control.height,
+    width: controlSizes((size) => `calc(${selection.size[size]} + ${selection.size[size]})`),
     height: trackHeight,
     thumb,
     inset: rim,

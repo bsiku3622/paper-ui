@@ -48,6 +48,10 @@ describe("the app's layout primitives", () => {
 });
 
 describe("the app's styles", () => {
+  it("spell no :focus-visible of their own: keyboard focus has one judge, and a ring owner draws from it", () => {
+    expect(stylesheets.filter(([, text]) => text.includes(":focus-visible")).map(([file]) => file)).toEqual([]);
+  });
+
   it("select :hover only where a pointer can hover", () => {
     const REACH = 200;
     const ungated = stylesheets.flatMap(([file, text]) =>

@@ -15,5 +15,5 @@ export type DotProps = DotColor & {
 } & Omit<HTMLAttributes<HTMLDivElement>, "children" | "className" | "style">;
 
 export const Dot = ({ status, ink, size = "sm", ...rest }: DotProps) => (
-  <Surface radius="full" className={`${s.size[size]} ${status ? s.status[status] : ink ? s.ink[ink] : ""}`} {...rest} />
+  <Surface radius="full" className={`${s.size[size]} ${status ? s.status[status] : ink ? s.ink[ink] : ""} ${s.forced}`} {...rest} />
 );

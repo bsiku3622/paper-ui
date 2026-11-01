@@ -68,7 +68,7 @@ dp·em·색    CSS 값       var() 참조                  숫자 없는 완성�
 | Color | 원본이 `tokens/palette.ts`의 `OKLCH_PALETTE`이고, `COLOR_VALUES`는 원본이 아니라 역할입니다. | 색의 원본은 좌표 하나이고, 역할은 모드마다 그 좌표를 고르는 선택표(`COLOR_SELECTION`)에서 나옵니다. |
 | Motion | `VALUES`가 없고, 원본(`DURATION` · `EASING` · `LOOP`)이 곧 CSS 문자열입니다. 변수를 굽지 않습니다. | duration·easing은 한 변수로 줄여 쓰기 어려워, stylesheet가 빌드 때 transition 문자열로 조립합니다. 변위는 길이라서 Shape·Layout 변수를 가리킵니다. |
 | Layout | `LAYOUT_VALUES`는 `container`와 `elevation`의 쌓임 순서만 굽습니다. | gap과 gutter는 Shape의 space를 가리키는 별칭이고, breakpoint는 미디어 쿼리가 변수를 읽지 못해 값으로 둡니다. 그림자 기하는 모드별로 따로 굽습니다(`LAYOUT_MODE_VALUES`). |
-| Typography | 강조를 규칙으로 공개합니다. | 글자 안의 강조는 `emphasisRule()`이 Palette의 굵기 이름(`regular` · `medium` · `semibold` · `bold`)으로 고르고, 앱은 Palette를 직접 읽지 않습니다. 장식(밑줄 `underlineOffset`)만 Palette에서 읽습니다. |
+| Typography | 역할과 preset만 공개하고, 강조는 규칙으로 공개합니다. | `tokens.typography`는 `role`과 `preset`이고 Palette는 그 원본이라 공개 트리에 없습니다. CSS 변수 `--pui-typography-palette-*`는 그대로 구워지므로 `sourceVars`로 덮어쓸 수 있습니다. 글자 안의 강조는 `emphasisRule()`이 Palette의 굵기 이름(`regular` · `medium` · `semibold` · `bold`)으로 고르고, 링크의 밑줄 offset은 `linkStyle`이 담습니다. |
 | Motion | 역할만 공개합니다. | duration·easing·loop는 Motion의 원본이라 `tokens.motion`에 없습니다. 컴포넌트는 역할을 고르고 `transition(role, …속성)`으로 조립해, 속성마다 자기 duration을 따로 고르지 않습니다. |
 
 [contract:foundations.class-maps.one-way]: #
@@ -180,7 +180,7 @@ prop이 받는 닫힌 값의 집합을 **축**이라 부릅니다. 축마다 상
 | `JUSTIFY_ITEMS` · `JustifyItem` | `tokens/layout.ts` | Grid의 `justifyItems` — 칸 안의 가로 정렬 |
 | `ORIENTATIONS` · `Orientation` | `tokens/layout.ts` | Divider의 `orientation`, RovingFocus의 `orientation`(`both` 추가) |
 | `MOTION_ROLES` · `MotionRole` | `tokens/motion.ts` | `tokens.motion.role.<role>`, `transition()`의 첫 인자 |
-| `STATE_NAMES` · `StateName` | `tokens/state.ts` | 상태 attribute의 이름(`stateSelector()`의 인자) — active · focused · focusVisible · selected · disabled · invalid · required · dragging · dropTarget. attribute 이름은 이 파일 한 곳에서만 씁니다 |
+| `STATE_NAMES` · `StateName` | `tokens/state.ts` | 상태 attribute의 이름(`stateSelector()`의 인자) — active · focused · focusVisible · focusWithin · selected · disabled · invalid · required · dragging · dropTarget. attribute 이름은 이 파일 한 곳에서만 씁니다 |
 
 새 축은 원본 tree에서 파생하거나 `satisfies`로 양방향 묶고 `vocabulary.ts`에 상수·타입 짝으로 공개합니다. 원본 tree에서 파생한 축은 단계를 더하면 상수와 타입이 함께 늘고, `satisfies`로 묶은 축은 한쪽만 늘면 타입 검사가 막습니다.
 

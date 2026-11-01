@@ -2,7 +2,7 @@
 
 import { globalStyle, style, styleVariants } from "@vanilla-extract/css";
 
-import { SURFACE_FILLS, codeRule, focusRing, tokens } from "@studio-baeks/paper-ui/tokens";
+import { SURFACE_FILLS, codeRule, tokens } from "@studio-baeks/paper-ui/tokens";
 
 import { narrow, navHeight } from "../site/shell.css";
 
@@ -65,7 +65,6 @@ export const surfaceButton = styleVariants(
     ...face,
     selectors: {
       '&[aria-pressed="true"]': { borderColor: tokens.color.border.strong },
-      "&:focus-visible": focusRing,
     },
     "@media": { "(hover: hover)": { selectors: { "&:hover": { borderColor: tokens.color.border.hover } } } },
   }),

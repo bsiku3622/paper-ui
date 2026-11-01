@@ -17,7 +17,10 @@ Motion은 위 네 시스템의 값이 시간에 따라 어떻게 바뀌는지를
 | `loop` | `spin` 900ms linear · `pulse` 1400ms standard |
 <!-- /generated:motion-source -->
 
-`reduced`는 reduced-motion 환경에서 모든 전이에 거는 가장 작은 양수 duration입니다. `linear`는 반복 회전과 등속 진행에, `overshoot`은 떠오르는 overlay가 살짝 튀어 안착할 때 씁니다. `loop`는 전이와 별도인 반복입니다.
+`reduced`는 reduced-motion 환경에서 모든 전이에 거는 가장 작은 양수 duration입니다. `linear`는 반복 회전과 등속 진행에, `overshoot`은 떠오르는 overlay가 안착할 때 씁니다. `loop`는 전이와 별도인 반복입니다.
+
+[contract:foundations.motion.easing-settles]: #
+`overshoot`은 이름과 달리 목표를 지나치지 않습니다. 곡선의 y 값이 1을 넘지 않아, 빠르게 출발해 끝에서 부드럽게 멈춥니다.
 
 이 원본은 Motion의 파일 안에서만 읽습니다. 컴포넌트와 앱은 duration · easing · loop에 닿지 않고, 아래 역할을 고릅니다.
 
@@ -33,7 +36,7 @@ Motion은 위 네 시스템의 값이 시간에 따라 어떻게 바뀌는지를
 | 역할 | duration | easing | 변위 | 상황 | 쓰는 곳 |
 | --- | --- | --- | --- | --- | --- |
 | `press` | fast | standard | `stroke.border` 만큼 아래로 | 버튼을 누르는 순간 | Button · IconButton |
-| `hover` | fast | standard | — | 포인터가 지나갈 때 바뀌는 hover tint·테두리·글자색 | Button · IconButton · Field · Surface |
+| `hover` | fast | standard | — | 포인터가 지나갈 때 바뀌는 hover tint·테두리·글자색 | Button · IconButton · Field · Select · Textarea · Surface |
 | `state` | base | standard | — | 켜짐·선택처럼 머무는 상태, 면·배경의 전이, 스위치 손잡이 | Button · IconButton · Field · Select · Textarea · Checkbox · Radio · Switch |
 | `enter` | moderate | overshoot | `gap.xs` · scale 0.99 | 떠오르는 overlay | Floating |
 | `exit` | fast | accelerate | — | 사라지는 overlay | Floating |
@@ -41,7 +44,7 @@ Motion은 위 네 시스템의 값이 시간에 따라 어떻게 바뀌는지를
 <!-- /generated:motion-roles -->
 
 [contract:foundations.motion.consumers]: #
-"쓰는 곳"에 적힌 Atom은 실제로 그 역할로 전이합니다. hover 반응에는 `hover`를, 켜진 채 머무는 상태와 면의 전이에는 `state`를 고릅니다. 한 요소가 둘을 함께 가질 수 있어서, Button은 hover tint(`--pui-state-tint`)와 테두리를 `hover`로, 배경색과 글자색을 `state`로, 눌림을 `press`로 전이합니다.
+"쓰는 곳"에 적힌 Atom은 실제로 그 역할로 전이합니다. hover 반응에는 `hover`를, 켜진 채 머무는 상태와 면의 전이에는 `state`를 고릅니다. 한 요소가 둘을 함께 가질 수 있어서, Button은 hover tint(`--pui-state-tint`)와 테두리를 `hover`로, 배경색과 글자색을 `state`로, 눌림을 `press`로 전이합니다. 입력의 틀(Field · Select · Textarea)도 hover에 오르는 테두리를 `hover`로, 배경을 `state`로 전이합니다.
 
 [contract:foundations.motion.no-focus-role]: #
 포커스에는 역할이 없습니다. 포커스 링은 키보드가 닿는 자리를 알리는 신호라 지연 없이 나타나야 하므로, 아무것도 포커스에서 전이하지 않습니다.

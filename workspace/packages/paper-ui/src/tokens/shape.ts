@@ -43,6 +43,8 @@ export const SHAPE_SOURCE = {
     // A button's label defines its box, so it sits wider than a typed value.
     buttonInsetRatio: 1.4,
   },
+  // A selection mark stands beside a line of text, so its size doesn't follow how much room a control takes.
+  selection: { size: { sm: 15, md: 16, lg: 18 } satisfies Record<ControlSize, number> },
   // Icon artboards are named after the Text role they stand beside.
   icon: { label: 14, caption: 16, body: 18, subheading: 20 } satisfies Partial<Record<TextVariant, number>>,
   dimension: {
@@ -90,6 +92,7 @@ export const SHAPE_VALUES = {
   focus: lengths(s.focus, px),
   target: lengths(s.target, px),
   control: { height: lengths(s.control.height), buttonInsetRatio: String(s.control.buttonInsetRatio) },
+  selection: { size: lengths(s.selection.size) },
   icon: lengths(s.icon),
   dimension: { width: lengths(s.dimension.width), height: lengths(s.dimension.height) },
   measure: lengths(s.measure),
@@ -110,12 +113,11 @@ export const ANATOMY = source.anatomy;
 
 const height = source.control.height;
 
-// A typed value gets the same room on every side of its line box.
+// Measured from the glyph line: the same room above, below and beside the glyphs. The input's own line box
+// (inputLeading) is taller, for the caret, and the inset does not read it.
 const inputInset = controlSizes((size) => `calc((${height[size]} - ${TYPOGRAPHY.preset.field[size].leading}) / 2)`);
 const buttonInset = controlSizes((size) =>
   `round(nearest, calc((${height[size]} - ${TYPOGRAPHY.preset.button.medium[size].leading}) / 2 * ${source.control.buttonInsetRatio}), 1px)`);
-// Selection marks are half a control tall, so a switch track spans one control height.
-const selection = controlSizes((size) => `calc(${height[size]} / 2)`);
 
 export const SHAPE = {
   inset: SPACE,
@@ -129,7 +131,7 @@ export const SHAPE = {
     gap: SPACE.sm,
     icon: controlSizes((size) => source.icon[CONTROL_ICON[size]]),
   },
-  selection: { size: selection },
+  selection: source.selection,
   icon: { size: source.icon },
   dimension: source.dimension,
   measure: source.measure,

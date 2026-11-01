@@ -3,12 +3,12 @@
 // says the same about invalid, about where its attributes go and about the ring; the selection marks (Checkbox, Radio,
 // Switch) are their own frame and say the same about invalid.
 
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { createRef, type ReactElement } from "react";
-import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { createRef, type FocusEvent, type ReactElement } from "react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { INVENTORY } from "../inventory";
 import { FormField } from "../primitives/field/FormField";
@@ -29,9 +29,31 @@ import { Spinner } from "./Spinner";
 import { Switch } from "./Switch";
 import { Textarea } from "./Textarea";
 
+// What ran, in order: a caller's handler writes here, and so does the focus judge an input control stands on, through this wrap.
+const ran = vi.hoisted(() => ({ log: [] as string[] }));
+vi.mock("../primitives/a11y/focus", async (importOriginal) => {
+  const original = await importOriginal<typeof import("../primitives/a11y/focus")>();
+  return {
+    ...original,
+    useFocusRing: (options?: Parameters<typeof original.useFocusRing>[0]) => {
+      const ring = original.useFocusRing(options);
+      const { onFocus, onBlur } = ring.focusProps;
+      return {
+        ...ring,
+        focusProps: {
+          ...ring.focusProps,
+          onFocus: (event: FocusEvent<HTMLElement>) => { ran.log.push("judge:focus"); onFocus?.(event); },
+          onBlur: (event: FocusEvent<HTMLElement>) => { ran.log.push("judge:blur"); onBlur?.(event); },
+        },
+      };
+    },
+  };
+});
+
 afterEach(cleanup);
 
-const read = (path: string) => readFileSync(join(dirname(fileURLToPath(import.meta.url)), path), "utf8");
+const here = dirname(fileURLToPath(import.meta.url));
+const read = (path: string) => readFileSync(join(here, path), "utf8");
 
 type Control = { name: string; control: (props: { status?: "error" | "warning"; "aria-invalid"?: boolean }) => ReactElement; frame: (control: HTMLElement) => HTMLElement };
 const own = (control: HTMLElement) => control;
@@ -100,6 +122,52 @@ describe("the input family", () => {
       }
     });
   }
+});
+
+describe("a caller's handlers on an input control", () => {
+  type Handlers = { onFocus?: (event: FocusEvent<HTMLElement>) => void; onBlur?: (event: FocusEvent<HTMLElement>) => void };
+  const CONTROLS: Array<[name: string, control: (handlers: Handlers) => ReactElement]> = [
+    ["Field", (handlers) => <Field aria-label="control" {...handlers} />],
+    ["Textarea", (handlers) => <Textarea aria-label="control" {...handlers} />],
+    ["Select", (handlers) => <Select aria-label="control" {...handlers}><Select.Option value="a">A</Select.Option></Select>],
+    ["Checkbox", (handlers) => <Checkbox aria-label="control" {...handlers} />],
+    ["Radio", (handlers) => <Radio aria-label="control" {...handlers} />],
+    ["Switch", (handlers) => <Switch aria-label="control" {...handlers} />],
+    ["Link", (handlers) => <Link href="#" aria-label="control" {...handlers} />],
+  ];
+  const focusAndLeave = () => {
+    const control = screen.getByLabelText("control");
+    act(() => control.focus());
+    act(() => control.blur());
+  };
+
+  for (const [name, control] of CONTROLS) {
+    it(`[primitives.composition.compose-handlers] ${name} runs the caller's onFocus and onBlur before its own focus judge`, () => {
+      ran.log.length = 0;
+      render(control({ onFocus: () => ran.log.push("caller:focus"), onBlur: () => ran.log.push("caller:blur") }));
+      focusAndLeave();
+      expect(ran.log).toEqual(["caller:focus", "judge:focus", "caller:blur", "judge:blur"]);
+    });
+
+    it(`[primitives.composition.compose-handlers] ${name}'s focus judge runs even when the caller prevented the default: focus has already moved`, () => {
+      ran.log.length = 0;
+      render(control({ onFocus: (event) => event.preventDefault(), onBlur: (event) => event.preventDefault() }));
+      focusAndLeave();
+      expect(ran.log).toEqual(["judge:focus", "judge:blur"]);
+    });
+  }
+
+  it("[primitives.composition.compose-handlers] Field runs the caller's onChange first, so what it tracks of its value is what the caller left", () => {
+    const type = (element: ReactElement) => {
+      const view = render(element);
+      fireEvent.change(screen.getByLabelText("control"), { target: { value: "x" } });
+      const shown = screen.queryByRole("button", { name: "Clear" }) !== null;
+      view.unmount();
+      return shown;
+    };
+    expect(type(<Field aria-label="control" clearable />)).toBe(true);
+    expect(type(<Field aria-label="control" clearable onChange={(event) => { event.currentTarget.value = ""; }} />)).toBe(false);
+  });
 });
 
 describe("the input family's stylesheets", () => {
@@ -183,6 +251,13 @@ describe("every Atom", () => {
       };
       expect(classes(plain), name).toBe(classes(explicit));
     }
+  });
+
+  it("[foundations.shape.control-geometry] builds no size ladder in its stylesheet: the sizes come from controlGeometry", () => {
+    const sheets = (dir: string) => readdirSync(join(here, dir)).filter((file) => file.endsWith(".css.ts")).map((file) => join(dir, file));
+    const files = [...sheets("."), ...sheets("recipes")];
+    expect(files.length).toBeGreaterThan(0);
+    for (const file of files) expect(read(file), file).not.toMatch(/CONTROL_SIZES\s*\.\s*map/);
   });
 
   it("[atoms.contract.stands-on] stands on the Primitives its row names, and takes its colour from the paint tier", () => {

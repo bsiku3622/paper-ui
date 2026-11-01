@@ -2,5 +2,5 @@
 // it. The Playground reads it as @paper-ui/inspect/typography and shows it; nothing in the package
 // imports this directory.
 
-export { CODE_SPEC, PRESET_SPEC, ROLE_SPEC, TEXT_INK, TYPOGRAPHY_SOURCE, TYPOGRAPHY_VALUES } from "../typography";
+export { CODE_SPEC, PRESET_SPEC, ROLE_SPEC, TEXT_INK, TYPOGRAPHY, TYPOGRAPHY_SOURCE, TYPOGRAPHY_VALUES } from "../typography";
 export type { TextVariant } from "../typography";

@@ -215,6 +215,47 @@ describe("roving registry and direction", () => {
     error.mockRestore();
   });
 
+  // Items that keep their identity across a render, so one leaving is not another changing its value.
+  type Keyed = { key: string; value: string; disabled?: boolean };
+  const Keyed = ({ items }: { items: Keyed[] }) => <RovingFocus>{items.map(({ key, ...item }) => <RovingFocus.Item key={key} {...item}>{key}</RovingFocus.Item>)}</RovingFocus>;
+
+  it("[primitives.roving-focus.registry] gives the value to the refused item when the registered one leaves, with the Tab stop and the keys, and tells no second time", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const view = render(<Keyed items={[{ key: "first", value: "a" }, { key: "other", value: "b" }, { key: "second", value: "a" }]} />);
+    expect(error).toHaveBeenCalledTimes(1);
+    expect(screen.getByText("second").tabIndex).toBe(-1);
+    view.rerender(<Keyed items={[{ key: "other", value: "b" }, { key: "second", value: "a" }]} />);
+    // b comes first now, so the group's entry point is b, and the survivor is reachable by the keys.
+    expect(screen.getAllByRole("button").filter((item) => item.tabIndex === 0)).toHaveLength(1);
+    act(() => screen.getByText("other").focus());
+    fireEvent.keyDown(screen.getByText("other"), { key: "ArrowRight" });
+    expect(document.activeElement).toBe(screen.getByText("second"));
+    expect(screen.getByText("second").tabIndex).toBe(0);
+    expect(error).toHaveBeenCalledTimes(1);
+    error.mockRestore();
+  });
+
+  it("[primitives.roving-focus.registry] keeps a group's one Tab stop when its only registered item with the value leaves", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const view = render(<Keyed items={[{ key: "first", value: "a" }, { key: "second", value: "a" }]} />);
+    expect(screen.getAllByRole("button").map((item) => item.tabIndex)).toEqual([0, -1]);
+    view.rerender(<Keyed items={[{ key: "second", value: "a" }]} />);
+    expect(screen.getByText("second").tabIndex).toBe(0);
+    error.mockRestore();
+  });
+
+  it("[primitives.roving-focus.registry] does not hand the value over when the registered item only changes: its disabled moves, and it keeps its place", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const view = render(<Keyed items={[{ key: "first", value: "a" }, { key: "other", value: "b" }, { key: "second", value: "a" }]} />);
+    view.rerender(<Keyed items={[{ key: "first", value: "a", disabled: true }, { key: "other", value: "b" }, { key: "second", value: "a" }]} />);
+    // The disabled first still holds the value, so the second stays refused and the stop moves on to b.
+    expect(screen.getAllByRole("button").map((item) => item.tabIndex)).toEqual([-1, 0, -1]);
+    view.rerender(<Keyed items={[{ key: "first", value: "a" }, { key: "other", value: "b" }, { key: "second", value: "a" }]} />);
+    expect(screen.getAllByRole("button").map((item) => item.tabIndex)).toEqual([0, -1, -1]);
+    expect(error).toHaveBeenCalledTimes(1);
+    error.mockRestore();
+  });
+
   it("[primitives.roving-focus.registry] lists the values in document order for the group built on it, disabled ones included", () => {
     function Values() { return <output data-testid="values">{String(useRovingValues())}</output>; }
     render(<RovingFocus><Values /><RovingFocus.Item value="b">B</RovingFocus.Item><RovingFocus.Item value="a" disabled>A</RovingFocus.Item></RovingFocus>);
@@ -508,21 +549,26 @@ describe("hidden content and focus within", () => {
     expect(input.hasAttribute("data-focused")).toBe(false);
   });
 
-  it("[primitives.focus-ring.states] focus-within stays active when focus moves between descendants", () => {
+  it("[primitives.focus-ring.states] [primitives.hooks.attribute-table] [primitives.state.emitters] focus-within stays active when focus moves between descendants, and its props say so with data-focus-within", () => {
     const change = vi.fn();
     function FocusGroup() {
       const { focusWithinProps, isFocusWithin } = useFocusWithin({ onFocusWithinChange: change });
       return <div {...focusWithinProps} data-testid="focus-group" data-within={isFocusWithin}><button type="button">First</button><button type="button">Second</button></div>;
     }
     render(<FocusGroup />);
+    const group = screen.getByTestId("focus-group");
     const first = screen.getByRole("button", { name: "First" });
     const second = screen.getByRole("button", { name: "Second" });
+    expect(group.hasAttribute("data-focus-within")).toBe(false);
     act(() => first.focus());
+    expect(group.getAttribute("data-focus-within")).toBe("true");
     act(() => second.focus());
-    expect(screen.getByTestId("focus-group").getAttribute("data-within")).toBe("true");
+    expect(group.getAttribute("data-within")).toBe("true");
+    expect(group.getAttribute("data-focus-within")).toBe("true");
     expect(change.mock.calls.map(([value]) => value)).toEqual([true]);
     act(() => second.blur());
     expect(change.mock.calls.map(([value]) => value)).toEqual([true, false]);
+    expect(group.hasAttribute("data-focus-within")).toBe(false);
   });
 });
 
@@ -547,6 +593,72 @@ describe("portal", () => {
     render(<Portal container={container}><span>Inside</span></Portal>);
     expect(container.contains(screen.getByText("Inside"))).toBe(true);
     container.remove();
+  });
+});
+
+describe("a portal's direction", () => {
+  const items = <RovingFocus><RovingFocus.Item value="a">A</RovingFocus.Item><RovingFocus.Item value="b">B</RovingFocus.Item></RovingFocus>;
+  const inSubtree = (dir: string) => {
+    const element = document.createElement("div");
+    element.dir = dir;
+    const button = document.createElement("button");
+    element.append(button);
+    document.body.append(element);
+    return button;
+  };
+  const rootOf = (name: string) => screen.getByText(name).closest(`.${portalRoot}`) as HTMLElement;
+  // Whether a key moves the focus from the first item to the second, where the Portal's content reads its direction.
+  const moves = (key: string) => {
+    const a = screen.getByText("A");
+    act(() => a.focus());
+    fireEvent.keyDown(a, { key });
+    return document.activeElement === screen.getByText("B");
+  };
+
+  it("[primitives.portal.direction] writes the direction of an opener in a right-to-left subtree on its root, and the keys inside follow it", () => {
+    const opener = inSubtree("rtl");
+    render(<Portal opener={() => opener}>{items}</Portal>);
+    expect(rootOf("A").getAttribute("dir")).toBe("rtl");
+    expect(moves("ArrowRight")).toBe(false);
+    expect(moves("ArrowLeft")).toBe(true);
+    opener.parentElement!.remove();
+  });
+
+  it("[primitives.portal.direction] takes the focused element as the opener when none is named, as the carry does", () => {
+    const focused = inSubtree("rtl");
+    focused.focus();
+    render(<Portal><span>Inside</span></Portal>);
+    expect(rootOf("Inside").getAttribute("dir")).toBe("rtl");
+    focused.parentElement!.remove();
+  });
+
+  it("[primitives.portal.direction] writes a left-to-right opener's direction under a right-to-left page", () => {
+    document.documentElement.dir = "rtl";
+    const opener = inSubtree("ltr");
+    render(<Portal opener={() => opener}>{items}</Portal>);
+    expect(rootOf("A").getAttribute("dir")).toBe("ltr");
+    expect(moves("ArrowRight")).toBe(true);
+    opener.parentElement!.remove();
+  });
+
+  it("[primitives.portal.direction] writes no dir where the opener reads the same as the container, so the root keeps following the page", () => {
+    const view = render(<Portal><span>Page</span></Portal>);
+    expect(rootOf("Page").hasAttribute("dir")).toBe(false);
+    view.unmount();
+    const opener = inSubtree("rtl");
+    const container = document.createElement("div");
+    container.dir = "rtl";
+    document.body.append(container);
+    render(<Portal opener={() => opener} container={container}><span>Same</span></Portal>);
+    expect(rootOf("Same").hasAttribute("dir")).toBe(false);
+    opener.parentElement!.remove();
+    container.remove();
+  });
+
+  it("[primitives.portal.direction] [primitives.floating.portal] gives a Floating opened in a right-to-left subtree the Trigger's direction", () => {
+    render(<div dir="rtl"><Floating defaultOpen><Floating.Trigger>Open</Floating.Trigger><Floating.Content aria-label="Panel">{items}</Floating.Content></Floating></div>);
+    expect(rootOf("A").getAttribute("dir")).toBe("rtl");
+    expect(moves("ArrowLeft")).toBe(true);
   });
 });
 

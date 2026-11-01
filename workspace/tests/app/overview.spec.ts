@@ -1,6 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { SHAPE_SOURCE } from "../../packages/paper-ui/src/tokens/shape";
+import { TYPOGRAPHY } from "../../packages/paper-ui/src/tokens/typography";
 import { tokens, CONTROL_SIZES, STATUSES, SURFACE_FILLS, TEXT_VARIANTS, VARIANTS, type ControlSize, type TextVariant } from "../../packages/paper-ui/src/tokens";
 import { pageErrors } from "../support/console";
 import { expectStyle, profile, type Style } from "../support/style";
@@ -44,7 +45,7 @@ test("the Type scale shows each text role as its role", async ({ page }) => {
   await open(page);
   for (const variant of TEXT_VARIANTS) await expectStyle(page.getByTestId(`text-${variant}`), role(variant));
   const { fontWeight, lineHeight } = role("body");
-  await expectStyle(page.getByTestId("text-mono"), { fontWeight, lineHeight, fontFamily: tokens.typography.palette.family.mono });
+  await expectStyle(page.getByTestId("text-mono"), { fontWeight, lineHeight, fontFamily: TYPOGRAPHY.palette.family.mono });
 });
 
 test("the Color section shows each surface and each accent's solid and ink", async ({ page }) => {

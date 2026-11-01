@@ -14,7 +14,7 @@ import * as vocabulary from "./vocabulary";
 // Composition functions: they take a name or a role and return a declaration, a class-free style fragment or a string.
 const FUNCTIONS = [
   "elevationStack", "elevationCast", "elevationStyle", "accentProfile", "controlSizes", "strokeRing", "typographyRule", "monoRule", "codeRule", "presetRule", "emphasisRule",
-  "stateSelector", "stateAttributes", "transition", "isStylesheetLoaded",
+  "stateSelector", "stateAttributes", "transition", "isStylesheetLoaded", "unknownSourceVariables",
 ];
 
 // Names the package spells: attributes, selectors, queries, the system colours a component may ask for.

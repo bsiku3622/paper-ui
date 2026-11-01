@@ -229,6 +229,72 @@ test("[foundations.theme.swap-instant] a toggle leaves no CSS transition running
   expect(await page.evaluate(() => document.getAnimations().filter((animation) => animation instanceof CSSTransition).length)).toBe(0);
 });
 
+// Counts every transition the page starts from here on, so one that starts and ends between two looks is still seen.
+const watchTransitions = (page: Page) =>
+  page.evaluate(() => {
+    Object.assign(window, { transitionsStarted: 0 });
+    document.addEventListener("transitionrun", () => Object.assign(window, { transitionsStarted: (window as unknown as { transitionsStarted: number }).transitionsStarted + 1 }), true);
+  });
+// The count once the frames that follow a write have passed. Nothing here reads a style first, or the read would start them.
+const transitionsStarted = (page: Page) =>
+  page.evaluate(async () => {
+    for (let frame = 0; frame < 4; frame += 1) await new Promise((resolve) => requestAnimationFrame(resolve));
+    return (window as unknown as { transitionsStarted: number }).transitionsStarted;
+  });
+const writeRoot = (page: Page, mode: "light" | "dark") => page.evaluate(([name, value]) => document.documentElement.setAttribute(name!, value!), [THEME_ATTRIBUTE, mode]);
+
+test("[foundations.theme.swap-instant] [foundations.theme.external-writer] another theme manager's write on <html> is held too: with a Provider on the page no control transitions", async ({ page }) => {
+  await openSite(page, "light", "light", "/playground/switch");
+  await expect(page.getByRole("switch").first()).toBeVisible();
+  await expect(page.locator("html")).toHaveAttribute(THEME_ATTRIBUTE, "light");
+  await watchTransitions(page);
+  await writeRoot(page, "dark");
+  expect(await transitionsStarted(page)).toBe(0);
+  await expect(page.locator("html")).toHaveAttribute(THEME_ATTRIBUTE, "dark");
+  await expect(page.locator("html")).not.toHaveAttribute(THEME_SWAP_ATTRIBUTE);
+  await expect(page.locator("body")).toHaveCSS("background-color", rgb(dark.bg.canvas));
+});
+
+test("[foundations.theme.swap-instant] an OS flip is held with a Provider following it", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "light" });
+  await page.addInitScript(([key]) => window.localStorage.setItem(key!, "system"), [THEME_STORAGE_KEY]);
+  await page.goto("/playground/switch");
+  await expect(page.getByRole("switch").first()).toBeVisible();
+  await watchTransitions(page);
+  await page.emulateMedia({ colorScheme: "dark" });
+  expect(await transitionsStarted(page)).toBe(0);
+  await expect(page.locator("html")).toHaveAttribute(THEME_ATTRIBUTE, "dark");
+});
+
+test("[foundations.theme.swap-instant] with no Provider, a component that reads the theme is enough to hold a write", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "light" });
+  await openHarness(page, "geometry");
+  await expect(page.locator("html")).not.toHaveAttribute(THEME_ATTRIBUTE);
+  await watchTransitions(page);
+  await writeRoot(page, "dark");
+  expect(await transitionsStarted(page)).toBe(0);
+  await expect(page.locator("body")).toHaveCSS("background-color", rgb(dark.bg.canvas));
+});
+
+test("[foundations.theme.swap-limit] with no Provider an OS flip is not held, even with a component reading the theme: the stylesheet changes first", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "light" });
+  await openHarness(page, "geometry");
+  await expect(page.locator("html")).not.toHaveAttribute(THEME_ATTRIBUTE);
+  await watchTransitions(page);
+  await page.emulateMedia({ colorScheme: "dark" });
+  expect(await transitionsStarted(page)).toBeGreaterThan(0);
+  await expect(page.locator("body")).toHaveCSS("background-color", rgb(dark.bg.canvas));
+});
+
+test("[foundations.theme.swap-limit] with nothing on the page reading the theme, a write is not held either: the controls run their own transitions", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "light" });
+  await openHarness(page, "marks");
+  await watchTransitions(page);
+  await writeRoot(page, "dark");
+  expect(await transitionsStarted(page)).toBeGreaterThan(0);
+  await expect(page.locator("html")).not.toHaveAttribute(THEME_SWAP_ATTRIBUTE);
+});
+
 // Without the app's JavaScript: only the boot script in <head> has run.
 const bootOnly = async (page: Page, colorScheme: "light" | "dark", stored?: string) => {
   await page.emulateMedia({ colorScheme });

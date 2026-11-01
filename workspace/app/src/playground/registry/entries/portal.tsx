@@ -26,7 +26,7 @@ const PortalExample = () => {
 
 export default defineSpec({
   name: "Portal",
-  blurb: "자식을 container(기본은 document.body)로 옮깁니다. 하나뿐인 root(display contents)가 열린 자리의 테마를 다시 걸어, 옮겨진 내용도 열린 자리의 모드로 그려지고, 열린 자리가 덮어쓴 Shape·Layout·Typography 원본도 함께 옮겨집니다. Floating의 panel과 backdrop이 이 길로 옮겨집니다.",
+  blurb: "자식을 container(기본은 document.body)로 옮깁니다. 하나뿐인 root(display contents)가 열린 자리의 테마를 다시 걸어, 옮겨진 내용도 열린 자리의 모드로 그려지고, 열린 자리의 방향과 덮어쓴 Shape·Layout·Typography 원본도 함께 옮겨집니다. Floating의 panel과 backdrop이 이 길로 옮겨집니다.",
   controls: [],
   defaults: {},
   parts: {

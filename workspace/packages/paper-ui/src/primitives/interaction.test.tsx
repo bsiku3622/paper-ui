@@ -648,6 +648,41 @@ describe("selectable groups", () => {
     error.mockRestore();
   });
 
+  it("[primitives.roving-focus.registry] [primitives.selectable-group.items] keeps a duplicate's selection when the registered item leaves: the survivor takes the value, stays selected and holds the Tab stop, and nothing tells of a change", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const change = vi.fn();
+    const group = (first: boolean) => <SelectableGroup defaultSelectedValues={["a"]} onSelectedValuesChange={change}>
+      {first && <SelectableGroup.Item key="first" value="a">first</SelectableGroup.Item>}<SelectableGroup.Item key="second" value="a">second</SelectableGroup.Item><SelectableGroup.Item key="other" value="b">B</SelectableGroup.Item>
+    </SelectableGroup>;
+    const view = render(group(true));
+    expect(screen.getByText("first").tabIndex).toBe(0);
+    expect(screen.getByText("second").tabIndex).toBe(-1);
+    view.rerender(group(false));
+    const second = screen.getByText("second");
+    expect(second.getAttribute("aria-pressed")).toBe("true");
+    expect(second.tabIndex).toBe(0);
+    expect(change).not.toHaveBeenCalled();
+    error.mockRestore();
+  });
+
+  it("[primitives.roving-focus.registry] [primitives.selectable-group.items] keeps a duplicate's selection when the removal happens below the group, where the root does not render with it", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const change = vi.fn();
+    let drop = () => {};
+    const First = () => {
+      const [shown, setShown] = useState(true);
+      drop = () => setShown(false);
+      return shown ? <SelectableGroup.Item value="a">first</SelectableGroup.Item> : null;
+    };
+    render(<SelectableGroup defaultSelectedValues={["a"]} onSelectedValuesChange={change}><First /><SelectableGroup.Item value="a">second</SelectableGroup.Item></SelectableGroup>);
+    act(() => drop());
+    const second = screen.getByText("second");
+    expect(second.getAttribute("aria-pressed")).toBe("true");
+    expect(second.tabIndex).toBe(0);
+    expect(change).not.toHaveBeenCalled();
+    error.mockRestore();
+  });
+
   it("[primitives.selectable-group.state] controlled groups request a change without taking ownership", () => {
     const change = vi.fn();
     render(<SelectableGroup selectedValues={["a"]} onSelectedValuesChange={change}><SelectableGroup.Item value="a">A</SelectableGroup.Item><SelectableGroup.Item value="b">B</SelectableGroup.Item></SelectableGroup>);
@@ -891,6 +926,26 @@ describe("floating options", () => {
   it.each(["popover", "modal"] as const)("[primitives.floating.dismiss] keyboardDismissDisabled keeps Escape from closing the %s, and without it Escape closes", (presentation) => {
     expect(closes({}, presentation, escape)).toHaveBeenCalledWith(false);
     expect(closes({ keyboardDismissDisabled: true }, presentation, escape)).not.toHaveBeenCalled();
+  });
+
+  it("[primitives.floating.dismiss] [primitives.floating.content-options] hears Escape only with focus inside the panel: a popover opened without taking focus stays open for an Escape on the page", () => {
+    const change = vi.fn();
+    render(<>
+      <button>Outside</button>
+      <Floating open onOpenChange={change}>
+        <Floating.Trigger>Anchor</Floating.Trigger>
+        <Floating.Content aria-label="Panel" autoFocus={false}><button>Inside</button></Floating.Content>
+      </Floating>
+    </>);
+    const outside = screen.getByText("Outside");
+    act(() => outside.focus());
+    fireEvent.keyDown(outside, { key: "Escape" });
+    fireEvent.keyDown(document.body, { key: "Escape" });
+    expect(change).not.toHaveBeenCalled();
+    const inside = screen.getByText("Inside");
+    act(() => inside.focus());
+    fireEvent.keyDown(inside, { key: "Escape" });
+    expect(change).toHaveBeenCalledWith(false);
   });
 
   it("[primitives.floating.dismiss] dismissable and Escape are independent: a popover that ignores outside presses still closes on Escape", () => {

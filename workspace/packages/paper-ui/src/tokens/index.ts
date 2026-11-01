@@ -19,7 +19,8 @@ import { LAYOUT } from "./layout";
 export const tokens = {
   // opacity 는 역할 옆에 둔다 — palette token 이 아니고 어떤 모드도 바꾸지 않는다.
   color: { ...COLOR, opacity: buildVarTree(OPACITY_VALUES, ["color", "opacity"]) },
-  typography: TYPOGRAPHY,
+  // Typography 는 역할과 preset 만 노출한다 — Palette 는 토큰 층 안에 둔다 (typography.ts · inspect/typography.ts).
+  typography: { role: TYPOGRAPHY.role, preset: TYPOGRAPHY.preset },
   // Shape은 요소 하나의 형태, Layout은 요소 사이의 관계. 둘 다 역할만 노출한다 (shape.ts · layout.ts).
   shape: SHAPE,
   layout: LAYOUT,
@@ -35,6 +36,7 @@ export * from "./vocabulary";
 
 export { THEME_ATTRIBUTE, THEME_SWAP_ATTRIBUTE, COLOR_MODE_QUERY } from "./color-modes";
 export { SOURCE_VARIABLES } from "./variables";
+export { unknownSourceVariables } from "./overrides";
 
 export { ELEVATION_NEST_LIMIT } from "./layout";
 export { ELEVATION, elevationStack, elevationCast, elevationStyle } from "./elevation-recipes";

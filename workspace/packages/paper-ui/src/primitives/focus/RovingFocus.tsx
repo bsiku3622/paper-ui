@@ -12,6 +12,15 @@ const inDocumentOrder = (a: Entry, b: Entry) => a.element === b.element ? 0 : a.
 // Every item that is still in the document, in document order; the ones a key can land on are the enabled among them.
 const connected = (entries: readonly Entry[]) => entries.filter((entry) => entry.element.isConnected).sort(inDocumentOrder);
 const enabled = (entries: readonly Entry[]) => connected(entries).filter((entry) => !entry.disabled);
+// The one item per value the registry holds, of the items in the order they arrived: the first that is on the page.
+const registered = (claims: readonly Entry[]) => {
+  const held = new Set<string>();
+  return claims.filter((entry) => {
+    if (held.has(entry.value)) return false;
+    if (entry.element.isConnected) held.add(entry.value);
+    return true;
+  });
+};
 
 export type RovingFocusState = { currentValue: string | undefined; isDisabled: boolean };
 export type RovingFocusProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "dir"> & {
@@ -30,7 +39,7 @@ type Context = {
   disabled: boolean;
   /** Every registered item, or undefined until the first one registers. */
   entries: readonly Entry[] | undefined;
-  /** The registry is the only list of items; a second item with a value already registered is refused. */
+  /** The registry is the only list of items; a second item with a value already registered is refused until the first leaves. */
   register: (entry: Entry) => () => void;
   activate: (value: string) => void;
   navigate: (event: KeyboardEvent<HTMLElement>, value: string) => void;
@@ -52,7 +61,11 @@ export const RovingFocusRoot = forwardRef<HTMLDivElement, RovingFocusProps>(func
   const root = useRef<HTMLDivElement>(null);
   const rootRef = useMergedRef(root, forwardedRef);
   const [entries, setEntries] = useState<readonly Entry[] | undefined>();
-  const registry = useRef<Entry[]>([]);
+  const registry = useRef<readonly Entry[]>([]);
+  // Every item that asked, the refused ones too, so a refused one takes over when the one it lost to leaves.
+  const claims = useRef<readonly Entry[]>([]);
+  // The order elements first arrived in: an item that registers again because its disabled changed keeps its place, and its value.
+  const arrival = useRef({ next: 0, of: new WeakMap<HTMLElement, number>() });
   const reported = useRef(new Set<string>());
   const [requested, setRequested] = useControllableState<string | null | undefined>({
     value: currentValue,
@@ -69,21 +82,26 @@ export const RovingFocusRoot = forwardRef<HTMLDivElement, RovingFocusProps>(func
     setRequested(value);
   };
   const register = useCallback((entry: Entry) => {
-    if (registry.current.some((item) => item.value === entry.value && item.element.isConnected)) {
-      if (process.env.NODE_ENV !== "production" && !reported.current.has(entry.value)) {
-        reported.current.add(entry.value);
-        console.error(paperError(`RovingFocus value '${entry.value}' is registered twice.`).message);
-      }
-      return () => {};
+    const { of: places } = arrival.current;
+    if (!places.has(entry.element)) places.set(entry.element, arrival.current.next++);
+    const settle = () => {
+      const next = registered(claims.current);
+      if (next.length === registry.current.length && next.every((item, index) => item === registry.current[index])) return;
+      registry.current = next;
+      setEntries(next);
+    };
+    claims.current = [...claims.current, entry].sort((a, b) => places.get(a.element)! - places.get(b.element)!);
+    settle();
+    if (!registry.current.includes(entry) && process.env.NODE_ENV !== "production" && !reported.current.has(entry.value)) {
+      reported.current.add(entry.value);
+      console.error(paperError(`RovingFocus value '${entry.value}' is registered twice.`).message);
     }
-    registry.current = [...registry.current, entry];
-    setEntries(registry.current);
     return () => {
-      if (focused.current?.value === entry.value) {
+      if (focused.current?.value === entry.value && registry.current.includes(entry)) {
         restore.current = focused.current.index;
       }
-      registry.current = registry.current.filter((item) => item !== entry);
-      setEntries(registry.current);
+      claims.current = claims.current.filter((item) => item !== entry);
+      settle();
     };
   }, []);
   useLayoutEffect(() => {
@@ -155,7 +173,7 @@ export function useRovingFocusItem<Element extends HTMLElement = HTMLElement>({ 
   const isDisabled = disabled || context.disabled;
   const entry = useMemo<Entry | null>(() => element && { value, element, disabled: isDisabled }, [element, value, isDisabled]);
   useLayoutEffect(() => entry ? register(entry) : undefined, [entry, register]);
-  // An item the registry refused (a second one with the same value) is never the Tab stop, so the group keeps one.
+  // An item the registry refuses (a second one with the same value) is not the Tab stop, so the group keeps one.
   const isCurrent = !isDisabled && entry !== null && context.entries?.includes(entry) === true && context.current === value;
   return {
     itemProps: {
