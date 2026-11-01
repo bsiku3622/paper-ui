@@ -65,9 +65,9 @@ export const surfaceButton = styleVariants(
     ...face,
     selectors: {
       '&[aria-pressed="true"]': { borderColor: tokens.color.border.strong },
-      "&:hover": { borderColor: tokens.color.border.hover },
       "&:focus-visible": focusRing,
     },
+    "@media": { "(hover: hover)": { selectors: { "&:hover": { borderColor: tokens.color.border.hover } } } },
   }),
 );
 

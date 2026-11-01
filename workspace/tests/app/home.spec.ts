@@ -15,6 +15,15 @@ test("[atoms.link.target] the hero Buttons that are links carry no underline, an
   await expectStyle(demo, { textDecorationLine: "underline" });
 });
 
+test("the footer's links are Link Atoms in a quiet ink: no mark at rest, an underline on hover", async ({ page }) => {
+  await page.goto("/");
+  const link = page.locator("footer").getByRole("link", { name: "원칙", exact: true });
+  await page.mouse.move(0, 0);
+  await expectStyle(link, { color: tokens.color.ink.secondary, textDecorationLine: "none" });
+  await link.hover();
+  await expectStyle(link, { textDecorationLine: "underline" });
+});
+
 // The landing page draws its own parts from roles: the brand label is not a status, the mockup's mark is a wash on the
 // primary solid, its current item rests on the selected face, and its filter is the roving group the Demo has.
 test("the brand label is a neutral badge, and the mockup's mark and current item are drawn from roles", async ({ page }) => {

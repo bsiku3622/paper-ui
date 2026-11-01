@@ -22,7 +22,7 @@ import { Dot } from "../compositions/Dot";
 import { ArrowRightIcon } from "../compositions/icons";
 import { Logo } from "../site/Logo";
 import * as s from "../site/home.css";
-import { navLink } from "../site/shell.css";
+import { frame } from "../site/shell.css";
 
 type Issue = { id: string; key: string; title: string; who: string; status: Status; label: string };
 
@@ -137,59 +137,57 @@ const AppMockup = () => {
 };
 
 export const Home = () => (
-  <Box paddingX="xl">
-    <Box data-testid="home-column" maxWidth="container.content" width="full" className={s.column}>
-      {/* ── Hero ─────────────────────────────────────────────── */}
-      <Box className={s.hero}>
-        <Inline gap="sm" align="center" className={s.heroMeta}>
-          <Badge>Studio Baeks</Badge>
-          <Text variant="caption" ink="secondary">{`Design System · v${__PAPER_UI_VERSION__}`}</Text>
+  <Box data-testid="home-column" className={`${frame} ${s.column}`}>
+    {/* ── Hero ─────────────────────────────────────────────── */}
+    <Box className={s.hero}>
+      <Inline gap="sm" align="center" className={s.heroMeta}>
+        <Badge>Studio Baeks</Badge>
+        <Text variant="caption" ink="secondary">{`Design System · v${__PAPER_UI_VERSION__}`}</Text>
+      </Inline>
+
+      <Text variant="hero">
+        복잡한 웹앱을 위한<br />
+        조용한 바탕.
+      </Text>
+
+      <Text variant="body" as="p" ink="secondary" className={s.sub}>
+        레이아웃은 Primitive로, 상호작용은 Atom으로 시작합니다. 색은 의미가 있을 때만 쓰고, 순백 위에 부드럽게.
+      </Text>
+
+      {/* Both actions navigate, so Button renders the router link directly. */}
+      <Inline gap="sm" className={s.heroActions}>
+        <Button as={RouterLink} to="/docs" size="lg" shape="pill">
+          문서 읽기
+        </Button>
+        <Button as={RouterLink} to="/playground" size="lg" variant="hairline" shape="pill">
+          Playground 살펴보기
+        </Button>
+      </Inline>
+    </Box>
+
+    {/* ── 완전한 앱 목업 ──────────────────────────────────────── */}
+    <Box as="figure" className={s.figure}>
+      <AppMockup />
+
+      <Inline as="figcaption" gap="sm" align="center" wrap paddingY="xl">
+        <Text variant="caption" ink="secondary">갤러리가 아니라 실제 화면(이슈 트래커)으로 검증합니다.</Text>
+        <Link as={RouterLink} to="/demo" underline="hover">
+          <Text variant="caption" as="span" ink="inherit" className={s.demoLink}>데모 열기<ArrowRightIcon size="label" className={s.demoArrow} /></Text>
+        </Link>
+      </Inline>
+    </Box>
+
+    {/* ── 푸터 ────────────────────────────────────────────────── */}
+    <Box as="footer" className={s.footer}>
+      <Inline justify="between" align="center" wrap gap="md">
+        <Logo height={18} className={s.footerLogo} />
+        <Inline gap="md" wrap align="center">
+          <Link as={RouterLink} to="/docs/get-started/philosophy" underline="hover" className={s.footerLink}><Text variant="caption" as="span" ink="inherit">원칙</Text></Link>
+          <Link as={RouterLink} to="/docs/foundations" underline="hover" className={s.footerLink}><Text variant="caption" as="span" ink="inherit">Foundations</Text></Link>
+          <Link as={RouterLink} to="/docs" underline="hover" className={s.footerLink}><Text variant="caption" as="span" ink="inherit">문서</Text></Link>
+          <Text variant="caption" ink="tertiary" as="span">© Studio Baeks</Text>
         </Inline>
-
-        <Text variant="hero">
-          복잡한 웹앱을 위한<br />
-          조용한 바탕.
-        </Text>
-
-        <Text variant="body" as="p" ink="secondary" className={s.sub}>
-          레이아웃은 Primitive로, 상호작용은 Atom으로 시작합니다. 색은 의미가 있을 때만 쓰고, 순백 위에 부드럽게.
-        </Text>
-
-        {/* Both actions navigate, so Button renders the router link directly. */}
-        <Inline gap="sm" className={s.heroActions}>
-          <Button as={RouterLink} to="/docs" size="lg" shape="pill">
-            문서 읽기
-          </Button>
-          <Button as={RouterLink} to="/playground" size="lg" variant="hairline" shape="pill">
-            Playground 살펴보기
-          </Button>
-        </Inline>
-      </Box>
-
-      {/* ── 완전한 앱 목업 ──────────────────────────────────────── */}
-      <Box as="figure" className={s.figure}>
-        <AppMockup />
-
-        <Inline as="figcaption" gap="sm" align="center" wrap paddingY="xl">
-          <Text variant="caption" ink="secondary">갤러리가 아니라 실제 화면(이슈 트래커)으로 검증합니다.</Text>
-          <Link as={RouterLink} to="/demo" underline="hover">
-            <Text variant="caption" as="span" ink="inherit" className={s.demoLink}>데모 열기<ArrowRightIcon size="label" className={s.demoArrow} /></Text>
-          </Link>
-        </Inline>
-      </Box>
-
-      {/* ── 푸터 ────────────────────────────────────────────────── */}
-      <Box as="footer" className={s.footer}>
-        <Inline justify="between" align="center" wrap gap="md">
-          <Logo height={18} className={s.footerLogo} />
-          <Inline gap="md" wrap align="center">
-            <RouterLink to="/docs/get-started/philosophy" className={navLink.plain}><Text variant="caption" as="span" ink="secondary">원칙</Text></RouterLink>
-            <RouterLink to="/docs/foundations" className={navLink.plain}><Text variant="caption" as="span" ink="secondary">Foundations</Text></RouterLink>
-            <RouterLink to="/docs" className={navLink.plain}><Text variant="caption" as="span" ink="secondary">문서</Text></RouterLink>
-            <Text variant="caption" ink="tertiary" as="span">© Studio Baeks</Text>
-          </Inline>
-        </Inline>
-      </Box>
+      </Inline>
     </Box>
   </Box>
 );

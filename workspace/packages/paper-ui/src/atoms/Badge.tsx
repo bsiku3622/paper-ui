@@ -21,7 +21,7 @@ export type BadgeProps = Omit<HTMLAttributes<HTMLSpanElement>, "className"> & {
   accent?: Accent;
   // 시각 무게 — 기본 soft(옅은 면). solid·hairline·ghost·muted 도 된다.
   variant?: Variant;
-  // 크기 3 단 (sm·md·lg). 배지 높이 사다리(20·22·24).
+  // 크기 3 단 (sm·md·lg). 높이는 Shape 의 배지 사다리.
   size?: ControlSize;
   fontSize?: ControlFontSize;
   // 앞에 작은 색 점(상태 표시자). 글자색(currentColor)을 따른다.

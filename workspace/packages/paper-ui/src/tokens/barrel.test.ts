@@ -140,4 +140,18 @@ describe("the five systems stack in one direction", () => {
       expect(readFileSync(join(here, `${file}.ts`), "utf8"), file).toContain(`export const ${source}`);
     }
   });
+
+  it("[foundations.systems.differences] differs from the others only where the table says", () => {
+    const text = (file: string) => readFileSync(join(here, `${file}.ts`), "utf8");
+    // Colour: the coordinates are the source, and COLOR_VALUES is what the selection table picks from them.
+    expect(text("palette")).toContain("export const OKLCH_PALETTE");
+    expect(text("colors")).toMatch(/export const COLOR_VALUES = mapLeaves\(COLOR_SELECTION\.light/);
+    // Motion: strings for a source, no tree of values, nothing emitted.
+    expect(text("motion")).not.toMatch(/\bMOTION_VALUES\b/);
+    expect(barrel.tokens.motion).toEqual({ role: barrel.MOTION });
+    for (const name of ["DURATION", "EASING", "LOOP"]) expect(text("motion"), name).toMatch(new RegExp(`const ${name}\\b`));
+    // Layout: what it emits as a tree is the containers and the stacking order; the rest points at Shape.
+    expect(text("layout")).toMatch(/export const LAYOUT_VALUES = \{\n  container:[^\n]*\n  elevation:/);
+    expect(text("layout")).toContain("gutter: SPACE.lg");
+  });
 });

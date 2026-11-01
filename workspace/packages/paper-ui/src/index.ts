@@ -68,7 +68,7 @@ export type {
   DragPosition, MoveDragEvent, MoveDragOptions, TransferDragOptions, DraggableOptions,
 } from "./primitives/types";
 
-// Atoms (13)
+// Atoms
 export { Button, type ButtonProps } from "./atoms/Button";
 export { IconButton, type IconButtonProps } from "./atoms/IconButton";
 export { Field, type FieldProps } from "./atoms/Field";

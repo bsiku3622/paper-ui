@@ -1,5 +1,8 @@
 // resolver는 공유 축의 이름을 typed class map에서 고른다; 렌더 값은 tests/*.spec.ts가 본다.
 
+import { readdirSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, it, expect } from "vitest";
 
 import { accentVariantClass, fillClass, hoverGate, inkClass } from "../styles/color.css";
@@ -12,6 +15,12 @@ import { BOX_STYLE, BOX_STYLE_KEYS, resolveBoxClass, resolveControlFontSize, res
 const distinct = (classes: readonly string[]) => new Set(classes).size === classes.length && classes.every(Boolean);
 
 describe("the class maps", () => {
+  it("[foundations.class-maps.one-way] stay below the resolvers: nothing in styles/ imports them", () => {
+    const styles = join(dirname(fileURLToPath(import.meta.url)), "../styles");
+    const importing = readdirSync(styles).filter((file) => /from\s*["'][^"']*resolvers/.test(readFileSync(join(styles, file), "utf8")));
+    expect(importing).toEqual([]);
+  });
+
   it("[foundations.class-maps.follow-vocabulary] name every value of the axis they index, once, with a class of their own", () => {
     expect(Object.keys(fillClass)).toEqual([...SURFACE_FILLS]);
     expect(Object.keys(inkClass)).toEqual([...INKS]);

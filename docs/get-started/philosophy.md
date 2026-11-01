@@ -108,7 +108,7 @@ Paper UI는 강조가 필요할 때 요소를 띄우지 않고 반대로 가라�
 
 #### 원칙 6. 빌드가 규칙을 지킨다
 
-앞의 약속은 문서만으로 지켜지지 않습니다. 네 규칙이 막습니다 — `raw-color`는 색 리터럴을, `source-isolation`은 원본 import를, `inline-token`은 style로 토큰을 주입하는 것을, `source-numbers`는 원본 밖의 숫자를 막습니다([규칙 목록](../foundations/README.md#규칙은-빌드가-지킨다)). paper-ui가 직접 정의한 lint 규칙(`paper/*`)은 `eslint-disable` 주석으로도 끌 수 없습니다. `eslint-plugin-jsx-a11y`는 유효하지 않은 role·aria, 대체텍스트 누락, 양수 tabindex 같은 정적 접근성 문제를 검사합니다. 이 검사들은 누군가 기억해서 돌리는 것이 아닙니다. 패키지 build는 lint와 typecheck를 통과해야 번들을 만들고, 배포 전 검사와 CI는 단위 테스트와 브라우저 테스트까지 같은 순서로 돌립니다. 런타임 동작은 제품 구현과 검토가 책임집니다.
+앞의 약속은 문서만으로 지켜지지 않습니다. 규칙이 막습니다. 예를 들어 `raw-color`는 색 리터럴을, `source-isolation`은 원본 import를, `inline-token`은 style로 토큰을 주입하는 것을, `source-numbers`는 원본 밖의 숫자를 막습니다([규칙 목록](../foundations/README.md#규칙은-빌드가-지킨다)). paper-ui가 직접 정의한 lint 규칙(`paper/*`)은 `eslint-disable` 주석으로도 끌 수 없습니다. `eslint-plugin-jsx-a11y`는 유효하지 않은 role·aria, 대체텍스트 누락, 양수 tabindex 같은 정적 접근성 문제를 검사합니다. 이 검사들은 누군가 기억해서 돌리는 것이 아닙니다. 패키지 build는 lint와 typecheck를 통과해야 번들을 만들고, 배포 전 검사와 CI는 단위 테스트와 브라우저 테스트까지 같은 순서로 돌립니다. 런타임 동작은 제품 구현과 검토가 책임집니다.
 
 Paper UI는 값을 한 곳에서만 정의합니다. 색·크기·시간은 `tokens/`에 정본이 있고, 같은 트리를 걷는 헬퍼가 CSS 변수와 TS 참조 객체를 만듭니다. Playground는 Foundations·Primitives·Atoms를 보여주고, 이슈 트래커 데모는 primitives와 atoms를 실제 앱 조합 안에서 살펴보는 자리입니다.
 
@@ -121,7 +121,7 @@ Paper UI는 기본적으로 닫혀 있습니다. 형태 값을 함부로 열지 
 ```ts
 import type { Accent, Ink, SurfaceFill, Variant } from "@studio-baeks/paper-ui/tokens";
 
-export type Tone = { accent: Accent; variant: Variant; fill: SurfaceFill; ink: Ink };
+export type Look = { accent: Accent; variant: Variant; fill: SurfaceFill; ink: Ink };
 ```
 
 다만 순서가 있습니다. 구조의 안전은 자유보다 앞서므로 **escape는 최후의 수단입니다.** 어떤 요구가 로컬 스타일을 부르면, 개발자는 먼저 그게 토큰이나 레이어로 표현될 자리인지 봅니다. 앞선 원칙들을 다 통과했는데도 답이 안 나오면, 그건 원칙이 부족한 게 아니라 요구가 아직 시스템으로 표현되지 않은 자리입니다. 개발자는 토큰이나 레이어를 확장하는 쪽을 먼저 보고, 그래도 안 되는 진짜 일회성만 escape로 엽니다.

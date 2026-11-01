@@ -5,7 +5,7 @@ import { MOTION_CONSUMERS, STATE_TINT_PROPERTY, type MotionRole } from "@studio-
 import type { Loop } from "@paper-ui/inspect/motion";
 
 export const MOTION_NOTES: Record<MotionRole, string> = {
-  press: "누르는 순간 1px 내려앉음",
+  press: "누르는 순간 stroke.border 두께만큼 내려앉음",
   hover: "hover tint·테두리·글자색의 짧은 반응",
   state: "켜짐·선택 같은 상태 전이",
   enter: "떠오르는 overlay — 살짝 튀어 안착",

@@ -33,6 +33,9 @@ export const frame = style({
   boxSizing: "border-box",
 });
 
+// The wordmark is a block, so the line box around it adds nothing to its height.
+export const logoMark = style({ display: "block" });
+
 // ── Header ───────────────────────────────────────────────────────────────────
 // One row of the frame; below md the links drop to a second row under the brand instead of breaking per
 // character, and the header leaves the top of the screen with the rest of the page.

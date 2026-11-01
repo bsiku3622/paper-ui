@@ -11,16 +11,19 @@ import { useEffect, useRef, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 
 import { Button, Field, IconButton, Inline, Select, Stack, Surface, Switch, Text, SelectableGroup, useResolvedTheme } from "@studio-baeks/paper-ui";
-import type { SurfaceFill } from "@studio-baeks/paper-ui/tokens";
+import { SURFACE_FILLS, type SurfaceFill } from "@studio-baeks/paper-ui/tokens";
 
 import { CheckIcon, CloseIcon, EditIcon } from "../compositions/icons";
 import { joinClass } from "../joinClass";
 import { PageHeader } from "../site/PageHeader";
+import { SectionHeading } from "../site/SectionHeading";
 import { codeOf, entryBySlug, initialState, normalized, stateFromCode, type Control, type State } from "./registry";
 import type { Entry } from "./registry";
 import * as s from "./detail.css";
 
-const PREVIEW_SURFACES = ["raised", "canvas", "sunken"] as const satisfies readonly SurfaceFill[];
+// The order the page shows them in. A fill added to the vocabulary fails typecheck here until it has a place.
+const PREVIEW_ORDER: Record<SurfaceFill, number> = { raised: 0, canvas: 1, sunken: 2 };
+const PREVIEW_SURFACES = [...SURFACE_FILLS].sort((a, b) => PREVIEW_ORDER[a] - PREVIEW_ORDER[b]);
 const PREVIEW_BACKGROUNDS = [...PREVIEW_SURFACES, "track"] as const;
 type PreviewBackground = (typeof PREVIEW_BACKGROUNDS)[number];
 const PREVIEW_SURFACE_KEY = "paper-ui-preview-surface";
@@ -203,7 +206,7 @@ const DetailView = ({ entry }: { entry: Entry }) => {
             </SelectableGroup>
           </div>
           <Stack gap="xs">
-            <Text variant="label">코드</Text>
+            <SectionHeading title="코드" variant="label" />
             <CodeBlock code={code} onChange={editCode} error={codeError} />
           </Stack>
         </Stack>
@@ -212,7 +215,7 @@ const DetailView = ({ entry }: { entry: Entry }) => {
         <Surface fill="canvas" radius="md" padding="lg" elevation="sticky" border className={s.propsPanel}>
           <Stack gap="lg">
             <Inline justify="between" align="center">
-              <Text variant="label">Props</Text>
+              <SectionHeading title="Props" variant="label" />
               {/* 손으로 꾸민 raw <button> 이었다 — muted 변형이 바로 그 자리다. */}
               {entry.controls.length > 0 && (
                 <Button variant="muted" size="sm" onClick={() => { setState(normalized(entry, initialState(entry))); setDraft(undefined); setCodeError(undefined); }}>

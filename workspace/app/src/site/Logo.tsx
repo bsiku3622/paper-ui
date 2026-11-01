@@ -9,6 +9,9 @@
 
 import type { CSSProperties } from "react";
 
+import { joinClass } from "../joinClass";
+import { logoMark } from "./shell.css";
+
 const VIEW_W = 4381;
 const VIEW_H = 1051;
 const RATIO = VIEW_W / VIEW_H; // ≈ 4.17
@@ -28,8 +31,8 @@ export const Logo = ({ height = 28, title = "Paper UI", className, style }: Logo
     role="img"
     aria-label={title}
     fill="currentColor"
-    className={className}
-    style={{ display: "block", ...style }}
+    className={joinClass(logoMark, className)}
+    style={style}
   >
     <path d={PAPER_UI} />
   </svg>

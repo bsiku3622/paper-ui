@@ -15,13 +15,16 @@ const line = `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`;
 
 // ── 칼럼과 hero ──────────────────────────────────────────────────────────────
 // 홈은 자기 칼럼(container.content)을 직접 그린다 — 풀블리드 랜딩이다. isolation 은 목업의 쌓임을 칼럼 안에 가둔다.
-export const column = style({ marginInline: "auto", isolation: "isolate" });
+export const column = style({ isolation: "isolate" });
 
 // 히어로의 위아래 여백은 뷰포트 높이를 따라 자라는 section 역할이다.
 export const hero = style({
   paddingBlock: `${tokens.layout.section.start} ${tokens.layout.section.end}`,
   maxWidth: tokens.shape.measure.xl,
 });
+// A quiet link of the footer: the Link Atom, in the footer's own ink.
+export const footerLink = style({ color: tokens.color.ink.secondary });
+
 export const sub = style({
   marginTop: tokens.layout.gap.lg,
   maxWidth: tokens.shape.measure.md,

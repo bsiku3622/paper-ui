@@ -25,7 +25,7 @@ Shape와 Layout의 경계는 하나의 질문으로 가립니다. **빈 캔버�
 
 ## 원본 → 역할 → 조합
 
-다섯 시스템은 모두 같은 세 단계로 짜여 있습니다. 숫자와 색은 원본에 한 번만 적고, 컴포넌트와 앱은 역할을 고르며, 역할을 묶어 컴포넌트 하나가 쓰는 완성형을 만듭니다.
+다섯 시스템은 같은 세 단계로 짜여 있고, 다른 점은 아래 표에 있습니다. 숫자와 색은 원본에 한 번만 적고, 컴포넌트와 앱은 역할을 고르며, 역할을 묶어 컴포넌트 하나가 쓰는 완성형을 만듭니다.
 
 | 시스템 | 원본 | 역할 | 조합 |
 |---|---|---|---|
@@ -55,18 +55,24 @@ dp·em·색    CSS 값       var() 참조                  숫자 없는 완성�
 | Color | `tokens/palette.ts` · `tokens/colors.ts` · `tokens/color-modes.ts` · `tokens/color-recipes.ts` |
 | Typography | `tokens/typography.ts` · `tokens/typography-recipes.ts` · `styles/typography.css.ts` |
 | Shape | `tokens/shape.ts` · `tokens/shape-recipes.ts` |
-| Layout | `tokens/layout.ts` · `primitives/Box.css.ts` · `primitives/paint/Surface.css.ts` |
+| Layout | `tokens/layout.ts` · `tokens/elevation-recipes.ts` · `styles/elevation.css.ts` |
 | Motion | `tokens/motion.ts` · `styles/motion.css.ts` |
 | State recipes | `tokens/state.ts` · `tokens/state-recipes.ts` · `styles/states.css.ts` |
 
-네 군데는 시스템마다 일부러 다르게 짜여 있습니다. 모양을 억지로 맞추면 쓰임이 틀어지므로, 다른 점과 까닭을 한 표에 모아 둡니다.
+[contract:foundations.systems.differences]: #
+시스템마다 일부러 다르게 짠 자리가 있습니다. 모양을 억지로 맞추면 쓰임이 틀어지므로, 다른 점과 까닭을 한 표에 모아 둡니다.
 
 | 시스템 | 다른 점 | 까닭 |
 |---|---|---|
 | Color | 역할을 light·dark 두 벌로 굽습니다. | 테마가 바뀌면 같은 이름의 변수 값만 바뀌어, 소비처가 테마를 분기하지 않습니다. |
-| Motion | 변수를 굽지 않습니다. | duration·easing은 한 변수로 줄여 쓰기 어려워, stylesheet가 빌드 때 transition 문자열로 조립합니다. 변위는 길이라서 Shape·Layout 변수를 가리킵니다. |
+| Color | 원본이 `tokens/palette.ts`의 `OKLCH_PALETTE`이고, `COLOR_VALUES`는 원본이 아니라 역할입니다. | 색의 원본은 좌표 하나이고, 역할은 모드마다 그 좌표를 고르는 선택표(`COLOR_SELECTION`)에서 나옵니다. |
+| Motion | `VALUES`가 없고, 원본(`DURATION` · `EASING` · `LOOP`)이 곧 CSS 문자열입니다. 변수를 굽지 않습니다. | duration·easing은 한 변수로 줄여 쓰기 어려워, stylesheet가 빌드 때 transition 문자열로 조립합니다. 변위는 길이라서 Shape·Layout 변수를 가리킵니다. |
+| Layout | `LAYOUT_VALUES`는 `container`와 `elevation`의 쌓임 순서만 굽습니다. | gap과 gutter는 Shape의 space를 가리키는 별칭이고, breakpoint는 미디어 쿼리가 변수를 읽지 못해 값으로 둡니다. 그림자 기하는 모드별로 따로 굽습니다(`LAYOUT_MODE_VALUES`). |
 | Typography | 강조를 규칙으로 공개합니다. | 글자 안의 강조는 `emphasisRule()`이 Palette의 굵기 이름(`regular` · `medium` · `semibold` · `bold`)으로 고르고, 앱은 Palette를 직접 읽지 않습니다. 장식(밑줄 `underlineOffset`)만 Palette에서 읽습니다. |
 | Motion | 역할만 공개합니다. | duration·easing·loop는 Motion의 원본이라 `tokens.motion`에 없습니다. 컴포넌트는 역할을 고르고 `transition(role, …속성)`으로 조립해, 속성마다 자기 duration을 따로 고르지 않습니다. |
+
+[contract:foundations.class-maps.one-way]: #
+class의 실체는 `styles/`에 있고 `resolvers/`는 그 typed map을 고를 뿐이라, `styles/`는 `resolvers/`를 import하지 않습니다.
 
 ## 토큰 층과 그 문
 

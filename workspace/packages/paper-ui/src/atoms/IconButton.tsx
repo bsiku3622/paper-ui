@@ -1,7 +1,7 @@
 // IconButton — 아이콘만 담는 정사각 버튼. Button의 텍스트 API와 분리해 아이콘 크기와
 // 접근성 이름을 한 곳에서 강제한다. 축은 명시적이다: 정사각과 부딪히는 loading · fullWidth · fontSize 는 없다.
 //
-// 안의 Icon 은 size 를 안 주면 컨트롤 높이를 따른다(16 · 18 · 20). iconSize 를 주면 컨트롤 안의 모든 Icon 이 그 크기다.
+// 안의 Icon 은 size 를 안 주면 컨트롤 높이를 따른다. iconSize 를 주면 컨트롤 안의 모든 Icon 이 그 크기다.
 
 import { forwardRef, type ElementType, type ReactElement } from "react";
 
