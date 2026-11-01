@@ -1,16 +1,21 @@
 # Theming
 
+[contract:foundations.theme.choice-and-mode]: #
 paper-ui의 테마는 두 가지를 구분합니다. **선택**은 사용자가 고른 `light` · `dark` · `system`이고, **모드**는 화면에 실제로 적용된 `light` 또는 `dark`입니다. `system`을 고르면 OS 설정(`prefers-color-scheme`)이 모드를 정합니다.
 
+[contract:foundations.theme.root-attribute]: #
 모드의 정본은 `<html data-pui-theme>` 속성 하나입니다. 스타일시트도 hook도 이 속성을 읽고, 속성이 없으면 OS 설정을 따릅니다([Color](../foundations/color.md#테마-스코프)). 속성을 쓰는 쪽은 셋입니다 — `<head>`의 부팅 스크립트, `PaperProvider`, 그리고 외부 테마 관리자.
 
 ## Provider와 저장
 
+[contract:foundations.theme.provider]: #
 `PaperProvider`는 선택을 저장하고, 고른 모드를 `<html>`에 씁니다. DOM wrapper를 만들지 않고, 스타일시트도 import하지 않습니다.
 
 ```tsx
 <PaperProvider defaultTheme="system" storageKey="pui-theme">…</PaperProvider>
 ```
+
+[contract:foundations.theme.provider-options]: #
 
 | prop | 기본값 | 뜻 |
 |---|---|---|
@@ -65,6 +70,7 @@ export const Document = ({ children }: { children: React.ReactNode }) => (
 
 ## 외부 테마 관리자
 
+[contract:foundations.theme.external-writer]: #
 속성이 정본이라 다른 테마 관리자가 `<html data-pui-theme="dark">`를 쓰기만 해도 스타일시트와 `useResolvedTheme`이 따라갑니다. Provider는 붙을 때 자기 선택을 한 번 쓰고, 그 뒤에 다른 쪽이 쓴 속성은 되돌리지 않고 읽습니다. 서버가 쿠키로 아는 테마가 있다면 그 값을 서버가 `<html data-pui-theme>`에 직접 쓰는 편이 가장 정확합니다.
 
 ## hook
@@ -74,9 +80,11 @@ export const Document = ({ children }: { children: React.ReactNode }) => (
 | `useTheme()` | 안에서만 | `theme`(선택, `system` 포함) · `resolved`(`<html>`이 보이는 모드) · `setTheme(선택)` |
 | `useResolvedTheme()` | 어디서나 | 가장 가까운 Surface `theme`의 모드, 없으면 Provider의 모드, 없으면 `<html>` 속성(속성이 없으면 OS 설정) |
 
+[contract:foundations.theme.hooks]: #
 `useTheme`을 Provider 밖에서 부르면 오류입니다. 선택을 바꾸는 주인이 Provider이기 때문입니다. `useResolvedTheme`은 읽기만 하므로 Provider 없이도 실제 모드를 답합니다.
 
-서버 렌더는 `<html>`을 읽지 못해 Provider의 `defaultTheme`로 답하고, `system`이면 `light`로 답합니다. 하이드레이션 직후 실제 모드로 한 번 다시 그립니다.
+[contract:foundations.theme.server-render]: #
+서버 렌더는 `<html>`을 읽지 못해 Provider의 `defaultTheme`로 답하고, `system`이면 `light`로 답합니다. `matchMedia`가 없는 창도 `light`로 답합니다. 하이드레이션 직후 실제 모드로 한 번 다시 그립니다.
 
 ## 일부만 뒤집기
 

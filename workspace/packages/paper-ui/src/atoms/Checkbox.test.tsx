@@ -6,7 +6,7 @@ import { Checkbox } from "./Checkbox";
 afterEach(cleanup);
 
 describe("Checkbox", () => {
-  it("[atoms.checkbox.indeterminate] sets the indeterminate property from the prop, and clears it when the prop goes", () => {
+  it("[atoms.checkbox.indeterminate] [atoms.contract.axes] sets the indeterminate property from the prop, and clears it when the prop goes", () => {
     const view = render(<Checkbox aria-label="all" indeterminate />);
     const box = screen.getByLabelText("all") as HTMLInputElement;
     expect(box.indeterminate).toBe(true);

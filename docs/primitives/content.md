@@ -2,6 +2,8 @@
 
 Content Primitive는 화면에 읽히는 것 — 글자와 아이콘 — 을 그립니다. 둘 다 크기를 숫자로 받지 않고 Typography의 역할 이름으로 받습니다.
 
+[contract:primitives.content.axes]: #
+
 | 컴포넌트 | 공개 축 | 기본값 |
 | --- | --- | --- |
 | Text | `as` · variant · ink · family=sans/mono · numeric | variant=body, family=sans. 기본 태그는 hero·display·title=h1, heading=h2, subheading=h3, body·caption=p, label=span |
@@ -9,10 +11,13 @@ Content Primitive는 화면에 읽히는 것 — 글자와 아이콘 — 을 그
 
 ## Text
 
-`variant`가 크기·굵기·행간·자간·기본 잉크를 한 번에 정하고, 태그는 `as`가 따로 정합니다. 시각 위계와 의미 태그가 직교하므로, 같은 `title`이 페이지에서는 `h1`, 대화상자 안에서는 `h2`가 될 수 있습니다. 역할별 값은 [Typography](../foundations/typography.md)에 있습니다.
+[contract:primitives.text.default-tag]: #
+`variant`가 크기·굵기·행간·자간·기본 잉크를 한 번에 정하고, 태그는 `as`가 따로 정합니다. `as`를 주지 않으면 위 표의 기본 태그로 그립니다. 시각 위계와 의미 태그가 직교하므로, 같은 `title`이 페이지에서는 `h1`, 대화상자 안에서는 `h2`가 될 수 있습니다. 역할별 값은 [Typography](../foundations/typography.md)에 있습니다.
 
 [contract:primitives.text.ink-beats-variant]: #
 크기·굵기·색을 따로 고르는 prop은 없습니다. `ink`만 variant 기본값 위로 한 번 덮을 수 있습니다.
+
+[contract:primitives.text.ink-table]: #
 
 | ink | 뜻 |
 | --- | --- |
@@ -20,8 +25,10 @@ Content Primitive는 화면에 읽히는 것 — 글자와 아이콘 — 을 그
 | info · success · warning · error | 그 상태색의 `ink` |
 | inherit | 내 색을 정하지 않고 부모 면의 글자색을 받음 — 색면 위의 글자 |
 
+[contract:primitives.text.ink-vocabulary]: #
 세 줄의 이름은 `/tokens`의 `INKS`와 같고, Icon의 `ink`도 같은 어휘입니다.
 
+[contract:primitives.text.family-mono]: #
 `family="mono"`는 어느 variant에도 얹어 등폭 서체로 바꿉니다. 코드·토큰·식별자에만 쓰고, 숫자 열은 mono 대신 `numeric`으로 자리만 맞춥니다.
 
 [contract:primitives.text.numeric]: #
@@ -38,11 +45,13 @@ Content Primitive는 화면에 읽히는 것 — 글자와 아이콘 — 을 그
 
 ## Icon
 
+[contract:primitives.icon.artboard]: #
 아이콘 세트는 시스템이 소유하지 않습니다. 24 단위 viewBox의 path를 앱이 children으로 넣고(Lucide 등), 크기와 선 굵기는 Paper UI가 정합니다. 크기 이름은 Text 역할 이름의 부분집합이고 타입으로 묶여 있습니다(`IconSize`는 `TextVariant`의 일부). `label` 글자 옆이면 `size="label"`(14), 본문 옆이면 `body`(18). 선 굵기는 Shape의 `stroke.icon`(1.75)입니다.
 
 [contract:primitives.icon.size-precedence]: #
 `size`를 주지 않으면 컨트롤 안에서는 그 컨트롤의 `control.icon`(Shape)을, 그 밖에서는 body를 씁니다. 컨트롤이 정한 크기는 맥락으로 건네져 안쪽 Icon이 받고, 명시한 `size`가 언제나 맥락을 이깁니다.
 
+[contract:primitives.icon.ink]: #
 `ink`를 주지 않으면 부모의 글자색(currentColor)을 따릅니다.
 
 [contract:primitives.icon.label]: #

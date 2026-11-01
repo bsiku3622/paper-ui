@@ -3,11 +3,14 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { elevation } from "../index";
-import { Box, Paint, Stack, Surface, paintClass, surfaceClass } from "./index";
+import { Box } from "./Box";
+import { Paint, paintClass } from "./paint/Paint";
+import { Stack } from "./layout/Stack";
+import { Surface, surfaceClass } from "./paint/Surface";
 import { surfaceBorder, surfaceItem, surfaceRadius } from "./paint/Surface.css";
 import { accentVariantClass, fillClass, hoverGate } from "../styles/color.css";
 import { spaceClass } from "../styles/space.css";
-import { ACCENTS, ELEVATIONS, SURFACE_FILLS, VARIANTS } from "../tokens";
+import { ACCENTS, ELEVATIONS, SURFACE_FILLS, SURFACE_RADII, VARIANTS } from "../tokens";
 import { stackRoot } from "./layout/flex.css";
 
 // Never rendered: each line only has to compile.
@@ -22,7 +25,7 @@ describe("Surface", () => {
     }
   });
 
-  it("[primitives.surface.classes] gives surfaceClass the same classes for everything but the theme", () => {
+  it("[primitives.surface.classes] [primitives.paint.class-functions] gives surfaceClass the same classes for everything but the theme", () => {
     expect(surfaceClass({ fill: "sunken", border: true, radius: "full", elevation: "modal" })).toBe(
       [fillClass.sunken, surfaceBorder, surfaceRadius.full, elevation.modal].join(" "),
     );
@@ -65,7 +68,30 @@ describe("Surface", () => {
     expect(screen.getByTestId("bare").getAttribute("class") ?? "").toBe("");
   });
 
-  it("[primitives.surface.classes] paints nothing it was not asked to", () => {
+  it("[primitives.surface.no-role] adds no button role and no Tab stop: the element's meaning is the caller's to choose", () => {
+    render(<><Surface data-testid="div" fill="raised" hoverable /><Surface as="section" data-testid="section" fill="raised" /></>);
+    for (const id of ["div", "section"]) {
+      expect(screen.getByTestId(id).hasAttribute("role"), id).toBe(false);
+      expect(screen.getByTestId(id).hasAttribute("tabindex"), id).toBe(false);
+    }
+  });
+
+  it("[primitives.surface.prop-table] names its values from the vocabulary, and sets data-selected for selected", () => {
+    for (const fill of SURFACE_FILLS) {
+      const view = render(<Surface data-testid="surface" fill={fill} />);
+      expect(screen.getByTestId("surface").classList.contains(fillClass[fill]), fill).toBe(true);
+      view.unmount();
+    }
+    for (const radius of SURFACE_RADII) {
+      const view = render(<Surface data-testid="surface" radius={radius} />);
+      expect(screen.getByTestId("surface").classList.contains(surfaceRadius[radius]), radius).toBe(true);
+      view.unmount();
+    }
+    render(<Surface data-testid="on" selected />);
+    expect(screen.getByTestId("on").getAttribute("data-selected")).toBe("true");
+  });
+
+  it("[primitives.surface.classes] [foundations.layout.elevation-vocabulary] paints nothing it was not asked to", () => {
     render(<Surface data-testid="plain" />);
     expect(screen.getByTestId("plain").getAttribute("class") ?? "").toBe("");
   });

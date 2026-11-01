@@ -7,6 +7,7 @@ import { INVENTORY } from "../inventory";
 import { tokens } from "./index";
 import {
   DURATION,
+  EASING,
   LOOP,
   LOOP_FRAMES,
   MOTION,
@@ -17,6 +18,7 @@ import {
   transition,
   type MotionRole,
 } from "./motion";
+import * as rootEntry from "../index";
 import * as publicEntry from "./public";
 
 const SRC = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -26,8 +28,17 @@ const sourceFiles = (directory: string): string[] =>
     entry.isDirectory() ? sourceFiles(join(directory, entry.name)) : [join(directory, entry.name)],
   );
 
+// The design values of Motion, written down. The tests below hold for any design; this file says which design this
+// is. A change to it is deliberate: review the diff, then `vitest -u` rewrites the file.
+describe("the golden Motion file", () => {
+  it("[foundations.motion.source-table] [foundations.motion.role-table] records the sources, the roles and loops they make, and the transitions those write", async () => {
+    const written = { hover: transition("hover", "color"), state: transition("state", "background", "border-color"), theme: transition("theme", "color") };
+    await expect(`${JSON.stringify({ duration: DURATION, easing: EASING, roles: MOTION, loops: MOTION_LOOPS, reduced: MOTION_REDUCED, transition: written }, null, 2)}\n`).toMatchFileSnapshot("./__golden__/motion-resolved.json");
+  });
+});
+
 describe("Motion roles", () => {
-  it("[foundations.motion.roles] names press, hover, state, enter, exit and theme, in that order, and no focus", () => {
+  it("[foundations.motion.roles] [foundations.motion.no-focus-role] names press, hover, state, enter, exit and theme, in that order, and no focus", () => {
     expect([...MOTION_ROLES]).toEqual(["press", "hover", "state", "enter", "exit", "theme"]);
     expect(Object.keys(MOTION)).toEqual([...MOTION_ROLES]);
     expect(Object.keys(MOTION)).not.toContain("focus");
@@ -53,27 +64,50 @@ describe("Motion roles", () => {
   it("[foundations.motion.displacement] points a displacement at a Shape or Layout role", () => {
     expect(MOTION.press.offset).toBe(tokens.shape.stroke.border);
     expect(MOTION.enter.offset).toBe(tokens.layout.gap.xs);
-    expect(MOTION.enter.scale).toBe("0.99");
+    expect(Number(MOTION.enter.scale)).toBeLessThan(1);
     const withOffset = MOTION_ROLES.filter((role) => "offset" in MOTION[role]);
     expect(withOffset).toEqual(["press", "enter"]);
     for (const role of withOffset) expect((MOTION[role] as { offset: string }).offset, role).toMatch(/^var\(--pui-/);
   });
 
+  it("[foundations.motion.roles] takes every role's duration and easing from the scales, and every loop's curve from the easing scale", () => {
+    for (const role of MOTION_ROLES) {
+      expect(Object.values(DURATION), `${role} duration`).toContain(MOTION[role].duration);
+      expect(Object.values(EASING), `${role} easing`).toContain(MOTION[role].easing);
+    }
+    for (const [name, loop] of Object.entries(MOTION_LOOPS)) expect(Object.values(EASING), `${name} curve`).toContain(loop.easing);
+  });
+
   it("[foundations.motion.reduced] ends a role's duration by the smallest positive one", () => {
-    expect(parseFloat(MOTION_REDUCED.duration)).toBeGreaterThan(0);
+    const positive = Object.values(DURATION).map(parseFloat).filter((ms) => ms > 0);
+    expect(MOTION_REDUCED.duration).toBe(DURATION.reduced);
+    expect(parseFloat(MOTION_REDUCED.duration)).toBe(Math.min(...positive));
     for (const role of MOTION_ROLES) {
       if (MOTION[role].duration !== DURATION.instant) expect(parseFloat(MOTION_REDUCED.duration), role).toBeLessThan(parseFloat(MOTION[role].duration));
     }
+  });
+
+  it("[foundations.motion.reduced] [foundations.motion.reduced-layers] covers transitions, finite animations and pseudo-elements in one policy, ahead of nothing but the loops' own reduced forms", () => {
+    const code = readFileSync(join(SRC, "styles", "motion.css.ts"), "utf8");
+    const policy = /components\.globalStyle\("([^"]+)", \{[\s\S]*?\n\}\);/.exec(code);
+    expect(policy?.[1], "the policy selector").toBe("*, *::before, *::after");
+    const body = policy![0];
+    for (const declaration of ["transitionDuration", "animationDuration", "animationIterationCount"]) expect(body, declaration).toContain(`${declaration}:`);
+    expect(body).toContain("[REDUCED_MOTION]");
+    expect(code).toContain('const REDUCED_MOTION = "(prefers-reduced-motion: reduce)"');
+    expect(body.match(/!important/g)).toHaveLength(3);
+    // Every other motion class leaves reduced motion to the policy, but a loop swaps in its reduced form itself.
+    expect(code.match(/REDUCED_MOTION\]: \{\s*animation: run\(MOTION_LOOPS/g)).toHaveLength(Object.keys(MOTION_LOOPS).length);
   });
 });
 
 describe("transition()", () => {
   it("[foundations.motion.transition] assembles a property with its role's duration and easing", () => {
-    expect(transition("hover", "color")).toBe("color 100ms cubic-bezier(0.4, 0, 0.2, 1)");
+    expect(transition("hover", "color")).toBe(`color ${MOTION.hover.duration} ${MOTION.hover.easing}`);
     expect(transition("state", "background", "border-color")).toBe(
-      "background 130ms cubic-bezier(0.4, 0, 0.2, 1), border-color 130ms cubic-bezier(0.4, 0, 0.2, 1)",
+      `background ${MOTION.state.duration} ${MOTION.state.easing}, border-color ${MOTION.state.duration} ${MOTION.state.easing}`,
     );
-    expect(transition("theme", "color")).toBe("color 0ms linear");
+    expect(transition("theme", "color")).toBe(`color ${DURATION.instant} ${EASING.linear}`);
   });
 
   it("[foundations.motion.transition] takes each role's own timing and nothing else", () => {
@@ -85,7 +119,7 @@ describe("transition()", () => {
 });
 
 describe("Loops", () => {
-  it("[foundations.motion.compositions] gives every loop frames, a period, a curve and the loop that stands in for it under reduced motion", () => {
+  it("[foundations.motion.compositions] [foundations.motion.loops] gives every loop frames, a period, a curve and the loop that stands in for it under reduced motion", () => {
     expect(Object.keys(MOTION_LOOPS)).toEqual(Object.keys(LOOP));
     for (const [name, loop] of Object.entries(MOTION_LOOPS)) {
       expect(loop.frames, name).toBe(LOOP_FRAMES[name as keyof typeof LOOP_FRAMES]);
@@ -94,11 +128,24 @@ describe("Loops", () => {
     }
   });
 
-  it("[foundations.motion.reduced] stands in for every loop with one that never leaves its place", () => {
+  it("[foundations.motion.reduced] [foundations.motion.reduced-loops] stands in for every loop with one that never leaves its place", () => {
     for (const [name, loop] of Object.entries(MOTION_LOOPS)) {
       const frames = Object.values(MOTION_LOOPS[loop.reduced].frames).flatMap((step) => Object.keys(step));
       expect(frames, name).toEqual(["opacity"]);
     }
+  });
+});
+
+describe("The class maps", () => {
+  it("[foundations.motion.class-maps-in-root] come from the component entry, not from /tokens", () => {
+    const root = rootEntry as Record<string, unknown>;
+    const tokensEntry = publicEntry as Record<string, unknown>;
+    for (const name of ["presence", "loop"]) {
+      expect(typeof root[name], `${name} in '.'`).toBe("object");
+      expect(tokensEntry[name], `${name} not in /tokens`).toBeUndefined();
+    }
+    expect(Object.keys(root.presence as object)).toEqual(["surface", "scrim"]);
+    expect(Object.keys(root.loop as object)).toEqual(Object.keys(LOOP));
   });
 });
 

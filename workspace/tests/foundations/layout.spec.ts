@@ -1,7 +1,8 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator } from "@playwright/test";
 
-import { ELEVATION } from "../../packages/paper-ui/src/tokens";
+import { ELEVATION, ELEVATION_NEST_LIMIT } from "../../packages/paper-ui/src/tokens";
 import { BREAKPOINTS, ELEVATIONS, LAYOUT_SOURCE, type Elevation } from "../../packages/paper-ui/src/tokens/layout";
+import { px } from "../support/geometry";
 import { openHarness, openPlayground } from "../support/harness";
 import { expectStyle } from "../support/style";
 
@@ -9,7 +10,7 @@ import { expectStyle } from "../support/style";
 
 const z = (tier: Elevation) => String(LAYOUT_SOURCE.elevation.tier[tier].z);
 
-test("the Layout page reads each breakpoint in em beside its px at the default root font", async ({ page }) => {
+test("[foundations.layout.breakpoint-em] [foundations.pages.derived-rows] the Layout page reads each breakpoint in em beside its px at the default root font", async ({ page }) => {
   await page.goto("/playground/foundations/layout");
   for (const name of BREAKPOINTS) {
     const dp = LAYOUT_SOURCE.breakpoint[name];
@@ -18,23 +19,28 @@ test("the Layout page reads each breakpoint in em beside its px at the default r
 });
 
 test("[foundations.layout.breakpoint-em] a breakpoint follows the browser's default font size, and so does the container", async ({ page }) => {
-  await page.setViewportSize({ width: 900, height: 900 });
+  // The browser's default font goes from 16px to 20px, which moves an em breakpoint and a rem length by that ratio. The
+  // window stands between md at the two fonts: wider than it at first, narrower than it after.
+  const FONT = 20;
+  const ratio = FONT / 16;
+  const { md } = LAYOUT_SOURCE.breakpoint;
+  const { content } = LAYOUT_SOURCE.container;
+  await page.setViewportSize({ width: Math.round((md + md * ratio) / 2), height: 900 });
   const sidebar = page.getByTestId("home-mockup-side");
   const column = page.getByTestId("home-column");
 
   await page.goto("/");
   await expect(column).toBeVisible();
   await expect(sidebar).toBeVisible();
-  await expect(column).toHaveCSS("max-width", "1152px");
+  await expect(column).toHaveCSS("max-width", px(content));
 
-  // At a 20px default font md (48em) is 960px, so a 900px window is already narrower than it.
   const cdp = await page.context().newCDPSession(page);
-  await cdp.send("Page.setFontSizes", { fontSizes: { standard: 20 } });
+  await cdp.send("Page.setFontSizes", { fontSizes: { standard: FONT } });
   await page.reload();
   await expect(column).toBeVisible();
-  await expect(page.locator("html")).toHaveCSS("font-size", "20px");
+  await expect(page.locator("html")).toHaveCSS("font-size", px(FONT));
   await expect(sidebar).toBeHidden();
-  await expect(column).toHaveCSS("max-width", "1440px");
+  await expect(column).toHaveCSS("max-width", px(content * ratio));
 });
 
 test("[foundations.layout.elevation-unit] a Surface in block flow takes its tier's position, z and shadow together", async ({ page }) => {
@@ -45,6 +51,26 @@ test("[foundations.layout.elevation-unit] a Surface in block flow takes its tier
     await expect(surface, tier).toHaveCSS("z-index", z(tier));
     await expectStyle(surface, { boxShadow: ELEVATION.shadow[tier] });
   }
+});
+
+test("[foundations.layout.elevation-tier-order] the computed z-index of every tier's Surface, and of a popover and a modal Floating, rises strictly with the tier and keeps a nest of the limit's depth under the next tier", async ({ page }) => {
+  await openHarness(page, "elevation");
+  const zIndex = (locator: Locator) => locator.evaluate((element) => Number(getComputedStyle(element).zIndex));
+  const tiers = await Promise.all(ELEVATIONS.map((tier) => zIndex(page.getByTestId(`tier-${tier}`))));
+  expect(tiers).toEqual(ELEVATIONS.map((tier) => LAYOUT_SOURCE.elevation.tier[tier].z));
+  tiers.forEach((value, index) => {
+    if (index > 0) expect(value, ELEVATIONS[index]).toBeGreaterThan(tiers[index - 1]!);
+  });
+  const { nudge } = LAYOUT_SOURCE.elevation;
+  tiers.slice(0, -1).forEach((value, index) => expect(value + ELEVATION_NEST_LIMIT * nudge, ELEVATIONS[index]).toBeLessThan(tiers[index + 1]!));
+  // The Floating tiers are the same steps: a popover panel stands at overlay, a modal's scrim at modal, and a toast above both.
+  expect(await zIndex(page.getByTestId("popover"))).toBe(LAYOUT_SOURCE.elevation.tier.overlay.z);
+  const toast = await zIndex(page.getByTestId("toast"));
+  expect(toast).toBe(LAYOUT_SOURCE.elevation.tier.toast.z);
+  await openHarness(page, "elevation", { modal: "" });
+  const scrim = await zIndex(page.getByTestId("popover").locator("xpath=.."));
+  expect(scrim).toBe(LAYOUT_SOURCE.elevation.tier.modal.z);
+  expect(scrim).toBeLessThan(toast);
 });
 
 test("[foundations.layout.elevation-unit] the GNB is sticky at the sticky tier, and the Demo toast stands at the toast tier with the floating shadow", async ({ page }) => {
@@ -130,7 +156,7 @@ test("[foundations.layout.elevation-nesting] a toast paints above an open modal 
   expect(order.toast, "the toast is ahead of the scrim").toBeLessThan(order.scrim);
 });
 
-test("[foundations.layout.elevation-nesting] a previewed Surface at the toast tier stays under the GNB, because the preview stage isolates its content", async ({ page }) => {
+test("[foundations.layout.elevation-nesting] [foundations.layout.stage-isolation] a previewed Surface at the toast tier stays under the GNB, because the preview stage isolates its content", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 500 });
   await openPlayground(page, "surface", "Surface");
   await page.getByRole("combobox", { name: "elevation", exact: true }).selectOption("toast");
@@ -147,7 +173,7 @@ test("[foundations.layout.elevation-nesting] a previewed Surface at the toast ti
   expect(hit, "the GNB is above the previewed Surface").toBe(true);
 });
 
-test("[foundations.layout.elevation-nesting] a sticky rail that rides up under the GNB at the end of a page stays under it", async ({ page }) => {
+test("[foundations.layout.elevation-nesting] [foundations.layout.stage-isolation] a sticky rail that rides up under the GNB at the end of a page stays under it", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 400 });
   // The sidebars are not here: they scroll inside themselves (tests/app/shell.spec.ts), so they never ride up.
   const rails = [{ path: "/playground/button", heading: "Button", anchor: () => page.getByText("Props", { exact: true }) }];

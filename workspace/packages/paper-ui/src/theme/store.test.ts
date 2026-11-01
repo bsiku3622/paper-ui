@@ -52,14 +52,14 @@ afterEach(() => {
 });
 
 describe("getThemeStore", () => {
-  it("is one store per document", () => {
+  it("[foundations.theme.one-store] is one store per document", () => {
     expect(getThemeStore(document)).toBe(store);
     expect(getThemeStore(document.implementation.createHTMLDocument())).not.toBe(store);
   });
 });
 
 describe("the preference", () => {
-  it("starts from the default theme and resolves it onto <html> when attached", () => {
+  it("[foundations.theme.provider-options] starts from the default theme and resolves it onto <html> when attached", () => {
     mockMedia(false);
     store.configure({ storageKey: THEME_STORAGE_KEY, defaultTheme: "dark" });
     expect(store.getPreference()).toBe("dark");
@@ -68,7 +68,7 @@ describe("the preference", () => {
     expect(store.getMode()).toBe("dark");
   });
 
-  it("starts from the stored choice, which beats the default, and ignores a stored value that is no theme", () => {
+  it("[foundations.theme.provider-options] starts from the stored choice, which beats the default, and ignores a stored value that is no theme", () => {
     mockMedia(false);
     storage.setItem(THEME_STORAGE_KEY, "light");
     store.configure({ storageKey: THEME_STORAGE_KEY, defaultTheme: "dark" });
@@ -128,7 +128,7 @@ describe("the preference", () => {
 });
 
 describe("system", () => {
-  it("follows the OS while the preference is system, and stops following once a mode is chosen", () => {
+  it("[foundations.theme.choice-and-mode] follows the OS while the preference is system, and stops following once a mode is chosen", () => {
     const media = mockMedia(false);
     store.configure({ storageKey: null, defaultTheme: "system" });
     attach();
@@ -142,7 +142,7 @@ describe("system", () => {
     expect(root.getAttribute(THEME_ATTRIBUTE)).toBe("light");
   });
 
-  it("tells subscribers when the OS moves the mode", () => {
+  it("[foundations.theme.choice-and-mode] tells subscribers when the OS moves the mode", () => {
     const media = mockMedia(false);
     store.configure({ storageKey: null, defaultTheme: "system" });
     attach();
@@ -155,7 +155,7 @@ describe("system", () => {
 });
 
 describe("the root attribute", () => {
-  it("reads an external write and does not revert it", async () => {
+  it("[foundations.theme.external-writer] reads an external write and does not revert it", async () => {
     mockMedia(false);
     store.configure({ storageKey: null, defaultTheme: "light" });
     attach();
@@ -192,7 +192,7 @@ describe("the root attribute", () => {
     expect(root.getAttribute(THEME_ATTRIBUTE)).toBe("dark");
   });
 
-  it("removes the attribute again when it held none before the attach", () => {
+  it("[foundations.theme.one-store] removes the attribute again when it held none before the attach", () => {
     mockMedia(false);
     store.configure({ storageKey: null, defaultTheme: "dark" });
     attach()();
@@ -215,7 +215,7 @@ describe("configure", () => {
     attach()();
   });
 
-  it("takes a new configuration once every attach has been released", () => {
+  it("[foundations.theme.one-store] takes a new configuration once every attach has been released", () => {
     mockMedia(false);
     const error = vi.spyOn(console, "error").mockImplementation(() => {});
     store.configure({ storageKey: null, defaultTheme: "dark" });

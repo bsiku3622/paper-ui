@@ -74,7 +74,7 @@ test("[primitives.form-field.relations] field labels, descriptions and errors po
   await expect(input).toBeDisabled();
 });
 
-test("FocusScope contains focus and restores the opener", async ({ page }) => {
+test("[primitives.focus-scope.options] FocusScope contains focus and restores the opener", async ({ page }) => {
   await openPlayground(page, "focus-scope", "FocusScope");
   const opener = page.getByRole("button", { name: "Focus scope 열기", exact: true });
   await opener.click();
@@ -89,7 +89,7 @@ test("FocusScope contains focus and restores the opener", async ({ page }) => {
   await expect(opener).toBeFocused();
 });
 
-test("hidden content names the button and a focusable skip link becomes visible", async ({ page }) => {
+test("[primitives.visually-hidden.accessible] hidden content names the button and a focusable skip link becomes visible", async ({ page }) => {
   await openPlayground(page, "visually-hidden", "VisuallyHidden");
   await expect(page.getByRole("button", { name: "새 항목 추가", exact: true })).toBeVisible();
   // The page has a skip link of its own, outside <main>; this is the specimen's.

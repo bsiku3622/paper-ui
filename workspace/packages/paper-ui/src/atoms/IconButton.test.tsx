@@ -4,7 +4,8 @@ import { createRef, forwardRef, type AnchorHTMLAttributes } from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import { Floating, Icon } from "../primitives";
+import { Floating } from "../primitives/float/Floating";
+import { Icon } from "../primitives/Icon";
 import { CONTROL_ICON, tokens } from "../tokens";
 import { IconButton } from "./IconButton";
 
@@ -12,7 +13,7 @@ const glyph = <Icon><path d="M4 12h16" /></Icon>;
 const iconClass = (name: string) => screen.getByRole("button", { name }).querySelector("svg")!.getAttribute("class")!;
 
 describe("IconButton", () => {
-  it("[atoms.icon-button.axes] opens exactly the axes of a square: as, accent, variant, size, shape, disabled, iconSize", () => {
+  it("[atoms.icon-button.axes] [atoms.contract.axes] opens exactly the axes of a square: as, accent, variant, size, shape, disabled, iconSize", () => {
     // @ts-expect-error a square has no room for a spinner
     const loading = <IconButton aria-label="저장" loading>{glyph}</IconButton>;
     // @ts-expect-error a square is as wide as it is tall
@@ -40,7 +41,7 @@ describe("IconButton", () => {
     expect(screen.getByRole("link", { name: "이동" }).getAttribute("href")).toBe("/there");
   });
 
-  it("[atoms.icon-button.axes] gives the Icon inside the control's own size, 16 · 18 · 20 by control size, and lets an explicit size win", () => {
+  it("[atoms.icon-button.axes] [foundations.shape.geometry-entry] gives the Icon inside the control's own size at each control size, and lets an explicit size win", () => {
     render(
       <>
         <IconButton aria-label="sm" size="sm">{glyph}</IconButton>
@@ -77,5 +78,24 @@ describe("IconButton", () => {
     );
     fireEvent.click(screen.getByRole("button", { name: "메뉴" }));
     expect(screen.getByRole("dialog", { name: "패널" })).toBeTruthy();
+  });
+
+  it("[atoms.icon-button.axes] asks for a name and for one Icon, which the types enforce", () => {
+    const glyph = <Icon><path d="M2 2h4" /></Icon>;
+    // @ts-expect-error an icon-only button has no text to name it, so aria-label is required
+    render(<IconButton>{glyph}</IconButton>);
+    // @ts-expect-error the label is one Icon, not a list
+    render(<IconButton aria-label="Two">{[glyph, glyph]}</IconButton>);
+    // @ts-expect-error loading belongs to the text Button
+    render(<IconButton aria-label="Busy" loading>{glyph}</IconButton>);
+    render(<IconButton aria-label="Named">{glyph}</IconButton>);
+    expect(screen.getByRole("button", { name: "Named" })).toBeTruthy();
+  });
+
+  it("[atoms.icon-button.axes] forwards iconSize to the Icon inside, over the size its control would give", () => {
+    render(<IconButton aria-label="Large glyph" size="sm" iconSize="subheading"><Icon><path d="M2 2h4" /></Icon></IconButton>);
+    const svg = screen.getByRole("button", { name: "Large glyph" }).querySelector("svg")!;
+    const small = render(<IconButton aria-label="Own size" size="sm"><Icon><path d="M2 2h4" /></Icon></IconButton>).container.querySelector("svg")!;
+    expect(svg.getAttribute("class")).not.toBe(small.getAttribute("class"));
   });
 });

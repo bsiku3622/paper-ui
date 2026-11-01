@@ -50,14 +50,14 @@ afterEach(() => {
 });
 
 describe("useTheme", () => {
-  it("throws an English error outside <PaperProvider>", () => {
+  it("[foundations.theme.hooks] [primitives.errors.prefix] throws an English error outside <PaperProvider>", () => {
     mockMedia(false);
     const error = vi.spyOn(console, "error").mockImplementation(() => {});
     expect(() => renderHook(() => useTheme())).toThrow("[paper-ui] useTheme must be used inside <PaperProvider>.");
     error.mockRestore();
   });
 
-  it("reads the user's choice and the mode <html> shows, and sets a new choice", () => {
+  it("[foundations.theme.choice-and-mode] [install.provider.use-theme] reads the user's choice and the mode <html> shows, and sets a new choice", () => {
     mockMedia(false);
     const { result } = renderHook(() => useTheme(), { wrapper: ({ children }) => <PaperProvider storageKey={null} defaultTheme="system">{children}</PaperProvider> });
     expect(result.current).toMatchObject({ theme: "system", resolved: "light" });
@@ -90,7 +90,21 @@ describe("useTheme", () => {
 });
 
 describe("the root attribute", () => {
-  it("is written from the choice, which a stored value decides over the default", () => {
+  it("[foundations.theme.provider] [install.provider.first-screen] draws no element of its own and writes the mode on <html>", () => {
+    mockMedia(false);
+    const { container } = render(<PaperProvider storageKey={null}><span data-testid="child" /></PaperProvider>);
+    expect(screen.getByTestId("child").parentElement).toBe(container);
+    expect(root.getAttribute(THEME_ATTRIBUTE)).toBe("light");
+  });
+
+  it("[install.provider.no-primary-color] has no setting for a brand colour", () => {
+    mockMedia(false);
+    // @ts-expect-error the identity is not a colour, so the Provider takes none
+    const element = <PaperProvider primaryColor="tomato" storageKey={null}><span data-testid="child" /></PaperProvider>;
+    expect(element).toBeTruthy();
+  });
+
+  it("[foundations.theme.provider-options] [install.provider.settings] is written from the choice, which a stored value decides over the default", () => {
     mockMedia(false);
     localStorage.setItem("pui-theme", "dark");
     render(<PaperProvider defaultTheme="light" />);
@@ -113,7 +127,7 @@ describe("the root attribute", () => {
     expect(root.getAttribute(THEME_ATTRIBUTE)).toBe("dark");
   });
 
-  it("is removed again on unmount when there was none, and survives StrictMode's second mount", () => {
+  it("[foundations.theme.one-store] is removed again on unmount when there was none, and survives StrictMode's second mount", () => {
     mockMedia(false);
     const view = render(<StrictMode><PaperProvider storageKey={null} defaultTheme="dark" /></StrictMode>);
     expect(root.getAttribute(THEME_ATTRIBUTE)).toBe("dark");
@@ -121,7 +135,7 @@ describe("the root attribute", () => {
     expect(root.hasAttribute(THEME_ATTRIBUTE)).toBe(false);
   });
 
-  it("follows the OS under system, and not under a chosen mode", () => {
+  it("[foundations.theme.choice-and-mode] [install.provider.settings] follows the OS under system, and not under a chosen mode", () => {
     const media = mockMedia(false);
     const { result } = renderHook(() => useTheme(), { wrapper: ({ children }) => <PaperProvider storageKey={null}>{children}</PaperProvider> });
     act(() => media.set(true));
@@ -151,7 +165,7 @@ describe("useResolvedTheme", () => {
     await waitFor(() => expect(result.current).toBe("light"));
   });
 
-  it("outside a Provider and with no attribute reads what the OS prefers", () => {
+  it("[foundations.theme.hooks] outside a Provider and with no attribute reads what the OS prefers", () => {
     const media = mockMedia(true);
     const { result } = renderHook(() => useResolvedTheme());
     expect(result.current).toBe("dark");
@@ -159,7 +173,7 @@ describe("useResolvedTheme", () => {
     expect(result.current).toBe("light");
   });
 
-  it("inside a Provider reads the mode <html> shows, an external write included", async () => {
+  it("[foundations.theme.external-writer] inside a Provider reads the mode <html> shows, an external write included", async () => {
     mockMedia(false);
     const { result } = renderHook(() => useResolvedTheme(), { wrapper: ({ children }) => <PaperProvider storageKey={null} defaultTheme="light">{children}</PaperProvider> });
     expect(result.current).toBe("light");
@@ -181,7 +195,7 @@ describe("a server render", () => {
     return { Provider, Readout, Mode: () => <>{useMode()}</> };
   };
 
-  it("answers with the default theme, light for system, wraps nothing and writes nothing", async () => {
+  it("[foundations.theme.server-render] [install.runtime.environments] answers with the default theme, light for system, wraps nothing and writes nothing", async () => {
     mockMedia(true);
     const dark = await fresh();
     expect(renderToStaticMarkup(<dark.Provider defaultTheme="dark"><dark.Readout /></dark.Provider>)).toBe("dark/dark");
@@ -190,7 +204,7 @@ describe("a server render", () => {
     expect(root.hasAttribute(THEME_ATTRIBUTE)).toBe(false);
   });
 
-  it("reads light outside a Provider, whatever <html> shows", async () => {
+  it("[foundations.theme.server-render] reads light outside a Provider, whatever <html> shows", async () => {
     mockMedia(true);
     root.setAttribute(THEME_ATTRIBUTE, "dark");
     const { Mode } = await fresh();
@@ -199,7 +213,7 @@ describe("a server render", () => {
 });
 
 describe("the stylesheet warning", () => {
-  it("is logged once in development when styles.css is missing", async () => {
+  it("[install.styles.provider-warning] is logged once in development when styles.css is missing", async () => {
     mockMedia(false);
     vi.resetModules();
     const { PaperProvider: Fresh } = await import("./PaperProvider");

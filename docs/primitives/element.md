@@ -8,6 +8,8 @@ Element Primitive는 1차 바탕인 Box 하나입니다. Box는 "무엇이든 �
 
 ## Box — 칸 하나
 
+[contract:primitives.box.prop-table]: #
+
 | prop | 값 | 출처 |
 | --- | --- | --- |
 | `padding` · `paddingX` · `paddingY` | xs · sm · md · lg · xl · 2xl · 3xl | Shape `inset.*` |
@@ -16,7 +18,7 @@ Element Primitive는 1차 바탕인 Box 하나입니다. Box는 "무엇이든 �
 | `overflow` · `overflowX` · `overflowY` | visible · hidden · clip · scroll · auto | 키워드만 받습니다 |
 
 [contract:primitives.box.named-size-class]: #
-이름 있는 크기(`md` 같은 dimension, `measure.md`, `container.content`, `full` · `fit` 같은 키워드)는 모두 class가 됩니다. 그래서 inline style에는 이름 있는 크기가 남지 않고, 소비자의 className이 이름 있는 크기를 덮을 수 있습니다.
+이름 있는 크기(`md` 같은 dimension, `measure.md`, `container.content`, `full` · `fit` 같은 키워드)는 모두 class가 됩니다. 그래서 inline style에는 이름 있는 크기가 남지 않고, 소비자의 className이 이름 있는 크기를 덮을 수 있습니다. 호출자가 넘긴 `style`은 이름 있는 크기도 길이도 이깁니다.
 
 [contract:primitives.box.length-escape]: #
 이름이 아닌 CSS 길이(`42ch` 같은 값)와 number만 inline style로 갑니다. 그 화면에만 있는 치수를 위한 통로입니다.
@@ -24,6 +26,7 @@ Element Primitive는 1차 바탕인 Box 하나입니다. Box는 "무엇이든 �
 [contract:primitives.box.overflow-class]: #
 `overflow` · `overflowX` · `overflowY`는 키워드 다섯 개만 받고, 모두 class가 됩니다. 길이를 받는 속성이 아니라 escape가 없습니다.
 
+[contract:primitives.box.padding-axes]: #
 안쪽 여백 축(`padding` · `paddingX` · `paddingY`)은 지도 하나(`BOX_STYLE`)에서 나옵니다. prop 타입, Box가 DOM으로 넘기지 않을 prop의 목록, class가 같은 키를 돌아 축을 더하면 셋이 함께 늘어납니다.
 
 크기 이름 가운데 `xs ~ xl`은 Shape의 dimension이고, 글 덩어리의 읽기 폭은 `measure.md`, 본문 격자의 최대 폭은 `container.content`처럼 가족을 앞에 붙여 부릅니다. 그 화면에만 있는 치수는 CSS 길이로 직접 줍니다. 면이나 테두리가 필요하면 Box에 얹지 않고 [Surface](paint.md#surface--면)를 씁니다.

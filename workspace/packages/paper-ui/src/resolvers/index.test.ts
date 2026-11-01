@@ -28,18 +28,18 @@ describe("the class maps", () => {
     expect(distinct([...Object.values(textRoleClass), ...Object.values(textMonoClass)])).toBe(true);
   });
 
-  it("declare the space axes in the order that lets the single axis lose to the pair", () => {
+  it("[primitives.box.padding-axes] declare the space axes in the order that lets the single axis lose to the pair", () => {
     expect(Object.keys(spaceClass)).toEqual(["padding", "paddingX", "paddingY", "gap", "rowGap", "columnGap"]);
   });
 
-  it("give the hover gate a class that is none of the accent classes", () => {
+  it("[primitives.paint.classes] give the hover gate a class that is none of the accent classes", () => {
     expect(hoverGate).toBeTruthy();
     expect(ACCENTS.flatMap((accent) => Object.values(accentVariantClass[accent]))).not.toContain(hoverGate);
   });
 });
 
 describe("resolveFill / resolveInk", () => {
-  it("pick the class their map holds for every value, and nothing for undefined", () => {
+  it("[foundations.class-maps.follow-vocabulary] pick the class their map holds for every value, and nothing for undefined", () => {
     for (const fill of SURFACE_FILLS) expect(resolveFill(fill), fill).toBe(fillClass[fill]);
     for (const ink of INKS) expect(resolveInk(ink), ink).toBe(inkClass[ink]);
     expect(resolveFill(undefined)).toBe("");
@@ -48,7 +48,7 @@ describe("resolveFill / resolveInk", () => {
 });
 
 describe("resolveText", () => {
-  it("joins the role, the mono modifier for family mono, and the ink — the role's own when none is given", () => {
+  it("[primitives.text.ink-beats-variant] joins the role, the mono modifier for family mono, and the ink — the role's own when none is given", () => {
     for (const variant of TEXT_VARIANTS) {
       const ink = inkClass[TEXT_INK[variant]];
       expect(resolveText({ variant }), variant).toBe([textRoleClass[variant], ink].join(" "));
@@ -59,14 +59,14 @@ describe("resolveText", () => {
     expect(resolveText({})).toBe([textRoleClass.body, inkClass.primary].join(" "));
   });
 
-  it("adds the numeric class last", () => {
+  it("[primitives.text.numeric] adds the numeric class last", () => {
     expect(resolveText({ variant: "caption", numeric: true })).toBe([textRoleClass.caption, inkClass.secondary, textNumericClass].join(" "));
     expect(resolveText({ numeric: false })).not.toContain(textNumericClass);
   });
 });
 
 describe("resolvePreset", () => {
-  it("picks a class for every preset × size × weight", () => {
+  it("[foundations.typography.control-preset] picks a class for every preset × size × weight", () => {
     for (const size of CONTROL_SIZES) {
       expect(resolvePreset("button", size, "medium"), `button ${size} medium`).toBe(presetClass.button.medium[size]);
       expect(resolvePreset("button", size, "strong"), `button ${size} strong`).toBe(presetClass.button.strong[size]);
@@ -80,14 +80,14 @@ describe("resolvePreset", () => {
 });
 
 describe("resolveControlFontSize", () => {
-  it("picks the font size class of a control font size, and nothing for undefined", () => {
+  it("[foundations.typography.font-size-escape] picks the font size class of a control font size, and nothing for undefined", () => {
     for (const fontSize of CONTROL_FONT_SIZES) expect(resolveControlFontSize(fontSize), fontSize).toBe(controlFontSizeClass[fontSize]);
     expect(resolveControlFontSize(undefined)).toBe("");
   });
 });
 
 describe("resolveSpace", () => {
-  it("picks the class of the axis and the step, and nothing without a step", () => {
+  it("[primitives.box.padding-axes] picks the class of the axis and the step, and nothing without a step", () => {
     for (const axis of Object.keys(spaceClass) as (keyof typeof spaceClass)[]) {
       for (const step of SPACES) expect(resolveSpace(axis, step), `${axis} ${step}`).toBe(spaceClass[axis][step]);
       expect(resolveSpace(axis, undefined), axis).toBe("");
@@ -96,7 +96,7 @@ describe("resolveSpace", () => {
 });
 
 describe("resolveGap", () => {
-  it("joins the gap family from one map and gives a class only to the names it was given", () => {
+  it("[primitives.layout.gap-family] joins the gap family from one map and gives a class only to the names it was given", () => {
     expect(resolveGap({ gap: "md", rowGap: "lg", columnGap: "xs" })).toBe([spaceClass.gap.md, spaceClass.rowGap.lg, spaceClass.columnGap.xs].join(" "));
     expect(resolveGap({ columnGap: "sm" })).toBe(spaceClass.columnGap.sm);
     expect(resolveGap({})).toBe("");
@@ -104,20 +104,20 @@ describe("resolveGap", () => {
 });
 
 describe("resolveBoxClass", () => {
-  it("joins the space classes in BOX_STYLE_KEYS order — Box has no ink and no paint", () => {
+  it("[primitives.box.padding-axes] joins the space classes in BOX_STYLE_KEYS order — Box has no ink and no paint", () => {
     expect(BOX_STYLE_KEYS).toEqual(["padding", "paddingX", "paddingY"]);
     expect(resolveBoxClass({ paddingX: "sm", padding: "md" })).toBe([spaceClass.padding.md, spaceClass.paddingX.sm].join(" "));
     expect(resolveBoxClass({ paddingX: "lg", paddingY: "xs" })).toBe([spaceClass.paddingX.lg, spaceClass.paddingY.xs].join(" "));
   });
 
-  it("takes every key of BOX_STYLE from its own map", () => {
+  it("[primitives.box.padding-axes] takes every key of BOX_STYLE from its own map", () => {
     for (const key of BOX_STYLE_KEYS) {
       const map: Record<string, string> = BOX_STYLE[key];
       for (const [name, className] of Object.entries(map)) expect(resolveBoxClass({ [key]: name }), `${key} ${name}`).toBe(className);
     }
   });
 
-  it("is empty for empty input", () => {
+  it("[primitives.box.padding-axes] is empty for empty input", () => {
     expect(resolveBoxClass({})).toBe("");
   });
 });

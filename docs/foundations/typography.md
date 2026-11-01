@@ -2,9 +2,12 @@
 
 Typography는 서체·크기·굵기·행간·자간을 정하는 시스템입니다. 컴포넌트는 크기를 숫자로 고르지 않고 **역할**로 고릅니다 — 페이지 제목인지, 본문인지, 짧은 이름인지. Color 다음 층이라, 역할마다 기본 잉크를 Color에서 가져옵니다.
 
+[contract:foundations.typography.palette-only]: #
 Typography도 세 단계입니다. 원본 수치인 **Typography Palette**, 그것을 조합한 **글자 역할**, 반복되는 컨트롤 글자를 묶은 **Control preset**입니다. 역할과 preset은 Palette의 변수를 조합할 뿐, 숫자를 새로 쓰지 않습니다. 토큰 경로는 Palette가 `tokens.typography.palette`, 역할이 `tokens.typography.role`, preset이 `tokens.typography.preset`입니다. 이 값들을 화면에 적용하는 선언은 한 곳, `tokens/typography-recipes.ts`가 만듭니다([역할을 적용하는 단위](#역할을-적용하는-단위)).
 
 ## Typography Palette — 원본
+
+[contract:foundations.typography.palette-table]: #
 
 <!-- generated:typography-palette -->
 <!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
@@ -20,11 +23,15 @@ Typography도 세 단계입니다. 원본 수치인 **Typography Palette**, 그�
 | `codeScale` | `inline` 0.85 · `compact` 0.8 |
 <!-- /generated:typography-palette -->
 
+[contract:foundations.typography.palette-names]: #
 크기와 행간은 실제 px 값을 이름으로 씁니다(`tokens.typography.palette.fontSize.14`). 서로 다른 단계 이름을 억지로 짝짓지 않기 위해서입니다. 450은 작은 sans 글자가 Retina에서 힘이 빠지지 않도록 둔 입력값용 보정이고, 650은 채워진 버튼처럼 강조가 필요한 라벨에 씁니다. 밑줄 offset은 글자의 장식이라 글자 크기(em)를 따릅니다. `codeScale`은 문장 속 코드가 둘러싼 글자에서 줄어드는 비율입니다.
 
+[contract:foundations.typography.hero-fluid]: #
 **고정 사다리의 선언된 예외는 `hero` 하나입니다.** `hero`의 크기는 뷰포트 폭을 따라 36px과 60px 사이에서 자라는 `clamp(2.25rem, 6vw, 3.75rem)`이고, 행간은 px이 아니라 단위 없는 비율 1.04입니다. 랜딩 첫 화면의 헤드라인처럼 화면 폭에 따라 크기가 달라져야 하는 한 자리만 이 예외를 씁니다. 다른 모든 크기와 행간은 px 고정값입니다.
 
 ## 서체
+
+[contract:foundations.typography.families]: #
 
 | family | 서체 | 쓰는 곳 |
 |---|---|---|
@@ -35,9 +42,12 @@ Pretendard를 맨 앞에 둡니다. 라틴과 한글을 한 몸으로 그려, �
 
 서체는 Typography 계약의 일부입니다. 굵기 사다리(400 · 450 · 500 · 600 · 650 · 700)는 Pretendard Variable이 있다고 전제하고 세워져 있고, 서체가 없으면 시스템 폰트가 가까운 굵기로 접습니다 — Windows(Segoe UI·맑은 고딕)는 450·500이 400으로, 600·650이 700으로, Android(Roboto)는 450이 500으로, 600·650이 700으로 접힙니다. macOS는 대부분의 단계를 그대로 유지합니다. 행간이 px 고정값이라 접혀도 기하는 바뀌지 않습니다. 불러올 두 스타일시트의 주소는 `FONT_STYLESHEETS`(`/tokens`)이고, 그대로 옮긴 스니펫은 [설치 › 폰트](../get-started/install.md#폰트)에 있습니다.
 
+[contract:foundations.typography.mono-axis]: #
 mono는 위계가 아니라 **family 축**입니다. `<Text family="mono">`로 어느 역할에도 얹고, 기술적인 자리에만 씁니다. 표의 숫자 열은 mono로 바꾸지 않고 sans에 `tabular-nums`만 줍니다. mono는 같은 px에서 sans보다 크게 읽혀 크기에 `monoSizeScale`(0.95)을 곱하고, 역할별 자간 대신 `tracking.mono`(−0.04em) 하나를 씁니다 — SF Mono와 D2Coding은 글자 폭이 넓어 UI에서 벌어져 보이기 때문입니다. 한글 mono를 쓰려면 앱이 D2Coding을 불러와야 합니다.
 
 ## 글자 역할
+
+[contract:foundations.typography.role-table]: #
 
 <!-- generated:typography-roles -->
 <!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
@@ -65,9 +75,14 @@ mono는 위계가 아니라 **family 축**입니다. `<Text family="mono">`로 �
 
 날짜, 담당, 소속 프로젝트처럼 곁에 붙는 정보는 `body`의 잉크만 낮추지 않고 `caption`으로 적고, 섹션 머리와 표 머리는 대문자가 아니라 `label`로 적습니다. Demo가 이렇게 그립니다.
 
+[contract:foundations.typography.role-computed]: #
+브라우저가 계산한 값은 원본이 풀린 값과 같습니다. 모든 `Text` variant와 모든 control preset의 계산된 글자 크기 · 굵기 · 행간 · 자간이 원본(`TYPOGRAPHY_SOURCE`)에서 풀린 값과 일치하고, mono는 크기가 variant의 `monoSizeScale`배이며 자간은 `tracking.mono`로 바뀝니다. 고정 행간이 아닌 hero의 단위 없는 행간은 자기 글자 크기에 곱해집니다.
+
 ## 역할을 적용하는 단위
 
 역할을 화면에 적용하는 길은 둘이고, 둘 다 같은 선언 하나에서 나옵니다. 컴포넌트는 `Text`를 쓰고, 앱의 stylesheet는 `/tokens`의 규칙 함수로 같은 선언을 가져옵니다.
+
+[contract:foundations.typography.code-rule]: #
 
 | 규칙 | 만드는 선언 | 쓰는 곳 |
 |---|---|---|
@@ -93,13 +108,18 @@ body 요소는 body 역할 전체를 받습니다. 크기와 행간뿐 아니라
 | `sans` | `keep-all` | `break-word` | 한글은 어절 사이에서만 끊고, 한 어절이 줄보다 길 때만 그 안에서 끊습니다. |
 | `mono` | `normal` | `anywhere` | 식별자와 경로는 어디서든 끊습니다. |
 
+[contract:foundations.typography.code-breaking]: #
 문장 속 코드 조각(`codeRule`의 `inline` · `compact`)은 서체 규칙이 아니라 둘러싼 글자의 줄바꿈을 따릅니다. 표 칸 안의 식별자가 어디서든 끊겨 칸의 최소 폭을 줄이면 표가 식별자를 가로로 자르며 좁아지기 때문에, 칸이 좁으면 표가 자기 wrapper 안에서 스크롤합니다.
 
+[contract:foundations.typography.single-line]: #
 한 줄에 서야 하는 라벨은 preset이 정합니다. Button과 Badge의 preset은 `white-space: nowrap`을 함께 담고, 입력은 값이 줄을 정하므로 담지 않습니다.
 
 ## Control preset
 
+[contract:foundations.typography.control-preset]: #
 조작 문구는 읽기 위계가 아니라 **컨트롤 크기**를 따릅니다. 같은 size의 Button·Field·Select가 같은 줄에 서면 글자 높이도 맞아야 하기 때문입니다. preset은 완성 class 하나로 제공되고, package의 Atom이 안에서 그 class를 고릅니다. 컨트롤을 직접 그리는 stylesheet는 `/tokens`의 `presetRule(preset, size, weight)`로 같은 선언을 가져옵니다.
+
+[contract:foundations.typography.preset-table]: #
 
 <!-- generated:typography-presets -->
 <!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
@@ -112,6 +132,7 @@ body 요소는 body 역할 전체를 받습니다. 크기와 행간뿐 아니라
 | `badge` | 12 / 16 · 500 (크기 무관) |  |  | Badge |
 <!-- /generated:typography-presets -->
 
+[contract:foundations.typography.control-line]: #
 컨트롤 글자 줄(행간 16)은 Shape이 컨트롤의 안쪽 여백을 계산하는 입력이기도 합니다 — 입력칸 inset은 (컨트롤 높이 − 16) / 2입니다. Badge 글자는 배지가 작아져도 12px에서 내려가지 않습니다. 밀도(높이)와 가독성(글자 크기)은 다른 축이기 때문입니다.
 
 [contract:foundations.typography.input-line]: #

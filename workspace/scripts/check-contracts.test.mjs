@@ -28,7 +28,7 @@ const withRepository = (files, run) => {
 
 test("[guardrails.contracts.one-to-one] a marker and a test with the same id pass, in every title form", () => {
   assert.deepEqual(errorsOf([doc(sentence("atoms.sample.case"))], [spec("[atoms.sample.case] works")]), []);
-  for (const call of ["describe", "test", "test.describe", "it.only", "test.describe.serial"]) {
+  for (const call of ["describe", "test", "test.describe", "it.only", "test.describe.serial", 'it.each(["a", f("b")] as const)']) {
     assert.deepEqual(errorsOf([doc(sentence("atoms.sample.case"))], [spec("[atoms.sample.case] works", call)]), [], call);
   }
   // A template-literal title, and one test that claims two contracts at once.
@@ -79,7 +79,7 @@ test("[guardrails.contracts.one-to-one] a marker that would render as text fails
 
 test("[guardrails.contracts.one-to-one] a skipped, todo, fixme or failing test covers nothing", () => {
   const marked = [doc(sentence("atoms.sample.case"))];
-  for (const call of ["it.skip", "test.skip", "describe.skip", "test.describe.skip", "it.todo", "test.fixme", "test.fail", "it.fails"]) {
+  for (const call of ["it.skip", "test.skip", "describe.skip", "test.describe.skip", "it.todo", "test.fixme", "test.fail", "it.fails", "it.skip.each([[1], [2]])"]) {
     const errors = errorsOf(marked, [spec("[atoms.sample.case] works", call)]);
     assert.equal(errors.length, 1, call);
     assert.match(errors[0], /^docs\/sample\.md:3 contract atoms\.sample\.case has no test whose title starts with \[atoms\.sample\.case\] and asserts it/, call);

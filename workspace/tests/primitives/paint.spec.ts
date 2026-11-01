@@ -1,13 +1,21 @@
 import { expect, test } from "@playwright/test";
 
-import { STATE_TINT_PROPERTY, tokens } from "../../packages/paper-ui/src/tokens";
+import { STATE_TINT_PROPERTY, SURFACE_FILLS, tokens } from "../../packages/paper-ui/src/tokens";
 import { accentProfile, itemProfile } from "../../packages/paper-ui/src/tokens/color-recipes";
 import { MOTION } from "../../packages/paper-ui/src/tokens/motion";
-import { openPlayground } from "../support/harness";
+import { openHarness, openPlayground } from "../support/harness";
 import { expectStyle } from "../support/style";
 
 // The tint an item lays over its face, as the computed background image.
 const tint = (color: string) => ({ backgroundImage: `linear-gradient(${color}, ${color})` });
+
+test("[primitives.surface.prop-table] each prop of a Surface comes from the role the table names: fill from bg, border from the border role and stroke, radius from the surface family and the pill", async ({ page }) => {
+  await openHarness(page, "layout");
+  for (const fill of SURFACE_FILLS) await expectStyle(page.getByTestId(`fill-${fill}`), { backgroundColor: tokens.color.bg[fill] });
+  await expectStyle(page.getByTestId("surface-border"), { borderTopColor: tokens.color.border.base, borderTopWidth: tokens.shape.stroke.border, borderTopStyle: "solid" });
+  for (const step of ["sm", "md", "lg"] as const) await expectStyle(page.getByTestId(`radius-${step}`), { borderTopLeftRadius: tokens.shape.radius.surface[step] });
+  await expectStyle(page.getByTestId("radius-full"), { borderTopLeftRadius: tokens.shape.radius.full });
+});
 
 test("[primitives.surface.item] a hoverable Surface fades its tint over the hover role", async ({ page }) => {
   await openPlayground(page, "surface", "Surface");
@@ -17,7 +25,7 @@ test("[primitives.surface.item] a hoverable Surface fades its tint over the hove
   await expect(surface).toHaveCSS("transition-duration", `${parseFloat(MOTION.hover.duration) / 1000}s`);
 });
 
-test("[primitives.surface.item] a hoverable Surface tints under the pointer and when pressed, and a selected one keeps its own tint under hover", async ({ page }) => {
+test("[primitives.surface.item] [atoms.states.hover-table] a hoverable Surface tints under the pointer and when pressed, and a selected one keeps its own tint under hover", async ({ page }) => {
   await openPlayground(page, "surface", "Surface");
   const surface = page.getByTestId("surface-example");
   // Without hoverable the Surface is not an item: it has no tint to take.

@@ -4,7 +4,7 @@
 import { forwardRef, type InputHTMLAttributes } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import { mergeProps } from "../primitives";
+import { mergeProps } from "../primitives/composition";
 import { markPaint } from "../primitives/paint/recipes.css";
 import type { ChoiceStatus, ControlSize } from "../tokens";
 import { useInputControl } from "./input-control";

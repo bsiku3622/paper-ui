@@ -23,6 +23,49 @@ test("[install.layers.app-css-wins] app CSS linked before the package beats its 
   await expect(page.getByTestId("package-box")).not.toHaveCSS("width", "123px");
 });
 
+test("[install.layers.contents] each sublayer holds what the docs say: the resets, the variables, the document ground, the classes a shared axis names, and the components", async ({ page }) => {
+  await openHarness(page, "layers");
+  // Every style rule of the package by the sublayer it sits in, with its selector and the properties it declares.
+  const rules = await page.evaluate(() => {
+    const found: { layer: string; selector: string; properties: string[] }[] = [];
+    const walk = (list: CSSRuleList, layer: string) => {
+      for (const rule of Array.from(list)) {
+        if (rule instanceof CSSLayerBlockRule) walk(rule.cssRules, layer ? `${layer}.${rule.name}` : rule.name);
+        else if (rule instanceof CSSStyleRule) found.push({ layer, selector: rule.selectorText, properties: Array.from(rule.style) });
+        else if ("cssRules" in rule) walk((rule as CSSGroupingRule).cssRules, layer);
+      }
+    };
+    for (const sheet of Array.from(document.styleSheets)) {
+      if (sheet.href?.endsWith("/consumer-first.css")) continue;
+      if ((sheet.ownerNode as Element | null)?.id === "react-aria-pressable-style") continue;
+      walk(sheet.cssRules, "");
+    }
+    return found;
+  });
+  const inLayer = (layer: string) => rules.filter((rule) => rule.layer === `pui.${layer}`);
+  const selects = (layer: string, selector: string) => inLayer(layer).some((rule) => rule.selector.includes(selector));
+  const declares = (layer: string, property: string) => inLayer(layer).some((rule) => rule.properties.includes(property));
+
+  // reset: box-sizing, the body's margin and the bare button's reset.
+  expect(inLayer("reset").some((rule) => rule.selector === "*" && rule.properties.includes("box-sizing"))).toBe(true);
+  expect(inLayer("reset").some((rule) => rule.selector === "body" && rule.properties.includes("margin-top"))).toBe(true);
+  expect(inLayer("reset").some((rule) => rule.selector.startsWith(":where(.") && rule.properties.includes("appearance"))).toBe(true);
+  // theme: nothing but variables and the colour scheme.
+  expect(inLayer("theme").flatMap((rule) => rule.properties).filter((name) => !name.startsWith("--") && name !== "color-scheme")).toEqual([]);
+  // base: the document, the scope's ink and the ring baseline, by selectors that carry no class. A role's letters are a class, so they are not here.
+  expect(selects("base", "body")).toBe(true);
+  expect(selects("base", ":focus-visible")).toBe(true);
+  expect(inLayer("base").filter((rule) => /\.[A-Za-z_-]/.test(rule.selector))).toEqual([]);
+  // utilities: the classes a shared axis names, the letters of a role among them, and presence and loop.
+  expect(declares("utilities", "background-color")).toBe(true);
+  expect(declares("utilities", "row-gap")).toBe(true);
+  expect(inLayer("utilities").some((rule) => rule.selector.startsWith(".") && rule.properties.includes("font-size") && rule.properties.includes("line-height"))).toBe(true);
+  expect(declares("utilities", "animation-name")).toBe(true);
+  // components: the primitives and Atoms, and the policy for reduced motion.
+  expect(inLayer("components").some((rule) => rule.selector.startsWith("."))).toBe(true);
+  expect(inLayer("components").some((rule) => rule.selector.includes("*") && rule.properties.includes("transition-duration"))).toBe(true);
+});
+
 test("[install.layers.every-rule-layered] every package rule sits in a pui sublayer; only @keyframes and @property stand outside", async ({ page }) => {
   await openHarness(page, "layers");
   // Walks every stylesheet but the app's own, through @layer, @media and @supports blocks and nested rules.
@@ -63,7 +106,7 @@ test("[install.layers.every-rule-layered] every package rule sits in a pui subla
   expect(filled.sort()).toEqual([...SUBLAYERS].sort());
 });
 
-test("the package stylesheet names no global pui- class; its classes are scoped to the build", async ({ page }) => {
+test("[guardrails.internal-class.no-class-names] the package stylesheet names no global pui- class; its classes are scoped to the build", async ({ page }) => {
   await openHarness(page, "layers");
   const selectors = await page.evaluate(() => {
     const found: string[] = [];

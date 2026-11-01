@@ -11,7 +11,7 @@ import { forwardRef, type HTMLAttributes } from "react";
 
 import { joinClass } from "../internal/joinClass";
 import { useMessages } from "../internal/locale";
-import { Box } from "../primitives";
+import { Box } from "../primitives/Box";
 import { spinnerPaint } from "../primitives/paint/recipes.css";
 import type { ControlSize } from "../tokens";
 import { spinnerInline, spinnerRoot, spinnerSize } from "./Spinner.css";

@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { useControllableState } from "./useControllableState";
 
 describe("useControllableState", () => {
-  it("keeps the value when uncontrolled, and notifies once per change", () => {
+  it("[primitives.hooks.naming] keeps the value when uncontrolled, and notifies once per change", () => {
     const onChange = vi.fn();
     const { result } = renderHook(() => useControllableState({ defaultValue: 1, onChange }));
     expect(result.current[0]).toBe(1);
@@ -24,7 +24,7 @@ describe("useControllableState", () => {
     expect(onChange).toHaveBeenCalledTimes(1);
   });
 
-  it("only notifies when controlled, and leaves the value to its owner", () => {
+  it("[primitives.hooks.naming] only notifies when controlled, and leaves the value to its owner", () => {
     const onChange = vi.fn();
     const { result, rerender } = renderHook(({ value }) => useControllableState({ value, defaultValue: 0, onChange }), { initialProps: { value: 5 } });
     act(() => result.current[1](6));

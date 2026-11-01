@@ -7,7 +7,7 @@ import { forwardRef, useEffect, useLayoutEffect, useRef, type InputHTMLAttribute
 
 import { joinClass } from "../internal/joinClass";
 import { useMergedRef } from "../internal/refs";
-import { mergeProps } from "../primitives";
+import { mergeProps } from "../primitives/composition";
 import { markPaint } from "../primitives/paint/recipes.css";
 import type { ChoiceStatus, ControlSize } from "../tokens";
 import { useInputControl } from "./input-control";

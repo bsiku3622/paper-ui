@@ -4,7 +4,7 @@
 import { forwardRef, type HTMLAttributes } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import { Box } from "../primitives";
+import { Box } from "../primitives/Box";
 import { linePaint } from "../primitives/paint/recipes.css";
 import type { DividerLevel, Orientation } from "../tokens";
 import { dividerRoot, dividerOrientation } from "./Divider.css";

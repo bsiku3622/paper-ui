@@ -1,15 +1,26 @@
 import { createRef, forwardRef, useState, type ReactNode } from "react";
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { Checkbox, Field, Radio, Select, Switch, Textarea } from "../atoms";
+import { Checkbox } from "../atoms/Checkbox";
+import { Field } from "../atoms/Field";
+import { Radio } from "../atoms/Radio";
+import { Select } from "../atoms/Select";
+import { Switch } from "../atoms/Switch";
+import { Textarea } from "../atoms/Textarea";
 import { textRoleClass } from "../styles/typography.css";
 import { ScopeModeContext } from "../theme/context";
 import { THEME_ATTRIBUTE } from "../tokens";
 import { portalRoot } from "./a11y/Portal.css";
-import {
-  FormField, Floating, Icon, LiveRegion, Portal, Pressable, RovingFocus, VisuallyHidden, announce, clearAnnouncements, mergeProps,
-  useFocusRing, useFocusWithin, useFormField, useFormFieldControl, useRovingFocusItem,
-} from "./index";
+import { FormField, useFormField, useFormFieldControl } from "./field/FormField";
+import { Floating } from "./float/Floating";
+import { Icon } from "./Icon";
+import { LiveRegion, announce, clearAnnouncements } from "./a11y/LiveRegion";
+import { Portal } from "./a11y/Portal";
+import { Pressable } from "./press/Pressable";
+import { RovingFocus, useRovingFocusItem } from "./focus/RovingFocus";
+import { VisuallyHidden } from "./a11y/VisuallyHidden";
+import { mergeProps } from "./composition";
+import { useFocusRing, useFocusWithin } from "./a11y/focus";
 import { useRovingValues } from "./focus/RovingFocus";
 
 const announcer = vi.hoisted(() => ({ announce: vi.fn(), clearAnnouncer: vi.fn() }));
@@ -27,7 +38,7 @@ function Control(props: Parameters<typeof useFormFieldControl>[0] & { label?: st
 }
 
 describe("roving focus", () => {
-  it("[primitives.roving-focus.tab-stop] has one tab stop, skips disabled items and emits one change per arrow", () => {
+  it("[primitives.roving-focus.tab-stop] [primitives.roving-focus.root-options] has one tab stop, skips disabled items and emits one change per arrow", () => {
     const change = vi.fn();
     render(<RovingFocus onCurrentValueChange={change}>
       <RovingFocus.Item value="a">A</RovingFocus.Item><RovingFocus.Item value="b" disabled>B</RovingFocus.Item><RovingFocus.Item value="c">C</RovingFocus.Item>
@@ -48,7 +59,7 @@ describe("roving focus", () => {
     expect(document.activeElement).toBe(c);
   });
 
-  it("[primitives.roving-focus.tab-stop] supports vertical orientation, RTL and wrapping without trapping Tab", () => {
+  it("[primitives.roving-focus.tab-stop] [primitives.roving-focus.root-options] supports vertical orientation, RTL and wrapping without trapping Tab", () => {
     const view = render(<RovingFocus dir="rtl" loop><RovingFocus.Item value="a">A</RovingFocus.Item><RovingFocus.Item value="b">B</RovingFocus.Item></RovingFocus>);
     const a = screen.getByRole("button", { name: "A" });
     const b = screen.getByRole("button", { name: "B" });
@@ -91,7 +102,7 @@ describe("roving focus", () => {
     expect(screen.getByText("C").tabIndex).toBe(0);
   });
 
-  it("honors caller cancellation and propagates group disabled through custom components", () => {
+  it("[primitives.roving-focus.item-hook] [primitives.roving-focus.root-options] honors caller cancellation and propagates group disabled through custom components", () => {
     const ref = createRef<HTMLButtonElement>();
     const view = render(<RovingFocus><RovingFocus.Item value="a" onKeyDown={(event) => event.preventDefault()}>A</RovingFocus.Item><RovingFocus.Item value="b">B</RovingFocus.Item></RovingFocus>);
     const a = screen.getByText("A");
@@ -103,7 +114,7 @@ describe("roving focus", () => {
     expect(ref.current?.tabIndex).toBe(-1);
   });
 
-  it("does not intercept keys originating in a descendant input", () => {
+  it("[primitives.roving-focus.item-hook] does not intercept keys originating in a descendant input", () => {
     render(<RovingFocus><RovingFocus.Item as="div" value="a"><input aria-label="Edit" /></RovingFocus.Item><RovingFocus.Item value="b">B</RovingFocus.Item></RovingFocus>);
     const input = screen.getByRole("textbox");
     act(() => input.focus());
@@ -119,6 +130,38 @@ describe("roving focus", () => {
     act(() => screen.getByText("Outside").focus());
     view.rerender(<><button>Outside</button><RovingFocus><RovingFocus.Item value="a" disabled>A</RovingFocus.Item></RovingFocus></>);
     expect(document.activeElement).toBe(screen.getByText("Outside"));
+  });
+});
+
+describe("roving focus under an outside current value", () => {
+  const group = (current: string, extra?: React.ReactNode) => (
+    <>
+      <button>Elsewhere</button>
+      <RovingFocus aria-label="Group" currentValue={current}>
+        <RovingFocus.Item value="a">A</RovingFocus.Item>
+        <RovingFocus.Item value="b">B</RovingFocus.Item>
+      </RovingFocus>
+      {extra}
+    </>
+  );
+
+  it("[primitives.roving-focus.external-current-keeps-focus] moves the Tab stop to the new value and leaves the focus where it was", () => {
+    const { rerender } = render(group("a"));
+    const [a, b] = [screen.getByText("A"), screen.getByText("B")];
+    expect([a.tabIndex, b.tabIndex]).toEqual([0, -1]);
+    act(() => screen.getByText("Elsewhere").focus());
+    rerender(group("b"));
+    expect([a.tabIndex, b.tabIndex]).toEqual([-1, 0]);
+    expect(document.activeElement).toBe(screen.getByText("Elsewhere"));
+  });
+
+  it("[primitives.roving-focus.external-current-keeps-focus] does not pull focus out of an item when the value is set to another", () => {
+    const { rerender } = render(group("a"));
+    const a = screen.getByText("A");
+    act(() => a.focus());
+    rerender(group("b"));
+    expect(document.activeElement).toBe(a);
+    expect(screen.getByText("B").tabIndex).toBe(0);
   });
 });
 
@@ -144,7 +187,7 @@ describe("roving registry and direction", () => {
     expect(arrow()).toBe(true);
   });
 
-  it("[primitives.roving-focus.direction] writes dir when it is given, and an explicit dir beats an inherited one", () => {
+  it("[primitives.roving-focus.direction] [primitives.roving-focus.root-options] writes dir when it is given, and an explicit dir beats an inherited one", () => {
     document.documentElement.dir = "rtl";
     render(<RovingFocus dir="ltr" data-testid="group"><RovingFocus.Item value="a">A</RovingFocus.Item><RovingFocus.Item value="b">B</RovingFocus.Item></RovingFocus>);
     expect(screen.getByTestId("group").getAttribute("dir")).toBe("ltr");
@@ -186,7 +229,7 @@ describe("roving registry and direction", () => {
     expect(screen.getByTestId("state").textContent).toBe("undefined true");
   });
 
-  it("an item renders a button by default, and another tag as it is, without a role", () => {
+  it("[primitives.roving-focus.tab-stop] [primitives.target.exceptions] an item renders a button by default, and another tag as it is, without a role", () => {
     render(<RovingFocus><RovingFocus.Item value="a">A</RovingFocus.Item><RovingFocus.Item as="div" value="b" data-testid="div">B</RovingFocus.Item></RovingFocus>);
     expect(screen.getByText("A").tagName).toBe("BUTTON");
     expect(screen.getByText("A").getAttribute("type")).toBe("button");
@@ -223,7 +266,7 @@ describe("field relationships", () => {
 describe("field control", () => {
   const log = () => vi.spyOn(console, "error").mockImplementation(() => {});
 
-  it("[primitives.form-field.control] ties Field, Textarea, Select, Checkbox, Radio and Switch to the field's id, relationships and state", () => {
+  it("[primitives.form-field.control] [primitives.form-field.context] ties Field, Textarea, Select, Checkbox, Radio and Switch to the field's id, relationships and state", () => {
     const controls: Array<[string, ReactNode]> = [
       ["Field", <Field />], ["Textarea", <Textarea />],
       ["Select", <Select><Select.Option value="a">A</Select.Option></Select>],
@@ -248,7 +291,7 @@ describe("field control", () => {
     expect(input.id).toBe((screen.getByText("Name") as HTMLLabelElement).htmlFor);
   });
 
-  it("[primitives.form-field.invalid] is invalid on error status alone, on the field being invalid alone, and not on neither", () => {
+  it("[primitives.form-field.invalid] [primitives.form-field.status-link] is invalid on error status alone, on the field being invalid alone, and not on neither", () => {
     const value = (field: ReactNode) => {
       const view = render(field);
       const invalid = screen.getByLabelText("control").getAttribute("aria-invalid");
@@ -273,7 +316,7 @@ describe("field control", () => {
     expect(screen.getByLabelText("control").getAttribute("aria-invalid")).toBe("grammar");
   });
 
-  it("[primitives.form-field.invalid] gives controlProps no undefined value, and tells isInvalid and visualStatus", () => {
+  it("[primitives.form-field.invalid] [primitives.hooks.attribute-table] [primitives.form-field.control-hook] [primitives.form-field.status-link] gives controlProps no undefined value, and tells isInvalid and visualStatus", () => {
     let seen: ReturnType<typeof useFormFieldControl> | undefined;
     function Probe(props: Parameters<typeof useFormFieldControl>[0]) {
       seen = useFormFieldControl(props);
@@ -289,6 +332,10 @@ describe("field control", () => {
     cleanup();
     render(<Probe status="warning" aria-invalid={false} />);
     expect([seen!.isInvalid, seen!.visualStatus]).toEqual([false, "warning"]);
+    cleanup();
+    // Each fills the other: an aria-invalid alone draws the error status.
+    render(<Probe aria-invalid />);
+    expect([seen!.isInvalid, seen!.visualStatus]).toEqual([true, "error"]);
     cleanup();
     render(<FormField label="L" invalid><Probe status="warning" /></FormField>);
     expect([seen!.isInvalid, seen!.visualStatus, seen!.isInField]).toEqual([true, "error", true]);
@@ -308,7 +355,7 @@ describe("field control", () => {
     error.mockRestore();
   });
 
-  it("[primitives.form-field.control] resets inside a Floating panel, so a control there has no relationship to the field", () => {
+  it("[primitives.form-field.control] [primitives.floating.content-state] resets inside a Floating panel, so a control there has no relationship to the field", () => {
     render(<FormField label="Outer" description="Help" required disabled invalid>
       <Floating defaultOpen><Floating.Trigger>Open</Floating.Trigger><Floating.Content aria-label="Panel"><Field aria-label="inside" /></Floating.Content></Floating>
     </FormField>);
@@ -345,7 +392,7 @@ describe("field control", () => {
 });
 
 describe("field hook", () => {
-  it("[primitives.form-field.relations] useFormField gives the control, label, description and error props without rendering", () => {
+  it("[primitives.form-field.relations] [primitives.form-field.hook] useFormField gives the control, label, description and error props without rendering", () => {
     function Probe() {
       const field = useFormField({ id: "name", description: "Help", error: "Wrong", invalid: true, required: true });
       return <><label {...field.labelProps}>Name</label><input {...field.controlProps} /><p {...field.descriptionProps}>Help</p><p {...field.errorProps}>Wrong</p></>;
@@ -367,7 +414,7 @@ describe("field hook", () => {
     expect(props).toEqual({ id: "x", disabled: true, required: true, "aria-invalid": true });
   });
 
-  it("marks the field's state on its wrapper", () => {
+  it("[primitives.form-field.hook] [primitives.hooks.attribute-table] [primitives.state.emitters] marks the field's state on its wrapper", () => {
     render(<FormField label="Email" disabled required invalid data-testid="field"><Control /></FormField>);
     const field = screen.getByTestId("field");
     expect(["data-disabled", "data-invalid", "data-required"].map((name) => field.getAttribute(name))).toEqual(["true", "true", "true"]);
@@ -375,7 +422,7 @@ describe("field hook", () => {
 });
 
 describe("roving item hook", () => {
-  it("[primitives.hooks.result-shape] gives itemProps with the ref, the Tab stop and the marker, and says which item is current", () => {
+  it("[primitives.hooks.result-shape] [primitives.hooks.attribute-table] gives itemProps with the ref, the Tab stop and the marker, and says which item is current", () => {
     function Item({ value }: { value: string }) {
       const { itemProps, isCurrent } = useRovingFocusItem<HTMLButtonElement>({ value });
       return <button type="button" {...itemProps} data-current={isCurrent}>{value}</button>;
@@ -397,7 +444,7 @@ describe("roving item hook", () => {
     expect([screen.getByText("a").tabIndex, screen.getByText("b").tabIndex]).toEqual([0, -1]);
   });
 
-  it("is a developer error outside a RovingFocus", () => {
+  it("[primitives.roving-focus.item-hook] [primitives.errors.prefix] is a developer error outside a RovingFocus", () => {
     const log = vi.spyOn(console, "error").mockImplementation(() => {});
     function Lonely() { useRovingFocusItem({ value: "a" }); return null; }
     expect(() => render(<Lonely />)).toThrow("[paper-ui] useRovingFocusItem must be used inside <RovingFocus>.");
@@ -421,20 +468,20 @@ describe("field parts", () => {
 });
 
 describe("hidden content and focus within", () => {
-  it("VisuallyHidden supplies an accessible name without aria-hidden", () => {
+  it("[primitives.visually-hidden.accessible] VisuallyHidden supplies an accessible name without aria-hidden", () => {
     render(<Pressable><Icon><path d="M1 1h2" /></Icon><VisuallyHidden>Create item</VisuallyHidden></Pressable>);
     expect(screen.getByRole("button", { name: "Create item" })).toBeTruthy();
     expect(screen.getByText("Create item").getAttribute("aria-hidden")).not.toBe("true");
   });
 
-  it("VisuallyHidden forwards a ref to the element it renders, as the tag it is asked for", () => {
+  it("[primitives.visually-hidden.accessible] VisuallyHidden forwards a ref to the element it renders, as the tag it is asked for", () => {
     const ref = createRef<HTMLElement>();
     render(<VisuallyHidden as="div" ref={ref}>Skip</VisuallyHidden>);
     expect(ref.current).toBe(screen.getByText("Skip"));
     expect(ref.current?.tagName).toBe("DIV");
   });
 
-  it("VisuallyHidden focusable shows the content while it holds focus, and not otherwise", () => {
+  it("[primitives.visually-hidden.accessible] VisuallyHidden focusable shows the content while it holds focus, and not otherwise", () => {
     render(<><VisuallyHidden>Plain</VisuallyHidden><VisuallyHidden focusable><a href="#main">Skip to content</a></VisuallyHidden></>);
     const hidden = screen.getByText("Plain");
     const wrapper = screen.getByText("Skip to content").parentElement as HTMLElement;
@@ -446,7 +493,7 @@ describe("hidden content and focus within", () => {
     expect(wrapper.style.position).toBe("absolute");
   });
 
-  it("[primitives.hooks.result-shape] useFocusRing marks focus and keyboard focus, and a text input shows its ring for every focus", () => {
+  it("[primitives.hooks.result-shape] [primitives.focus-ring.states] [primitives.hooks.attribute-table] useFocusRing marks focus and keyboard focus, and a text input shows its ring for every focus", () => {
     function Ring({ textInput }: { textInput?: boolean }) {
       const { focusProps, isFocusVisible } = useFocusRing({ textInput });
       return <input aria-label="Name" {...focusProps} data-visible={isFocusVisible} />;
@@ -461,7 +508,7 @@ describe("hidden content and focus within", () => {
     expect(input.hasAttribute("data-focused")).toBe(false);
   });
 
-  it("focus-within stays active when focus moves between descendants", () => {
+  it("[primitives.focus-ring.states] focus-within stays active when focus moves between descendants", () => {
     const change = vi.fn();
     function FocusGroup() {
       const { focusWithinProps, isFocusWithin } = useFocusWithin({ onFocusWithinChange: change });
@@ -533,5 +580,99 @@ describe("live region", () => {
     announcer.clearAnnouncer.mockClear();
     clearAnnouncements();
     expect(announcer.clearAnnouncer.mock.calls).toEqual([["polite"], ["assertive"]]);
+  });
+});
+
+describe("the options of a RovingFocus root", () => {
+  const items = <>
+    <RovingFocus.Item value="a">A</RovingFocus.Item>
+    <RovingFocus.Item value="b">B</RovingFocus.Item>
+    <RovingFocus.Item value="c">C</RovingFocus.Item>
+  </>;
+  const stops = () => ["A", "B", "C"].map((name) => screen.getByRole("button", { name }).tabIndex);
+
+  it("[primitives.roving-focus.root-options] starts an uncontrolled entry point at defaultCurrentValue, which then follows the focus and tells each move", () => {
+    const change = vi.fn();
+    render(<RovingFocus defaultCurrentValue="b" onCurrentValueChange={change}>{items}</RovingFocus>);
+    expect(stops()).toEqual([-1, 0, -1]);
+    const b = screen.getByRole("button", { name: "B" });
+    act(() => b.focus());
+    change.mockClear();
+    fireEvent.keyDown(b, { key: "ArrowRight" });
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "C" }));
+    expect(stops()).toEqual([-1, -1, 0]);
+    expect(change.mock.calls).toEqual([["c"]]);
+  });
+
+  it("[primitives.roving-focus.root-options] takes the first enabled item when no value names one, or the one it names cannot take the stop", () => {
+    const view = render(<RovingFocus>{items}</RovingFocus>);
+    expect(stops()).toEqual([0, -1, -1]);
+    view.unmount();
+    render(<RovingFocus defaultCurrentValue="b">
+      <RovingFocus.Item value="a" disabled>A</RovingFocus.Item>
+      <RovingFocus.Item value="b" disabled>B</RovingFocus.Item>
+      <RovingFocus.Item value="c">C</RovingFocus.Item>
+    </RovingFocus>);
+    expect(stops()).toEqual([-1, -1, 0]);
+  });
+
+  it("[primitives.roving-focus.root-options] moves on its own axis, and on both under orientation=both", () => {
+    const horizontal = render(<RovingFocus>{items}</RovingFocus>);
+    const a = screen.getByRole("button", { name: "A" });
+    act(() => a.focus());
+    fireEvent.keyDown(a, { key: "ArrowDown" });
+    expect(document.activeElement, "a horizontal group leaves the other axis alone").toBe(a);
+    horizontal.unmount();
+    render(<RovingFocus orientation="both">{items}</RovingFocus>);
+    const first = screen.getByRole("button", { name: "A" });
+    act(() => first.focus());
+    fireEvent.keyDown(first, { key: "ArrowDown" });
+    const second = screen.getByRole("button", { name: "B" });
+    expect(document.activeElement).toBe(second);
+    fireEvent.keyDown(second, { key: "ArrowRight" });
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "C" }));
+  });
+
+  it("[primitives.roving-focus.root-options] stops at the ends unless loop is on, and a disabled root disables its items", () => {
+    const view = render(<RovingFocus>{items}</RovingFocus>);
+    const c = screen.getByRole("button", { name: "C" });
+    act(() => c.focus());
+    fireEvent.keyDown(c, { key: "ArrowRight" });
+    expect(document.activeElement).toBe(c);
+    view.unmount();
+    render(<RovingFocus disabled>{items}</RovingFocus>);
+    for (const name of ["A", "B", "C"]) expect(screen.getByRole<HTMLButtonElement>("button", { name }).disabled, name).toBe(true);
+  });
+});
+
+describe("a LiveRegion's element", () => {
+  it("[primitives.live-region.element] is a div that forwards its ref and native attributes, whose changing content is what gets read", () => {
+    const ref = createRef<HTMLDivElement>();
+    const view = render(<LiveRegion ref={ref} data-probe="on" className="mine">First</LiveRegion>);
+    expect(ref.current?.tagName).toBe("DIV");
+    expect(ref.current?.getAttribute("data-probe")).toBe("on");
+    expect(ref.current?.classList.contains("mine")).toBe(true);
+    view.rerender(<LiveRegion ref={ref} data-probe="on" className="mine">Second</LiveRegion>);
+    expect(ref.current?.textContent).toBe("Second");
+  });
+});
+
+describe("focus within", () => {
+  it("[primitives.focus-ring.states] tells a focus entering and a focus leaving with the events of each, once per crossing of the boundary", () => {
+    const entered = vi.fn();
+    const left = vi.fn();
+    function Group() {
+      const { focusWithinProps } = useFocusWithin({ onFocusWithin: entered, onBlurWithin: left });
+      return <div {...focusWithinProps}><button type="button">First</button><button type="button">Second</button></div>;
+    }
+    render(<Group />);
+    const first = screen.getByRole("button", { name: "First" });
+    const second = screen.getByRole("button", { name: "Second" });
+    act(() => first.focus());
+    act(() => second.focus());
+    expect(entered).toHaveBeenCalledTimes(1);
+    expect(left).not.toHaveBeenCalled();
+    act(() => second.blur());
+    expect(left).toHaveBeenCalledTimes(1);
   });
 });

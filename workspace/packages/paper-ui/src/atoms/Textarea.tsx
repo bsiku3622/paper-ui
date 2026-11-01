@@ -13,7 +13,7 @@
 import { forwardRef, type TextareaHTMLAttributes } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import { mergeProps } from "../primitives";
+import { mergeProps } from "../primitives/composition";
 import { fieldPaint, fieldPlaceholderPaint } from "../primitives/paint/recipes.css";
 import { resolveControlFontSize, resolveFill, resolvePreset } from "../resolvers";
 import type { ControlFontSize, ControlSize, Status, SurfaceFill } from "../tokens";

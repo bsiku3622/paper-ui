@@ -2,7 +2,8 @@ import { expect, test } from "@playwright/test";
 
 import { tokens } from "../../packages/paper-ui/src/tokens";
 import { tab } from "../support/keyboard";
-import { colors, contrast, expectStyle, profile } from "../support/style";
+import { colors, contrast } from "../support/contrast";
+import { expectStyle, profile } from "../support/style";
 
 test("[atoms.link.target] the hero Buttons that are links carry no underline, and the demo link is a Link with an arrow icon that underlines under the pointer", async ({ page }) => {
   await page.goto("/");

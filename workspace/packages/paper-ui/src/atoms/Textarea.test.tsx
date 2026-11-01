@@ -28,7 +28,7 @@ describe("Textarea", () => {
     }
   });
 
-  it("[atoms.textarea.rows] shows four rows unless rows says otherwise, and keeps the caller's other attributes", () => {
+  it("[atoms.textarea.rows] [atoms.contract.axes] shows four rows unless rows says otherwise, and keeps the caller's other attributes", () => {
     const ref = createRef<HTMLTextAreaElement>();
     const view = render(<Textarea ref={ref} aria-label="rows" name="memo" />);
     const textarea = screen.getByLabelText("rows") as HTMLTextAreaElement;
@@ -55,7 +55,7 @@ describe("Textarea", () => {
     expect(source).not.toMatch(/minHeight|min-height/);
   });
 
-  it("[atoms.focus.ring] is its own frame: the keyboard's focus lands on the textarea, and its handlers still run", () => {
+  it("[atoms.focus.ring] [primitives.state.emitters] is its own frame: the keyboard's focus lands on the textarea, and its handlers still run", () => {
     const onFocus = vi.fn();
     render(<Textarea aria-label="ring" onFocus={onFocus} />);
     const textarea = screen.getByLabelText("ring");

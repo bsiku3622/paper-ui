@@ -121,6 +121,11 @@ const ShapeSource = () => (
         </BoardRow>
       ))}
       <BoardRow>
+        <TokenCell name="shape.anatomy.checkbox.markShift · x · y" note="돌린 체크의 광학 보정 — 획(emphasis)의 배수" />
+        <Cell><Checkbox size="md" defaultChecked aria-label="Checkbox markShift" /></Cell>
+        <ValueCell>{SHAPE_SOURCE.anatomy.checkbox.markShift.x} · {String(SHAPE_SOURCE.anatomy.checkbox.markShift.y).replace("-", "−")}</ValueCell>
+      </BoardRow>
+      <BoardRow>
         <TokenCell name="shape.anatomy.inline.dot" note="글자에 붙는 상태 점" />
         <Cell><Badge accent="info" dot>진행</Badge></Cell>
         <ValueCell>{n(SHAPE_SOURCE.anatomy.inline.dot, "em")}</ValueCell>
@@ -192,7 +197,7 @@ export const ShapePage = () => (
     <FoundationSection title="Shape roles" description="컴포넌트와 앱이 고르는 이름입니다. 역할은 자기 변수를 갖지 않습니다 — 원본의 별칭이거나 원본 위의 식입니다.">
       <ShapeRoles />
     </FoundationSection>
-    <FoundationSection title="Recipes" description="역할이 컴포넌트 anatomy가 되는 자리입니다. recipe에는 숫자가 없고, 아래 값은 브라우저가 식을 계산한 결과입니다.">
+    <FoundationSection title="Recipes" description="역할이 컴포넌트 anatomy가 되는 자리입니다. recipe에는 구조 값(절반 /2, 45° 회전)만 쓰고, 광학 보정 비율은 원본 anatomy에 둡니다. 아래 값은 브라우저가 식을 계산한 결과입니다.">
       <Board columns={[{ label: "Recipe" }, ...CONTROL_SIZES.map((size) => ({ label: size, align: "center" as const }))]} template="minmax(9rem, 1fr) repeat(3, minmax(10rem, 1fr))" minWidth="44rem">
         {RECIPES.map((recipe) => (
           <BoardRow key={recipe.name} size="lg">

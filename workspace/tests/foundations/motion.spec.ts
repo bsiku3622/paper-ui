@@ -2,7 +2,8 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { INVENTORY } from "../../packages/paper-ui/src/inventory";
 import { STATE_TINT_PROPERTY } from "../../packages/paper-ui/src/tokens";
-import { MOTION, MOTION_CONSUMERS, MOTION_ROLES, type MotionRole } from "../../packages/paper-ui/src/tokens/motion";
+import { DURATION, LOOP, MOTION, MOTION_CONSUMERS, MOTION_ROLES, type MotionRole } from "../../packages/paper-ui/src/tokens/motion";
+import { px, roleDp } from "../support/geometry";
 import { openHarness, openPlayground } from "../support/harness";
 
 // The chromium project runs the role timings and the presence recipe as authored; chromium-reduced-motion runs the
@@ -13,6 +14,9 @@ const isReduced = ({ contextOptions }: Fixtures) => contextOptions.reducedMotion
 
 type Timing = { duration: number; easing: string };
 const timing = (role: MotionRole): Timing => ({ duration: parseFloat(MOTION[role].duration), easing: MOTION[role].easing });
+const reduced = parseFloat(DURATION.reduced);
+const period = (loop: keyof typeof LOOP) => parseFloat(LOOP[loop].duration);
+const rise = roleDp(MOTION.enter.offset);
 
 // Each transitioned property of an element with its duration in ms and its easing, as the browser computes them.
 const transitionsOf = (target: Locator, pseudo?: "::after") =>
@@ -121,7 +125,8 @@ test.describe("with motion", () => {
     expect(entering.name).not.toBe(exiting.name);
 
     // The surface rises from the enter offset and scale, and sinks back to them; a scrim only fades.
-    const hidden = { opacity: "0", transform: "matrix(0.99, 0, 0, 0.99, 0, 4)" };
+    const { scale } = MOTION.enter;
+    const hidden = { opacity: "0", transform: `matrix(${scale}, 0, 0, ${scale}, 0, ${rise})` };
     expect(await frameOf(page.getByTestId("surface-entering"), "start")).toEqual(hidden);
     expect(await frameOf(page.getByTestId("surface-exiting"), "end")).toEqual(hidden);
     for (const [id, at] of [["scrim-entering", "start"], ["scrim-exiting", "end"]] as const) {
@@ -131,12 +136,12 @@ test.describe("with motion", () => {
     expect(scrim).toMatchObject({ easing: timing("exit").easing, fill: "forwards" });
   });
 
-  test("[foundations.motion.compositions] loops run at their own period and curve, and Spinner and the loading Button compose the spin", async ({ page }) => {
+  test("[foundations.motion.compositions] [foundations.motion.loops] loops run at their own period and curve, and Spinner and the loading Button compose the spin", async ({ page }) => {
     await openHarness(page, "motion");
     const spin = await animationOf(page.getByTestId("loop-spin"));
     const pulse = await animationOf(page.getByTestId("loop-pulse"));
-    expect(spin).toMatchObject({ duration: 900, easing: "linear", iterations: "infinite" });
-    expect(pulse).toMatchObject({ duration: 1400, easing: timing("state").easing, iterations: "infinite" });
+    expect(spin).toMatchObject({ duration: period("spin"), easing: LOOP.spin.easing, iterations: "infinite" });
+    expect(pulse).toMatchObject({ duration: period("pulse"), easing: LOOP.pulse.easing, iterations: "infinite" });
     expect(spin.name).not.toBe(pulse.name);
     expect(await animationOf(page.getByRole("progressbar", { name: "Spinner" }))).toEqual(spin);
     expect(await animationOf(page.getByRole("button", { name: "Saving" }).locator("span[aria-hidden]"))).toEqual(spin);
@@ -200,12 +205,12 @@ test.describe("with motion", () => {
     await expect(page.getByRole("heading", { name: "설정", exact: true })).toBeFocused();
   });
 
-  test("[foundations.motion.roles] draws one row per role on the Motion page, in the vocabulary's order", async ({ page }) => {
+  test("[foundations.motion.roles] [foundations.pages.derived-rows] draws one row per role on the Motion page, in the vocabulary's order", async ({ page }) => {
     await openPlayground(page, "foundations/motion", "Motion");
     const rows = await page.locator("code").filter({ hasText: /^motion\.role\./ }).allTextContents();
     expect(rows).toEqual(MOTION_ROLES.map((role) => `motion.role.${role}`));
     await expect(page.getByRole("heading", { name: "Motion composition", exact: true })).toBeVisible();
-    await expect(page.getByText("4px · 0.99", { exact: true })).toBeVisible();
+    await expect(page.getByText(`${px(rise)} · ${MOTION.enter.scale}`, { exact: true })).toBeVisible();
   });
 
   test("[foundations.motion.roles] times the press, hover and state specimens as their roles", async ({ page }) => {
@@ -219,7 +224,7 @@ test.describe("with motion", () => {
     expect(state["background-color"]!.easing).toBe(timing("state").easing);
   });
 
-  test("[foundations.motion.compositions] shows the enter specimen rising 4px and the exit specimen playing its enter on load, then leaving and staying hidden", async ({ page }) => {
+  test("[foundations.motion.compositions] shows the enter specimen rising by its role's displacement and the exit specimen playing its enter on load, then leaving and staying hidden", async ({ page }) => {
     await openPlayground(page, "foundations/motion", "Motion");
     // A presence specimen is a button and the surface it opens and closes, in the row's specimen cell.
     const specimen = (role: MotionRole) => page.getByText(`motion.role.${role}`, { exact: true }).locator("xpath=../following-sibling::div[1]");
@@ -235,18 +240,19 @@ test.describe("with motion", () => {
     await expect(surface("enter")).toBeHidden();
     await specimen("enter").getByRole("button", { name: "열기", exact: true }).click();
     await expect(surface("enter")).toHaveAttribute("data-presence", "entering");
-    expect(await frameOf(surface("enter"), "start")).toEqual({ opacity: "0", transform: "matrix(0.99, 0, 0, 0.99, 0, 4)" });
+    const { scale } = MOTION.enter;
+    expect(await frameOf(surface("enter"), "start")).toEqual({ opacity: "0", transform: `matrix(${scale}, 0, 0, ${scale}, 0, ${rise})` });
   });
 });
 
 test.describe("with reduced motion", () => {
   test.skip(({ contextOptions }) => !isReduced({ contextOptions }), "the policy only applies where the user asks for less motion");
 
-  test("[foundations.motion.reduced] ends every transition at once, the Switch thumb's included", async ({ page }) => {
+  test("[foundations.motion.reduced] [foundations.motion.reduced-layers] ends every transition at once, the Switch thumb's included", async ({ page }) => {
     await openHarness(page, "motion");
     for (const row of ATOM_TRANSITIONS) {
       const actual = await transitionsOf(row.target(page), row.pseudo);
-      for (const property of Object.keys(row.properties)) expect(actual[property]!.duration, `${labelOf(row)} ${property}`).toBeCloseTo(0.01, 3);
+      for (const property of Object.keys(row.properties)) expect(actual[property]!.duration, `${labelOf(row)} ${property}`).toBeCloseTo(reduced, 3);
     }
   });
 
@@ -254,7 +260,7 @@ test.describe("with reduced motion", () => {
     await openHarness(page, "motion");
     for (const id of ["surface-entering", "surface-exiting", "scrim-entering", "scrim-exiting"]) {
       const animation = await animationOf(page.getByTestId(id));
-      expect(animation.duration, id).toBeCloseTo(0.01, 3);
+      expect(animation.duration, id).toBeCloseTo(reduced, 3);
       expect(animation.iterations, id).toBe("1");
     }
     expect((await frameOf(page.getByTestId("surface-exiting"), "end")).opacity).toBe("0");
@@ -278,19 +284,19 @@ test.describe("with reduced motion", () => {
     await expect(page.getByRole("button", { name: "설정 열기", exact: true })).toBeFocused();
   });
 
-  test("[foundations.motion.reduced] turns the Spinner, the loading Button's spinner and the spin loop into the pulse", async ({ page }) => {
+  test("[foundations.motion.reduced] [foundations.motion.reduced-loops] turns the Spinner, the loading Button's spinner and the spin loop into the pulse", async ({ page }) => {
     await openHarness(page, "motion");
     const pulse = await animationOf(page.getByTestId("loop-pulse"));
-    expect(pulse).toMatchObject({ duration: 1400, iterations: "infinite" });
+    expect(pulse).toMatchObject({ duration: period("pulse"), iterations: "infinite" });
     for (const target of [page.getByTestId("loop-spin"), page.getByRole("progressbar", { name: "Spinner" }), page.getByRole("button", { name: "Saving" }).locator("span[aria-hidden]")]) {
       expect(await animationOf(target)).toEqual(pulse);
     }
   });
 
-  test("[foundations.motion.reduced] pulses the loop specimens on the Motion page", async ({ page }) => {
+  test("[foundations.motion.reduced] [foundations.motion.reduced-loops] pulses the loop specimens on the Motion page", async ({ page }) => {
     await openPlayground(page, "foundations/motion", "Motion");
     const pulse = await animationOf(page.getByText("motion.loop.pulse", { exact: true }).locator("xpath=../following-sibling::div[1]/span"));
-    expect(pulse).toMatchObject({ duration: 1400, iterations: "infinite" });
+    expect(pulse).toMatchObject({ duration: period("pulse"), iterations: "infinite" });
     expect(await animationOf(page.getByRole("progressbar", { name: "회전 반복 예시" }))).toEqual(pulse);
   });
 });

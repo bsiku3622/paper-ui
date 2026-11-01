@@ -54,19 +54,19 @@ describe("vocabulary", () => {
     expect(vocabulary.SURFACE_THEMES).toEqual([...vocabulary.COLOR_MODES, "inverse"]);
   });
 
-  it("orders the surfaces as the Color docs do", () => {
+  it("[foundations.vocabulary.one-pair-per-axis] orders the surfaces as the Color docs do", () => {
     expect(vocabulary.SURFACE_FILLS).toEqual(["canvas", "raised", "sunken"]);
   });
 
-  it("keeps the divider levels inside the border levels", () => {
+  it("[foundations.vocabulary.one-pair-per-axis] keeps the divider levels inside the border levels", () => {
     for (const level of vocabulary.DIVIDER_LEVELS) expect(vocabulary.BORDER_LEVELS).toContain(level);
   });
 
-  it("keeps the selectable variants inside the variants", () => {
+  it("[foundations.vocabulary.one-pair-per-axis] keeps the selectable variants inside the variants", () => {
     for (const variant of vocabulary.SELECTABLE_VARIANTS) expect(vocabulary.VARIANTS).toContain(variant);
   });
 
-  it("gives every accent × variant a profile", () => {
+  it("[foundations.vocabulary.one-pair-per-axis] gives every accent × variant a profile", () => {
     for (const accent of vocabulary.ACCENTS) {
       for (const variant of vocabulary.VARIANTS) expect(accentProfile(accent, variant), `${accent} ${variant}`).toBeDefined();
     }
@@ -94,7 +94,7 @@ describe("vocabulary", () => {
     for (const size of vocabulary.ICON_SIZES) expect(vocabulary.TEXT_VARIANTS, size).toContain(size);
   });
 
-  it("[foundations.vocabulary.one-pair-per-axis] derives the Layout axes from the trees that author them", () => {
+  it("[foundations.vocabulary.one-pair-per-axis] [foundations.layout.elevation-vocabulary] derives the Layout axes from the trees that author them", () => {
     expect(vocabulary.ELEVATIONS).toEqual(keysOf(LAYOUT_SOURCE.elevation.tier));
     expect(vocabulary.BREAKPOINTS).toEqual(keysOf(LAYOUT_SOURCE.breakpoint));
     expect(vocabulary.CONTAINERS).toEqual(keysOf(LAYOUT_SOURCE.container));
@@ -148,7 +148,7 @@ describe("vocabulary", () => {
     expectTypeOf<vocabulary.MotionRole>().toEqualTypeOf<(typeof vocabulary.MOTION_ROLES)[number]>();
   });
 
-  it("closes the axes at the values the components rely on", () => {
+  it("[foundations.vocabulary.one-pair-per-axis] closes the axes at the values the components rely on", () => {
     expectTypeOf<vocabulary.Status>().toEqualTypeOf<"info" | "success" | "warning" | "error">();
     expectTypeOf<vocabulary.Accent>().toEqualTypeOf<"primary" | "info" | "success" | "warning" | "error">();
     expectTypeOf<vocabulary.SurfaceFill>().toEqualTypeOf<"canvas" | "raised" | "sunken">();

@@ -21,7 +21,7 @@ describe("measureSpace", () => {
     expect(measureSpace("none", element)).toBe(0);
   });
 
-  it("reads the width a probe has inside the element, and takes the probe out again", () => {
+  it("[primitives.floating.geometry] reads the width a probe has inside the element, and takes the probe out again", () => {
     const element = document.createElement("div");
     document.body.append(element);
     const seen: Array<{ parent: Element | null; className: string }> = [];
@@ -61,7 +61,7 @@ describe("useMeasuredSpace", () => {
     expect(view.container.querySelector("output")!.textContent).toBe("16");
   });
 
-  it("measures again when the window resizes", () => {
+  it("[primitives.floating.geometry] measures again when the window resizes", () => {
     const widths = { [stepProbe.sm]: 8 };
     laidOut(widths);
     const view = render(<>{host()}<Probe step="sm" active /></>);

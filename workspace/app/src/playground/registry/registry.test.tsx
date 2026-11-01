@@ -1,7 +1,7 @@
 import { createElement, type ReactElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { renderHook } from "@testing-library/react";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { PaperProvider } from "@studio-baeks/paper-ui";
 import * as vocabulary from "@studio-baeks/paper-ui/tokens";
@@ -237,5 +237,33 @@ describe("stage", () => {
       }
       expect(staged, entry.name).toContain(markup(subject));
     }
+  });
+});
+
+describe("Foundations pages", () => {
+  it("[app.playground.foundations-render] each of the five draws its heading and its sections without an error", async () => {
+    const { render, screen } = await import("@testing-library/react");
+    const { MemoryRouter, Route, Routes } = await import("react-router-dom");
+    const { Foundations } = await import("../foundations");
+    const { FOUNDATIONS } = await import("../../site/site-map");
+    expect(FOUNDATIONS).toHaveLength(5);
+    const errors: unknown[][] = [];
+    const spy = vi.spyOn(console, "error").mockImplementation((...args) => void errors.push(args));
+    for (const { id, label } of FOUNDATIONS) {
+      const view = render(
+        <PaperProvider>
+          <MemoryRouter initialEntries={[`/playground/foundations/${id}`]}>
+            <Routes>
+              <Route path="/playground/foundations/:section" element={<Foundations />} />
+            </Routes>
+          </MemoryRouter>
+        </PaperProvider>,
+      );
+      expect(screen.getByRole("heading", { level: 1, name: label }), id).toBeTruthy();
+      expect(view.container.querySelectorAll("section, h2").length, `${id} draws sections`).toBeGreaterThan(0);
+      view.unmount();
+    }
+    spy.mockRestore();
+    expect(errors).toEqual([]);
   });
 });

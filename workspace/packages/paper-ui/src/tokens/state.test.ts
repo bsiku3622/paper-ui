@@ -15,7 +15,7 @@ import {
 } from "./state";
 
 describe("state vocabulary", () => {
-  it("names the nine states, with no hover and no 'pressed'", () => {
+  it("[primitives.state.active-not-pressed] [atoms.states.names] [atoms.states.vocabulary] names the nine states, with no hover and no 'pressed'", () => {
     expect([...STATE_NAMES]).toEqual(["active", "focused", "focusVisible", "selected", "disabled", "invalid", "required", "dragging", "dropTarget"]);
     expect(STATE_NAMES).not.toContain("hovered");
     expect(STATE_NAMES).not.toContain("pressed");
@@ -23,13 +23,20 @@ describe("state vocabulary", () => {
     expect(Object.values(STATE_ATTRIBUTE).some((attribute) => attribute.startsWith("data-pui-"))).toBe(false);
   });
 
-  it("selects a state by its attribute", () => {
+  it("[atoms.states.names] writes each state of the table under its attribute", () => {
+    expect(STATE_ATTRIBUTE).toEqual({
+      active: "data-active", focused: "data-focused", focusVisible: "data-focus-visible", selected: "data-selected", disabled: "data-disabled",
+      invalid: "data-invalid", required: "data-required", dragging: "data-dragging", dropTarget: "data-drop-target",
+    });
+  });
+
+  it("[atoms.states.vocabulary] selects a state by its attribute", () => {
     expect(stateSelector("focusVisible")).toBe("[data-focus-visible]");
     expect(stateSelector("active")).toBe("[data-active]");
     for (const name of STATE_NAMES) expect(stateSelector(name)).toBe(`[${STATE_ATTRIBUTE[name]}]`);
   });
 
-  it("maps a snapshot to attributes: 'true' while a state holds, undefined otherwise", () => {
+  it("[primitives.state.attributes] [atoms.states.vocabulary] maps a snapshot to attributes: 'true' while a state holds, undefined otherwise", () => {
     expect(stateAttributes({ active: true, focusVisible: false, disabled: undefined })).toEqual({
       "data-active": "true", "data-focus-visible": undefined, "data-disabled": undefined,
     });
@@ -38,22 +45,22 @@ describe("state vocabulary", () => {
     expectTypeOf(attributes).toEqualTypeOf<{ "data-selected"?: "true" }>();
   });
 
-  it("spells the selected and enabled selectors from the state attributes", () => {
+  it("[atoms.states.value-attributes] spells the selected and enabled selectors from the state attributes", () => {
     expect(SELECTED_SELECTOR).toBe(":is([data-selected], [aria-current]:not([aria-current=false]))");
     expect(ENABLED_SELECTOR).toBe(":not(:disabled):not([aria-disabled=true]):not([data-disabled])");
   });
 
-  it("keeps the value and marker attributes apart from the states", () => {
+  it("[atoms.states.value-attributes] keeps the value and marker attributes apart from the states", () => {
     const states = new Set<string>(Object.values(STATE_ATTRIBUTE));
     for (const attribute of [...Object.values(VALUE_ATTRIBUTE), ...Object.values(MARKER_ATTRIBUTE)]) {
       expect(attribute.startsWith("data-")).toBe(true);
       expect(states.has(attribute), attribute).toBe(false);
     }
-    expect(VALUE_ATTRIBUTE.orientation).toBe("data-orientation");
-    expect(MARKER_ATTRIBUTE.rovingItem).toBe("data-roving-item");
+    expect(Object.values(VALUE_ATTRIBUTE).sort()).toEqual(["data-orientation", "data-part", "data-placement", "data-presence", "data-presentation", "data-status"]);
+    expect(Object.values(MARKER_ATTRIBUTE).sort()).toEqual(["data-drag-ignore", "data-roving-item"]);
   });
 
-  it("reaches the /tokens entry as the vocabulary and the state selector, and nothing more", () => {
+  it("[atoms.states.vocabulary] reaches the /tokens entry as the vocabulary and the state selector, and nothing more", () => {
     expect((publicEntry as Record<string, unknown>).STATE_NAMES).toBe(STATE_NAMES);
     expect(typeof (publicEntry as Record<string, unknown>).stateSelector).toBe("function");
     expectTypeOf<StateName>().toEqualTypeOf<keyof typeof STATE_ATTRIBUTE>();
@@ -77,7 +84,7 @@ describe("attribute spelling", () => {
     for (const code of ["data-active-item", "x-data-active", "isActive"]) expect(spells(code, "data-active"), code).toBe(false);
   });
 
-  it("leaves no state, value or marker attribute spelled in a primitive", () => {
+  it("[primitives.state.attributes] [atoms.states.vocabulary] leaves no state, value or marker attribute spelled in a primitive", () => {
     const attributes = [...Object.values(STATE_ATTRIBUTE), ...Object.values(VALUE_ATTRIBUTE), ...Object.values(MARKER_ATTRIBUTE)];
     expect(sources.length).toBeGreaterThan(0);
     const spelled = sources.flatMap((file) => {
@@ -105,28 +112,28 @@ describe("state recipes", () => {
     expect(stateStyle.tinted).toEqual({ backgroundImage: "linear-gradient(var(--pui-state-tint), var(--pui-state-tint))" });
   });
 
-  it("[foundations.state.recipes] draws the ring from the Shape geometry and the focus colour", () => {
+  it("[foundations.state.recipes] [foundations.state.fragments] draws the ring from the Shape geometry and the focus colour", () => {
     expect(focusRing).toEqual({ outline: `${shape.focus.width} solid ${color.interaction.focus}`, outlineOffset: shape.focus.offset });
   });
 
-  it("[foundations.state.recipes] lets the ring owner draw the ring on the keyboard state, with the native outline off", () => {
+  it("[foundations.state.recipes] [foundations.state.fragments] lets the ring owner draw the ring on the keyboard state, with the native outline off", () => {
     const { focusVisible } = stateStyle;
     expect(focusVisible.outline).toBe("none");
     expect(at(focusVisible, "selectors")["&[data-focus-visible]"]).toEqual(focusRing);
     expect(at(forced(focusVisible), "(forced-colors: active)", "selectors")["&[data-focus-visible]"]).toEqual({ outlineColor: SYSTEM_COLORS.highlight });
   });
 
-  it("[foundations.state.recipes] fades a disabled target by the opacity role and gives it the not-allowed cursor", () => {
+  it("[foundations.state.recipes] [foundations.state.fragments] fades a disabled target by the opacity role and gives it the not-allowed cursor", () => {
     expect(at(stateStyle.disabled, "selectors")["&[data-disabled]"]).toEqual({ opacity: color.opacity.disabled, cursor: "not-allowed" });
     expect(at(stateStyle.disabledCursor, "selectors")["&[data-disabled]"]).toEqual({ cursor: "not-allowed" });
     expect(at(forced(stateStyle.disabled), "(forced-colors: active)", "selectors")["&[data-disabled]"]).toEqual({ opacity: 1, color: SYSTEM_COLORS.grayText, borderColor: SYSTEM_COLORS.grayText });
   });
 
-  it("[foundations.state.recipes] presses one stroke down under the pointer or data-active, while the target is enabled", () => {
+  it("[foundations.state.recipes] [foundations.state.fragments] presses one stroke down under the pointer or data-active, while the target is enabled", () => {
     expect(at(stateStyle.press, "selectors")[`&:is(:active, [data-active])${ENABLED}`]).toEqual({ transform: `translateY(${motion.role.press.offset})` });
   });
 
-  it("[foundations.state.recipes] tints a neutral item: pressed over selected over hover, and a disabled item answers to neither the pointer nor the press", () => {
+  it("[foundations.state.recipes] [atoms.states.priority] [foundations.state.fragments] tints a neutral item: pressed over selected over hover, and a disabled item answers to neither the pointer nor the press", () => {
     const { item } = stateStyle;
     const selectors = at(item, "selectors");
     const selected = `&${SELECTED_SELECTOR}`;
@@ -151,7 +158,7 @@ describe("state recipes", () => {
     expect(at(item, "@media", "(prefers-contrast: more)", "selectors")[selected]).toEqual({ boxShadow: strokeRing(color.ink.primary) });
   });
 
-  it("[foundations.state.recipes] gives an outlined control a border per status, and a rising border on hover only while it has none", () => {
+  it("[foundations.state.recipes] [foundations.state.fragments] gives an outlined control a border per status, and a rising border on hover only while it has none", () => {
     const { field } = stateStyle;
     expect(Object.keys(at(field, "selectors"))).toEqual(STATUSES.map((status) => `&[data-status="${status}"]`));
     for (const status of STATUSES) expect(at(field, "selectors")[`&[data-status="${status}"]`]).toEqual({ borderColor: outlinedControlProfile.status[status] });
@@ -161,12 +168,12 @@ describe("state recipes", () => {
     for (const selector of [`&:hover${ENABLED}`, `&:hover${ENABLED}:not([data-status])`]) expect(forcedHover[selector]).toEqual({ borderColor: SYSTEM_COLORS.highlight });
   });
 
-  it("[foundations.state.recipes] turns the border of a drop target to where the input is going", () => {
+  it("[foundations.state.recipes] [foundations.state.fragments] turns the border of a drop target to where the input is going", () => {
     expect(at(stateStyle.dropTarget, "selectors")["&[data-drop-target]"]).toEqual({ borderColor: color.interaction.focus });
     expect(at(forced(stateStyle.dropTarget), "(forced-colors: active)", "selectors")["&[data-drop-target]"]).toEqual({ borderColor: SYSTEM_COLORS.highlight });
   });
 
-  it("[foundations.state.recipes] underlines only under a pointer that can hover, while the target is enabled", () => {
+  it("[foundations.state.recipes] [foundations.state.fragments] underlines only under a pointer that can hover, while the target is enabled", () => {
     const { hoverUnderline } = stateStyle;
     expect(hoverUnderline.textDecorationLine).toBe("none");
     expect(at(hoverUnderline, "@media", "(hover: hover)", "selectors")[`&:hover${ENABLED}`]).toEqual({ textDecorationLine: "underline" });
@@ -184,7 +191,7 @@ describe("state recipes", () => {
     }
   });
 
-  it("[foundations.state.recipes] never sets a transition, and leaves a link as flat declarations", () => {
+  it("[foundations.state.recipes] [foundations.state.fragments] never sets a transition, and leaves a link as flat declarations", () => {
     for (const [name, fragment] of Object.entries(stateStyle)) expect(valuesOf(fragment, "transition"), name).toEqual([]);
     expect(linkStyle).toEqual({ color: color.interaction.link, textDecorationLine: "underline", textUnderlineOffset: tokens.typography.palette.decoration.underlineOffset });
   });
@@ -195,7 +202,7 @@ describe("state recipes", () => {
     expect(code).not.toMatch(/["'`][^"'`\n]*(?<![\w-])(?:data|aria)-[a-z]/);
   });
 
-  it("reaches the /tokens entry as plain objects", () => {
+  it("[foundations.state.recipes] reaches the /tokens entry as plain objects", () => {
     for (const name of ["focusRing", "stateStyle", "linkStyle", "STATE_TINT", "STATE_TINT_PROPERTY"]) expect(name in publicEntry, name).toBe(true);
     expect((publicEntry as Record<string, unknown>).stateStyle).toBe(stateStyle);
   });

@@ -94,9 +94,22 @@ const AtomTrigger = () => {
   );
 };
 
+// A Pressable that writes its callbacks down, in the order they ran.
+const LoggedTarget = ({ id, ...options }: { id: string; cancelOnPointerExit?: boolean; allowTextSelection?: boolean }) => {
+  const [log, setLog] = useState<string[]>([]);
+  const note = (name: string) => setLog((current) => [...current, name]);
+  return (
+    <Pressable {...options} data-testid={id} data-log={log.join(" ")} onPressStart={() => note("start")} onPressEnd={() => note("end")} onPressUp={() => note("up")}
+      onPressChange={(isActive) => note(`change:${isActive}`)} onPress={() => note("press")}>{id}</Pressable>
+  );
+};
+
 // The elements a press lands on, each counting its clicks and presses in data attributes.
 export const PressCase = () => (
   <>
+    <LoggedTarget id="logged" />
+    <LoggedTarget id="exits" cancelOnPointerExit />
+    <LoggedTarget id="selects" allowTextSelection />
     <ButtonTarget />
     <ButtonTarget disabled />
     <RoleTarget />

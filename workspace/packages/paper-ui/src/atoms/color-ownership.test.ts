@@ -15,7 +15,7 @@ const stylesheets = (dir: string): string[] =>
 const read = (path: string) => readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
 
 describe("the Atom stylesheets", () => {
-  it("never reference tokens.color: their colour is the paint tier's", () => {
+  it("[primitives.orders.colour] never reference tokens.color: their colour is the paint tier's", () => {
     const files = stylesheets(atoms);
     // Button, IconButton, Link, Field, Textarea, Select, Checkbox, Radio, Switch, Badge, Spinner, Divider and the two recipes.
     expect(files.length).toBeGreaterThanOrEqual(13);

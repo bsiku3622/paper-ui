@@ -1,7 +1,9 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import { tokens } from "../../packages/paper-ui/src/tokens";
 import { pageErrors } from "../support/console";
 import { crawlRoutes, settled } from "../support/crawl";
+import { px, roleDp } from "../support/geometry";
 import { tab } from "../support/keyboard";
 
 // The site shell: one layout route owns the chrome, the landmarks, the title, the frame and the sidebars of every page.
@@ -206,7 +208,7 @@ test("at 390 the header is static and the sidebars are closed disclosures above 
   await page.goto("/docs/foundations/color");
   await settled(page);
   await expect(header(page)).toHaveCSS("position", "static");
-  await expect(main(page)).toHaveCSS("padding-left", "16px");
+  await expect(main(page)).toHaveCSS("padding-left", px(roleDp(tokens.layout.gutter)));
   for (const [route, nav, link] of [["/docs/foundations/color", docsNav, "Typography"], ["/playground/button", playgroundNav, "Badge"]] as const) {
     await page.goto(route);
     await settled(page);

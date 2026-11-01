@@ -4,7 +4,10 @@ Atom이 hover·focus·active·selected·disabled·invalid에 어떻게 반응하
 
 ## 상태 어휘
 
+[contract:atoms.states.vocabulary]: #
 상태의 이름과 속성은 `tokens/state.ts` 한 곳이 적고, 컴포넌트가 다는 이름과 stylesheet가 읽는 이름이 어긋나지 않도록 패키지의 다른 어느 파일도 이 속성을 직접 쓰지 않습니다. 상태는 켜져 있는 동안만 속성이 있는 boolean이고, 접두어 없는 `data-*`입니다(`data-pui-*`는 테마 속성만 씁니다).
+
+[contract:atoms.states.names]: #
 
 | 상태 | 속성 | 뜻 |
 | --- | --- | --- |
@@ -16,19 +19,23 @@ Atom이 hover·focus·active·selected·disabled·invalid에 어떻게 반응하
 | `required` | `data-required` | 필수 |
 | `dragging` · `dropTarget` | `data-dragging` · `data-drop-target` | 끌리는 중 · 떨어뜨릴 자리 |
 
+[contract:atoms.states.value-attributes]: #
 값을 가진 속성은 `data-status`(error 같은 틀의 상태 단어), `data-presence`(`entering` · `exiting`), `data-presentation`, `data-placement`, `data-part`, `data-orientation`이고, 코드가 DOM을 걷기 위한 표지는 `data-roving-item`과 `data-drag-ignore`입니다. hover는 CSS이고 속성이 없습니다 — `@media (hover: hover)` 안에서, 막히지 않은 대상에만 걸립니다.
 
 ## 우선순위
 
 한 면 안에서 상태는 다음 순서로 읽습니다.
 
+[contract:atoms.states.priority]: #
 1. `disabled` — 모든 interaction을 끕니다.
 2. `active` — 눌리는 동안의 면과 변위입니다.
 3. `selected` — 현재 선택된 항목의 면을 유지합니다.
 4. `hover` — 포인터가 올라온 동안만 일시적인 피드백을 보여줍니다.
 
+[contract:atoms.states.ring-channel]: #
 포커스 링은 이 사슬의 밖에 있는 별도 채널이라 면 상태와 무관하게 키보드가 닿으면 늘 그려집니다.
 
+[contract:atoms.states.pointer-focus]: #
 포인터 클릭은 키보드 focus와 다릅니다. 클릭한 Field·Select·Textarea에는 caret이나 native 열림 상태만 남고 focus ring을 그리지 않습니다. ring은 React Aria의 입력 modality가 키보드로 판정한 포커스에만 표시합니다 — Tab으로 들어오거나 Shift+Tab으로 돌아온 경우이고, 텍스트 입력은 글자를 치는 것만으로는 ring이 생기지 않습니다. 클릭한 뒤에 누른 키도 키보드로 판정합니다: 클릭한 Select에서 키를 누르면(Escape로 목록을 닫을 때도) ring이 뜨고, 클릭한 텍스트 입력에서는 Escape를 누르면 ring이 뜹니다.
 
 ## 상태가 그려지는 길
@@ -38,6 +45,8 @@ Atom이 hover·focus·active·selected·disabled·invalid에 어떻게 반응하
 전이는 상태마다 Motion 역할이 정합니다. hover는 tint · hover 경계 · hover 잉크(`hover`, 100ms), state는 선택된 면과 켜진 표식(`state`, 130ms), press는 1px 변위(`press`, 100ms)입니다.
 
 ## 표준 hover 규칙
+
+[contract:atoms.states.hover-table]: #
 
 | 대상 | resting | hover | focus | 비고 |
 |---|---|---|---|---|
@@ -51,6 +60,7 @@ Atom이 hover·focus·active·selected·disabled·invalid에 어떻게 반응하
 | Link | `interaction.link` 잉크, 밑줄(`underline="always"` 기본) | 밑줄 없이 시작한 Link(`underline="hover"`)만 가리킬 때 밑줄 | keyboard ring | 면을 만들지 않음 |
 | Badge·상태 점·정적 표시 | 그대로 | 없음 | 해당 없음 | 정보 표식에 hover를 추가하지 않음 |
 
+[contract:atoms.states.hover-border]: #
 neutral Form의 `border.hover`는 `border.base`·`border.strong`보다 진하고 잉크보다 옅은 전용 경계 역할로, 입력 상자의 존재만 잠깐 강조합니다. semantic Form은 처음부터 의미 색을 쓰므로 같은 선을 한 번 더 올리지 않고 hover에서도 같은 경계를 유지합니다.
 
 [contract:atoms.field.frame]: #
@@ -82,6 +92,8 @@ Button · IconButton은 눌리는 동안 한 단계(`motion.press`의 변위, 1p
 ## Atom별 상태 표
 
 열 하나가 상태 하나이고, 아래 [검증](#검증)이 열마다 그 열을 지키는 테스트를 가리킵니다.
+
+[contract:atoms.states.atom-table]: #
 
 | Atom | 링 주인 | hover | active(눌림) | selected | disabled | invalid | forced colors | target |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |

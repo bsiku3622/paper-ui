@@ -6,7 +6,8 @@
 // The frame is the element that draws the border and the ring. For a Textarea or a selection mark that is the control
 // itself; for Field and Select it is the wrapper around the native control, which keeps the focus handlers and the controlProps.
 
-import { useFocusRing, useFormFieldControl, type FormFieldControlOptions } from "../primitives";
+import { useFocusRing } from "../primitives/a11y/focus";
+import { useFormFieldControl, type FormFieldControlOptions } from "../primitives/field/FormField";
 import { VALUE_ATTRIBUTE, stateAttributes } from "../tokens";
 
 export type InputControlOptions = FormFieldControlOptions & {

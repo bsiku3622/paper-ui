@@ -60,9 +60,8 @@ const ownFolder = (file: string) => {
   return parts.length > 1 ? parts[0]! : "";
 };
 
-// The one barrel imports every folder by design, so it belongs to neither order.
 const secondOrderFiles = SECOND.flatMap((folder) => sources(join(primitives, folder)));
-const firstOrderFiles = sources(primitives).filter((file) => !SECOND.includes(ownFolder(file)) && relative(primitives, file) !== "index.ts");
+const firstOrderFiles = sources(primitives).filter((file) => !SECOND.includes(ownFolder(file)));
 
 describe("the first order", () => {
   it("[primitives.orders.first] imports no second-order folder", () => {
@@ -81,7 +80,7 @@ describe("the first order", () => {
 });
 
 describe("the second order", () => {
-  it("[primitives.orders.second] imports only the allowed edges, and each import of another folder is one of them", () => {
+  it("[primitives.orders.second] [primitives.orders.allowed-edges] imports only the allowed edges, and each import of another folder is one of them", () => {
     expect(secondOrderFiles.length).toBeGreaterThan(0);
     const violations = secondOrderFiles.flatMap((file) => {
       const own = ownFolder(file);
@@ -105,11 +104,18 @@ describe("the second order", () => {
     for (const module of shared) expect(read(join(src, "internal", `${module}.ts`)), module).not.toMatch(/createContext/);
   });
 
-  it("[primitives.orders.second] lets float reach paint for the scrim and nothing else", () => {
+  it("[primitives.orders.second] [primitives.orders.allowed-edges] lets float reach paint for the scrim and nothing else", () => {
     const names = sources(join(primitives, "float")).flatMap((file) =>
       importsOf(file).filter(({ from }) => folderOf(file, from) === "paint").flatMap(({ from, names }) => names.map((name) => `${from}#${name}`)),
     );
     expect(names).toEqual(["../paint/recipes.css#scrimPaint"]);
+  });
+
+  it("[primitives.orders.press-reach] lets nothing under primitives but press itself reach it: a part gets a press from whoever draws it", () => {
+    const reachers = sources(primitives).filter((file) => ownFolder(file) !== "press").flatMap((file) =>
+      importsOf(file).filter(({ from }) => folderOf(file, from) === "press").map(({ from }) => `${relative(primitives, file)} → ${from}`),
+    );
+    expect(reachers).toEqual([]);
   });
 
   it("[primitives.orders.second] keeps the hook useSelectable free of press", () => {

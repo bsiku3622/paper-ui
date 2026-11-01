@@ -24,3 +24,17 @@ test("[install.fonts.snippet-matches-app] the app and install.md load exactly th
   assert.deepEqual(stylesheets(snippet), expected);
   assert.deepEqual(stylesheets(read("../app/index.html")), expected);
 });
+
+test("[guardrails.verify.order] runs lint, typecheck, unit tests, build, the tarball smoke and e2e in the order the docs name, in CI and before publishing, and a package build lints and type-checks first", () => {
+  const { scripts } = JSON.parse(read("../package.json"));
+  assert.equal(scripts.verify, "pnpm check && pnpm build && pnpm smoke:dist && pnpm test:e2e");
+  assert.equal(scripts.check, "pnpm lint && pnpm typecheck && pnpm test");
+  const sentence = read("../../docs/foundations/README.md").split("\n").find((line) => line.startsWith("이 검사는 사람이 기억해서 돌리지 않습니다."));
+  assert.ok(sentence, "the README states the order");
+  assert.match(sentence, /lint · typecheck · 단위 테스트 · build · smoke:dist · e2e/);
+  const paper = JSON.parse(read("../packages/paper-ui/package.json")).scripts;
+  assert.match(paper.prepublishOnly, /pnpm -w run verify/);
+  const build = paper.build;
+  for (const [earlier, later] of [["eslint", "vite build"], ["tsc --noEmit", "vite build"]]) assert.ok(build.indexOf(earlier) >= 0 && build.indexOf(earlier) < build.indexOf(later), `${earlier} before ${later}`);
+  assert.match(read("../../.github/workflows/ci.yml"), /run: pnpm verify/);
+});

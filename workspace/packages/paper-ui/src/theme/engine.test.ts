@@ -26,20 +26,20 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals());
 
 describe("the theme's pure rules", () => {
-  it("inverts each mode into the other", () => {
+  it("[primitives.surface.theme] inverts each mode into the other", () => {
     expect(invertMode("light")).toBe("dark");
     expect(invertMode("dark")).toBe("light");
     for (const mode of COLOR_MODES) expect(invertMode(invertMode(mode))).toBe(mode);
   });
 
-  it("resolves a Surface theme against the mode around it", () => {
+  it("[primitives.surface.theme] resolves a Surface theme against the mode around it", () => {
     for (const ambient of COLOR_MODES) {
       expect(resolveSurfaceTheme("inverse", ambient)).toBe(invertMode(ambient));
       for (const theme of SURFACE_THEMES.filter((theme): theme is ColorMode => theme !== "inverse")) expect(resolveSurfaceTheme(theme, ambient)).toBe(theme);
     }
   });
 
-  it("resolves a preference, following the OS only for system", () => {
+  it("[foundations.theme.choice-and-mode] resolves a preference, following the OS only for system", () => {
     for (const prefersDark of [true, false]) {
       expect(resolvePreference("system", prefersDark)).toBe(prefersDark ? "dark" : "light");
       expect(resolvePreference("light", prefersDark)).toBe("light");
@@ -50,7 +50,7 @@ describe("the theme's pure rules", () => {
 });
 
 describe("readRootMode", () => {
-  it("reads the attribute when it names a mode, whatever the OS prefers", () => {
+  it("[foundations.theme.root-attribute] reads the attribute when it names a mode, whatever the OS prefers", () => {
     const media = mockMedia(true);
     root.setAttribute(THEME_ATTRIBUTE, "light");
     expect(readRootMode()).toBe("light");
@@ -59,20 +59,20 @@ describe("readRootMode", () => {
     expect(readRootMode()).toBe("dark");
   });
 
-  it("follows the OS when there is no attribute, the way the stylesheet does", () => {
+  it("[foundations.theme.root-attribute] follows the OS when there is no attribute, the way the stylesheet does", () => {
     const media = mockMedia(true);
     expect(readRootMode()).toBe("dark");
     media.set(false);
     expect(readRootMode()).toBe("light");
   });
 
-  it("answers light, and subscribes without error, where the window has no matchMedia", () => {
+  it("[foundations.theme.server-render] answers light, and subscribes without error, where the window has no matchMedia", () => {
     vi.stubGlobal("matchMedia", undefined);
     expect(readRootMode()).toBe("light");
     subscribeRootMode(document, () => {})();
   });
 
-  it("follows the OS when the attribute names no mode", () => {
+  it("[foundations.theme.root-attribute] follows the OS when the attribute names no mode", () => {
     mockMedia(true);
     root.setAttribute(THEME_ATTRIBUTE, "sepia");
     expect(readRootMode()).toBe("dark");
@@ -80,7 +80,7 @@ describe("readRootMode", () => {
 });
 
 describe("subscribeRootMode", () => {
-  it("calls back for an attribute write and for an OS change, and stops once unsubscribed", async () => {
+  it("[foundations.theme.root-attribute] calls back for an attribute write and for an OS change, and stops once unsubscribed", async () => {
     const media = mockMedia(false);
     const onChange = vi.fn();
     const unsubscribe = subscribeRootMode(document, onChange);
@@ -96,7 +96,7 @@ describe("subscribeRootMode", () => {
     expect(onChange).toHaveBeenCalledTimes(2);
   });
 
-  it("ignores other attributes of <html>", async () => {
+  it("[foundations.theme.root-attribute] ignores other attributes of <html>", async () => {
     mockMedia(false);
     const onChange = vi.fn();
     const unsubscribe = subscribeRootMode(document, onChange);
@@ -119,7 +119,7 @@ describe("holdTransitions", () => {
   });
   afterEach(() => vi.restoreAllMocks());
 
-  it("sets the swap attribute at once and removes it on the next frame, after a style flush", () => {
+  it("[foundations.theme.swap-instant] sets the swap attribute at once and removes it on the next frame, after a style flush", () => {
     const flush = vi.spyOn(window, "getComputedStyle");
     const release = holdTransitions(document);
     expect(root.hasAttribute(THEME_SWAP_ATTRIBUTE)).toBe(true);
@@ -131,7 +131,7 @@ describe("holdTransitions", () => {
     expect(root.hasAttribute(THEME_SWAP_ATTRIBUTE)).toBe(false);
   });
 
-  it("counts holds: the attribute stays until the last one is released and its frame has passed", () => {
+  it("[foundations.theme.swap-instant] counts holds: the attribute stays until the last one is released and its frame has passed", () => {
     const first = holdTransitions(document);
     const second = holdTransitions(document);
     first();
@@ -143,7 +143,7 @@ describe("holdTransitions", () => {
     expect(root.hasAttribute(THEME_SWAP_ATTRIBUTE)).toBe(false);
   });
 
-  it("keeps the attribute when a new hold starts before the releasing frame", () => {
+  it("[foundations.theme.swap-instant] keeps the attribute when a new hold starts before the releasing frame", () => {
     holdTransitions(document)();
     const again = holdTransitions(document);
     nextFrame();
@@ -153,7 +153,7 @@ describe("holdTransitions", () => {
     expect(root.hasAttribute(THEME_SWAP_ATTRIBUTE)).toBe(false);
   });
 
-  it("releases a hold once, however often its release is called", () => {
+  it("[foundations.theme.swap-instant] releases a hold once, however often its release is called", () => {
     const first = holdTransitions(document);
     const second = holdTransitions(document);
     first();
@@ -199,7 +199,7 @@ describe("themeBootScript", () => {
     expect(boot({ storageKey: "k", defaultTheme: "system" })).toBe("light");
   });
 
-  it("reads the default key and the system default when given no options", () => {
+  it("[foundations.theme.boot-before-paint] reads the default key and the system default when given no options", () => {
     mockMedia(true);
     const getItem = store({ [THEME_STORAGE_KEY]: "dark" });
     expect(boot()).toBe("dark");
@@ -208,7 +208,7 @@ describe("themeBootScript", () => {
     expect(boot()).toBe("dark");
   });
 
-  it("reads no storage for a null key, and falls back when storage throws", () => {
+  it("[foundations.theme.boot-before-paint] reads no storage for a null key, and falls back when storage throws", () => {
     mockMedia(false);
     const getItem = store({ k: "dark" });
     expect(boot({ storageKey: null, defaultTheme: "light" })).toBe("light");
@@ -217,7 +217,7 @@ describe("themeBootScript", () => {
     expect(boot({ storageKey: "k", defaultTheme: "dark" })).toBe("dark");
   });
 
-  it("is an expression that carries its options as data, so no option can end the script element", () => {
+  it("[foundations.theme.boot-before-paint] is an expression that carries its options as data, so no option can end the script element", () => {
     mockMedia(false);
     const key = '</script><script>alert("x")</script>';
     const script = themeBootScript({ storageKey: key });
@@ -244,7 +244,7 @@ describe("the boot entry", () => {
     return { modules, packages };
   };
 
-  it("imports no React and no CSS, however far its imports reach", () => {
+  it("[install.entry.tokens-server-safe] imports no React and no CSS, however far its imports reach", () => {
     const { modules, packages } = reach(resolve(process.cwd(), "src/theme/boot.ts"));
     expect([...modules].length).toBeGreaterThan(1);
     expect([...packages]).toEqual([]);

@@ -1,0 +1,213 @@
+{
+  "roles": {
+    "inset": {
+      "xs": 4,
+      "sm": 8,
+      "md": 12,
+      "lg": 16,
+      "xl": 24,
+      "2xl": 32,
+      "3xl": 48
+    },
+    "radius": {
+      "control": 4,
+      "selection": 3,
+      "surface": {
+        "sm": 4,
+        "md": 6,
+        "lg": 8
+      },
+      "full": 999
+    },
+    "stroke": {
+      "border": 1,
+      "emphasis": 2,
+      "icon": 1.75
+    },
+    "focus": {
+      "width": 2,
+      "offset": 2
+    },
+    "target": {
+      "min": 24
+    },
+    "control": {
+      "height": {
+        "sm": 30,
+        "md": 32,
+        "lg": 36
+      },
+      "inset": {
+        "input": {
+          "sm": 7,
+          "md": 8,
+          "lg": 10
+        },
+        "button": {
+          "sm": 10,
+          "md": 11,
+          "lg": 14
+        }
+      },
+      "gap": 8,
+      "icon": {
+        "sm": 16,
+        "md": 18,
+        "lg": 20
+      }
+    },
+    "selection": {
+      "size": {
+        "sm": 15,
+        "md": 16,
+        "lg": 18
+      }
+    },
+    "icon": {
+      "size": {
+        "label": 14,
+        "caption": 16,
+        "body": 18,
+        "subheading": 20
+      }
+    },
+    "dimension": {
+      "width": {
+        "xs": 72,
+        "sm": 108,
+        "md": 160,
+        "lg": 240,
+        "xl": 360
+      },
+      "height": {
+        "xs": 64,
+        "sm": 96,
+        "md": 144,
+        "lg": 216,
+        "xl": 320
+      }
+    },
+    "measure": {
+      "xs": 448,
+      "sm": 512,
+      "md": 608,
+      "lg": 672,
+      "xl": 736
+    }
+  },
+  "recipes": {
+    "badge": {
+      "height": {
+        "sm": 20,
+        "md": 22,
+        "lg": 24
+      },
+      "inset": {
+        "sm": 6,
+        "md": 8,
+        "lg": 10
+      },
+      "gap": 4,
+      "dot": "0.5em"
+    },
+    "checkbox": {
+      "radius": 3,
+      "mark": {
+        "sm": 7.5,
+        "md": 8,
+        "lg": 9
+      },
+      "short": {
+        "sm": 3.75,
+        "md": 4,
+        "lg": 4.5
+      },
+      "stroke": 2,
+      "markTransform": "rotate(-45deg) translate(calc(var(--pui-shape-stroke-emphasis) * var(--pui-shape-anatomy-checkbox-mark-shift-x)), calc(var(--pui-shape-stroke-emphasis) * var(--pui-shape-anatomy-checkbox-mark-shift-y)))",
+      "dash": {
+        "width": {
+          "sm": 7.5,
+          "md": 8,
+          "lg": 9
+        },
+        "height": 2,
+        "radius": 999
+      }
+    },
+    "radio": {
+      "dot": {
+        "sm": 7.5,
+        "md": 8,
+        "lg": 9
+      }
+    },
+    "switch": {
+      "width": {
+        "sm": 30,
+        "md": 32,
+        "lg": 36
+      },
+      "height": {
+        "sm": 17,
+        "md": 18,
+        "lg": 20
+      },
+      "thumb": {
+        "sm": 13,
+        "md": 14,
+        "lg": 16
+      },
+      "inset": 2,
+      "travel": {
+        "sm": 13,
+        "md": 14,
+        "lg": 16
+      }
+    },
+    "select": {
+      "arrowInset": {
+        "sm": 7,
+        "md": 8,
+        "lg": 10
+      },
+      "paddingEnd": {
+        "sm": 31,
+        "md": 34,
+        "lg": 38
+      }
+    },
+    "textarea": {
+      "paddingBlock": {
+        "sm": 4,
+        "md": 5,
+        "lg": 7
+      }
+    },
+    "spinner": {
+      "size": {
+        "sm": 16,
+        "md": 18,
+        "lg": 20
+      },
+      "inline": "1em",
+      "stroke": 2
+    },
+    "target": {
+      "selection": {
+        "sm": -4.5,
+        "md": -4,
+        "lg": -3
+      },
+      "switchBlock": {
+        "sm": -3.5,
+        "md": -3,
+        "lg": -2
+      },
+      "action": {
+        "sm": -4,
+        "md": -3,
+        "lg": -2
+      }
+    }
+  }
+}

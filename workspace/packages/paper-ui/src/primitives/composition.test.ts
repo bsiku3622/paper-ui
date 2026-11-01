@@ -1,6 +1,10 @@
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { createRef, type Ref } from "react";
 import { describe, expect, it, vi } from "vitest";
 
+import * as root from "../index";
 import { composeEventHandlers, mergeProps, mergeRefs } from "./composition";
 
 describe("mergeProps", () => {
@@ -51,7 +55,7 @@ describe("mergeProps", () => {
     expect(mergeProps({ id: "a" }, { id: undefined }).id).toBe("a");
   });
 
-  it("[primitives.composition.merge-props] merges an object ref and a callback ref, and calls the callback with null on unmount", () => {
+  it("[primitives.composition.merge-props] [primitives.composition.merge-refs] merges an object ref and a callback ref, and calls the callback with null on unmount", () => {
     const object = createRef<HTMLElement>();
     const callback = vi.fn();
     const ref = mergeProps({ ref: object }, { ref: callback }).ref;
@@ -70,7 +74,7 @@ describe("mergeProps", () => {
 });
 
 describe("mergeRefs", () => {
-  it("[primitives.composition.merge-props] feeds every callback and object ref, and skips an absent one", () => {
+  it("[primitives.composition.merge-props] [primitives.composition.merge-refs] feeds every callback and object ref, and skips an absent one", () => {
     const object = createRef<HTMLElement>();
     const callback = vi.fn();
     const ref = mergeRefs(object, undefined, null, callback);
@@ -80,7 +84,7 @@ describe("mergeRefs", () => {
     expect(callback).toHaveBeenCalledWith(node);
   });
 
-  it("[primitives.composition.merge-props] runs the cleanup a callback ref returned instead of calling it with null", () => {
+  it("[primitives.composition.merge-props] [primitives.composition.merge-refs] runs the cleanup a callback ref returned instead of calling it with null", () => {
     const cleanup = vi.fn();
     const withCleanup = vi.fn(() => cleanup);
     const plain = vi.fn();
@@ -122,5 +126,15 @@ describe("composeEventHandlers", () => {
     composeEventHandlers(undefined, internal)({});
     expect(internal).toHaveBeenCalledTimes(1);
     expect(() => composeEventHandlers(() => {}, undefined)({})).not.toThrow();
+  });
+});
+
+describe("the composition tools", () => {
+  it("[primitives.composition.own-tools] are Paper's own: one module defines them, and it leans on no React Aria", () => {
+    const source = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "composition.ts"), "utf8");
+    expect(source).not.toMatch(/@react-aria|internal\/aria/);
+    expect(root.mergeProps).toBe(mergeProps);
+    expect(root.composeEventHandlers).toBe(composeEventHandlers);
+    expect(root.mergeRefs).toBe(mergeRefs);
   });
 });

@@ -1,7 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { Floating, Grid, Inline, Stack, Surface } from "./index";
+import { Floating } from "./float/Floating";
+import { Grid } from "./layout/Grid";
+import { Inline } from "./layout/Inline";
+import { Stack } from "./layout/Stack";
+import { Surface } from "./paint/Surface";
 import { fillClass } from "../styles/color.css";
 import { ScopeModeContext, useResolvedTheme } from "../theme/context";
 import { SURFACE_FILLS, THEME_ATTRIBUTE, type SurfaceTheme } from "../tokens";
@@ -76,13 +80,13 @@ describe("Surface theme", () => {
     for (const fill of SURFACE_FILLS) expect(screen.getByTestId("plain").classList.contains(fillClass[fill]), fill).toBe(false);
   });
 
-  it("writes no attribute and gives no scope without a theme", () => {
+  it("[primitives.surface.theme] writes no attribute and gives no scope without a theme", () => {
     render(<Surface data-testid="plain"><Mode id="inside" /></Surface>);
     expect(screen.getByTestId("plain").hasAttribute(THEME_ATTRIBUTE)).toBe(false);
     expect(screen.getByTestId("inside").textContent).toBe("light");
   });
 
-  it("reaches Stack, Inline and Grid through `as`, on the same element", () => {
+  it("[primitives.surface.theme] reaches Stack, Inline and Grid through `as`, on the same element", () => {
     const themes: SurfaceTheme[] = ["dark", "light", "inverse"];
     render(
       <ScopeModeContext.Provider value="light">

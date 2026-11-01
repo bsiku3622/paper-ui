@@ -80,3 +80,9 @@ test("[guardrails.no-rule-disable.second-pass] the second lint pass runs the pap
   const other = (await second.lintText("export const x = 1; var y = 2; export { y };", { filePath: packagePath }))[0].messages;
   assert.deepEqual(other, []);
 });
+
+test("[guardrails.a11y.polymorphic] reads a primitive's `as` as the element it renders, so jsx-a11y checks it", async () => {
+  const code = 'export const X = () => <Box as="img" src="a.png" />;';
+  assert.equal(await hasRule(code, "jsx-a11y/alt-text"), true);
+  assert.equal(await hasRule('export const X = () => <Box src="a.png" />;', "jsx-a11y/alt-text"), false);
+});
