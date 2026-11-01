@@ -12,7 +12,8 @@ import {
 } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import { Icon, mergeProps } from "../primitives";
+import { Icon } from "../primitives/Icon";
+import { mergeProps } from "../primitives/composition";
 import { fieldPaint, selectArrowPaint, selectEmptyPaint } from "../primitives/paint/recipes.css";
 import { resolveControlFontSize, resolveFill, resolvePreset } from "../resolvers";
 import { CONTROL_ICON, type ControlFontSize, type ControlShape, type ControlSize, type Status, type SurfaceFill } from "../tokens";

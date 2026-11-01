@@ -188,3 +188,25 @@ test("the Motion page lists the theme role as instant, with a Surface that swaps
   await row.getByRole("button", { name: "전환" }).click();
   await expect(row.locator("[data-pui-theme]")).toHaveCount(1);
 });
+
+test("[app.playground.code-panel] the code panel copies what it prints, applies an edit to the controls, and a reset puts the defaults and their code back", async ({ page, context }) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await openPlayground(page, "checkbox", "Checkbox");
+  const printed = page.getByTestId("code-block").locator("pre");
+  const initial = await printed.innerText();
+  // Copy: the button says it has, and the clipboard holds the printed code.
+  await page.getByRole("button", { name: "복사", exact: true }).click();
+  await expect(page.getByRole("button", { name: "복사됨", exact: true })).toBeVisible();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(initial);
+  // Edit and apply: code that can be read moves the controls and the preview with it.
+  await page.getByRole("button", { name: "코드 편집" }).click();
+  await page.getByRole("textbox", { name: "컴포넌트 코드 편집" }).fill('<Inline as="label" gap="sm" align="center">\n  <Checkbox size="lg" />\n  <Text variant="body" as="span">저장</Text>\n</Inline>');
+  await expect(control(page, "size")).toHaveValue("lg");
+  // Reset: the controls are the defaults again, and so is the printed code.
+  await page.getByRole("button", { name: "초기화", exact: true }).click();
+  await expect(control(page, "size")).toHaveValue("__pui_default__");
+  await page.getByRole("button", { name: "코드 편집 닫기" }).click();
+  await expect(printed).toHaveText(initial);
+  // The default labels name what the component does without a prop.
+  await expect(control(page, "size").locator("option").first()).toHaveText(/^default \(/);
+});

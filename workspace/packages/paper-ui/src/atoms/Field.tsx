@@ -24,7 +24,10 @@ import {
 import { joinClass } from "../internal/joinClass";
 import { useMessages } from "../internal/locale";
 import { useMergedRef } from "../internal/refs";
-import { Icon, Pressable, Selectable, mergeProps } from "../primitives";
+import { Icon } from "../primitives/Icon";
+import { Pressable } from "../primitives/press/Pressable";
+import { Selectable } from "../primitives/select/Selectable";
+import { mergeProps } from "../primitives/composition";
 import { IconSizeContext } from "../primitives/icon-context";
 import { fieldActionPaint, fieldAdornmentPaint, fieldPaint, fieldPlaceholderPaint } from "../primitives/paint/recipes.css";
 import { resolveControlFontSize, resolvePreset, resolveFill } from "../resolvers";

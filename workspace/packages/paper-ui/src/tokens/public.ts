@@ -7,4 +7,17 @@ export { FONT_STYLESHEETS } from "./typography";
 export { stateSelector } from "./state";
 export { sourceVars } from "./overrides";
 export type { SourceOverrides } from "./overrides";
-export * from "./vocabulary";
+export {
+  STATUSES, CHOICE_STATUSES, ACCENTS, ACCENT_TONES, SURFACE_FILLS, INK_LEVELS, INKS, BORDER_LEVELS, DIVIDER_LEVELS, DEPTHS,
+  COLOR_MODES, THEME_PREFERENCES, SURFACE_THEMES, VARIANTS, SELECTABLE_VARIANTS,
+  TEXT_VARIANTS, TEXT_FAMILIES, CONTROL_SIZES, CONTROL_FONT_SIZES, CONTROL_PRESETS, EMPHASES, LINK_UNDERLINES,
+  SPACES, DIMENSIONS, MEASURES, ICON_SIZES, CONTROL_SHAPES, SURFACE_RADII,
+  ELEVATIONS, BREAKPOINTS, CONTAINERS, ALIGNS, JUSTIFIES, JUSTIFY_ITEMS, ORIENTATIONS, MOTION_ROLES, STATE_NAMES,
+} from "./vocabulary";
+export type {
+  Status, ChoiceStatus, Accent, AccentTone, SurfaceFill, InkLevel, Ink, BorderLevel, DividerLevel, Depth,
+  ColorMode, ThemePreference, SurfaceTheme, Variant, SelectableVariant,
+  TextVariant, TextFamily, ControlSize, ControlFontSize, ControlPreset, Emphasis, LinkUnderline,
+  Space, Dimension, Measure, IconSize, ControlShape, SurfaceRadius,
+  Elevation, Breakpoint, Container, Align, Justify, JustifyItem, Orientation, MotionRole, StateName,
+} from "./vocabulary";

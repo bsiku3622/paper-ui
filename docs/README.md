@@ -39,3 +39,22 @@ Playground의 [Overview](/playground)는 표본의 파생 색인입니다. 목�
 
 [contract:guardrails.contracts.one-to-one]: #
 문서의 계약 문장 앞에는 화면에 보이지 않는 표시(`[contract:<id>]: #`)가 있고 그 계약을 검사하는 테스트는 제목을 같은 id로 시작하므로, `pnpm test`가 둘을 1:1로 대조해 테스트 없는 계약과 문서에 없는 계약을 가리키는 테스트를 모두 실패로 잡습니다.
+
+[contract:guardrails.testids.no-orphans]: #
+앱과 e2e 하네스에 심은 `data-testid`는 테스트가 찾을 때만 남습니다. `pnpm test`의 `check-testids`가 테스트의 `getByTestId` · `[data-testid=…]`와 그 id를 적어 둔 표로 읽히지 않는 값을 모두 실패로 잡으므로, 아무도 읽지 않는 fixture는 지우거나 spec에 묶어야 합니다.
+
+## 사이트 계약
+
+사이트(홈 · 문서 · Playground · Demo)도 테스트가 지키는 약속을 갖습니다.
+
+[contract:app.routes.every-route]: #
+사이트가 선언한 모든 경로, 곧 페이지 목록과 문서 목록(`DOC_GROUPS`)과 Playground 사이드바가 그리는 링크는 리다이렉트 없이 열리고, 본문(`main`)에 h1을 그리며, 콘솔 오류를 내지 않고, 휴대폰 폭에서 가로로 넘치지 않습니다. 다크 테마에서는 대표 경로로 같은 확인을 한 번 더 합니다.
+
+[contract:app.docs.links-resolve]: #
+문서가 그리는 모든 링크는 갑니다. 문서 링크는 문서 목록에 있는 쪽으로, 앵커는 그 쪽에 실제로 있는 id로, 앱 링크는 경로를 바꾸지 않는 h1이 있는 쪽으로 닿습니다.
+
+[contract:app.playground.foundations-render]: #
+Playground의 Foundations 다섯 쪽(Color · Typography · Shape · Layout · Motion)은 각자 제목과 절을 오류 없이 그립니다.
+
+[contract:app.playground.code-panel]: #
+컴포넌트 쪽의 코드 패널은 지금 그려진 것을 그대로 찍습니다. 복사는 찍힌 코드를 클립보드에 담고, 편집한 코드는 읽을 수 있으면 컨트롤과 미리보기를 옮기며, 초기화는 컨트롤과 코드를 기본값으로 되돌립니다. select의 첫 선택지는 컴포넌트의 실제 기본값을 이름으로 말합니다(`default (…)`).

@@ -10,16 +10,18 @@ import { APP_PORT, HARNESS_PORT, app, harness } from "./tests/support/harness";
 
 type Engine = "firefox" | "webkit";
 
-// 한 엔진에서만 실패하는 테스트. 그 대상을 다시 짓는 `until` 단계가 그 엔진에서 다시 켤 때까지 끈다.
-type EngineExclusion = { spec: string; test: string; engine: Engine; reason: string; until: string };
+// 한 엔진에서만 실패하는 테스트. 그 대상을 다시 짓는 `until` 단계가 그 엔진에서 다시 켤 때까지 끈다. 엔진이나 Playwright 의
+// 한계라 고칠 단계가 없는 것은 `until` 에 "engine" 이라 적고, 한계가 있는 `platform` 에서만 끈다.
+type EngineExclusion = { spec: string; test: string; engine: Engine; platform?: NodeJS.Platform; reason: string; until: string };
 
 const ENGINE_EXCLUSIONS: readonly EngineExclusion[] = [
   {
     spec: "primitives/a11y.spec.ts",
-    test: "FocusScope contains focus and restores the opener",
+    test: "[primitives.focus-scope.options] FocusScope contains focus and restores the opener",
     engine: "webkit",
-    reason: "macOS WebKit reaches the close button only with Option+Tab, which FocusScope contain leaves to the browser, so focus does not wrap.",
-    until: "S32",
+    platform: "darwin",
+    reason: "macOS WebKit tabs to a button only with Option+Tab, and React Aria's contain leaves a Tab with Alt held to the browser, so the third press leaves the page instead of wrapping to the first input. WebKit on other platforms tabs with Tab and runs the test.",
+    until: "engine",
   },
 ];
 
@@ -27,7 +29,7 @@ const escape = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 // Playwright 는 "<project> <spec> <describe…> <title>" 을 grep 한다 — spec 은 testDir 기준 경로,
 // test 는 그 뒤의 전부(describe 제목들, 테스트 제목)다.
 const excludedIn = (engine: Engine) => {
-  const entries = ENGINE_EXCLUSIONS.filter((entry) => entry.engine === engine);
+  const entries = ENGINE_EXCLUSIONS.filter((entry) => entry.engine === engine && (entry.platform ?? process.platform) === process.platform);
   return entries.length > 0 ? new RegExp(entries.map((entry) => `${escape(entry.spec)} ${escape(entry.test)}$`).join("|")) : undefined;
 };
 

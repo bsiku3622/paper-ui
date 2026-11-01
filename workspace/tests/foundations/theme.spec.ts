@@ -45,7 +45,7 @@ test("[foundations.theme.system-fallback] an attribute on <html> beats the OS", 
   expect(await variable(page, "html", "--pui-color-shadow-floating")).toBe(dark.shadow.floating);
 });
 
-test("[foundations.theme.scope-roles] a scope re-declares ink, takes its own roles itself and draws ground roles from its children down", async ({ page }) => {
+test("[foundations.theme.scope-roles] [foundations.theme.ground-roles] a scope re-declares ink, takes its own roles itself and draws ground roles from its children down", async ({ page }) => {
   await mount(page, "light");
   await page.evaluate((html) => document.body.insertAdjacentHTML("beforeend", html), FIXTURE);
   // Ink is inherited, so a raw span inside the dark scope reads the dark ink.
@@ -70,7 +70,7 @@ test("[foundations.theme.scope-roles] a scope re-declares ink, takes its own rol
   expect(await variable(page, "#nested-child", "--pui-color-interaction-focus")).toBe(light.interaction.focus);
 });
 
-test("[foundations.theme.scope-roles] a Surface theme casts its shadow and draws its focus ring on the ground it stands on, and the Surface inside casts in its own mode", async ({ page }) => {
+test("[foundations.theme.scope-roles] [foundations.layout.shadow-geometry] [foundations.theme.ground-roles] a Surface theme casts its shadow and draws its focus ring on the ground it stands on, and the Surface inside casts in its own mode", async ({ page }) => {
   await mount(page, "light");
   const card = page.getByTestId("inverse-card");
   const inside = page.getByTestId("inverse-card-child");
@@ -78,8 +78,8 @@ test("[foundations.theme.scope-roles] a Surface theme casts its shadow and draws
   // Beside the card, an element on the same ground casts the same shadow: the page's, light.
   await expectStyle(card, { boxShadow: ELEVATION.shadow.overlay });
   const shadow = (locator: typeof card) => locator.evaluate((element) => getComputedStyle(element).boxShadow);
-  expect(await shadow(card)).toContain("24px 0px");
-  expect(await shadow(inside)).toContain("22px -5px");
+  expect(await shadow(card)).toContain(LAYOUT_MODE_VALUES.light.shadow.floating["0"]);
+  expect(await shadow(inside)).toContain(LAYOUT_MODE_VALUES.dark.shadow.floating["0"]);
   expect(await shadow(inside)).not.toBe(await shadow(card));
   // The shadow colour is the ground's: a child of <body> reads light, a child of the card reads dark.
   const tint = (parent: typeof card) => parent.evaluate((element) => {
@@ -101,7 +101,7 @@ test("[foundations.theme.scope-roles] a Surface theme casts its shadow and draws
   await expect(card).toHaveCSS("outline-color", rgb(light.interaction.focus));
 });
 
-test("[primitives.surface.theme] raw text, an Icon, a Pressable and Floating content inside an inverse Surface take the inverse ink", async ({ page }) => {
+test("[primitives.surface.theme] [primitives.portal.root] raw text, an Icon, a Pressable and Floating content inside an inverse Surface take the inverse ink, the portal root keeping the opener's mode", async ({ page }) => {
   await mount(page, "light");
   const ink = rgb(dark.ink.primary);
   const scope = page.getByTestId("ink-scope");
@@ -116,8 +116,27 @@ test("[primitives.surface.theme] raw text, an Icon, a Pressable and Floating con
   await page.getByTestId("ink-trigger").click();
   const panel = page.getByRole("dialog", { name: "Ink panel" });
   await expect(panel.locator(`xpath=ancestor-or-self::*[@${THEME_ATTRIBUTE}][1]`)).toHaveAttribute(THEME_ATTRIBUTE, "dark");
+  await expect(panel).toHaveCSS("color-scheme", "dark");
   await expect(page.getByTestId("ink-floating-raw")).toHaveCSS("color", ink);
   await expect(page.getByTestId("ink-floating-close")).toHaveCSS("color", ink);
+});
+
+test("[primitives.surface.theme] inverse Surfaces nest: each sets its own color-scheme and gives raw text its own ink, and two inverses bring the page's mode back", async ({ page }) => {
+  await mount(page, "light");
+  const scope = page.getByTestId("ink-scope");
+  const nested = page.getByTestId("ink-nested");
+  await expect(scope).toHaveAttribute(THEME_ATTRIBUTE, "dark");
+  await expect(scope).toHaveCSS("color-scheme", "dark");
+  await expect(nested).toHaveAttribute(THEME_ATTRIBUTE, "light");
+  await expect(nested).toHaveCSS("color-scheme", "light");
+  await expect(page.getByTestId("ink-raw")).toHaveCSS("color", rgb(dark.ink.primary));
+  await expect(page.getByTestId("ink-nested-raw")).toHaveCSS("color", rgb(light.ink.primary));
+  // The nest follows the OS too: under a dark OS the outer inverse is light and the inner one is dark again.
+  await page.emulateMedia({ colorScheme: "dark" });
+  await expect(scope).toHaveAttribute(THEME_ATTRIBUTE, "light");
+  await expect(nested).toHaveAttribute(THEME_ATTRIBUTE, "dark");
+  await expect(nested).toHaveCSS("color-scheme", "dark");
+  await expect(page.getByTestId("ink-nested-raw")).toHaveCSS("color", rgb(dark.ink.primary));
 });
 
 test("[primitives.surface.theme] an inverse Surface paints the opposite canvas, and follows the OS live", async ({ page }) => {
@@ -143,7 +162,7 @@ test("[foundations.theme.swap-instant] while <html> carries the swap attribute e
   expect(await duration()).not.toBe("0s");
 });
 
-test("[foundations.color.contrast-more] prefers-contrast: more lifts the quiet roles in the mode in force, scopes included", async ({ page }) => {
+test("[foundations.color.contrast-more] [foundations.color.contrast-more-roles] prefers-contrast: more lifts the quiet roles in the mode in force, scopes included", async ({ page }) => {
   await mount(page, "light");
   await page.evaluate((html) => document.body.insertAdjacentHTML("beforeend", html), FIXTURE);
   expect(await variable(page, "html", "--pui-color-border-base")).toBe(light.border.base);
@@ -169,7 +188,7 @@ const openSite = async (page: Page, stored: "light" | "dark", colorScheme: "ligh
   await page.goto(path);
 };
 
-test("a stored dark choice applies under a light OS, and the GNB toggle flips the attribute", async ({ page }) => {
+test("[foundations.theme.provider-options] a stored dark choice applies under a light OS, and the GNB toggle flips the attribute", async ({ page }) => {
   await openSite(page, "dark", "light");
   const html = page.locator("html");
   await expect(html).toHaveAttribute(THEME_ATTRIBUTE, "dark");
@@ -235,3 +254,67 @@ test("[foundations.theme.boot-before-paint] a stored dark beats a light OS", asy
   await expect(page.locator("#root")).toBeEmpty();
   await expect(page.locator("html")).toHaveAttribute(THEME_ATTRIBUTE, "dark");
 });
+
+test("[foundations.theme.storage] a choice made with the GNB toggle survives a reload, in the attribute and in the native controls' color-scheme", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "light" });
+  await page.goto("/playground/field");
+  const html = page.locator("html");
+  await expect(html).toHaveAttribute(THEME_ATTRIBUTE, "light");
+  await page.getByRole("button", { name: "다크 테마로 전환" }).click();
+  await expect(html).toHaveAttribute(THEME_ATTRIBUTE, "dark");
+  expect(await page.evaluate((key) => window.localStorage.getItem(key), THEME_STORAGE_KEY)).toBe("dark");
+  await page.reload();
+  await expect(html).toHaveAttribute(THEME_ATTRIBUTE, "dark");
+  await expect(page.locator("body")).toHaveCSS("background-color", rgb(dark.bg.canvas));
+  const input = page.getByRole("main").locator("input").first();
+  await expect(input).toBeVisible();
+  await expect(input).toHaveCSS("color-scheme", "dark");
+  await expect(html).toHaveCSS("color-scheme", "dark");
+});
+
+// Every value <html> held, with when it was set, and the first paint with when it happened: one init script records both.
+const recordPaint = (page: Page) =>
+  page.addInitScript((attribute) => {
+    const log: { theme: string | null; at: number }[] = [];
+    // The script runs before the document has an <html>: watch for it, so no value it takes goes unseen.
+    const watch = () => {
+      const root = document.documentElement;
+      log.push({ theme: root.getAttribute(attribute), at: performance.now() });
+      new MutationObserver(() => log.push({ theme: root.getAttribute(attribute), at: performance.now() })).observe(root, { attributes: true, attributeFilter: [attribute] });
+    };
+    if (document.documentElement) watch();
+    else
+      new MutationObserver((_records, observer) => {
+        if (!document.documentElement) return;
+        observer.disconnect();
+        watch();
+      }).observe(document, { childList: true });
+    const paints: { name: string; at: number }[] = [];
+    new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) paints.push({ name: entry.name, at: entry.startTime });
+    }).observe({ type: "paint", buffered: true });
+    Object.assign(window, { __theme: { log, paints } });
+  }, THEME_ATTRIBUTE);
+
+for (const { name, os, stored, mode } of [
+  { name: "a dark OS", os: "dark", stored: undefined, mode: "dark" },
+  { name: "a stored dark under a light OS", os: "light", stored: "dark", mode: "dark" },
+  { name: "a stored light under a dark OS", os: "dark", stored: "light", mode: "light" },
+] as const) {
+  test(`[foundations.theme.boot-before-paint] no frame is painted in the wrong mode: ${name}`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme: os });
+    if (stored) await page.addInitScript(([key, value]) => window.localStorage.setItem(key!, value!), [THEME_STORAGE_KEY, stored]);
+    await recordPaint(page);
+    await page.goto("/");
+    await expect(page.locator("#root > *").first()).toBeVisible();
+    await expect(page.locator("body")).toHaveCSS("background-color", rgb(COLOR_VALUES_BY_MODE[mode].bg.canvas));
+    const { log, paints } = await page.evaluate(() => (window as unknown as { __theme: { log: { theme: string | null; at: number }[]; paints: { name: string; at: number }[] } }).__theme);
+    const first = Math.min(...paints.map(({ at }) => at));
+    expect(Number.isFinite(first), "the page painted").toBe(true);
+    // From the first moment a script could look, to the first paint, <html> never held anything but the right mode.
+    const before = log.filter(({ at }) => at <= first);
+    expect(before.map(({ theme }) => theme)).toContain(mode);
+    expect(before.filter(({ theme }) => theme !== null && theme !== mode)).toEqual([]);
+    expect(log.at(-1)!.theme).toBe(mode);
+  });
+}

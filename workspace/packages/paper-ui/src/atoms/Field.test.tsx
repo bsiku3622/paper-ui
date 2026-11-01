@@ -2,7 +2,8 @@ import { createRef } from "react";
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { FormField, Icon } from "../primitives";
+import { FormField } from "../primitives/field/FormField";
+import { Icon } from "../primitives/Icon";
 import { iconSize } from "../primitives/Icon.css";
 import { CONTROL_ICON, CONTROL_SIZES, STATUSES } from "../tokens";
 import { Field } from "./Field";
@@ -16,7 +17,7 @@ afterEach(() => {
 const wrapperOf = (label: string) => screen.getByLabelText(label).parentElement as HTMLElement;
 
 describe("Field", () => {
-  it("sunken 표면과 leading/trailing adornment를 함께 렌더한다", () => {
+  it("[atoms.contract.axes] sunken 표면과 leading/trailing adornment를 함께 렌더한다", () => {
     render(
       <Field
         fill="sunken"
@@ -31,14 +32,14 @@ describe("Field", () => {
     expect(screen.getByText("⌘ K").tagName).toBe("KBD");
   });
 
-  it("기본 fill은 raised다", () => {
-    const { rerender } = render(<Field aria-label="raised" />);
-    const raisedClass = screen.getByLabelText("raised").parentElement?.className;
-
-    rerender(<Field aria-label="sunken" fill="sunken" />);
-    const sunkenClass = screen.getByLabelText("sunken").parentElement?.className;
-
-    expect(raisedClass).not.toBe(sunkenClass);
+  it("[atoms.field.neutral-status] 기본 fill은 raised다: 생략한 것과 fill=\"raised\"가 같은 class이고, sunken만 다르다", () => {
+    const { rerender } = render(<Field aria-label="field" />);
+    const wrapper = () => screen.getByLabelText("field").parentElement!.className;
+    const byDefault = wrapper();
+    rerender(<Field aria-label="field" fill="raised" />);
+    expect(wrapper()).toBe(byDefault);
+    rerender(<Field aria-label="field" fill="sunken" />);
+    expect(wrapper()).not.toBe(byDefault);
   });
 
   it("[atoms.field.neutral-status] status 를 생략하면 data-status 를 그리지 않는다", () => {
@@ -160,7 +161,7 @@ describe("Field", () => {
     expect(wrapper.style.width).toBe("240px");
   });
 
-  it("[atoms.focus.ring] shows the keyboard's focus on the wrapper and not on the input", () => {
+  it("[atoms.focus.ring] [primitives.state.emitters] shows the keyboard's focus on the wrapper and not on the input", () => {
     render(<Field aria-label="ring" />);
     const input = screen.getByLabelText("ring");
     const wrapper = wrapperOf("ring");

@@ -8,7 +8,7 @@
 //
 // Several markers may stand together in front of one block. The test that asserts a contract starts its
 // title with `[<id>]`; a test that asserts several lists their ids one after another (`[a] [b] title`).
-// This covers vitest describe/it/test, Playwright test and node:test. A skipped, todo, fixme or failing title
+// This covers vitest describe/it/test and their .each, Playwright test and node:test. A skipped, todo, fixme or failing title
 // still has to name a defined contract, but it asserts nothing, so it does not cover one.
 //
 // `node scripts/check-contracts.mjs` reads the repository and fails on a duplicate marker, a marker without a
@@ -28,9 +28,10 @@ const FENCE = /^ {0,3}(`{3,}|~{3,})/;
 const HEADING = /^ {0,3}#{1,6}(?:\s|$)/;
 const BREAK = /^ {0,3}([-*_])(?:\s*\1){2,}\s*$/;
 const TABLE_ROW = /^ {0,3}\|/;
-// A call whose first argument is a string that opens with one or more bracketed tokens. Group 1 is the
-// modifier chain after the call name (`.skip`, `.describe.serial` …), group 2 the bracketed tokens.
-const TITLE = /\b(?:describe|it|test)((?:\.(?:only|skip|todo|fixme|fails?|concurrent|sequential|serial|parallel|describe))*)\s*\(\s*["'`]((?:\[[^\]\n]*\]\s*)+)/g;
+// A call whose first argument is a string that opens with one or more bracketed tokens, or the title call after a
+// table (`it.each(table)("…")`). Group 1 is the modifier chain after the call name (`.skip`, `.describe.serial` …),
+// group 2 the bracketed tokens.
+const TITLE = /\b(?:describe|it|test)((?:\.(?:only|skip|todo|fixme|fails?|concurrent|sequential|serial|parallel|describe))*)(?:\.each\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*\))?\s*\(\s*["'`]((?:\[[^\]\n]*\]\s*)+)/g;
 // Modifiers of a test that is not run, or that is run expecting it to fail.
 const NOT_ASSERTED = /\.(?:skip|todo|fixme|fails?)\b/;
 

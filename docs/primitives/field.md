@@ -8,6 +8,7 @@ Field Primitive는 입력과 그 설명 · 오류의 연결을 맡는 2차 primi
 
 ## 입력과 설명의 관계
 
+[contract:primitives.form-field.context]: #
 FormField는 label · 입력 · 설명 · 오류의 ID를 context로 연결합니다. 안에 둔 입력이 `useFormFieldControl`을 부르면 field의 id와 관계, 상태가 그 입력에 닿습니다. Field · Textarea · Select · Checkbox · Radio · Switch Atom은 이미 부르고 있어서, 안에 두기만 하면 됩니다.
 
 오류를 입력창의 접근성 설명에 연결하는 예시입니다.
@@ -19,6 +20,7 @@ FormField는 label · 입력 · 설명 · 오류의 ID를 context로 연결합�
 </FormField>
 ```
 
+[contract:primitives.form-field.status-link]: #
 Field는 FormField가 invalid일 때 `aria-invalid`와 error 경계를 스스로 얻으므로 status를 따로 넘기지 않습니다. 입력의 `status`와 `aria-invalid`는 서로에게서 채워지고, 둘 중 하나만 주면 됩니다. Checkbox · Radio · Switch는 `status`가 `error`뿐이지만 같은 규칙을 따릅니다.
 
 [contract:primitives.form-field.relations]: #
@@ -39,6 +41,7 @@ function PinInput({ status, ...props }: PinProps) {
 }
 ```
 
+[contract:primitives.form-field.control-hook]: #
 `useFormFieldControl({ id, disabled, required, "aria-invalid", "aria-describedby", status })`는 `controlProps`, `isInvalid`, `visualStatus`, `isInField`를 돌려줍니다. `isInvalid`는 위 규칙의 결과이고, `visualStatus`는 입력이 그려야 할 status입니다 — invalid이면 `error`, 아니면 받은 status입니다. FormField 밖에서도 같은 규칙으로 동작합니다(`isInField`는 `false`).
 
 [contract:primitives.form-field.snapshot]: #
@@ -47,4 +50,5 @@ children은 노드이거나 스냅샷 함수 `({ isDisabled, isInvalid, isRequir
 [contract:primitives.form-field.parts]: #
 FormField의 보이는 부분은 Typography 역할로 그려지고 `data-part`로 이름이 붙습니다. label은 Text `label`(`data-part="label"`), 설명은 Text `caption`(`data-part="description"`), 오류는 Text `caption`에 error 잉크를 입힌 것(`data-part="error"`)입니다. Label Atom과 같은 label 역할이라 나란히 놓아도 글자가 갈라지지 않습니다.
 
+[contract:primitives.form-field.hook]: #
 useFormField는 같은 FormFieldOptions를 받아 FormFieldResult(controlProps · labelProps · descriptionProps · errorProps)를 반환하며 DOM을 만들지 않습니다. FormField 없이 관계만 직접 조립할 때 쓰고, 그 controlProps에도 값이 있는 키만 들어 있습니다. 같은 이름의 Atom `Field`와 겹치지 않도록 이름에 Form을 붙였습니다. wrapper는 data-disabled · data-invalid · data-required로 자기 상태를 알립니다. 직접 사용할 때 선언한 description/error를 해당 ID로 렌더링해주세요. 시각적 status · validation · 값 저장 · 제출 · 오류 요약 이동은 소비자가 결정하고, 비동기 알림은 [LiveRegion](a11y.md#상태-변화-알리기)을 씁니다.

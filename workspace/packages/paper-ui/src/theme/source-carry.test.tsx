@@ -63,7 +63,7 @@ describe("Floating", () => {
   const REGION = { "--pui-shape-control-height-md": "40px" } as CSSProperties;
   const carried = () => document.querySelector<HTMLElement>(`.${portalRoot}`)!.style.getPropertyValue("--pui-shape-control-height-md");
 
-  it("[foundations.override.portal-carry] a panel open from its first render reads its Trigger, written above or below it, and not the element that holds the focus", () => {
+  it("[foundations.override.portal-carry] [primitives.floating.open-from-start] a panel open from its first render reads its Trigger, written above or below it, and not the element that holds the focus", () => {
     const elsewhere = withStyle({ "--pui-shape-control-height-md": "48px" });
     elsewhere.tabIndex = 0;
     const trigger = <Floating.Trigger style={REGION}>Open</Floating.Trigger>;

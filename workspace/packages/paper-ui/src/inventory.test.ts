@@ -17,20 +17,20 @@ const classes: readonly string[] = INVENTORY.classes;
 const listed: readonly string[] = [...components, ...functions, ...classes];
 
 describe("INVENTORY", () => {
-  it("lists exactly the value exports of '.'", () => {
+  it("[install.entry.table] lists exactly the value exports of '.'", () => {
     expect(Object.keys(pkg).sort()).toEqual([...listed, "INVENTORY", "PRIMITIVE_ORDERS", "PRIMITIVE_GROUPS"].sort());
   });
 
-  it("lists exactly the value exports of '/tokens' as foundations", () => {
+  it("[install.entry.table] lists exactly the value exports of '/tokens' as foundations", () => {
     expect(Object.keys(tokensEntry).sort()).toEqual([...INVENTORY.foundations].sort());
   });
 
-  it("names every export once, across both entries", () => {
+  it("[install.entry.one-home] names every export once, across both entries", () => {
     const names = [...listed, ...INVENTORY.foundations];
     expect(names.filter((name, index) => names.indexOf(name) !== index)).toEqual([]);
   });
 
-  it("keeps PRIMITIVE_GROUPS the order of the primitive categories, the first order before the second", () => {
+  it("[primitives.orders.first] keeps PRIMITIVE_GROUPS the order of the primitive categories, the first order before the second", () => {
     expect(Object.keys(INVENTORY.primitives)).toEqual([...PRIMITIVE_GROUPS]);
     expect([...PRIMITIVE_GROUPS]).toEqual([...PRIMITIVE_ORDERS.first, ...PRIMITIVE_ORDERS.second]);
     expect(exported.PRIMITIVE_ORDERS).toBe(PRIMITIVE_ORDERS);
@@ -45,7 +45,7 @@ describe("INVENTORY", () => {
     for (const name of components) expect(isComponent(exported[name]), name).toBe(true);
   });
 
-  it("lists the compound statics of an atom without exporting them on their own", () => {
+  it("[atoms.select.anatomy] lists the compound statics of an atom without exporting them on their own", () => {
     for (const [name, parts] of Object.entries(INVENTORY.anatomy)) {
       const compound = exported[name] as unknown as Record<string, unknown>;
       for (const part of parts) {
@@ -67,7 +67,7 @@ describe("INVENTORY", () => {
     }
   });
 
-  it("renders as='section' as a <section> for every polymorphic entry", () => {
+  it("[primitives.polymorphic.default-tags] renders as='section' as a <section> for every polymorphic entry", () => {
     for (const name of INVENTORY.polymorphic) {
       const [head = "", member] = name.split(".");
       const Root = exported[head] as ElementType;

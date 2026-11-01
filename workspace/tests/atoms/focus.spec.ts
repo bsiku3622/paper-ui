@@ -38,7 +38,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 for (const [id, corner] of OWNERS) {
-  test(`[atoms.focus.ring] ${id} shows its ring for the keyboard and not for the pointer, on its own corner`, async ({ page }) => {
+  test(`[atoms.focus.ring] [atoms.focus.input-modality] ${id} shows its ring for the keyboard and not for the pointer, on its own corner`, async ({ page }) => {
     const target = page.getByTestId(id);
     await target.click();
     await target.focus();
@@ -52,12 +52,19 @@ for (const [id, corner] of OWNERS) {
   });
 }
 
-test("[atoms.focus.ring] a Button that is busy keeps its ring when the keyboard reaches it", async ({ page }) => {
+test("[atoms.focus.ring] [atoms.states.ring-channel] [atoms.states.atom-table] a Button that is busy keeps its ring when the keyboard reaches it", async ({ page }) => {
   const loading = page.getByTestId("loading");
   await loading.click({ force: true });
   await reachByKeyboard(page, loading);
   await expect(loading).toHaveAttribute("data-focus-visible", "true");
   await expectStyle(loading, ringOf);
+});
+
+test("[atoms.states.ring-channel] the ring stands outside the state chain: a selected Button draws the same ring as a resting one when the keyboard reaches it", async ({ page }) => {
+  const selected = page.getByTestId("selected-ghost");
+  await reachByKeyboard(page, selected);
+  await expect(selected).toHaveAttribute("data-focus-visible", "true");
+  await expectStyle(selected, ringOf);
 });
 
 // The input family: Field and Select draw the ring on their wrapper, Textarea on itself; the control the keyboard lands on is the native one.
@@ -68,7 +75,7 @@ const INPUTS = [
 ] as const;
 
 for (const [label, id, corner] of INPUTS) {
-  test(`[atoms.focus.ring] ${label} shows no ring for a click, and Tab away then Shift+Tab back draws the 2px ring on its frame`, async ({ page }) => {
+  test(`[atoms.focus.ring] [atoms.focus.input-modality] [atoms.states.pointer-focus] [atoms.states.hover-table] ${label} shows no ring for a click, and Tab away then Shift+Tab back draws the focus ring on its frame`, async ({ page }) => {
     const control = page.getByLabel(label, { exact: true });
     const frame = page.getByTestId(id);
     await control.click();
@@ -90,7 +97,7 @@ for (const [label, id, corner] of INPUTS) {
   });
 }
 
-test("[atoms.focus.ring] typing in a Field or a Textarea after a click draws no ring, and a click on the wrapper's padding puts the caret in the input without one", async ({ page }) => {
+test("[atoms.focus.ring] [atoms.states.pointer-focus] typing in a Field or a Textarea after a click draws no ring, and a click on the wrapper's padding puts the caret in the input without one", async ({ page }) => {
   for (const [label, id] of [["Field", "field"], ["Textarea", "textarea"]] as const) {
     const control = page.getByLabel(label, { exact: true });
     await control.click();
@@ -104,7 +111,7 @@ test("[atoms.focus.ring] typing in a Field or a Textarea after a click draws no 
   await expect(field).not.toHaveAttribute("data-focus-visible", /.*/);
 });
 
-test("[atoms.focus.ring] a key that is not typing counts as the keyboard after a click: Escape in a clicked text input and a key on a clicked Select draw the frame ring", async ({ page }) => {
+test("[atoms.focus.ring] [atoms.states.pointer-focus] a key that is not typing counts as the keyboard after a click: Escape in a clicked text input and a key on a clicked Select draw the frame ring", async ({ page }) => {
   for (const [label, id] of [["Field", "field"], ["Textarea", "textarea"], ["Select", "select"]] as const) {
     const control = page.getByLabel(label, { exact: true });
     const frame = page.getByTestId(id);
@@ -170,7 +177,7 @@ test("[atoms.field.actions] a search Field exposes exactly one clear control, Fi
   await expect(buttons).toHaveAccessibleName("Clear");
 });
 
-test("[atoms.field.actions] the browser's cancel button and search decoration are gone from a search Field", async ({ page, browserName }) => {
+test("[atoms.field.actions] [atoms.contract.axes] the browser's cancel button and search decoration are gone from a search Field", async ({ page, browserName }) => {
   test.skip(browserName !== "chromium", "the browser's own controls live in a user-agent shadow tree that only Chromium's DevTools protocol shows");
   await page.evaluate(() => {
     const bare = document.createElement("input");
@@ -214,7 +221,7 @@ test.describe("the selection marks", () => {
   });
 
   for (const [id, corner] of [["checkbox-md", tokens.shape.radius.selection], ["radio-md", tokens.shape.radius.full], ["switch-md", tokens.shape.radius.full]] as const) {
-    test(`[atoms.focus.ring] ${id} shows its ring for the keyboard and not for the pointer, on its own corner`, async ({ page }) => {
+    test(`[atoms.focus.ring] [atoms.focus.input-modality] ${id} shows its ring for the keyboard and not for the pointer, on its own corner`, async ({ page }) => {
       const target = page.getByTestId(id);
       await target.click();
       await target.focus();

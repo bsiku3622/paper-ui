@@ -1,9 +1,13 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import { DEMO_LAYOUT } from "../../app/src/pages/demo/layout";
 import { tokens } from "../../packages/paper-ui/src/tokens";
+import { PRESET_SPEC, TYPOGRAPHY_SOURCE } from "../../packages/paper-ui/src/tokens/typography";
 import { pageErrors } from "../support/console";
 import { tab } from "../support/keyboard";
-import { colors, contrast, expectStyle, profile } from "../support/style";
+import { colors, contrast } from "../support/contrast";
+import { px } from "../support/geometry";
+import { expectStyle, profile } from "../support/style";
 
 // /demo is the product the system is checked against: an issue tracker built from the Primitives, the Atoms and the
 // app's own compositions. It owns its landmarks (chrome 'none'), so these tests read it the way a user does.
@@ -127,21 +131,25 @@ test("the toast's live region is there before any notice, and a notice goes into
   await expect(region).toBeEmpty();
 });
 
-test("avatars, day chips and the workspace mark are 22px pills around a 14px label", async ({ page }) => {
+// The height of a pill, which app/src/compositions/pill.css.ts holds as that composition's own.
+const PILL = "22px";
+
+test("avatars, day chips and the workspace mark are pills of the composition's own height around a body label", async ({ page }) => {
   const avatar = page.getByRole("navigation", { name: "작업 공간 메뉴" }).getByText("재", { exact: true }).locator("..");
-  await expectStyle(avatar, { fontSize: tokens.typography.role.body.size, height: "22px", paddingLeft: tokens.shape.inset.sm, paddingRight: tokens.shape.inset.sm, borderTopLeftRadius: tokens.shape.radius.full, ...profile("primary", "soft") });
+  await expectStyle(avatar, { fontSize: tokens.typography.role.body.size, height: PILL, paddingLeft: tokens.shape.inset.sm, paddingRight: tokens.shape.inset.sm, borderTopLeftRadius: tokens.shape.radius.full, ...profile("primary", "soft") });
   const mark = page.getByRole("navigation", { name: "작업 공간 메뉴" }).getByText("S", { exact: true }).locator("..");
-  await expectStyle(mark, { height: "22px", borderTopLeftRadius: tokens.shape.radius.control });
+  await expectStyle(mark, { height: PILL, borderTopLeftRadius: tokens.shape.radius.control });
   const today = page.getByText("25", { exact: true }).locator("..");
-  await expectStyle(today, { fontSize: tokens.typography.role.body.size, height: "22px", ...profile("primary", "solid") });
+  await expectStyle(today, { fontSize: tokens.typography.role.body.size, height: PILL, ...profile("primary", "solid") });
   await expect(today).toHaveAttribute("aria-current", "date");
   await expectStyle(page.getByText("24", { exact: true }).locator(".."), profile("primary", "ghost"));
 });
 
-test("badges are 12px and say what they are: counts, statuses and priorities, with the teams neutral", async ({ page }) => {
-  for (const name of ["진행 중", "긴급"]) await expect(page.getByText(name, { exact: true }).first()).toHaveCSS("font-size", "12px");
-  await expect(page.getByRole("navigation", { name: "작업 공간 메뉴" }).getByText("4", { exact: true })).toHaveCSS("font-size", "12px");
-  await expectStyle(page.getByText("디자인 팀 · 회의"), { fontSize: "12px", ...profile("primary", "muted") });
+test("badges keep the badge preset's size and say what they are: counts, statuses and priorities, with the teams neutral", async ({ page }) => {
+  const size = px(TYPOGRAPHY_SOURCE.fontSize[PRESET_SPEC.badge.size]);
+  for (const name of ["진행 중", "긴급"]) await expect(page.getByText(name, { exact: true }).first()).toHaveCSS("font-size", size);
+  await expect(page.getByRole("navigation", { name: "작업 공간 메뉴" }).getByText("4", { exact: true })).toHaveCSS("font-size", size);
+  await expectStyle(page.getByText("디자인 팀 · 회의"), { fontSize: size, ...profile("primary", "muted") });
   await expectStyle(page.getByText("콘텐츠 팀 · 회의"), profile("primary", "muted"));
 });
 
@@ -168,20 +176,21 @@ for (const scheme of ["light", "dark"] as const) {
   });
 }
 
-test("the page switches its columns at exactly 1180, 900 and 600px", async ({ page }) => {
+test("the page switches its columns exactly at the widths of its own layout module", async ({ page }) => {
+  const { rail: wide, nav: narrow, stack } = DEMO_LAYOUT.collapse;
   const columns = async (width: number, target: (page: Page) => Locator) => {
     await page.setViewportSize({ width, height: 900 });
     return target(page).evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(" ").length);
   };
   const layout = (page: Page) => page.getByRole("main").locator("..");
   const rail = (page: Page) => layout(page).locator(":scope > *").nth(2);
-  expect([await columns(1181, layout), await columns(1180, layout), await columns(901, layout), await columns(900, layout)]).toEqual([3, 2, 2, 1]);
-  await page.setViewportSize({ width: 1181, height: 900 });
+  expect([await columns(wide + 1, layout), await columns(wide, layout), await columns(narrow + 1, layout), await columns(narrow, layout)]).toEqual([3, 2, 2, 1]);
+  await page.setViewportSize({ width: wide + 1, height: 900 });
   await expect(page.getByRole("navigation", { name: "작업 공간 메뉴" })).toBeVisible();
-  await page.setViewportSize({ width: 900, height: 900 });
+  await page.setViewportSize({ width: narrow, height: 900 });
   await expect(page.getByRole("navigation", { name: "작업 공간 메뉴" })).toBeHidden();
   await expect(rail(page)).toHaveCSS("position", "static");
-  expect([await columns(601, rail), await columns(600, rail)]).toEqual([2, 1]);
+  expect([await columns(stack + 1, rail), await columns(stack, rail)]).toEqual([2, 1]);
 });
 
 test("nothing overflows horizontally at 1440 and 390, and nothing is reported broken", async ({ page }) => {

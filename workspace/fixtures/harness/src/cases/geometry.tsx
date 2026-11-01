@@ -1,4 +1,4 @@
-import { Badge, Button, Checkbox, Field, Floating, Icon, IconButton, Radio, Select, Surface, Switch, Textarea } from "@studio-baeks/paper-ui";
+import { Badge, Button, Checkbox, Field, Floating, Icon, IconButton, Inline, Radio, Select, Surface, Switch, Textarea } from "@studio-baeks/paper-ui";
 import { sourceVars } from "@studio-baeks/paper-ui/tokens";
 import { useState } from "react";
 
@@ -49,6 +49,7 @@ export const GeometryCase = () => (
           </div>
         ))}
         <Surface radius="sm" data-testid="surface-corner">Surface</Surface>
+        <Inline gap="md" data-testid="gap-md"><span>A</span><span>B</span></Inline>
         <ThemeBoxes />
         <Panels id="inside" />
       </form>

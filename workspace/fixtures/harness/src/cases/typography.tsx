@@ -1,4 +1,5 @@
 import { Badge, Button, Field, FormField, Label, Select, Text, Textarea } from "@studio-baeks/paper-ui";
+import { CONTROL_SIZES, TEXT_VARIANTS } from "@studio-baeks/paper-ui/tokens";
 
 import { SELECT_OPTIONS } from "./options.js";
 
@@ -28,5 +29,18 @@ export const TypographyCase = () => (
     <FormField label="Email" description="Help" error="Wrong" invalid>
       <Field />
     </FormField>
+    <div id="roles-fixture">
+      {TEXT_VARIANTS.map((variant) => <Text key={variant} variant={variant} data-testid={`role-${variant}`}>Role</Text>)}
+      {TEXT_VARIANTS.map((variant) => <Text key={variant} variant={variant} family="mono" data-testid={`role-mono-${variant}`}>Role</Text>)}
+      {CONTROL_SIZES.map((size) => (
+        <span key={size}>
+          <Button size={size} data-testid={`preset-button-strong-${size}`}>Button</Button>
+          <Button size={size} variant="soft" data-testid={`preset-button-medium-${size}`}>Button</Button>
+          <Field size={size} aria-label={`preset ${size} field`} data-testid={`preset-field-${size}`} />
+          <Textarea size={size} aria-label={`preset ${size} textarea`} data-testid={`preset-textarea-${size}`} />
+        </span>
+      ))}
+      <Badge data-testid="preset-badge">Badge</Badge>
+    </div>
   </div>
 );

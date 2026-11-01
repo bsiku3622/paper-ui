@@ -23,13 +23,14 @@ paper-ui/
 ├── docs/                       # get-started · foundations · primitives · atoms
 └── workspace/
     ├── packages/paper-ui/      # @studio-baeks/paper-ui — 단일 npm 패키지
-    │   ├── scripts/            # build-types.mjs — entry 마다 d.ts 하나
+    │   ├── api/                # surface.json — 공개 이름의 기록, released/ — 발행한 버전의 기록
+    │   ├── scripts/            # build-types.mjs — entry 마다 d.ts 하나, check-package.mjs — tarball 검사
     │   └── src/                # 아래 src 구조(생성)
     ├── app/                    # 사이트 · Playground · 문서 · 데모 — routes.tsx + site/ = 사이트 셸 · compositions/ = 앱의 조각 · vite/paper-docs.ts 가 docs/ 를 서빙
     ├── fixtures/harness/       # @paper-ui/harness — e2e 가 패키지를 소비자처럼 마운트하는 페이지(`window.__paper.sourceVars`)
     ├── eslint-rules/           # lint plugin `paper` — manifest.js 가 경계와 예외의 유일한 선언, structural.js 가 구조 값의 유일한 정의
-    ├── scripts/                # 레포 검사 (docs-sync · browser-baseline · check-contracts)
-    └── tests/                  # Playwright e2e — foundations · primitives · atoms · app · install, support/
+    ├── scripts/                # 레포 검사 (docs-sync · browser-baseline · check-contracts · smoke-dist)
+    └── tests/                  # Playwright e2e — foundations · primitives · atoms · app · install · dist, support/
 ```
 
 패키지와 앱의 `src` 구조는 생성됩니다.
@@ -38,7 +39,7 @@ paper-ui/
 <!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 ```text
 workspace/packages/paper-ui/src/
-  index.ts                     entry `.` — 컴포넌트 · hook · Provider (`"use client"`)
+  index.ts                     entry `.` — 컴포넌트 · hook · Provider (`"use client"`). 공개 이름을 한 곳에 다 적은 목록이고 `export *`가 없습니다
   inventory.ts                 이름 · 분류 · 순서의 정본 — import가 없고 inventory.test가 export와 대조합니다
   atoms/                       Atom 13개 — 한 가지 역할의 컨트롤, 모두 Primitive 위에 섭니다
     button-base.tsx            Button과 IconButton의 몸 하나 — 내부 모듈
@@ -58,7 +59,6 @@ workspace/packages/paper-ui/src/
     aria/                      React Aria 어댑터 — `@react-aria/*`를 import하는 유일한 자리
   primitives/                  두 차수 — 1차 바탕(Box · Text · Icon · polymorphic · composition)과 2차 Box + 능력 하나
     bare-button.css.ts         부품이 쓰는 button reset
-    index.ts                   유일한 배럴 — primitives/orders.test.ts가 폴더 사이의 길을 지킵니다
     a11y/                      1차 A11y — FocusScope · VisuallyHidden · Portal · LiveRegion
     drag/                      2차 Drag — Draggable · Droppable
     field/                     2차 Field — FormField와 입력 연결
@@ -136,7 +136,7 @@ typography.css 의 class 전부(Text 역할 · mono · 숫자 · control preset 
 
 배포본은 ESM 전용이고 peer 는 react · react-dom `^18.2.0 || ^19.0.0` 이다. 타입은 `tsconfig.build.json`(테스트 ·
 inspector 제외)으로 낸 선언을 `scripts/build-types.mjs` 가 entry 마다 한 파일(dist/index.d.ts · dist/tokens.d.ts)로
-묶는다. `pnpm --filter @studio-baeks/paper-ui check:package` 가 publint(--strict)와 attw(esm-only)로 배포 형태를
+묶는다. `pnpm --filter @studio-baeks/paper-ui check:package` 가 tarball 을 publint(--strict)와 attw(esm-only)로 배포 형태를
 검사한다. 지원 브라우저 하한은 패키지 package.json 의 `browserslist` 한 곳에 둔다(Chrome·Edge 125 · Firefox 121 ·
 Safari 16.4). Vite build.target · cssTarget 이 거기서 나오고, CSS 기능을 새로 쓰면 `scripts/browser-baseline.mjs`
 표에 행을 더한다 — required 는 하한이 지원해야 하고, enhancement 는 하한에서 움직임만 빠진다.
@@ -212,13 +212,13 @@ focus ring 색은 `interaction.focus`에, 링크 색은 `interaction.link`에 �
 - 숫자는 `SHAPE_SOURCE`·`LAYOUT_SOURCE`에 dp로 한 번만 씁니다. **원본만 CSS 변수로 굽고**, 역할은 원본 변수의 별칭이거나 소비 요소에서 계산되는 calc() 식입니다. 역할에 변수를 따로 만들지 않습니다 — 하위 트리에서 원본 하나를 덮으면 그 위의 역할·recipe가 모두 다시 계산되어야 합니다.
 - 길이 scale은 하나입니다: <!-- generated:agents-scale --><!-- 이 블록은 생성됩니다 — pnpm docs:sync -->`xs4 · sm8 · md12 · lg16 · xl24 · 2xl32 · 3xl48`<!-- /generated:agents-scale -->. 안쪽 여백은 `tokens.shape.inset`, 형제 사이·margin·위치 offset은 `tokens.layout.gap`으로 고릅니다. 둘은 같은 단계면 같은 길이입니다. 실행 중에 숫자 픽셀이 필요한 배치 값(Floating의 `offset` · `crossOffset`, Draggable의 `keyboardStep`)도 같은 단계 이름을 받고 `internal/measure`가 쓰이는 자리에서 잽니다. 뷰포트 가장자리에 닿는 popover의 여백은 `layout.gutter`입니다.
 - radius는 날만 죽이고 가족마다 한 값입니다: `control` 4 · `selection` 3 · `surface` sm4/md6/lg8 · `full` 999px. Surface radius는 surface를 선택합니다.
-- 컨트롤 원본은 <!-- generated:shape-source --><!-- 이 블록은 생성됩니다 — pnpm docs:sync -->높이 사다리(`control.height`: sm 30 · md 32 · lg 36)와 button inset 배율(`control.buttonInsetRatio`: 1.4)이고, `anatomy`는 Badge 높이·inset(`anatomy.badge`)과 inline 점 · spinner 크기(`anatomy.inline`: 0.5em · 1em)입니다.<!-- /generated:shape-source --> input inset = (높이 − 컨트롤 글자 줄)/2 = 7/8/10, button inset = input × 1.4 반올림 = 10/11/14, selection = 높이/2 = 15/16/18, `control.icon` 16/18/20(옆 글자가 아니라 컨트롤 높이를 따릅니다), `control.gap` 8. `internal/shape.ts`의 `controlGeometry`가 크기가 있는 모든 Atom(button · iconButton · field · select · selectArrow · textarea · selection · checkbox · radio · switch · badge · spinner · spinnerInline)의 단일 진입점이고 stylesheet가 자기 사다리를 만들지 않습니다. 컨트롤 안의 Icon은 그 크기를 `IconSizeContext`로 받고(Field의 어도먼트와 지우기·보기 버튼 포함), 명시한 `size`가 이깁니다.
-- recipe(`tokens/shape-recipes.ts`)에는 숫자가 없습니다. Switch 트랙 폭 = 컨트롤 높이, 테 = `stroke.emphasis`, 손잡이는 자기 폭만큼 이동. Textarea 한 줄 = 같은 size Field 높이(block 여백 4/5/7)이고 최소 높이는 없이 `rows`(기본 4)가 높이를 정함(90/92/96). Select 화살표는 `control.icon` 크기 Icon(레시피에 따로 둔 값 없음), 입력 inset 자리, 값은 `control.gap` 앞에서 멈춤. Checkbox mark·Radio dot = 선택 상자의 절반(크기별 보정 없음). Badge 높이 20/22/24·inset 6/8/10만 원본 anatomy입니다.
+- 컨트롤 원본은 <!-- generated:shape-source --><!-- 이 블록은 생성됩니다 — pnpm docs:sync -->높이 사다리(`control.height`: sm 30 · md 32 · lg 36)와 button inset 배율(`control.buttonInsetRatio`: 1.4)이고, `anatomy`는 Badge 높이·inset(`anatomy.badge`)과 체크의 보정 비율(`anatomy.checkbox.markShift`: x 0.25 · y -0.5, `stroke.emphasis`의 배수)과 inline 점 · spinner 크기(`anatomy.inline`: 0.5em · 1em)입니다.<!-- /generated:shape-source --> 역할은 식이고 값은 [docs/foundations/shape.md](docs/foundations/shape.md)가 적습니다 — input inset = (높이 − 컨트롤 글자 줄)/2, button inset = input × 배율 반올림, selection = 높이/2, `control.icon`은 옆 글자가 아니라 컨트롤 높이를 따르고, `control.gap`은 space sm입니다. 풀린 값은 `tokens/__golden__/shape-resolved.json`이 지킵니다. `internal/shape.ts`의 `controlGeometry`가 크기가 있는 모든 Atom(button · iconButton · field · select · selectArrow · textarea · selection · checkbox · radio · switch · badge · spinner · spinnerInline)의 단일 진입점이고 stylesheet가 자기 사다리를 만들지 않습니다. 컨트롤 안의 Icon은 그 크기를 `IconSizeContext`로 받고(Field의 어도먼트와 지우기·보기 버튼 포함), 명시한 `size`가 이깁니다.
+- recipe(`tokens/shape-recipes.ts`)에는 구조 값(절반 `/ 2`, 45° 회전)만 쓰고, 광학 보정 비율은 원본 anatomy에 둡니다(`shape.test.ts`가 recipe 문자열의 숫자를 `eslint-rules/structural.js`의 `STRUCTURAL`과 대조합니다). Switch 트랙 폭 = 컨트롤 높이, 테 = `stroke.emphasis`, 손잡이는 자기 폭만큼 이동. Textarea 한 줄 = 같은 size Field 높이이고 최소 높이는 없이 `rows`(기본 4)가 높이를 정함. Select 화살표는 `control.icon` 크기 Icon(레시피에 따로 둔 값 없음), 입력 inset 자리, 값은 `control.gap` 앞에서 멈춤. Checkbox mark·Radio dot = 선택 상자의 절반(크기별 보정 없음), 체크를 돌린 뒤의 이동은 원본 `anatomy.checkbox.markShift`가 정합니다. Badge 높이·inset만 크기별 원본 anatomy입니다.
 - 선(`stroke.border` 1 · `emphasis` 2)과 포커스 링(`focus.width`·`offset` 2)은 px, `stroke.icon` 1.75는 SVG 단위입니다. 누르는 표식의 최소 크기 `target.min` 24도 px이고, 이에 못 미치는 표식은 `targetReach`(= (min(표식, 24) − 24) / 2)만큼 보이지 않는 hit area를 넓힙니다(Checkbox · Radio · Switch와 Field의 지우기·보기 버튼의 `::before` — 테두리가 있는 상자는 padding box에서 놓이므로 테두리만큼 더 멀리서 시작합니다). 모든 포커스 링은 `focusRing` 하나를 씁니다(색은 `interaction.focus`). 키보드 판정은 `useFocusRing` 하나이고 링은 링 주인(Field · Select는 wrapper, Textarea · Button · Link · Checkbox · Radio · Switch는 자기 자신)이 `[data-focus-visible]`에서 그립니다. 링은 요소 자신의 곡률을 따릅니다 — 전역 `:where(:focus-visible)`(`styles/states.css.ts`)은 링 주인이 없는 요소의 baseline이라 링만 그리고 요소의 모양을 바꾸지 않습니다. 상자 안쪽에 긋는 1px 선은 `strokeRing(color)`(`tokens/shape-recipes.ts`)가 `box-shadow` 값 하나로 만들고, elevation 말고 `box-shadow`를 쓰는 유일한 자리입니다.
 - Icon 크기 이름은 Text 역할 이름의 부분집합이고 타입으로 묶여 있습니다: label 14 · caption 16 · body 18 · subheading 20. Box의 named size는 `dimension.width/height`(xs~xl), 읽기 폭 `measure`, Layout의 `container`를 가족 접두어(`md` · `measure.md` · `container.content`)와 키워드(`full · fit · min-content · max-content`)로 고르고 모두 class가 됩니다. 이름이 아닌 CSS 길이만 inline입니다.
 - elevation은 <!-- generated:agents-elevation --><!-- 이 블록은 생성됩니다 — pnpm docs:sync -->`lifted 10 · sticky 20 · overlay 30 · modal 40 · toast 50`<!-- /generated:agents-elevation --> 다섯 tier(지면은 tier가 아닙니다)이고, **tier 하나가 position · z · 그림자를 한 단위로 정합니다.** position은 lifted·overlay·modal·toast가 relative, sticky가 sticky입니다. 그림자 깊이는 lifted(lifted tier)·floating(overlay·modal·toast) 둘뿐, sticky는 그림자가 없습니다. 기하는 Layout(모드별 원본 변수 `--pui-layout-shadow-<depth>-<i>`), 색은 Color의 shadow colour이고, 그림자는 쓰이는 요소에서 둘을 이어 붙여 조립합니다(`castShadow`). 단위는 `tokens/elevation-recipes.ts`(`elevationStack` · `elevationCast` · `elevationStyle`)가 한 곳에서 만들고, `elevation` class 지도(`styles/elevation.css.ts`, `.` entry)와 Surface의 `elevation` prop, Floating, Switch 손잡이가 그것을 씁니다 — `zIndex`와 깊이 그림자는 이 레시피를 spread한 자리 밖에 쓰지 않습니다. tier 사이는 10이고 같은 tier 안의 한 걸음(`nudge` 1)이 중첩을 만듭니다: 같은 tier에 중첩된 Floating은 `ELEVATION_NEST_LIMIT`(9)번까지 한 걸음씩 오르고, 더 높은 tier 위에서는 그 tier를 따릅니다. 흐름 안의 견본과 목업은 `isolation: isolate` 무대에 두고, 페이지 헤더(sticky tier) 아래의 sticky 레일도 같은 tier라 DOM 순서로 헤더를 덮으므로 `isolation: isolate` 프레임 안에 둡니다.
 - breakpoint(30/48/64/80em = 480/768/1024/1280)는 미디어 쿼리가 변수를 못 읽어 값입니다. 길이는 rem, 미디어 쿼리는 em, 선·포커스 링은 px입니다. `layout.section`(start · end)은 뷰포트 높이를 따라 자라는 선언된 유동 단계로, Typography의 `hero`와 함께 고정 사다리의 예외는 둘뿐입니다. `color.control.track`은 Switch 트랙과 진행 막대 홈에 씁니다.
-- gap 가족(`gap · rowGap · columnGap`)은 자식을 늘어놓는 Stack·Inline·Grid가 같은 지도에서 고르고 Box에는 없습니다. 세 컴포넌트는 정렬 어휘 하나(`ALIGNS · JUSTIFIES · JUSTIFY_ITEMS`)를 나눠 쓰고, 기본값은 root가 갖고 class는 prop을 줄 때만 붙습니다. Grid의 `justify`는 track 분배이고 칸 안의 정렬은 `justifyItems`입니다.
+- gap 가족은 자식을 늘어놓는 컨테이너가 같은 지도에서 고릅니다 — `gap`은 Stack·Inline·Grid, `rowGap · columnGap`은 Inline·Grid이고 Box에는 없습니다. 세 컴포넌트는 정렬 어휘 하나(`ALIGNS · JUSTIFIES · JUSTIFY_ITEMS`)를 나눠 쓰고, 기본값은 root가 갖고 class는 prop을 줄 때만 붙습니다. Grid의 `justify`는 track 분배이고 칸 안의 정렬은 `justifyItems`입니다.
 - Select는 native select와 장식 Icon을 wrapper 안에 둡니다. ref와 폼 속성은 native select, className/style/data-testid는 보이는 wrapper에 전달합니다. `status` · `fill`은 Field와 같은 축이고 `multiple`은 없습니다. 화살표는 semantic ink를 사용합니다.
 
 상위 화면 조합과 그 prop 축은 현재 패키지 API에 포함하지 않습니다. 실제 제품에서 반복되는 요구가 생기면 공통 책임과 축을 먼저 설계합니다.
@@ -344,13 +344,23 @@ Atom이 스스로 말하는 문구(접근성 이름 같은 것)는 prop이고 �
 
 ---
 
+## 배포 계약
+
+패키지는 npm에 올라갈 tarball 그대로 검증합니다. 약속은 [docs/get-started/install.md](docs/get-started/install.md)에 있고 아래가 그것을 지키는 장치입니다.
+
+- **entry는 넷이고, 이름 하나는 한 entry에서만 나갑니다.** `src/index.ts`(`.`)와 `tokens/public.ts`(`/tokens`)와 `theme/boot.ts`(`/theme-boot`)는 내보내는 이름을 하나하나 적은 목록이고 `export *`가 없습니다. 안쪽의 배럴은 패키지가 토큰 층을 읽는 문 `tokens/index.ts` 하나이고(`tokens/barrel.test.ts`가 지킵니다), `atoms/index.ts`와 `primitives/index.ts`는 없습니다. 안쪽 파일은 그 문을 빼면 이름을 정의한 파일을 직접 import합니다. `/styles.css`는 `styles/global.css.ts`가 짓는 `dist/paper-ui.css` 하나입니다.
+- **공개 이름은 기록됩니다.** `packages/paper-ui/api/surface.json`이 네 entry의 값과 타입 이름, `tokens`의 leaf 경로, 방출하는 CSS 변수, 레이어 이름과 버전을 기록하고, `src/api.test.ts`가 TypeScript checker와 런타임으로 소스에서 계산한 값과 대조합니다(`[install.api.surface-recorded]`). export · 토큰 경로 · CSS 변수 · 레이어를 바꾼 변경은 같은 변경에서 `pnpm api:update`를 돌려 기록을 고치고, 그 diff가 리뷰에서 API 변경으로 읽힙니다. INVENTORY는 이름의 분류(`inventory.test.ts`)이고 surface.json은 전체의 기록입니다.
+- **발행한 버전은 고정됩니다.** `prepublishOnly`가 `api/released/<버전>.json`을 남기고, `pnpm api:update`는 발행한 버전의 기록을 바꾸는 일을 거부합니다. pre-release(`-alpha` · `-beta` · `-rc.n`)의 기록도 고정되지만 bump는 마지막 정식 버전에서 잽니다. 새 버전에는 변경에 맞는 bump — 0.x에서는 이름이 사라지거나 바뀌면 minor, 더하기만 하면 patch이고 1.0 이후에는 각각 major와 minor — 와 `CHANGELOG.md`의 `## <버전>` 제목이 있어야 기록이 바뀝니다(`[install.api.bump-required]`). 지금 버전은 첫 발행인 0.1.0이라 발행한 버전이 아직 없습니다.
+- **tarball이 계약을 증명합니다.** `pnpm smoke:dist`(`scripts/smoke-dist.mjs`)는 패키지를 `pnpm pack`한 tarball을 publint · attw로 검사하고, `dist/index.js`가 `"use client"`로 열리며 `dist/tokens.js` · `dist/theme-boot.js`와 그 chunk가 React를 import하지 않음을 확인하고, `dist/paper-ui.css`가 쓰는 CSS 기능을 browserslist 하한과 대조합니다(`scripts/browser-baseline.mjs`). 그런 다음 하네스를 복사한 React 19와 React 18.2 소비자 앱을 임시 폴더에서 tarball로 설치(vanilla-extract 없이)해 `tsc`(`bundler` · `node16`, `skipLibCheck` 끔)와 Vite 빌드와 `react-server` 조건의 `/tokens` · `/theme-boot` import를 통과시키고, `playwright.dist.config.ts`로 두 빌드와 `dist/paper-ui.css`를 실행해 봅니다. `verify`는 build 다음에 이것을 돌립니다.
+- **전역에 거는 규칙은 선언된 것뿐입니다.** class 없이 걸리는 규칙은 레이어별 표([이 스타일시트가 거는 전역 규칙](docs/get-started/install.md#이-스타일시트가-거는-전역-규칙)과 패키지 README의 같은 절)에 모두 있고, `tests/dist/stylesheet.spec.ts`가 빌드된 CSS와 표를 대조하며 모든 규칙이 `pui.*` 레이어 안에 있는지 확인합니다(`[install.stylesheet.global-rules]`). 전역 규칙을 더하거나 바꾸면 두 표가 같은 변경에서 바뀝니다.
+
 ## 계약과 테스트
 
 `docs/`의 계약 문장·문단·표 바로 앞에는 렌더되지 않는 표시 `[contract:<area>.<subject>.<slug>]: #`를 한 줄로 둡니다. area는 foundations · primitives · atoms · install · guardrails · app 중 하나입니다. 그 계약을 단언하는 테스트는 제목을 `[<id>]`로 시작하고, 한 테스트가 계약 여럿을 단언하면 id를 이어 씁니다(`[a] [b] 제목`). 새 계약 문장은 같은 변경에서 표시와 테스트를 함께 얻습니다. `scripts/check-contracts.mjs`가 `pnpm test` 안에서 둘을 1:1로 대조합니다 — 같은 id의 표시가 둘이거나, 테스트 없는 표시(skip · todo · fixme · fail 테스트는 세지 않습니다), 표시 없는 테스트 id, 내용 블록이 뒤따르지 않는 표시, 문단·목록·표에 이어 붙어 글자로 보이는 표시는 실패입니다. 표 바로 위의 표시는 GitHub에서 글자로 보이므로 표와 표시 사이에 빈 줄을 둡니다.
 
-테스트 파일은 계층과 시스템 이름을 따릅니다. 단위 테스트는 소스 옆에 `tokens/{color,color-recipes,typography,shape,layout,motion,state,barrel,overrides}.test.ts` · `styles/{typography,states}.test.ts`(`states`는 패키지 소스 전체의 상태 철자 훑기) · `theme/{engine,store}.test.ts` · `theme/{provider,source-carry}.test.tsx` · `primitives/{layout,content,theme,paint,interaction,a11y}.test.tsx` · `primitives/orders.test.ts` · `primitives/composition.test.ts` · `internal/*.test.ts(x)` · `public-types.test.ts`(공개 타입과 React Aria 경계) · `atoms/<Atom>.test.tsx` · `atoms/contract.test.tsx`(Atom이 함께 말하는 것 — 열세 Atom의 ref · 속성 · 상자 대상, 입력 가족과 선택 표식의 invalid)로, e2e는 `tests/{foundations,primitives,atoms,app,install}/<시스템>.spec.ts`로 둡니다. 테스트 이름에서 Foundations는 Color부터 Motion까지 다섯 시스템만 뜻합니다. e2e 도구(하네스 · 키보드 · 기하 · 콘솔 · 사이트를 링크로 훑는 `crawl.ts` · 계산된 스타일 probe `style.ts`)와 단위 테스트도 함께 쓰는 `dp()`는 `tests/support/`에 있습니다. 앱의 단위 테스트(`app/src/**/*.test.ts(x)`)는 문서 파서 · 링크 해석 · `docs/` 전체의 링크와 앵커와 앱 링크(라우트 표에 있는지) · 사이트 지도 · 라우트 handle · Playground registry와 JSX 문법에 더해, Foundations inspector(`playground/foundations/inspector.test.ts`: 역할 설명 `ROLE_NOTES`의 누락 없음 · 두 테마의 Palette 경로 이름 · 타이포 preset 범위 · Motion 역할과 반복의 설명)를 지킵니다. lint 규칙은 `eslint-rules/<규칙>.test.js`(`node --test`)가 계약 id로 지키고, manifest의 경로와 예외가 실제로 있는지는 `manifest.test.js`가 봅니다.
+테스트 파일은 계층과 시스템 이름을 따릅니다. 단위 테스트는 소스 옆에 `tokens/{color,color.golden,color-recipes,typography,shape,layout,motion,state,variables,barrel,overrides}.test.ts` · `styles/{typography,states}.test.ts`(`states`는 패키지 소스 전체의 상태 철자 훑기) · `theme/{engine,store}.test.ts` · `theme/{provider,source-carry}.test.tsx` · `primitives/{layout,content,theme,paint,interaction,a11y}.test.tsx` · `primitives/orders.test.ts` · `primitives/composition.test.ts` · `internal/*.test.ts(x)` · `public-types.test.ts`(공개 타입과 React Aria 경계) · `api.test.ts`(공개 이름의 기록과 버전 규칙) · `atoms/<Atom>.test.tsx` · `atoms/contract.test.tsx`(Atom이 함께 말하는 것 — 열세 Atom의 ref · 속성 · 상자 대상, 입력 가족과 선택 표식의 invalid)로, e2e는 `tests/{foundations,primitives,atoms,app,install,dist}/<시스템>.spec.ts`로 둡니다. 사이트가 선언한 모든 경로(`routes.spec`)와 문서가 그리는 모든 링크(`docs.spec`)는 e2e가 열어 보므로, 데모를 포함한 화면이 서는지는 손으로 확인할 항목이 아닙니다. `data-testid`는 테스트가 찾을 때만 앱과 하네스에 남고, `scripts/check-testids.mjs`(`pnpm test`)가 읽는 테스트가 없는 값을 실패로 잡습니다(`[guardrails.testids.no-orphans]`). 디자인 값은 테스트가 아니라 골든 파일(`tokens/__golden__/{color-roles,palette-oklch,shape-resolved,typography-resolved,layout-resolved,motion-resolved}.json`)이 적습니다 — 테스트는 원본에서 계산한 불변식이고, 골든은 `vitest -u`로만 고칩니다. 테스트 이름에서 Foundations는 Color부터 Motion까지 다섯 시스템만 뜻합니다. e2e 도구(하네스 · 키보드 · 기하(`geometry.ts`의 `roleDp`는 역할을 원본에서 dp로 풉니다) · 콘솔 · 사이트를 링크로 훑는 `crawl.ts` · 계산된 스타일 probe `style.ts` · 색 대비와 합성 `contrast.ts`)와 단위 테스트도 함께 쓰는 `dp()` · `contrast.ts`는 `tests/support/`에 있습니다. 앱의 단위 테스트(`app/src/**/*.test.ts(x)`)는 문서 파서 · 링크 해석 · `docs/` 전체의 링크와 앵커와 앱 링크(라우트 표에 있는지) · 사이트 지도 · 라우트 handle · Playground registry와 JSX 문법에 더해, Foundations inspector(`playground/foundations/inspector.test.ts`: 역할 설명 `ROLE_NOTES`의 누락 없음 · 두 테마의 Palette 경로 이름 · 타이포 preset 범위 · Motion 역할과 반복의 설명)를 지킵니다. lint 규칙은 `eslint-rules/<규칙>.test.js`(`node --test`)가 계약 id로 지키고, manifest의 경로와 예외가 실제로 있는지는 `manifest.test.js`가 봅니다.
 
-e2e는 자기 서버를 직접 띄웁니다. 앱은 41731, 하네스(`fixtures/harness`, `?case=geometry|carry|theme|layers|layout|elevation|typography|motion|press|states|marks|drag|overrides`)는 41732 포트에서 `--strictPort`로 뜨고 이미 떠 있는 서버를 재사용하지 않으므로, 포트를 다른 서버가 쓰고 있으면 실행이 실패합니다. 포트는 `E2E_APP_PORT` · `E2E_HARNESS_PORT`로 바꿉니다. 하네스는 Vite 내부 경로 없이 패키지를 exports로만 불러오고, `window.__paper.sourceVars`로 원본 덮어쓰기를 spec에 내줍니다. 프로젝트는 chromium · chromium-dark · chromium-reduced-motion · chromium-forced-colors · firefox · webkit 여섯입니다. `foundations/motion` spec은 chromium에서 역할 타이밍을, chromium-reduced-motion에서 reduced-motion 정책을 돌립니다(프로젝트 옵션으로 서로의 테스트를 건너뜁니다). firefox · webkit은 `foundations/shape` · `primitives` · `atoms` spec을 돌고, `tests/dist/`는 배포본 전용 설정만 돌립니다 — 이름은 dist여도 산출물이 아니라 소스이므로 git · eslint · check-contracts는 산출물 `dist/`와 달리 이 디렉터리를 읽습니다. Tab은 `tests/support/keyboard.ts`의 `tab()`으로만 누릅니다 — macOS WebKit에서는 Alt+Tab이어야 버튼까지 닿습니다. 한 엔진에서만 나는 실패는 `playwright.config.ts`의 `ENGINE_EXCLUSIONS`에 이유와 다시 켜는 단계를 적어 그 엔진에서만 끕니다.
+e2e는 자기 서버를 직접 띄웁니다. 앱은 41731, 하네스(`fixtures/harness`, `?case=geometry|carry|theme|layers|layout|elevation|typography|motion|press|states|marks|drag|overrides|exports|accents`)는 41732 포트에서 `--strictPort`로 뜨고 이미 떠 있는 서버를 재사용하지 않으므로, 포트를 다른 서버가 쓰고 있으면 실행이 실패합니다. 포트는 `E2E_APP_PORT` · `E2E_HARNESS_PORT`로 바꿉니다. 하네스는 Vite 내부 경로 없이 패키지를 exports로만 불러오고, `window.__paper.sourceVars`로 원본 덮어쓰기를 spec에 내줍니다. 프로젝트는 chromium · chromium-dark · chromium-reduced-motion · chromium-forced-colors · firefox · webkit 여섯입니다. `foundations/motion` spec은 chromium에서 역할 타이밍을, chromium-reduced-motion에서 reduced-motion 정책을 돌립니다(프로젝트 옵션으로 서로의 테스트를 건너뜁니다). firefox · webkit은 `foundations/shape` · `primitives` · `atoms` spec을 돌고, `tests/dist/`는 `playwright.dist.config.ts`만 돌립니다(`pnpm smoke:dist`가 tarball에서 지은 React 19 · 18 소비자 앱의 `consumer.spec.ts`와 `dist/paper-ui.css`의 `stylesheet.spec.ts`) — 이름은 dist여도 산출물이 아니라 소스이므로 git · eslint · check-contracts는 산출물 `dist/`와 달리 이 디렉터리를 읽습니다. Tab은 `tests/support/keyboard.ts`의 `tab()`으로만 누릅니다 — macOS WebKit에서는 Alt+Tab이어야 버튼까지 닿습니다. 한 엔진에서만 나는 실패는 `playwright.config.ts`의 `ENGINE_EXCLUSIONS`에 이유와 다시 켜는 단계를 적어 그 엔진에서만 끕니다. 고칠 단계가 없는 엔진의 한계는 `until`에 `engine`이라 적고 한계가 있는 `platform`에서만 끄는데, 지금 목록에는 그런 것 하나가 있습니다 — macOS WebKit은 버튼에 Option+Tab으로만 닿고 React Aria의 `contain`이 Alt를 쥔 Tab을 브라우저에 맡기므로 FocusScope가 한 바퀴 돌지 않습니다.
 
 ---
 
@@ -364,9 +374,10 @@ e2e는 자기 서버를 직접 띄웁니다. 앱은 41731, 하네스(`fixtures/h
 
 ## 작업 완료 전 체크
 
-- [ ] `pnpm verify` 가 통과했는가 — check(lint · typecheck · 단위 테스트 · 계약 대조) → build(패키지 → 앱) → e2e. CI 와 배포 전 검사(`prepublishOnly`)가 같은 명령을 돌린다
+- [ ] `pnpm verify` 가 통과했는가 — check(lint · typecheck · 단위 테스트 · 계약 대조) → build(패키지 → 앱) → smoke:dist(tarball 소비자 앱) → e2e. CI 와 배포 전 검사(`prepublishOnly`)가 같은 명령을 돌린다
 - [ ] 작업 중에는 `pnpm check` 로 빠르게 확인하고, Foundations · Primitives · Atoms 를 바꿨다면 `pnpm test:e2e` 도 함께 돌렸는가
-- [ ] 패키지 package.json · entry · 빌드를 바꿨다면 `pnpm --filter @studio-baeks/paper-ui check:package` 도 돌렸는가
+- [ ] 패키지 package.json · entry · 빌드를 바꿨다면 `pnpm smoke:dist`(tarball 검사와 React 19 · 18 소비자 앱)도 돌렸는가
+- [ ] export · 토큰 경로 · CSS 변수 · 레이어 이름을 바꿨다면 `pnpm api:update`로 `api/surface.json`을 고쳤고, 발행한 버전이면 bump와 `CHANGELOG.md` 제목을 함께 했는가
 - [ ] CSS 기능을 새로 썼다면 `scripts/browser-baseline.mjs` 표에 그 행을 더했는가
 - [ ] 색을 추가했다면 — 정말 *의미* 가 있는가. 장식이면 넣지 않는다
 - [ ] 큰 면을 색으로 채우지 않았는가 (색 면은 그 색의 의미를 짊어질 때만 — error 버튼처럼. 일상의 채움은 검정)
@@ -374,5 +385,4 @@ e2e는 자기 서버를 직접 띄웁니다. 앱은 41731, 하네스(`fixtures/h
 - [ ] Primitive·Atom API를 수정했다면 — app의 실제 사용 예와 문서, 그리고 Playground 항목(`app/src/playground/registry/entries/`)을 갱신했는가
 - [ ] prop이 받는 닫힌 값의 집합(축)을 더하거나 바꿨다면 — 원본 tree에서 파생하거나 `satisfies`로 묶고 `tokens/vocabulary.ts`에 상수·타입 짝으로 공개했는가
 - [ ] 문서에 계약 문장을 더했다면 — 같은 변경에서 `[contract:…]: #` 표시와 그 id로 시작하는 테스트를 더했는가
-- [ ] 데모(`app/`)가 여전히 서는가
 - [ ] 문서를 고쳤다면 — 생성 블록은 `pnpm docs:sync`로 다시 썼고, `pnpm docs:check`(타입 · 코드 블록 · 링크 · 산문 · description)가 통과했는가

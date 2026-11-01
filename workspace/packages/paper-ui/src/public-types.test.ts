@@ -8,10 +8,11 @@ import { fileURLToPath } from "node:url";
 import type { ComponentProps } from "react";
 import { describe, expect, expectTypeOf, it } from "vitest";
 
+import { INVENTORY } from "./inventory";
 import type { Space } from "./tokens";
 
 import {
-  VisuallyHidden, useDraggable, useDroppable, useFloating, useFocusRing, useFocusWithin, useFormField, useFormFieldControl, usePressable, useRovingFocusItem, useSelectable, useSelectableGroup,
+  Floating, VisuallyHidden, useDraggable, useDroppable, useFloating, useFloatingContext, useFocusRing, useFocusWithin, useFormField, useFormFieldControl, usePressable, useRovingFocusItem, useSelectable, useSelectableGroup,
   type DraggableProps, type DraggableResult, type DraggableState, type DroppableProps, type DroppableResult, type DroppableState, type FloatingContentProps, type FloatingContentState, type FloatingModalProps, type FloatingPopoverProps, type FloatingPresentation, type FloatingResult, type FocusRingResult, type FocusWithinResult, type FormFieldControlResult, type FormFieldResult, type PressEvent, type PressableOptions,
   type FormFieldProps, type FormFieldState, type PressableProps, type PressableResult, type PressableState, type RovingFocusItemResult, type RovingFocusProps, type RovingFocusState, type SelectableGroupProps,
   type SelectableGroupResult, type SelectableGroupState, type SelectableProps, type SelectableResult, type SelectableState,
@@ -60,6 +61,56 @@ describe("public types", () => {
     expectTypeOf<ReturnType<typeof useRovingFocusItem>>().toEqualTypeOf<RovingFocusItemResult>();
     expectTypeOf<ReturnType<typeof useFormField>>().toEqualTypeOf<FormFieldResult>();
     expectTypeOf<ReturnType<typeof useFormFieldControl>>().toEqualTypeOf<FormFieldControlResult>();
+  });
+
+  it("[primitives.hooks.naming] keeps a controlled state to x, defaultX and onXChange, and a state read back to is*", () => {
+    expectTypeOf<SelectableProps>().toHaveProperty("selected");
+    expectTypeOf<SelectableProps>().toHaveProperty("defaultSelected");
+    expectTypeOf<SelectableProps>().toHaveProperty("onSelectedChange");
+    expectTypeOf<SelectableGroupProps>().toHaveProperty("selectedValues");
+    expectTypeOf<SelectableGroupProps>().toHaveProperty("defaultSelectedValues");
+    expectTypeOf<SelectableGroupProps>().toHaveProperty("onSelectedValuesChange");
+    expectTypeOf<RovingFocusProps>().toHaveProperty("currentValue");
+    expectTypeOf<RovingFocusProps>().toHaveProperty("defaultCurrentValue");
+    expectTypeOf<RovingFocusProps>().toHaveProperty("onCurrentValueChange");
+    expectTypeOf<ComponentProps<typeof Floating>>().toHaveProperty("open");
+    expectTypeOf<ComponentProps<typeof Floating>>().toHaveProperty("defaultOpen");
+    expectTypeOf<ComponentProps<typeof Floating>>().toHaveProperty("onOpenChange");
+    expectTypeOf<PressableResult>().toHaveProperty("isActive");
+    expectTypeOf<SelectableResult>().toHaveProperty("isSelected");
+    expectTypeOf<FloatingResult>().toHaveProperty("isOpen");
+    expectTypeOf<FocusRingResult>().toHaveProperty("isFocusVisible");
+    expectTypeOf<DraggableResult>().toHaveProperty("isDragging");
+    expectTypeOf<DroppableResult>().toHaveProperty("isDropTarget");
+  });
+
+  it("[primitives.hooks.naming] gives no input an is or should, wherever an options type is declared", () => {
+    const options = /export type \w*(?:Options|OwnProps) = (?:[^{;]*&\s*)?\{([\s\S]*?)\n?\};/g;
+    const primitives = join(dirname(fileURLToPath(import.meta.url)), "primitives");
+    const files = readdirSync(primitives, { recursive: true, encoding: "utf8" }).filter((file) => /\.tsx?$/.test(file) && !/\.(test|css)\./.test(file)).map((file) => join(primitives, file));
+    expect(files.length).toBeGreaterThan(0);
+    let seen = 0;
+    for (const file of files) {
+      for (const [, body = ""] of readFileSync(file, "utf8").matchAll(options)) {
+        seen += 1;
+        expect(body.match(/^\s*(?:is|should)[A-Z]\w*\??:/gm), relative(primitives, file)).toBeNull();
+      }
+    }
+    expect(seen).toBeGreaterThan(5);
+  });
+
+  it("[primitives.hooks.naming] publishes XOptions and XResult for every hook of a primitive, and the event types under Paper's names", () => {
+    const { types } = (JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), "../api/surface.json"), "utf8")) as { entries: Record<string, { types: string[] }> }).entries["."]!;
+    // useFloatingContext reads the Floating it stands in, so it takes no options and answers with useFloating's result.
+    const hooks = Object.values(INVENTORY.primitives).flatMap(({ hooks }) => [...hooks]).filter((hook) => hook !== "useFloatingContext");
+    expect(hooks.length).toBeGreaterThan(5);
+    for (const hook of hooks) {
+      const name = hook.slice("use".length);
+      expect(types, `${name}Options`).toContain(`${name}Options`);
+      expect(types, `${name}Result`).toContain(`${name}Result`);
+    }
+    expectTypeOf<ReturnType<typeof useFloatingContext>>().toEqualTypeOf<FloatingResult>();
+    for (const event of ["PressEvent", "DropEvent", "DropEnterEvent", "TransferDragEvent", "MoveDragEvent", "Placement"]) expect(types, event).toContain(event);
   });
 
   it("[primitives.snapshots.children] names the snapshot each children function receives", () => {

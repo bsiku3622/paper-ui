@@ -4,11 +4,14 @@ Foundations는 화면에 쓰이는 모든 값을 정하는 다섯 시스템입�
 
 ## 다섯 시스템은 쌓인다
 
+[contract:foundations.systems.one-way]: #
 다섯 시스템은 정해진 순서로 쌓이고, 각 시스템은 자기보다 앞에 있는 시스템만 참조합니다.
 
 ```text
 Color → Typography → Shape → Layout → Motion → Primitives → Atoms
 ```
+
+[contract:foundations.systems.sources]: #
 
 | 시스템 | 정하는 것 | 앞 시스템에서 가져오는 것 | 원본 |
 |---|---|---|---|
@@ -32,6 +35,7 @@ Shape와 Layout의 경계는 하나의 질문으로 가립니다. **빈 캔버�
 | Layout | `LAYOUT_SOURCE` | `gap` · `gutter` · `container` · `breakpoint` · `section` | elevation class · Surface `elevation` |
 | Motion | duration · easing · loop | `press` · `hover` · `state` · `enter` · `exit` · `theme` | `transition()` · `presence` · `loop` |
 
+[contract:foundations.pages.derived-rows]: #
 Playground의 [Foundations](/playground/foundations/color) 페이지가 이 순서 그대로 각 시스템을 보여줍니다. 위에서부터 원본, 역할, 조합 순서입니다. Color만은 예전 형태(Palette 행렬과 역할별 값 카드)를 유지하고, 맨 아래에 accent × variant 표가 붙어 조합 단을 맡습니다. 모든 페이지의 행은 원본에서 파생하므로, 역할이나 단계를 더하면 페이지가 따라옵니다.
 
 ## 이름 계약
@@ -43,6 +47,7 @@ SOURCE  →  VALUES  →  역할 (tokens.<system>)  →  조합 (<system>-recipe
 dp·em·색    CSS 값       var() 참조                  숫자 없는 완성형
 ```
 
+[contract:foundations.naming.one-tree]: #
 `VALUES`의 prefix는 인자로 줍니다. `buildVarTree(TYPOGRAPHY_VALUES, ["typography"])`는 `--pui-typography-palette-*` 이름을 만들고, 같은 트리를 `walkValues()`로 걸어 `:root` 변수를 굽습니다. 그래서 같은 트리 한 벌에서 CSS 이름과 TS 경로가 나옵니다.
 
 | 시스템 | 파일 |
@@ -83,10 +88,17 @@ dp·em·색    CSS 값       var() 참조                  숫자 없는 완성�
    └──► tokens 객체            tokens.color.ink.primary = "var(--pui-color-ink-primary)"
 ```
 
+[contract:foundations.emission.source-only]: #
+스타일시트가 내는 변수는 원본뿐입니다. Shape · Layout · Typography 원본 tree를 걸은 경로가 모드와 무관한 변수의 이름과 하나도 남김없이 같고, light와 dark가 같은 변수를 갖고, `tokens`가 가리키는 모든 `var()`가 실제로 방출되며, 역할의 경로는 변수 이름이 되지 않습니다.
+
 두 산출물이 같은 tree를 같은 헬퍼로 걷기 때문에 변수 이름과 TS 경로가 어긋날 수 없습니다. 축 목록을 손으로 나열하지 않고 tree를 통째로 걷는 것도 같은 이유입니다 — 나열하면 축이 늘 때 조용히 빠지고, 빠진 변수는 에러 없이 초기값으로 떨어집니다.
+
+[contract:foundations.emission.root-values]: #
+브라우저가 계산한 변수도 방출하는 변수와 같습니다. `:root`가 가진 원본과 투명도와 지금 모드의 색 역할이 `themeVariables()`가 선언한 값과 일치하고, `data-pui-theme`을 가진 스코프는 그 모드의 고유 역할을 자기 요소에, 지면 역할을 자식에 갖습니다.
 
 시스템마다 굽는 범위는 다릅니다.
 
+[contract:foundations.emission.per-system]: #
 - **Color**는 의미 역할 전체를 light·dark 두 벌로 굽습니다. `<html>`에 속성이 없으면 OS 설정이 모드를 정하고, 테마 스코프(`[data-pui-theme]`)는 자기 요소에 그 모드의 고유 역할을 겁니다. 포커스 링 색과 그림자 색처럼 지면에 그려지는 역할은 스코프의 자식부터 바뀝니다. opacity는 테마와 무관한 값으로 한 번만 굽습니다.
 - **Typography**는 Palette를 굽고, 글자 역할과 control preset은 Palette 변수를 조합한 class입니다.
 - **Shape·Layout**은 원본만 굽습니다. 역할은 원본 변수의 별칭이거나 쓰이는 요소에서 계산되는 `calc()` 식이라, 하위 트리에서 원본 하나를 덮으면 그 위의 역할이 그 자리에서 모두 다시 계산됩니다. 그림자의 기하는 모드마다 달라 모드별 원본 변수로 굽고, 그림자 값은 쓰이는 요소에서 기하 변수와 그림자 색을 이어 붙여 조립합니다. Portal로 옮겨진 층(Floating의 panel과 backdrop)에는 열린 자리가 덮어쓴 원본이 root에 얹혀 따라갑니다. 실행 중에 숫자가 필요한 배치 값은 gap 단계 이름으로 받아 쓰이는 자리에서 잽니다.
@@ -95,6 +107,8 @@ dp·em·색    CSS 값       var() 참조                  숫자 없는 완성�
 ## 상태 recipe
 
 hover · 눌림 · 선택 · 비활성 · 키보드 포커스가 어떻게 보이는지는 시스템이 아니라 조합입니다. Color가 면과 선의 색을, Shape가 링의 모양을, Motion이 전이 시간을 정하고, 상태 recipe(`tokens/state-recipes.ts`)가 그 값을 상태 attribute에 묶어 style 조각으로 내놓습니다. 상태의 이름(`data-active` · `data-selected` …)은 `tokens/state.ts` 한 곳에서만 적고, recipe의 selector는 모두 거기서 만들어집니다.
+
+[contract:foundations.state.fragments]: #
 
 | 조각 | 하는 일 |
 |---|---|
@@ -146,7 +160,7 @@ prop이 받는 닫힌 값의 집합을 **축**이라 부릅니다. 축마다 상
 | `CONTROL_FONT_SIZES` · `ControlFontSize` | `tokens/typography.ts` | 컨트롤의 `fontSize` — 컨트롤 상자가 담을 수 있는 `TEXT_VARIANTS`의 부분집합 |
 | `CONTROL_PRESETS` · `ControlPreset` | `tokens/typography.ts` | `tokens.typography.preset.<preset>` |
 | `EMPHASES` · `Emphasis` | `tokens/typography.ts` | `emphasisRule()`의 인자 — Palette 굵기 이름의 부분집합 |
-| `SPACES` · `Space` | `tokens/shape.ts` | Box의 `padding`, Stack · Inline · Grid의 `gap` · `rowGap` · `columnGap`, `tokens.shape.inset.<space>`, `tokens.layout.gap.<space>` |
+| `SPACES` · `Space` | `tokens/shape.ts` | Box의 `padding`, Stack · Inline · Grid의 `gap`, Inline · Grid의 `rowGap` · `columnGap`, `tokens.shape.inset.<space>`, `tokens.layout.gap.<space>` |
 | `DIMENSIONS` · `Dimension` | `tokens/shape.ts` | Box의 `width` · `height` 이름 값, `tokens.shape.dimension` |
 | `MEASURES` · `Measure` | `tokens/shape.ts` | Box의 `measure.<measure>` 폭, `tokens.shape.measure.<measure>` |
 | `ICON_SIZES` · `IconSize` | `tokens/shape.ts` | Icon의 `size`, IconButton의 `iconSize` — `TEXT_VARIANTS`의 부분집합 |
@@ -228,6 +242,8 @@ export const panel = style([elevation.overlay, {
 [contract:foundations.class-maps.follow-vocabulary]: #
 값만 원본에서 나오는 것이 아닙니다. 어휘 상수와 타입, class 지도의 키도 같은 원본 tree를 돌아 만들어지므로, 원본에 단계를 더하면 상수 · 타입 · class가 함께 늘고 어휘 밖의 이름은 타입에서 걸립니다.
 
-이 검사는 사람이 기억해서 돌리지 않습니다. 패키지 build는 lint와 typecheck를 통과해야 번들을 만들고, 배포 전(`prepublishOnly`)과 CI는 `pnpm verify`로 lint · typecheck · 단위 테스트 · build · e2e를 같은 순서로 돌립니다.
+[contract:guardrails.verify.order]: #
+이 검사는 사람이 기억해서 돌리지 않습니다. 패키지 build는 lint와 typecheck를 통과해야 번들을 만들고, 배포 전(`prepublishOnly`)과 CI는 `pnpm verify`로 lint · typecheck · 단위 테스트 · build · smoke:dist · e2e를 같은 순서로 돌립니다.
 
+[contract:guardrails.a11y.polymorphic]: #
 접근성도 같은 방식으로 지킵니다. `eslint-plugin-jsx-a11y`가 `as`로 바뀐 요소까지 읽도록 설정되어 있어, `<Box as="button">` 같은 경우도 검사합니다.

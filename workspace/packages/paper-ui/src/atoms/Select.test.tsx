@@ -2,6 +2,8 @@ import { createRef } from "react";
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
+import * as entry from "../index";
+import { INVENTORY } from "../inventory";
 import { iconSize } from "../primitives/Icon.css";
 import { CONTROL_ICON, CONTROL_SIZES, STATUSES } from "../tokens";
 import { Select } from "./Select";
@@ -16,7 +18,7 @@ const choices = (
 );
 
 describe("Select", () => {
-  it("Option과 Group을 native select anatomy로 렌더한다", () => {
+  it("[atoms.select.native-form] [atoms.contract.axes] Option과 Group을 native select anatomy로 렌더한다", () => {
     render(
       <Select aria-label="선택">
         <Select.Option value="">선택하세요</Select.Option>
@@ -63,6 +65,14 @@ describe("Select", () => {
     expect(group.current).toBe(screen.getByRole("group", { name: "G" }));
   });
 
+  it("[atoms.select.anatomy] reaches its option and group through Select alone: the entry exports neither under a name of its own", () => {
+    expect(Select.Option).toBeTruthy();
+    expect(Select.Group).toBeTruthy();
+    for (const name of ["Option", "Group", "SelectOption", "SelectGroup"]) expect(name in entry, name).toBe(false);
+    expect(INVENTORY.anatomy.Select).toEqual(["Option", "Group"]);
+    expect(INVENTORY.atoms).not.toContain("Option");
+  });
+
   it("[atoms.select.native-form] has no multiple: a select that lists its choices is a different control", () => {
     // @ts-expect-error a Select takes one value
     const many = <Select multiple aria-label="many">{choices}</Select>;
@@ -90,7 +100,7 @@ describe("Select", () => {
     expect(screen.getByLabelText("face").parentElement!.className).not.toBe(raised);
   });
 
-  it("[atoms.focus.ring] shows the keyboard's focus on the wrapper and not on the select", () => {
+  it("[atoms.focus.ring] [primitives.state.emitters] shows the keyboard's focus on the wrapper and not on the select", () => {
     render(<Select aria-label="ring">{choices}</Select>);
     const select = screen.getByLabelText("ring");
     fireEvent.keyDown(document.body, { key: "Tab" });
@@ -112,5 +122,15 @@ describe("Select", () => {
       expect(screen.getByLabelText(size).parentElement!.querySelector("svg")!.getAttribute("class")!.split(" "), size).toContain(iconSize[CONTROL_ICON[size]]);
       unmount();
     }
+  });
+
+  it("[atoms.select.native-form] hides its arrow from assistive technology and keeps it out of the Tab order", () => {
+    render(<Select aria-label="arrow">{choices}</Select>);
+    const arrow = screen.getByLabelText("arrow").parentElement!.querySelector("svg")!;
+    expect(arrow.getAttribute("aria-hidden")).toBe("true");
+    expect(arrow.getAttribute("focusable")).toBe("false");
+    expect(arrow.hasAttribute("tabindex")).toBe(false);
+    expect(arrow.getAttribute("role")).toBeNull();
+    expect(screen.getAllByRole("combobox")).toHaveLength(1);
   });
 });

@@ -2,8 +2,10 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { tokens } from "../../packages/paper-ui/src/tokens";
 import { accentProfile, itemProfile } from "../../packages/paper-ui/src/tokens/color-recipes";
-import { strokeRing } from "../../packages/paper-ui/src/tokens/shape-recipes";
+import { SHAPE_SOURCE } from "../../packages/paper-ui/src/tokens/shape";
+import { SHAPE_RECIPES, strokeRing } from "../../packages/paper-ui/src/tokens/shape-recipes";
 import type { Accent, Variant } from "../../packages/paper-ui/src/tokens";
+import { px, roleDp } from "../support/geometry";
 import { openHarness } from "../support/harness";
 import { tab } from "../support/keyboard";
 import { expectStyle } from "../support/style";
@@ -22,7 +24,7 @@ test.beforeEach(async ({ page }) => {
   await openHarness(page, "states");
 });
 
-test("[atoms.button.tint] a hover lays the profile's tint over the Button's own face and gives it back, and a hairline raises its border instead", async ({ page }) => {
+test("[atoms.button.tint] [atoms.states.hover-table] [atoms.states.atom-table] a hover lays the profile's tint over the Button's own face and gives it back, and a hairline raises its border instead", async ({ page }) => {
   for (const [id, accent, variant] of TINTED) {
     const button = page.getByTestId(id);
     const face = accentProfile(accent, variant).face;
@@ -55,7 +57,7 @@ test("[atoms.button.tint] a selected Button wears its selected face, and a hover
   }
 });
 
-test("[atoms.button.selected] announces its selection with aria-pressed and data-selected, and leaves a current item to aria-current", async ({ page }) => {
+test("[atoms.button.selected] [atoms.states.atom-table] announces its selection with aria-pressed and data-selected, and leaves a current item to aria-current", async ({ page }) => {
   for (const id of ["selected-ghost", "selected-hairline"]) {
     await expect(page.getByTestId(id)).toHaveAttribute("aria-pressed", "true");
     await expect(page.getByTestId(id)).toHaveAttribute("data-selected", "true");
@@ -65,7 +67,7 @@ test("[atoms.button.selected] announces its selection with aria-pressed and data
   await expect(page.getByTestId("ghost")).not.toHaveAttribute("aria-pressed", /.*/);
 });
 
-test("[atoms.button.press] a press sinks the Button by one stroke, by the pointer and by Enter alike", async ({ page }) => {
+test("[atoms.button.press] [atoms.states.atom-table] a press sinks the Button by one stroke, by the pointer and by Enter alike", async ({ page }) => {
   const sunk = { transform: `translateY(${tokens.motion.role.press.offset})` };
   for (const id of ["solid", "ghost", "icon-button"]) {
     const button = page.getByTestId(id);
@@ -87,7 +89,7 @@ test("[atoms.button.press] a press sinks the Button by one stroke, by the pointe
   }
 });
 
-test("[atoms.button.disabled] every disabled or busy Button, link-styled or not, is dimmed, shows the not-allowed cursor and takes no tint", async ({ page }) => {
+test("[atoms.button.disabled] [atoms.states.atom-table] [atoms.states.priority] every disabled or busy Button, link-styled or not, is dimmed, shows the not-allowed cursor and takes no tint", async ({ page }) => {
   for (const id of ["disabled", "disabled-hairline", "disabled-icon-button", "disabled-link-button", "loading"]) {
     const button = page.getByTestId(id);
     await expect(button).toHaveAttribute("data-disabled", "true");
@@ -100,7 +102,11 @@ test("[atoms.button.disabled] every disabled or busy Button, link-styled or not,
   await expect(page.getByTestId("disabled-link-button")).toHaveAttribute("tabindex", "-1");
 });
 
-test("[atoms.button.target] a disabled link-styled Button does not navigate, and an enabled one does", async ({ page }) => {
+test("[atoms.button.as-link] a Button drawn as a link wears no underline of the browser's, which its own stylesheet takes off", async ({ page }) => {
+  await expect(page.getByTestId("link-button")).toHaveCSS("text-decoration-line", "none");
+});
+
+test("[atoms.button.target] [atoms.button.as-link] a disabled link-styled Button does not navigate, and an enabled one does", async ({ page }) => {
   const disabled = page.getByTestId("disabled-link-button");
   await disabled.click({ force: true });
   expect(new URL(page.url()).hash).toBe("");
@@ -131,7 +137,7 @@ test("[atoms.button.loading] stays focusable and busy, and neither a key nor a c
   await expect(page.getByTestId("form")).toHaveAttribute("data-submits", "0");
 });
 
-test("[atoms.link.underline] a Link underlines at rest, or only under the pointer when asked, in the link ink", async ({ page }) => {
+test("[atoms.link.underline] [atoms.states.hover-table] [atoms.states.atom-table] a Link underlines at rest, or only under the pointer when asked, in the link ink", async ({ page }) => {
   const link = page.getByTestId("link");
   const hover = page.getByTestId("link-hover");
   await page.mouse.move(0, 0);
@@ -156,7 +162,7 @@ test("[atoms.link.underline] a link in a documentation page is the Link Atom: un
 
 const FRAMES = ["field", "textarea", "select"] as const;
 
-test("[atoms.field.frame] a neutral input rests on the base border and rises to the hover border under a pointer, and a status keeps its own border", async ({ page }) => {
+test("[atoms.field.frame] [atoms.states.hover-table] [atoms.states.atom-table] a neutral input rests on the base border and rises to the hover border under a pointer, and a status keeps its own border", async ({ page }) => {
   for (const id of FRAMES) {
     const frame = page.getByTestId(id);
     await page.mouse.move(0, 0);
@@ -177,7 +183,7 @@ test("[atoms.field.frame] a neutral input rests on the base border and rises to 
   await page.mouse.move(0, 0);
 });
 
-test("[atoms.field.frame] a disabled input is dimmed, shows the not-allowed cursor over its whole frame and native control, and does not rise under a pointer", async ({ page }) => {
+test("[atoms.field.frame] [atoms.states.hover-table] a disabled input is dimmed, shows the not-allowed cursor over its whole frame and native control, and does not rise under a pointer", async ({ page }) => {
   for (const id of ["field-disabled", "textarea-disabled", "select-disabled"]) {
     const frame = page.getByTestId(id);
     await expect(frame).toHaveAttribute("data-disabled", "true");
@@ -278,7 +284,7 @@ test.describe("the selection marks", () => {
     await openHarness(page, "marks");
   });
 
-  test("[atoms.mark.ring] an unchecked Checkbox and Radio rest in a tertiary ink ring over the raised face, a hover leaves it there, and a checked one wears the primary solid", async ({ page }) => {
+  test("[atoms.mark.ring] [atoms.states.atom-table] an unchecked Checkbox and Radio rest in a tertiary ink ring over the raised face, a hover leaves it there, and a checked one wears the primary solid", async ({ page }) => {
     for (const id of ["checkbox-md", "radio-md"]) {
       const mark = page.getByTestId(id);
       await page.mouse.move(0, 0);
@@ -295,8 +301,8 @@ test.describe("the selection marks", () => {
     const off = page.getByTestId("switch-md");
     await expectStyle(off, { backgroundColor: color.control.track, ...ring(color.ink.tertiary) });
     const box = await off.boundingBox();
-    expect(box!.width, "the ring adds no size").toBe(32);
-    expect(box!.height).toBe(18);
+    expect(box!.width, "the ring adds no size").toBe(roleDp(SHAPE_RECIPES.switch.width.md));
+    expect(box!.height).toBe(roleDp(SHAPE_RECIPES.switch.height.md));
     await expectStyle(page.getByTestId("switch-on"), { backgroundColor: color.accent.primary.solid, ...ring("transparent") });
     await off.check();
     await expectStyle(off, { backgroundColor: color.accent.primary.solid, ...ring("transparent") });
@@ -324,34 +330,38 @@ test.describe("the selection marks", () => {
     for (const id of ["checkbox-md", "radio-md", "switch-md"]) await expectStyle(page.getByTestId(id), { opacity: "1", cursor: "pointer" });
   });
 
-  // The hit area is a 24px square around the mark, so 11.5px from its centre is inside it for every mark and every size; the browser places the edge within a pixel,
-  // so 14px away is outside it.
+  // The hit area is a square of the minimum target around the mark, so half a pixel short of half its side is inside it for every mark and every size;
+  // the browser places the edge within a pixel, so two pixels past it is outside.
+  const halfTarget = SHAPE_SOURCE.target.min / 2;
+  const inside = halfTarget - 0.5;
+  const outside = halfTarget + 2;
   const owner = (page: Page, x: number, y: number) =>
     page.evaluate(([px, py]) => document.elementFromPoint(px!, py!)?.closest("input")?.getAttribute("data-testid") ?? null, [x, y]);
 
   for (const kind of ["checkbox", "radio", "switch"]) {
-    test(`[atoms.mark.target] a pointer within 11.5px of a ${kind}'s centre hits it at every size, and one 14px off does not`, async ({ page }) => {
+    test(`[atoms.mark.target] [foundations.shape.hit-area] a pointer inside the minimum target around a ${kind}'s centre hits it at every size, and one past it does not`, async ({ page }) => {
       for (const size of ["sm", "md", "lg"]) {
         const id = `${kind}-${size}`;
         const mark = page.getByTestId(id);
         await mark.scrollIntoViewIfNeeded();
         const box = (await mark.boundingBox())!;
         const [x, y] = [box.x + box.width / 2, box.y + box.height / 2];
-        for (const [dx, dy] of [[0, 0], [-11.5, 0], [11.5, 0], [0, -11.5], [0, 11.5]] as const) {
+        for (const [dx, dy] of [[0, 0], [-inside, 0], [inside, 0], [0, -inside], [0, inside]] as const) {
           expect(await owner(page, x + dx, y + dy), `${id} at ${dx},${dy}`).toBe(id);
         }
-        for (const [dx, dy] of [[0, -14], [0, 14]] as const) expect(await owner(page, x + dx, y + dy), `${id} at ${dx},${dy}`).not.toBe(id);
-        if (kind !== "switch") for (const dx of [-14, 14]) expect(await owner(page, x + dx, y), `${id} at ${dx},0`).not.toBe(id);
+        for (const [dx, dy] of [[0, -outside], [0, outside]] as const) expect(await owner(page, x + dx, y + dy), `${id} at ${dx},${dy}`).not.toBe(id);
+        if (kind !== "switch") for (const dx of [-outside, outside]) expect(await owner(page, x + dx, y), `${id} at ${dx},0`).not.toBe(id);
       }
     });
   }
 
-  test("[atoms.mark.target] a press in the hit area outside the visible box toggles the mark", async ({ page }) => {
+  test("[atoms.mark.target] [atoms.states.atom-table] a press in the hit area outside the visible box toggles the mark", async ({ page }) => {
+    // A reach is written as a negative inset; half a pixel short of it is still inside.
     const box = (await page.getByTestId("checkbox-sm").boundingBox())!;
-    await page.mouse.click(box.x - 4, box.y + box.height / 2);
+    await page.mouse.click(box.x + roleDp(SHAPE_RECIPES.target.selection.sm) + 0.5, box.y + box.height / 2);
     await expect(page.getByTestId("checkbox-sm")).toBeChecked();
     const track = (await page.getByTestId("switch-sm").boundingBox())!;
-    await page.mouse.click(track.x + track.width / 2, track.y - 3);
+    await page.mouse.click(track.x + track.width / 2, track.y + roleDp(SHAPE_RECIPES.target.switchBlock.sm) + 0.5);
     await expect(page.getByTestId("switch-sm")).toBeChecked();
   });
 
@@ -360,8 +370,9 @@ test.describe("the selection marks", () => {
       const style = getComputedStyle(element);
       return { height: element.getBoundingClientRect().height, width: element.getBoundingClientRect().width, top: style.borderTopWidth, topStyle: style.borderTopStyle, start: style.borderInlineStartWidth };
     });
-    expect(await rule("divider")).toMatchObject({ height: 1, width: 160, top: "1px", topStyle: "solid" });
-    expect(await rule("divider-vertical")).toMatchObject({ width: 1, start: "1px" });
+    const { border } = SHAPE_SOURCE.stroke;
+    expect(await rule("divider")).toMatchObject({ height: border, width: 160, top: px(border), topStyle: "solid" });
+    expect(await rule("divider-vertical")).toMatchObject({ width: border, start: px(border) });
     await expectStyle(page.getByTestId("divider"), { borderTopColor: color.border.base });
     await expectStyle(page.getByTestId("divider-strong"), { borderTopColor: color.border.strong });
     await expectStyle(page.getByTestId("divider-vertical"), { borderInlineStartColor: color.border.base });

@@ -2,11 +2,21 @@ import { describe, expect, it } from "vitest";
 
 import { COLOR_MODES } from "./color-modes";
 import { ELEVATION, ELEVATION_NEST_LIMIT, elevationCast, elevationStack, elevationStyle, tokens } from "./index";
-import { BREAKPOINTS, ELEVATIONS, LAYOUT_SOURCE, castShadow } from "./layout";
+import { BREAKPOINTS, ELEVATIONS, LAYOUT_MODE_VALUES, LAYOUT_SOURCE, castShadow } from "./layout";
 import { themeVariables } from "./variables";
 
+// The design values of Layout, written down. The tests below hold for any design; this file says which design this
+// is. A change to it is deliberate: review the diff, then `vitest -u` rewrites the file.
+describe("the golden Layout file", () => {
+  it("[foundations.layout.role-table] [foundations.layout.elevation-table] records the source, the breakpoints and sections it resolves to, the shadow strings of each mode, and the nesting limit", async () => {
+    const { breakpoint, section } = tokens.layout;
+    const shadow = Object.fromEntries(COLOR_MODES.map((mode) => [mode, LAYOUT_MODE_VALUES[mode].shadow]));
+    await expect(`${JSON.stringify({ source: LAYOUT_SOURCE, breakpoint, section, shadow, nestLimit: ELEVATION_NEST_LIMIT }, null, 2)}\n`).toMatchFileSnapshot("./__golden__/layout-resolved.json");
+  });
+});
+
 describe("Layout builds on Shape", () => {
-  it("shares one length scale between inset and gap", () => {
+  it("[foundations.shape.inset-scale] shares one length scale between inset and gap", () => {
     expect(tokens.shape.inset).toEqual(tokens.layout.gap);
     expect(tokens.layout.gutter).toBe(tokens.shape.inset.lg);
   });
@@ -15,7 +25,13 @@ describe("Layout builds on Shape", () => {
 describe("Layout distances that are not a fixed gap", () => {
   it("[foundations.layout.breakpoint-em] writes every breakpoint as the em of its dp", () => {
     for (const name of BREAKPOINTS) expect(tokens.layout.breakpoint[name], name).toBe(`${LAYOUT_SOURCE.breakpoint[name] / 16}em`);
-    expect(Object.values(tokens.layout.breakpoint)).toEqual(["30em", "48em", "64em", "80em"]);
+  });
+
+  it("[foundations.layout.breakpoint-em] ascends from one breakpoint to the next", () => {
+    const widths = BREAKPOINTS.map((name) => LAYOUT_SOURCE.breakpoint[name]);
+    expect(widths.every((width, index) => index === 0 || width > widths[index - 1]!)).toBe(true);
+    const ems = BREAKPOINTS.map((name) => parseFloat(tokens.layout.breakpoint[name]));
+    expect(ems).toEqual([...ems].sort((a, b) => a - b));
   });
 
   it("[foundations.layout.section-fluid] grows a section's start and end with the viewport height between space steps", () => {
@@ -29,7 +45,7 @@ const tiers = ELEVATIONS.map((tier) => ({ tier, ...LAYOUT_SOURCE.elevation.tier[
 const { nudge } = LAYOUT_SOURCE.elevation;
 
 describe("An elevation is applied as one unit", () => {
-  it("[foundations.layout.elevation-unit] gives every tier its position, its z and its shadow together", () => {
+  it("[foundations.layout.elevation-unit] [foundations.layout.elevation-table] gives every tier its position, its z and its shadow together", () => {
     for (const { tier, depth, position } of tiers) {
       const style = elevationStyle(tier);
       expect(Object.keys(style).sort(), tier).toEqual(["boxShadow", "position", "zIndex"]);
@@ -57,7 +73,7 @@ describe("An elevation is applied as one unit", () => {
     expect(Object.keys(tokens.layout).sort()).toEqual(["breakpoint", "container", "gap", "gutter", "section"]);
   });
 
-  it("emits each tier's z and the nudge as source variables, and no variable for a shadow", () => {
+  it("[foundations.layout.emission] emits each tier's z and the nudge as source variables, and no variable for a shadow", () => {
     const { source, modes } = themeVariables();
     for (const { tier, z } of tiers) expect(source[`--pui-layout-elevation-${tier}-z`], tier).toBe(String(z));
     expect(source["--pui-layout-elevation-nudge"]).toBe(String(nudge));
@@ -65,7 +81,7 @@ describe("An elevation is applied as one unit", () => {
     for (const mode of COLOR_MODES) expect(Object.keys(modes[mode].ground).some((name) => name.startsWith("--pui-layout-elevation-")), mode).toBe(false);
   });
 
-  it("raises the z of a ranked element by nudges and leaves an unranked one at its tier", () => {
+  it("[foundations.layout.elevation-nesting] raises the z of a ranked element by nudges and leaves an unranked one at its tier", () => {
     expect(elevationStack("overlay").zIndex).toBe(ELEVATION.z.overlay);
     expect(elevationStack("overlay", "var(--rank)").zIndex).toBe(`calc(${ELEVATION.z.overlay} + var(--rank) * ${ELEVATION.nudge})`);
   });
@@ -82,7 +98,7 @@ describe("Elevation nesting never reaches the next tier", () => {
 
   it("[foundations.layout.elevation-nesting] holds span / nudge − 1 nudges in a tier", () => {
     expect(ELEVATION_NEST_LIMIT).toBe(spans[0]! / nudge - 1);
-    expect(ELEVATION_NEST_LIMIT).toBe(9);
+    expect(Number.isInteger(ELEVATION_NEST_LIMIT) && ELEVATION_NEST_LIMIT > 0).toBe(true);
   });
 
   it("[foundations.layout.elevation-nesting] keeps the deepest nest of a tier below the next tier, and the toast above the deepest modal", () => {

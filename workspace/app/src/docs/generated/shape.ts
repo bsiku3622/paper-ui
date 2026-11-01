@@ -42,7 +42,8 @@ const sizingRows = (): string[][] => {
 const controlLine = () => {
   const { height, buttonInsetRatio } = S.control;
   const anatomy = S.anatomy.inline;
-  return `높이 사다리(\`control.height\`: sm ${height.sm} · md ${height.md} · lg ${height.lg})와 button inset 배율(\`control.buttonInsetRatio\`: ${buttonInsetRatio})이고, \`anatomy\`는 Badge 높이·inset(\`anatomy.badge\`)과 inline 점 · spinner 크기(\`anatomy.inline\`: ${anatomy.dot}em · ${anatomy.spinner}em)입니다.`;
+  const { x, y } = S.anatomy.checkbox.markShift;
+  return `높이 사다리(\`control.height\`: sm ${height.sm} · md ${height.md} · lg ${height.lg})와 button inset 배율(\`control.buttonInsetRatio\`: ${buttonInsetRatio})이고, \`anatomy\`는 Badge 높이·inset(\`anatomy.badge\`)과 체크의 보정 비율(\`anatomy.checkbox.markShift\`: x ${x} · y ${y}, \`stroke.emphasis\`의 배수)과 inline 점 · spinner 크기(\`anatomy.inline\`: ${anatomy.dot}em · ${anatomy.spinner}em)입니다.`;
 };
 
 export const SHAPE_BLOCKS: GeneratedBlock[] = [

@@ -11,7 +11,9 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { INVENTORY } from "../inventory";
-import { FormField, Icon, Text } from "../primitives";
+import { FormField } from "../primitives/field/FormField";
+import { Icon } from "../primitives/Icon";
+import { Text } from "../primitives/Text";
 import { Badge } from "./Badge";
 import { Button } from "./Button";
 import { Checkbox } from "./Checkbox";
@@ -56,7 +58,7 @@ const stateOf = (input: Pick<Control, "frame">, element: ReactElement) => {
 
 describe("the input family", () => {
   for (const input of INPUTS) {
-    it(`[atoms.field.invalid] ${input.name} has one invalid contract: the field being invalid, the error status and an explicit word each reach aria-invalid and the frame`, () => {
+    it(`[atoms.field.invalid] [primitives.form-field.status-link] [atoms.states.atom-table] [primitives.state.emitters] ${input.name} has one invalid contract: the field being invalid, the error status and an explicit word each reach aria-invalid and the frame`, () => {
       // The field being invalid alone.
       expect(stateOf(input, <FormField label="L" invalid>{input.control({})}</FormField>)).toEqual({ ariaInvalid: "true", status: "error", invalid: true });
       // An error status alone, in a field that is not invalid (the regression of a status the field overwrote).
@@ -135,13 +137,66 @@ const TARGETS: Target[] = [
   { name: "Divider", element: (props) => <Divider {...props} />, semantic: (root) => root.querySelector("hr")!, visible: same },
 ];
 
+// The axes an Atom names, with each at the default the table gives: the two draw the same classes.
+const DEFAULTS: Array<[name: string, plain: ReactElement, explicit: ReactElement]> = [
+  ["Button", <Button>x</Button>, <Button size="md" shape="rounded" accent="primary" variant="solid">x</Button>],
+  ["IconButton", <IconButton aria-label="i"><Icon><path d="M4 12h16" /></Icon></IconButton>, <IconButton aria-label="i" size="md" shape="rounded" accent="primary" variant="solid"><Icon><path d="M4 12h16" /></Icon></IconButton>],
+  ["Field", <Field aria-label="f" />, <Field aria-label="f" size="md" fill="raised" shape="rounded" />],
+  ["Textarea", <Textarea aria-label="t" />, <Textarea aria-label="t" size="md" fill="raised" />],
+  ["Select", <Select aria-label="s"><Select.Option value="a">A</Select.Option></Select>, <Select aria-label="s" size="md" fill="raised" shape="rounded"><Select.Option value="a">A</Select.Option></Select>],
+  ["Checkbox", <Checkbox aria-label="c" />, <Checkbox aria-label="c" size="md" />],
+  ["Radio", <Radio aria-label="r" />, <Radio aria-label="r" size="md" />],
+  ["Switch", <Switch aria-label="w" />, <Switch aria-label="w" size="md" />],
+  ["Badge", <Badge>x</Badge>, <Badge size="md" shape="rounded" accent="primary" variant="soft">x</Badge>],
+];
+
+// What each Atom stands on, as what its source names: the Primitives and hooks of the table, and where its colour comes from.
+const STANDS_ON: Record<string, readonly string[]> = {
+  "button-base.tsx": ["Pressable", 'motion="press"', "useSelectable", "paintClass"],
+  "Link.tsx": ["useFocusRing", "linkPaint"],
+  "Field.tsx": ["inputFrame", "fieldPaint", "<Icon", "<Pressable", "as={Selectable}"],
+  "Textarea.tsx": ["inputFrame", "fieldPaint"],
+  "Select.tsx": ["inputFrame", "fieldPaint", "<Icon"],
+  "input-control.ts": ["useFormFieldControl", "useFocusRing"],
+  "Checkbox.tsx": ["markPaint"],
+  "Radio.tsx": ["markPaint"],
+  "Switch.tsx": ["markPaint"],
+  "Label.tsx": ["<Text"],
+  "Badge.tsx": ["<Paint", 'as="span"'],
+  "Divider.tsx": ["<Box", 'as="hr"', "linePaint"],
+  "Spinner.tsx": ["<Box", 'as="span"', "spinnerPaint"],
+  "Spinner.css.ts": ["loop.spin"],
+};
+
 describe("every Atom", () => {
-  it("[atoms.contract.targets] is covered: the table names the 13 Atoms of the inventory, once each", () => {
+  it("[atoms.contract.common-axes] leaves each shared axis at the default the table names", () => {
+    for (const [name, plain, explicit] of DEFAULTS) {
+      const classes = (element: ReactElement) => {
+        const view = render(element);
+        const box = view.container.firstElementChild!;
+        const found = box.className;
+        view.unmount();
+        return found;
+      };
+      expect(classes(plain), name).toBe(classes(explicit));
+    }
+  });
+
+  it("[atoms.contract.stands-on] stands on the Primitives its row names, and takes its colour from the paint tier", () => {
+    for (const [file, names] of Object.entries(STANDS_ON)) for (const name of names) expect(read(file), `${file}: ${name}`).toContain(name);
+    for (const file of ["Checkbox.tsx", "Radio.tsx", "Switch.tsx", "Field.tsx", "Textarea.tsx", "Select.tsx"]) expect(read(file), file).toMatch(/input-control/);
+  });
+
+  it("[primitives.selectable.native-widgets] leaves a native control's meaning to it: Checkbox, Radio and Switch take no useSelectable", () => {
+    for (const file of ["Checkbox.tsx", "Radio.tsx", "Switch.tsx"]) expect(read(file), file).not.toMatch(/useSelectable/);
+  });
+
+  it("[atoms.contract.targets] [atoms.contract.target-table] is covered: the table names the 13 Atoms of the inventory, once each", () => {
     expect(TARGETS.map((target) => target.name).sort()).toEqual([...INVENTORY.atoms].sort());
   });
 
   for (const target of TARGETS) {
-    it(`[atoms.contract.targets] ${target.name} gives its ref, id, data-* and aria-describedby to the semantic element, and className, style and data-testid to the visible box`, () => {
+    it(`[atoms.contract.targets] [atoms.contract.target-table] ${target.name} gives its ref, id, data-* and aria-describedby to the semantic element, and className, style and data-testid to the visible box`, () => {
       const ref = createRef<never>();
       const view = render(target.element({ ref, id: "the-id", "data-x": "x", "aria-describedby": "help", className: "mine", style: { width: 77 }, "data-testid": "box" }));
       const semantic = target.semantic(view.container);
@@ -160,7 +215,7 @@ describe("every Atom", () => {
     });
   }
 
-  it("[atoms.contract.targets] Select.Option and Select.Group give their ref, attributes, className, style and data-testid to the option and the optgroup", () => {
+  it("[atoms.contract.targets] [atoms.contract.target-table] Select.Option and Select.Group give their ref, attributes, className, style and data-testid to the option and the optgroup", () => {
     const option = createRef<HTMLOptionElement>();
     const group = createRef<HTMLOptGroupElement>();
     render(
@@ -213,7 +268,7 @@ describe("the selection marks", () => {
   for (const mark of MARKS) {
     const stateOfMark = (element: ReactElement) => stateOf({ frame: own }, element);
 
-    it(`[atoms.mark.invalid] ${mark.name} has the input family's invalid contract: the field being invalid, the error status and an explicit word each reach aria-invalid and the input`, () => {
+    it(`[atoms.mark.invalid] [primitives.form-field.status-link] ${mark.name} has the input family's invalid contract: the field being invalid, the error status and an explicit word each reach aria-invalid and the input`, () => {
       expect(stateOfMark(<FormField label="L" invalid>{mark.control({})}</FormField>)).toEqual({ ariaInvalid: "true", status: "error", invalid: true });
       expect(stateOfMark(<FormField label="L" invalid={false}>{mark.control({ status: "error" })}</FormField>)).toEqual({ ariaInvalid: "true", status: "error", invalid: true });
       expect(stateOfMark(<FormField label="L" invalid>{mark.control({ status: "error" })}</FormField>)).toEqual({ ariaInvalid: "true", status: "error", invalid: true });

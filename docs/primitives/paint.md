@@ -7,11 +7,14 @@ Paint Primitive는 Box 위에 색을 얹는 길입니다. 색이 오는 곳은 �
 | Surface | Box 전체 + `fill` canvas / raised / sunken · `border` · `radius` · `elevation` · `theme` · `hoverable` · `selected` | div. 면 · 테두리 · 모서리 · 높이는 모두 opt-in, 테마가 있으면 fill 없이도 그 모드의 canvas |
 | Paint | Box 전체 + `accent` · `variant` · `hoverable` · `selected` | div. accent가 없으면 칠하지 않음 |
 
+[contract:primitives.paint.class-functions]: #
 Atom이 이 층에 닿는 길은 class 함수 둘뿐입니다. `surfaceClass({ fill, border, radius, elevation, hoverable })`는 theme을 뺀 Surface의 class를, `paintClass({ accent, variant, hoverable })`는 Paint의 class를 돌려줍니다. theme은 context가 필요해서 class만으로 만들 수 없습니다. 높이만 필요한 요소는 Surface를 거치지 않고 공개 class 지도 `elevation`(`@studio-baeks/paper-ui`)에서 tier의 class를 직접 받습니다. Surface의 `elevation` prop도 같은 지도입니다.
 
 ## Surface — 면
 
 Surface는 Box가 놓인 종이입니다. 어떤 면 위에 있는지(fill), 경계가 있는지(border), 모서리가 얼마나 둥근지(radius), 얼마나 떠 있는지(elevation), 어느 모드인지(theme)를 말합니다.
+
+[contract:primitives.surface.prop-table]: #
 
 | prop | 값 | 출처 |
 | --- | --- | --- |

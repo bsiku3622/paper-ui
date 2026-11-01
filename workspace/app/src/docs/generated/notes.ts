@@ -81,7 +81,7 @@ export const DIR_NOTES: Record<string, string> = {
 // The files that carry a fact the directory note cannot: an entry, a barrel, an owner. The keys are paths from
 // workspace/, and a file that no longer exists fails the tree, so a rename cannot leave a stale line.
 export const FILE_NOTES: Record<string, string> = {
-  "packages/paper-ui/src/index.ts": "entry `.` — 컴포넌트 · hook · Provider (`\"use client\"`)",
+  "packages/paper-ui/src/index.ts": "entry `.` — 컴포넌트 · hook · Provider (`\"use client\"`). 공개 이름을 한 곳에 다 적은 목록이고 `export *`가 없습니다",
   "packages/paper-ui/src/inventory.ts": "이름 · 분류 · 순서의 정본 — import가 없고 inventory.test가 export와 대조합니다",
   "packages/paper-ui/src/tokens/index.ts": "나머지 패키지가 읽는 유일한 문 — 역할 · 어휘 · 조합뿐이고 barrel.test가 지킵니다",
   "packages/paper-ui/src/tokens/public.ts": "entry `/tokens`",
@@ -120,7 +120,6 @@ export const FILE_NOTES: Record<string, string> = {
   "packages/paper-ui/src/theme/scope.ts": "스코프 모드(`useThemeScope` · `usePortalScope`)",
   "packages/paper-ui/src/theme/source-carry.ts": "Portal이 옮기는 열린 자리의 원본 덮어쓰기",
   "packages/paper-ui/src/theme/boot.ts": "entry `/theme-boot`",
-  "packages/paper-ui/src/primitives/index.ts": "유일한 배럴 — primitives/orders.test.ts가 폴더 사이의 길을 지킵니다",
   "packages/paper-ui/src/primitives/bare-button.css.ts": "부품이 쓰는 button reset",
   "packages/paper-ui/src/atoms/button-base.tsx": "Button과 IconButton의 몸 하나 — 내부 모듈",
   "packages/paper-ui/src/atoms/input-control.ts": "입력 틀 셋과 선택 표식 셋의 FormField 관계 · 키보드 포커스 · 틀의 속성 — 내부 모듈",

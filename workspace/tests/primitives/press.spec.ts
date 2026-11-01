@@ -48,7 +48,7 @@ for (const [name, platform] of Object.entries(PLATFORMS)) {
     }
 
     for (const key of ["Enter", "Space"]) {
-      test(`[primitives.pressable.one-click] ${key} on <Pressable as={Selectable}> flips the selection once with one press`, async ({ page }) => {
+      test(`[primitives.pressable.one-click] [primitives.selectable.pressable] ${key} on <Pressable as={Selectable}> flips the selection once with one press`, async ({ page }) => {
         const target = page.getByTestId("pressable-selectable");
         await target.focus();
         await page.keyboard.press(key);
@@ -72,7 +72,7 @@ for (const [name, platform] of Object.entries(PLATFORMS)) {
         await expect(page.getByRole("dialog", { name: "Panel" })).toBeVisible();
       });
 
-      test(`[primitives.target.projection] ${key} on <Selectable as="div"> flips the selection once`, async ({ page }) => {
+      test(`[primitives.target.projection] [primitives.selectable.target] ${key} on <Selectable as="div"> flips the selection once`, async ({ page }) => {
         const target = page.getByTestId("div-selectable");
         await target.focus();
         await page.keyboard.press(key);
@@ -118,6 +118,70 @@ for (const [name, platform] of Object.entries(PLATFORMS)) {
     });
   });
 }
+
+test.describe("the callbacks of one press", () => {
+  const log = (target: Locator) => target.getAttribute("data-log");
+  const released = ["up", "end", "change:false", "press"];
+
+  test.beforeEach(async ({ page }) => {
+    await openHarness(page, "press");
+  });
+
+  test("[primitives.pressable.input-paths] a mouse press runs onPressStart and onPressChange when it begins, then onPressUp, onPressEnd, onPressChange and onPress when it ends", async ({ page }) => {
+    const target = page.getByTestId("logged");
+    const box = (await target.boundingBox())!;
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await expect.poll(() => log(target)).toBe("start change:true");
+    await page.mouse.up();
+    await expect.poll(() => log(target)).toBe(["start", "change:true", ...released].join(" "));
+  });
+
+  test("[primitives.pressable.input-paths] a key runs the same callbacks in the same order", async ({ page }) => {
+    const target = page.getByTestId("logged");
+    await target.focus();
+    await page.keyboard.down("Enter");
+    await expect.poll(() => log(target)).toBe("start change:true");
+    await page.keyboard.up("Enter");
+    await expect.poll(() => log(target)).toBe(["start", "change:true", ...released].join(" "));
+  });
+
+  test("[primitives.pressable.input-paths] a pointer that leaves and comes back still presses, unless cancelOnPointerExit ended the press when it left", async ({ page }) => {
+    const leaveAndReturn = async (target: Locator) => {
+      const box = (await target.boundingBox())!;
+      const [x, y] = [box.x + box.width / 2, box.y + box.height / 2];
+      await page.mouse.move(x, y);
+      await page.mouse.down();
+      await page.mouse.move(x + box.width * 2, y + box.height * 4, { steps: 3 });
+      // Leaving ends the press either way.
+      await expect.poll(() => log(target)).toBe("start change:true end change:false");
+      await page.mouse.move(x, y, { steps: 3 });
+      await page.mouse.up();
+    };
+    const logged = page.getByTestId("logged");
+    await leaveAndReturn(logged);
+    await expect.poll(async () => (await log(logged))!.split(" ").at(-1)).toBe("press");
+    const exits = page.getByTestId("exits");
+    await leaveAndReturn(exits);
+    // The release is told, and no press comes of it.
+    await expect.poll(async () => (await log(exits))!.split(" ").at(-1)).toBe("up");
+    expect((await log(exits))!.split(" ")).not.toContain("press");
+  });
+
+  test("[primitives.pressable.input-paths] a press holds the text around it still, unless allowTextSelection leaves it free", async ({ page }) => {
+    const whilePressed = async (target: Locator) => {
+      const box = (await target.boundingBox())!;
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+      await page.mouse.down();
+      // WebKit knows the property by its prefixed name.
+      const select = await target.evaluate((element) => { const { style } = element as HTMLElement; return style.userSelect || style.webkitUserSelect; });
+      await page.mouse.up();
+      return select;
+    };
+    expect(await whilePressed(page.getByTestId("logged"))).toBe("none");
+    expect(await whilePressed(page.getByTestId("selects"))).toBe("");
+  });
+});
 
 test.describe("with other inputs", () => {
   test.beforeEach(async ({ page }) => {

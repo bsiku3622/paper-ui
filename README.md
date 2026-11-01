@@ -61,11 +61,13 @@ cd workspace
 pnpm install
 pnpm dev          # site, playground, docs and the demo screen
 pnpm check        # lint, typecheck, unit tests and the contract check: the fast loop while working
-pnpm verify       # check, then the package and app builds, then e2e: what CI and prepublish run
+pnpm verify       # check, then the package and app builds, the tarball smoke, then e2e: what CI and prepublish run
 pnpm typecheck
 pnpm lint
 pnpm test         # unit tests and the contract check (every docs contract has its test)
 pnpm test:e2e     # e2e on computed values: six projects across Chromium, Firefox and WebKit
+pnpm smoke:dist   # packs the package and runs React 19 and React 18.2 consumers against the tarball
+pnpm api:update   # rewrites api/surface.json after an intended change to an exported name
 ```
 
 `pnpm test:e2e` starts its own two servers: the app on port 41731 and the test harness
@@ -73,6 +75,10 @@ pnpm test:e2e     # e2e on computed values: six projects across Chromium, Firefo
 so the run fails when another process holds either port instead of testing that process.
 Set `E2E_APP_PORT` or `E2E_HARNESS_PORT` to move them. Firefox and WebKit come from
 `pnpm exec playwright install firefox webkit`.
+
+## Versioning
+
+Versions follow semver, and the first release is 0.1.0. While the package is 0.x, removing or renaming an exported name raises the minor version and adding one raises the patch; from 1.0 on they raise the major and the minor. `workspace/packages/paper-ui/api/surface.json` records every name the four entries export, the token paths, the CSS variables and the cascade layers. `api.test.ts` computes the same record from the source, so a change to the public surface shows up as a diff of that file, and `pnpm api:update` rewrites it. A released version's record (`api/released/<version>.json`, written at publish time) never changes: the command refuses, and a new version needs the bump its changes call for and a `## <version>` heading in `workspace/packages/paper-ui/CHANGELOG.md`.
 
 ## Licence
 

@@ -1,6 +1,7 @@
-// Shape recipes — component anatomy built from Shape roles. No number is written here: every
-// value is a Shape role, a SHAPE_SOURCE anatomy value, or a formula over them. Formulas stay
-// strings and are evaluated on the consuming element, like the roles they read.
+// Shape recipes — component anatomy built from Shape roles. A recipe holds only structural values
+// (half with / 2, the 45° turn); optical ratios live in the source anatomy. Every value is a Shape
+// role, a SHAPE_SOURCE anatomy value, or a formula over them. Formulas stay strings and are
+// evaluated on the consuming element, like the roles they read.
 
 import { ANATOMY, SHAPE, SPACE, controlSizes } from "./shape";
 import { TYPOGRAPHY } from "./typography";
@@ -27,11 +28,11 @@ export const SHAPE_RECIPES = {
   checkbox: {
     radius: radius.selection,
     // The check is an L, half the box wide and a quarter tall, turned onto its diagonal. Turning
-    // leaves its visual mass low and left, so it shifts by fractions of its own stroke.
+    // leaves its visual mass low and left, so it shifts by the source's ratios of its own stroke.
     mark: half,
     short: controlSizes((size) => `calc(${half[size]} / 2)`),
     stroke: stroke.emphasis,
-    markTransform: `rotate(-45deg) translate(calc(${stroke.emphasis} / 4), calc(${stroke.emphasis} / -2))`,
+    markTransform: `rotate(-45deg) translate(calc(${stroke.emphasis} * ${ANATOMY.checkbox.markShift.x}), calc(${stroke.emphasis} * ${ANATOMY.checkbox.markShift.y}))`,
     // Indeterminate: the check's long side as one round-capped emphasis line.
     dash: { width: half, height: stroke.emphasis, radius: radius.full },
   },

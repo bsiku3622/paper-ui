@@ -1,6 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
-import { tokens } from "../../packages/paper-ui/src/tokens";
+import { THEME_ATTRIBUTE, tokens } from "../../packages/paper-ui/src/tokens";
+import { LAYOUT_SOURCE } from "../../packages/paper-ui/src/tokens/layout";
 import { accentProfile } from "../../packages/paper-ui/src/tokens/color-recipes";
 import { SHAPE_SOURCE } from "../../packages/paper-ui/src/tokens/shape";
 import { openHarness, openPlayground } from "../support/harness";
@@ -20,7 +21,7 @@ const dragBy = async (page: Page, locator: ReturnType<Page["locator"]>, x: numbe
   if (release) await page.mouse.up();
 };
 
-test("[primitives.pressable.input-paths] press normalizes mouse, Enter, and Space and exposes focus state", async ({ page }) => {
+test("[primitives.pressable.input-paths] [primitives.pressable.state] press normalizes mouse, Enter, and Space and exposes focus state", async ({ page }) => {
   await openPlayground(page, "pressable", "Pressable");
   const button = page.getByTestId("press-example");
   await button.click();
@@ -62,7 +63,7 @@ test("[primitives.selectable.input-paths] selection survives press releases and 
   await expect(button).toHaveAttribute("aria-pressed", "false");
 });
 
-test("[primitives.paint.hover] a hoverable Paint takes its tint under a pointer that can hover, and a blocked one does not", async ({ page }) => {
+test("[primitives.paint.hover] [atoms.states.value-attributes] a hoverable Paint takes its tint under a pointer that can hover, and a blocked one does not", async ({ page }) => {
   await openPlayground(page, "paint", "Paint");
   const element = page.getByTestId("paint-example");
   // Without hoverable there is no tint layer to take, whatever the pointer does.
@@ -97,7 +98,7 @@ test.describe("on a pointer that cannot hover", () => {
   });
 });
 
-test("[primitives.draggable.input-paths] handle moves the entire box while content and internal actions remain independent", async ({ page }) => {
+test("[primitives.draggable.input-paths] [primitives.draggable.handle] handle moves the entire box while content and internal actions remain independent", async ({ page }) => {
   await openPlayground(page, "draggable", "Draggable");
   const panel = page.getByTestId("moving-panel");
   const before = (await panel.boundingBox())!;
@@ -132,7 +133,7 @@ test("[primitives.draggable.input-paths] move supports Escape cancellation, keyb
   await expect(handle).toBeDisabled();
 });
 
-test("[primitives.draggable.input-paths] a live handle moves its panel, the control for the two below", async ({ page }) => {
+test("[primitives.draggable.input-paths] [primitives.draggable.handle] a live handle moves its panel, the control for the two below", async ({ page }) => {
   await openHarness(page, "drag");
   await dragBy(page, page.getByTestId("live"), 30, 20);
   await expect(page.getByTestId("live-panel")).not.toHaveAttribute("data-x", "0");
@@ -140,7 +141,7 @@ test("[primitives.draggable.input-paths] a live handle moves its panel, the cont
 });
 
 for (const id of ["off-button", "off-div"]) {
-  test(`[primitives.draggable.input-paths] a handle switched off by itself takes no pointer drag and no arrow key (${id})`, async ({ page }) => {
+  test(`[primitives.draggable.input-paths] [primitives.draggable.handle] a handle switched off by itself takes no pointer drag and no arrow key (${id})`, async ({ page }) => {
     await openHarness(page, "drag");
     const handle = page.getByTestId(id);
     const panel = page.getByTestId(`${id}-panel`);
@@ -177,7 +178,7 @@ test("[primitives.droppable.input-paths] a disabled Droppable shows the not-allo
   await expect(target).toHaveCSS("cursor", "not-allowed");
 });
 
-test("[primitives.droppable.input-paths] transfer drag accepts native data through a dedicated handle", async ({ page }) => {
+test("[primitives.droppable.input-paths] [primitives.draggable.transfer] transfer drag accepts native data through a dedicated handle", async ({ page }) => {
   await openPlayground(page, "droppable", "Droppable");
   const handle = page.getByRole("button", { name: "항목 전달", exact: true });
   await expect(handle).toHaveAttribute("draggable", "true");
@@ -185,7 +186,73 @@ test("[primitives.droppable.input-paths] transfer drag accepts native data throu
   await expect(page.getByText("받음: Paper item", { exact: true })).toBeVisible();
 });
 
-test("[primitives.droppable.input-paths] transfer and drop have a keyboard path", async ({ page }) => {
+test("[primitives.draggable.transfer] the item tells its drag starting, moving and ending, and the end says what the drop did", async ({ page, browserName }) => {
+  await openHarness(page, "drag");
+  const item = page.getByTestId("item");
+  await page.getByTestId("send").dragTo(page.getByTestId("takes"));
+  const events = async () => runs(((await item.getAttribute("data-events")) ?? "").split(" ").filter(Boolean));
+  // Playwright drives a drag differently by engine: only Chromium both sends the moves and leaves a dropEffect on the dragend, so the other two are held to the order.
+  if (browserName === "chromium") await expect.poll(events).toEqual(["dragstart", "dragmove", "dragend:copy"]);
+  else await expect.poll(async () => (await events()).filter((event) => event !== "dragmove")).toEqual(["dragstart", expect.stringMatching(/^dragend/)]);
+});
+
+test("[primitives.droppable.input-paths] [primitives.droppable.options] a target takes the drop its getDropOperation allows, refuses the one it cancels, and takes nothing while it is disabled", async ({ page }) => {
+  await openHarness(page, "drag");
+  const send = page.getByTestId("send");
+  const drops = (id: string) => page.getByTestId(id).getAttribute("data-drops");
+  await send.dragTo(page.getByTestId("takes"));
+  await expect.poll(() => drops("takes")).toBe("1");
+  await send.dragTo(page.getByTestId("refuses"));
+  await send.dragTo(page.getByTestId("off"));
+  // The refused and the disabled drops would have landed by now; the accepting target still counts the one.
+  await send.dragTo(page.getByTestId("takes"));
+  await expect.poll(() => drops("takes")).toBe("2");
+  expect(await drops("refuses")).toBe("0");
+  expect(await drops("off")).toBe("0");
+});
+
+// A drag held at a point of the page: the buttons stay down until the test lets them go.
+const dragFrom = async (page: Page, source: Locator) => {
+  await source.scrollIntoViewIfNeeded();
+  const box = (await source.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+};
+
+// A list of events with a run of the same event read as one, since a drag reports its moves at the rate of the engine.
+const runs = (events: string[]) => events.filter((event, index) => event !== events[index - 1]);
+
+test("[primitives.droppable.options] [primitives.state.emitters] [primitives.draggable.transfer] a target tells a drag entering, moving, hovering and leaving, in that order, and the point it is at decides its operation", async ({ page }) => {
+  await openHarness(page, "drag");
+  const target = page.getByTestId("lifecycle");
+  const events = async () => runs(((await target.getAttribute("data-events")) ?? "").split(" ").filter(Boolean));
+  await target.scrollIntoViewIfNeeded();
+  await dragFrom(page, page.getByTestId("send"));
+  const to = (await target.boundingBox())!;
+  const left = { x: to.x + to.width / 4, y: to.y + to.height / 2 };
+  const right = { x: to.x + (to.width * 3) / 4, y: to.y + to.height / 2 };
+  await page.mouse.move(left.x, left.y, { steps: 5 });
+  await page.mouse.move(left.x + 2, left.y, { steps: 2 });
+  await expect.poll(events).toEqual(["dropenter", "dropmove"]);
+  await expect(target).toHaveAttribute("data-drop-target", "true");
+  // The point is relative to the target, and what the drag allows reaches the target's question.
+  const [x, y] = (await target.getAttribute("data-point"))!.split(",").map(Number) as [number, number];
+  expect(x).toBeCloseTo(to.width / 4 + 2, 0);
+  expect(y).toBeCloseTo(to.height / 2, 0);
+  await expect(target).toHaveAttribute("data-allowed", "copy link");
+  // Held still over the target, the drag activates it.
+  await expect.poll(events).toEqual(["dropenter", "dropmove", "dropactivate"]);
+  // The right half cancels, so the same element stops being a target: the drag has left it.
+  await page.mouse.move(right.x, right.y, { steps: 2 });
+  await expect.poll(events).toEqual(["dropenter", "dropmove", "dropactivate", "dropexit"]);
+  await expect(target).not.toHaveAttribute("data-drop-target", /.*/);
+  await page.mouse.move(left.x, left.y, { steps: 2 });
+  await page.mouse.up();
+  // Coming back over the left half enters again, and the drop ends the drag over the target.
+  await expect.poll(events).toEqual(["dropenter", "dropmove", "dropactivate", "dropexit", "dropenter", "dropmove", "drop", "dropexit"]);
+});
+
+test("[primitives.droppable.input-paths] [primitives.draggable.transfer] transfer and drop have a keyboard path", async ({ page }) => {
   await openPlayground(page, "droppable", "Droppable");
   const handle = page.getByRole("button", { name: "항목 전달", exact: true });
   await handle.focus();
@@ -237,6 +304,19 @@ test("[primitives.floating.portal] popover portals, anchors, dismisses and resto
   await trigger.click();
   await page.getByRole("heading", { name: "Floating", exact: true }).click();
   await expect(dialog).toHaveCount(0);
+});
+
+test("[primitives.floating.portal] [primitives.portal.root] [primitives.floating.portal-container] a popover opened inside a themed Surface stands at the overlay tier, in a body-level root that carries the opener's mode", async ({ page }) => {
+  await openHarness(page, "theme");
+  await page.getByTestId("ink-trigger").click();
+  const panel = page.getByRole("dialog", { name: "Ink panel" });
+  await expect(panel).toHaveCSS("z-index", String(LAYOUT_SOURCE.elevation.tier.overlay.z));
+  // The Surface around the Trigger is the inverse of a light page, so the portal root re-establishes dark for what it carries.
+  const root = panel.locator(`xpath=ancestor::*[@${THEME_ATTRIBUTE}][1]`);
+  await expect(root).toHaveAttribute(THEME_ATTRIBUTE, "dark");
+  await expect(root).toHaveCSS("display", "contents");
+  expect(await root.evaluate((element) => element.parentElement === document.body)).toBe(true);
+  await expect(panel).toHaveCSS("color-scheme", "dark");
 });
 
 test("[primitives.floating.nesting] [primitives.floating.focus-restore] nested modal closes only the top panel, contains focus and restores each trigger", async ({ page }) => {
@@ -309,6 +389,25 @@ test("[primitives.floating.geometry] a popover keeps the sm gap from its trigger
   expect(await gapOf(trigger, panel)).toBeCloseTo(0, 1);
 });
 
+for (const [dir, side] of [["ltr", "left"], ["rtl", "right"]] as const) {
+  test(`[primitives.floating.content-state] [primitives.floating.content-options] a panel placed at the start stands on the ${side} of its anchor under ${dir}, and says start`, async ({ page }) => {
+    await openHarness(page, "elevation", { placed: dir });
+    const panel = page.getByTestId("placed");
+    await expect(panel).toHaveAttribute("data-placement", "start");
+    await expect(panel).not.toHaveAttribute("data-presence", /.*/);
+    const [from, to] = [(await page.getByTestId("anchor").boundingBox())!, (await panel.boundingBox())!];
+    if (side === "left") expect(to.x + to.width).toBeLessThanOrEqual(from.x);
+    else expect(to.x).toBeGreaterThanOrEqual(from.x + from.width);
+  });
+}
+
+test("[primitives.floating.content-options] a panel with no room on its side flips to the other, unless flip is off", async ({ page }) => {
+  await openHarness(page, "elevation", { flipped: "on" });
+  await expect(page.getByTestId("flipped")).toHaveAttribute("data-placement", "bottom");
+  await openHarness(page, "elevation", { flipped: "off" });
+  await expect(page.getByTestId("flipped")).toHaveAttribute("data-placement", "top");
+});
+
 test("[primitives.floating.geometry] a popover pushed against the viewport edge keeps the gutter from it", async ({ page }) => {
   await page.goto("/playground/floating");
   const trigger = page.getByRole("button", { name: "설정 열기", exact: true });
@@ -322,7 +421,7 @@ test("[primitives.floating.geometry] a popover pushed against the viewport edge 
   expect(edge - right).toBeCloseTo(SHAPE_SOURCE.space.lg, 1);
 });
 
-test("[primitives.floating.presentation] a popover says where it settled beside its trigger, and a modal is placed against nothing", async ({ page }) => {
+test("[primitives.floating.presentation] [primitives.floating.content-state] a popover says where it settled beside its trigger, and a modal is placed against nothing", async ({ page }) => {
   await page.goto("/playground/floating");
   await page.getByRole("button", { name: "설정 열기", exact: true }).click();
   const panel = page.getByRole("dialog", { name: "설정", exact: true });
@@ -349,7 +448,7 @@ test("[primitives.draggable.keyboard-step] an arrow key moves the box by a step 
   await expect(position).toHaveText(`x: ${SHAPE_SOURCE.space.sm}, y: ${SHAPE_SOURCE.space.md}`);
 });
 
-test("hook composition keeps press and focus behavior on one node", async ({ page }) => {
+test("[primitives.composition.merge-props] hook composition keeps press and focus behavior on one node", async ({ page }) => {
   await page.goto("/playground/composition");
   const button = page.getByRole("button", { name: "Hook으로 조립한 버튼" });
   await button.click();

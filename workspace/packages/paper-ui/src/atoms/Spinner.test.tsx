@@ -18,7 +18,7 @@ afterEach(() => {
 });
 
 describe("Spinner", () => {
-  it("[atoms.spinner.roles] is a progressbar with an aria-label and no value, named by the catalog unless given a label", () => {
+  it("[atoms.spinner.roles] [atoms.contract.axes] is a progressbar with an aria-label and no value, named by the catalog unless given a label", () => {
     const view = render(<Spinner />);
     const bar = screen.getByRole("progressbar", { name: "Loading" });
     expect(bar.tagName).toBe("SPAN");

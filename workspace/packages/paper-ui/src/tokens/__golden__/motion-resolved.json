@@ -1,0 +1,76 @@
+{
+  "duration": {
+    "instant": "0ms",
+    "reduced": "0.01ms",
+    "fast": "100ms",
+    "base": "130ms",
+    "moderate": "200ms",
+    "slow": "300ms"
+  },
+  "easing": {
+    "linear": "linear",
+    "standard": "cubic-bezier(0.4, 0, 0.2, 1)",
+    "decelerate": "cubic-bezier(0, 0, 0.2, 1)",
+    "accelerate": "cubic-bezier(0.4, 0, 1, 1)",
+    "overshoot": "cubic-bezier(0.22, 1, 0.36, 1)"
+  },
+  "roles": {
+    "press": {
+      "duration": "100ms",
+      "easing": "cubic-bezier(0.4, 0, 0.2, 1)",
+      "offset": "var(--pui-shape-stroke-border)"
+    },
+    "hover": {
+      "duration": "100ms",
+      "easing": "cubic-bezier(0.4, 0, 0.2, 1)"
+    },
+    "state": {
+      "duration": "130ms",
+      "easing": "cubic-bezier(0.4, 0, 0.2, 1)"
+    },
+    "enter": {
+      "duration": "200ms",
+      "easing": "cubic-bezier(0.22, 1, 0.36, 1)",
+      "offset": "var(--pui-shape-space-xs)",
+      "scale": "0.99"
+    },
+    "exit": {
+      "duration": "100ms",
+      "easing": "cubic-bezier(0.4, 0, 1, 1)"
+    },
+    "theme": {
+      "duration": "0ms",
+      "easing": "linear"
+    }
+  },
+  "loops": {
+    "spin": {
+      "frames": {
+        "to": {
+          "transform": "rotate(360deg)"
+        }
+      },
+      "duration": "900ms",
+      "easing": "linear",
+      "reduced": "pulse"
+    },
+    "pulse": {
+      "frames": {
+        "50%": {
+          "opacity": "0.25"
+        }
+      },
+      "duration": "1400ms",
+      "easing": "cubic-bezier(0.4, 0, 0.2, 1)",
+      "reduced": "pulse"
+    }
+  },
+  "reduced": {
+    "duration": "0.01ms"
+  },
+  "transition": {
+    "hover": "color 100ms cubic-bezier(0.4, 0, 0.2, 1)",
+    "state": "background 130ms cubic-bezier(0.4, 0, 0.2, 1), border-color 130ms cubic-bezier(0.4, 0, 0.2, 1)",
+    "theme": "color 0ms linear"
+  }
+}

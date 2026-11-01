@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 import { STRUCTURAL } from "../../../../eslint-rules/structural.js";
@@ -104,6 +107,37 @@ describe("the tokens barrel", () => {
         expect(typeof value, path).toBe("string");
         expect(value as string, path).not.toMatch(/\d(?:\.\d+)?(?:px|rem|em|ms|vh|vw|%)|#[\da-f]{3,8}\b|(?:rgb|hsl|oklch)\(/i);
       }
+    }
+  });
+});
+
+describe("the five systems stack in one direction", () => {
+  const SYSTEMS = [
+    { name: "Color", files: ["palette", "color-ladder", "color-modes", "colors", "color-recipes"] },
+    { name: "Typography", files: ["typography", "typography-recipes"] },
+    { name: "Shape", files: ["shape", "shape-recipes"] },
+    { name: "Layout", files: ["layout", "elevation-recipes"] },
+    { name: "Motion", files: ["motion"] },
+  ];
+  const here = dirname(fileURLToPath(import.meta.url));
+  const importsOf = (file: string) => [...readFileSync(join(here, `${file}.ts`), "utf8").matchAll(/^(?:import|export)\s[^;'"]*?from\s*["']\.\/([^"']+)["']/gm)].map(([, from]) => from!);
+  const systemOf = (file: string) => SYSTEMS.findIndex(({ files }) => files.includes(file));
+
+  it("[foundations.systems.one-way] reads only the systems before it", () => {
+    const backward = SYSTEMS.flatMap(({ name, files }, position) => files.flatMap((file) =>
+      importsOf(file).filter((from) => from !== "helpers" && systemOf(from) > position).map((from) => `${name}: ${file} reads ${from}`),
+    ));
+    expect(backward).toEqual([]);
+  });
+
+  it("[foundations.systems.sources] takes from the systems before it what its row names, and writes its source in the file its row names", () => {
+    expect(importsOf("shape")).toContain("typography");
+    expect(importsOf("layout")).toEqual(expect.arrayContaining(["shape", "colors"]));
+    expect(importsOf("motion")).toEqual(expect.arrayContaining(["shape", "layout"]));
+    // A Typography role names its default ink, which Color defines.
+    for (const [variant, ink] of Object.entries(barrel.TEXT_INK)) expect(barrel.INK_LEVELS, variant).toContain(ink);
+    for (const [file, source] of [["palette", "OKLCH_PALETTE"], ["typography", "TYPOGRAPHY_SOURCE"], ["shape", "SHAPE_SOURCE"], ["layout", "LAYOUT_SOURCE"], ["motion", "DURATION"]] as const) {
+      expect(readFileSync(join(here, `${file}.ts`), "utf8"), file).toContain(`export const ${source}`);
     }
   });
 });

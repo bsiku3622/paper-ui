@@ -13,7 +13,7 @@ const Router = forwardRef<HTMLAnchorElement, AnchorHTMLAttributes<HTMLAnchorElem
 });
 
 describe("Link", () => {
-  it("[atoms.link.underline] underlines at rest by default and only on hover when asked", () => {
+  it("[atoms.link.underline] [atoms.contract.axes] underlines at rest by default and only on hover when asked", () => {
     expect(Object.keys(linkUnderline)).toEqual([...LINK_UNDERLINES]);
     render(<><Link href="#a">기본</Link><Link href="#b" underline="hover">호버</Link></>);
     const always = screen.getByRole("link", { name: "기본" }).className.split(" ");

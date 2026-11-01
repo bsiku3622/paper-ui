@@ -10,6 +10,7 @@ Color → Typography → Shape → Layout → Motion → Primitives
 
 ## 원본 → 역할 → recipe
 
+[contract:foundations.shape.source-dp]: #
 Shape의 숫자는 `tokens/shape.ts`의 `SHAPE_SOURCE` 한 곳에만 dp 단위로 적습니다(기본 root 16px에서 1dp = 1px). 그 아래는 한 방향으로만 흐릅니다.
 
 ```text
@@ -36,6 +37,7 @@ import { sourceVars } from "@studio-baeks/paper-ui/tokens";
 export const dense = style({ vars: sourceVars({ shape: { control: { height: { md: "40px" } } } }) });
 ```
 
+[contract:foundations.override.worked-example]: #
 이 한 줄로 그 영역의 md 버튼 높이는 40, 입력 inset은 12, 버튼 inset은 17, 체크박스는 20, 스위치 트랙은 40×22가 됩니다. 역할 변수를 따로 구웠다면 `:root`에서 이미 계산이 끝나 이 재정의를 따라가지 못합니다.
 
 [contract:foundations.override.source-paths-only]: #
@@ -44,11 +46,14 @@ export const dense = style({ vars: sourceVars({ shape: { control: { height: { md
 [contract:foundations.override.portal-carry]: #
 그 영역에서 연 Floating의 panel은 `<body>` 아래로 옮겨지지만 덮어쓴 원본을 잃지 않습니다. Portal의 root가 열린 자리와 container 사이에서 값이 다른 원본 변수(`SOURCE_VARIABLES`: Shape · mode와 무관한 Layout · Typography)만 얹어 옮기므로, 영역 안에서 연 popover와 dialog 속 컨트롤도 40이 되고 dialog의 scrim 여백도 영역의 gutter를 따릅니다. 처음부터 열려 있는 panel도 Trigger가 선 자리를 따르고, 영역 밖에서 연 것은 기본값 그대로입니다. 색 역할은 옮기지 않고, 모드는 테마 속성이 옮깁니다.
 
-패키지 안에서는 숫자를 원본 파일(`shape.ts` · `layout.ts` · `typography.ts` · `motion.ts`와 색 원본)에만 씁니다. recipe와 stylesheet에는 구조 값(0 · 100% · 1fr …) 말고 숫자가 없고, eslint `paper/source-numbers`가 토큰 층 밖의 패키지 전체에서 이를 막습니다.
+패키지 안에서는 숫자를 원본 파일(`shape.ts` · `layout.ts` · `typography.ts` · `motion.ts`와 색 원본)에만 씁니다. recipe와 stylesheet에는 구조 값(0 · 100% · 1fr · 절반 `/ 2` · 45° 회전 …) 말고 숫자가 없고, eslint `paper/source-numbers`가 토큰 층 밖의 패키지 전체에서 이를 막습니다.
 
 ## 길이 scale — inset
 
+[contract:foundations.shape.inset-scale]: #
 안쪽 여백은 `tokens.shape.inset`으로 고릅니다. Layout의 `gap`과 같은 scale이라, 같은 단계는 같은 길이입니다. 4dp 격자로 xl까지 오르고, 페이지 단위 거리는 8dp 흐름으로 이어집니다.
+
+[contract:foundations.shape.inset-values]: #
 
 | 단계 | xs | sm | md | lg | xl | 2xl | 3xl |
 |---|---|---|---|---|---|---|---|
@@ -60,6 +65,8 @@ Box의 `padding` · `paddingX` · `paddingY`가 이 단계를 받습니다. 앱 
 
 모서리는 날만 죽입니다. 그래서 한 가족은 크기와 무관하게 한 값을 씁니다.
 
+[contract:foundations.shape.radius-table]: #
+
 <!-- generated:shape-radius -->
 <!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 | 역할 | 값 | 쓰는 곳 |
@@ -70,6 +77,7 @@ Box의 `padding` · `paddingX` · `paddingY`가 이 단계를 받습니다. 앱 
 | `radius.full` | 999px | 알약, 원(Radio · Switch · Spinner) |
 <!-- /generated:shape-radius -->
 
+[contract:foundations.shape.radius-separate]: #
 Surface의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값이 같아도 역할과 변수는 따로입니다.
 
 ## Stroke · Focus
@@ -83,7 +91,9 @@ Surface의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값
 ## Control
 
 [contract:foundations.shape.control-geometry]: #
-컨트롤 원본은 <!-- generated:shape-source --><!-- 이 블록은 생성됩니다 — pnpm docs:sync -->높이 사다리(`control.height`: sm 30 · md 32 · lg 36)와 button inset 배율(`control.buttonInsetRatio`: 1.4)이고, `anatomy`는 Badge 높이·inset(`anatomy.badge`)과 inline 점 · spinner 크기(`anatomy.inline`: 0.5em · 1em)입니다.<!-- /generated:shape-source --> 나머지는 높이와 컨트롤 글자 줄(Typography의 control preset이 읽는 글자 한 줄, 행간 16)에서 계산합니다. 입력값이 앉는 줄상자 `inputLeading` 20은 이 식의 입력이 아니라 caret 높이를 위한 값이라, 글자 줄 안쪽에서 중앙에 앉습니다.
+컨트롤 원본은 <!-- generated:shape-source --><!-- 이 블록은 생성됩니다 — pnpm docs:sync -->높이 사다리(`control.height`: sm 30 · md 32 · lg 36)와 button inset 배율(`control.buttonInsetRatio`: 1.4)이고, `anatomy`는 Badge 높이·inset(`anatomy.badge`)과 체크의 보정 비율(`anatomy.checkbox.markShift`: x 0.25 · y -0.5, `stroke.emphasis`의 배수)과 inline 점 · spinner 크기(`anatomy.inline`: 0.5em · 1em)입니다.<!-- /generated:shape-source --> 나머지는 높이와 컨트롤 글자 줄(Typography의 control preset이 읽는 글자 한 줄, 행간 16)에서 계산합니다. 입력값이 앉는 줄상자 `inputLeading` 20은 이 식의 입력이 아니라 caret 높이를 위한 값이라, 글자 줄 안쪽에서 중앙에 앉습니다.
+
+[contract:foundations.shape.control-table]: #
 
 <!-- generated:shape-control -->
 <!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
@@ -97,9 +107,12 @@ Surface의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값
 | `control.gap` | 8 | 8 | 8 | 아이콘과 라벨 사이, inset sm |
 <!-- /generated:shape-control -->
 
+[contract:foundations.shape.geometry-entry]: #
 컨트롤 안의 아이콘은 옆 글자가 아니라 컨트롤 높이를 따라 30 → 16, 32 → 18, 36 → 20으로 커집니다. 컨트롤 글자는 control preset(13 · 13 · 14)이라 어느 Text 역할과도 같지 않기 때문입니다. 같은 size의 Button · Field · Select는 같은 높이를 고르고, 글자는 Typography의 control preset에서 따로 고릅니다. `controlGeometry`(`internal/shape.ts`)는 크기가 있는 모든 Atom의 단일 진입점이고, stylesheet가 자기만의 크기 사다리를 만들지 않습니다. 항목은 button · iconButton(높이를 변으로 하는 정사각, 안쪽 여백 없음) · field · select · selectArrow · textarea · selection(선택 상자) · checkbox · radio · switch · badge · spinner · spinnerInline입니다. `control.icon`은 컨트롤 안 아이콘의 기본 크기입니다. 컨트롤 안의 Icon은 그 컨트롤이 정한 크기를 맥락(`IconSizeContext`)으로 받고, 명시한 `size`가 있으면 그것이 이깁니다.
 
 ## Sizing
+
+[contract:foundations.shape.sizing-table]: #
 
 <!-- generated:shape-sizing -->
 <!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
@@ -118,25 +131,30 @@ Surface의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값
 [contract:foundations.shape.target-reach]: #
 누를 수 있는 최소 크기는 `target.min` 24px(CSS px)입니다. 시각 크기가 더 작은 표식은 보이지 않는 hit area를 `targetReach`로 넓힙니다. `targetReach(visual)`은 `(min(visual, target.min) − target.min) / 2`라서 표식이 24px에 못 미치는 만큼의 절반이고, 이미 24px 이상이면 0입니다. 값은 hit area가 표식 밖으로 뻗는 거리를 음수 inset으로 적은 것입니다.
 
+[contract:foundations.shape.target-table]: #
+
 | 대상 | 식 | sm | md | lg |
 |---|---|---|---|---|
 | `target.selection` | targetReach(`selection.size`) | −4.5 | −4 | −3 |
 | `target.switchBlock` | targetReach(Switch 트랙 높이) | −3.5 | −3 | −2 |
 | `target.action` | targetReach(`control.icon`) | −4 | −3 | −2 |
 
+[contract:foundations.shape.hit-area]: #
 hit area를 갖는 Atom은 Checkbox · Radio · Switch와 Field의 지우기와 보기 버튼입니다. 보이지 않는 `::before`가 표식 밖으로 넓어지고 색을 칠하지 않습니다. Field의 버튼 안 아이콘은 `control.icon` 그대로 그려지고 `::before`가 `target.action`만큼 사방으로 넓어져 24px 정사각이 됩니다. 나란한 두 버튼은 `control.gap` 8을 사이에 두므로 서로의 hit area를 침범하지 않습니다. Checkbox · Radio는 `target.selection`만큼 사방으로, Switch는 `target.switchBlock`만큼 트랙 위아래로 넓어지고 가로는 트랙 폭이 이미 24px 이상이라 그대로입니다. 상자는 테두리를 가져 `::before`가 padding box에서 놓이므로 테두리 한 줄만큼 더 멀리서 시작합니다.
 
+[contract:foundations.shape.no-coarse-growth]: #
 coarse pointer에서 더 키우지 않습니다 — 촘촘한 목록에서 hit area가 겹치면 탭이 엉뚱한 곳으로 가기 때문이고, 행 단위 hit area는 앱이 정합니다.
 
 ## Recipe — 컴포넌트 anatomy
 
-`SHAPE_RECIPES`에는 숫자가 없습니다. 모든 값이 역할이거나, 원본의 anatomy 값이거나, 그 둘 위의 식입니다.
+[contract:foundations.shape.recipe-structural-numbers]: #
+`SHAPE_RECIPES`에는 구조 값(절반 `/ 2`, 45° 회전)만 쓰고, 광학 보정 비율은 원본 anatomy에 둡니다. 모든 값이 역할이거나, 원본의 anatomy 값이거나, 그 둘 위의 식입니다. 단위 테스트가 var() 이름을 지운 recipe 문자열에 남은 숫자를 `STRUCTURAL`과 대조합니다.
 
 [contract:foundations.shape.recipe-geometry]: #
 
 | 대상 | 규칙 |
 |---|---|
-| Checkbox | 모서리 `radius.selection`. 체크는 상자의 절반 너비·4분의 1 높이인 L자를 대각선으로 돌린 것이고, 돌리면 시각 무게가 아래 왼쪽으로 쏠려 자기 획의 ¼ · ½만큼 옮깁니다. indeterminate 대시는 체크의 긴 변 길이로 그은 둥근 끝 emphasis 선입니다. |
+| Checkbox | 모서리 `radius.selection`. 체크는 상자의 절반 너비·4분의 1 높이인 L자를 대각선으로 돌린 것이고, 돌리면 시각 무게가 아래 왼쪽으로 쏠려 자기 획(`stroke.emphasis`)의 배수만큼 옮깁니다. 그 배수는 원본 `anatomy.checkbox.markShift`(x ¼ · y −½)입니다. indeterminate 대시는 체크의 긴 변 길이로 그은 둥근 끝 emphasis 선입니다. |
 | Radio | 점은 상자의 절반입니다. |
 | Switch | 트랙 폭 = 컨트롤 높이, 트랙 높이 = 선택 상자 + 테, 손잡이 = 선택 상자 − 테. 테는 `stroke.emphasis`라, 손잡이는 사방 2px 안쪽에 앉고 정확히 자기 폭만큼 이동합니다. 손잡이는 `inset-inline-start`로 놓이고 켜지면 그 값에 이동 거리가 더해지는 논리 속성이라 RTL에서는 저절로 뒤집힙니다. 꺼진 트랙의 안쪽 테(`stroke.border`)는 박스 안에 그려져 크기를 늘리지 않습니다. |
 | Textarea | 한 줄은 같은 size의 Field와 정확히 같은 높이입니다: block 여백 = (컨트롤 높이 − textarea 글자 줄) / 2 − 테두리. 최소 높이는 없고 높이는 `rows`(기본 4)가 정합니다 — 4줄은 sm 90 · md 92 · lg 96입니다. |

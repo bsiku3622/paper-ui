@@ -11,6 +11,8 @@ Drag Primitive는 끌어 옮기기와 놓기를 맡는 2차 primitive입니다. 
 
 Draggable·useDraggable는 mode로 두 계약을 명시합니다.
 
+[contract:primitives.draggable.modes]: #
+
 | 모드 | 책임 | 필수 입력 |
 | --- | --- | --- |
 | move, 기본값 | x/y 좌표 이동 | 없음 |
@@ -27,10 +29,13 @@ Draggable·useDraggable는 mode로 두 계약을 명시합니다.
 </Draggable>
 ```
 
+[contract:primitives.draggable.disabled]: #
 Draggable은 기본 div이고 `as`로 다른 태그를 고릅니다. children 함수는 `{ position, isDragging, isDisabled }`(`DraggableState`)를 받습니다. 비활성 Draggable은 끌기만 멈추고 안쪽 내용은 그대로 동작하며, `data-disabled`와 대상에 맞는 투영(div에는 `aria-disabled`, button에는 native `disabled`)이 달리고 not-allowed 커서를 보입니다.
 
+[contract:primitives.draggable.handle]: #
 Draggable.Handle(`DraggableHandleProps`)은 부모 Draggable 내부에 있어야 하며 aria-label이 필수입니다. 기본은 native button이고 `as`로 다른 대상을 고를 수 있으며, `disabled`는 [공통 계약](README.md#공통-계약)의 투영을 따르고, Handle 자신의 `disabled`는 Draggable이 살아 있어도 그 Handle의 포인터와 키 입력을 모두 끕니다. Handle은 키보드 끌기를 React Aria의 press로 직접 다루므로 `Pressable`로 감싸지 않습니다(press 뒤에 click이 따라오면 끌기가 취소됩니다). Input 대상은 Handle, 측정과 이동 대상은 전체 Draggable입니다. Surface 모드도 자식 button·input·textarea·select·link·contenteditable·data-drag-ignore에서 시작한 입력은 이동으로 처리하지 않습니다. 내부 입력의 방향키도 부모를 이동시키지 않습니다.
 
+[contract:primitives.draggable.controlled]: #
 Move 모드는 position/defaultPosition/onPositionChange, axis=both/x/y, keyboardStep, onDragStart/onDragMove/onDragEnd/onDragCancel을 받습니다. Event는 position·시작점 기준 delta·pointerType을 제공합니다. 컴포넌트는 CSS translate로 이동하고, hook 사용자는 position을 자신의 요소에 적용합니다. 방향키로 이동하고, 포인터 이동 중 Escape는 시작 좌표로 복귀하며 onDragCancel을 호출합니다. Disabled 전환도 진행 중인 move를 취소합니다.
 
 [contract:primitives.draggable.keyboard-step]: #
@@ -51,12 +56,15 @@ return (
 );
 ```
 
-useDraggable는 dragProps·handleProps·position·isDragging·cancel을 반환합니다. dragProps에는 이동 대상의 ref와 data-dragging · data-disabled · aria-disabled가 들어 있고, handleProps에는 data-dragging · data-disabled가 들어 있습니다. 외부 ref·이벤트와 함께 쓰려면 `mergeProps`로 병합하고, 객체 spread로 한쪽을 덮어쓰지 않습니다. 컴포넌트는 내부 ref와 전달받은 ref를 함께 연결합니다.
+[contract:primitives.draggable.refs]: #
+useDraggable는 dragProps·handleProps·position·isDragging·cancel을 반환합니다. dragProps에는 이동 대상의 ref와 data-dragging · data-disabled · aria-disabled가 들어 있고, handleProps에는 data-dragging · data-disabled가 들어 있습니다. 외부 ref·이벤트와 함께 쓰려면 `mergeProps`로 병합하고, 객체 spread로 한쪽을 덮어쓰지 않습니다. Draggable과 Droppable은 내부 ref와 전달받은 ref를 함께 연결합니다.
 
 ## Transfer와 Drop
 
+[contract:primitives.draggable.transfer]: #
 Transfer 모드의 getItems는 MIME type과 문자열 데이터의 record(`DragItem`) 배열을 반환합니다. getAllowedDropOperations로 move/copy/link 허용 작업(`DropOperation`)을 선택하고 onDragStart/onDragMove/onDragEnd로 lifecycle(`TransferDragEvent`)을 받습니다. Native drag preview는 전체 박스를 사용합니다. Handle만 등록해도 키보드와 스크린리더 경로를 함께 제공합니다.
 
+[contract:primitives.droppable.options]: #
 Droppable·useDroppable은 getDropOperation(types, allowedOperations), getDropOperationForPoint, onDropEnter/onDropMove/onDropExit/onDropActivate/onDrop, disabled를 받습니다. getDropOperation은 허용한 작업 또는 cancel을 반환합니다. useDroppable은 ref 인자를 받지 않습니다. 결과는 dropProps(ref · data-drop-target · data-disabled · aria-disabled)와 isDropTarget이며, 이벤트는 `DropEvent` · `DropEnterEvent` 같은 Paper의 타입입니다.
 
 텍스트 데이터를 전달하고 읽는 예시입니다.

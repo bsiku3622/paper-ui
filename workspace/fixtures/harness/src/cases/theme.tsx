@@ -22,6 +22,9 @@ export const ThemeBoxes = () => (
 const ThemeInk = () => (
   <Surface theme="inverse" data-testid="ink-scope">
     <span data-testid="ink-raw">raw</span>
+    <Surface theme="inverse" data-testid="ink-nested">
+      <span data-testid="ink-nested-raw">raw</span>
+    </Surface>
     <Icon data-testid="ink-icon" aria-hidden="true"><path d="M2 2h4" /></Icon>
     <Pressable data-testid="ink-pressable">Press</Pressable>
     <Floating>

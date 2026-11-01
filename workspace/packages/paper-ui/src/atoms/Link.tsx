@@ -9,7 +9,8 @@
 import { forwardRef, type ElementType, type ReactElement, type ReactNode } from "react";
 
 import { joinClass } from "../internal/joinClass";
-import { mergeProps, useFocusRing } from "../primitives";
+import { mergeProps } from "../primitives/composition";
+import { useFocusRing } from "../primitives/a11y/focus";
 import type { PolymorphicProps } from "../primitives/polymorphic";
 import { linkPaint } from "../primitives/paint/recipes.css";
 import type { LinkUnderline } from "../tokens";

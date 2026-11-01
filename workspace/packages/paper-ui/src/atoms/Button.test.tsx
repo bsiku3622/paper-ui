@@ -7,9 +7,14 @@ import { forwardRef, useState, type AnchorHTMLAttributes } from "react";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 
-import { Draggable, Floating, Pressable, Selectable, SelectableGroup } from "../primitives";
+import { Draggable } from "../primitives/drag/Draggable";
+import { Floating } from "../primitives/float/Floating";
+import { Pressable } from "../primitives/press/Pressable";
+import { Selectable } from "../primitives/select/Selectable";
+import { SelectableGroup } from "../primitives/select/SelectableGroup";
 import type { ControlFontSize } from "../tokens";
 import { Button, type ButtonProps } from "./Button";
+import { buttonSize } from "./Button.css";
 
 const announcer = vi.hoisted(() => ({ announce: vi.fn(), clearAnnouncer: vi.fn() }));
 vi.mock("@react-aria/live-announcer", () => announcer);
@@ -17,14 +22,14 @@ vi.mock("@react-aria/live-announcer", () => announcer);
 afterEach(() => announcer.announce.mockClear());
 
 describe("Button · as", () => {
-  it("기본은 <button> 이고 type 이 붙는다", () => {
+  it("[atoms.button.target] [atoms.contract.axes] 기본은 <button> 이고 type 이 붙는다", () => {
     render(<Button>저장</Button>);
     const el = screen.getByRole("button", { name: "저장" });
     expect(el.tagName).toBe("BUTTON");
     expect(el.getAttribute("type")).toBe("button");
   });
 
-  it("as='a' 면 링크 하나만 그린다 — 안에 button 이 없다", () => {
+  it("[atoms.button.target] [atoms.button.as-link] as='a' 면 링크 하나만 그린다 — 안에 button 이 없다", () => {
     render(
       <Button as="a" href="/docs" shape="pill">
         문서 읽기
@@ -35,7 +40,23 @@ describe("Button · as", () => {
     expect(el.querySelector("button")).toBeNull();
     // <button> 전용 속성은 안 새어 나간다.
     expect(el.hasAttribute("type")).toBe(false);
+  });
+
+  it("[atoms.button.target] [atoms.button.as-link] as='a' 의 disabled 는 aria-disabled 와 Tab 제외로 가고, disabled 속성은 없으며, click 은 이동도 onClick 도 일으키지 않는다", () => {
+    const click = vi.fn();
+    render(
+      <Button as="a" href="/docs" disabled onClick={click}>
+        문서 읽기
+      </Button>,
+    );
+    const el = screen.getByRole("link", { name: "문서 읽기" });
+    expect(el.getAttribute("aria-disabled")).toBe("true");
+    expect(el.getAttribute("tabindex")).toBe("-1");
+    expect(el.getAttribute("data-disabled")).toBe("true");
     expect(el.hasAttribute("disabled")).toBe(false);
+    // fireEvent 는 preventDefault 가 불리면 false 를 돌려준다 — 브라우저의 이동을 막는 것이 그것이다.
+    expect(fireEvent.click(el)).toBe(false);
+    expect(click).not.toHaveBeenCalled();
   });
 
   it("[atoms.button.target] a disabled link-styled Button is aria-disabled and out of the Tab order, and the click does not reach the link", () => {
@@ -279,7 +300,13 @@ describe("Button · loading", () => {
 });
 
 describe("Button · fontSize", () => {
-  it("takes only the roles a control box can hold", () => {
+  it("[atoms.contract.font-size] 글자를 바꿔도 geometry 는 고른 size 를 따른다", () => {
+    render(<Button size="lg" fontSize="label">크게</Button>);
+    const classes = screen.getByRole("button", { name: "크게" }).classList;
+    for (const name of buttonSize.lg.split(" ")) expect(classes.contains(name)).toBe(true);
+  });
+
+  it("[atoms.contract.axes] takes only the roles a control box can hold", () => {
     expectTypeOf<ButtonProps["fontSize"]>().toEqualTypeOf<ControlFontSize | undefined>();
     // @ts-expect-error display does not fit a control box
     const tooBig = <Button fontSize="display">크게</Button>;

@@ -57,6 +57,9 @@ export const SHAPE_SOURCE = {
       height: { sm: 20, md: 22, lg: 24 } satisfies Record<ControlSize, number>,
       inset: { sm: 6, md: 8, lg: 10 } satisfies Record<ControlSize, number>,
     },
+    // Turned onto its diagonal, the check keeps its visual mass low and left, so it shifts by these ratios of the
+    // emphasis stroke (x to the right, y down).
+    checkbox: { markShift: { x: 0.25, y: -0.5 } },
     // Marks sized against the text they sit in (em).
     inline: { dot: 0.5, spinner: 1 },
   },
@@ -90,6 +93,7 @@ export const SHAPE_VALUES = {
   measure: lengths(s.measure),
   anatomy: {
     badge: { height: lengths(s.anatomy.badge.height), inset: lengths(s.anatomy.badge.inset) },
+    checkbox: { markShift: { x: String(s.anatomy.checkbox.markShift.x), y: String(s.anatomy.checkbox.markShift.y) } },
     inline: lengths(s.anatomy.inline, em),
   },
 } as const;

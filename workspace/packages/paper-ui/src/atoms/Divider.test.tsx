@@ -13,7 +13,7 @@ const line = (element: ReactElement): HTMLElement => {
 };
 
 describe("Divider", () => {
-  it("기본은 base 수평선이다", () => {
+  it("[atoms.divider.orientation-level] [atoms.contract.axes] 기본은 base 수평선이다", () => {
     const hr = line(<Divider />);
     expect(hr.getAttribute("aria-orientation")).toBe("horizontal");
     expect(hr.classList.contains(dividerOrientation.horizontal)).toBe(true);

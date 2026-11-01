@@ -12,9 +12,11 @@ Primitive는 두 차수로 나뉩니다. **1차**는 바탕입니다 — Box · 
 [contract:primitives.orders.second]: #
 2차 폴더끼리 서로 기대지 않습니다. 소유자가 승인한 예외는 아래 둘이고, 어느 2차 폴더든 1차 primitive를 import할 수 있습니다. Atom은 모든 Primitive를 import할 수 있습니다.
 
+[contract:primitives.orders.allowed-edges]: #
 - Select → Focus: SelectableGroup은 Tab 정지가 하나라 RovingFocus 위에 섭니다.
 - Float → Paint: modal의 backdrop이 쓰는 `scrimPaint` 하나뿐입니다.
 
+[contract:primitives.orders.press-reach]: #
 Atom과 호출자 말고는 아무도 Press에 닿지 않습니다. 부품에 press가 필요하면 호출자가 `<Pressable as={Selectable}>`처럼 올리고, press 한 번이 늘 click 한 번이라([Press](press.md)) 그 요소의 press 장치는 하나입니다.
 
 [contract:primitives.orders.colour]: #
@@ -42,10 +44,13 @@ Atom과 호출자 말고는 아무도 Press에 닿지 않습니다. 부품에 pr
 
 ## 공통 계약
 
+[contract:primitives.polymorphic.default-tags]: #
 `as`로 렌더 대상을 고르는 것은 <!-- generated:polymorphic --><!-- 이 블록은 생성됩니다 — pnpm docs:sync -->Box · Surface · Paint · Stack · Inline · Grid · Text · VisuallyHidden · Pressable · Selectable · SelectableGroup.Item · Floating.Trigger · Floating.Close · Draggable · Draggable.Handle · Droppable · RovingFocus.Item · Button · IconButton · Link입니다. native props와 ref는 같은 요소로 전달합니다.<!-- /generated:polymorphic --> Pressable의 `as`에는 부품도 올 수 있습니다(`<Pressable as={Selectable}>`). 부품(Pressable · Selectable · SelectableGroup.Item · Floating.Trigger · Floating.Close · RovingFocus.Item · Draggable · Draggable.Handle · Droppable)과 VisuallyHidden도 `as`를 받고, 기본 태그는 Pressable · Selectable · Floating.Trigger · Floating.Close · Draggable.Handle · RovingFocus.Item이 button, Draggable과 Droppable이 div, VisuallyHidden이 span입니다. Icon도 SVG ref와 native SVG props를 전달합니다. 어느 것도 중첩 wrapper를 더하지 않습니다. 부품의 `as`는 모두 같은 규칙으로 `disabled`를 대상에 옮깁니다(`internal/render-target.ts`의 `targetProps`가 유일한 투영입니다).
 
 [contract:primitives.target.projection]: #
 대상은 두 종류입니다. **control**은 입력을 받는 대상(Pressable · Selectable · Floating.Trigger · Floating.Close · Draggable · Draggable.Handle · Droppable · RovingFocus.Item)이고, **region**은 자리만 차지하는 대상(VisuallyHidden)입니다. 비활성은 모든 경우 `data-disabled`를 달아 같은 selector로 스타일되고, 나머지는 대상이 무엇이냐에 따라 갈립니다.
+
+[contract:primitives.target.table]: #
 
 | 대상 | control: 활성 | control: 비활성 | region: 비활성 |
 | --- | --- | --- | --- |
@@ -56,17 +61,22 @@ Atom과 호출자 말고는 아무도 Press에 닿지 않습니다. 부품에 pr
 | Paper 부품 · pressable Atom | `type`은 줄 때만 | `disabled` | `disabled` |
 | 그 밖의 컴포넌트 | `type`은 줄 때만 | `aria-disabled`, tabIndex −1, 클릭 차단 | `disabled` |
 
+[contract:primitives.target.focusable]: #
 `focusable`을 주면 비활성 control이 Tab 정지에 남습니다. button은 native `disabled` 대신 `aria-disabled`를 달고, 다른 태그와 컴포넌트는 tabIndex 0을 유지하며, Paper 부품도 `disabled`를 받는 대신 `aria-disabled`와 클릭 차단으로 막힙니다(로딩 중인 Button처럼 포커스를 잃으면 안 되는 대상). native input · select는 언제나 native `disabled`입니다. 클릭 차단은 대상의 `onClick`과 조상의 handler가 클릭을 듣기 전에 멈추고 가운데 버튼 클릭도 함께 막으므로, 비활성 링크 컴포넌트는 이동하지 않습니다. 브라우저 컨텍스트 메뉴의 '새 탭에서 열기'는 막지 못합니다. 호출자가 준 `role` · `tabIndex`는 투영을 이깁니다. hover는 CSS이고 비활성 대상에는 뜨지 않으며, hover만 따로 끄는 스위치는 없습니다. Atom의 모습을 부품에 입히는 길은 `<Button as={부품}>`입니다. 반대로 부품이나 Pressable의 `as`에 Button · IconButton을 주면(`<Floating.Trigger as={Button}>`) 한 요소에 press 장치가 둘이 되므로, 개발 모드 오류를 한 번 내고 Button이 부품을 받는 모양을 안내합니다.
 
+[contract:primitives.target.own-keys]: #
 Selectable · SelectableGroup.Item · Floating.Trigger · Floating.Close는 press 장치가 없는 부품이라, `role="button"`을 받은 태그 위에서는 button의 키를 스스로 갖습니다. Enter와 Space가 클릭을 냅니다. 비활성이면 받지 않고, 안쪽 입력에서 올라온 키는 그 입력의 것이며, 호출자의 `onKeyDown`이 먼저 실행되어 `preventDefault()`를 부르면 누르지 않습니다. Pressable의 키는 press가, Draggable · Draggable.Handle · Droppable의 키는 키보드 끌기가 맡습니다. a[href]와 native 태그, 컴포넌트 대상은 자기 키를 그대로 씁니다.
 
+[contract:primitives.target.exceptions]: #
 표를 그대로 따르지 않는 곳이 있습니다. Draggable 루트와 Droppable의 비활성은 끌기·놓기만 멈추므로 클릭 차단이 없고, 안쪽 내용의 클릭은 그대로 동작합니다. Draggable 루트의 role과 Tab 정지는 끌기를 시작하는 방식(activation)이 정합니다. RovingFocus.Item은 button이 아닌 태그에 role을 주지 않고(역할은 호출자가 정합니다), tabIndex는 그룹의 Tab 정지 규칙이 정합니다.
 
+[contract:primitives.hooks.disabled]: #
 이 표는 컴포넌트의 `disabled`입니다. Hook의 `disabled`는 그 행동만 끕니다. `usePressable({ disabled })`은 press를 멈추고 `data-disabled`를 달 뿐 native `disabled`도 `aria-disabled`도 쓰지 않으므로, 요소를 막는 일은 hook을 쓰는 쪽이 합니다. `useDraggable` · `useDroppable`도 끌기·놓기만 멈춥니다. dragProps · dropProps에는 hook으로 직접 만든 요소를 위한 `aria-disabled`가, handleProps에는 native `disabled`가 들어 있고, 컴포넌트는 그 `aria-disabled` 대신 위 표를 따릅니다.
 
 [contract:primitives.snapshots.children]: #
 children 함수는 읽기 전용 스냅샷을 받습니다 — Pressable `{ isActive, isFocused, isFocusVisible, isDisabled }`, Selectable `{ isSelected, isDisabled }`, SelectableGroup `{ selectedValues, isDisabled }`, RovingFocus `{ currentValue, isDisabled }`, Draggable `{ position, isDragging, isDisabled }`, Droppable `{ isDropTarget, isDisabled }`, Floating.Content `{ isOpen, presentation, placement, elevation }`, FormField `{ isDisabled, isInvalid, isRequired }`. 스냅샷은 상태를 읽을 뿐 바꾸지 못합니다. Floating.Content 안의 부품이 열고 닫으려면 `useFloatingContext()`를 씁니다. Floating.Content와 FormField는 구조가 고정된 부품이라 `as`를 받지 않습니다.
 
+[contract:primitives.polymorphic.target-and-ref]: #
 `as`는 대상과 ref를 바꿀 뿐 의미론을 만들지 않습니다. 아래 예시는 Stack을 면으로 만듭니다 — 요소는 하나이고, Stack의 prop(`gap`)과 Surface의 prop(`fill` · `border`)이 함께 타입으로 검사됩니다.
 
 ```tsx
@@ -76,6 +86,7 @@ children 함수는 읽기 전용 스냅샷을 받습니다 — Pressable `{ isAc
 </Surface>
 ```
 
+[contract:primitives.surface.no-role]: #
 Surface는 button 역할이나 Tab 정지를 자동으로 붙이지 않습니다. 행동의 의미에 맞는 native 요소와 접근성 이름은 쓰는 쪽이 고릅니다.
 
 [contract:primitives.polymorphic.own-props-win]: #
@@ -88,10 +99,15 @@ React Aria는 `src/internal/aria` 밖으로 나오지 않습니다. 어댑터가
 
 패키지 스타일은 CSS class로 적용하고 토큰을 inline style로 넘기지 않습니다. 실행 중에 정해지는 값만 runtime style을 씁니다: Draggable 이동 좌표, Grid track, Floating rank 변수, Floating 앵커 위치, Floating 원본 변수 운반, 호출자가 넘긴 style.
 
+[contract:primitives.errors.prefix]: #
+개발자에게 하는 오류는 늘 영어이고 `[paper-ui] `로 시작합니다. 부품을 부모 밖에서 쓰면 어느 부품인지 이름을 댑니다.
+
 ## Hook의 공통 계약
 
 [contract:primitives.hooks.result-shape]: #
 DOM에 닿는 hook은 `{ <부분>Props, ...상태 }` 한 꼴로 돌려줍니다. 부분의 props에는 그 hook이 쓰는 callback ref와 상태 attribute가 이미 들어 있어서 hook은 ref를 인자로 받지 않고, 소비자는 `{...pressProps}`처럼 펼치거나 `mergeProps`로 다른 hook의 props와 합칩니다. 상태만 다루는 hook(`useSelectableGroup` · `useFloating` · `useFloatingContext`)은 상태와 동작만 돌려주고 DOM을 모릅니다.
+
+[contract:primitives.hooks.attribute-table]: #
 
 | Hook | 돌려주는 props | 상태 attribute |
 | --- | --- | --- |
@@ -105,11 +121,15 @@ DOM에 닿는 hook은 `{ <부분>Props, ...상태 }` 한 꼴로 돌려줍니다.
 | FormField | (wrapper) | data-disabled · data-invalid · data-required, 부분은 data-part |
 | Floating.Content | (panel) | data-presentation · data-placement(popover) · data-presence(`entering` · `exiting`, 서 있는 동안은 없음) |
 
-이름도 한 규칙을 따릅니다. 입력에는 `is` · `should`를 붙이지 않고(`disabled` · `selected` · `flip` · `focusable` · `textInput` · `cancelOnPointerExit` · `closeOnInteractOutside`), 출력은 `is*`입니다(`isActive` · `isSelected` · `isOpen` · `isFocusVisible` · `isDragging` · `isDropTarget`). 제어 상태는 `x` · `defaultX` · `onXChange` 셋이 한 벌입니다. 공개 hook마다 `XOptions`와 `XResult`가 있고, `XState`는 children 함수가 받는 읽기 전용 스냅샷의 이름입니다. press · drop · drag · 포커스 이벤트의 타입(`PressEvent` · `DropEvent` · `TransferDragEvent` · `Placement` …)도 Paper가 선언해 `@studio-baeks/paper-ui`에서 내보냅니다.
+[contract:primitives.hooks.naming]: #
+이름도 한 규칙을 따릅니다. 입력에는 `is` · `should`를 붙이지 않고(`disabled` · `selected` · `flip` · `focusable` · `textInput` · `cancelOnPointerExit` · `closeOnInteractOutside`), 출력은 `is*`입니다(`isActive` · `isSelected` · `isOpen` · `isFocusVisible` · `isDragging` · `isDropTarget`). 제어 상태는 `x` · `defaultX` · `onXChange` 셋이 한 벌입니다. 공개 hook마다 `XOptions`와 `XResult`가 있고(옵션을 받지 않는 `useFloatingContext`는 `useFloating`의 `FloatingResult`를 돌려줍니다), `XState`는 children 함수가 받는 읽기 전용 스냅샷의 이름입니다. press · drop · drag · 포커스 이벤트의 타입(`PressEvent` · `DropEvent` · `TransferDragEvent` · `Placement` …)도 Paper가 선언해 `@studio-baeks/paper-ui`에서 내보냅니다.
 
 ## 상태 속성
 
+[contract:primitives.state.attributes]: #
 상태 attribute의 이름은 `tokens/state.ts` 한 곳에서만 쓰고, hook은 `stateAttributes`로 내보냅니다. 상태는 값이 있는 동안 `"true"`이고 없으면 attribute 자체가 없습니다.
+
+[contract:primitives.state.emitters]: #
 
 | 속성 | 켜지는 때 | 내는 컴포넌트 |
 | --- | --- | --- |
@@ -123,6 +143,7 @@ DOM에 닿는 hook은 `{ <부분>Props, ...상태 }` 한 꼴로 돌려줍니다.
 | data-dragging | 끄는 동안 | Draggable · Draggable.Handle · useDraggable |
 | data-drop-target | 끌던 것이 위에 있는 동안 | Droppable · useDroppable |
 
+[contract:primitives.state.active-not-pressed]: #
 눌리는 동안의 순간 상태는 `active`입니다. `pressed`는 선택을 알리는 `aria-pressed`만 뜻하므로 같은 요소에서 두 뜻이 겹치지 않습니다. hover는 CSS이고 attribute로 내보내지 않습니다.
 
 ## 테마와 언어
@@ -142,6 +163,7 @@ locale은 Provider의 `locale`, 없으면 `<html lang>`, 그것도 없으면 `en
 
 ## 합성 도구
 
+[contract:primitives.composition.own-tools]: #
 `mergeProps` · `mergeRefs` · `composeEventHandlers`는 위 열한 분류와 함께 쓰는 합성 도구이고, 계약은 React Aria가 아니라 Paper의 것입니다. 소비자가 hook이 돌려준 props를 한 요소에 합칠 때 같은 도구를 쓰도록 `primitives/composition.ts` 하나가 정의합니다.
 
 [contract:primitives.composition.merge-props]: #
@@ -159,6 +181,7 @@ const { focusProps } = useFocusRing();
 </Box>
 ```
 
+[contract:primitives.composition.merge-refs]: #
 `mergeRefs(...refs)`는 callback ref와 object ref를 한 callback으로 모아 같은 DOM에 연결합니다. 해제될 때 callback ref는 null로 호출되고, cleanup을 돌려준 callback ref는 null 대신 그 cleanup이 실행됩니다.
 
 [contract:primitives.composition.compose-handlers]: #

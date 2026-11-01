@@ -118,6 +118,28 @@ which gives the hover tint its fade. CSS features newer
 than the floor are used only as enhancements, so a browser at the floor loses motion
 and nothing else.
 
+## What the stylesheet sets globally
+
+Nearly every rule in the stylesheet applies to elements that carry one of its classes. The rules without a class selector are the ones below, by cascade layer; all of them sit inside `pui`, and only `@keyframes` and `@property` stand outside it. They apply once the stylesheet is loaded, with or without a `PaperProvider`, which renders no element.
+
+| Layer | Selector | Sets |
+|---|---|---|
+| `pui.reset` | `*` | `box-sizing: border-box` |
+| `pui.reset` | `body` | `margin: 0` |
+| `pui.theme` | `:root` | The Shape, Layout and Typography source variables, opacity, the light mode's colour roles, and the default `color-scheme: light` |
+| `pui.theme` | `:root[data-pui-theme=light]`, `[data-pui-theme=light]` | The light mode's colour roles and `color-scheme: light` |
+| `pui.theme` | `:root[data-pui-theme=light]`, `[data-pui-theme=light] > *` | The ground roles: focus ring colour, shadow colour and shadow geometry |
+| `pui.theme` | `:root[data-pui-theme=dark]`, `[data-pui-theme=dark]` | The dark mode's colour roles and `color-scheme: dark` |
+| `pui.theme` | `:root[data-pui-theme=dark]`, `[data-pui-theme=dark] > *` | The ground roles |
+| `pui.theme` | `:root:not([data-pui-theme])` | Under `prefers-color-scheme: dark`, the dark mode when `<html>` carries no attribute |
+| `pui.base` | `body` | The canvas, the primary ink and the body type role |
+| `pui.base` | `:where([data-pui-theme])` | Scope ink: text inside a mode scope takes that mode's primary ink (specificity 0) |
+| `pui.base` | `:root[data-pui-theme-swap] *`, `:root[data-pui-theme-swap] ::before`, `:root[data-pui-theme-swap] ::after` | Transitions are instant while the theme changes (`!important`) |
+| `pui.base` | `:where(:focus-visible)` | The focus ring baseline: outline width, colour and offset only, no change to corners (specificity 0) |
+| `pui.components` | `*`, `::before`, `::after` | Under `prefers-reduced-motion: reduce`, transitions and animations shrink to almost nothing (`!important`); `loop` keeps its own reduced form in an earlier layer |
+
+Under `prefers-contrast: more` the `pui.theme` selectors redeclare the border roles and `ink.tertiary` one step stronger. To opt out of a rule, write an unlayered rule: unlayered CSS beats every layer whatever the specificity or load order, so `:where(:focus-visible) { outline: none }` simply wins.
+
 ## What is in the box
 
 <!-- generated:inventory.package -->
@@ -166,6 +188,10 @@ export const Confirm = () => (
 <!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 Eight rules hold the rest together, and eslint enforces them rather than the documentation: no raw colour outside the token sources, source modules isolated behind the token barrel (an app uses the package through its exports and overrides a source with `sourceVars()` instead of naming its variable), no token read through an inline style, no number outside the token sources, every package rule inside a `pui` cascade layer, no internal class name in an app, no hand-named global class, and no `eslint-disable` comment that switches a `paper/*` rule off. The package build, prepublish and CI run those checks.
 <!-- /generated:rules.en -->
+
+## Versioning
+
+Versions follow semver. While the package is 0.x, removing or renaming an exported name raises the minor version and adding one raises the patch; from 1.0 on they raise the major and the minor. The repository records every exported name, the token paths, the CSS variables and the cascade layers in `api/surface.json`. `pnpm api:update` rewrites that record, and it refuses to change the record of a released version, or to record a new version whose bump is too small or whose `## <version>` heading is missing from `CHANGELOG.md`.
 
 ## Documentation
 

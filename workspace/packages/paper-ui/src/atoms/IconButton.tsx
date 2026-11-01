@@ -6,7 +6,7 @@
 import { forwardRef, type ElementType, type ReactElement } from "react";
 
 import { registerAtom } from "../internal/render-target";
-import type { IconProps } from "../primitives";
+import type { IconProps } from "../primitives/Icon";
 import type { PolymorphicProps } from "../primitives/polymorphic";
 import type { Accent, ControlShape, ControlSize, IconSize, Variant } from "../tokens";
 import { ButtonBase, type ButtonBaseProps } from "./button-base";

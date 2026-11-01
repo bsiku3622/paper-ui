@@ -1,7 +1,9 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { tokens } from "../../packages/paper-ui/src/tokens";
+import { SHAPE_SOURCE } from "../../packages/paper-ui/src/tokens/shape";
 import { strokeRing } from "../../packages/paper-ui/src/tokens/shape-recipes";
+import { px } from "../support/geometry";
 import { openHarness } from "../support/harness";
 import { tab } from "../support/keyboard";
 import { expectStyle } from "../support/style";
@@ -57,7 +59,7 @@ test.describe("the selection marks", () => {
     await openHarness(page, "marks");
   });
 
-  test("[atoms.mark.forced-colors] an off and an on Switch differ in their track: ButtonFace in a ButtonText ring, and Highlight with a HighlightText thumb", async ({ page }) => {
+  test("[atoms.mark.forced-colors] [foundations.color.forced-colors] an off and an on Switch differ in their track: ButtonFace in a ButtonText ring, and Highlight with a HighlightText thumb", async ({ page }) => {
     const { ButtonFace: buttonFace, ButtonText: buttonText, Highlight: highlight, HighlightText: highlightText } = await systems(page, "ButtonFace", "ButtonText", "Highlight", "HighlightText");
     const off = await painted(page.getByTestId("switch-md"));
     const on = await painted(page.getByTestId("switch-on"));
@@ -96,7 +98,7 @@ test.describe("the selection marks", () => {
     expect(dot.backgroundColor).not.toBe(canvas);
   });
 
-  test("[atoms.mark.forced-colors] a disabled mark is GrayText, checked or not", async ({ page }) => {
+  test("[atoms.mark.forced-colors] [foundations.color.forced-colors] a disabled mark is GrayText, checked or not", async ({ page }) => {
     const gray = await system(page, "GrayText");
     for (const id of ["checkbox-disabled", "checkbox-on-disabled", "radio-disabled", "radio-on-disabled", "radio-error-disabled"]) expect((await painted(page.getByTestId(id))).borderTopColor, id).toBe(gray);
     expect((await painted(page.getByTestId("checkbox-on-disabled"))).backgroundColor).toBe(gray);
@@ -113,7 +115,7 @@ test.describe("the selection marks", () => {
     expect((await painted(page.getByTestId("switch-error"))).boxShadow).toContain(buttonText);
   });
 
-  test("[atoms.mark.forced-colors] a Spinner's arc and its ring are two colours, and a Divider is a visible 1px solid border", async ({ page }) => {
+  test("[atoms.mark.forced-colors] a Spinner's arc and its ring are two colours, and a Divider is a visible solid border, one stroke wide", async ({ page }) => {
     const { CanvasText: canvasText, GrayText: grayText, Canvas: canvas } = await systems(page, "CanvasText", "GrayText", "Canvas");
     const spinner = await painted(page.getByTestId("spinner"));
     expect(spinner.borderTopColor).not.toBe(spinner.borderRightColor);
@@ -122,7 +124,7 @@ test.describe("the selection marks", () => {
       const style = getComputedStyle(element);
       return { width: style.borderTopWidth, style: style.borderTopStyle, color: style.borderTopColor };
     });
-    expect(rule).toMatchObject({ width: "1px", style: "solid" });
+    expect(rule).toMatchObject({ width: px(SHAPE_SOURCE.stroke.border), style: "solid" });
     expect(rule.color).not.toBe(canvas);
     expect(rule.color).not.toBe("rgba(0, 0, 0, 0)");
   });
@@ -135,7 +137,7 @@ test.describe("the Button family", () => {
     await openHarness(page, "states");
   });
 
-  test("[atoms.button.forced-colors] a selected Button is Highlight, a hovered one has a Highlight border, a disabled one is GrayText and a ring is Highlight", async ({ page }) => {
+  test("[atoms.button.forced-colors] [atoms.states.atom-table] [foundations.color.forced-colors] a selected Button is Highlight, a hovered one has a Highlight border, a disabled one is GrayText and a ring is Highlight", async ({ page }) => {
     const { Highlight: highlight, HighlightText: highlightText, GrayText: grayText } = await systems(page, "Highlight", "HighlightText", "GrayText");
     const selected = await painted(page.getByTestId("selected-ghost"));
     expect([selected.backgroundColor, selected.color]).toEqual([highlight, highlightText]);
@@ -182,14 +184,14 @@ test.describe("the display Atoms", () => {
   });
 
   for (const id of ["badge", "badge-ghost"]) {
-    test(`[atoms.badge.forced-colors] ${id} stays a visible 1px solid border`, async ({ page }) => {
+    test(`[atoms.badge.forced-colors] ${id} stays a visible solid border, one stroke wide`, async ({ page }) => {
       await openHarness(page, "marks");
       const canvas = await system(page, "Canvas");
       const line = await page.getByTestId(id).evaluate((element) => {
         const style = getComputedStyle(element);
         return { width: style.borderTopWidth, style: style.borderTopStyle, color: style.borderTopColor };
       });
-      expect(line).toMatchObject({ width: "1px", style: "solid" });
+      expect(line).toMatchObject({ width: px(SHAPE_SOURCE.stroke.border), style: "solid" });
       expect(line.color).not.toBe(canvas);
       expect(line.color).not.toBe("rgba(0, 0, 0, 0)");
     });

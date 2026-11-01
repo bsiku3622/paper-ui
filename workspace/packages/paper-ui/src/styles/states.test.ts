@@ -51,7 +51,7 @@ describe("the package source", () => {
     expect(offenders).toEqual([]);
   });
 
-  it("[foundations.state.source-scan] spells no state, value or marker attribute outside tokens/state.ts", () => {
+  it("[foundations.state.source-scan] [primitives.state.attributes] [atoms.states.vocabulary] spells no state, value or marker attribute outside tokens/state.ts", () => {
     const attributes = [...Object.values(STATE_ATTRIBUTE), ...Object.values(VALUE_ATTRIBUTE), ...Object.values(MARKER_ATTRIBUTE)];
     const offenders = sources
       .filter((file) => relative(src, file) !== join("tokens", "state.ts"))
@@ -60,6 +60,11 @@ describe("the package source", () => {
         return attributes.filter((attribute) => new RegExp(`(?<![\\w-])${attribute}(?![\\w-])`).test(code)).map((attribute) => `${relative(src, file)}: ${attribute}`);
       });
     expect(offenders).toEqual([]);
+  });
+
+  it("[foundations.shape.no-coarse-growth] grows no hit area under a coarse pointer: no stylesheet of the package asks about one", () => {
+    const asking = stylesheets(src).filter((file) => /pointer:\s*coarse/.test(read(file)));
+    expect(asking.length, asking.join(", ")).toBe(0);
   });
 
   it("[foundations.state.source-scan] finds the spelling it looks for", () => {

@@ -21,6 +21,8 @@ Toolbar의 비활성 항목을 건너뛰고 양 끝에서 순환하는 예시입
 </RovingFocus>
 ```
 
+[contract:primitives.roving-focus.root-options]: #
+
 | Root 옵션 | 기본값 | 계약 |
 | --- | --- | --- |
 | orientation | horizontal | horizontal / vertical / both |
@@ -38,6 +40,10 @@ Toolbar의 비활성 항목을 건너뛰고 양 끝에서 순환하는 예시입
 
 [contract:primitives.roving-focus.keys]: #
 [contract:primitives.roving-focus.removal]: #
-Value는 그룹 안에서 고유해야 합니다. Home·End는 첫·마지막 활성 항목으로 이동하고 순서는 현재 DOM을 따릅니다. 현재 항목이 제거되거나 비활성화되면 다음 이웃, 마지막 항목이었다면 이전 이웃으로 이동합니다. 모두 사라지면 root로 옮깁니다. 이미 바깥으로 옮긴 focus는 되돌리지 않습니다. CurrentValue를 외부에서 바꿔도 DOM focus를 강제로 빼앗지 않습니다.
+Value는 그룹 안에서 고유해야 합니다. Home·End는 첫·마지막 활성 항목으로 이동하고 순서는 현재 DOM을 따릅니다. 현재 항목이 제거되거나 비활성화되면 다음 이웃, 마지막 항목이었다면 이전 이웃으로 이동합니다. 모두 사라지면 root로 옮깁니다. 이미 바깥으로 옮긴 focus는 되돌리지 않습니다.
 
+[contract:primitives.roving-focus.external-current-keeps-focus]: #
+`currentValue`를 바깥에서 바꾸면 Tab 진입점만 새 항목으로 옮겨지고, DOM focus는 있던 자리에 그대로 있습니다 — 그룹 밖의 요소에 있던 focus도, 그룹 안 항목에 있던 focus도 빼앗지 않습니다.
+
+[contract:primitives.roving-focus.item-hook]: #
 useRovingFocusItem({ value, disabled })은 root 안에서 `itemProps`와 `isCurrent`를 반환합니다. itemProps에는 ref·tabIndex·onFocus·onKeyDown·data-roving-item(값은 항목의 value)이 들어 있어 실제 focus 대상에 펼치고, 외부 ref와는 `mergeRefs`로, 외부 handler와는 `composeEventHandlers`로 잇습니다. isCurrent는 그룹의 Tab 진입점인 항목에서 true입니다. root 밖에서 쓰면 개발 오류입니다. 기본 Item과 disabled를 받는 custom component에는 비활성 상태를 전달하며, 일반 div 같은 custom control의 실행 차단은 해당 구현이 담당합니다. 자손 입력에서 발생한 방향키와 수정키 조합은 가로채지 않습니다. 등록하지 않은 자손의 Tab 진입은 바꾸지 않습니다. Aria-activedescendant·typeahead·위젯별 선택 정책은 상위 컴포넌트가 연결합니다.

@@ -2,7 +2,10 @@ import { forwardRef, type AnchorHTMLAttributes, type ReactElement } from "react"
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import { Floating, Paint, Pressable, Selectable } from "../primitives";
+import { Floating } from "../primitives/float/Floating";
+import { Paint } from "../primitives/paint/Paint";
+import { Pressable } from "../primitives/press/Pressable";
+import { Selectable } from "../primitives/select/Selectable";
 import { registerAtom, registerPart, targetProps } from "./render-target";
 
 // A Paper part, a pressable Atom and a foreign component, as targets.
@@ -13,7 +16,7 @@ const Foreign = () => null;
 const keys = (props: object) => Object.keys(props).sort();
 
 describe("targetProps", () => {
-  it("[primitives.target.projection] projects a control: a button disables itself, anything else is told to be a button and says it is disabled", () => {
+  it("[primitives.target.projection] [primitives.target.table] projects a control: a button disables itself, anything else is told to be a button and says it is disabled", () => {
     expect(targetProps("button", { kind: "control" })).toEqual({ type: "button" });
     expect(targetProps("button", { kind: "control", type: "submit" })).toEqual({ type: "submit" });
     expect(targetProps("button", { kind: "control", disabled: true })).toEqual({ type: "button", disabled: true, "data-disabled": "true" });
@@ -29,7 +32,7 @@ describe("targetProps", () => {
     }
   });
 
-  it("[primitives.target.projection] projects a control that is a Paper part or a foreign component", () => {
+  it("[primitives.target.projection] [primitives.target.table] projects a control that is a Paper part or a foreign component", () => {
     expect(targetProps(Part, { kind: "control" })).toEqual({});
     expect(targetProps(Part, { kind: "control", type: "submit" })).toEqual({ type: "submit" });
     expect(targetProps(Part, { kind: "control", disabled: true })).toEqual({ disabled: true, "data-disabled": "true" });
@@ -38,7 +41,7 @@ describe("targetProps", () => {
     expect(targetProps(Foreign, { kind: "control", disabled: true })).not.toHaveProperty("disabled");
   });
 
-  it("[primitives.target.projection] projects a region: native tags and components are disabled, other tags only say so", () => {
+  it("[primitives.target.projection] [primitives.target.table] projects a region: native tags and components are disabled, other tags only say so", () => {
     expect(targetProps("button", { kind: "region" })).toEqual({});
     expect(targetProps("button", { kind: "region", disabled: true })).toEqual({ disabled: true, "data-disabled": "true" });
     expect(targetProps("input", { kind: "region", disabled: true })).toEqual({ disabled: true, "data-disabled": "true" });
@@ -49,7 +52,7 @@ describe("targetProps", () => {
     for (const tag of ["span", "div", "a"] as const) expect(keys(targetProps(tag, { kind: "region", disabled: true })), tag).toEqual(["data-disabled"]);
   });
 
-  it("[primitives.target.projection] blocks a middle click as well as a click, so a disabled link opens no new tab", () => {
+  it("[primitives.target.projection] [primitives.target.focusable] blocks a middle click as well as a click, so a disabled link opens no new tab", () => {
     render(<a data-testid="link" href="#target" {...targetProps("a", { kind: "control", disabled: true, href: "#target" })}>Link</a>);
     const link = screen.getByTestId("link");
     expect(fireEvent(link, new MouseEvent("auxclick", { bubbles: true, cancelable: true, button: 1 }))).toBe(false);
@@ -58,7 +61,7 @@ describe("targetProps", () => {
     expect(foreign.onAuxClickCapture).toBe(foreign.onClickCapture);
   });
 
-  it("[primitives.target.projection] keeps a focusable control in the Tab order, blocked by aria-disabled instead of the platform", () => {
+  it("[primitives.target.projection] [primitives.target.focusable] keeps a focusable control in the Tab order, blocked by aria-disabled instead of the platform", () => {
     expect(targetProps("button", { kind: "control", disabled: true, focusable: true })).toMatchObject({ type: "button", "aria-disabled": true, "data-disabled": "true" });
     expect(targetProps("button", { kind: "control", disabled: true, focusable: true })).not.toHaveProperty("disabled");
     expect(targetProps("div", { kind: "control", disabled: true, focusable: true })).toMatchObject({ tabIndex: 0, "aria-disabled": true });
@@ -66,9 +69,11 @@ describe("targetProps", () => {
     expect(targetProps(Part, { kind: "control", disabled: true, focusable: true })).not.toHaveProperty("disabled");
     expect(targetProps(Part, { kind: "control", disabled: true, focusable: true })).not.toHaveProperty("focusable");
     expect(targetProps(Foreign, { kind: "control", disabled: true, focusable: true })).toMatchObject({ tabIndex: 0, "aria-disabled": true });
+    // A native input has no Tab stop to keep apart from its disabled state.
+    for (const tag of ["input", "select"] as const) expect(targetProps(tag, { kind: "control", disabled: true, focusable: true }), tag).toEqual({ disabled: true, "data-disabled": "true" });
   });
 
-  it("[primitives.target.projection] projects a pressable Atom like a Paper part", () => {
+  it("[primitives.target.projection] [primitives.target.table] projects a pressable Atom like a Paper part", () => {
     // Asking for an Atom's projection is the mistake the next describe pins, so the message is not wanted here.
     const error = vi.spyOn(console, "error").mockImplementation(() => {});
     expect(targetProps(AtomTarget, { kind: "control", disabled: true })).toEqual({ disabled: true, "data-disabled": "true" });
@@ -76,7 +81,7 @@ describe("targetProps", () => {
     error.mockRestore();
   });
 
-  it("[primitives.target.projection] gives a button's keys only to a tag that stands in for one, only when asked and only while enabled", () => {
+  it("[primitives.target.projection] [primitives.target.own-keys] gives a button's keys only to a tag that stands in for one, only when asked and only while enabled", () => {
     const key = { kind: "control", activateOnKey: true } as const;
     expect(targetProps("div", key).onKeyDown).toBeTypeOf("function");
     expect(targetProps("a", key).onKeyDown).toBeTypeOf("function");
@@ -93,7 +98,7 @@ describe("targetProps", () => {
 });
 
 describe("an Atom as a target", () => {
-  it("[primitives.target.projection] tells a developer once that a behaviour was given an Atom, and that the Atom takes the part instead", () => {
+  it("[primitives.target.projection] [primitives.target.focusable] tells a developer once that a behaviour was given an Atom, and that the Atom takes the part instead", () => {
     const error = vi.spyOn(console, "error").mockImplementation(() => {});
     const Pressed = registerAtom(forwardRef<HTMLButtonElement, { children?: string }>(function Pressed({ children }, ref) { return <button ref={ref}>{children}</button>; }));
     const view = render(<Floating><Floating.Trigger as={Pressed}>Open</Floating.Trigger></Floating>);
@@ -118,7 +123,7 @@ describe("a Pressable over each target", () => {
   });
   const navigate = vi.fn();
 
-  it("[primitives.target.projection] renders a native button, a link, a div, an input, a Paper part and a foreign component, enabled and disabled", () => {
+  it("[primitives.target.projection] [primitives.target.table] renders a native button, a link, a div, an input, a Paper part and a foreign component, enabled and disabled", () => {
     const rows: Array<[string, (disabled: boolean) => ReactElement, string, (element: HTMLElement) => boolean]> = [
       ["button", (disabled) => <Pressable disabled={disabled}>x</Pressable>, "BUTTON", (element) => (element as HTMLButtonElement).disabled],
       ["a[href]", (disabled) => <Pressable as="a" href="/x" disabled={disabled}>x</Pressable>, "A", (element) => element.getAttribute("aria-disabled") === "true"],
@@ -150,7 +155,7 @@ describe("a Pressable over each target", () => {
     expect([div.getAttribute("role"), div.tabIndex, div.getAttribute("aria-disabled")]).toEqual(["button", -1, "true"]);
   });
 
-  it("[primitives.target.projection] does not navigate through a disabled foreign link, and takes it out of the Tab order", () => {
+  it("[primitives.target.projection] [primitives.target.focusable] does not navigate through a disabled foreign link, and takes it out of the Tab order", () => {
     navigate.mockClear();
     const view = render(<Pressable as={ForeignLink} disabled>Go</Pressable>);
     const link = screen.getByText("Go");
@@ -162,7 +167,7 @@ describe("a Pressable over each target", () => {
     expect(navigate).toHaveBeenCalledTimes(1);
   });
 
-  it("[primitives.target.projection] runs neither a click handler nor a press on a disabled element that is not a button", () => {
+  it("[primitives.target.projection] [primitives.target.focusable] runs neither a click handler nor a press on a disabled element that is not a button", () => {
     const click = vi.fn();
     const press = vi.fn();
     render(<Pressable as="div" disabled onClick={click} onPress={press}>Go</Pressable>);

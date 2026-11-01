@@ -64,15 +64,17 @@
     "src",
     "!src/**/*.test.ts",
     "!src/**/*.test.tsx",
-    "!src/tokens/inspect"
+    "!src/tokens/inspect",
+    "!src/tokens/__golden__"
   ],
   "scripts": {
     "build": "eslint src --max-warnings 0 && pnpm --dir ../.. exec eslint packages/paper-ui/src -c eslint.paper.config.js --quiet && tsc --noEmit && vite build && node scripts/build-types.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest --run",
-    "check:package": "publint --strict && attw --pack . --profile esm-only --exclude-entrypoints ./styles.css",
+    "api:update": "PAPER_API_UPDATE=1 vitest --run src/api.test.ts",
+    "check:package": "node scripts/check-package.mjs",
     "prepack": "pnpm run build",
-    "prepublishOnly": "pnpm -w run verify"
+    "prepublishOnly": "pnpm -w run verify && PAPER_API_RECORD=1 vitest --run src/api.test.ts"
   },
   "dependencies": {
     "@react-aria/dnd": "^3.12.1",
