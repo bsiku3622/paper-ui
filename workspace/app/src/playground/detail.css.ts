@@ -4,9 +4,10 @@ import { globalStyle, style, styleVariants } from "@vanilla-extract/css";
 
 import { SURFACE_FILLS, codeRule, tokens } from "@studio-baeks/paper-ui/tokens";
 
-import { narrow, navHeight } from "../site/shell.css";
+import { navHeight } from "../site/shell.css";
 
 const BP = tokens.layout.breakpoint;
+const narrow = `screen and (max-width: ${BP.md})`;
 
 export const detailBody = style({
   display: "grid",

@@ -48,6 +48,43 @@ test("[guardrails.raw-color.no-color-literals] roles, keywords that are not colo
   ]) assert.equal(await flagged(code, path), false, `${path}: ${code}`);
 });
 
+test("[guardrails.raw-color.no-color-literals] a keyword is followed through a same-file name, a table, a function and a shorthand", async () => {
+  for (const [code, path] of [
+    ['const c = "tomato"; export const rule = style({ color: c });', "packages/paper-ui/src/atoms/Probe.css.ts"],
+    ['const fill = "white"; export const rule = style({ fill });', "packages/paper-ui/src/atoms/Probe.css.ts"],
+    ['const pair = { a: "navy" }; export const rule = style({ color: pair.a });', "packages/paper-ui/src/atoms/Probe.css.ts"],
+    ['const c = "tomato"; export const rule = style({ color: c });', "app/src/Probe.css.ts"],
+    ['const fill = "white"; export const rule = style({ fill });', "app/src/Probe.css.ts"],
+    ['const pair = { a: "navy" }; export const rule = style({ color: pair.a });', "app/src/Probe.css.ts"],
+    ['const a = "navy"; const b = a; export const rule = style({ color: b });', "app/src/Probe.css.ts"],
+    ['let c; c = "navy"; export const rule = style({ color: c });', "app/src/Probe.css.ts"],
+    ['const pair = { a: { b: "navy" } }; export const rule = style({ color: pair.a.b });', "app/src/Probe.css.ts"],
+    ['const pair = { a: "navy" }; export const pick = (k) => ({ color: pair[k] });', "app/src/Probe.css.ts"],
+    ['const pair = { a: "navy" } as const; export const rule = style({ color: pair.a });', "app/src/Probe.css.ts"],
+    ['const pair = { a: "navy" }; export const rule = style({ color: pair?.a });', "app/src/Probe.css.ts"],
+    ['const { a } = { a: "navy" }; export const rule = style({ color: a });', "app/src/Probe.css.ts"],
+    ['const list = ["navy"]; export const rule = style({ color: list[0] });', "app/src/Probe.css.ts"],
+    ['const c = "navy"; export const rule = style({ border: `1px solid ${c}` });', "app/src/Probe.css.ts"],
+    ['const c = "navy"; export const rule = style({ color: dark ? c : "inherit" });', "app/src/Probe.css.ts"],
+    ['const pick = () => "tomato"; export const rule = style({ color: pick() });', "app/src/Probe.css.ts"],
+    ['function pick() { return "tomato"; } export const rule = style({ color: pick() });', "app/src/Probe.css.ts"],
+    ['const c = "navy"; export const X = () => <svg fill={c} />;', "app/src/Probe.tsx"],
+    ['const c = "CanvasText"; export const rule = style({ outlineColor: c });', "packages/paper-ui/src/atoms/Probe.css.ts"],
+  ]) assert.equal(await flagged(code, path), true, `${path}: ${code}`);
+  for (const [code, path] of [
+    ['const c = "inherit"; export const rule = style({ color: c });', "app/src/Probe.css.ts"],
+    ['const fill = "canvas"; export const rule = style({ fill });', "app/src/Probe.css.ts"],
+    ['const pair = { a: "inherit", label: "navy" }; export const rule = style({ color: pair.a });', "app/src/Probe.css.ts"],
+    ['const name = "tomato"; export const rule = style({ gridArea: name });', "app/src/Probe.css.ts"],
+    ['const pair = { a: "navy" }; export const rule = style({ gridArea: pair.a });', "app/src/Probe.css.ts"],
+    ['import { c } from "./elsewhere"; export const rule = style({ color: c });', "app/src/Probe.css.ts"],
+    ['export const rule = ({ color }) => style({ color });', "app/src/Probe.css.ts"],
+    // A name run into other text is part of a longer word: a palette path, not a colour.
+    ['const ramp = { info: "blue" }; export const role = { accent: `${ramp.info}.700` };', "packages/paper-ui/src/tokens/colors.ts"],
+    ['const RAMP = { error: "red" }; const path = (status) => { const ramp = RAMP[status]; return `${ramp}.700`; }; export const role = { accent: path("error") };', "packages/paper-ui/src/tokens/colors.ts"],
+  ]) assert.equal(await flagged(code, path), false, `${path}: ${code}`);
+});
+
 test("[guardrails.raw-color.no-color-literals] tests and fixtures are not read", async () => {
   assert.equal(await flagged('export const expected = "#ffffff";', "packages/paper-ui/src/tokens/color.test.ts"), false);
   assert.equal(await flagged('export const expected = "#ffffff";', "tests/foundations/probe.spec.ts"), false);

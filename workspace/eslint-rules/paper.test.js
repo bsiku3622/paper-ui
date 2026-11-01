@@ -26,19 +26,53 @@ test("consumer styles, CSS classes, inherited ink and system colors through SYST
   assert.deepEqual(await errors('export const X = ({style}) => <div style={style} />;'), []);
 });
 
-test("[guardrails.internal-class.no-class-names] an app or a test cannot spell a package class name, but variables and attributes keep their prefix", async () => {
+test("[guardrails.internal-class.no-class-names] the package, an app, a fixture or a test cannot spell a package class name, but variables and attributes keep their prefix", async () => {
   for (const [code, path] of [
     ['export const className = "pui-info-ink";', "app/src/pages/Probe.tsx"],
     ['export const className = `pui-${accent}-dot`;', "app/src/pages/Probe.tsx"],
     ['export const X = () => <div className="home pui-gap-sm" />;', "app/src/pages/Probe.tsx"],
     ['export const selector = ".pui-gap-sm";', "tests/primitives/probe.spec.ts"],
+    ['export const X = () => <div className="pui-foo" />;', "packages/paper-ui/src/atoms/Button.test.tsx"],
+    ['export const X = () => <div className="pui-foo" />;', "packages/paper-ui/src/primitives/Probe.tsx"],
+    ['export const className = "pui-info-ink";', "packages/paper-ui/src/atoms/TokenProbe.tsx"],
+    ['export const name = "pui-foo";', "packages/paper-ui/src/styles/probe.css.ts"],
+    ['export const name = "pui-foo";', "packages/paper-ui/src/resolvers/probe.ts"],
+    ['export const X = () => <div className="pui-foo" />;', "fixtures/harness/src/cases/probe.tsx"],
+    ['export const selector = ".pui-foo";', "fixtures/harness/vite.config.probe.ts"],
+    ['expect(el.className).toContain("pui-gap-md");', "packages/paper-ui/src/primitives/probe.test.tsx"],
+    ['expect(el.className).toMatch(/pui-gap-md/);', "packages/paper-ui/src/primitives/probe.test.tsx"],
+    ['expect(el.className).toMatch(/pui-gap-md/);', "tests/primitives/probe.spec.ts"],
+    // A binding named for an id or a key is still a class where a class position reads it, and in a selector.
+    ['const fooId = "pui-foo"; export const X = () => <div className={fooId} />;', "packages/paper-ui/src/atoms/Probe.tsx"],
+    ['const fooKey = "pui-foo"; export const props = { className: `${fooKey} other` };', "packages/paper-ui/src/atoms/Probe.tsx"],
+    ['const fooId = "pui-foo"; export const add = (el) => el.classList.add(fooId);', "packages/paper-ui/src/atoms/Probe.tsx"],
+    ['const fooId = "pui-foo"; export const add = (el) => { el.className = fooId; };', "packages/paper-ui/src/atoms/Probe.tsx"],
+    ['const fooId = "pui-foo"; const other = fooId; export const X = () => <div className={other} />;', "packages/paper-ui/src/atoms/Probe.tsx"],
+    ['export const SELECTOR_KEY = ".pui-foo";', "packages/paper-ui/src/atoms/Probe.tsx"],
+    ['expect(el).toHaveClass("pui-foo");', "packages/paper-ui/src/atoms/Probe.test.tsx"],
+    // Only the package has names of its own: everywhere else the same positions are a class name.
+    ['const controlId = "pui-foo";', "app/src/pages/Probe.tsx"],
+    ['export const STORAGE_KEY = "pui-foo";', "fixtures/harness/src/probe.ts"],
+    ['expect(source).not.toContain("pui-foo");', "tests/primitives/probe.spec.ts"],
+    ['localStorage.setItem("pui-theme", "dark");', "tests/foundations/probe.spec.ts"],
+    // A negative assertion is a test's: source that says `.not` is not asserting.
+    ['builder.not.add("pui-foo");', "packages/paper-ui/src/atoms/Probe.tsx"],
   ]) assert.equal(await hasRule(code, "paper/internal-class", path), true, `${path}: ${code}`);
   for (const [code, path] of [
     ['export const color = "var(--pui-color-ink-primary)";', "app/src/pages/Probe.tsx"],
     ['export const attribute = "data-pui-status";', "app/src/pages/Probe.tsx"],
     ['export const variable = `--pui-${name}`;', "app/src/pages/Probe.tsx"],
     ['export const selector = "[data-pui-theme]";', "tests/foundations/probe.spec.ts"],
-    ['export const className = "pui-info-ink";', "packages/paper-ui/src/atoms/TokenProbe.tsx"],
+    ['export const X = () => <div data-pui-theme="dark" style={{ "--pui-x": 0 }} />;', "fixtures/harness/src/cases/probe.tsx"],
+    ['export const attribute = "data-pui-status"; export const variable = "--pui-color";', "packages/paper-ui/src/atoms/Probe.tsx"],
+    // In the package a `pui-` name that is not a class says so by where it sits.
+    ['export const controlId = (id, generatedId) => { const controlId = id ?? `pui-field-${generatedId}`; return { id: controlId, htmlFor: controlId }; };', "packages/paper-ui/src/primitives/field/FormField.tsx"],
+    ['export const THEME_STORAGE_KEY = "pui-theme";', "packages/paper-ui/src/theme/engine.ts"],
+    ['expect(source).not.toContain("pui-state-tint");', "packages/paper-ui/src/styles/states.test.ts"],
+    ['expect(source).not.toMatch(/pui-state-tint/);', "packages/paper-ui/src/styles/states.test.ts"],
+    ['localStorage.setItem("pui-theme", "dark"); expect(localStorage.getItem("pui-theme")).toBeNull();', "packages/paper-ui/src/theme/provider.test.tsx"],
+    ['export const X = () => <><label htmlFor="pui-x" /><input id="pui-x" /></>;', "packages/paper-ui/src/atoms/Probe.tsx"],
+    ['export const props = { id: "pui-x" };', "packages/paper-ui/src/atoms/Probe.tsx"],
   ]) assert.equal(await hasRule(code, "paper/internal-class", path), false, `${path}: ${code}`);
 });
 

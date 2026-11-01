@@ -186,7 +186,7 @@ export const Confirm = () => (
 
 <!-- generated:rules.en -->
 <!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
-Eight rules hold the rest together, and eslint enforces them rather than the documentation: no raw colour outside the token sources, source modules isolated behind the token barrel (an app uses the package through its exports and overrides a source with `sourceVars()` instead of naming its variable), no token read through an inline style, no number outside the token sources, every package rule inside a `pui` cascade layer, no internal class name in an app, no hand-named global class, and no `eslint-disable` comment that switches a `paper/*` rule off. The package build, prepublish and CI run those checks.
+Eight rules hold the rest together, and eslint enforces them rather than the documentation: no raw colour outside the token sources, source modules isolated behind the token barrel (an app uses the package through its exports and overrides a source with `sourceVars()` instead of naming its variable), no token read through an inline style, no number outside the token sources, every package rule inside a `pui` cascade layer, no internal class name spelled as a string, no hand-named global class, and no `eslint-disable` comment that switches a `paper/*` rule off. The package build, prepublish and CI run those checks.
 <!-- /generated:rules.en -->
 
 ## Versioning

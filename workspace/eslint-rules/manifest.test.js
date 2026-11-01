@@ -12,7 +12,6 @@ import {
   INSPECT_SYSTEMS,
   LAYER_MODULE,
   PACKAGE_EXPORTS,
-  PALETTE_INSPECTOR,
   RULES,
   RUNTIME_STYLE,
   STROKE_OWNER,
@@ -42,7 +41,6 @@ test("[guardrails.manifest.declared-boundaries] every path the manifest declares
     assert.ok(reason.length > 0, module);
   }
   for (const entry of TOOLING) assert.ok(entry.reason.length > 0, entry.file);
-  assert.deepEqual(PALETTE_INSPECTOR, ["typography"]);
 });
 
 test("[guardrails.manifest.declared-boundaries] the app's alias, the package's exports and the inspector files agree with the manifest", () => {
