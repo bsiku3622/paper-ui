@@ -9,8 +9,9 @@ const line = `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`;
 export const topbar = style({ height: 58, display: "flex", alignItems: "center", justifyContent: "space-between", padding: `0 ${tokens.shape.inset.xl}`, borderBottom: line, background: tokens.color.bg.raised });
 export const brand = style({ gap: tokens.layout.gap.sm, color: "inherit", textDecoration: "none" });
 export const brandMark = style({ width: tokens.shape.control.height.sm, height: tokens.shape.control.height.sm, display: "grid", placeItems: "center", borderRadius: tokens.shape.radius.control });
-export const topActions = style({ gap: tokens.layout.gap.sm, "@media": { [compact]: { flex: "1 1 auto", minWidth: 0, justifyContent: "flex-end" } } });
-export const search = style({ width: 245, "@media": { [compact]: { width: "auto", flex: "1 1 auto", minWidth: 0 } } });
+export const topActions = style({ gap: tokens.layout.gap.sm, minWidth: 0, "@media": { [compact]: { flex: "1 1 auto", justifyContent: "flex-end" } } });
+// An input's own width comes from the font's metrics, so it differs by platform; the search gives way before the topbar does.
+export const search = style({ width: 245, minWidth: 0, "@media": { [compact]: { width: "auto", flex: "1 1 auto" } } });
 // The workspace name and the divider before it give way to the search on a narrow topbar.
 export const workspaceLabel = style({ "@media": { [compact]: { display: "none" } } });
 export const filterSearch = style({ width: 190 });
