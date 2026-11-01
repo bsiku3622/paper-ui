@@ -3,7 +3,7 @@
 
 import { Link as RouterLink, useLocation } from "react-router-dom";
 
-import { Box, Inline, Surface, Text } from "@studio-baeks/paper-ui";
+import { Box, Inline, Link, Surface, Text } from "@studio-baeks/paper-ui";
 
 import { ThemeToggle } from "../compositions/ThemeToggle";
 import { Logo } from "./Logo";
@@ -18,12 +18,12 @@ export const SiteHeader = () => {
   return (
     <Surface as="header" fill="canvas" elevation="sticky" className={s.header}>
       <Box className={s.headerInner}>
-        <RouterLink to="/" className={`${s.navLink.plain} ${s.brand}`} aria-label="Paper UI 홈">
+        <Link as={RouterLink} to="/" underline="hover" className={`${s.navLink.plain} ${s.brand}`} aria-label="Paper UI 홈">
           <Logo height={26} />
-        </RouterLink>
+        </Link>
         <Inline as="nav" aria-label="주요 메뉴" gap="sm" align="center" className={s.headerNav}>
           {SITE_NAV.map(({ to, label }) => (
-            <RouterLink key={to} to={to} className={s.navLink.bar} aria-current={active === to ? "page" : undefined}>{label}</RouterLink>
+            <Link as={RouterLink} key={to} to={to} underline="hover" className={s.navLink.bar} aria-current={active === to ? "page" : undefined}>{label}</Link>
           ))}
         </Inline>
         <Inline gap="sm" align="center" className={s.headerTools}>

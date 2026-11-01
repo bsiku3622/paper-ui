@@ -88,6 +88,11 @@ test("submitting the dialog adds the task, closes it and announces it; an empty 
   await expect(page.getByRole("button", { name: "새 작업" })).toBeFocused();
 });
 
+test("the milestone bar counts time and warns of nothing, so it wears the primary fill", async ({ page }) => {
+  const fill = page.getByRole("progressbar", { name: "마일스톤까지 지난 기간" }).locator("> *").first();
+  await expectStyle(fill, { backgroundColor: tokens.color.accent.primary.solid });
+});
+
 test("both bars are progressbars with values, and the sprint bar shows the true share", async ({ page }) => {
   const sprint = page.getByRole("progressbar", { name: "스프린트 진행률" });
   const milestone = page.getByRole("progressbar", { name: "마일스톤까지 지난 기간" });

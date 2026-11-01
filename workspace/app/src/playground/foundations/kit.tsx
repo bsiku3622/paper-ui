@@ -100,7 +100,7 @@ export const Computed = ({ value, unit = true }: { value: string; unit?: boolean
     const n = Math.round(parseFloat(getComputedStyle(probe.current).marginLeft) * 100) / 100;
     setLength(unit ? `${n}px` : String(n));
   }, [value, unit]);
-  return <>{length}<span ref={probe} aria-hidden style={{ position: "absolute", visibility: "hidden", marginLeft: value }} /></>;
+  return <>{length}<span ref={probe} aria-hidden className={s.lengthProbe} style={{ marginLeft: value }} /></>;
 };
 
 // Several sizes of one role, joined the way the docs write them: "7 · 8 · 10".

@@ -153,5 +153,8 @@ describe("the five systems stack in one direction", () => {
     // Layout: what it emits as a tree is the containers and the stacking order; the rest points at Shape.
     expect(text("layout")).toMatch(/export const LAYOUT_VALUES = \{\n  container:[^\n]*\n  elevation:/);
     expect(text("layout")).toContain("gutter: SPACE.lg");
+    // Composition: what an app stylesheet uses is public, and what belongs to an Atom or the Paint tier is not.
+    for (const name of ["typographyRule", "presetRule", "transition", "stateStyle"]) expect(text("public"), name).toContain(name);
+    for (const name of ["SHAPE_RECIPES", "accentProfile", "markProfile"]) expect(text("public"), name).not.toContain(name);
   });
 });

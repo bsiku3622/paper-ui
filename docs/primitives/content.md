@@ -7,7 +7,7 @@ Content Primitive는 화면에 읽히는 것 — 글자와 아이콘 — 을 그
 | 컴포넌트 | 공개 축 | 기본값 |
 | --- | --- | --- |
 | Text | `as` · variant · ink · family=sans/mono · numeric | variant=body, family=sans. 기본 태그는 hero·display·title=h1, heading=h2, subheading=h3, body·caption=p, label=span |
-| Icon | size=label/caption/body/subheading · ink · SVG children · className · aria-label · aria-labelledby | size=body(컨트롤 안에서는 그 컨트롤의 `control.icon`). artboard 14 / 16 / 18 / 20, viewBox 24, 기본 currentColor |
+| Icon | size=label/caption/body/subheading · ink · SVG children · className · aria-label · aria-labelledby | size=body(컨트롤 안에서는 그 컨트롤의 `control.icon`). artboard는 Shape의 icon 사다리, viewBox 24, 기본 currentColor |
 
 ## Text
 

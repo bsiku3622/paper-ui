@@ -88,7 +88,7 @@ mono는 위계가 아니라 **family 축**입니다. `<Text family="mono">`로 �
 |---|---|---|
 | `typographyRule(variant, { family })` | 역할의 서체 · 크기 · 굵기 · 행간 · 자간 · 줄바꿈 | `Text`, body 요소, 제목처럼 역할을 따르는 stylesheet |
 | `monoRule()` | 어느 역할 안에서든 문장 속 mono 조각 — 크기는 둘러싼 글자의 `monoSizeScale`배 | 역할 안의 식별자 |
-| `codeRule('inline' \| 'compact' \| 'block')` | 코드. `inline`은 문단 속 0.85배, `compact`는 표 칸 속 0.8배이고 둘 다 자간과 줄바꿈을 정하지 않아 둘러싼 글자를 따릅니다. `block`은 mono 13 / 20 · 450이고 mono로 끊습니다 | 문서의 인라인 코드, 표 칸, 코드 블록 |
+| `codeRule('inline' \| 'compact' \| 'block')` | 코드. `inline`은 문단 속, `compact`는 표 칸 속 크기이고 둘 다 자간과 줄바꿈을 정하지 않아 둘러싼 글자를 따릅니다. `block`은 mono로 끊습니다. 값은 위의 생성 표에 있습니다 | 문서의 인라인 코드, 표 칸, 코드 블록 |
 | `presetRule(preset, size, weight)` | 컨트롤 preset. Button은 크기와 굵기, Field · Textarea는 크기, Badge는 크기와 무관 | 컨트롤을 직접 그리는 stylesheet |
 | `emphasisRule(emphasis)` | 굵기 하나. `regular` · `medium` · `semibold` · `bold`는 Palette의 이름이라 `regular`는 언제나 400입니다 | 문장 속 강조, 역할 밖의 가벼운 글자 |
 

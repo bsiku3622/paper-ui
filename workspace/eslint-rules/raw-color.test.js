@@ -85,6 +85,69 @@ test("[guardrails.raw-color.no-color-literals] a keyword is followed through a s
   ]) assert.equal(await flagged(code, path), false, `${path}: ${code}`);
 });
 
+test("[guardrails.raw-color.no-color-literals] a keyword reaches a colour through a parameter, a mapper's table, a variable, a computed key and a DOM write", async () => {
+  const CSS = "app/src/Probe.css.ts";
+  const TSX = "app/src/Probe.tsx";
+  for (const [code, path] of [
+    ['styleVariants({ x: "navy" }, (c) => ({ color: c }));', CSS],
+    ['const m = (c) => ({ color: c }); styleVariants({ x: "navy" }, m);', CSS],
+    ['const pick = (c) => ({ color: c }); style(pick("navy"));', CSS],
+    ['function pick(c) { return { color: c }; } style(pick("navy"));', CSS],
+    ['const pick = (o) => ({ color: o.c }); style(pick({ c: "navy" }));', CSS],
+    ['const pick = (c) => style({ color: c }); pick("navy");', CSS],
+    ['const same = (c) => c; style({ color: same("navy") });', CSS],
+    ['const fade = (c) => `color-mix(in oklab, ${c}, transparent)`; style({ background: fade("navy") });', CSS],
+    ['["navy"].map((c) => style({ color: c }));', CSS],
+    ['import { pick } from "./pick"; style(pick("navy"));', CSS],
+    ['import { pick } from "./pick"; style([base, pick("navy")]);', CSS],
+    ['import { pick } from "./pick"; style({ ...pick("navy") });', CSS],
+    ['import { pick } from "./pick"; globalStyle("a", pick("navy"));', CSS],
+    ['import { style as s } from "@vanilla-extract/css"; import { pick } from "./pick"; s(pick("navy"));', CSS],
+    ['const v = createVar(); style({ vars: { [v]: "navy" } });', CSS],
+    ['const v = createVar(); const c = "navy"; style({ vars: { [v]: c } });', CSS],
+    ['style({ vars: { name: "navy" } });', CSS],
+    ['import { v } from "./probe.css"; export const X = () => <div style={{ [v]: "navy" }} />;', TSX],
+    ['const k = "color"; style({ [k]: "navy" });', CSS],
+    ['const k = "borderColor"; const c = "navy"; style({ [k]: c });', CSS],
+    ['export const paint = (el) => { el.style.color = "navy"; };', TSX],
+    ['export const paint = (el) => { el.style["color"] = "navy"; };', TSX],
+    ['export const paint = (el) => { const c = "navy"; el.style.background = c; };', TSX],
+    ['export const paint = (el) => { el.style.setProperty("color", "navy"); };', TSX],
+    ['export const paint = (el) => { el.style.setProperty("--x", "navy"); };', TSX],
+    ['export const paint = (el) => { el.style.cssText = "color: navy"; };', TSX],
+    ['export const paint = (el) => { el.setAttribute("style", "color: navy"); };', TSX],
+    ['const set = (el, c) => { el.style.color = c; }; set(el, "navy");', TSX],
+    ['const Inner = ({ c }) => <div style={{ color: c }} />; export const X = () => <Inner c="navy" />;', TSX],
+  ]) assert.equal(await flagged(code, path), true, `${path}: ${code}`);
+  for (const [code, path] of [
+    ['styleVariants({ x: "inherit" }, (c) => ({ color: c }));', CSS],
+    ['styleVariants({ x: "navy" }, (name) => ({ gridArea: name }));', CSS],
+    ['styleVariants({ x: "navy" }, (_, name) => ({ gridArea: name, color: "inherit" }));', CSS],
+    ['const pick = (name) => ({ gridArea: name }); style(pick("navy"));', CSS],
+    ['const pick = (c) => ({ color: c }); style(pick("inherit"));', CSS],
+    ['const ramp = (name) => `${name}.700`; export const role = { accent: ramp("red") };', CSS],
+    ['["navy"].map((name) => style({ gridArea: name }));', CSS],
+    ['import { pick } from "./pick"; style(pick("caption"));', CSS],
+    ['import { pick } from "./pick"; export const label = pick("navy");', CSS],
+    ['style({ gap: 0 }, "navy");', CSS],
+    ['const v = createVar(); style({ vars: { [v]: "inherit" } });', CSS],
+    ['const v = createVar(); style({ vars: { [v]: tokens.color.ink.primary } });', CSS],
+    ['const k = "gridArea"; style({ [k]: "navy" });', CSS],
+    ['const sel = "&:hover"; style({ selectors: { [sel]: { gridArea: "navy" } } });', CSS],
+    ['import { sel } from "./sel"; style({ selectors: { [sel]: { gridArea: "navy" } } });', CSS],
+    ['export const paint = (el) => { el.style.color = "inherit"; el.style.gridArea = "navy"; };', TSX],
+    ['export const paint = (el) => { el.dataset.color = "navy"; el.setAttribute("data-color", "navy"); };', TSX],
+    ['export const paint = (map) => { map.setProperty("color", "navy"); };', TSX],
+    ['const set = (el, c) => { el.style.gridArea = c; }; set(el, "navy");', TSX],
+    ['const Inner = ({ c, d }) => <div style={{ color: c }} data-d={d} />; export const X = () => <Inner c="inherit" d="navy" />;', TSX],
+    // A ramp's name as a table's key is not a colour.
+    ['const NAMES = ["blue", "red"]; export const tree = { accent: Object.fromEntries(NAMES.map((name) => [name, { solid: 1 }])) };', "packages/paper-ui/src/tokens/palette.ts"],
+    ['export const tree = { accent: Object.fromEntries([["blue", { solid: 1 }]]) };', "packages/paper-ui/src/tokens/palette.ts"],
+  ]) assert.equal(await flagged(code, path), false, `${path}: ${code}`);
+  // The value of a pair is still read.
+  assert.equal(await flagged('const NAMES = ["a"]; export const tree = { accent: Object.fromEntries(NAMES.map((name) => [name, "navy"])) };', "packages/paper-ui/src/tokens/palette.ts"), true);
+});
+
 test("[guardrails.raw-color.no-color-literals] tests and fixtures are not read", async () => {
   assert.equal(await flagged('export const expected = "#ffffff";', "packages/paper-ui/src/tokens/color.test.ts"), false);
   assert.equal(await flagged('export const expected = "#ffffff";', "tests/foundations/probe.spec.ts"), false);

@@ -1,4 +1,5 @@
 // The Typography tables: the Palette as authored, and the roles and presets that choose from it.
+import { CONTROL_SIZES, type ControlSize } from "@studio-baeks/paper-ui/tokens";
 import { PRESET_SPEC, ROLE_SPEC, TEXT_INK, TYPOGRAPHY_SOURCE } from "@paper-ui/inspect/typography";
 
 import type { GeneratedBlock } from "./markers";
@@ -42,16 +43,14 @@ const roleRows = (): string[][] =>
   });
 
 type Step = { size: keyof typeof S.fontSize; weight: keyof typeof S.weight; leading: keyof typeof S.leading; inputLeading?: keyof typeof S.leading };
-type Ladder = Record<"sm" | "md" | "lg", Step>;
+type Ladder = Record<ControlSize, Step>;
 
 const presetCell = ({ size, weight, leading }: Step, extra = "") => `${S.fontSize[size]} / ${S.leading[leading]} · ${weightOf(weight)}${extra}`;
 
 const presetRows = (): string[][] => {
   const row = (name: PresetName, ladder: Ladder, extra: (step: Step) => string = () => ""): string[] => [
     `\`${name}\``,
-    presetCell(ladder.sm, extra(ladder.sm)),
-    presetCell(ladder.md, extra(ladder.md)),
-    presetCell(ladder.lg, extra(ladder.lg)),
+    ...CONTROL_SIZES.map((size) => presetCell(ladder[size], extra(ladder[size]))),
     PRESET_USES[name],
   ];
   const inputLine = ({ inputLeading }: Step) => (inputLeading === undefined ? "" : ` · 입력 줄상자 ${S.leading[inputLeading]}`);
@@ -64,7 +63,7 @@ const presetRows = (): string[][] => {
   ];
 };
 
-const controlSizes = () => `${S.fontSize[PRESET_SPEC.button.medium.sm.size]} · ${S.fontSize[PRESET_SPEC.button.medium.md.size]} · ${S.fontSize[PRESET_SPEC.button.medium.lg.size]}`;
+const controlSizes = () => CONTROL_SIZES.map((size) => S.fontSize[PRESET_SPEC.button.medium[size].size]).join(" · ");
 const roleSize = (role: keyof typeof ROLE_SPEC) => (ROLE_SPEC[role].size === "hero" ? `${FLUID.min}–${FLUID.max} 유동` : String(S.fontSize[ROLE_SPEC[role].size as keyof typeof S.fontSize]));
 
 export const LADDER_BLOCK: GeneratedBlock = {
@@ -80,6 +79,6 @@ export const TYPOGRAPHY_BLOCKS: GeneratedBlock[] = [
   {
     id: "typography-presets",
     files: ["docs/foundations/typography.md"],
-    render: () => table(["preset", "sm", "md", "lg", "쓰는 Atom"], presetRows()),
+    render: () => table(["preset", ...CONTROL_SIZES, "쓰는 Atom"], presetRows()),
   },
 ];

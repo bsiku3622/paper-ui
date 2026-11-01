@@ -257,7 +257,7 @@ describe("every Atom", () => {
     const sheets = (dir: string) => readdirSync(join(here, dir)).filter((file) => file.endsWith(".css.ts")).map((file) => join(dir, file));
     const files = [...sheets("."), ...sheets("recipes")];
     expect(files.length).toBeGreaterThan(0);
-    for (const file of files) expect(read(file), file).not.toMatch(/CONTROL_SIZES\s*\.\s*map/);
+    for (const file of files) expect(read(file), file).not.toMatch(/CONTROL_SIZES\s*\.\s*map|\bcontrolSizes\s*\(|styleVariants\(\s*geometry\./);
   });
 
   it("[atoms.contract.stands-on] stands on the Primitives its row names, and takes its colour from the paint tier", () => {

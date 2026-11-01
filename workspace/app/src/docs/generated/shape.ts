@@ -1,7 +1,7 @@
 // The Shape tables and notes: the source numbers, the radius, the control geometry and the sizing. Only this file
 // and the Shape inspector read the Shape source.
 import { CONTROL_ICON, SHAPE_SOURCE, resolveRole } from "@paper-ui/inspect/shape";
-import { CONTROL_SIZES, tokens } from "@studio-baeks/paper-ui/tokens";
+import { CONTROL_SIZES, tokens, type ControlSize } from "@studio-baeks/paper-ui/tokens";
 
 import type { GeneratedBlock } from "./markers";
 import { table } from "./table";
@@ -44,12 +44,13 @@ const controlLine = () => {
   const anatomy = S.anatomy.inline;
   const { x, y } = S.anatomy.checkbox.markShift;
   const mark = S.selection.size;
-  return `높이 사다리(\`control.height\`: sm ${height.sm} · md ${height.md} · lg ${height.lg})와 button inset 배율(\`control.buttonInsetRatio\`: ${buttonInsetRatio}), 표식 사다리(\`selection.size\`: sm ${mark.sm} · md ${mark.md} · lg ${mark.lg})이고, \`anatomy\`는 Badge 높이·inset(\`anatomy.badge\`)과 체크의 보정 비율(\`anatomy.checkbox.markShift\`: x ${x} · y ${y}, \`stroke.emphasis\`의 배수)과 inline 점 · spinner 크기(\`anatomy.inline\`: ${anatomy.dot}em · ${anatomy.spinner}em)입니다.`;
+  const ladder = (values: Record<ControlSize, number>) => CONTROL_SIZES.map((size) => `${size} ${values[size]}`).join(" · ");
+  return `높이 사다리(\`control.height\`: ${ladder(height)})와 button inset 배율(\`control.buttonInsetRatio\`: ${buttonInsetRatio}), 표식 사다리(\`selection.size\`: ${ladder(mark)})이고, \`anatomy\`는 Badge 높이·inset(\`anatomy.badge\`)과 체크의 보정 비율(\`anatomy.checkbox.markShift\`: x ${x} · y ${y}, \`stroke.emphasis\`의 배수)과 inline 점 · spinner 크기(\`anatomy.inline\`: ${anatomy.dot}em · ${anatomy.spinner}em)입니다.`;
 };
 
 export const SHAPE_BLOCKS: GeneratedBlock[] = [
   { id: "shape-radius", files: ["docs/foundations/shape.md"], render: () => table(["역할", "값", "쓰는 곳"], radiusRows()) },
-  { id: "shape-control", files: ["docs/foundations/shape.md"], render: () => table(["역할", "sm", "md", "lg", "식"], controlRows()) },
+  { id: "shape-control", files: ["docs/foundations/shape.md"], render: () => table(["역할", ...CONTROL_SIZES, "식"], controlRows()) },
   { id: "shape-sizing", files: ["docs/foundations/shape.md"], render: () => table(["역할", "단계", "dp"], sizingRows()) },
   { id: "shape-source", files: ["AGENTS.md", "docs/foundations/shape.md"], inline: true, render: controlLine },
   { id: "agents-scale", files: ["AGENTS.md"], inline: true, render: () => `\`${entries(S.space)}\`` },

@@ -1,4 +1,4 @@
-import { controlGeometry, geometry } from "../../internal/shape";
+import { controlGeometry } from "../../internal/shape";
 import { stateStyle, tokens } from "../../tokens";
 import { layered } from "../../tokens/layers.css";
 
@@ -28,7 +28,4 @@ export const selectionBox = style([controlReset, {
 // target is still one: the hit area is invisible and carries no paint. A pseudo-element is placed from the padding box,
 // inside the border, so the reach starts a border further out.
 export const selectionSize = styleVariants(controlGeometry.selection);
-export const selectionReach = styleVariants(
-  geometry.target.selection,
-  (reach) => ({ selectors: { "&::before": { content: "''", position: "absolute", inset: `calc(${reach} - ${tokens.shape.stroke.border})` } } }),
-);
+export const selectionReach = styleVariants(controlGeometry.selectionReach);

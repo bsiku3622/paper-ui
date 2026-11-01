@@ -42,7 +42,7 @@ const NAV = [
   { label: "멤버", active: false },
 ];
 
-const FILTERS: { label: string; accent: "info" | "success" | "warning" | "error" }[] = [
+const FILTERS: { label: string; accent: Status }[] = [
   { label: "진행 중", accent: "info" },
   { label: "막힘", accent: "error" },
   { label: "검토", accent: "warning" },

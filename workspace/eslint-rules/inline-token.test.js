@@ -119,6 +119,57 @@ test("[guardrails.inline-token.no-token-style] a DOM style write is a style: a p
   assert.equal(await hasInline('import {measureSpace} from "../internal/measure"; export const paint = (el) => { el.style.width = `${measureSpace("md", el)}px`; };', "packages/paper-ui/src/atoms/probe.ts"), false);
 });
 
+test("[guardrails.inline-token.no-token-style] a parameter reads what the file hands it: a call's argument, a JSX prop, a `.map` or `.forEach` entry", async () => {
+  const TOKEN = 'import {tokens} from "../tokens"; import {forwardRef, memo, useCallback} from "react";\n';
+  for (const code of [
+    "const mk = (w) => <div style={{ width: w }} />; mk(tokens.shape.control.height.md);",
+    "function mk(w) { return <div style={{ width: w }} />; } mk(tokens.x);",
+    "const mk = (o) => <div style={{ width: o.w }} />; mk({ w: tokens.x });",
+    "const mk = ({ w }) => <div style={{ width: w }} />; mk({ w: tokens.x });",
+    "const mk = (w = tokens.x) => <div style={{ width: w }} />; mk();",
+    "const mk = (w) => <div style={{ width: w }} />; const outer = (t) => mk(t); outer(tokens.x);",
+    "const mk = (w) => <div style={{ width: w }} />; const again = mk; again(tokens.x);",
+    "const mk = (w) => ({ style: { width: w } }); mk(tokens.x);",
+    "const set = (el, w) => { el.style.width = w; }; set(el, tokens.x);",
+    "const set = (el, w) => { el.style.setProperty('width', w); }; set(el, tokens.x);",
+    "const set = useCallback((el, w) => { el.style.width = w; }, []); set(el, tokens.x);",
+    "[tokens.x].map((w) => <div style={{ width: w }} />);",
+    "[tokens.x].forEach((w) => { el.style.width = w; });",
+    "const LIST = [tokens.x]; LIST.map((w) => <div style={{ width: w }} />);",
+    "tokens.list.map((w) => <div style={{ width: w }} />);",
+    "const Row = (w) => <div style={{ width: w }} />; [tokens.x].map(Row);",
+    "Object.values({ a: tokens.x }).map((w) => <div style={{ width: w }} />);",
+    "const Inner = ({ w }) => <div style={{ width: w }} />; export const X = () => <Inner w={tokens.x} />;",
+    "const Inner = ({ w: width }) => <div style={{ width }} />; export const X = () => <Inner w={tokens.x} />;",
+    "const Inner = (props) => <div style={{ width: props.w }} />; export const X = () => <Inner w={tokens.x} />;",
+    "const Inner = (props) => { const { w } = props; return <div style={{ width: w }} />; }; export const X = () => <Inner w={tokens.x} />;",
+    "const Inner = ({ w, ...rest }) => <div style={{ height: rest.h }} data-w={w} />; export const X = () => <Inner h={tokens.x} />;",
+    "function Inner({ w }) { return <div style={{ width: w }} />; } export const X = () => <Inner w={tokens.x} />;",
+    "const Inner = forwardRef(({ w }, ref) => <div ref={ref} style={{ width: w }} />); export const X = () => <Inner w={tokens.x} />;",
+    "const Inner = memo(({ w }) => <div style={{ width: w }} />); export const X = () => <Inner w={tokens.x} />;",
+    "const Inner = ({ w }) => <div style={{ width: w }} />; const Outer = ({ t }) => <Inner w={t} />; export const X = () => <Outer t={tokens.x} />;",
+    "const Inner = ({ w }) => <div style={{ width: w }} />; export const X = () => <Inner {...{ w: tokens.x }} />;",
+    "const Inner = ({ w }) => <div style={{ width: w }} />; const Other = () => null; export const X = ({ on }) => { const C = on ? Inner : Other; return <C w={tokens.x} />; };",
+  ]) assert.equal(await hasInline(TOKEN + code, probe), true, code);
+  assert.equal(await hasInline('import { pick } from "./other"; const mk = (w) => <div style={{ width: w }} />; mk(pick());', probe), true);
+  assert.equal(await hasInline('import {tokens} from "@studio-baeks/paper-ui/tokens"; const Inner = ({ w }) => <div style={{ width: w }} />; export const X = () => <Inner w={tokens.layout.gutter} />;', "app/src/pages/Probe.tsx"), true);
+  for (const code of [
+    "const mk = (w) => <div style={{ width: w }} />; mk(12); mk('auto');",
+    "const mk = (w, t) => <div style={{ width: w }} data-token={t} />; mk(1, tokens.x);",
+    "const mk = (w) => <div style={{ width: 1 }} data-token={w} />; mk(tokens.x);",
+    "const mk = (o) => <div style={{ width: o.w }} data-token={o.t} />; mk({ w: 1, t: tokens.x });",
+    "const set = (el, w) => { el.style.width = w; }; set(tokens.x, 1);",
+    "[1, 2].map((w) => <div style={{ width: w }} />);",
+    "[tokens.x].map((w, index) => <div style={{ order: index }} data-token={w} />);",
+    "const Inner = ({ w }) => <div data-token={w} />; export const X = () => <Inner w={tokens.x} />;",
+    "const Inner = ({ w, h }) => <div style={{ height: h }} data-token={w} />; export const X = () => <Inner w={tokens.x} h={1} />;",
+    "const Inner = (props) => <div style={{ height: props.h }} data-token={props.w} />; export const X = () => <Inner w={tokens.x} h={1} />;",
+    "const Inner = (props) => { const { h } = props; return <div style={{ height: h }} />; }; export const X = () => <Inner w={tokens.x} h={1} />;",
+    "const Inner = forwardRef(({ h }, ref) => <div ref={ref} style={{ height: h }} />); export const X = () => <Inner w={tokens.x} h={1} />;",
+    "const Outer = ({ style }) => <div style={style} />; export const X = () => <Outer style={{ width: 1 }} data-token={tokens.x} />;",
+  ]) assert.equal(await hasInline(TOKEN + code, probe), false, code);
+});
+
 test("[guardrails.inline-token.no-token-style] the rule reads package .ts and .tsx, and leaves stylesheets and tests alone", async () => {
   const token = 'import {tokens} from "../tokens"; export const props = () => ({style: {color: tokens.color.ink.primary}});';
   assert.equal(await hasInline(token, "packages/paper-ui/src/primitives/useProbe.ts"), true);

@@ -34,7 +34,7 @@ export const row = styleVariants({
 });
 
 // Cells start after the empty edge track; the rest auto-place, leaving the far edge track empty.
-globalStyle([header, row.sm, row.md, row.lg].map((name) => `${name} > :first-child`).join(", "), { gridColumnStart: 2 });
+globalStyle([header, ...Object.values(row)].map((name) => `${name} > :first-child`).join(", "), { gridColumnStart: 2 });
 
 export const align = styleVariants({
   start: { textAlign: "start", justifySelf: "start" },
@@ -93,6 +93,9 @@ export const travelDot = style({
     "(forced-colors: active)": { forcedColorAdjust: "none", background: SYSTEM_COLORS.canvasText },
   },
 });
+
+// Measures a length by wearing it, out of the way of the page.
+export const lengthProbe = style({ position: "absolute", visibility: "hidden" });
 
 // An easing as its curve on a 64 × 32 plot.
 export const curve = style({ width: tokens.shape.dimension.width.xs, fill: "none", stroke: tokens.color.ink.primary, strokeWidth: tokens.shape.stroke.emphasis, overflow: "visible" });
