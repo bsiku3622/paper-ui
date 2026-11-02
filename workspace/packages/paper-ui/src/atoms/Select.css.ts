@@ -4,9 +4,12 @@ import { layered } from "../tokens/layers.css";
 const { style, styleVariants } = layered("components");
 
 // The wrapper is the frame: inputFrame draws its border, corner and ring, fieldPaint its colour, the Surface fill its face.
-// The native select owns the form and the focus behaviour.
+// The native select owns the form and the focus behaviour, and fills the frame from inside it: in a place with no width of
+// its own, the widest option is what gives the frame one.
 export const selectWrap = style({
   display: "inline-grid",
+  gridTemplateColumns: "minmax(0, 1fr)",
+  gridTemplateRows: "minmax(0, 1fr)",
   position: "relative",
   width: "100%",
   minWidth: 0,
@@ -16,13 +19,10 @@ export const selectWrap = style({
 
 export const selectRoot = style({
   appearance: "none",
-  position: "absolute",
-  inset: 0,
   minWidth: 0,
   width: "100%",
   height: "100%",
   margin: 0,
-  padding: "inherit",
   border: "none",
   outline: "none",
   background: "transparent",
@@ -33,6 +33,7 @@ export const selectRoot = style({
 });
 
 export const selectSize = styleVariants(controlGeometry.select);
+export const selectValueSize = styleVariants(controlGeometry.selectValue);
 
 // The arrow is a trailing Icon: SVG backgrounds cannot inherit semantic vars; this
 // non-interactive decoration can. Its artboard and stroke come from Icon, its place from size, its colour from selectArrowPaint.

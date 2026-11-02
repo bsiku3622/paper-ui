@@ -113,6 +113,9 @@ Button의 loading은 포커스를 잃지 않습니다. native `disabled`를 달�
 [contract:atoms.icon-button.axes]: #
 IconButton은 정사각 anatomy와 부딪히지 않는 축만 엽니다 — `as` · accent · variant · size · shape · disabled · iconSize · badge와 필수 `aria-label`. loading · fullWidth · fontSize는 타입에서 막힙니다. 안의 Icon은 `size`를 주지 않으면 컨트롤 높이를 따릅니다(`control.icon`).
 
+[contract:atoms.icon-button.keeps-square]: #
+IconButton은 줄이 꽉 차도 정사각형을 지킵니다. 폭이 모자라면 옆의 글자가 먼저 줄어듭니다.
+
 [contract:atoms.spinner.roles]: #
 Spinner는 혼자 서면 `role="progressbar"`와 `aria-label`을 갖습니다. 값(`aria-valuenow`)이 없어 얼마나 걸릴지 모르는 진행이고, progressbar는 이름을 만든 사람의 글에서 받으므로 숨은 라벨 요소를 두지 않습니다. `decorative`면 `aria-hidden`이고 role도 이름도 없습니다. 컨트롤 안의 Spinner가 그렇습니다. 회전은 Motion의 `loop.spin` 하나(패키지에 `@keyframes spin`은 하나)이고, 크기는 control icon 사다리(`inline`은 글자만큼)가, 색은 `ink`가 정합니다 — 기본은 옅은 링에 잉크색 호, `inherit`는 둘러싼 글자색의 호입니다.
 
@@ -154,6 +157,9 @@ Divider는 `Box as="hr"`이고 선을 background가 아니라 border로 긋습�
 
 [contract:atoms.select.native-form]: #
 className으로 넘긴 앱 class는 패키지 CSS가 든 레이어 밖에 있어, 로드 순서와 무관하게 Atom의 상태 규칙까지 이깁니다([우선순위](../get-started/install.md#우선순위)). Field와 Select는 wrapper가 면·테두리·포커스 링을 갖고, label 연결·폼 제출·value·disabled·ref는 native 요소에 남습니다. Select 화살표는 포커스를 받거나 클릭을 가로채지 않습니다.
+
+[contract:atoms.select.natural-width]: #
+폭을 정해 주지 않은 자리(Grid의 `auto` 칸)에서 Select는 가장 긴 선택지만큼 넓어집니다. 폭이 있는 자리에서는 그 폭을 채웁니다. 값의 안쪽 여백은 native select가 갖고 native select가 틀을 채우므로, 틀 어디를 눌러도 열립니다.
 
 ## 상태와 접근성
 

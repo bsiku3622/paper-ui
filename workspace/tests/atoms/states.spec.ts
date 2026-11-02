@@ -302,6 +302,33 @@ test("[atoms.button.badge] a badge hangs over the button's corner without changi
   expect(hit).toBe("counted");
 });
 
+test("[atoms.icon-button.keeps-square] an IconButton holds its square when its row runs out of room", async ({ page }) => {
+  for (const id of ["crowded-one", "crowded-two", "crowded-three"]) {
+    const box = (await page.getByTestId(id).boundingBox())!;
+    expect(box.width, id).toBe(box.height);
+  }
+});
+
+test("[atoms.select.natural-width] a Select with no width of its own is as wide as its longest option, and one with a width fills it", async ({ page }) => {
+  const auto = page.getByTestId("select-auto");
+  const room = await auto.locator("select").evaluate((select: HTMLSelectElement) => {
+    const style = getComputedStyle(select);
+    const canvas = document.createElement("canvas").getContext("2d")!;
+    canvas.font = style.font;
+    const widest = Math.max(...[...select.options].map((option) => canvas.measureText(option.text).width));
+    return { widest, inner: select.clientWidth - parseFloat(style.paddingInlineStart) - parseFloat(style.paddingInlineEnd) };
+  });
+  // A canvas measures without the preset's tracking and hinting, so it runs a little over what the engine laid out.
+  expect(room.inner).toBeGreaterThan(room.widest - 3);
+
+  const frame = (await page.getByTestId("select-fills").boundingBox())!;
+  expect(frame.width).toBe(320);
+  // The native select fills the frame inside its border, so the frame opens it anywhere.
+  const native = (await page.getByTestId("select-fills").locator("select").boundingBox())!;
+  expect(native.width).toBe(frame.width - 2 * SHAPE_SOURCE.stroke.border);
+  expect(native.height).toBe(frame.height - 2 * SHAPE_SOURCE.stroke.border);
+});
+
 test("[atoms.button.justify] justify moves a wide button's content along it, over the root's own centring", async ({ page }) => {
   await openHarness(page, "states");
   await expect(page.getByTestId("justify-default")).toHaveCSS("justify-content", "center");

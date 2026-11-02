@@ -20,7 +20,7 @@ import { resolveControlFontSize, resolveFill, resolvePreset } from "../resolvers
 import { CONTROL_ICON, type ControlFontSize, type ControlShape, type ControlSize, type InputVariant, type Status, type SurfaceFill } from "../tokens";
 import { useInputControl } from "./input-control";
 import { inputFrame, inputFrameCorner, inputFramePill } from "./recipes/input-frame.css";
-import { selectRoot, selectSize, selectWrap, selectArrow, selectArrowSize } from "./Select.css";
+import { selectRoot, selectSize, selectValueSize, selectWrap, selectArrow, selectArrowSize } from "./Select.css";
 
 // className/style/data-testid target the visible wrapper; ref and native attributes target select.
 export type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "className" | "children" | "size" | "multiple" | "style"> & {
@@ -52,7 +52,7 @@ const SelectRoot = forwardRef<HTMLSelectElement, SelectProps>(function SelectRoo
       className={joinClass(inputFrame, inputFrameCorner[size], fieldPaint, variant === "ghost" && fieldLinelessPaint, selectEmptyPaint, selectWrap, resolveFill(fill), shadow && restingShadow, selectSize[size], resolvePreset("field", size), resolveControlFontSize(fontSize), shape === "pill" && inputFramePill, className)}
       {...frameProps}
     >
-      <select ref={ref} className={selectRoot} {...mergeProps(rest, focusHandlers, controlProps)}>
+      <select ref={ref} className={joinClass(selectRoot, selectValueSize[size])} {...mergeProps(rest, focusHandlers, controlProps)}>
         {children}
       </select>
       <Icon size={CONTROL_ICON[size]} className={joinClass(selectArrow, selectArrowPaint, selectArrowSize[size])}><path d="m6 9 6 6 6-6" /></Icon>

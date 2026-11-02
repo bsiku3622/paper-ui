@@ -119,6 +119,18 @@ test("[primitives.layout.stack-inline] Stack's justify distributes down the colu
   await expect(page.getByTestId("inline-baseline")).toHaveCSS("align-items", "baseline");
 });
 
+test("[primitives.layout.list] a list a layout primitive draws has no browser indent or marker, and a padding prop still wins", async ({ page }) => {
+  await openHarness(page, "layout");
+  for (const id of ["list-stack", "list-inline", "list-grid"]) {
+    const list = page.getByTestId(id);
+    await expect(list, id).toHaveCSS("padding-inline-start", "0px");
+    await expect(list, id).toHaveCSS("margin-block-start", "0px");
+    await expect(list, id).toHaveCSS("margin-block-end", "0px");
+    expect((await list.locator("li").evaluate((item) => getComputedStyle(item).listStyleType)), id).not.toMatch(/disc|decimal/);
+  }
+  await expect(page.getByTestId("list-padded")).toHaveCSS("padding-inline-start", px(roleDp(tokens.shape.inset.lg)));
+});
+
 test("[primitives.layout.root-min-width] a bare layout container holds min-width 0, and any minWidth beats it", async ({ page }) => {
   await openHarness(page, "layout");
   for (const id of ["stack-bare", "inline-bare", "grid-bare"]) await expect(page.getByTestId(id), id).toHaveCSS("min-width", "0px");

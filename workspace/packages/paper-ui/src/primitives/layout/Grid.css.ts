@@ -4,10 +4,13 @@ import { BREAKPOINTS, tokens, type Align, type Breakpoint, type Justify, type Ju
 import { layered } from "../../tokens/layers.css";
 
 const { style, styleVariants, globalStyle } = layered("components");
+const reset = layered("reset");
 
 // columns 의 기본값 하나는 root 가 갖는다. 아래의 어느 규칙보다 앞에 있어 그것들에 지고, 호출자의 track 은 inline 이라 이긴다.
 export const gridRoot = style({ display: "grid", gridTemplateColumns: "minmax(0, 1fr)" });
 globalStyle(`:where(.${gridRoot})`, { minWidth: 0 });
+// As flex.css.ts: a list the grid arranges answers to gap alone.
+reset.globalStyle(`:where(ul.${gridRoot}, ol.${gridRoot})`, { marginBlock: 0, paddingInlineStart: 0, listStyleType: '""' });
 
 const ALIGN_ITEMS = { start: "start", center: "center", end: "end", stretch: "stretch", baseline: "baseline" } as const satisfies Record<Align, string>;
 const JUSTIFY_CONTENT = { start: "start", center: "center", end: "end", between: "space-between" } as const satisfies Record<Justify, string>;

@@ -19,6 +19,9 @@ Stack · Inline · Grid는 정렬 어휘 하나를 나눠 씁니다. `align`은 
 [contract:primitives.grid.token-gap]: #
 Grid의 `gap`은 토큰 단계입니다. 컨테이너가 계산한 `column-gap`과 `row-gap`은 그 단계가 가리키는 길이(`tokens.layout.gap`)와 같고, track 수를 바꿔도 달라지지 않습니다. 한 축의 `rowGap` · `columnGap`을 따로 주면 그 축만 그 단계로 바뀝니다.
 
+[contract:primitives.layout.list]: #
+`as="ul"`이나 `as="ol"`로 그린 Stack · Inline · Grid는 브라우저의 들여쓰기와 표식을 버립니다. 간격은 `gap`이 정합니다. 이 규칙은 reset 레이어에 있어서 `paddingX`를 주면 그쪽이 이깁니다.
+
 [contract:primitives.layout.root-min-width]: #
 Stack · Inline · Grid의 root는 `min-width: 0`을 특정도 0으로 갖습니다. 긴 내용이 flex · grid 항목을 부모 밖으로 밀어내지 않게 하는 값이고, 특정도가 0이라 `minWidth`를 주면 이름 있는 크기든 CSS 길이든 선언 순서와 무관하게 그쪽이 이깁니다.
 

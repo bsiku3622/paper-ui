@@ -12,12 +12,14 @@ export const controlGeometry = {
   // Kept apart from the boxes below: a stylesheet declares its corner before its pill, so the pill wins by order.
   corner: controlSizes((size) => ({ borderRadius: tokens.shape.radius.control[size] } satisfies StyleRule)),
   button: controlSizes((size) => ({ height: height[size], paddingInline: tokens.shape.control.inset.button[size] } satisfies StyleRule)),
-  // A square the height of a control, with no inset: the label is an icon.
-  iconButton: controlSizes((size) => ({ height: height[size], width: height[size], paddingInline: 0 } satisfies StyleRule)),
+  // A square the height of a control, with no inset: the label is an icon. A crowded row does not get to squeeze it.
+  iconButton: controlSizes((size) => ({ height: height[size], width: height[size], paddingInline: 0, flexShrink: 0 } satisfies StyleRule)),
   field: controlSizes((size) => ({ height: height[size], paddingInline: tokens.shape.control.inset.input[size] } satisfies StyleRule)),
   // The line box a Field's value sits in: taller than the glyph line the inset reads, for the caret.
   fieldInput: controlSizes((size) => ({ lineHeight: tokens.typography.preset.field[size].inputLeading } satisfies StyleRule)),
-  select: controlSizes((size) => ({ height: height[size], paddingInline: tokens.shape.control.inset.input[size], paddingInlineEnd: geometry.select.paddingEnd[size] } satisfies StyleRule)),
+  select: controlSizes((size) => ({ height: height[size] } satisfies StyleRule)),
+  // The value's inset belongs to the native select, which fills the frame: the frame opens it anywhere, and its widest option sizes it.
+  selectValue: controlSizes((size) => ({ paddingInline: tokens.shape.control.inset.input[size], paddingInlineEnd: geometry.select.paddingEnd[size] } satisfies StyleRule)),
   // The trailing arrow sits at the input inset.
   selectArrow: controlSizes((size) => ({ insetInlineEnd: geometry.select.arrowInset[size] } satisfies StyleRule)),
   textarea: controlSizes((size) => ({ paddingInline: tokens.shape.control.inset.input[size], paddingBlock: geometry.textarea.paddingBlock[size] } satisfies StyleRule)),

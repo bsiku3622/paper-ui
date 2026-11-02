@@ -239,7 +239,7 @@ describe("controlGeometry is the one size entry of every sized Atom", () => {
 
   it("[foundations.shape.control-geometry] [foundations.shape.geometry-entry] names a rule for every control size in each entry", () => {
     expect(Object.keys(controlGeometry)).toEqual([
-      "corner", "button", "iconButton", "field", "fieldInput", "select", "selectArrow", "textarea", "selection", "checkbox", "radio", "switch", "selectionReach", "switchReach", "fieldActionReach", "badge", "spinner", "spinnerInline",
+      "corner", "button", "iconButton", "field", "fieldInput", "select", "selectValue", "selectArrow", "textarea", "selection", "checkbox", "radio", "switch", "selectionReach", "switchReach", "fieldActionReach", "badge", "spinner", "spinnerInline",
     ]);
     for (const [name, entry] of Object.entries(controlGeometry)) {
       if (name !== "spinnerInline") expect(Object.keys(entry), name).toEqual([...CONTROL_SIZES]);
@@ -290,7 +290,7 @@ describe("controlGeometry is the one size entry of every sized Atom", () => {
     expect(rules(controlGeometry.button, prop("height"))).toEqual(each(expected.height));
     expect(rules(controlGeometry.button, prop("paddingInline"))).toEqual(each(expected.buttonInset));
     expect(rules(controlGeometry.field, prop("paddingInline"))).toEqual(each(expected.inputInset));
-    expect(rules(controlGeometry.select, prop("paddingInlineEnd"))).toEqual(each(expected.selectEnd));
+    expect(rules(controlGeometry.selectValue, prop("paddingInlineEnd"))).toEqual(each(expected.selectEnd));
     expect(rules(controlGeometry.textarea, prop("paddingBlock"))).toEqual(each(expected.textareaPadding));
   });
 });

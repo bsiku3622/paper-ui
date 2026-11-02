@@ -1,4 +1,4 @@
-import { Badge, Button, Field, Icon, IconButton, Link, Select, Textarea } from "@studio-baeks/paper-ui";
+import { Badge, Box, Button, Field, Grid, Icon, IconButton, Inline, Link, Select, Textarea } from "@studio-baeks/paper-ui";
 import { JUSTIFIES } from "@studio-baeks/paper-ui/tokens";
 import { useState } from "react";
 
@@ -39,6 +39,11 @@ export const StatesCase = () => (
     <IconButton aria-label="Icon" data-testid="icon-button">{glyph}</IconButton>
     <IconButton aria-label="Disabled icon" disabled data-testid="disabled-icon-button">{glyph}</IconButton>
     <IconButton aria-label="Pill icon" shape="pill" data-testid="pill-icon-button">{glyph}</IconButton>
+    <Inline width="4rem">
+      <IconButton aria-label="Crowded one" data-testid="crowded-one">{glyph}</IconButton>
+      <IconButton aria-label="Crowded two" data-testid="crowded-two">{glyph}</IconButton>
+      <IconButton aria-label="Crowded three" data-testid="crowded-three">{glyph}</IconButton>
+    </Inline>
     {JUSTIFIES.map((justify) => <Button key={justify} fullWidth justify={justify} data-testid={`justify-${justify}`}><span>A</span><span>B</span></Button>)}
     <Button fullWidth data-testid="justify-default">Default</Button>
     <IconButton aria-label="Alerts 3" badge={<Badge accent="info" variant="solid" size="xs" data-testid="count">3</Badge>} data-testid="counted">{glyph}</IconButton>
@@ -64,5 +69,7 @@ export const StatesCase = () => (
     <button type="button">After select</button>
     <Select aria-label="Select error" status="error" data-testid="select-error">{SELECT_OPTIONS}</Select>
     <Select aria-label="Select disabled" disabled data-testid="select-disabled">{SELECT_OPTIONS}</Select>
+    <Grid columns="minmax(0, 1fr) auto" width="40rem"><Box /><Select aria-label="Select in an auto track" data-testid="select-auto">{SELECT_OPTIONS}</Select></Grid>
+    <Box width="20rem"><Select aria-label="Select in a set width" data-testid="select-fills">{SELECT_OPTIONS}</Select></Box>
   </>
 );

@@ -33,6 +33,10 @@ export const LayoutCase = () => (
     <Surface elevation="sticky" top="lg" fill="raised" shadow data-testid="sticky-top" />
     <Surface elevation="sticky" top="none" data-testid="sticky-none" />
     <Surface elevation="overlay" top="lg" data-testid="top-unread" />
+    <Stack as="ul" data-testid="list-stack"><li>One</li></Stack>
+    <Inline as="ol" data-testid="list-inline"><li>One</li></Inline>
+    <Grid as="ul" data-testid="list-grid"><li>One</li></Grid>
+    <Stack as="ul" paddingX="lg" data-testid="list-padded"><li>One</li></Stack>
     <Inline width="md"><Text truncate data-testid="truncate">{"긴 글자가 칸을 넘으면 말줄임표로 잘립니다 ".repeat(6)}</Text></Inline>
     <FormField label="Email" description="Help" error="Wrong" invalid data-testid="form-field"><Field /></FormField>
   </>

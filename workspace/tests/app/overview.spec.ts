@@ -153,7 +153,9 @@ test("the controls of the base row share one corner and each its own inset", asy
   const corner = radius(tokens.shape.radius.control.md);
   await expectStyle(row.getByTestId("base-button"), { ...corner, paddingLeft: tokens.shape.control.inset.button.md });
   await expectStyle(row.getByTestId("base-field"), { ...corner, paddingLeft: tokens.shape.control.inset.input.md });
-  await boxStyle(row.getByTestId("base-select"), { ...corner, paddingLeft: tokens.shape.control.inset.input.md });
+  await boxStyle(row.getByTestId("base-select"), corner);
+  // The inset belongs to the native select, which fills the frame.
+  await expectStyle(row.getByTestId("base-select").locator("select"), { paddingLeft: tokens.shape.control.inset.input.md });
   await expectStyle(row.getByTestId("base-textarea"), corner);
 });
 

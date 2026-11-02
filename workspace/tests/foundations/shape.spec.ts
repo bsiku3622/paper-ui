@@ -43,9 +43,9 @@ test("[foundations.shape.control-geometry] [foundations.shape.recipe-geometry] a
     expect(field.padding).toBe(inputInset);
     // The actions of a Field follow the control's icon, not the text beside it.
     for (const svg of [0, 1]) expect((await metrics(page, `[data-testid=actions-${size}] button >> nth=${svg} >> svg`)).width, `${size} action ${svg}`).toBe(icon);
-    const select = await metrics(page, `[data-testid=select-${size}]`);
-    expect(select.height).toBe(height);
-    expect(select.padding).toBe(inputInset);
+    expect((await metrics(page, `[data-testid=select-${size}]`)).height).toBe(height);
+    // The inset belongs to the native select, which fills the frame.
+    expect((await metrics(page, `[data-testid=select-${size}] select`)).padding).toBe(inputInset);
     // One textarea row is exactly one control tall, and the rows decide the height: four by default.
     const textareaPadding = roleDp(SHAPE_RECIPES.textarea.paddingBlock[size]);
     expect((await metrics(page, `textarea[aria-label=textarea-${size}]`)).blockPadding).toBe(textareaPadding);
