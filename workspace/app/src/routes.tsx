@@ -18,6 +18,9 @@ const docTitle = (path: string) => {
 
 const Home = lazy(() => import("./pages/Home").then((m) => ({ default: m.Home })));
 const Demo = lazy(() => import("./pages/demo/Demo").then((m) => ({ default: m.Demo })));
+const DashboardScreen = lazy(() => import("./pages/demo/DashboardScreen").then((m) => ({ default: m.DashboardScreen })));
+const LoginScreen = lazy(() => import("./pages/demo/LoginScreen").then((m) => ({ default: m.LoginScreen })));
+const SettingsScreen = lazy(() => import("./pages/demo/SettingsScreen").then((m) => ({ default: m.SettingsScreen })));
 const Overview = lazy(() => import("./playground/Overview").then((m) => ({ default: m.Overview })));
 const ComponentDetail = lazy(() => import("./playground/Detail").then((m) => ({ default: m.ComponentDetail })));
 const Foundations = lazy(() => import("./playground/foundations").then((m) => ({ default: m.Foundations })));
@@ -45,7 +48,16 @@ export const routes: RouteObject[] = [
     element: <SiteLayout />,
     children: [
       { index: true, element: <Home />, handle: handle({ frame: "full" }) },
-      { path: "demo", element: <Demo />, handle: handle({ title: "데모", chrome: "none" }) },
+      {
+        path: "demo",
+        element: <Demo />,
+        handle: handle({ title: "데모", chrome: "none" }),
+        children: [
+          { index: true, element: <DashboardScreen /> },
+          { path: "login", element: <LoginScreen />, handle: handle({ title: "로그인 데모" }) },
+          { path: "settings", element: <SettingsScreen />, handle: handle({ title: "설정 폼 데모" }) },
+        ],
+      },
       {
         path: "playground",
         handle: handle({ sidebar: "playground" }),

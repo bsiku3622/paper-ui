@@ -83,7 +83,7 @@ export const RUNTIME_STYLE = {
 };
 
 // An app module that holds one page's content dimensions. paper/source-numbers leaves it alone.
-export const APP_DIMENSION_MODULES = ["app/src/pages/demo/layout.ts"];
+export const APP_DIMENSION_MODULES = [];
 
 // Files that run outside Vite's resolver and so reach a package source by path.
 export const TOOLING = [
