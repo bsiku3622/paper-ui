@@ -14,10 +14,8 @@ export const transfer = style({ padding: tokens.shape.inset.md, border: `${token
 export const dropTarget = style([stateStyle.dropTarget, { minHeight: 100, padding: tokens.shape.inset.md, border: `${tokens.shape.stroke.border} dashed ${tokens.color.border.strong}`, borderRadius: tokens.shape.radius.surface.md, background: tokens.color.bg.raised }]);
 export const roving = style({ display: "flex", flexWrap: "wrap", gap: tokens.layout.gap.sm });
 globalStyle(`${roving}[data-orientation="vertical"]`, { flexDirection: "column", alignItems: "flex-start" });
-export const floatingContent = style({ width: 340, maxWidth: "100%", padding: tokens.shape.inset.lg, color: tokens.color.ink.primary });
 // What a Portal carries to the body is placed in the corner of the viewport, where it can be seen.
 export const portalNote = style({ position: "fixed", insetInlineEnd: tokens.layout.gap.lg, insetBlockEnd: tokens.layout.gap.lg });
-export const formField = style({ display: "grid", gap: tokens.layout.gap.sm });
 // Width of a control's stage: the field-like controls need a column to fill.
 export const narrow = style({ width: "12rem" });
 export const wide = style({ width: "18rem" });

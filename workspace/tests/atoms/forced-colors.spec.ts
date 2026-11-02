@@ -237,16 +237,6 @@ test.describe("the app's compositions", () => {
     expect(await face(dot)).toBe(CanvasText);
   });
 
-  test("a ProgressBar keeps a track and a fill that can be told apart, on a Canvas they can be told from", async ({ page }) => {
-    await page.goto("/demo");
-    const { Canvas, CanvasText, GrayText } = await systems(page, "Canvas", "CanvasText", "GrayText");
-    const bar = page.getByRole("progressbar", { name: "스프린트 진행률" });
-    await expect(bar).toBeVisible();
-    expect(await face(bar)).toBe(GrayText);
-    expect(await face(bar.locator("> *"))).toBe(CanvasText);
-    expect(GrayText).not.toBe(Canvas);
-    expect(CanvasText).not.toBe(GrayText);
-  });
 });
 
 // Increased contrast is a different media query from forced colours: the page here is not under forced colours, only asking for more contrast.

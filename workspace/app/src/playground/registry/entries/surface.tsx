@@ -1,6 +1,6 @@
 import { Surface, Text, type SurfaceProps } from "@studio-baeks/paper-ui";
 
-import { boolControl, defineSpec, enumControl, flag, pick, vocab } from "../schema";
+import { boolControl, defineSpec, enumControl, flag, pick, subset, vocab } from "../schema";
 
 export default defineSpec({
   name: "Surface",
@@ -11,6 +11,7 @@ export default defineSpec({
     enumControl<SurfaceProps, "theme">("theme", vocab("SURFACE_THEMES")),
     boolControl<SurfaceProps, "shadow">("shadow", false, { behaviorOnly: "only a fill casts one, and an elevation's shadow wins" }),
     enumControl<SurfaceProps, "elevation">("elevation", vocab("ELEVATIONS")),
+    enumControl<SurfaceProps, "top">("top", subset("SPACES", ["xs", "sm", "md", "lg", "xl"], "a sticky face stops close to the edge; the larger steps are page distances", ["none"]), { behaviorOnly: "only a sticky face stops, and only once the page scrolls" }),
     enumControl<SurfaceProps, "radius">("radius", vocab("SURFACE_RADII"), { initial: "md" }),
     boolControl<SurfaceProps, "hoverable">("hoverable"),
     boolControl<SurfaceProps, "selected">("selected"),
@@ -23,6 +24,7 @@ export default defineSpec({
       border={flag(state, "border")}
       theme={pick<NonNullable<SurfaceProps["theme"]>>(state, "theme")}
       elevation={pick<NonNullable<SurfaceProps["elevation"]>>(state, "elevation")}
+      top={pick<NonNullable<SurfaceProps["top"]>>(state, "top")}
       radius={pick<NonNullable<SurfaceProps["radius"]>>(state, "radius")}
       hoverable={flag(state, "hoverable")}
       selected={flag(state, "selected")}

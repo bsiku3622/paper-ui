@@ -2,7 +2,7 @@
 // preset · fontSize 탈출구가 각자 지도 하나로 굳는다. 선언은 tokens/typography-recipes.ts 가 만들고
 // 여기는 그것을 class 로 얹을 뿐이다. 전부 pui.utilities 에 있어서 컴포넌트의 geometry 가 이긴다.
 
-import { tokens, CONTROL_FONT_SIZES, CONTROL_SIZES, presetRule, typographyRule, type ControlFontSize, type ControlSize } from "../tokens";
+import { tokens, CONTROL_FONT_SIZES, CONTROL_SIZES, emphasisRule, presetRule, typographyRule, type ControlFontSize, type ControlSize } from "../tokens";
 import { layered } from "../tokens/layers.css";
 
 const { style, styleVariants } = layered("utilities");
@@ -56,3 +56,11 @@ export const presetClass: Mirror<typeof tokens.typography.preset> = {
 // 특정도의 preset 크기를 순서로 이긴다. 행간은 preset 에 남으므로 상자의 기하는 그대로다.
 const sizes = Object.fromEntries(CONTROL_FONT_SIZES.map((variant) => [variant, tokens.typography.role[variant].size])) as Record<ControlFontSize, string>;
 export const controlFontSizeClass = styleVariants(sizes, (fontSize) => ({ fontSize }));
+
+// strong — 굵기 한 비트. true 는 역할이 정한 강조 굵기, false 는 regular 다. 굵기 이름을 고르는 길은 없어서 같은 역할의 글자가
+// 화면마다 여러 굵기로 갈리지 않는다. 위의 어느 class 보다 뒤에 와서 같은 특정도를 순서로 이긴다.
+export const textStrongClass = styleVariants(tokens.typography.role, (role) => ({ fontWeight: role.strong }));
+export const plainWeightClass = style(emphasisRule("regular"));
+
+// 한 줄로 자르기 — 넘치는 글자는 말줄임표가 된다. 칸이 줄어들 수 있어야 잘리므로 최소 폭을 풀어 준다.
+export const textTruncateClass = style({ display: "block", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" });

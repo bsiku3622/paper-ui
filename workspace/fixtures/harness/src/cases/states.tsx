@@ -1,4 +1,5 @@
-import { Button, Field, Icon, IconButton, Link, Select, Textarea } from "@studio-baeks/paper-ui";
+import { Badge, Button, Field, Icon, IconButton, Link, Select, Textarea } from "@studio-baeks/paper-ui";
+import { JUSTIFIES } from "@studio-baeks/paper-ui/tokens";
 import { useState } from "react";
 
 import { SELECT_OPTIONS } from "./options.js";
@@ -38,6 +39,10 @@ export const StatesCase = () => (
     <IconButton aria-label="Icon" data-testid="icon-button">{glyph}</IconButton>
     <IconButton aria-label="Disabled icon" disabled data-testid="disabled-icon-button">{glyph}</IconButton>
     <IconButton aria-label="Pill icon" shape="pill" data-testid="pill-icon-button">{glyph}</IconButton>
+    {JUSTIFIES.map((justify) => <Button key={justify} fullWidth justify={justify} data-testid={`justify-${justify}`}><span>A</span><span>B</span></Button>)}
+    <Button fullWidth data-testid="justify-default">Default</Button>
+    <IconButton aria-label="Alerts 3" badge={<Badge accent="info" variant="solid" size="xs" data-testid="count">3</Badge>} data-testid="counted">{glyph}</IconButton>
+    <div dir="rtl"><IconButton aria-label="Alerts 4" badge={<Badge accent="info" variant="solid" size="xs" data-testid="count-rtl">4</Badge>} data-testid="counted-rtl">{glyph}</IconButton></div>
     <Link href="#target" data-testid="link">Link</Link>
     <Link as="button" data-testid="link-as-button">Link as button</Link>
     <Link href="#target" underline="hover" data-testid="link-hover">Hover link</Link>

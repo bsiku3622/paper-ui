@@ -1,4 +1,4 @@
-import { IconButton, type IconButtonProps } from "@studio-baeks/paper-ui";
+import { Badge, IconButton, type IconButtonProps } from "@studio-baeks/paper-ui";
 
 import { glyph } from "../demo";
 import { boolControl, defineSpec, enumControl, faceProps, flag, pick, vocab } from "../schema";
@@ -14,6 +14,7 @@ export default defineSpec({
     enumControl<IconButtonProps, "size">("size", vocab("CONTROL_SIZES")),
     enumControl<IconButtonProps, "shape">("shape", vocab("CONTROL_SHAPES")),
     enumControl<IconButtonProps, "iconSize">("iconSize", vocab("ICON_SIZES"), { omitted: "auto", derived: "the omitted size is the control's own icon size, body at md, so naming it there changes nothing" }),
+    boolControl<IconButtonProps, "badge">("badge", false, { label: "badge(알림 숫자)" }),
     boolControl<IconButtonProps, "disabled">("disabled"),
   ],
   defaults: { accent: "primary", variant: "solid", size: "md", shape: "rounded" },
@@ -25,6 +26,7 @@ export default defineSpec({
       size={pick<NonNullable<IconButtonProps["size"]>>(state, "size")}
       shape={pick<NonNullable<IconButtonProps["shape"]>>(state, "shape")}
       iconSize={pick<NonNullable<IconButtonProps["iconSize"]>>(state, "iconSize")}
+      badge={flag(state, "badge") ? <Badge accent="info" variant="solid" size="xs">3</Badge> : undefined}
       disabled={flag(state, "disabled")}
       aria-label="추가"
     >

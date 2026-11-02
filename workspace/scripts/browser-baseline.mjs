@@ -63,6 +63,8 @@ export const FEATURES = [
   { name: "overflow: clip", pattern: /(?<![\w-])overflow(?:-[xy])?\s*:\s*clip\b/, kind: "required", since: since("90", "90", "81", "16", "16") },
   // The named keywords of Box's width and height classes. fit-content waits longest: Firefox ships it unprefixed from 94.
   { name: "intrinsic sizing keywords", pattern: /(?<![\w-])(?:(?:min|max)-)?(?:width|height)\s*:\s*(?:fit|min|max)-content\b/, kind: "required", since: since("46", "79", "94", "11", "11") },
+  // The window's height as a face or a page frame reads it: a phone browser's bars are not in it.
+  { name: "dynamic viewport units", pattern: /(?<![\w.-])\d+dvh\b/, kind: "required", since: since("108", "108", "101", "15.4", "15.4") },
   // The state tint is a registered colour property, which is what lets a hover fade in. Without it the tint still
   // applies and only the fade is lost, so the floor degrades by motion alone.
   { name: "@property", pattern: /@property\b/, kind: "enhancement", since: since("85", "85", "128", "16.4", "16.4") },

@@ -26,6 +26,13 @@ describe("IconButton", () => {
     expect([loading, full, font, nameless, ok]).toHaveLength(5);
   });
 
+  it("[atoms.button.badge] holds its badge inside the one element, and the name stays the label's", () => {
+    render(<IconButton aria-label="알림 3개" badge={<span data-testid="count">3</span>}>{glyph}</IconButton>);
+    const button = screen.getByRole("button", { name: "알림 3개" });
+    expect(button.contains(screen.getByTestId("count"))).toBe(true);
+    expect(button.children).toHaveLength(2);
+  });
+
   it("[atoms.icon-button.axes] forwards a ref to the button and renders the one element", () => {
     const ref = createRef<HTMLButtonElement>();
     render(<IconButton ref={ref} aria-label="추가">{glyph}</IconButton>);

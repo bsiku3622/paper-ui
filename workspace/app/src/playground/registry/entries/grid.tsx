@@ -6,16 +6,16 @@ const CELLS = [1, 2, 3, 4, 5, 6];
 
 export default defineSpec({
   name: "Grid",
-  blurb: "Box의 여백·크기·ref 계약에 grid 배치를 더합니다. columns는 양의 정수 또는 CSS track 선언입니다.",
+  blurb: "Box의 여백·크기·ref 계약에 grid 배치를 더합니다. columns는 양의 정수 또는 CSS track 선언이고, base · sm · md · lg · xl로 분기점마다 다른 값을 줄 수 있습니다.",
   controls: [
-    enumControl<GridProps, "columns">("columns", sample(["1", "2", "3"] as const, "columns takes any positive integer or track list"), { initial: "3" }),
+    enumControl<GridProps, "columns">("columns", sample(["1", "2", "3"] as const, "columns takes any positive integer or track list"), { initial: "3", rootDefault: "1" }),
     enumControl<GridProps, "rowGap">("rowGap", vocab("SPACES")),
     enumControl<GridProps, "columnGap">("columnGap", vocab("SPACES")),
     enumControl<GridProps, "align">("align", vocab("ALIGNS")),
     enumControl<GridProps, "justify">("justify", vocab("JUSTIFIES")),
     enumControl<GridProps, "justifyItems">("justifyItems", vocab("JUSTIFY_ITEMS")),
   ],
-  defaults: { columns: 1 },
+  defaults: {},
   subject: (state) => {
     const columns = pick(state, "columns");
     return (

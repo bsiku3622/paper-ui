@@ -228,7 +228,6 @@ describe("non-text contrast", () => {
       const values = COLOR_VALUES_BY_MODE[mode];
       for (const [surface, background] of surfaces(mode)) {
         const at = `${mode} on ${surface}`;
-        expect(contrast(values.ink.tertiary, background), `${at}: the rest ring (ink.tertiary)`).toBeGreaterThanOrEqual(NON_TEXT);
         expect(contrast(values.accent.primary.solid, background), `${at}: the checked fill (accent.primary.solid)`).toBeGreaterThanOrEqual(NON_TEXT);
         expect(contrast(values.interaction.focus, background), `${at}: the focus ring`).toBeGreaterThanOrEqual(NON_TEXT);
         expect(contrast(values.accent.error.ink, background), `${at}: the error ring (accent.error.ink)`).toBeGreaterThanOrEqual(NON_TEXT);
@@ -274,7 +273,7 @@ describe("non-text contrast", () => {
     }
   });
 
-  it("[foundations.color.non-text-exceptions] holds the off Switch's knob on its track to the ratios the page gives, and the ring that makes up for it to 3:1", () => {
+  it("[foundations.color.non-text-exceptions] holds the off Switch's knob on its track to the ratios the page gives, and the on track that makes up for it to 3:1", () => {
     expect(markProfile.rest.knob).toBe(COLOR.bg.raised);
     expect(markProfile.rest.track).toBe(COLOR.control.track);
     const colorDoc = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "../../../../../docs/foundations/color.md"), "utf8");
@@ -287,12 +286,13 @@ describe("non-text contrast", () => {
     for (const mode of COLOR_MODES) {
       const values = COLOR_VALUES_BY_MODE[mode];
       expect(ratio(mode), `${mode}: the knob is below the contract, so the list is honest`).toBeLessThan(NON_TEXT);
-      expect(contrast(values.ink.tertiary, values.control.track), `${mode}: the ring on the track`).toBeGreaterThanOrEqual(NON_TEXT);
+      expect(contrast(values.accent.primary.solid, values.control.track), `${mode}: the on track against the off one`).toBeGreaterThanOrEqual(NON_TEXT);
     }
   });
 
-  it("[foundations.color.non-text-contrast] [foundations.color.contrast-contract] names the ring of a mark as the quietest ink that holds the contrast: ink.tertiary", () => {
-    expect(markProfile.rest.ring).toBe(COLOR.ink.tertiary);
+  it("[foundations.color.non-text-contrast] [foundations.color.contrast-contract] rings an off mark in the input's line, on no face, and leaves the contract to what is on and what is wrong", () => {
+    expect(markProfile.rest.ring).toBe(COLOR.border.base);
+    expect(markProfile.rest.face).toBe("transparent");
     expect(markProfile.invalid.ring).toBe(COLOR.accent.error.ink);
     expect(markProfile.checked.face).toBe(COLOR.accent.primary.solid);
     expect(markProfile.rest.knob).toBe(COLOR.bg.raised);
@@ -301,22 +301,8 @@ describe("non-text contrast", () => {
 
 describe("what the Color page says", () => {
   const colorDoc = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "../../../../../docs/foundations/color.md"), "utf8");
-  // The range of a colour over the surfaces of a mode, to two places.
-  const range = (color: string, mode: ColorMode) => {
-    const ratios = Object.values(COLOR_VALUES_BY_MODE[mode].bg).map((surface) => contrast(color, surface));
-    return `${Math.min(...ratios).toFixed(2)}~${Math.max(...ratios).toFixed(2)}`;
-  };
 
-  it("[foundations.color.contrast-contract] rings a mark in the quietest ink that holds 3:1, in the numbers the page gives", () => {
-    const quiet = (step: string) => paletteValue(`neutral.${step}` as Parameters<typeof paletteValue>[0]);
-    for (const [mode, step] of [["light", "650"], ["dark", "500"]] as const) {
-      expect(paletteValue(COLOR_SELECTION[mode].ink.tertiary as Parameters<typeof paletteValue>[0]), mode).toBe(quiet(step));
-      expect(new RegExp(`neutral\\.${step}\`이 (?:면 위에서 )?([\\d.]+~[\\d.]+)`).exec(colorDoc)?.[1], `${mode} ring`).toBe(range(COLOR_VALUES_BY_MODE[mode].ink.tertiary, mode));
-    }
-    // No border role passes the ratio the page names on a light surface, to the one place it writes, so none can stand for the ring.
-    const said = Number(/경계 역할은 라이트에서 ([\d.]+)을 넘지 못해/.exec(colorDoc)![1]);
-    for (const level of BORDER_LEVELS) for (const surface of Object.values(COLOR_VALUES.bg)) expect(Number(contrast(COLOR_VALUES.border[level], surface).toFixed(1)), level).toBeLessThanOrEqual(said);
-    // A checked Switch says so by its face, against the track and the surface around it.
+  it("[foundations.color.contrast-contract] tells a checked Switch by its face, in the number the page gives", () => {
     const face = Number(/켜짐은 면\(최소 ([\d.]+):1\)이 알립니다/.exec(colorDoc)![1]);
     for (const mode of COLOR_MODES) {
       const values = COLOR_VALUES_BY_MODE[mode];

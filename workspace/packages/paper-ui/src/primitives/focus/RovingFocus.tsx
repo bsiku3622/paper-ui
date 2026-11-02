@@ -1,4 +1,4 @@
-import { createContext, forwardRef, useCallback, useContext, useLayoutEffect, useMemo, useRef, useState, type ComponentPropsWithoutRef, type ElementType, type HTMLAttributes, type KeyboardEvent, type ReactElement, type ReactNode, type Ref, type RefCallback } from "react";
+import { createContext, forwardRef, useCallback, useContext, useLayoutEffect, useMemo, useRef, useState, type ComponentPropsWithoutRef, type ElementType, type FocusEvent, type KeyboardEvent, type ReactElement, type ReactNode, type Ref, type RefCallback } from "react";
 import { directionOf } from "../../internal/direction";
 import { paperError } from "../../internal/errors";
 import { registerPart, targetProps } from "../../internal/render-target";
@@ -6,6 +6,7 @@ import { useMergedRef } from "../../internal/refs";
 import { useControllableState } from "../../internal/useControllableState";
 import { MARKER_ATTRIBUTE, VALUE_ATTRIBUTE, type Orientation } from "../../tokens";
 import { composeEventHandlers, mergeProps } from "../composition";
+import type { PolymorphicComponent, PolymorphicProps } from "../polymorphic";
 
 type Entry = { value: string; element: HTMLElement; disabled: boolean };
 const inDocumentOrder = (a: Entry, b: Entry) => a.element === b.element ? 0 : a.element.compareDocumentPosition(b.element) & 2 ? 1 : -1;
@@ -23,7 +24,7 @@ const registered = (claims: readonly Entry[]) => {
 };
 
 export type RovingFocusState = { currentValue: string | undefined; isDisabled: boolean };
-export type RovingFocusProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "dir"> & {
+export type RovingFocusOwnProps = {
   orientation?: Orientation | "both";
   /** Written to the element only when given; without it the group reads the direction it inherits. */
   dir?: "ltr" | "rtl";
@@ -34,6 +35,8 @@ export type RovingFocusProps = Omit<HTMLAttributes<HTMLDivElement>, "children" |
   onCurrentValueChange?: (value: string) => void;
   children?: ReactNode | ((state: RovingFocusState) => ReactNode);
 };
+// The group is one element. `as` makes that element a layout primitive, so the items are its children and no row is drawn inside it.
+export type RovingFocusProps<As extends ElementType = "div"> = PolymorphicProps<RovingFocusOwnProps, As>;
 type Context = {
   current: string | undefined;
   disabled: boolean;
@@ -54,11 +57,12 @@ export function useRovingValues(): readonly string[] | undefined {
   return useMemo(() => entries && [...new Set(connected(entries).map((entry) => entry.value))], [entries]);
 }
 
-export const RovingFocusRoot = forwardRef<HTMLDivElement, RovingFocusProps>(function RovingFocus({
-  orientation = "horizontal", dir, loop = false, disabled = false,
+const RovingFocusRoot = forwardRef<HTMLElement, Omit<RovingFocusProps, "as" | "ref"> & { as?: ElementType }>(function RovingFocus({
+  as, orientation = "horizontal", dir, loop = false, disabled = false,
   currentValue, defaultCurrentValue, onCurrentValueChange, children, ...props
 }, forwardedRef) {
-  const root = useRef<HTMLDivElement>(null);
+  const Tag = as ?? "div";
+  const root = useRef<HTMLElement>(null);
   const rootRef = useMergedRef(root, forwardedRef);
   const [entries, setEntries] = useState<readonly Entry[] | undefined>();
   const registry = useRef<readonly Entry[]>([]);
@@ -144,11 +148,11 @@ export const RovingFocusRoot = forwardRef<HTMLDivElement, RovingFocusProps>(func
     target?.element.focus();
   };
   return <RovingContext.Provider value={{ current, disabled, entries, register, activate, navigate }}>
-    <div tabIndex={-1} {...props} ref={rootRef} dir={dir} {...{ [VALUE_ATTRIBUTE.orientation]: orientation }}
-      onBlur={(event) => {
+    <Tag tabIndex={-1} {...props} ref={rootRef} dir={dir} {...{ [VALUE_ATTRIBUTE.orientation]: orientation }}
+      onBlur={(event: FocusEvent<HTMLDivElement>) => {
         props.onBlur?.(event);
         if (!event.relatedTarget || !event.currentTarget.contains(event.relatedTarget as Node)) focused.current = null;
-      }}>{typeof children === "function" ? children({ currentValue: current, isDisabled: disabled }) : children}</div>
+      }}>{typeof children === "function" ? children({ currentValue: current, isDisabled: disabled }) : children}</Tag>
   </RovingContext.Provider>;
 });
 
@@ -206,4 +210,4 @@ const Item = forwardRef<HTMLElement, RovingFocusItemProps<ElementType>>(function
     onFocus={composeEventHandlers(onFocus, itemProps.onFocus)} onKeyDown={composeEventHandlers(onKeyDown, itemProps.onKeyDown)} />;
 }) as <As extends ElementType = "button">(props: RovingFocusItemProps<As>) => ReactElement;
 
-export const RovingFocus = Object.assign(RovingFocusRoot, { Item: registerPart(Item) });
+export const RovingFocus = Object.assign(RovingFocusRoot as PolymorphicComponent<RovingFocusOwnProps, "div">, { Item: registerPart(Item) });

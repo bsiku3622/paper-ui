@@ -446,10 +446,9 @@ test("[guardrails.source-numbers.media-keys] a query key is followed through tab
   // What a query holds is still read as a rule.
   assert.equal(await flagged(before("const FORCED = '(forced-colors: active)';", "{ '@media': { [FORCED]: { padding: '9px' } } }"), PACKAGE_CSS), true);
   assert.equal(await flagged(before("", "{ '@media': { ...{ '(hover: hover)': { padding: '9px' } } } }"), PACKAGE_CSS), true);
-  // A dimension module's import says what the module says; anywhere else the same name cannot be read.
-  const demo = before("import { DEMO_MEDIA, maxWidth } from './layout';", "{ '@media': { [DEMO_MEDIA.rail]: { gap: 0 }, [maxWidth(900)]: { gap: 0 } } }");
-  assert.equal(await flagged(demo, "app/src/pages/demo/demo.css.ts"), false);
-  assert.equal(await flagged(demo, "app/src/pages/demo.css.ts"), true);
+  // A name from a module the manifest does not declare for dimensions cannot be read.
+  const local = before("import { DEMO_MEDIA, maxWidth } from './layout';", "{ '@media': { [DEMO_MEDIA.rail]: { gap: 0 }, [maxWidth(900)]: { gap: 0 } } }");
+  assert.equal(await flagged(local, "app/src/pages/demo.css.ts"), true);
 });
 
 test("[guardrails.source-numbers.depth-owners] depth is stated by the elevation owners and drawn as strokeRing()", async () => {
@@ -482,9 +481,8 @@ test("[guardrails.source-numbers.app-roles] the app reads no typography palette"
   assert.equal(await flagged("import { tokens } from '@studio-baeks/paper-ui/tokens';\nexport const p = tokens.typography.role.body.size;", APP_TSX), false);
 });
 
-test("[guardrails.source-numbers.app-roles] the module the manifest declares for a page's dimensions is left alone", async () => {
+test("[guardrails.source-numbers.app-roles] a page's own module of dimensions is read like any other until the manifest declares it", async () => {
   const frame = "export const DEMO_LAYOUT = { frame: 1540 };\nexport const probe = { style: { padding: 24, opacity: 0.4 } };";
-  assert.equal(await flagged(frame, "app/src/pages/demo/layout.ts"), false);
   assert.equal(await flagged(frame, "app/src/pages/demo/other.ts"), true);
 });
 

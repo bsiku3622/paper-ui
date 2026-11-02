@@ -287,6 +287,41 @@ test.describe("on a pointer that cannot hover", () => {
 });
 
 // The selection marks, one to a room so a hit area never reaches into a neighbour's.
+test("[atoms.button.badge] a badge hangs over the button's corner without changing its size, on the far side in RTL, and a press on it is the button's", async ({ page }) => {
+  const plain = (await page.getByTestId("icon-button").boundingBox())!;
+  const button = page.getByTestId("counted");
+  const box = (await button.boundingBox())!;
+  expect([box.width, box.height]).toEqual([plain.width, plain.height]);
+  const count = (await page.getByTestId("count").boundingBox())!;
+  expect(count.y).toBeLessThan(box.y);
+  expect(count.x + count.width).toBeGreaterThan(box.x + box.width);
+  const rtl = (await page.getByTestId("counted-rtl").boundingBox())!;
+  const countRtl = (await page.getByTestId("count-rtl").boundingBox())!;
+  expect(countRtl.x).toBeLessThan(rtl.x);
+  const hit = await page.evaluate(([x, y]) => document.elementFromPoint(x!, y!)?.closest("button")?.getAttribute("data-testid"), [count.x + count.width / 2, count.y + count.height / 2]);
+  expect(hit).toBe("counted");
+});
+
+test("[atoms.button.justify] justify moves a wide button's content along it, over the root's own centring", async ({ page }) => {
+  await openHarness(page, "states");
+  await expect(page.getByTestId("justify-default")).toHaveCSS("justify-content", "center");
+  const offsets = async (id: string) => page.getByTestId(id).evaluate((node) => {
+    const box = node.getBoundingClientRect();
+    const [first, second] = [node.children[0]!.getBoundingClientRect(), node.children[1]!.getBoundingClientRect()];
+    return { start: first.left - box.left, end: box.right - second.right };
+  });
+  const start = await offsets("justify-start");
+  const center = await offsets("justify-center");
+  const end = await offsets("justify-end");
+  const between = await offsets("justify-between");
+  expect(start.start).toBeLessThan(center.start);
+  expect(end.end).toBeLessThan(center.end);
+  expect(center.start).toBeCloseTo(center.end, 0);
+  // Between puts each child at its own edge, at the button's inset.
+  expect(between.start).toBeCloseTo(start.start, 0);
+  expect(between.end).toBeCloseTo(end.end, 0);
+});
+
 test.describe("the selection marks", () => {
   const { color } = tokens;
   const ring = (ink: string) => ({ boxShadow: strokeRing(ink) });
@@ -295,22 +330,22 @@ test.describe("the selection marks", () => {
     await openHarness(page, "marks");
   });
 
-  test("[atoms.mark.ring] [atoms.states.atom-table] an unchecked Checkbox and Radio rest in a tertiary ink ring over the raised face, a hover leaves it there, and a checked one wears the primary solid", async ({ page }) => {
+  test("[atoms.mark.ring] [atoms.states.atom-table] an unchecked Checkbox and Radio rest in the input's line on no face, a hover leaves it there, and a checked one wears the primary solid", async ({ page }) => {
     for (const id of ["checkbox-md", "radio-md"]) {
       const mark = page.getByTestId(id);
       await page.mouse.move(0, 0);
-      await expectStyle(mark, { backgroundColor: color.bg.raised, borderTopColor: color.ink.tertiary });
+      await expectStyle(mark, { backgroundColor: "transparent", borderTopColor: color.border.base });
       await mark.hover();
-      await expectStyle(mark, { backgroundColor: color.bg.raised, borderTopColor: color.ink.tertiary });
+      await expectStyle(mark, { backgroundColor: "transparent", borderTopColor: color.border.base });
     }
     await expectStyle(page.getByTestId("checkbox-on"), { backgroundColor: color.accent.primary.solid, borderTopColor: color.accent.primary.solid });
     await expectStyle(page.getByTestId("checkbox-mixed"), { backgroundColor: color.accent.primary.solid, borderTopColor: color.accent.primary.solid });
     await expectStyle(page.getByTestId("radio-on"), { borderTopColor: color.accent.primary.solid });
   });
 
-  test("[atoms.mark.ring] an off Switch keeps its track inside a tertiary ink ring that is part of its own box, and an on one is the primary solid with no ring to show", async ({ page }) => {
+  test("[atoms.mark.ring] an off Switch keeps its track inside the input's line, a ring that is part of its own box, and an on one is the primary solid with no ring to show", async ({ page }) => {
     const off = page.getByTestId("switch-md");
-    await expectStyle(off, { backgroundColor: color.control.track, ...ring(color.ink.tertiary) });
+    await expectStyle(off, { backgroundColor: color.control.track, ...ring(color.border.base) });
     const box = await off.boundingBox();
     expect(box!.width, "the ring adds no size").toBe(roleDp(SHAPE_RECIPES.switch.width.md));
     expect(box!.height).toBe(roleDp(SHAPE_RECIPES.switch.height.md));
@@ -318,11 +353,11 @@ test.describe("the selection marks", () => {
     await off.check();
     await expectStyle(off, { backgroundColor: color.accent.primary.solid, ...ring("transparent") });
     await off.uncheck();
-    await expectStyle(off, { backgroundColor: color.control.track, ...ring(color.ink.tertiary) });
+    await expectStyle(off, { backgroundColor: color.control.track, ...ring(color.border.base) });
   });
 
   test("[atoms.mark.ring] an error draws the unchecked ring in the error ink and leaves what is checked as it was", async ({ page }) => {
-    await expectStyle(page.getByTestId("checkbox-error"), { backgroundColor: color.bg.raised, borderTopColor: color.accent.error.ink });
+    await expectStyle(page.getByTestId("checkbox-error"), { backgroundColor: "transparent", borderTopColor: color.accent.error.ink });
     await expectStyle(page.getByTestId("radio-error"), { borderTopColor: color.accent.error.ink });
     await expectStyle(page.getByTestId("switch-error"), { backgroundColor: color.control.track, ...ring(color.accent.error.ink) });
     await expectStyle(page.getByTestId("checkbox-error-on"), { backgroundColor: color.accent.primary.solid, borderTopColor: color.accent.primary.solid });

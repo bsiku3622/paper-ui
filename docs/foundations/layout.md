@@ -19,6 +19,7 @@ Layout의 숫자는 `tokens/layout.ts`의 `LAYOUT_SOURCE`에만 있습니다. co
 | `layout.gutter` | 16 | 페이지 가장자리와 내용 사이, 모달 scrim의 안쪽, 팝오버가 뷰포트에 닿을 때 남기는 여백 |
 | `layout.container.content` | 72rem (1152) | 사이트 본문 격자의 최대 폭. Box에서는 `maxWidth="container.content"`로 고릅니다 |
 | `layout.breakpoint.sm / md / lg / xl` | 30 · 48 · 64 · 80em (480 · 768 · 1024 · 1280px) | 미디어 쿼리가 변수를 못 읽어 값으로 둡니다 |
+| `layout.viewport` | 100dvh | 창의 높이. 휴대폰 브라우저의 막대를 뺀 지금의 높이이고, Box의 `height="viewport"`가 읽습니다 |
 | `layout.section.start / end` | clamp(3xl, 8vh, 2 × 3xl) · clamp(2xl, 5vh, 3xl) | 페이지 구획의 위·아래 거리. 뷰포트 높이를 따라 자라는 유동 단계입니다 |
 | `elevation.<tier>` (class) | 아래 표 | tier 하나가 position · z · 그림자를 한 번에 붙이는 class입니다. `tokens.layout`의 역할이 아닙니다 |
 <!-- /generated:layout-roles -->
@@ -47,7 +48,7 @@ tier 하나를 고르면 position, z, 그림자가 함께 정해집니다. z는 
 | tier | position | z | 그림자 깊이 | 쓰는 곳 |
 | --- | --- | --- | --- | --- |
 | `lifted` | relative | 10 | lifted | 스위치 손잡이처럼 살짝 들린 작은 것 |
-| `sticky` | sticky | 20 | 없음 | sticky 헤더·사이드바 — 경계선으로 나눕니다 |
+| `sticky` | sticky | 20 | 없음 | sticky 헤더·사이드바 — 경계선이나 제자리 그림자(`shadow`)로 나눕니다 |
 | `overlay` | relative | 30 | floating | 팝오버·메뉴 |
 | `modal` | relative | 40 | floating | 대화상자, 그 아래 `color.overlay.scrim` |
 | `toast` | relative | 50 | floating | 가장 위 알림 |

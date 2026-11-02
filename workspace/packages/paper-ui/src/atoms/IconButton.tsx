@@ -3,7 +3,7 @@
 //
 // 안의 Icon 은 size 를 안 주면 컨트롤 높이를 따른다. iconSize 를 주면 컨트롤 안의 모든 Icon 이 그 크기다.
 
-import { forwardRef, type ElementType, type ReactElement } from "react";
+import { forwardRef, type ElementType, type ReactElement, type ReactNode } from "react";
 
 import { registerAtom } from "../internal/render-target";
 import type { IconProps } from "../primitives/Icon";
@@ -18,6 +18,8 @@ type IconButtonOwn = PaintFace & {
   shape?: ControlShape;
   disabled?: boolean;
   iconSize?: IconSize;
+  // 모서리 표식 — 보통 Badge 하나. 이름은 aria-label 이 말하므로 숫자도 거기에 적는다("알림 3개").
+  badge?: ReactNode;
   "aria-label": string;
   children: ReactElement<IconProps>;
   className?: string;

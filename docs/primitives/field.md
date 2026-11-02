@@ -47,6 +47,9 @@ function PinInput({ status, ...props }: PinProps) {
 [contract:primitives.form-field.snapshot]: #
 children은 노드이거나 스냅샷 함수 `({ isDisabled, isInvalid, isRequired }) => 노드`입니다. 스냅샷은 읽기 전용이고, 입력의 status처럼 field의 상태에서 파생하는 값을 쓰는 곳입니다. FormField는 구조가 고정되어 있어 `as`를 받지 않습니다.
 
+[contract:primitives.form-field.spacing]: #
+FormField의 root는 세로로 쌓이고 label · 입력 · 설명 · 오류 사이의 간격을 스스로 갖습니다(Layout `gap.xs`). 안쪽에 Stack을 한 겹 더 두지 않아도 됩니다.
+
 [contract:primitives.form-field.parts]: #
 FormField의 보이는 부분은 Typography 역할로 그려지고 `data-part`로 이름이 붙습니다. label은 Text `label`(`data-part="label"`), 설명은 Text `caption`(`data-part="description"`), 오류는 Text `caption`에 error 잉크를 입힌 것(`data-part="error"`)입니다. Label Atom과 같은 label 역할이라 나란히 놓아도 글자가 갈라지지 않습니다.
 

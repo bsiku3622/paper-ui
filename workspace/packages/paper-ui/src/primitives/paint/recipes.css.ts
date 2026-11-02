@@ -49,7 +49,7 @@ const forcedMark = markForcedProfile.checked;
 
 export const markPaint = styleVariants({
   checkbox: {
-    backgroundColor: outlinedControlProfile.face,
+    backgroundColor: markProfile.rest.face,
     borderColor: markProfile.rest.ring,
     selectors: {
       [checkedOrMixed]: { backgroundColor: markProfile.checked.face, borderColor: markProfile.checked.face },
@@ -74,10 +74,10 @@ export const markPaint = styleVariants({
     },
   },
   radio: {
-    backgroundColor: outlinedControlProfile.face,
+    backgroundColor: markProfile.rest.face,
     borderColor: markProfile.rest.ring,
     selectors: {
-      "&:checked": { borderColor: markProfile.checked.face },
+      "&:checked": { backgroundColor: outlinedControlProfile.face, borderColor: markProfile.checked.face },
       "&:checked::after": { backgroundColor: markProfile.checked.face },
       [`${off}${errored}`]: { borderColor: markProfile.invalid.ring },
     },

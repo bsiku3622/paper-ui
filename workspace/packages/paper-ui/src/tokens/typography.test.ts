@@ -41,9 +41,9 @@ describe("Typography source is data", () => {
     const leaves: string[] = [];
     walkValues(TYPOGRAPHY.role, [], (_path, value) => leaves.push(value));
     walkValues(TYPOGRAPHY.preset, [], (_path, value) => leaves.push(value));
-    // Four values for each of the roles and the button, field and textarea at every size, the field's input line, and the badge.
+    // Five values for each role (its strong weight too), four for the button, field and textarea at every size, the field's input line, and the badge.
     const perSize = CONTROL_SIZES.length * (1 + 1 + 1);
-    expect(leaves).toHaveLength(TEXT_VARIANTS.length * 4 + perSize * 4 + CONTROL_SIZES.length + 4);
+    expect(leaves).toHaveLength(TEXT_VARIANTS.length * 5 + perSize * 4 + CONTROL_SIZES.length + 4);
     for (const leaf of leaves) expect(emitted.has(leaf.slice("var(".length, -1)), leaf).toBe(true);
     // Every leaf is the variable of a palette value the spec names, and no value stands in for one.
     for (const leaf of leaves) expect(leaf, leaf).toMatch(/^var\(--pui-typography-palette-/);
@@ -57,7 +57,10 @@ describe("Typography source is data", () => {
       expect(Object.keys(TYPOGRAPHY_SOURCE.tracking), "tracking").toContain(spec.tracking);
       if (spec.inputLeading) expect(Object.keys(TYPOGRAPHY_SOURCE.leading), "inputLeading").toContain(spec.inputLeading);
     };
-    for (const role of Object.values(ROLE_SPEC)) steps(role);
+    for (const role of Object.values(ROLE_SPEC)) {
+      steps(role);
+      expect(Object.keys(TYPOGRAPHY_SOURCE.weight), "strong").toContain(role.strong);
+    }
     for (const spec of [...Object.values(PRESET_SPEC.button), ...Object.values(PRESET_SPEC.field), ...Object.values(PRESET_SPEC.textarea), PRESET_SPEC.badge]) steps(spec);
     const block = CODE_SPEC.block;
     expect(Object.keys(TYPOGRAPHY_SOURCE.fontSize)).toContain(block.size);

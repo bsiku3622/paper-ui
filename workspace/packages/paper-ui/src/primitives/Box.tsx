@@ -11,14 +11,14 @@ import { forwardRef, type CSSProperties, type ElementType, type ReactNode } from
 
 import { BOX_STYLE_KEYS, resolveBoxClass, type BoxStyleProps } from "../resolvers";
 import { joinClass } from "../internal/joinClass";
-import { boxOverflow, boxSize, type BoxKeyword, type BoxOverflow } from "./Box.css";
+import { boxHideBelow, boxOverflow, boxSize, type BoxKeyword, type BoxOverflow } from "./Box.css";
 import type { PolymorphicComponent, PolymorphicProps } from "./polymorphic";
-import type { Container, Dimension, Measure } from "../tokens";
+import type { Breakpoint, Container, Dimension, Measure } from "../tokens";
 
 // 크기는 이름 가족 넷 중 하나이거나 CSS 길이다. 이름(Shape dimension · measure, Layout container, 키워드)은
 // class 가 되고, Primitive 인 Box 는 앱 고유 layout 도 담아야 하므로 CSS 길이 escape hatch 만 inline 으로 간다.
 export type BoxWidth = Dimension | `measure.${Measure}` | `container.${Container}` | BoxKeyword | number | (string & {});
-export type BoxHeight = Dimension | BoxKeyword | number | (string & {});
+export type BoxHeight = Dimension | BoxKeyword | "viewport" | number | (string & {});
 
 export type BoxLayoutProps = {
   width?: BoxWidth;
@@ -30,6 +30,8 @@ export type BoxLayoutProps = {
   overflow?: BoxOverflow;
   overflowX?: BoxOverflow;
   overflowY?: BoxOverflow;
+  // 이 분기점보다 좁은 창에서는 그려지지 않는다. 자리도 차지하지 않고 읽히지도 않는다.
+  hideBelow?: Breakpoint;
 };
 
 const SIZE_AXES = ["width", "minWidth", "maxWidth", "height", "minHeight", "maxHeight"] as const;
@@ -71,6 +73,7 @@ const BoxImpl = forwardRef<HTMLDivElement, Omit<BoxProps, "as" | "ref"> & { as?:
   overflow,
   overflowX,
   overflowY,
+  hideBelow,
   children,
   className,
   style: styleOverride,
@@ -109,6 +112,7 @@ const BoxImpl = forwardRef<HTMLDivElement, Omit<BoxProps, "as" | "ref"> & { as?:
       className={joinClass(
         resolveBoxClass(style as BoxStyleProps),
         ...classes,
+        hideBelow && boxHideBelow[hideBelow],
         className,
       )}
       style={{ ...lengths, ...styleOverride }}

@@ -21,9 +21,9 @@ import { announce } from "../primitives/a11y/LiveRegion";
 import { useSelectable } from "../primitives/select/useSelectable";
 import { IconSizeContext } from "../primitives/icon-context";
 import { paintClass } from "../primitives/paint/Paint";
-import { resolveControlFontSize, resolvePreset } from "../resolvers";
-import { CONTROL_ICON, type Accent, type ControlFontSize, type ControlShape, type ControlSize, type IconSize, type SurfaceFill, type Variant } from "../tokens";
-import { buttonCorner, buttonFull, buttonIconSize, buttonPill, buttonRoot, buttonSize } from "./Button.css";
+import { resolveControlFontSize, resolveControlStrong, resolvePreset } from "../resolvers";
+import { CONTROL_ICON, type Accent, type ControlFontSize, type ControlShape, type ControlSize, type IconSize, type Justify, type SurfaceFill, type Variant } from "../tokens";
+import { buttonAnchored, buttonBadge, buttonCorner, buttonFull, buttonIconSize, buttonJustify, buttonPill, buttonRoot, buttonSize } from "./Button.css";
 import { Spinner } from "./Spinner";
 
 export type ButtonBaseProps = {
@@ -35,6 +35,8 @@ export type ButtonBaseProps = {
   shadow?: boolean;
   size?: ControlSize;
   fontSize?: ControlFontSize;
+  strong?: boolean;
+  justify?: Justify;
   shape?: ControlShape;
   loading?: boolean;
   loadingLabel?: string;
@@ -42,6 +44,7 @@ export type ButtonBaseProps = {
   selected?: boolean;
   disabled?: boolean;
   iconSize?: IconSize;
+  badge?: ReactNode;
   children?: ReactNode;
   className?: string;
 } & Omit<HTMLAttributes<HTMLElement>, "className" | "children"> & { type?: string; href?: string };
@@ -55,8 +58,8 @@ const holdsSelection = (as: ElementType | undefined) => as === Selectable || as 
 // What the target takes beyond these (a router link's `to`) goes through to it untouched, so the Atoms type it by `as`.
 export const ButtonBase = forwardRef<HTMLElement, ButtonBaseProps>(function ButtonBase(
   {
-    anatomy, as, accent = "primary", variant = "solid", fill, shadow, size = "md", fontSize, shape = "rounded", loading, loadingLabel, fullWidth,
-    selected, disabled = false, iconSize, children, className, ...rest
+    anatomy, as, accent = "primary", variant = "solid", fill, shadow, size = "md", fontSize, strong, justify, shape = "rounded", loading, loadingLabel, fullWidth,
+    selected, disabled = false, iconSize, badge, children, className, ...rest
   },
   forwardedRef,
 ) {
@@ -95,9 +98,12 @@ export const ButtonBase = forwardRef<HTMLElement, ButtonBaseProps>(function Butt
         anatomy === "icon" ? buttonIconSize[size] : buttonSize[size],
         resolvePreset("button", size),
         resolveControlFontSize(fontSize),
+        resolveControlStrong(strong),
         paintClass({ accent, variant, fill, shadow, hoverable: true }),
         fullWidth && buttonFull,
+        justify && buttonJustify[justify],
         shape === "pill" && buttonPill,
+        badge != null && buttonAnchored,
         className,
       )}
       {...(holdsSelection(as) ? { selected } : selected !== undefined ? selectProps : null)}
@@ -106,6 +112,7 @@ export const ButtonBase = forwardRef<HTMLElement, ButtonBaseProps>(function Butt
       {busy ? <Spinner size="inline" ink="inherit" decorative /> : null}
       {/* A control's icons follow the control, not the text beside them; an explicit size on the Icon still wins. */}
       <IconSizeContext.Provider value={iconSize ?? CONTROL_ICON[size]}>{children}</IconSizeContext.Provider>
+      {badge != null ? <span className={buttonBadge}>{badge}</span> : null}
     </Pressable>
   );
 });

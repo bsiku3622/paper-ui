@@ -47,7 +47,7 @@ export const INVENTORY = {
   ],
   polymorphic: [
     "Box", "Surface", "Paint", "Stack", "Inline", "Grid", "Text", "VisuallyHidden",
-    "Pressable", "Selectable", "SelectableGroup.Item", "Floating.Trigger", "Floating.Close", "Draggable", "Draggable.Handle", "Droppable", "RovingFocus.Item",
+    "Pressable", "Selectable", "SelectableGroup", "SelectableGroup.Item", "Floating.Trigger", "Floating.Content", "Floating.Close", "Draggable", "Draggable.Handle", "Droppable", "RovingFocus", "RovingFocus.Item",
     "Button", "IconButton", "Link",
   ],
 } as const;

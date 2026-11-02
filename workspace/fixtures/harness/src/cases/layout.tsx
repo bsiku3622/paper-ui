@@ -1,4 +1,4 @@
-import { Grid, Inline, Stack, Surface } from "@studio-baeks/paper-ui";
+import { Box, Field, FormField, Grid, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";
 
 // The layout roots against Box's named sizes: each container bare, then with a named minWidth, so the spec
 // reads which min-width wins when both sit in one layer.
@@ -22,5 +22,18 @@ export const LayoutCase = () => (
     <Surface radius="md" data-testid="radius-md" />
     <Surface radius="lg" data-testid="radius-lg" />
     <Surface radius="full" data-testid="radius-full" />
+    <Grid columns={{ base: 1, md: 2, lg: "1fr 2fr 3fr" }} rows={{ md: "2rem 3rem" }} data-testid="grid-steps"><Box /></Grid>
+    <Grid columns={{ md: 3 }} data-testid="grid-no-base"><Box /></Grid>
+    <Grid columns={{ md: 2 }} data-testid="grid-outer"><Grid columns={{ lg: 3 }} data-testid="grid-inner"><Box /></Grid></Grid>
+    <Box hideBelow="md" data-testid="hide-box">Box</Box>
+    <Stack hideBelow="md" data-testid="hide-stack">Stack</Stack>
+    <Grid hideBelow="lg" data-testid="hide-grid">Grid</Grid>
+    <Box height="viewport" data-testid="height-viewport" />
+    <Box minHeight="viewport" data-testid="min-height-viewport" />
+    <Surface elevation="sticky" top="lg" fill="raised" shadow data-testid="sticky-top" />
+    <Surface elevation="sticky" top="none" data-testid="sticky-none" />
+    <Surface elevation="overlay" top="lg" data-testid="top-unread" />
+    <Inline width="md"><Text truncate data-testid="truncate">{"긴 글자가 칸을 넘으면 말줄임표로 잘립니다 ".repeat(6)}</Text></Inline>
+    <FormField label="Email" description="Help" error="Wrong" invalid data-testid="form-field"><Field /></FormField>
   </>
 );

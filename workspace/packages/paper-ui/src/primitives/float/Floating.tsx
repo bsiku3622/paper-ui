@@ -91,9 +91,10 @@ const TriggerImpl = forwardRef<HTMLElement, Omit<FloatingTriggerProps, "as" | "r
 });
 const Trigger = registerPart(TriggerImpl) as PolymorphicComponent<FloatingButtonOwnProps, "button">;
 
-type FloatingCommonProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "autoFocus" | "role" | "id"> & {
+type FloatingCommonProps = {
   children: ReactNode | ((state: FloatingContentState) => ReactNode);
   role?: "dialog" | "alertdialog";
+  id?: never;
   dismissable?: boolean;
   keyboardDismissDisabled?: boolean;
   closeOnBlur?: boolean;
@@ -104,7 +105,7 @@ type FloatingCommonProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "au
   portalContainer?: Element;
 };
 /** A panel beside its anchor: the `anchorRef`, or the Floating.Trigger when it is not given. */
-export type FloatingPopoverProps = FloatingCommonProps & {
+type FloatingPopoverOwnProps = FloatingCommonProps & {
   presentation?: "popover";
   anchorRef?: RefObject<Element | null>;
   placement?: Placement;
@@ -115,7 +116,7 @@ export type FloatingPopoverProps = FloatingCommonProps & {
   underlayClassName?: never;
 };
 /** A dialog over a scrim: centred, with the page behind it inert and its scroll locked. */
-export type FloatingModalProps = FloatingCommonProps & {
+type FloatingModalOwnProps = FloatingCommonProps & {
   presentation: "modal";
   underlayClassName?: string;
   anchorRef?: never;
@@ -124,7 +125,12 @@ export type FloatingModalProps = FloatingCommonProps & {
   crossOffset?: never;
   flip?: never;
 };
-export type FloatingContentProps = FloatingPopoverProps | FloatingModalProps;
+type FloatingContentOwnProps = FloatingPopoverOwnProps | FloatingModalOwnProps;
+// The panel is one element. Floating draws its elevation and nothing else, so `as={Surface}` is how the panel gets a face.
+export type FloatingPopoverProps<As extends ElementType = "div"> = PolymorphicProps<FloatingPopoverOwnProps, As>;
+export type FloatingModalProps<As extends ElementType = "div"> = PolymorphicProps<FloatingModalOwnProps, As>;
+export type FloatingContentProps<As extends ElementType = "div"> = PolymorphicProps<FloatingContentOwnProps, As>;
+type ContentImplProps = FloatingContentOwnProps & { as?: ElementType } & Omit<HTMLAttributes<HTMLDivElement>, keyof FloatingContentOwnProps>;
 
 // React 19 reads `inert` as a boolean attribute; React 18 passes an unknown attribute through as a string, and an empty one is on.
 const INERT = Number.parseInt(version, 10) >= 19 ? true : "";
@@ -137,6 +143,7 @@ type BehaviorProps = {
   closeOnInteractOutside: (element: Element) => boolean;
 };
 type PanelProps = {
+  as: ElementType;
   state: FloatingResult;
   elevation: FloatingElevation;
   rootRef: RefObject<HTMLDivElement | null>;
@@ -163,27 +170,27 @@ function useInitialFocus(ref: RefObject<HTMLDivElement | null>, initial: RefObje
     }
   }, [ref, initial, takeFocus, scope]);
 }
-function ModalPanel({ state, elevation, rootRef, panelRef: ref, forwardedRef, behavior, initialFocusRef, takeFocus, underlayClassName, isExiting, data, domProps }: PanelProps) {
+function ModalPanel({ as: Tag, state, elevation, rootRef, panelRef: ref, forwardedRef, behavior, initialFocusRef, takeFocus, underlayClassName, isExiting, data, domProps }: PanelProps) {
   const { panelProps, backdropProps } = useAriaModal(behavior, state, ref);
   const mergedRef = useMergedRef(ref, forwardedRef);
   useInitialFocus(ref, initialFocusRef, takeFocus);
   return <div {...backdropProps} {...leaving(isExiting)} {...data} ref={rootRef} className={joinClass(styles.backdrop, styles.stack[elevation.tier], scrimPaint, presence.scrim, underlayClassName)}
     style={{ [styles.rankProperty]: String(elevation.rank) }}>
-    <div {...mergeProps(domProps, panelProps)} {...data} ref={mergedRef} aria-modal="true" />
+    <Tag {...mergeProps(domProps, panelProps)} {...data} ref={mergedRef} aria-modal="true" />
   </div>;
 }
-function PopoverPanel({ state, rootRef, panelRef: ref, forwardedRef, behavior, initialFocusRef, takeFocus, isExiting, data, domProps }: PanelProps) {
+function PopoverPanel({ as: Tag, state, rootRef, panelRef: ref, forwardedRef, behavior, initialFocusRef, takeFocus, isExiting, data, domProps }: PanelProps) {
   const { panelProps } = useAriaDismiss({ ...behavior, isOpen: state.isOpen, onClose: state.close }, ref);
   const mergedRef = useMergedRef(ref, forwardedRef, rootRef);
   useInitialFocus(ref, initialFocusRef, takeFocus);
-  return <div {...mergeProps(domProps, panelProps)} {...leaving(isExiting)} {...data} ref={mergedRef} />;
+  return <Tag {...mergeProps(domProps, panelProps)} {...leaving(isExiting)} {...data} ref={mergedRef} />;
 }
 
-type ShownProps = FloatingContentProps & { rootRef: RefObject<HTMLDivElement | null>; isExiting: boolean; forwardedRef: Ref<HTMLDivElement> };
+type ShownProps = ContentImplProps & { rootRef: RefObject<HTMLDivElement | null>; isExiting: boolean; forwardedRef: Ref<HTMLDivElement> };
 // A Content while it is on the page: opening and closing animate through it, and it is gone when the exit has played.
 function Shown({ rootRef, isExiting, forwardedRef, ...props }: ShownProps) {
   const { state, triggerRef, contentId } = useContextValue();
-  const { presentation = "popover", role = "dialog", dismissable = true, keyboardDismissDisabled = false, closeOnBlur = false, autoFocus = true, restoreFocus = true,
+  const { as = "div", presentation = "popover", role = "dialog", dismissable = true, keyboardDismissDisabled = false, closeOnBlur = false, autoFocus = true, restoreFocus = true,
     initialFocusRef, closeOnInteractOutside, portalContainer, anchorRef, placement = "bottom start", offset = "sm", crossOffset = "none", flip = true,
     underlayClassName, className, style, children, ...attributes } = props;
   const modal = presentation === "modal";
@@ -246,14 +253,14 @@ function Shown({ rootRef, isExiting, forwardedRef, ...props }: ShownProps) {
   return <ElevationContext.Provider value={elevation}>
     <Portal container={portalContainer} opener={opener}>
       <FocusScope contain={modal && state.isOpen} restoreFocus={restoreFocus}>
-        <Panel state={state} elevation={elevation} rootRef={rootRef} panelRef={panelRef} forwardedRef={forwardedRef} behavior={behavior} initialFocusRef={initialFocusRef}
+        <Panel as={as} state={state} elevation={elevation} rootRef={rootRef} panelRef={panelRef} forwardedRef={forwardedRef} behavior={behavior} initialFocusRef={initialFocusRef}
           takeFocus={autoFocus} underlayClassName={underlayClassName} isExiting={isExiting}
           data={{ [VALUE_ATTRIBUTE.presence]: isExiting ? "exiting" : isEntering ? "entering" : undefined }} domProps={domProps} />
       </FocusScope>
     </Portal>
   </ElevationContext.Provider>;
 }
-const Content = forwardRef<HTMLDivElement, FloatingContentProps>(function FloatingContent(props, ref) {
+const ContentImpl = forwardRef<HTMLDivElement, ContentImplProps>(function FloatingContent(props, ref) {
   const { state } = useContextValue();
   const rootRef = useRef<HTMLDivElement>(null);
   const isExiting = useAriaExit(rootRef, state.isOpen);
@@ -267,6 +274,7 @@ const Content = forwardRef<HTMLDivElement, FloatingContentProps>(function Floati
   if (awaitingCommit || (!state.isOpen && !isExiting)) return null;
   return <Shown key={opening.count} {...props} rootRef={rootRef} isExiting={isExiting} forwardedRef={ref} />;
 });
+const Content = ContentImpl as PolymorphicComponent<FloatingContentOwnProps, "div">;
 export type FloatingCloseProps<As extends ElementType = "button"> = PolymorphicProps<FloatingButtonOwnProps, As>;
 const CloseImpl = forwardRef<HTMLElement, Omit<FloatingCloseProps, "as" | "ref"> & { as?: ElementType }>(function FloatingClose({ as, disabled = false, onClick, onKeyDown, ...props }, ref) {
   const { state } = useContextValue();

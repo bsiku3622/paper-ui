@@ -24,6 +24,12 @@ export const TypographyCase = () => (
     <Text variant="display" data-testid="text-display">복잡한 화면도 단정하게</Text>
     <Text data-testid="text-korean">복잡한 화면을 더 명확하게 보여주는 단정한 시스템입니다.</Text>
     <Text family="mono" data-testid="text-mono">WEB24_verylongidentifier_withoutbreaks</Text>
+    {TEXT_VARIANTS.map((variant) => <Text key={variant} variant={variant} strong data-testid={`strong-${variant}`}>Strong</Text>)}
+    {TEXT_VARIANTS.map((variant) => <Text key={variant} variant={variant} strong={false} data-testid={`plain-${variant}`}>Plain</Text>)}
+    <Text variant="heading" family="mono" strong={false} data-testid="mono-plain">Mono plain</Text>
+    <Button data-testid="button-own">Own</Button>
+    <Button strong data-testid="button-strong">Strong</Button>
+    <Button strong={false} data-testid="button-plain">Plain</Button>
     <Text variant="caption" numeric data-testid="text-numeric">v0.1.0 1,234</Text>
     <Label data-testid="label">Name</Label>
     <FormField label="Email" description="Help" error="Wrong" invalid>

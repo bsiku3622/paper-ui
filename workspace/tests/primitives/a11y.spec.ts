@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
 
-import { openPlayground } from "../support/harness";
+import { tokens } from "../../packages/paper-ui/src/tokens";
+import { roleDp } from "../support/geometry";
+import { openHarness, openPlayground } from "../support/harness";
 import { tab } from "../support/keyboard";
 
 test("[primitives.roving-focus.tab-stop] roving focus has one Tab stop, supports keys and recovers after removal", async ({ page }) => {
@@ -56,6 +58,20 @@ test("[primitives.live-region.announce] announce leaves a message in the page's 
   await page.getByRole("button", { name: "announce() 호출", exact: true }).click();
   await expect(page.locator('[data-testid="live-region"]')).toHaveText("아직 알릴 내용이 없습니다.");
   await expect(page.locator('[aria-live="polite"]', { hasText: "저장했습니다." }).first()).toBeAttached();
+});
+
+test("[primitives.form-field.spacing] [primitives.form-field.status-link] a field stands its parts a gap step apart and draws its control's error edge on its own", async ({ page }) => {
+  await openHarness(page, "layout");
+  const field = page.getByTestId("form-field");
+  await expect(field).toHaveCSS("display", "flex");
+  await expect(field).toHaveCSS("flex-direction", "column");
+  const xs = roleDp(tokens.layout.gap.xs);
+  await expect(field).toHaveCSS("row-gap", `${xs}px`);
+  const edges = await field.evaluate((node) => [...node.children].map((child) => { const box = child.getBoundingClientRect(); return { top: box.top, bottom: box.bottom }; }));
+  for (let index = 1; index < edges.length; index++) expect(edges[index]!.top - edges[index - 1]!.bottom, `part ${index}`).toBeCloseTo(xs, 0);
+  const frame = field.locator(":scope > *").nth(1);
+  await expect(frame).toHaveAttribute("data-status", "error");
+  await expect(field.getByRole("textbox")).toHaveAttribute("aria-invalid", "true");
 });
 
 test("[primitives.form-field.relations] field labels, descriptions and errors point to the actual native input", async ({ page }) => {

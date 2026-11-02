@@ -4,7 +4,7 @@ Focus Primitive는 그룹 하나에 Tab 정지 하나를 두는 탐색을 맡는
 
 | 컴포넌트 | Hook | 책임 | 기본값 |
 | --- | --- | --- | --- |
-| RovingFocus | useRovingFocusItem | orientation, dir, loop, disabled, currentValue 계열, children(노드 또는 스냅샷 함수) | horizontal / dir 상속 / loop=false. 하나의 Tab 진입점과 DOM focus 이동 |
+| RovingFocus | useRovingFocusItem | as, orientation, dir, loop, disabled, currentValue 계열, children(노드 또는 스냅샷 함수) | horizontal / dir 상속 / loop=false. 하나의 Tab 진입점과 DOM focus 이동 |
 
 ## 그룹 focus 탐색
 
@@ -31,6 +31,9 @@ Toolbar의 비활성 항목을 건너뛰고 양 끝에서 순환하는 예시입
 | disabled | false | 그룹 탐색과 기본 Item 비활성화 |
 | currentValue / defaultCurrentValue | 첫 활성 항목 | controlled / uncontrolled Tab 진입점 |
 | onCurrentValueChange | 없음 | focus된 항목의 value 전달 |
+
+[contract:primitives.roving-focus.as]: #
+그룹은 요소 하나입니다. `as`로 Inline · Grid 같은 배치 Primitive를 고르면 그 요소가 항목을 늘어놓고, 기본은 div입니다.
 
 [contract:primitives.roving-focus.direction]: #
 `dir`은 줄 때만 DOM에 쓰고, 가로 방향키는 항목이 서 있는 자리의 방향을 따릅니다 — 가장 가까운 `dir` 속성(`ltr` · `rtl`), 없으면 계산된 `direction`, 그것도 없으면 `ltr`입니다. 그래서 `dir="rtl"`인 조상이나 `<html dir="rtl">` 아래에서는 `dir`을 주지 않아도 ArrowLeft가 다음 항목으로 갑니다. 명시한 `dir`은 물려받은 방향보다 앞섭니다.

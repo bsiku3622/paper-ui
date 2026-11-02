@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { elevation } from "../index";
+import { stickyTop } from "../styles/elevation.css";
 import { Box } from "./Box";
 import { Paint, paintClass } from "./paint/Paint";
 import { Stack } from "./layout/Stack";
@@ -21,6 +22,8 @@ describe("Surface", () => {
     expect(surfaceClass({ fill: "raised", shadow: true }).split(" ")).toContain(restingShadow);
     expect(surfaceClass({ shadow: true }).split(" ")).not.toContain(restingShadow);
     expect(surfaceClass({ fill: "raised", shadow: true, elevation: "overlay" }).split(" ")).not.toContain(restingShadow);
+    // The sticky tier has no shadow of its own.
+    expect(surfaceClass({ fill: "raised", shadow: true, elevation: "sticky" }).split(" ")).toContain(restingShadow);
     render(<Surface data-testid="themed" theme="dark" />);
     expect(screen.getByTestId("themed").classList.contains(restingShadow)).toBe(false);
     compiles(
@@ -30,6 +33,14 @@ describe("Surface", () => {
       // @ts-expect-error A box with no face has nothing to cast a shadow from.
       <Surface shadow />,
     );
+  });
+
+  it("[primitives.surface.sticky-top] reads top on the sticky tier alone, and gives surfaceClass the same class", () => {
+    render(<><Surface data-testid="sticky" elevation="sticky" top="lg" /><Surface data-testid="overlay" elevation="overlay" top="lg" /><Surface data-testid="ground" top="lg" /></>);
+    expect(screen.getByTestId("sticky").classList.contains(stickyTop.lg)).toBe(true);
+    expect(screen.getByTestId("overlay").classList.contains(stickyTop.lg)).toBe(false);
+    expect(screen.getByTestId("ground").classList.contains(stickyTop.lg)).toBe(false);
+    expect(surfaceClass({ elevation: "sticky", top: "none" })).toBe([elevation.sticky, stickyTop.none].join(" "));
   });
 
   it("[primitives.surface.classes] turns fill, border, radius and elevation into the classes of their own maps", () => {

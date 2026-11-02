@@ -21,7 +21,16 @@ import { mergeProps, mergeRefs, composeEventHandlers } from "./composition";
 import { useAnchoredPosition } from "../internal/aria/overlay";
 import { stepProbe } from "../internal/measure.css";
 import { spaceClass } from "../styles/space.css";
+import { fillClass } from "../styles/color.css";
+import { Grid } from "./layout/Grid";
+import { Inline } from "./layout/Inline";
+import { inlineRoot } from "./layout/flex.css";
+import { cast as floatingCast } from "./float/Floating.css";
+import { surfaceRadius } from "./paint/Surface.css";
 import { ELEVATION_NEST_LIMIT, THEME_ATTRIBUTE } from "../tokens";
+
+// Never rendered: each line only has to compile.
+const compiles = (...elements: ReactElement[]) => elements.length;
 import * as floatingStyles from "./float/Floating.css";
 import { pressMotion } from "./press/press.css";
 import { scrimPaint } from "./paint/recipes.css";
@@ -552,6 +561,37 @@ describe("children snapshots", () => {
     expect(screen.getByText("drag true false")).toBeTruthy();
     expect(screen.getByText("drop false false")).toBeTruthy();
     expect(screen.getByText("drop true")).toBeTruthy();
+  });
+
+  it("[primitives.selectable-group.as] [primitives.roving-focus.as] makes the group a layout primitive, so the items are its own children and the keys and the role stay", () => {
+    const groupRef = createRef<HTMLDivElement>();
+    const view = render(<SelectableGroup ref={groupRef} as={Inline} gap="sm" aria-label="Group" defaultSelectedValues={["a"]}>
+      <SelectableGroup.Item value="a">A</SelectableGroup.Item>
+      <SelectableGroup.Item value="b">B</SelectableGroup.Item>
+    </SelectableGroup>);
+    const group = screen.getByRole("group", { name: "Group" });
+    expect(groupRef.current).toBe(group);
+    expect(group.classList.contains(inlineRoot)).toBe(true);
+    expect(group.classList.contains(spaceClass.gap.sm)).toBe(true);
+    expect(screen.getByRole("button", { name: "A" }).parentElement).toBe(group);
+    screen.getByRole("button", { name: "A" }).focus();
+    fireEvent.keyDown(screen.getByRole("button", { name: "A" }), { key: "ArrowRight" });
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "B" }));
+    view.unmount();
+
+    render(<RovingFocus as={Inline} gap="md" data-testid="roving"><RovingFocus.Item value="a">A</RovingFocus.Item></RovingFocus>);
+    const roving = screen.getByTestId("roving");
+    expect(roving.classList.contains(inlineRoot)).toBe(true);
+    expect(roving.tabIndex).toBe(-1);
+    expect(screen.getByRole("button", { name: "A" }).parentElement).toBe(roving);
+    compiles(
+      <SelectableGroup as={Grid} columns={2} />,
+      <SelectableGroup />,
+      // @ts-expect-error A group's change is onSelectedValuesChange; the native onChange is closed.
+      <SelectableGroup onChange={() => {}} />,
+      // @ts-expect-error columns is Grid's.
+      <SelectableGroup as={Inline} columns={2} />,
+    );
   });
 
   it("[primitives.snapshots.children] [primitives.selectable-group.items] hands a SelectableGroup's children its selection and whether it is disabled", () => {
@@ -1659,6 +1699,28 @@ describe("what the root of a Floating takes", () => {
     fireEvent.pointerUp(screen.getByText("Outside"));
     fireEvent.click(screen.getByText("Outside"));
   };
+
+  it.each(["popover", "modal"] as const)("[primitives.floating.content-options] as draws the %s with another component, so the panel itself is the face and keeps its name, its elevation and its ref", (presentation) => {
+    const ref = createRef<HTMLDivElement>();
+    render(<Floating defaultOpen>
+      <Floating.Trigger>Anchor</Floating.Trigger>
+      <Floating.Content ref={ref} as={Surface} fill="raised" radius="lg" padding="xl" aria-label="Panel" presentation={presentation}>Body</Floating.Content>
+    </Floating>);
+    const panel = screen.getByRole("dialog", { name: "Panel" });
+    expect(ref.current).toBe(panel);
+    for (const className of [fillClass.raised, surfaceRadius.lg, spaceClass.padding.xl, floatingCast[presentation === "modal" ? "modal" : "overlay"]]) expect(panel.classList.contains(className), className).toBe(true);
+    // No face of its own inside it.
+    expect(panel.firstElementChild).toBeNull();
+    expect(panel.textContent).toBe("Body");
+    compiles(
+      <Floating.Content as={Surface} fill="raised" radius="lg">Body</Floating.Content>,
+      <Floating.Content presentation="modal">Body</Floating.Content>,
+      // @ts-expect-error radius is Surface's, and a div has none.
+      <Floating.Content radius="lg">Body</Floating.Content>,
+      // @ts-expect-error The panel's id ties it to its Trigger.
+      <Floating.Content id="mine">Body</Floating.Content>,
+    );
+  });
 
   it.each(["popover", "modal"] as const)("[primitives.floating.content-options] [primitives.floating.portal-container] portalContainer places the %s in that element, whose root keeps the opener's theme and source", (presentation) => {
     const host = document.createElement("section");

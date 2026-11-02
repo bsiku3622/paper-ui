@@ -1,17 +1,22 @@
 import { forwardRef, type CSSProperties, type ElementType } from "react";
 import { Box, type BoxOwnProps } from "../Box";
 import { resolveGap, type GapProps } from "../../resolvers";
-import type { Align, Justify, JustifyItem } from "../../tokens";
+import type { Align, Breakpoint, Justify, JustifyItem } from "../../tokens";
 import { paperError } from "../../internal/errors";
 import { joinClass } from "../../internal/joinClass";
-import { gridRoot, gridAlign, gridJustify, gridJustifyItems } from "./Grid.css";
+import { gridColumnSteps, gridRoot, gridRowSteps, gridAlign, gridJustify, gridJustifyItems } from "./Grid.css";
 import type { PolymorphicComponent, PolymorphicProps } from "../polymorphic";
+
+// 폭에 따라 달라지는 track — base 가 가장 좁은 창이고, 이름 붙은 단은 그 분기점부터 다음 단까지다.
+type Steps<Track> = { base?: Track } & { [Step in Breakpoint]?: Track };
+type ColumnTracks = number | CSSProperties["gridTemplateColumns"];
+type RowTracks = number | CSSProperties["gridTemplateRows"];
 
 // align 은 칸 안의 세로 정렬, justify 는 track 묶음의 가로 분배, justifyItems 는 칸 안의 가로 정렬이다.
 // 기본값은 CSS 의 normal 이 stretch 처럼 동작하므로 root 가 갖고, prop 은 줄 때만 class 가 된다.
 type GridOwnProps = BoxOwnProps & GapProps & {
-  columns?: number | CSSProperties["gridTemplateColumns"];
-  rows?: number | CSSProperties["gridTemplateRows"];
+  columns?: ColumnTracks | Steps<ColumnTracks>;
+  rows?: RowTracks | Steps<RowTracks>;
   autoFlow?: CSSProperties["gridAutoFlow"];
   align?: Align;
   justify?: Justify;
@@ -20,16 +25,30 @@ type GridOwnProps = BoxOwnProps & GapProps & {
 
 export type GridProps<As extends ElementType = "div"> = PolymorphicProps<GridOwnProps, As>;
 
-const tracks = (value: GridOwnProps["columns"]) => {
+const tracks = (value: ColumnTracks | RowTracks) => {
   if (typeof value !== "number") return value;
   if (!Number.isInteger(value) || value < 1) throw paperError("Grid track count must be a positive integer.", RangeError);
   return `repeat(${value}, minmax(0, 1fr))`;
 };
+
+const isSteps = <Track,>(value: Track | Steps<Track>): value is Steps<Track> => typeof value === "object" && value !== null;
+
+// Steps go through the variables their classes read: an inline track would beat every media query.
+const stepped = (value: Steps<ColumnTracks | RowTracks>, rules: typeof gridColumnSteps) => {
+  const given = [["base", rules.base] as const, ...(Object.entries(rules.at) as [Breakpoint, typeof rules.base][])].filter(([step]) => value[step] !== undefined);
+  return {
+    classes: given.map(([, rule]) => rule.className),
+    variables: Object.fromEntries(given.map(([step, rule]) => [rule.property, tracks(value[step]!)])),
+  };
+};
+
 const GridImpl = forwardRef<HTMLDivElement, Omit<GridProps, "as" | "ref"> & { as?: ElementType }>(function Grid({
-  columns = 1, rows, autoFlow, gap, rowGap, columnGap, align, justify, justifyItems, className, style, ...rest
+  columns, rows, autoFlow, gap, rowGap, columnGap, align, justify, justifyItems, className, style, ...rest
 }, ref) {
+  const columnSteps = columns !== undefined && isSteps(columns) ? stepped(columns, gridColumnSteps) : undefined;
+  const rowSteps = rows !== undefined && isSteps(rows) ? stepped(rows, gridRowSteps) : undefined;
   return <Box ref={ref} {...rest}
-    className={joinClass(gridRoot, resolveGap({ gap, rowGap, columnGap }), align && gridAlign[align], justify && gridJustify[justify], justifyItems && gridJustifyItems[justifyItems], className)}
-    style={{ gridTemplateColumns: tracks(columns), gridTemplateRows: tracks(rows), gridAutoFlow: autoFlow, ...style }} />;
+    className={joinClass(gridRoot, resolveGap({ gap, rowGap, columnGap }), ...(columnSteps?.classes ?? []), ...(rowSteps?.classes ?? []), align && gridAlign[align], justify && gridJustify[justify], justifyItems && gridJustifyItems[justifyItems], className)}
+    style={{ gridTemplateColumns: columns === undefined || isSteps(columns) ? undefined : tracks(columns), gridTemplateRows: rows === undefined || isSteps(rows) ? undefined : tracks(rows), gridAutoFlow: autoFlow, ...columnSteps?.variables, ...rowSteps?.variables, ...style }} />;
 });
 export const Grid = GridImpl as PolymorphicComponent<GridOwnProps, "div">;

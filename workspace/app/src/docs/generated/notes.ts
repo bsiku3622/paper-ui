@@ -13,6 +13,7 @@ export const TONE_USES: Record<AccentTone, string> = {
 
 export const ROLE_USES: Record<TextVariant, string> = {
   hero: "랜딩 헤드라인",
+  headline: "앱 화면의 큰 제목",
   display: "큰 제목",
   title: "페이지 제목",
   heading: "섹션 제목",
@@ -25,6 +26,7 @@ export const ROLE_USES: Record<TextVariant, string> = {
 // The default tag a Text variant renders as (Text.tsx).
 export const ROLE_TAGS: Record<TextVariant, string> = {
   hero: "h1",
+  headline: "h1",
   display: "h1",
   title: "h1",
   heading: "h2",
@@ -69,7 +71,7 @@ export const DIR_NOTES: Record<string, string> = {
   "app/src/docs": "docs 본문 파싱과 링크 해석, Prose 렌더링",
   "app/src/docs/generated": "문서의 생성 블록 — `pnpm docs:sync`가 원본에서 다시 씁니다",
   "app/src/pages": "라우트 페이지 — Home · Docs · demo/",
-  "app/src/pages/demo": "Demo 화면 — 이슈 트래커, Primitive · Atom을 실제 조합 안에서 봅니다",
+  "app/src/pages/demo": "Demo 화면 — 대시보드 · 로그인 · 설정 폼, 스타일시트 없이 Paper 부품만으로 그립니다",
   "app/src/playground": "Playground — Overview · 사이드바 · 상세와 foundations/ · registry/",
   "app/src/playground/foundations": "Foundations 페이지 — 시스템마다 원본 → 역할 → 조합을 그립니다",
   "app/src/playground/registry": "항목 spec과 코드 찍기(printJsx) — 항목마다 entries/ 하나",

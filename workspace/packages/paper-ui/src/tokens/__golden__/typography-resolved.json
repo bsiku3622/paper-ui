@@ -10,6 +10,7 @@
     "fontSize.20": "1.25rem",
     "fontSize.24": "1.5rem",
     "fontSize.32": "2rem",
+    "fontSize.48": "3rem",
     "fontSize.hero": "clamp(2.75rem, 5.2vw, 4.75rem)",
     "weight.regular": "400",
     "weight.normal": "450",
@@ -22,6 +23,7 @@
     "leading.28": "1.75rem",
     "leading.32": "2rem",
     "leading.40": "2.5rem",
+    "leading.56": "3.5rem",
     "leading.hero": "1.12",
     "tracking.mono": "-0.04em",
     "tracking.tightest": "-0.035em",
@@ -40,56 +42,72 @@
       "size": "clamp(2.75rem, 5.2vw, 4.75rem)",
       "weight": "400",
       "leading": "1.12",
-      "tracking": "-0.035em"
+      "tracking": "-0.035em",
+      "strong": "600"
+    },
+    "headline": {
+      "ink": "primary",
+      "size": "3rem",
+      "weight": "400",
+      "leading": "3.5rem",
+      "tracking": "-0.035em",
+      "strong": "600"
     },
     "display": {
       "ink": "primary",
       "size": "2rem",
       "weight": "400",
       "leading": "2.5rem",
-      "tracking": "-0.03em"
+      "tracking": "-0.03em",
+      "strong": "600"
     },
     "title": {
       "ink": "primary",
       "size": "1.5rem",
       "weight": "600",
       "leading": "2rem",
-      "tracking": "-0.02em"
+      "tracking": "-0.02em",
+      "strong": "600"
     },
     "heading": {
       "ink": "primary",
       "size": "1.25rem",
       "weight": "600",
       "leading": "1.75rem",
-      "tracking": "0"
+      "tracking": "0",
+      "strong": "600"
     },
     "subheading": {
       "ink": "primary",
       "size": "1rem",
       "weight": "600",
       "leading": "1.5rem",
-      "tracking": "0"
+      "tracking": "0",
+      "strong": "600"
     },
     "body": {
       "ink": "primary",
       "size": "0.875rem",
-      "weight": "500",
+      "weight": "400",
       "leading": "1.25rem",
-      "tracking": "0"
+      "tracking": "0",
+      "strong": "500"
     },
     "caption": {
       "ink": "secondary",
       "size": "0.8125rem",
       "weight": "400",
       "leading": "1rem",
-      "tracking": "0"
+      "tracking": "0",
+      "strong": "500"
     },
     "label": {
       "ink": "secondary",
       "size": "0.75rem",
       "weight": "600",
       "leading": "1rem",
-      "tracking": "0.01em"
+      "tracking": "0.01em",
+      "strong": "600"
     }
   },
   "presets": {

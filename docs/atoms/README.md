@@ -33,13 +33,13 @@ Atom은 같은 축 몇 개로 말합니다. 축의 값은 모두 Foundations에�
 
 | Atom | 고유 축 | 기본값·동작 |
 | --- | --- | --- |
-| Button | as · accent · variant · fill · shadow · size · fontSize · shape · selected · loading · loadingLabel · fullWidth | button / primary / solid / md / rounded, type=button. 글자는 variant와 무관하게 `button` preset. selected는 hairline · ghost · muted에서 aria-pressed와 선택된 면. loading은 spinner·aria-busy, 포커스는 유지하고 누름과 제출만 막음 |
-| IconButton | as · accent · variant · fill · shadow · size · shape · disabled · iconSize · 필수 aria-label · 단일 children | 정사각형, 높이가 변. 안의 Icon은 iconSize를 주지 않으면 컨트롤 높이를 따름. loading · fullWidth · fontSize는 없음 |
+| Button | as · accent · variant · fill · shadow · size · fontSize · strong · shape · selected · loading · loadingLabel · fullWidth · justify · badge | button / primary / solid / md / rounded, type=button. 글자는 variant와 무관하게 `button` preset. selected는 hairline · ghost · muted에서 aria-pressed와 선택된 면. loading은 spinner·aria-busy, 포커스는 유지하고 누름과 제출만 막음 |
+| IconButton | as · accent · variant · fill · shadow · size · shape · disabled · iconSize · badge · 필수 aria-label · 단일 children | 정사각형, 높이가 변. 안의 Icon은 iconSize를 주지 않으면 컨트롤 높이를 따름. loading · fullWidth · fontSize는 없음 |
 | Field | status · size · variant · fill · shadow · fontSize · shape · numeric · align · leading / trailing · clearable · clearLabel · showPasswordToggle · showPasswordLabel · onClear | 중립 / md / hairline / raised / rounded, type=text. wrapper가 면·높이·상태·포커스를 소유. 지우기와 보기 버튼의 이름은 locale 문구이고 label prop으로 바꿈. 브라우저의 search 취소 ×와 Edge 비밀번호 보기 장치는 Field가 소유해 숨기고, number 증감·date 선택 장치는 브라우저에 남음 |
 | Textarea | status · size · variant · fill · shadow · fontSize · rows · native textarea props | 중립 / md / hairline / raised, 기본 4줄. rows가 높이를 정하고(최소 높이 없음) 한 줄 = 같은 size Field, 세로 resize. pill 없음 |
 | Select | status · size · variant · fill · shadow · fontSize · shape · children · native select props | 중립 / md / hairline / raised / rounded. native select와 Option·Group, multiple 없음. 화살표는 trailing Icon. className · style · data-testid는 wrapper |
-| Checkbox | status · size · indeterminate · native input props | md. 상자는 `selection.size`, 체크는 그 절반. 꺼진 경계는 `ink.tertiary` 테이고 `status="error"`면 error 잉크. 24px hit area |
-| Switch | status · size · native input props | md. input type=checkbox + role=switch. 트랙 폭 = 상자의 2배. 꺼진 트랙은 `ink.tertiary` 안쪽 테를 두름. 손잡이는 `inset-inline-start`로 움직여 RTL에서 저절로 뒤집힘 |
+| Checkbox | status · size · indeterminate · native input props | md. 상자는 `selection.size`, 체크는 그 절반. 꺼진 경계는 입력칸과 같은 `border.base`이고 면이 없으며 `status="error"`면 error 잉크. 24px hit area |
+| Switch | status · size · native input props | md. input type=checkbox + role=switch. 트랙 폭 = 상자의 2배. 꺼진 트랙은 `border.base` 안쪽 테를 두름. 손잡이는 `inset-inline-start`로 움직여 RTL에서 저절로 뒤집힘 |
 | Radio | status · size · native input props | md. Checkbox와 같은 상자, 점은 상자의 절반. name·선택은 호출자가 조립. 한 묶음의 Radio는 모두 같은 `status`를 줌 |
 | Label | children · ref · native label props | Text의 label 역할 그대로. htmlFor 또는 내부 control로 연결 |
 | Badge | accent · variant · size · fontSize · dot · shape · ref | primary / soft / md / pill. `Paint as="span"`이고 표시용이라 hover 없음. 높이는 Shape의 배지 사다리, 글자는 크기와 무관하게 고정 |
@@ -101,8 +101,17 @@ Button의 `selected`는 hairline · ghost · muted에서만 줄 수 있고(타�
 [contract:atoms.button.loading]: #
 Button의 loading은 포커스를 잃지 않습니다. native `disabled`를 달지 않고 `aria-busy` · `aria-disabled` · `data-disabled`를 달며, 누름과 암묵적 제출(Enter)은 막힙니다. 스피너는 장식(`<Spinner size="inline" ink="inherit" decorative />`)이고 알림은 컨트롤이 aria-busy로 맡습니다. loading이 시작될 때 포커스가 그 Button에 있으면 `loadingLabel`(기본은 locale의 '불러오는 중' · 'Loading')을 한 번 알립니다. disabled는 native button을 비활성화합니다. 둘이 겹치면 disabled가 이깁니다.
 
+[contract:atoms.button.strong]: #
+`strong`은 라벨의 강조 한 비트입니다. preset이 이미 강조된 굵기라 `false`만 뜻이 있고 라벨이 regular가 됩니다. 상자의 높이와 여백은 그대로입니다. 사이드바처럼 버튼이 여럿 나란히 서는 자리에서 `strong={here}`로 씁니다.
+
+[contract:atoms.button.justify]: #
+`justify`는 내용의 가로 배치입니다(`JUSTIFIES`, 기본은 가운데). 버튼이 내용보다 넓을 때 뜻이 생깁니다 — 사이드바의 항목은 `fullWidth justify="start"`, 끝에 숫자가 붙는 항목은 `justify="between"`입니다. 아이콘 전용 IconButton에는 없습니다.
+
+[contract:atoms.button.badge]: #
+`badge`는 버튼의 바깥 모서리에 걸치는 표식입니다. 알림 숫자처럼 버튼에 딸린 작은 표시를 버튼의 크기를 바꾸지 않고 얹고, 표식 위를 눌러도 버튼이 눌립니다. 값은 보통 `Badge` 하나이고 색과 크기는 그 Badge가 정합니다. RTL에서는 왼쪽 모서리로 갑니다. IconButton의 이름은 `aria-label`이 말하므로 숫자도 거기에 적습니다.
+
 [contract:atoms.icon-button.axes]: #
-IconButton은 정사각 anatomy와 부딪히지 않는 축만 엽니다 — `as` · accent · variant · size · shape · disabled · iconSize와 필수 `aria-label`. loading · fullWidth · fontSize는 타입에서 막힙니다. 안의 Icon은 `size`를 주지 않으면 컨트롤 높이를 따릅니다(`control.icon`).
+IconButton은 정사각 anatomy와 부딪히지 않는 축만 엽니다 — `as` · accent · variant · size · shape · disabled · iconSize · badge와 필수 `aria-label`. loading · fullWidth · fontSize는 타입에서 막힙니다. 안의 Icon은 `size`를 주지 않으면 컨트롤 높이를 따릅니다(`control.icon`).
 
 [contract:atoms.spinner.roles]: #
 Spinner는 혼자 서면 `role="progressbar"`와 `aria-label`을 갖습니다. 값(`aria-valuenow`)이 없어 얼마나 걸릴지 모르는 진행이고, progressbar는 이름을 만든 사람의 글에서 받으므로 숨은 라벨 요소를 두지 않습니다. `decorative`면 `aria-hidden`이고 role도 이름도 없습니다. 컨트롤 안의 Spinner가 그렇습니다. 회전은 Motion의 `loop.spin` 하나(패키지에 `@keyframes spin`은 하나)이고, 크기는 control icon 사다리(`inline`은 글자만큼)가, 색은 `ink`가 정합니다 — 기본은 옅은 링에 잉크색 호, `inherit`는 둘러싼 글자색의 호입니다.
@@ -167,7 +176,7 @@ Checkbox · Radio · Switch는 native input입니다. Checkbox는 `type=checkbox
 Checkbox · Radio · Switch의 `status`는 `error`뿐입니다(`ChoiceStatus`). 오류는 입력과 같은 규칙으로 말합니다 — `aria-invalid`는 직접 준 값이 이기고, 없으면 `status="error"`이거나 FormField가 invalid일 때 `true`이며, 선택 표식 자신이 `data-invalid`와 `data-status`를 답니다. 직접 준 `aria-invalid={false}`는 속성을 `false`로 두면서 `status="error"`의 테는 그대로 둡니다. 꺼진 표식의 테만 error 잉크가 되고 켜진 표식은 그대로이며, 오류는 색만으로 알리지 않고 `aria-invalid`와 FormField의 오류 문구가 함께 알립니다. 한 묶음의 Radio는 모두 같은 `status`를 주거나 radiogroup에 `aria-invalid`를 줍니다.
 
 [contract:atoms.mark.paint]: #
-선택 표식의 stylesheet는 geometry만 갖습니다 — 색은 `markPaint`(`primitives/paint/recipes.css.ts`)가 입히고, 키보드 링과 비활성은 상태 recipe(`stateStyle.focusVisible` · `stateStyle.disabled`)가 입히며, hover는 없습니다(눌리는 자리는 표식이 아니라 라벨과 행입니다). 꺼진 표식은 raised 면 안의 `ink.tertiary` 테입니다 — 어느 면 위에서도 3:1이 되는 가장 옅은 잉크라, 입력 경계(`border.base`)와 달리 표식의 존재 자체가 이 테에 달려 있기 때문입니다([비텍스트 대비](../foundations/color.md#대비-계약)). Switch의 꺼진 트랙은 같은 잉크의 1px 안쪽 테(`strokeRing`)를 두르고, 켜진 표식은 primary solid 면입니다.
+선택 표식의 stylesheet는 geometry만 갖습니다 — 색은 `markPaint`(`primitives/paint/recipes.css.ts`)가 입히고, 키보드 링과 비활성은 상태 recipe(`stateStyle.focusVisible` · `stateStyle.disabled`)가 입히며, hover는 없습니다(눌리는 자리는 표식이 아니라 라벨과 행입니다). 꺼진 표식은 입력칸과 같은 `border.base` 테이고 자기 면이 없습니다. 3:1 아래의 문서화된 예외입니다([비텍스트 대비](../foundations/color.md#대비-계약)). Switch의 꺼진 트랙은 같은 선의 1px 안쪽 테(`strokeRing`)를 두르고, 켜진 표식은 primary solid 면입니다.
 
 [contract:atoms.checkbox.indeterminate]: #
 Checkbox의 `indeterminate`는 속성이 아니라 DOM 프로퍼티라 layout effect가 input에 직접 세웁니다. 넘어온 ref는 그대로 두므로 값이 바뀌어도 callback ref는 다시 불리지 않습니다.

@@ -35,6 +35,7 @@ const roleRows = (): string[][] =>
       `\`${role}\``,
       `${sizeOf(spec.size as keyof typeof S.fontSize)} / ${leadingOf(spec.leading as keyof typeof S.leading)}`,
       String(weightOf(spec.weight)),
+      String(weightOf(spec.strong)),
       spec.tracking,
       TEXT_INK[role],
       ROLE_TAGS[role],
@@ -74,7 +75,7 @@ export const LADDER_BLOCK: GeneratedBlock = {
 export const TYPOGRAPHY_BLOCKS: GeneratedBlock[] = [
   LADDER_BLOCK,
   { id: "typography-palette", files: ["docs/foundations/typography.md"], render: () => table(["축", "값"], paletteRows()) },
-  { id: "typography-roles", files: ["docs/foundations/typography.md"], render: () => table(["역할", "크기 / 행간", "굵기", "자간", "기본 잉크", "기본 태그", "쓰는 곳"], roleRows()) },
+  { id: "typography-roles", files: ["docs/foundations/typography.md"], render: () => table(["역할", "크기 / 행간", "굵기", "강조", "자간", "기본 잉크", "기본 태그", "쓰는 곳"], roleRows()) },
   {
     id: "typography-presets",
     files: ["docs/foundations/typography.md"],

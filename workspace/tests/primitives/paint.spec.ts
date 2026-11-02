@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
-import { STATE_TINT_PROPERTY, SURFACE_FILLS, tokens } from "../../packages/paper-ui/src/tokens";
+import { STATE_TINT_PROPERTY, SURFACE_FILLS, restingCast, tokens } from "../../packages/paper-ui/src/tokens";
+import { roleDp } from "../support/geometry";
 import { accentProfile, itemProfile } from "../../packages/paper-ui/src/tokens/color-recipes";
 import { MOTION } from "../../packages/paper-ui/src/tokens/motion";
 import { openHarness, openPlayground } from "../support/harness";
@@ -15,6 +16,23 @@ test("[primitives.surface.prop-table] each prop of a Surface comes from the role
   await expectStyle(page.getByTestId("surface-border"), { borderTopColor: tokens.color.border.base, borderTopWidth: tokens.shape.stroke.border, borderTopStyle: "solid" });
   for (const step of ["sm", "md", "lg"] as const) await expectStyle(page.getByTestId(`radius-${step}`), { borderTopLeftRadius: tokens.shape.radius.surface[step] });
   await expectStyle(page.getByTestId("radius-full"), { borderTopLeftRadius: tokens.shape.radius.full });
+});
+
+test("[primitives.surface.sticky-top] [primitives.surface.shadow] a sticky Surface stops at its top, stays inside the window and takes a resting shadow; another tier reads no top", async ({ page }) => {
+  await page.setViewportSize({ width: 1000, height: 640 });
+  await openHarness(page, "layout");
+  const lg = roleDp(tokens.layout.gap.lg);
+  const sticky = page.getByTestId("sticky-top");
+  await expect(sticky).toHaveCSS("position", "sticky");
+  await expect(sticky).toHaveCSS("top", `${lg}px`);
+  await expect(sticky).toHaveCSS("max-height", `${640 - lg - lg}px`);
+  await expectStyle(sticky, { boxShadow: restingCast.boxShadow });
+  const none = page.getByTestId("sticky-none");
+  await expect(none).toHaveCSS("top", "0px");
+  await expect(none).toHaveCSS("max-height", "640px");
+  // A sticky face with no shadow asked for has none: the tier casts nothing.
+  await expect(none).toHaveCSS("box-shadow", "none");
+  await expect(page.getByTestId("top-unread")).toHaveCSS("max-height", "none");
 });
 
 test("[primitives.surface.item] a hoverable Surface fades its tint over the hover role", async ({ page }) => {

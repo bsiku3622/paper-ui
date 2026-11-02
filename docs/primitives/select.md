@@ -74,6 +74,9 @@ Controlled 단일 선택 그룹을 만드는 예시입니다.
 </SelectableGroup>
 ```
 
+[contract:primitives.selectable-group.as]: #
+그룹은 요소 하나입니다. `as`로 Inline · Grid 같은 배치 Primitive를 고르면 그 요소가 항목을 늘어놓아(`<SelectableGroup as={Inline} gap="xs">`) 안쪽에 줄을 한 겹 더 두지 않습니다. 기본은 div이고 role과 포커스 동작은 어느 요소든 같습니다.
+
 [contract:primitives.selectable-group.single]: #
 [contract:primitives.selectable-group.multiple]: #
 selectionMode는 single / multiple이며 기본값은 single입니다. selectedValues/defaultSelectedValues는 문자열 배열이고 onSelectedValuesChange는 다음 배열을 받습니다. Single은 최대 하나를 선택합니다. selectionRequired는 사용자가 마지막 선택을 해제하는 것을 막으며 초기 항목을 자동 선택하지는 않습니다. 선택 항목 자체를 제거하면 빈 선택도 허용합니다.

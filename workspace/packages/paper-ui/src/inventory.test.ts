@@ -71,11 +71,13 @@ describe("INVENTORY", () => {
     for (const name of INVENTORY.polymorphic) {
       const [head = "", member] = name.split(".");
       const Root = exported[head] as ElementType;
+      // A panel stands only while it is open, and through a portal.
+      const panel = name === "Floating.Content";
       const element = member
-        ? createElement(Root, null, createElement((Root as unknown as Record<string, ElementType>)[member]!, { as: "section", value: "item" }))
+        ? createElement(Root, panel ? { defaultOpen: true } : null, createElement((Root as unknown as Record<string, ElementType>)[member]!, panel ? { as: "section", presentation: "modal", "aria-label": "Panel" } : { as: "section", value: "item" }))
         : createElement(Root, { as: "section" });
       const view = render(element);
-      expect(view.container.querySelector("section"), name).not.toBeNull();
+      expect(document.querySelector("section"), name).not.toBeNull();
       view.unmount();
     }
   });

@@ -19,7 +19,7 @@ const levelsOf = (depth: Depth) => ELEVATIONS.filter((level) => tier[level].dept
 
 const ELEVATION_USE: Record<Elevation, string> = {
   lifted: "살짝 들린 작은 것 — 스위치 손잡이",
-  sticky: "sticky 헤더·사이드바 — 그림자 대신 경계선",
+  sticky: "sticky 헤더·사이드바 — 경계선이나 제자리 그림자로 나눕니다",
   overlay: "팝오버·메뉴",
   modal: "대화상자 — 아래에 scrim",
   toast: "가장 위 알림",
@@ -60,6 +60,13 @@ export const LayoutPage = () => {
                 <ValueCell>{mediaValue(layout.breakpoint[name])}</ValueCell>
               </BoardRow>
             ))}
+          </BoardGroup>
+          <BoardGroup label="Viewport — 창의 높이입니다">
+            <BoardRow>
+              <TokenCell name="layout.viewport" note={'창만큼 서는 면과 화면을 채우는 틀 — Box의 height="viewport"'} />
+              <Meter value={1} max={1} />
+              <ValueCell><Computed value={layout.viewport} /></ValueCell>
+            </BoardRow>
           </BoardGroup>
           <BoardGroup label="Section — 페이지의 한 구간이 열고 닫는 거리, 뷰포트 높이를 따라 자라는 선언된 유동 단계입니다">
             <BoardRow>

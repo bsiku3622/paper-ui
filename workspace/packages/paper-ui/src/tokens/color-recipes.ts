@@ -79,11 +79,12 @@ export const itemProfile = {
   selectedInk: COLOR.ink.primary,
 };
 
-// The marks of Checkbox, Radio and Switch. The rest ring is the quietest ink that holds 3:1 on every surface;
-// the checked face and the mark on it are the primary accent's solid and wash. A checked Switch's ring is transparent:
-// painted in the face's colour it would thicken the track's anti-aliased edge.
+// The marks of Checkbox, Radio and Switch. An off mark wears the line an input wears, on no face of its own; a Switch keeps
+// its track, because a knob has to stand on something. That line is under 3:1, so it is a documented exception, and
+// prefers-contrast: more lifts it with border.base. The checked face and the mark on it are the primary accent's solid and
+// wash. A checked Switch's ring is transparent: painted in the face's colour it would thicken the track's anti-aliased edge.
 export const markProfile = {
-  rest: { ring: COLOR.ink.tertiary, knob: COLOR.bg.raised, track: COLOR.control.track },
+  rest: { ring: COLOR.border.base, face: "transparent", knob: COLOR.bg.raised, track: COLOR.control.track },
   checked: { face: COLOR.accent.primary.solid, ring: "transparent", mark: COLOR.accent.primary.wash, knob: COLOR.bg.raised },
   invalid: { ring: COLOR.accent.error.ink },
 };

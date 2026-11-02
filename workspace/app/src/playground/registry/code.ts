@@ -36,7 +36,7 @@ const read = (spec: Spec, control: Control, code: string): string | boolean | un
       if (control.required) throw new ParseError(`${name}의 ${control.prop}은 필수입니다.`);
       return undefined;
     }
-    const option = typeof value === "number" ? String(value) : value;
+    const option = typeof value === "number" || typeof value === "boolean" ? String(value) : value;
     if (typeof option === "string") {
       if (!control.options.includes(option)) throw new ParseError(`${control.prop}: "${option}"은 ${control.options.join(", ")} 중 하나여야 합니다.`);
       return option;

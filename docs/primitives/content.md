@@ -6,7 +6,7 @@ Content Primitive는 화면에 읽히는 것 — 글자와 아이콘 — 을 그
 
 | 컴포넌트 | 공개 축 | 기본값 |
 | --- | --- | --- |
-| Text | `as` · variant · ink · family=sans/mono · numeric | variant=body, family=sans. 기본 태그는 hero·display·title=h1, heading=h2, subheading=h3, body·caption=p, label=span |
+| Text | `as` · variant · ink · family=sans/mono · strong · numeric · truncate | variant=body, family=sans. 기본 태그는 hero·headline·display·title=h1, heading=h2, subheading=h3, body·caption=p, label=span |
 | Icon | size=label/caption/body/subheading · ink · SVG children · className · aria-label · aria-labelledby | size=body(컨트롤 안에서는 그 컨트롤의 `control.icon`). artboard는 Shape의 icon 사다리, viewBox 24, 기본 currentColor |
 
 ## Text
@@ -15,7 +15,7 @@ Content Primitive는 화면에 읽히는 것 — 글자와 아이콘 — 을 그
 `variant`가 크기·굵기·행간·자간·기본 잉크를 한 번에 정하고, 태그는 `as`가 따로 정합니다. `as`를 주지 않으면 위 표의 기본 태그로 그립니다. 시각 위계와 의미 태그가 직교하므로, 같은 `title`이 페이지에서는 `h1`, 대화상자 안에서는 `h2`가 될 수 있습니다. 역할별 값은 [Typography](../foundations/typography.md)에 있습니다.
 
 [contract:primitives.text.ink-beats-variant]: #
-크기·굵기·색을 따로 고르는 prop은 없습니다. `ink`만 variant 기본값 위로 한 번 덮을 수 있습니다.
+크기를 따로 고르는 prop은 없습니다. `ink`는 variant 기본값 위로 한 번 덮을 수 있습니다.
 
 [contract:primitives.text.ink-table]: #
 
@@ -33,6 +33,12 @@ Content Primitive는 화면에 읽히는 것 — 글자와 아이콘 — 을 그
 
 [contract:primitives.text.numeric]: #
 `numeric`은 숫자 글리프만 등폭(`tabular-nums`)으로 그립니다. 서체와 정렬은 그대로 두므로 표의 숫자 열이나 버전처럼 자리를 맞추는 곳에 씁니다.
+
+[contract:primitives.text.strong]: #
+`strong`은 강조 한 비트입니다. 생략하면 역할의 굵기이고, `true`는 역할이 정한 강조 굵기([역할 표](../foundations/typography.md)의 "강조"), `false`는 regular입니다. 크기 · 행간 · 자간은 역할의 값 그대로입니다. 굵기 이름을 고르는 prop은 없어서 같은 역할의 글자가 화면마다 여러 굵기로 갈리지 않습니다. 표의 행 제목은 `<Text strong>`, 12px 보조 글자는 `<Text variant="label" strong={false}>`입니다.
+
+[contract:primitives.text.truncate]: #
+`truncate`는 줄을 바꾸는 대신 한 줄로 자르고, 넘치는 글자는 말줄임표로 그립니다. 칸이 줄어들 수 있도록 최소 폭을 풀어 주므로 Inline · Grid의 칸 안에서도 잘립니다. 보조 기술은 잘리지 않은 글자를 읽습니다.
 
 줄바꿈은 서체가 정합니다. sans(기본)는 한글을 어절 사이에서만 끊고(`keep-all`), mono는 어디서든 끊습니다(`anywhere`). 정책과 이유는 [Typography › 줄바꿈](../foundations/typography.md#줄바꿈)에 있습니다.
 

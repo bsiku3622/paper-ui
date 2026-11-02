@@ -119,6 +119,10 @@ export const textControl = <P, K extends keyof P & string>(prop: K, initial: str
 // Reading the state back as the types the subject needs.
 export const pick = <T extends string>(state: State, key: string): T | undefined => (typeof state[key] === "string" && state[key] !== "" ? (state[key] as T) : undefined);
 export const flag = (state: State, key: string): boolean => state[key] === true;
+// A boolean prop with three answers: omitted is neither of the two values.
+export const answer = (state: State, key: string): boolean | undefined => (pick(state, key) === undefined ? undefined : pick(state, key) === "true");
+// The select for one: it offers both values, and its first entry is the omission. Omitted, the component decides.
+export const answerControl = (prop: string, reason: string, extra: Pick<Extra, "derived"> = {}): Control => enumControl<Record<string, "true" | "false">, string>(prop, sample(["true", "false"] as const, reason), extra);
 
 // A face a control may be given. Only a variant with no face of its own takes a fill, and only a face casts a shadow: the
 // knob always sets the prop so the code panel reads back what it printed, and on the others that code is a type error and

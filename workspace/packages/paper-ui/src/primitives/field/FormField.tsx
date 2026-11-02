@@ -1,9 +1,11 @@
 import { createContext, forwardRef, useCallback, useContext, useEffect, useId, useLayoutEffect, useMemo, useRef, type AriaAttributes, type HTMLAttributes, type ReactNode } from "react";
 
 import { paperError } from "../../internal/errors";
+import { joinClass } from "../../internal/joinClass";
 import { VALUE_ATTRIBUTE, stateAttributes, type Status } from "../../tokens";
 import { usePortalDepth } from "../a11y/Portal";
 import { Text } from "../Text";
+import { formField } from "./FormField.css";
 
 const useIsomorphicLayoutEffect = typeof document === "undefined" ? useEffect : useLayoutEffect;
 
@@ -130,7 +132,7 @@ export type FormFieldProps = Omit<HTMLAttributes<HTMLDivElement>, "children" | "
   label: ReactNode;
   children?: ReactNode | ((state: FormFieldState) => ReactNode);
 };
-export const FormField = forwardRef<HTMLDivElement, FormFieldProps>(function FormField({ label, children, id, disabled = false, required = false, invalid = false, description, error, "aria-describedby": describedBy, ...props }, ref) {
+export const FormField = forwardRef<HTMLDivElement, FormFieldProps>(function FormField({ label, children, id, disabled = false, required = false, invalid = false, description, error, "aria-describedby": describedBy, className, ...props }, ref) {
   const field = useFormField({ id, disabled, required, invalid, description, error, "aria-describedby": describedBy });
   const claimed = useRef(0);
   const claim = useCallback(() => {
@@ -142,7 +144,7 @@ export const FormField = forwardRef<HTMLDivElement, FormFieldProps>(function For
   const portalDepth = usePortalDepth();
   const context = useMemo<FormFieldContextValue>(() => ({ controlProps, invalid, claim, portalDepth }), [controlProps, invalid, claim, portalDepth]);
   return <FormFieldContext.Provider value={context}>
-    <div {...props} ref={ref} {...stateAttributes({ disabled, invalid, required })}>
+    <div {...props} ref={ref} className={joinClass(formField, className)} {...stateAttributes({ disabled, invalid, required })}>
       <Text as="label" variant="label" {...part("label")} {...field.labelProps}>{label}</Text>
       {typeof children === "function" ? children({ isDisabled: disabled, isInvalid: invalid, isRequired: required }) : children}
       {hasContent(description) && <Text variant="caption" {...part("description")} {...field.descriptionProps}>{description}</Text>}

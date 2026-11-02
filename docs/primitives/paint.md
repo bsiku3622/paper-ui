@@ -21,8 +21,9 @@ Surface는 Box가 놓인 종이입니다. 어떤 면 위에 있는지(fill), 경
 | `fill` | canvas · raised · sunken (`SURFACE_FILLS`) | Color `bg.*` — 다크에서 sunken = canvas라, canvas 위에서는 border와 함께 |
 | `border` | boolean | Color `border.base`, Shape `stroke.border` |
 | `radius` | sm · md · lg · full (`SURFACE_RADII`) | Shape `radius.surface.*` · `radius.full` |
-| `shadow` | boolean | Layout resting 깊이 — 제자리 그림자. `fill`이 있을 때만 받고, `elevation`이 있으면 tier의 그림자가 이김 |
+| `shadow` | boolean | Layout resting 깊이 — 제자리 그림자. `fill`이 있을 때만 받고, 그림자를 가진 tier에서는 그 그림자가 이김. sticky는 그림자가 없어 그대로 받음 |
 | `elevation` | lifted · sticky · overlay · modal · toast (`ELEVATIONS`) | Layout `elevation` class — position과 z와 그림자를 함께 |
+| `top` | none · xs ~ 3xl | Layout `gap.*` — sticky 면이 멈추는 자리. 다른 tier에서는 읽지 않음 |
 | `theme` | light · dark · inverse (`SURFACE_THEMES`) | Color 모드 — 이 면과 안쪽만 그 모드. `inverse`는 주변 모드의 반대 |
 | `hoverable` | boolean | Color `interaction` — 면이 항목이 되어 hover · 눌림 · 선택이 중립 tint로 드러남 |
 | `selected` | boolean | `data-selected`만 답니다 — 색은 그 속성을 읽는 CSS가 입힘 |
@@ -31,7 +32,10 @@ Surface는 Box가 놓인 종이입니다. 어떤 면 위에 있는지(fill), 경
 Surface의 `fill` · `border` · `radius` · `elevation`은 각자 지도 하나의 class가 되고, 주지 않은 축에는 class가 붙지 않습니다. `surfaceClass`는 같은 class를 theme만 빼고 돌려줍니다. `as`로 Stack · Inline · Grid 같은 primitive를 고르면 그 요소 하나가 면이 되어, `<Surface as={Stack} gap="md" fill="raised">`도 DOM 요소는 하나이고 Stack의 class와 prop이 그대로 남습니다. Box · Stack · Inline · Grid에 면 prop을 주면 타입이 막습니다.
 
 [contract:primitives.surface.shadow]: #
-`shadow`는 제자리 그림자입니다. 바탕 위 첫 면이 선 대신 가장자리를 세울 때 쓰고, 면 안의 면에는 주지 않습니다. 면이 없는 상자의 그림자는 속이 빈 고리로 보이므로 `fill`이 없으면 타입이 막고 그려지지도 않습니다.
+`shadow`는 제자리 그림자입니다. 바탕 위 첫 면이 선 대신 가장자리를 세울 때 쓰고, 면 안의 면에는 주지 않습니다. 면이 없는 상자의 그림자는 속이 빈 고리로 보이므로 `fill`이 없으면 타입이 막고 그려지지도 않습니다. sticky tier는 자기 그림자가 없어서 sticky 면도 `shadow`로 가장자리를 세웁니다.
+
+[contract:primitives.surface.sticky-top]: #
+`elevation="sticky"`의 `top`은 면이 멈추는 자리입니다. `none`은 창의 맨 위이고 나머지는 Layout `gap` 단계입니다. 위에 둔 만큼 아래에도 두어 창 안에 서므로 `max-height`도 함께 정해지고, 더 긴 내용은 `overflowY="auto"`로 면 안에서 스크롤합니다. 창 높이만큼 서는 면은 `height="viewport"`를 함께 줍니다. 다른 tier의 자리는 흐름이나 Floating이 정하므로 `top`을 읽지 않습니다. 고정 헤더 아래처럼 단계로 말할 수 없는 자리는 앱의 className이 정합니다.
 
 [contract:primitives.surface.theme]: #
 `theme`을 준 Surface는 자기 요소에 그 모드의 고유 역할을 걸고 안쪽을 그 모드로 읽게 합니다. `light` · `dark`는 주변과 무관하게 그 모드이고 `inverse`는 주변 모드의 반대라, 안쪽에 또 `inverse`를 두면 다시 뒤집힙니다. `fill`을 주지 않아도 그 모드의 `canvas`를 깔아 판이 늘 있고, 안쪽 글자 · Icon · Pressable과 Floating이 여는 층의 내용은 그 모드의 잉크를 받습니다. Surface 자신의 포커스 링과 그림자는 서 있는 바깥 지면의 모드로 그려집니다. `as={Stack}`처럼 Stack · Inline · Grid 위에서도 같고, 앱 전체의 테마는 [Theming](../get-started/theming.md)이 정합니다. 테마 속성을 `<html>` 아래에서 쓰는 길은 `theme/scope.ts`의 Surface와 [Portal](a11y.md#portal)뿐입니다.

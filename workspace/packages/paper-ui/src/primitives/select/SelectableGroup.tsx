@@ -5,7 +5,7 @@ import { registerPart } from "../../internal/render-target";
 import { useMergedRef } from "../../internal/refs";
 import { useControllableState } from "../../internal/useControllableState";
 import { composeEventHandlers } from "../composition";
-import { RovingFocus, useRovingFocusItem, useRovingValues, type RovingFocusProps } from "../focus/RovingFocus";
+import { RovingFocus, useRovingFocusItem, useRovingValues, type RovingFocusOwnProps } from "../focus/RovingFocus";
 import type { PolymorphicComponent, PolymorphicProps } from "../polymorphic";
 import { Selectable, type SelectableOwnProps } from "./Selectable";
 
@@ -62,21 +62,25 @@ export function useSelectableGroup({ selectionMode = "single", selectedValues, d
 type GroupContext = SelectableGroupResult & { disabled: boolean };
 const Context = createContext<GroupContext | null>(null);
 export type SelectableGroupState = { selectedValues: string[]; isDisabled: boolean };
-export type SelectableGroupProps = Omit<RovingFocusProps, "onChange" | "children"> & Omit<SelectableGroupOptions, "values"> & {
+export type SelectableGroupOwnProps = Omit<RovingFocusOwnProps, "children"> & Omit<SelectableGroupOptions, "values"> & {
+  onChange?: never;
   children?: ReactNode | ((state: SelectableGroupState) => ReactNode);
 };
+// The group is one element: `as={Inline}` lays the items out with no row of its own inside it.
+export type SelectableGroupProps<As extends ElementType = "div"> = PolymorphicProps<SelectableGroupOwnProps, As>;
+const Roving = RovingFocus as ElementType;
 // The group's selection is read against the items the RovingFocus registry holds, so it has no list of its own.
-function GroupState({ children, ...options }: Omit<SelectableGroupOptions, "values"> & { disabled: boolean; children: SelectableGroupProps["children"] }) {
+function GroupState({ children, ...options }: Omit<SelectableGroupOptions, "values"> & { disabled: boolean; children: SelectableGroupOwnProps["children"] }) {
   const state = useSelectableGroup({ ...options, values: useRovingValues() });
   return <Context.Provider value={{ ...state, disabled: options.disabled }}>
     {typeof children === "function" ? children({ selectedValues: state.selectedValues, isDisabled: options.disabled }) : children}
   </Context.Provider>;
 }
-const Root = forwardRef<HTMLDivElement, SelectableGroupProps>(function SelectableGroup({ selectionMode, selectedValues, defaultSelectedValues, onSelectedValuesChange, selectionRequired, disabled = false, children, ...props }, ref) {
-  return <RovingFocus {...props} ref={ref} role={props.role ?? "group"} disabled={disabled}
+const Root = forwardRef<HTMLElement, Omit<SelectableGroupProps, "as" | "ref"> & { as?: ElementType }>(function SelectableGroup({ selectionMode, selectedValues, defaultSelectedValues, onSelectedValuesChange, selectionRequired, disabled = false, children, ...props }, ref) {
+  return <Roving {...props} ref={ref} role={props.role ?? "group"} disabled={disabled}
     defaultCurrentValue={props.defaultCurrentValue ?? (selectedValues ?? defaultSelectedValues)?.[0]}>
     <GroupState {...{ selectionMode, selectedValues, defaultSelectedValues, onSelectedValuesChange, selectionRequired, disabled }}>{children}</GroupState>
-  </RovingFocus>;
+  </Roving>;
 });
 export type SelectableGroupItemOwnProps = Omit<SelectableOwnProps, "selected" | "defaultSelected" | "onSelectedChange"> & { value: string };
 export type SelectableGroupItemProps<As extends ElementType = "button"> = PolymorphicProps<SelectableGroupItemOwnProps, As>;
@@ -92,4 +96,4 @@ const ItemImpl = forwardRef<HTMLElement, Omit<SelectableGroupItemProps, "as" | "
     onFocus={composeEventHandlers(onFocus, itemProps.onFocus)} onKeyDown={composeEventHandlers(onKeyDown, itemProps.onKeyDown)} />;
 });
 const Item = registerPart(ItemImpl) as PolymorphicComponent<SelectableGroupItemOwnProps, "button">;
-export const SelectableGroup = Object.assign(Root, { Item });
+export const SelectableGroup = Object.assign(Root as PolymorphicComponent<SelectableGroupOwnProps, "div">, { Item });

@@ -1,14 +1,12 @@
 import { useRef } from "react";
 
-import { Button, Field, FormField, Floating, Stack, Text, surfaceClass, type FloatingContentProps, type FloatingPopoverProps, type FloatingPresentation } from "@studio-baeks/paper-ui";
+import { Button, Field, FormField, Floating, Stack, Surface, Text, type FloatingContentProps, type FloatingPopoverProps, type FloatingPresentation } from "@studio-baeks/paper-ui";
 
-import { classNamed, named } from "../jsx";
+import { named } from "../jsx";
 import { boolControl, defineSpec, enumControl, flag, local, pick, subset } from "../schema";
-import { formField, floatingContent } from "./examples.css";
 
-// The panel's face comes from the caller, as the Floating doc says; floatingContent only sizes and spaces it.
-const face = classNamed('surfaceClass({ fill: "raised", border: true, radius: "md" })', surfaceClass({ fill: "raised", border: true, radius: "md" }));
-const panel = `${face} ${floatingContent}`;
+// The panel's face comes from the caller, as the Floating doc says: the panel is a Surface.
+const panel = { as: Surface, fill: "raised", border: true, radius: "md", padding: "lg", width: "md", maxWidth: "full" } as const;
 
 export default defineSpec({
   name: "Floating",
@@ -26,15 +24,15 @@ export default defineSpec({
     return (
       <Floating>
         <Button as={Floating.Trigger} variant="hairline">설정 열기</Button>
-        <Floating.Content className={panel} aria-label="설정" {...standing} dismissable={flag(state, "dismissable")} initialFocusRef={named("titleRef", title)}>
+        <Floating.Content {...panel} aria-label="설정" {...standing} dismissable={flag(state, "dismissable")} initialFocusRef={named("titleRef", title)}>
           <Stack gap="md">
             <Text as="h2" variant="heading" ref={named("titleRef", title)} tabIndex={-1}>설정</Text>
-            <FormField label="표시 이름" description="화면에 표시할 이름입니다." className={formField}>
+            <FormField label="표시 이름" description="화면에 표시할 이름입니다.">
               <Field />
             </FormField>
             <Floating>
               <Button as={Floating.Trigger} variant="hairline">확인 창 열기</Button>
-              <Floating.Content presentation="modal" className={panel} aria-label="중첩 확인">
+              <Floating.Content {...panel} presentation="modal" aria-label="중첩 확인">
                 <Stack gap="md">
                   <Text>안쪽 창부터 닫힙니다.</Text>
                   <Button as={Floating.Close} variant="hairline">확인 창 닫기</Button>

@@ -8,11 +8,12 @@ import { Stack } from "./layout/Stack";
 import { Inline } from "./layout/Inline";
 import { Text } from "./Text";
 import { Icon } from "./Icon";
-import { boxOverflow, boxSize } from "./Box.css";
+import { boxHideBelow, boxOverflow, boxSize } from "./Box.css";
+import { gridColumnSteps, gridRowSteps } from "./layout/Grid.css";
 import { flexAlign, flexJustify, inlineRoot, inlineWrap, stackRoot } from "./layout/flex.css";
 import { gridAlign, gridJustify, gridJustifyItems, gridRoot } from "./layout/Grid.css";
 import { spaceClass } from "../styles/space.css";
-import { ALIGNS, CONTAINERS, DIMENSIONS, JUSTIFIES, JUSTIFY_ITEMS, MEASURES, SPACES } from "../tokens";
+import { ALIGNS, BREAKPOINTS, CONTAINERS, DIMENSIONS, JUSTIFIES, JUSTIFY_ITEMS, MEASURES, SPACES } from "../tokens";
 import { Surface } from "./paint/Surface";
 import { Paint } from "./paint/Paint";
 
@@ -48,6 +49,30 @@ describe("primitive composition", () => {
     expect(ref.current?.style.gridTemplateRows).toBe("repeat(2, minmax(0, 1fr))");
     expect(ref.current?.classList.contains(spaceClass.gap.md)).toBe(true);
     expect(ref.current?.classList.contains(spaceClass.padding.sm)).toBe(true);
+  });
+
+  it("[primitives.grid.steps] Grid takes tracks per width: each step named becomes a class and a variable, and nothing goes on the property itself", () => {
+    render(<Grid columns={{ base: 1, md: "1fr 2fr" }} rows={{ lg: 2 }} data-testid="grid" />);
+    const grid = screen.getByTestId("grid");
+    expect(grid.style.gridTemplateColumns).toBe("");
+    expect(grid.style.gridTemplateRows).toBe("");
+    for (const rule of [gridColumnSteps.base, gridColumnSteps.at.md, gridRowSteps.at.lg]) expect(grid.classList.contains(rule.className), rule.property).toBe(true);
+    expect(grid.classList.contains(gridColumnSteps.at.lg.className)).toBe(false);
+    expect(grid.classList.contains(gridRowSteps.base.className)).toBe(false);
+    expect(grid.style.getPropertyValue(gridColumnSteps.base.property)).toBe("repeat(1, minmax(0, 1fr))");
+    expect(grid.style.getPropertyValue(gridColumnSteps.at.md.property)).toBe("1fr 2fr");
+    expect(grid.style.getPropertyValue(gridRowSteps.at.lg.property)).toBe("repeat(2, minmax(0, 1fr))");
+  });
+
+  it("[primitives.grid.steps] a Grid with no base keeps the root's one column below its first step", () => {
+    render(<Grid columns={{ md: 3 }} data-testid="grid" />);
+    expect(screen.getByTestId("grid").classList.contains(gridColumnSteps.base.className)).toBe(false);
+  });
+
+  it("[primitives.grid.steps] [primitives.errors.prefix] a step's track count is held to the same rule", () => {
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    expect(() => render(<Grid columns={{ md: 0 }} />)).toThrow(new RangeError("[paper-ui] Grid track count must be a positive integer."));
+    log.mockRestore();
   });
 
   it("[primitives.grid.tracks] [primitives.errors.prefix] Grid rejects a track count that is not a positive integer, as a prefixed RangeError", () => {
@@ -124,8 +149,9 @@ describe("Box layout props", () => {
     }
     for (const axis of ["height", "minHeight", "maxHeight"] as const) {
       for (const name of DIMENSIONS) check(<Box {...{ [axis]: name }} />, [boxSize[axis].dimension[name]], `${axis} ${name}`);
-      for (const name of ["full", "fit", "min-content", "max-content"] as const) check(<Box {...{ [axis]: name }} />, [boxSize[axis].keyword[name]], `${axis} ${name}`);
+      for (const name of ["full", "fit", "min-content", "max-content", "viewport"] as const) check(<Box {...{ [axis]: name }} />, [boxSize[axis].keyword[name]], `${axis} ${name}`);
     }
+    for (const breakpoint of BREAKPOINTS) check(<Box hideBelow={breakpoint} />, [boxHideBelow[breakpoint]], `hideBelow ${breakpoint}`);
     for (const axis of ["overflow", "overflowX", "overflowY"] as const) {
       for (const keyword of ["visible", "hidden", "clip", "scroll", "auto"] as const) check(<Box {...{ [axis]: keyword }} />, [boxOverflow[axis][keyword]], `${axis} ${keyword}`);
     }

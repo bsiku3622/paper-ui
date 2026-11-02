@@ -13,8 +13,8 @@ Typography도 세 단계입니다. 원본 수치인 **Typography Palette**, 그�
 <!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 | 축 | 값 |
 | --- | --- |
-| `fontSize` | 12 · 13 · 14 · 15 · 16 · 20 · 24 · 32, 유동 단계 `hero` |
-| `leading` | 16 · 20 · 24 · 28 · 32 · 40, 단위 없는 `hero` 1.12 |
+| `fontSize` | 12 · 13 · 14 · 15 · 16 · 20 · 24 · 32 · 48, 유동 단계 `hero` |
+| `leading` | 16 · 20 · 24 · 28 · 32 · 40 · 56, 단위 없는 `hero` 1.12 |
 | `weight` | `regular` 400 · `normal` 450 · `medium` 500 · `semibold` 600 · `bold` 700 |
 | `tracking` | `mono` −0.04em · `tightest` −0.035em · `tighter` −0.03em · `tight` −0.02em · `normal` 0 · `wide` 0.01em |
 | `family` | `sans` · `mono` |
@@ -51,19 +51,20 @@ mono는 위계가 아니라 **family 축**입니다. `<Text family="mono">`로 �
 
 <!-- generated:typography-roles -->
 <!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
-| 역할 | 크기 / 행간 | 굵기 | 자간 | 기본 잉크 | 기본 태그 | 쓰는 곳 |
-| --- | --- | --- | --- | --- | --- | --- |
-| `hero` | 44–76 유동 / 1.12 | 400 | tightest | primary | h1 | 랜딩 헤드라인 |
-| `display` | 32 / 40 | 400 | tighter | primary | h1 | 큰 제목 |
-| `title` | 24 / 32 | 600 | tight | primary | h1 | 페이지 제목 |
-| `heading` | 20 / 28 | 600 | normal | primary | h2 | 섹션 제목 |
-| `subheading` | 16 / 24 | 600 | normal | primary | h3 | 작은 제목 |
-| `body` | 14 / 20 | 500 | normal | primary | p | 본문 (기본값) |
-| `caption` | 13 / 16 | 400 | normal | secondary | p | 보조 정보·메타 |
-| `label` | 12 / 16 | 600 | wide | secondary | span | 필드 라벨·표 머리·짧은 이름 |
+| 역할 | 크기 / 행간 | 굵기 | 강조 | 자간 | 기본 잉크 | 기본 태그 | 쓰는 곳 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `hero` | 44–76 유동 / 1.12 | 400 | 600 | tightest | primary | h1 | 랜딩 헤드라인 |
+| `headline` | 48 / 56 | 400 | 600 | tightest | primary | h1 | 앱 화면의 큰 제목 |
+| `display` | 32 / 40 | 400 | 600 | tighter | primary | h1 | 큰 제목 |
+| `title` | 24 / 32 | 600 | 600 | tight | primary | h1 | 페이지 제목 |
+| `heading` | 20 / 28 | 600 | 600 | normal | primary | h2 | 섹션 제목 |
+| `subheading` | 16 / 24 | 600 | 600 | normal | primary | h3 | 작은 제목 |
+| `body` | 14 / 20 | 400 | 500 | normal | primary | p | 본문 (기본값) |
+| `caption` | 13 / 16 | 400 | 500 | normal | secondary | p | 보조 정보·메타 |
+| `label` | 12 / 16 | 600 | 600 | wide | secondary | span | 필드 라벨·표 머리·짧은 이름 |
 <!-- /generated:typography-roles -->
 
-본문은 14px입니다. 복잡한 웹앱의 표준 밀도라 16px 본문 variant는 두지 않습니다. 제목은 크기로 위계를 만들고, `label`은 대문자나 mono가 아닌 sentence case semibold입니다. `hero`는 크기가 뷰포트를 따라 자라는 유일한 역할입니다([Palette](#typography-palette--원본)).
+본문은 14px입니다. 복잡한 웹앱의 표준 밀도라 16px 본문 variant는 두지 않습니다. 제목은 크기로 위계를 만들고, `label`은 대문자나 mono가 아닌 sentence case semibold입니다. `hero`는 크기가 뷰포트를 따라 자라는 유일한 역할입니다([Palette](#typography-palette--원본)). `headline`은 같은 결의 고정 단계로, 랜딩이 아니라 앱 화면의 큰 제목에 씁니다.
 
 `variant`와 태그는 따로 정합니다. `title`이 어떤 페이지에서는 `h1`, 대화상자 안에서는 `h2`가 될 수 있습니다. 잉크는 `ink`로 한 번 덮어쓸 수 있고, 색면 위에서는 `ink="inherit"`로 면의 글자색을 그대로 받습니다.
 
@@ -93,9 +94,12 @@ mono는 위계가 아니라 **family 축**입니다. `<Text family="mono">`로 �
 | `emphasisRule(emphasis)` | 굵기 하나. `regular` · `medium` · `semibold` · `bold`는 Palette의 이름이라 `regular`는 언제나 400입니다 | 문장 속 강조, 역할 밖의 가벼운 글자 |
 
 [contract:foundations.typography.body-role]: #
-body 요소는 body 역할 전체를 받습니다. 크기와 행간뿐 아니라 굵기 500과 줄바꿈까지 포함하므로, Text 밖의 글자(링크, 목록, 문서 본문)도 `<Text variant="body">`와 같은 글자로 그려집니다.
+body 요소는 body 역할 전체를 받습니다. 크기와 행간뿐 아니라 굵기 400과 줄바꿈까지 포함하므로, Text 밖의 글자(링크, 목록)도 `<Text variant="body">`와 같은 글자로 그려집니다.
 
-앱은 Palette를 직접 읽지 않습니다. 굵기는 `emphasisRule`로, 나머지는 위 규칙으로 고릅니다. `Text`에는 굵기 prop이 없습니다.
+[contract:foundations.typography.prose-text]: #
+문서 본문만 그보다 한 단 큽니다. 문서는 일하는 화면이 아니라 읽는 자리라, 사이트의 문서 본문은 `subheading`의 크기와 행간에 regular 굵기를 쓰고 제목도 h2는 `title`, h3는 `heading`으로 한 단씩 올립니다.
+
+앱은 Palette를 직접 읽지 않습니다. stylesheet의 굵기는 `emphasisRule`로, 나머지는 위 규칙으로 고릅니다. 컴포넌트는 굵기 이름을 고르지 않습니다. `Text` · `Button`의 `strong`이 역할이 정한 값을 켜고 끕니다.
 
 ### 줄바꿈
 
@@ -142,6 +146,6 @@ Field의 입력값은 글자 줄(16)이 아니라 preset의 `inputLeading`(20) �
 
 ## 앱에서
 
-앱이 글자를 고르는 길은 역할입니다. 컴포넌트에서는 `Text`의 `variant` · `ink` · `family` · `numeric`으로, stylesheet에서는 `typographyRule(variant, { family })`와 `codeRule` · `presetRule` · `emphasisRule`로 고르고, 값을 직접 읽어야 하는 자리는 `tokens.typography.role.<variant>`(`size` · `weight` · `leading` · `tracking`)와 `tokens.typography.preset.<preset>`입니다. `fontSize` · `fontWeight` · `lineHeight` · `letterSpacing`에 숫자나 단위 값을 적지 않습니다. 굵기 하나만 바꾸는 강조는 `emphasisRule`, 코드는 `codeRule`, 링크의 밑줄 offset은 `linkStyle`입니다. eslint `paper/source-numbers`의 앱 범위가 값을 막고, Palette는 공개 트리에 없어 앱이 읽을 경로가 없습니다. Palette를 보여 주는 Typography inspector만 `@paper-ui/inspect/typography`로 읽습니다. 컨트롤 글자 크기를 한 단계 바꾸는 탈출구는 컨트롤의 `fontSize` prop입니다.
+앱이 글자를 고르는 길은 역할입니다. 컴포넌트에서는 `Text`의 `variant` · `ink` · `family` · `strong` · `numeric`으로, stylesheet에서는 `typographyRule(variant, { family })`와 `codeRule` · `presetRule` · `emphasisRule`로 고르고, 값을 직접 읽어야 하는 자리는 `tokens.typography.role.<variant>`(`size` · `weight` · `strong` · `leading` · `tracking`)와 `tokens.typography.preset.<preset>`입니다. `fontSize` · `fontWeight` · `lineHeight` · `letterSpacing`에 숫자나 단위 값을 적지 않습니다. 굵기 하나만 바꾸는 강조는 `emphasisRule`, 코드는 `codeRule`, 링크의 밑줄 offset은 `linkStyle`입니다. eslint `paper/source-numbers`의 앱 범위가 값을 막고, Palette는 공개 트리에 없어 앱이 읽을 경로가 없습니다. Palette를 보여 주는 Typography inspector만 `@paper-ui/inspect/typography`로 읽습니다. 컨트롤 글자 크기를 한 단계 바꾸는 탈출구는 컨트롤의 `fontSize` prop입니다.
 
 Playground [Typography](/playground/foundations/typography)에서 Palette·역할·preset을 실제 글자로 볼 수 있습니다.

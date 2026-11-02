@@ -3,11 +3,10 @@ import { useState } from "react";
 import { Button, Field, FormField, Stack, type FormFieldProps } from "@studio-baeks/paper-ui";
 
 import { boolControl, defineSpec, flag } from "../schema";
-import { formField } from "./examples.css";
 
 export default defineSpec({
   name: "FormField",
-  blurb: "Label·입력·설명·오류의 ID 관계를 연결합니다. 입력 종류와 시각적 상태는 기존 Atom이 소유합니다.",
+  blurb: "Label·입력·설명·오류의 ID 관계를 연결하고, 그 사이 간격을 스스로 갖습니다. 입력 종류와 시각적 상태는 기존 Atom이 소유합니다.",
   controls: [
     boolControl<FormFieldProps, "disabled">("disabled"),
     boolControl<FormFieldProps, "required">("required", true),
@@ -25,7 +24,6 @@ export default defineSpec({
       invalid={invalid}
       required={flag(state, "required")}
       disabled={flag(state, "disabled")}
-      className={formField}
     >
       <Field type="email" />
     </FormField>

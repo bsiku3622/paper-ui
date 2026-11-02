@@ -33,6 +33,7 @@ const codeBlockValue = `${px(palette.fontSize[CODE_BLOCK.spec.size])} / ${px(pal
 
 const TEXT_SAMPLES = {
   hero: "조용한 바탕",
+  headline: "보안과 접근",
   display: "복잡한 화면을 더 명확하게",
   title: "큰 흐름을 한눈에 보여줍니다",
   heading: "필요한 정보에 집중할 수 있도록",
@@ -43,6 +44,7 @@ const TEXT_SAMPLES = {
 } satisfies Record<TextVariant, string>;
 const TEXT_ROLES: Record<TextVariant, string> = {
   hero: "랜딩 헤드라인",
+  headline: "앱 화면의 큰 제목",
   display: "큰 제목",
   title: "페이지 제목",
   heading: "섹션 제목",

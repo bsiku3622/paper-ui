@@ -1,14 +1,14 @@
 import { useState } from "react";
 
-import { Button, SelectableGroup, Stack, Text, type SelectableGroupProps } from "@studio-baeks/paper-ui";
+import { Button, Inline, SelectableGroup, Stack, Text, type SelectableGroupProps } from "@studio-baeks/paper-ui";
 
 import { named } from "../jsx";
 import { boolControl, defineSpec, enumControl, flag, local, pick } from "../schema";
-import { control, roving } from "./examples.css";
+import { control } from "./examples.css";
 
 export default defineSpec({
   name: "SelectableGroup",
-  blurb: "Selectable 항목의 단일·복수 선택과 그룹 focus 탐색을 연결합니다. 항목은 click으로 선택을 바꾸는 native button입니다. 선택과 focus는 별도 상태이고, role을 주면 항목이 그 role의 aria로 선택을 알립니다.",
+  blurb: "Selectable 항목의 단일·복수 선택과 그룹 focus 탐색을 연결합니다. 그룹은 요소 하나이고 as={Inline}이면 그 요소가 항목을 늘어놓습니다. 항목은 click으로 선택을 바꾸는 native button입니다. 선택과 focus는 별도 상태이고, role을 주면 항목이 그 role의 aria로 선택을 알립니다.",
   controls: [
     enumControl<SelectableGroupProps, "selectionMode">("selectionMode", local<SelectableGroupProps, "selectionMode">()(["single", "multiple"], "SelectableGroup's own two selection modes")),
     boolControl<SelectableGroupProps, "selectionRequired">("selectionRequired", false, { behaviorOnly: "a required selection only refuses the last deselect, which a static render does not show" }),
@@ -22,7 +22,9 @@ export default defineSpec({
   },
   subject: (state, { values, setValues, last }) => (
     <SelectableGroup
-      className={roving}
+      as={Inline}
+      gap="sm"
+      wrap
       aria-label="정렬 선택"
       selectionMode={pick<NonNullable<SelectableGroupProps["selectionMode"]>>(state, "selectionMode")}
       selectionRequired={flag(state, "selectionRequired")}

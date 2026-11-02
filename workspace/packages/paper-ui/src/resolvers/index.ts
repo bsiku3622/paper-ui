@@ -6,7 +6,7 @@
 
 import { joinClass } from "../internal/joinClass";
 import { spaceClass } from "../styles/space.css";
-export { resolveControlFontSize, resolvePreset, resolveText } from "./typography";
+export { resolveControlFontSize, resolveControlStrong, resolvePreset, resolveText } from "./typography";
 export { resolveFill, resolveInk } from "./color";
 export { resolveGap, resolveSpace, type GapProps } from "./space";
 

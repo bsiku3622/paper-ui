@@ -8,7 +8,7 @@ Layout Primitive는 자식을 늘어놓는 방식을 제공합니다. Stack · I
 | --- | --- | --- |
 | Stack | Box 전체 + `gap` · `align` start / center / end / stretch · `justify` start / center / end / between | 세로 flex. align을 주지 않으면 CSS stretch |
 | Inline | Box 전체 + `gap` / `rowGap` / `columnGap` · `align` start / center / end / stretch / baseline · `justify` start / center / end / between · `wrap` | 가로 flex, align=center, nowrap |
-| Grid | Box 전체 + columns / rows · autoFlow · `gap` / `rowGap` / `columnGap` · `align` · `justify` · `justifyItems` | columns=1, align · justify · justifyItems는 CSS 기본 |
+| Grid | Box 전체 + columns / rows(폭마다 값을 주는 단계 포함) · autoFlow · `gap` / `rowGap` / `columnGap` · `align` · `justify` · `justifyItems` | columns=1, align · justify · justifyItems는 CSS 기본 |
 
 [contract:primitives.layout.axis-classes]: #
 Stack · Inline · Grid는 정렬 어휘 하나를 나눠 씁니다. `align`은 교차축 정렬(`align-items`, 값은 `ALIGNS`)이고, `justify`는 주축 분배(`justify-content`, 값은 `JUSTIFIES`)입니다. Grid에서 `justify`는 track 묶음의 분배이고, 각 칸 안에서 항목을 놓는 일은 Grid만 가진 `justifyItems`(`JUSTIFY_ITEMS`)가 맡습니다. 기본값은 root가 갖고, prop은 줄 때만 class가 됩니다. 그래서 prop을 주지 않은 컨테이너에는 정렬 class가 붙지 않습니다.
@@ -39,10 +39,13 @@ Stack은 위에서 아래로, Inline은 시작에서 끝으로 자식을 놓습�
 [contract:primitives.grid.tracks]: #
 Grid의 columns 기본값은 1입니다. columns · rows에 양의 정수를 주면 같은 폭의 track을 만들고, CSS track 문자열도 받습니다. 양의 정수가 아닌 숫자는 `RangeError`입니다. gap · rowGap · columnGap은 Layout gap 단계를 고릅니다. track 정의는 실행 중에 정해지는 배치라 inline style로 가고, 간격은 class로 갑니다. `align`은 칸 안의 세로 정렬, `justify`는 track이 컨테이너를 다 채우지 않을 때의 가로 분배, `justifyItems`는 칸 안의 가로 정렬입니다.
 
+[contract:primitives.grid.steps]: #
+columns · rows는 폭마다 다른 값을 받습니다. `{ base: 1, md: "auto minmax(0, 1fr)" }`처럼 쓰고, `base`는 가장 좁은 창, 이름 붙은 단(`sm` · `md` · `lg` · `xl`)은 그 분기점부터 다음 단까지입니다. columns에 `base`가 없으면 기본값 1이고, rows에 없으면 자동입니다. 값은 정수든 track 문자열이든 같은 규칙을 따르고, 단의 값은 변수로 건너가 class가 미디어 쿼리에서 읽습니다.
+
 두 열 grid를 만드는 예시입니다.
 
 ```tsx
-<Grid columns={2} gap="md" align="start">
+<Grid columns={{ base: 1, md: 2 }} gap="md" align="start">
   <Surface border padding="md">첫 항목</Surface>
   <Surface border padding="md">둘째 항목</Surface>
 </Grid>

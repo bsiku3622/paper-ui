@@ -9,14 +9,14 @@ Float Primitive는 떠 있는 층의 위치와 elevation(z와 그림자), 열고
 ## Floating
 
 [contract:primitives.floating.portal]: #
-Floating은 열린 상태와 Trigger·Content·Close를 연결합니다. Root는 열린 상태만 들고 DOM wrapper를 만들지 않으며, Content가 열릴 때 [Portal](a11y.md#portal)과 focus 범위를 mount합니다. Content의 면·여백·테두리·모서리는 className으로 지정합니다. 기본 popover는 overlay tier, modal은 modal tier에 서고 둘 다 floating 그림자를 스스로 그립니다. 앱이 넘긴 class는 로드 순서가 아니라 레이어로 패키지 스타일을 이깁니다([우선순위](../get-started/install.md#우선순위)).
+Floating은 열린 상태와 Trigger·Content·Close를 연결합니다. Root는 열린 상태만 들고 DOM wrapper를 만들지 않으며, Content가 열릴 때 [Portal](a11y.md#portal)과 focus 범위를 mount합니다. Content의 면·여백·테두리·모서리는 호출자가 정합니다 — `as={Surface}`로 panel을 면으로 그리거나 className을 줍니다. 기본 popover는 overlay tier, modal은 modal tier에 서고 둘 다 floating 그림자를 스스로 그립니다. 앱이 넘긴 class는 로드 순서가 아니라 레이어로 패키지 스타일을 이깁니다([우선순위](../get-started/install.md#우선순위)).
 
 명시적으로 연 모달에 이름과 닫기 버튼을 제공하는 예시입니다.
 
 ```tsx
 <Floating>
   <Floating.Trigger>설정 열기</Floating.Trigger>
-  <Floating.Content presentation="modal" aria-label="설정" className={dialogClass}>
+  <Floating.Content as={Surface} fill="raised" radius="lg" padding="xl" presentation="modal" aria-label="설정">
     <Field aria-label="표시 이름" />
     <Floating.Close>닫기</Floating.Close>
   </Floating.Content>
@@ -40,6 +40,7 @@ Content role은 dialog / alertdialog이며 기본값은 dialog입니다. aria-la
 | Content 옵션 | 기본값 | 계약 |
 | --- | --- | --- |
 | presentation | popover | `popover`(앵커 곁) 또는 `modal`(scrim 위 가운데) |
+| as | div | panel을 그릴 요소나 컴포넌트. `as={Surface}`면 panel 자신이 면이 되어 안쪽에 면을 한 겹 더 두지 않습니다 |
 | dismissable | true | 바깥 pointer 조작으로 닫기 |
 | keyboardDismissDisabled | false | true이면 Escape 닫기 해제. Escape는 포커스가 panel 안에 있을 때만 듣습니다 |
 | closeOnBlur | false | focus 이탈 시 닫기 요청 |

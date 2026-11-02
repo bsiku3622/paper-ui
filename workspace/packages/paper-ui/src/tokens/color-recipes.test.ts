@@ -144,10 +144,10 @@ describe("item profile", () => {
 });
 
 describe("mark profile", () => {
-  it("[foundations.color.profile-shape] [foundations.color.profile-fields] rings a resting mark in the tertiary ink and fills a checked one with the primary solid", () => {
+  it("[foundations.color.profile-shape] [foundations.color.profile-fields] rings a resting mark in the input's line on no face and fills a checked one with the primary solid", () => {
     const { color } = tokens;
     expect(markProfile).toEqual({
-      rest: { ring: color.ink.tertiary, knob: color.bg.raised, track: color.control.track },
+      rest: { ring: color.border.base, face: "transparent", knob: color.bg.raised, track: color.control.track },
       checked: { face: color.accent.primary.solid, ring: "transparent", mark: color.accent.primary.wash, knob: color.bg.raised },
       invalid: { ring: color.accent.error.ink },
     });

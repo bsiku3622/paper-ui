@@ -158,7 +158,7 @@ describe("vocabulary", () => {
     expectTypeOf<vocabulary.ControlSize>().toEqualTypeOf<"xs" | "sm" | "md" | "lg">();
     expectTypeOf<vocabulary.ControlFontSize>().toEqualTypeOf<"label" | "caption" | "body">();
     expectTypeOf<vocabulary.Emphasis>().toEqualTypeOf<"regular" | "medium" | "semibold" | "bold">();
-    expectTypeOf<vocabulary.TextVariant>().toEqualTypeOf<"hero" | "display" | "title" | "heading" | "subheading" | "body" | "caption" | "label">();
+    expectTypeOf<vocabulary.TextVariant>().toEqualTypeOf<"hero" | "headline" | "display" | "title" | "heading" | "subheading" | "body" | "caption" | "label">();
     expectTypeOf<vocabulary.Space>().toEqualTypeOf<"xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl">();
     expectTypeOf<vocabulary.DividerLevel>().toEqualTypeOf<"base" | "strong">();
     expectTypeOf<vocabulary.SurfaceRadius>().toEqualTypeOf<"sm" | "md" | "lg" | "full">();

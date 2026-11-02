@@ -75,7 +75,7 @@ describe("An elevation is applied as one unit", () => {
   it("[foundations.layout.elevation-unit] keeps the unit out of the public roles", () => {
     // @ts-expect-error an elevation is applied through the unit, so tokens.layout has no elevation
     expect(tokens.layout.elevation).toBeUndefined();
-    expect(Object.keys(tokens.layout).sort()).toEqual(["breakpoint", "container", "gap", "gutter", "section"]);
+    expect(Object.keys(tokens.layout).sort()).toEqual(["breakpoint", "container", "gap", "gutter", "section", "viewport"]);
   });
 
   it("[foundations.layout.emission] emits each tier's z and the nudge as source variables, and no variable for a shadow", () => {

@@ -22,6 +22,56 @@ test("[primitives.grid.token-gap] Grid's computed column and row gap are the gap
   expect(await gaps()).toEqual({ column: sm, row: `${roleDp(tokens.layout.gap.lg)}px`, tracks: 2 });
 });
 
+test("[primitives.grid.steps] a Grid's tracks follow the width: the base below its first step, each step from its breakpoint on", async ({ page }) => {
+  const { sm, md, lg } = LAYOUT_SOURCE.breakpoint;
+  const tracks = (id: string, axis: "gridTemplateColumns" | "gridTemplateRows" = "gridTemplateColumns") =>
+    page.getByTestId(id).evaluate((node, axis) => getComputedStyle(node)[axis].split(" ").length, axis);
+  await page.setViewportSize({ width: md - 1, height: 800 });
+  await openHarness(page, "layout");
+  expect(await tracks("grid-steps")).toBe(1);
+  expect(await tracks("grid-no-base")).toBe(1);
+  // Rows with no base are the implicit one the content makes.
+  expect(await page.getByTestId("grid-steps").evaluate((node) => getComputedStyle(node).gridTemplateRows)).not.toContain("32px");
+  await page.setViewportSize({ width: md, height: 800 });
+  expect(await tracks("grid-steps")).toBe(2);
+  expect(await tracks("grid-no-base")).toBe(3);
+  await expect(page.getByTestId("grid-steps")).toHaveCSS("grid-template-rows", "32px 48px");
+  // A step that names no value keeps the one before it.
+  await page.setViewportSize({ width: lg - 1, height: 800 });
+  expect(await tracks("grid-steps")).toBe(2);
+  await page.setViewportSize({ width: lg, height: 800 });
+  expect(await tracks("grid-steps")).toBe(3);
+  expect(await tracks("grid-no-base")).toBe(3);
+  // An inner Grid reads only the steps it was given, not the outer one's variables.
+  await page.setViewportSize({ width: md, height: 800 });
+  expect(await tracks("grid-outer")).toBe(2);
+  expect(await tracks("grid-inner")).toBe(1);
+  await page.setViewportSize({ width: lg, height: 800 });
+  expect(await tracks("grid-inner")).toBe(3);
+  await page.setViewportSize({ width: sm, height: 800 });
+  expect(await tracks("grid-steps")).toBe(1);
+});
+
+test("[primitives.box.hide-below] a box is gone below its breakpoint and there from it on, over a layout root's own display", async ({ page }) => {
+  const { md, lg } = LAYOUT_SOURCE.breakpoint;
+  await page.setViewportSize({ width: md - 1, height: 800 });
+  await openHarness(page, "layout");
+  for (const id of ["hide-box", "hide-stack", "hide-grid"]) await expect(page.getByTestId(id), id).toBeHidden();
+  await page.setViewportSize({ width: md, height: 800 });
+  await expect(page.getByTestId("hide-box")).toBeVisible();
+  await expect(page.getByTestId("hide-stack")).toHaveCSS("display", "flex");
+  await expect(page.getByTestId("hide-grid")).toBeHidden();
+  await page.setViewportSize({ width: lg, height: 800 });
+  await expect(page.getByTestId("hide-grid")).toHaveCSS("display", "grid");
+});
+
+test("[primitives.box.prop-table] height=viewport is the height of the window", async ({ page }) => {
+  await page.setViewportSize({ width: 1000, height: 640 });
+  await openHarness(page, "layout");
+  await expect(page.getByTestId("height-viewport")).toHaveCSS("height", "640px");
+  await expect(page.getByTestId("min-height-viewport")).toHaveCSS("min-height", "640px");
+});
+
 test("[primitives.layout.axis-classes] Grid's justifyItems places each item in its cell, and justify distributes the tracks", async ({ page }) => {
   await openPlayground(page, "grid", "Grid");
   const grid = page.getByTestId("grid-example");

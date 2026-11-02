@@ -41,7 +41,7 @@ Atom이 hover·focus·active·selected·disabled·invalid에 어떻게 반응하
 
 ## 상태가 그려지는 길
 
-상태는 네 걸음을 지나 Atom에 닿습니다. [Color](../foundations/color.md)의 역할(`interaction.bgHover` · `selected` · `active` · `focus`, `control.track`, `ink.tertiary`)을 `tokens/color-recipes.ts`의 profile(`accentProfile` · `outlinedControlProfile` · `itemProfile` · `markProfile` · `markForcedProfile`)이 면 · 잉크 · 경계로 고르고, `tokens/state-recipes.ts`의 상태 조각(`stateStyle`)이 그 profile을 속성 selector에 묶으며, 색을 칠하는 조각은 paint 층(`primitives/paint/`)만 spread해 `paintClass` · `recipes.css.ts`의 class로 내놓고, Atom이 그 class를 합성합니다. 상태가 면을 바꾸는 방식은 하나입니다 — 면(`backgroundColor`) 위에 깔린 tint(`--pui-state-tint`)를 옮깁니다.
+상태는 네 걸음을 지나 Atom에 닿습니다. [Color](../foundations/color.md)의 역할(`interaction.bgHover` · `selected` · `active` · `focus`, `control.track`, `border.base`)을 `tokens/color-recipes.ts`의 profile(`accentProfile` · `outlinedControlProfile` · `itemProfile` · `markProfile` · `markForcedProfile`)이 면 · 잉크 · 경계로 고르고, `tokens/state-recipes.ts`의 상태 조각(`stateStyle`)이 그 profile을 속성 selector에 묶으며, 색을 칠하는 조각은 paint 층(`primitives/paint/`)만 spread해 `paintClass` · `recipes.css.ts`의 class로 내놓고, Atom이 그 class를 합성합니다. 상태가 면을 바꾸는 방식은 하나입니다 — 면(`backgroundColor`) 위에 깔린 tint(`--pui-state-tint`)를 옮깁니다.
 
 전이는 상태마다 Motion 역할이 정합니다. hover는 tint · hover 경계 · hover 잉크(`hover`, 100ms), state는 선택된 면과 켜진 표식(`state`, 130ms), press는 1px 변위(`press`, 100ms)입니다.
 
@@ -85,7 +85,7 @@ Button · IconButton은 눌리는 동안 한 단계(`motion.press`의 변위, 1p
 비활성(disabled)이거나 로딩 중인 Button은 모두 `data-disabled`를 달고 흐려지며(`opacity.disabled`) `not-allowed` 커서를 보이고, hover tint를 받지 않습니다. 링크 모양의 Button도 같습니다. 그 모습은 비활성 recipe(`stateStyle.disabled`) 하나가 입히고, `<a>`가 된 Button은 `aria-disabled`와 클릭 차단으로 이동하지 않습니다. 로딩의 접근성은 하나로 정합니다 — 혼자 서는 Spinner는 라벨이 있는 progressbar이고, 컨트롤 안의 Spinner는 장식이며 컨트롤이 `aria-busy`를 답니다.
 
 [contract:atoms.mark.ring]: #
-꺼진 Checkbox · Radio는 raised 면 안의 `ink.tertiary` 테로 서고, 포인터가 올라가도 테는 그대로입니다. 켜지거나 부분 선택이면 primary solid 면과 테, 오류면 꺼진 표식의 테만 error 잉크입니다. 꺼진 Switch는 `control.track` 트랙을 같은 잉크의 1px 안쪽 테(`strokeRing`)가 두르고, 이 테는 박스 안에 그려져 크기를 늘리지 않습니다. 켜진 Switch는 primary solid 트랙에 `bg.raised` 손잡이가 앉고, 테는 투명해져 트랙의 가장자리에 아무것도 덧칠하지 않으면서 전이는 이어집니다.
+꺼진 Checkbox · Radio는 입력칸과 같은 `border.base` 테로 서고 자기 면이 없으며, 포인터가 올라가도 테는 그대로입니다. 켜지거나 부분 선택이면 primary solid 면과 테, 오류면 꺼진 표식의 테만 error 잉크입니다. 꺼진 Switch는 `control.track` 트랙을 같은 선의 1px 안쪽 테(`strokeRing`)가 두르고, 이 테는 박스 안에 그려져 크기를 늘리지 않습니다. 켜진 Switch는 primary solid 트랙에 `bg.raised` 손잡이가 앉고, 테는 투명해져 트랙의 가장자리에 아무것도 덧칠하지 않으면서 전이는 이어집니다.
 
 [contract:atoms.mark.disabled]: #
 비활성 Checkbox · Radio · Switch는 켜져 있든 아니든 `data-disabled`를 달고 `opacity.disabled`로 흐려지며 `not-allowed` 커서를 보입니다. 그 모습은 비활성 recipe(`stateStyle.disabled`) 하나가 입히고, 표식 stylesheet에는 opacity 숫자가 없습니다. 비활성이 아닌 표식은 불투명하고 포인터 커서입니다.
@@ -122,7 +122,7 @@ Button · IconButton · Link는 키보드 포커스를 `useFocusRing`(Pressable 
 
 ## 대비 · forced colors · prefers-contrast · target
 
-글자는 4.5:1, 컨트롤과 그 상태를 알리는 표식은 3:1을 지킵니다 — 선택 표식의 테, Switch 트랙의 테와 켜진 트랙, 켜진 면과 그 위의 표식, 포커스 링, 오류 테. 명시된 예외 셋(입력 경계, 옅은 selected 면, 꺼진 Switch의 손잡이)과 그 보완은 [대비 계약](../foundations/color.md#대비-계약)에 있고, 수치는 단위 테스트가 두 테마에서 지킵니다.
+글자는 4.5:1, 컨트롤과 그 상태를 알리는 표식은 3:1을 지킵니다 — 켜진 트랙, 켜진 면과 그 위의 표식, 포커스 링, 오류 테. 명시된 예외 셋(입력과 꺼진 표식의 경계, 옅은 selected 면, 꺼진 Switch의 손잡이)과 그 보완은 [대비 계약](../foundations/color.md#대비-계약)에 있고, 수치는 단위 테스트가 두 테마에서 지킵니다.
 
 OS가 색을 정하는 모드(`forced-colors: active`)에서는 대부분의 요소를 OS에 맡깁니다. 상태가 배경에만 기대는 자리 — 선택 표식, Spinner, selected 면, Badge의 점 — 만 `forced-color-adjust: none`으로 빼고 시스템 색(`SYSTEM_COLORS`)으로 직접 그립니다. hover는 Highlight 경계, 비활성은 GrayText, 포커스 링은 Highlight이고, Divider는 border라 그대로 남습니다([Color](../foundations/color.md#forced-colors)). 오류는 이 모드에서 색을 고르지 못하므로 `aria-invalid`와 오류 문구가 알립니다.
 

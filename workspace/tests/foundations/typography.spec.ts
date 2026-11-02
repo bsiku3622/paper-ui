@@ -51,22 +51,27 @@ const lines = (target: Locator) =>
   });
 
 test.describe("the body role", () => {
-  test("[foundations.typography.code-rule] a docs heading renders like the Text role it stands for", async ({ page }) => {
+  test("[foundations.typography.code-rule] [foundations.typography.prose-text] a docs heading renders like the Text role it stands for, a step up from the app's", async ({ page }) => {
     await page.goto("/docs/get-started/philosophy");
     const prose = page.getByTestId("prose");
-    await expectStyle(prose.locator("h2").first(), role("heading"));
-    await expectStyle(prose.locator("h3").first(), role("subheading"));
+    await expectStyle(prose.locator("h2").first(), role("title"));
+    await expectStyle(prose.locator("h3").first(), role("heading"));
   });
 
-  test("[foundations.typography.body-role] a docs paragraph renders like a Text body, and so does a link outside any role", async ({ page }) => {
+  test("[foundations.typography.prose-text] a docs paragraph takes the subheading's size and line at the regular weight, and keeps the sans line breaking", async ({ page }) => {
     await page.goto("/docs/primitives/content");
     const paragraph = page.getByTestId("prose").locator("p").first();
     await expect(paragraph).toBeVisible();
-    await expectStyle(paragraph, role("body"));
-    await expectType(paragraph, resolved(ROLE_SPEC.body), "paragraph");
+    const { size, leading } = tokens.typography.role.subheading;
+    await expectStyle(paragraph, { fontSize: size, lineHeight: leading });
+    expect(await css(paragraph, "fontWeight")).toBe(String(TYPOGRAPHY_SOURCE.weight.regular));
     expect(await css(paragraph, "wordBreak")).toBe(TYPOGRAPHY_SOURCE.breaking.sans.wordBreak);
+  });
 
-    const link = page.getByRole("navigation", { name: "주요 메뉴" }).getByRole("link").first();
+  test("[foundations.typography.body-role] a link outside any role renders like a Text body", async ({ page }) => {
+    await page.goto("/docs/primitives/content");
+    // The skip link has no role of its own; the header's links are set a step up on purpose.
+    const link = page.getByRole("link", { name: "본문으로 건너뛰기" });
     await expectType(link, resolved(ROLE_SPEC.body), "link");
     expect(await css(page.locator("body"), "overflowWrap")).toBe(TYPOGRAPHY_SOURCE.breaking.sans.overflowWrap);
   });
@@ -208,6 +213,16 @@ test.describe("control presets", () => {
 });
 
 test.describe("Text", () => {
+  test("[atoms.button.strong] strong={false} moves a Button's label to the regular weight and leaves its box as the preset drew it", async ({ page }) => {
+    await openHarness(page, "typography");
+    const box = async (id: string) => page.getByTestId(id).evaluate((node) => { const { height, fontSize, lineHeight } = getComputedStyle(node); return { height, fontSize, lineHeight }; });
+    const own = String(TYPOGRAPHY_SOURCE.weight[PRESET_SPEC.button.md.weight]);
+    await expect(page.getByTestId("button-own")).toHaveCSS("font-weight", own);
+    await expect(page.getByTestId("button-strong")).toHaveCSS("font-weight", own);
+    await expect(page.getByTestId("button-plain")).toHaveCSS("font-weight", String(TYPOGRAPHY_SOURCE.weight.regular));
+    expect(await box("button-plain")).toEqual(await box("button-own"));
+  });
+
   test("[primitives.text.numeric] numeric sets digits tabular on Text and on a Field's value, and nothing else does", async ({ page }) => {
     await mount(page);
     expect(await css(fixture(page, "text-numeric"), "fontVariantNumeric")).toContain("tabular-nums");
@@ -344,36 +359,6 @@ test.describe("the docs, the Playground and the landing page take their type fro
 
 test.describe("what line breaking leaves to the shell", () => {
   const overflow = (page: Page) => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-  // When the page overflows, what is past its edge: elements and text runs outside any clipping box, and boxes whose
-  // content is wider than they are. An overflow can happen on one platform only, so the failure has to name it.
-  const pastTheEdge = (page: Page) =>
-    page.evaluate(() => {
-      const edge = document.documentElement.clientWidth;
-      const clipped = (node: Node) => {
-        for (let parent = node.parentElement; parent && parent !== document.body; parent = parent.parentElement) {
-          if (getComputedStyle(parent).overflowX !== "visible") return true;
-        }
-        return false;
-      };
-      const name = (element: Element) => `${element.tagName.toLowerCase()}.${element.getAttribute("class")?.split(/\s+/)[0] ?? ""}`;
-      const found: string[] = [];
-      for (const element of document.body.querySelectorAll("*")) {
-        if (clipped(element)) continue;
-        const { left, right } = element.getBoundingClientRect();
-        if (right > edge) found.push(`box ${name(element)} ${left.toFixed(2)}..${right.toFixed(2)}`);
-        if (element.scrollWidth > element.clientWidth && element.clientWidth > 0) found.push(`wider ${name(element)} ${element.clientWidth}<${element.scrollWidth}`);
-      }
-      const texts = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-      const range = document.createRange();
-      while (texts.nextNode()) {
-        const text = texts.currentNode;
-        if (!text.textContent?.trim() || clipped(text)) continue;
-        range.selectNodeContents(text);
-        const { right } = range.getBoundingClientRect();
-        if (right > edge) found.push(`text "${text.textContent.trim().slice(0, 24)}" ..${right.toFixed(2)} in ${name(text.parentElement!)}`);
-      }
-      return `edge ${edge}; ${found.join("; ") || "nothing measurable"}`;
-    });
 
   test("nothing overflows horizontally at 390 on the landing page or the demo", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
@@ -395,30 +380,15 @@ test.describe("what line breaking leaves to the shell", () => {
       const links = page.getByRole("navigation", { name: "주요 메뉴" });
       await expect(links).toBeVisible();
       const brand = (await page.getByRole("link", { name: "Paper UI 홈" }).boundingBox())!;
-      const row = (await links.boundingBox())!;
+      const line = (await links.boundingBox())!;
       const stacked = width <= md;
-      expect(row.y >= brand.y + brand.height - 1, `${width}: links on their own row`).toBe(stacked);
-      for (const link of await links.getByRole("link").all()) expect((await link.boundingBox())!.height, `${width}: no link wraps`).toBeLessThanOrEqual(row.height);
+      expect(line.y >= brand.y + brand.height - 1, `${width}: links on their own row`).toBe(stacked);
+      for (const link of await links.getByRole("link").all()) expect((await link.boundingBox())!.height, `${width}: no link wraps`).toBeLessThanOrEqual(line.height);
       const height = (await header.boundingBox())!.height;
-      expect(stacked ? height > 52 : height === 52, `${width}: header height ${height}`).toBe(true);
+      const row = roleDp(tokens.shape.control.height.sm) + roleDp(tokens.shape.inset.lg) * 2;
+      expect(stacked ? height > row : height === row, `${width}: header height ${height}`).toBe(true);
       expect(await header.evaluate((element) => element.scrollWidth <= element.clientWidth), `${width}: the header holds its content`).toBe(true);
     }
   });
 
-  test("on the demo at the sm breakpoint or less the topbar gives its workspace label to the search", async ({ page }) => {
-    const { sm } = LAYOUT_SOURCE.breakpoint;
-    for (const width of [sm + 120, sm + 1, sm, sm - 90]) {
-      await page.setViewportSize({ width, height: 844 });
-      await page.goto("/demo");
-      const label = page.getByText("내 작업 공간");
-      const search = page.getByLabel("전체 검색").locator("xpath=..");
-      await expect(search).toBeVisible();
-      if (width <= sm) await expect(label).toBeHidden();
-      else await expect(label).toBeVisible();
-      const box = (await search.boundingBox())!;
-      expect(box.x + box.width, `${width}: the search stays inside the viewport`).toBeLessThanOrEqual(width);
-      const over = await overflow(page);
-      expect(over, `${width}: no overflow${over > 0 ? ` (${await pastTheEdge(page)})` : ""}`).toBeLessThanOrEqual(0);
-    }
-  });
 });

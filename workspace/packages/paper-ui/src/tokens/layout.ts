@@ -110,6 +110,8 @@ export const LAYOUT = {
   container: source.container,
   // Media queries cannot read variables, so breakpoints are values, in em of the default root font.
   breakpoint: lengths(LAYOUT_SOURCE.breakpoint, mediaEm),
+  // The height of the window as it stands now: a phone browser's bars are not in it.
+  viewport: "100dvh",
   // Formulas over the space scale, evaluated where a section uses them.
   section: {
     start: `clamp(${SPACE["3xl"]}, ${section.start.vh}vh, calc(${SPACE["3xl"]} * ${section.start.maxRatio}))`,

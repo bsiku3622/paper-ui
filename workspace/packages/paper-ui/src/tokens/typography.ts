@@ -33,7 +33,7 @@ import { buildVarTree, em, keys, lengths, mapValues, rem } from "./helpers";
 // Navigation 등은 여기서 골라 역할별 preset을 완성한다.
 //
 // 450은 입력값을 위한 보정 단계다 — 작은 sans 글씨가 Retina에서 힘이 빠지지 않게 Field · Textarea 의
-// 값에만 쓴다. 읽기 본문과 Button 은 500 이다.
+// 값에만 쓴다. 읽기 본문은 400, Button 은 500 이다.
 
 const FAMILY = {
   sans: "'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
@@ -47,18 +47,18 @@ const FAMILY = {
 
 export const TYPOGRAPHY_SOURCE = {
   family: FAMILY,
-  fontSize: { "12": 12, "13": 13, "14": 14, "15": 15, "16": 16, "20": 20, "24": 24, "32": 32 },
+  fontSize: { "12": 12, "13": 13, "14": 14, "15": 15, "16": 16, "20": 20, "24": 24, "32": 32, "48": 48 },
   // 유동 단계 — 크기가 뷰포트 폭(vw)을 따라 min 과 max 사이에서 자라고, 행간은 단위 없는 비율이다.
   // 고정 dp 사다리의 유일한 예외이며 hero 역할만 쓴다.
   fluid: { hero: { min: 44, vw: 5.2, max: 76, leading: 1.12 } },
   weight: {
-    regular: 400, // 큰 제목(hero · display)과 caption처럼 가벼운 자리
+    regular: 400, // 큰 제목(hero · headline · display)과 본문 · caption
     normal: 450, // 입력값 — Field · Textarea
-    medium: 500, // 읽기 본문 · UI 컨트롤 — Button · Tab · Nav
-    semibold: 600, // 제목 · 라벨 · 소제목 · 활성/강조
+    medium: 500, // UI 컨트롤 — Button · Badge, 본문과 caption 의 강조
+    semibold: 600, // 제목 · 라벨 · 소제목, 큰 제목의 강조
     bold: 700, // 문장 속 강조
   },
-  leading: { "16": 16, "20": 20, "24": 24, "28": 28, "32": 32, "40": 40 },
+  leading: { "16": 16, "20": 20, "24": 24, "28": 28, "32": 32, "40": 40, "56": 56 },
   tracking: { mono: -0.04, tightest: -0.035, tighter: -0.03, tight: -0.02, normal: 0, wide: 0.01 },
   // 밑줄은 글자의 장식이라 글자 크기(em)를 따른다.
   decoration: { underlineOffset: 0.2 },
@@ -123,18 +123,20 @@ type StyleKeys = {
   tracking: keyof typeof TYPOGRAPHY_SOURCE.tracking;
 };
 
+// 역할은 자기 굵기와, 강조할 때의 굵기(strong)를 함께 정한다. Text 의 strong prop 은 굵기 이름을 고르지 않고 이 값을 켠다.
 export const ROLE_SPEC = {
-  hero: { size: "hero", weight: "regular", leading: "hero", tracking: "tightest" },
-  display: { size: "32", weight: "regular", leading: "40", tracking: "tighter" },
-  title: { size: "24", weight: "semibold", leading: "32", tracking: "tight" },
-  heading: { size: "20", weight: "semibold", leading: "28", tracking: "normal" },
-  subheading: { size: "16", weight: "semibold", leading: "24", tracking: "normal" },
-  body: { size: "14", weight: "medium", leading: "20", tracking: "normal" },
-  caption: { size: "13", weight: "regular", leading: "16", tracking: "normal" },
-  label: { size: "12", weight: "semibold", leading: "16", tracking: "wide" },
-} as const satisfies Record<string, StyleKeys>;
+  hero: { size: "hero", weight: "regular", strong: "semibold", leading: "hero", tracking: "tightest" },
+  headline: { size: "48", weight: "regular", strong: "semibold", leading: "56", tracking: "tightest" },
+  display: { size: "32", weight: "regular", strong: "semibold", leading: "40", tracking: "tighter" },
+  title: { size: "24", weight: "semibold", strong: "semibold", leading: "32", tracking: "tight" },
+  heading: { size: "20", weight: "semibold", strong: "semibold", leading: "28", tracking: "normal" },
+  subheading: { size: "16", weight: "semibold", strong: "semibold", leading: "24", tracking: "normal" },
+  body: { size: "14", weight: "regular", strong: "medium", leading: "20", tracking: "normal" },
+  caption: { size: "13", weight: "regular", strong: "medium", leading: "16", tracking: "normal" },
+  label: { size: "12", weight: "semibold", strong: "semibold", leading: "16", tracking: "wide" },
+} as const satisfies Record<string, StyleKeys & { strong: keyof typeof TYPOGRAPHY_SOURCE.weight }>;
 
-// hero·display·title·heading·subheading은 제목 계층, body·caption·label은 사용 역할이다. 서체(mono)는
+// hero·headline·display·title·heading·subheading은 제목 계층, body·caption·label은 사용 역할이다. 서체(mono)는
 // 위계가 아니라 family 축이라 여기 없다 — 어느 variant 에도 얹는다.
 export const TEXT_VARIANTS = keys(ROLE_SPEC);
 export type TextVariant = keyof typeof ROLE_SPEC;
@@ -143,7 +145,7 @@ export type TextVariant = keyof typeof ROLE_SPEC;
 export const CONTROL_FONT_SIZES = ["label", "caption", "body"] as const satisfies readonly TextVariant[];
 export type ControlFontSize = (typeof CONTROL_FONT_SIZES)[number];
 
-// 문장 속 강조가 고르는 굵기. 이름은 Palette 의 이름 그대로다.
+// 문장 속 강조가 고르는 굵기(emphasisRule). 이름은 Palette 의 이름 그대로다.
 export const EMPHASES = ["regular", "medium", "semibold", "bold"] as const satisfies readonly (keyof typeof TYPOGRAPHY_SOURCE.weight)[];
 export type Emphasis = (typeof EMPHASES)[number];
 
@@ -206,7 +208,7 @@ const refsOf = (spec: StyleKeys): Refs => ({
 
 export const TYPOGRAPHY = {
   palette,
-  role: mapValues(ROLE_SPEC, refsOf),
+  role: mapValues(ROLE_SPEC, (spec) => ({ ...refsOf(spec), strong: palette.weight[spec.strong] })),
   preset: {
     button: mapValues(PRESET_SPEC.button, refsOf),
     field: mapValues(PRESET_SPEC.field, (spec) => ({ ...refsOf(spec), inputLeading: palette.leading[spec.inputLeading] })),
@@ -218,6 +220,7 @@ export const TYPOGRAPHY = {
 // variant 별 기본 ink — caption · label 은 secondary(부연/짧은 이름 자리).
 export const TEXT_INK: Record<TextVariant, "primary" | "secondary"> = {
   hero: "primary",
+  headline: "primary",
   display: "primary",
   title: "primary",
   heading: "primary",

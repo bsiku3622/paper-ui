@@ -7,11 +7,12 @@ import { defineSpec, enumControl, local, pick, sample, vocab, type Control } fro
 import { boxSample } from "./examples.css";
 
 const KEYWORDS = ["full", "fit", "min-content", "max-content"] as const;
+const HEIGHT_KEYWORDS = [...KEYWORDS, "viewport"] as const;
 const widths = () => sample(
   [...DIMENSIONS, ...MEASURES.map((measure) => `measure.${measure}` as const), ...CONTAINERS.map((container) => `container.${container}` as const), ...KEYWORDS],
   "width takes any CSS length; these are the names of every family",
 );
-const heights = () => sample([...DIMENSIONS, ...KEYWORDS], "height takes any CSS length; these are the names of every family");
+const heights = () => sample([...DIMENSIONS, ...HEIGHT_KEYWORDS], "height takes any CSS length; these are the names of every family");
 const OVERFLOWS = ["visible", "hidden", "clip", "scroll", "auto"] as const;
 const OVERFLOW_REASON = "Box's own overflow keywords, which are all it takes";
 
@@ -31,6 +32,7 @@ const CONTROLS: Record<BoxAxis, Control> = {
   overflow: enumControl<BoxProps, "overflow">("overflow", local<BoxProps, "overflow">()(OVERFLOWS, OVERFLOW_REASON)),
   overflowX: enumControl<BoxProps, "overflowX">("overflowX", local<BoxProps, "overflowX">()(OVERFLOWS, OVERFLOW_REASON)),
   overflowY: enumControl<BoxProps, "overflowY">("overflowY", local<BoxProps, "overflowY">()(OVERFLOWS, OVERFLOW_REASON)),
+  hideBelow: enumControl<BoxProps, "hideBelow">("hideBelow", vocab("BREAKPOINTS")),
 };
 
 export default defineSpec({
@@ -53,6 +55,7 @@ export default defineSpec({
       overflow={pick<NonNullable<BoxProps["overflow"]>>(state, "overflow")}
       overflowX={pick<NonNullable<BoxProps["overflowX"]>>(state, "overflowX")}
       overflowY={pick<NonNullable<BoxProps["overflowY"]>>(state, "overflowY")}
+      hideBelow={pick<NonNullable<BoxProps["hideBelow"]>>(state, "hideBelow")}
     >
       <Text variant="caption" as="span">Box</Text>
     </Box>

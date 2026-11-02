@@ -33,6 +33,7 @@ const COMPOSITION = [
 const VALUE_ROLES: Record<string, string> = {
   "tokens.layout.breakpoint": "a media query cannot read a variable, so a breakpoint is its value, in em",
   "tokens.layout.section": "the declared fluid exception: a distance that follows the viewport height",
+  "tokens.layout.viewport": "the whole height of the window: an extent the browser measures, with no source value behind it",
   "tokens.motion": "a role holds its time and curve as values; only its displacement points at Shape and Layout variables",
   MOTION: "the motion roles themselves, read by styles/motion.css.ts",
   MOTION_LOOPS: "the loops' frames, time and curve, read by styles/motion.css.ts",

@@ -12,6 +12,7 @@ import { ScopeModeContext } from "../theme/context";
 import { THEME_ATTRIBUTE } from "../tokens";
 import { portalRoot } from "./a11y/Portal.css";
 import { FormField, useFormField, useFormFieldControl } from "./field/FormField";
+import { formField } from "./field/FormField.css";
 import { Floating } from "./float/Floating";
 import { Icon } from "./Icon";
 import { LiveRegion, announce, clearAnnouncements } from "./a11y/LiveRegion";
@@ -282,6 +283,12 @@ describe("roving registry and direction", () => {
 });
 
 describe("field relationships", () => {
+  it("[primitives.form-field.spacing] stacks its parts itself and keeps a caller's class beside its own", () => {
+    render(<FormField label="Email" className="mine" data-testid="field"><Field /></FormField>);
+    expect(screen.getByTestId("field").classList.contains(formField)).toBe(true);
+    expect(screen.getByTestId("field").classList.contains("mine")).toBe(true);
+  });
+
   it("[primitives.form-field.relations] associates labels, descriptions, errors and native state without dangling IDs", () => {
     const view = render(<FormField label="Email" description="Help" error="Wrong" required aria-describedby="external" invalid><Control /></FormField>);
     const input = screen.getByLabelText("Email") as HTMLInputElement;

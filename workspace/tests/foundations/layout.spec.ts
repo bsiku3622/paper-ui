@@ -95,17 +95,13 @@ test("[foundations.layout.elevation-tier-order] the computed z-index of every ti
   expect(scrim).toBeLessThan(toast);
 });
 
-test("[foundations.layout.elevation-unit] the GNB is sticky at the sticky tier, and the Demo toast stands at the toast tier with the floating shadow", async ({ page }) => {
+test("[foundations.layout.elevation-unit] the GNB is sticky at the sticky tier, and an element at the toast tier stands there with the floating shadow", async ({ page }) => {
   await page.goto("/");
   const header = page.getByRole("banner");
   await expect(header).toHaveCSS("position", "sticky");
   await expect(header).toHaveCSS("z-index", z("sticky"));
-  await page.goto("/demo");
-  // The finished task leaves the list, so the click is not followed by a state check.
-  await page.getByRole("checkbox", { name: "랜딩 페이지 정보 구조 확정 완료 처리" }).click();
-  // The notice is the plate inside the live region the page mounts from the start.
-  const toast = page.getByRole("status").locator(":scope > *");
-  await expect(toast).toBeVisible();
+  await openHarness(page, "elevation");
+  const toast = page.getByTestId("toast");
   await expect(toast).toHaveCSS("z-index", z("toast"));
   await expectStyle(toast, { boxShadow: ELEVATION.shadow.toast });
 });

@@ -1,4 +1,4 @@
-import { STATE_TINT_PROPERTY, stateStyle, tokens, transition } from "../tokens";
+import { STATE_TINT_PROPERTY, stateStyle, tokens, transition, type Justify } from "../tokens";
 import { controlGeometry } from "../internal/shape";
 import { layered } from "../tokens/layers.css";
 
@@ -32,6 +32,22 @@ export const buttonPill = style({ borderRadius: tokens.shape.radius.pill });
 
 // 가로 꽉 — 폼·모바일. 나란한 형제와 같은 폭.
 export const buttonFull = style({ width: "100%" });
+
+// 내용의 가로 배치 — 기본은 root 의 가운데다. 폭이 내용보다 넓을 때 뜻이 생긴다(사이드바의 항목, 끝에 숫자가 붙는 행).
+// buttonRoot 뒤에 와서 같은 특정도를 순서로 이긴다.
+const JUSTIFY_CONTENT = { start: "flex-start", center: "center", end: "flex-end", between: "space-between" } as const satisfies Record<Justify, string>;
+export const buttonJustify = styleVariants(JUSTIFY_CONTENT, (justifyContent) => ({ justifyContent }));
+
+// 모서리 표식 — 알림 숫자처럼 버튼에 딸린 작은 표시. 버튼의 크기를 바꾸지 않고 바깥 모서리에 걸치며, 누름은 버튼이 받는다.
+// 논리 속성이라 RTL 에서는 왼쪽 모서리로 간다.
+export const buttonAnchored = style({ position: "relative" });
+export const buttonBadge = style({
+  position: "absolute",
+  insetBlockStart: `calc(${tokens.shape.inset.xs} * -1)`,
+  insetInlineEnd: `calc(${tokens.shape.inset.xs} * -1)`,
+  display: "inline-flex",
+  pointerEvents: "none",
+});
 
 // size 4 단 — geometry만. Typography preset은 JSX에서 variant × size로 선택한다.
 // 버튼은 라벨이 상자를 정의하는 자리라 좌우가 넉넉해야 형태가 산다 — 입력류는 반대로

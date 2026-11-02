@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
-import { CONTROL_ICON } from "../../packages/paper-ui/src/tokens";
+import { CONTROL_ICON, TEXT_VARIANTS } from "../../packages/paper-ui/src/tokens";
+import { ROLE_SPEC, TYPOGRAPHY_SOURCE } from "../../packages/paper-ui/src/tokens/typography";
 import { SHAPE_SOURCE } from "../../packages/paper-ui/src/tokens/shape";
 import { px } from "../support/geometry";
 import { openHarness } from "../support/harness";
@@ -24,6 +25,32 @@ test("[primitives.icon.artboard] [primitives.icon.ink] an Icon draws its line at
   const { color, stroke } = await icon.evaluate((element) => ({ color: getComputedStyle(element).color, stroke: getComputedStyle(element).stroke }));
   expect(stroke).toBe(color);
   expect(color).toBe(await page.getByTestId("icon-md").evaluate((element) => getComputedStyle(element).color));
+});
+
+test("[primitives.text.strong] strong moves a role between its own weight, its strong one and the regular one, and nothing else of it, on either family", async ({ page }) => {
+  await openHarness(page, "typography");
+  const { weight } = TYPOGRAPHY_SOURCE;
+  for (const variant of TEXT_VARIANTS) {
+    await expect(page.getByTestId(`role-${variant}`), variant).toHaveCSS("font-weight", String(weight[ROLE_SPEC[variant].weight]));
+    await expect(page.getByTestId(`strong-${variant}`), variant).toHaveCSS("font-weight", String(weight[ROLE_SPEC[variant].strong]));
+    await expect(page.getByTestId(`plain-${variant}`), variant).toHaveCSS("font-weight", String(weight.regular));
+  }
+  const label = page.getByTestId("plain-label");
+  await expect(label).toHaveCSS("font-size", px(TYPOGRAPHY_SOURCE.fontSize["12"]));
+  await expect(label).toHaveCSS("line-height", px(TYPOGRAPHY_SOURCE.leading["16"]));
+  await expect(page.getByTestId("mono-plain")).toHaveCSS("font-weight", String(weight.regular));
+});
+
+test("[primitives.text.truncate] a truncated line stays one line inside its cell, cut by an ellipsis, with all its words still there", async ({ page }) => {
+  await openHarness(page, "layout");
+  const text = page.getByTestId("truncate");
+  await expect(text).toHaveCSS("text-overflow", "ellipsis");
+  await expect(text).toHaveCSS("white-space", "nowrap");
+  const box = await text.evaluate((node) => ({ scroll: node.scrollWidth, client: node.clientWidth, height: node.clientHeight, row: node.parentElement!.clientWidth, words: node.textContent!.length }));
+  expect(box.client).toBeLessThanOrEqual(box.row);
+  expect(box.scroll).toBeGreaterThan(box.client);
+  expect(box.height).toBe(parseFloat(px(TYPOGRAPHY_SOURCE.leading["20"])));
+  expect(box.words).toBeGreaterThan(100);
 });
 
 test("[primitives.text.ink-table] ink=inherit sets no colour of its own, so the letters take the face around them", async ({ page }) => {

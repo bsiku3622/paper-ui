@@ -97,6 +97,9 @@ const pieces = (children: ReactNode, options: PrintOptions): Piece[] => {
   return out;
 };
 
+// A prop whose false is not the same as leaving it out: strong={false} is the regular weight, and no strong is the role's own.
+const SAID_WHEN_FALSE = new Set(["strong"]);
+
 const attributes = (element: ReactElement, name: string, options: PrintOptions): string[] => {
   const props = element.props as Record<string, unknown>;
   const spreads = SPREADS.get(element) ?? [];
@@ -113,7 +116,7 @@ const attributes = (element: ReactElement, name: string, options: PrintOptions):
       else if (kept.length) out.push(`className=${quote(kept.join(" "))}`);
       continue;
     }
-    if (value === false) { if (own[prop] === true) out.push(`${prop}={false}`); continue; }
+    if (value === false) { if (own[prop] === true || SAID_WHEN_FALSE.has(prop)) out.push(`${prop}={false}`); continue; }
     if (value === own[prop]) continue;
     if (value === true) out.push(prop);
     else if (typeof value === "string") out.push(`${prop}=${quote(value)}`);

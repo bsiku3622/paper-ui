@@ -2,7 +2,7 @@ import { createRef } from "react";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, expectTypeOf, it } from "vitest";
 
-import { textMonoClass, textNumericClass, textRoleClass } from "../styles/typography.css";
+import { plainWeightClass, textMonoClass, textNumericClass, textRoleClass, textStrongClass, textTruncateClass } from "../styles/typography.css";
 import { ICON_SIZES, INKS, TEXT_INK, TEXT_VARIANTS, type IconSize, type TextVariant } from "../tokens";
 import { resolveInk } from "../resolvers";
 import { inkClass } from "../styles/color.css";
@@ -13,7 +13,7 @@ import { IconSizeContext } from "./icon-context";
 
 describe("Text", () => {
   it("[primitives.text.default-tag] draws its role with the tag that role implies, hero and display as the page's h1", () => {
-    const tags = { hero: "H1", display: "H1", title: "H1", heading: "H2", subheading: "H3", body: "P", caption: "P", label: "SPAN" };
+    const tags = { hero: "H1", headline: "H1", display: "H1", title: "H1", heading: "H2", subheading: "H3", body: "P", caption: "P", label: "SPAN" };
     expect(Object.keys(tags)).toEqual([...TEXT_VARIANTS]);
     for (const variant of TEXT_VARIANTS) {
       const view = render(<Text variant={variant}>{variant}</Text>);
@@ -46,6 +46,28 @@ describe("Text", () => {
     render(<><Text variant="label" ref={label}>Label</Text><Text variant="heading" ref={heading}>Heading</Text></>);
     expect(label.current?.tagName).toBe("SPAN");
     expect(heading.current?.tagName).toBe("H2");
+  });
+
+  it("[primitives.text.strong] wears the role's strong class for true, the regular class for false, and neither when strong is left out", () => {
+    for (const variant of TEXT_VARIANTS) {
+      const view = render(<><Text data-testid="on" variant={variant} strong>On</Text><Text data-testid="off" variant={variant} strong={false}>Off</Text><Text data-testid="own" variant={variant}>Own</Text></>);
+      const classes = (id: string) => screen.getByTestId(id).className.split(" ");
+      expect(classes("on"), variant).toContain(textStrongClass[variant]);
+      expect(classes("on"), variant).not.toContain(plainWeightClass);
+      expect(classes("off"), variant).toContain(plainWeightClass);
+      expect(classes("off"), variant).not.toContain(textStrongClass[variant]);
+      expect(classes("own"), variant).not.toContain(textStrongClass[variant]);
+      expect(classes("own"), variant).not.toContain(plainWeightClass);
+      view.unmount();
+    }
+    // @ts-expect-error A weight is not named: the role says what strong means.
+    expect(<Text weight="bold">Text</Text>).toBeTruthy();
+  });
+
+  it("[primitives.text.truncate] wears the truncating class only when truncate is given", () => {
+    render(<><Text data-testid="cut" truncate>Cut</Text><Text data-testid="whole">Whole</Text></>);
+    expect(screen.getByTestId("cut").classList.contains(textTruncateClass)).toBe(true);
+    expect(screen.getByTestId("whole").classList.contains(textTruncateClass)).toBe(false);
   });
 
   it("[primitives.text.numeric] sets digits tabular only when numeric is given", () => {

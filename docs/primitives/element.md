@@ -14,14 +14,18 @@ Element Primitive는 1차 바탕인 Box 하나입니다. Box는 "무엇이든 �
 | --- | --- | --- |
 | `padding` · `paddingX` · `paddingY` | xs · sm · md · lg · xl · 2xl · 3xl | Shape `inset.*` |
 | `width` · `minWidth` · `maxWidth` | xs ~ xl · `measure.xs` ~ `measure.xl` · `container.content` · full · fit · min-content · max-content · CSS 길이 · number | 이름은 Shape `dimension.width.*` · `measure.*`와 Layout `container.*` |
-| `height` · `minHeight` · `maxHeight` | xs ~ xl · full · fit · min-content · max-content · CSS 길이 · number | 이름은 Shape `dimension.height.*` |
+| `height` · `minHeight` · `maxHeight` | xs ~ xl · full · fit · min-content · max-content · viewport · CSS 길이 · number | 이름은 Shape `dimension.height.*`, viewport는 Layout `viewport` |
 | `overflow` · `overflowX` · `overflowY` | visible · hidden · clip · scroll · auto | 키워드만 받습니다 |
+| `hideBelow` | sm · md · lg · xl | Layout `breakpoint.*` — 그 분기점보다 좁은 창에서 그리지 않습니다 |
 
 [contract:primitives.box.named-size-class]: #
 이름 있는 크기(`md` 같은 dimension, `measure.md`, `container.content`, `full` · `fit` 같은 키워드)는 모두 class가 됩니다. 그래서 inline style에는 이름 있는 크기가 남지 않고, 소비자의 className이 이름 있는 크기를 덮을 수 있습니다. 호출자가 넘긴 `style`은 이름 있는 크기도 길이도 이깁니다.
 
 [contract:primitives.box.length-escape]: #
 이름이 아닌 CSS 길이(`42ch` 같은 값)와 number만 inline style로 갑니다. 그 화면에만 있는 치수를 위한 통로입니다.
+
+[contract:primitives.box.hide-below]: #
+`hideBelow`는 그 분기점보다 좁은 창에서 칸을 그리지 않습니다. 자리도 차지하지 않고 보조 기술도 읽지 않습니다. Stack · Inline · Grid의 root도 `display`를 정하므로 중요 선언으로 쓰고, 분기점의 폭에서는 보입니다. Grid의 단계와 경계가 같아서, 사이드바를 빼는 폭과 칸을 하나로 줄이는 폭이 어긋나지 않습니다.
 
 [contract:primitives.box.overflow-class]: #
 `overflow` · `overflowX` · `overflowY`는 키워드 다섯 개만 받고, 모두 class가 됩니다. 길이를 받는 속성이 아니라 escape가 없습니다.

@@ -1,9 +1,9 @@
 import type { ElementType } from "react";
 
-import { Button, type ButtonProps } from "@studio-baeks/paper-ui";
+import { Badge, Button, type ButtonProps } from "@studio-baeks/paper-ui";
 
 import { stay } from "../demo";
-import { boolControl, defineSpec, enumControl, faceProps, flag, sample, pick, textControl, vocab, words } from "../schema";
+import { answer, answerControl, boolControl, defineSpec, enumControl, faceProps, flag, sample, pick, textControl, vocab, words } from "../schema";
 
 export default defineSpec({
   name: "Button",
@@ -15,10 +15,13 @@ export default defineSpec({
     boolControl<ButtonProps, "shadow">("shadow", false, { behaviorOnly: "only a face casts one: solid, soft, or a fill" }),
     enumControl<ButtonProps, "size">("size", vocab("CONTROL_SIZES")),
     enumControl<ButtonProps, "fontSize">("fontSize", vocab("CONTROL_FONT_SIZES")),
+    answerControl("strong", "strong takes a boolean: false is the regular weight", { derived: "the preset is already strong, so true changes nothing" }),
     boolControl<ButtonProps, "selected">("selected", false, { behaviorOnly: "selected shows only on hairline, ghost and muted" }),
     boolControl<ButtonProps, "loading">("loading"),
     textControl<ButtonProps, "loadingLabel">("loadingLabel", ""),
     boolControl<ButtonProps, "fullWidth">("fullWidth"),
+    enumControl<ButtonProps, "justify">("justify", vocab("JUSTIFIES"), { behaviorOnly: "it shows once the button is wider than its content" }),
+    boolControl<ButtonProps, "badge">("badge", false, { label: "badge(알림 숫자)" }),
     enumControl<ButtonProps, "shape">("shape", vocab("CONTROL_SHAPES")),
     boolControl<ButtonProps, "disabled">("disabled"),
     enumControl<ButtonProps<ElementType>, "as">("as", sample(["button", "a"] as const, "the two elements a button-shaped control renders as; as takes any tag")),
@@ -32,9 +35,12 @@ export default defineSpec({
       ...faceProps(state),
       size: pick<NonNullable<ButtonProps["size"]>>(state, "size"),
       fontSize: pick<NonNullable<ButtonProps["fontSize"]>>(state, "fontSize"),
+      strong: answer(state, "strong"),
       loading: flag(state, "loading"),
       loadingLabel: words(state, "loadingLabel") || undefined,
       fullWidth: flag(state, "fullWidth"),
+      justify: pick<NonNullable<ButtonProps["justify"]>>(state, "justify"),
+      badge: flag(state, "badge") ? <Badge accent="info" variant="solid" size="xs">3</Badge> : undefined,
       shape: pick<NonNullable<ButtonProps["shape"]>>(state, "shape"),
       disabled: flag(state, "disabled"),
     };
