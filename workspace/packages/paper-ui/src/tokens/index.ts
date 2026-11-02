@@ -36,10 +36,11 @@ export * from "./vocabulary";
 
 export { THEME_ATTRIBUTE, THEME_SWAP_ATTRIBUTE, COLOR_MODE_QUERY } from "./color-modes";
 export { SOURCE_VARIABLES } from "./variables";
-export { unknownSourceVariables } from "./overrides";
+export { overridesRule, unknownSourceVariables } from "./overrides";
+export type { ThemeOverrides } from "./overrides";
 
 export { ELEVATION_NEST_LIMIT } from "./layout";
-export { ELEVATION, elevationStack, elevationCast, elevationStyle } from "./elevation-recipes";
+export { ELEVATION, elevationStack, elevationCast, elevationStyle, restingCast } from "./elevation-recipes";
 
 export { SYSTEM_COLORS } from "./colors";
 export { accentProfile, itemProfile, markProfile, markForcedProfile, outlinedControlProfile } from "./color-recipes";

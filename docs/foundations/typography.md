@@ -123,12 +123,12 @@ body 요소는 body 역할 전체를 받습니다. 크기와 행간뿐 아니라
 
 <!-- generated:typography-presets -->
 <!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
-| preset | sm | md | lg | 쓰는 Atom |
-| --- | --- | --- | --- | --- |
-| `button.medium` | 13 / 16 · 500 | 13 / 16 · 500 | 14 / 16 · 500 | Button·IconButton (solid 외) |
-| `button.strong` | 13 / 16 · 650 | 13 / 16 · 650 | 14 / 16 · 650 | solid Button |
-| `field` | 13 / 16 · 450 · 입력 줄상자 20 | 13 / 16 · 450 · 입력 줄상자 20 | 14 / 16 · 450 · 입력 줄상자 20 | Field · Select |
-| `textarea` | 13 / 20 · 450 | 13 / 20 · 450 | 14 / 20 · 450 | Textarea |
+| preset | xs | sm | md | lg | 쓰는 Atom |
+| --- | --- | --- | --- | --- | --- |
+| `button.medium` | 12 / 16 · 500 | 13 / 16 · 500 | 13 / 16 · 500 | 14 / 16 · 500 | Button·IconButton (solid 외) |
+| `button.strong` | 12 / 16 · 650 | 13 / 16 · 650 | 13 / 16 · 650 | 14 / 16 · 650 | solid Button |
+| `field` | 12 / 16 · 450 · 입력 줄상자 20 | 13 / 16 · 450 · 입력 줄상자 20 | 13 / 16 · 450 · 입력 줄상자 20 | 14 / 16 · 450 · 입력 줄상자 20 | Field · Select |
+| `textarea` | 12 / 20 · 450 | 13 / 20 · 450 | 13 / 20 · 450 | 14 / 20 · 450 | Textarea |
 | `badge` | 12 / 16 · 500 (크기 무관) |  |  | Badge |
 <!-- /generated:typography-presets -->
 

@@ -7,7 +7,7 @@ const { style, styleVariants } = layered("components");
 export const linkRoot = style([stateStyle.focusVisible, {
   textUnderlineOffset: linkStyle.textUnderlineOffset,
   // The ring follows the link's own corners; the baseline ring leaves them alone.
-  borderRadius: tokens.shape.radius.control,
+  borderRadius: tokens.shape.radius.text,
   cursor: "pointer",
 }]);
 

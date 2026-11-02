@@ -32,6 +32,7 @@ export const ROLE_NOTES: Record<RolePath, string> = {
   "overlay.scrim": "모달 뒤를 어둡게 누르는 면",
   "shadow.floating": "떠 있는 층(overlay · modal · toast) 그림자의 색",
   "shadow.lifted": "살짝 들린 층(lifted) 그림자의 색",
+  "shadow.resting": "제자리에 있는 면(shadow prop) 그림자의 색",
   "marker.fill": "형광펜의 칠",
   "marker.ink": "칠 위 글자, 두 모드 모두 어두운 잉크",
 };

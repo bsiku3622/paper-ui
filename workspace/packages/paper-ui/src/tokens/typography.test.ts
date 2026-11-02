@@ -254,7 +254,7 @@ describe("presetRule", () => {
   });
 
   it("[foundations.typography.control-preset] builds every preset leaf, and the declaration carries no input line", () => {
-    for (const size of ["sm", "md", "lg"] as const) {
+    for (const size of ["xs", "sm", "md", "lg"] as const) {
       for (const rule of [presetRule("button", size, "medium"), presetRule("button", size, "strong"), presetRule("field", size), presetRule("textarea", size)]) {
         expect(Object.keys(rule).sort()).toEqual(expect.arrayContaining(["fontFamily", "fontSize", "fontWeight", "lineHeight", "letterSpacing"]));
         expect(rule).not.toHaveProperty("inputLeading");

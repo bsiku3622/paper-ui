@@ -17,7 +17,7 @@ describe("vocabulary", () => {
   it("[foundations.vocabulary.one-pair-per-axis] exports every constant once and nothing else", () => {
     expect(constants.map(([name]) => name).sort()).toEqual([
       "ACCENTS", "ACCENT_TONES", "ALIGNS", "BORDER_LEVELS", "BREAKPOINTS", "CHOICE_STATUSES", "COLOR_MODES", "CONTAINERS", "CONTROL_FONT_SIZES", "CONTROL_PRESETS", "CONTROL_SHAPES",
-      "CONTROL_SIZES", "DEPTHS", "DIMENSIONS", "DIVIDER_LEVELS", "ELEVATIONS", "EMPHASES", "ICON_SIZES", "INKS", "INK_LEVELS", "JUSTIFIES", "JUSTIFY_ITEMS", "LINK_UNDERLINES", "MEASURES", "MOTION_ROLES", "ORIENTATIONS",
+      "CONTROL_SIZES", "DEPTHS", "DIMENSIONS", "DIVIDER_LEVELS", "ELEVATIONS", "EMPHASES", "FILLABLE_VARIANTS", "ICON_SIZES", "INKS", "INK_LEVELS", "INPUT_VARIANTS", "JUSTIFIES", "JUSTIFY_ITEMS", "LINK_UNDERLINES", "MEASURES", "MOTION_ROLES", "ORIENTATIONS",
       "SELECTABLE_VARIANTS", "SPACES", "STATE_NAMES", "STATUSES", "SURFACE_FILLS", "SURFACE_RADII", "SURFACE_THEMES", "TEXT_FAMILIES", "TEXT_VARIANTS", "THEME_PREFERENCES", "VARIANTS",
     ]);
   });
@@ -116,6 +116,8 @@ describe("vocabulary", () => {
     expectTypeOf<vocabulary.AccentTone>().toEqualTypeOf<(typeof vocabulary.ACCENT_TONES)[number]>();
     expectTypeOf<vocabulary.Variant>().toEqualTypeOf<(typeof vocabulary.VARIANTS)[number]>();
     expectTypeOf<vocabulary.SelectableVariant>().toEqualTypeOf<(typeof vocabulary.SELECTABLE_VARIANTS)[number]>();
+    expectTypeOf<vocabulary.FillableVariant>().toEqualTypeOf<(typeof vocabulary.FILLABLE_VARIANTS)[number]>();
+    expectTypeOf<vocabulary.InputVariant>().toEqualTypeOf<(typeof vocabulary.INPUT_VARIANTS)[number]>();
     expectTypeOf<vocabulary.Depth>().toEqualTypeOf<(typeof vocabulary.DEPTHS)[number]>();
     expectTypeOf<vocabulary.ColorMode>().toEqualTypeOf<(typeof vocabulary.COLOR_MODES)[number]>();
     expectTypeOf<vocabulary.ThemePreference>().toEqualTypeOf<(typeof vocabulary.THEME_PREFERENCES)[number]>();
@@ -153,7 +155,7 @@ describe("vocabulary", () => {
     expectTypeOf<vocabulary.Accent>().toEqualTypeOf<"primary" | "info" | "success" | "warning" | "error">();
     expectTypeOf<vocabulary.SurfaceFill>().toEqualTypeOf<"canvas" | "raised" | "sunken">();
     expectTypeOf<vocabulary.Ink>().toEqualTypeOf<"primary" | "secondary" | "tertiary" | "info" | "success" | "warning" | "error" | "inherit">();
-    expectTypeOf<vocabulary.ControlSize>().toEqualTypeOf<"sm" | "md" | "lg">();
+    expectTypeOf<vocabulary.ControlSize>().toEqualTypeOf<"xs" | "sm" | "md" | "lg">();
     expectTypeOf<vocabulary.ControlFontSize>().toEqualTypeOf<"label" | "caption" | "body">();
     expectTypeOf<vocabulary.Emphasis>().toEqualTypeOf<"regular" | "medium" | "semibold" | "bold">();
     expectTypeOf<vocabulary.TextVariant>().toEqualTypeOf<"hero" | "display" | "title" | "heading" | "subheading" | "body" | "caption" | "label">();

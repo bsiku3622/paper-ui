@@ -5,15 +5,15 @@
 // layout phase, and the Provider hands the store's preference and the mode <html> shows down as context.
 // Providers share one store per document, and the stylesheet comes in through "@studio-baeks/paper-ui/styles.css",
 // never through here. <html lang> and <html dir> are written only when a locale is passed; without one the locale
-// is whatever <html lang> already says.
+// is whatever <html lang> already says. The token values it is given go into one <style> in <head>.
 
-import { useContext, useEffect, useLayoutEffect, useMemo, useSyncExternalStore, type ReactNode } from "react";
+import { useContext, useEffect, useInsertionEffect, useLayoutEffect, useMemo, useRef, useSyncExternalStore, type ReactNode } from "react";
 
 import { LocaleHost } from "../internal/aria/i18n";
 import { localeDirection } from "../internal/direction";
 import { LocaleContext, normalizeLocale, resolveLocale, useDocumentLanguage, type LocaleValue } from "../internal/locale";
 import type { PaperMessages } from "../internal/messages";
-import { isStylesheetLoaded, type ColorMode, type ThemePreference } from "../tokens";
+import { isStylesheetLoaded, overridesRule, type ColorMode, type ThemeOverrides, type ThemePreference } from "../tokens";
 import { ThemeControlContext, type ThemeControl } from "./context";
 import { THEME_STORAGE_KEY } from "./engine";
 import { warnUnknownSourceVariables } from "./source-check";
@@ -26,7 +26,10 @@ let stylesheetWarned = false;
 // The plain CSS form of a source override is read once, at the first mount.
 let sourcesChecked = false;
 
-export type PaperProviderProps = {
+// Most of the token structure for the whole document, by its paths: the Shape, Layout and Typography sources, the colour
+// roles and the shadow geometry of each mode, the palette steps and the opacity roles. Every role built on one follows it.
+// Written once the page runs, so a server render draws the defaults first; such a page puts these in its stylesheet instead.
+export type PaperProviderProps = ThemeOverrides & {
   // The theme before the user has chosen. A stored choice wins.
   defaultTheme?: ThemePreference;
   // Where the choice is stored; null keeps it for this page only.
@@ -39,9 +42,31 @@ export type PaperProviderProps = {
   children?: ReactNode;
 };
 
-export const PaperProvider = ({ defaultTheme = "system", storageKey = THEME_STORAGE_KEY, locale, messages, children }: PaperProviderProps) => {
+// One <style> per Provider, kept in place when its text changes. Effects run from the inside out and each goes to the front
+// of <head>, so an inner Provider's rule comes later and wins.
+const useOverridesRule = (rule: string) => {
+  const element = useRef<HTMLStyleElement | null>(null);
+  useInsertionEffect(() => {
+    if (!rule) return;
+    const style = document.createElement("style");
+    style.setAttribute("data-pui-overrides", "");
+    document.head.prepend(style);
+    element.current = style;
+    return () => {
+      style.remove();
+      element.current = null;
+    };
+  }, [Boolean(rule)]);
+  useInsertionEffect(() => {
+    if (element.current) element.current.textContent = rule;
+  }, [rule]);
+};
+
+export const PaperProvider = ({ defaultTheme = "system", storageKey = THEME_STORAGE_KEY, locale, messages, children, ...overrides }: PaperProviderProps) => {
   const store = getThemeStore();
   store.configure({ storageKey, defaultTheme });
+
+  useOverridesRule(overridesRule(overrides));
 
   useIsomorphicLayoutEffect(() => store.attach(), [store]);
 

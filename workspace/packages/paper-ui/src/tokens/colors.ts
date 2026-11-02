@@ -143,6 +143,9 @@ const selection = (mode: ColorMode) => {
     shadow: {
       floating: pick("alpha10.neutral.950", "alpha60.neutral.950"),
       lifted: pick("alpha10.neutral.950", "alpha45.neutral.950"),
+      // Dark has no darker place for a shadow to fall, so there the resting depth is a one-pixel line. White at a low alpha
+      // reads about as strong as a border on either dark face.
+      resting: pick("alpha10.neutral.950", "alpha15.neutral.0"),
     },
     // The highlighter. The pigment is as bright as paper, so the ink on it stays dark in both modes.
     marker: {
@@ -173,7 +176,8 @@ export const BORDER_LEVELS = keys(COLOR_VALUES.border);
 export type BorderLevel = keyof typeof COLOR_VALUES.border;
 export const DIVIDER_LEVELS = ["base", "strong"] as const satisfies readonly BorderLevel[];
 export type DividerLevel = (typeof DIVIDER_LEVELS)[number];
-// How deep a shadow reads: lifted is a small rise off the page, floating is a layer above it.
+// How deep a shadow reads: resting is a face that stays in place and keeps its edge with a shadow, lifted is a small rise
+// off the page, floating is a layer above it.
 export const DEPTHS = keys(COLOR_VALUES.shadow);
 export type Depth = keyof typeof COLOR_VALUES.shadow;
 

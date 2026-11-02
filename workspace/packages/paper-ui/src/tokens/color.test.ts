@@ -197,7 +197,7 @@ describe("color systems", () => {
   });
 
   it("[foundations.color.shadow-depths] names the shadow colours by depth", () => {
-    expect(DEPTHS).toEqual(["floating", "lifted"]);
+    expect(DEPTHS).toEqual(["floating", "lifted", "resting"]);
   });
 
   it("[foundations.color.link] gives links their own role, and keeps it readable everywhere", () => {
@@ -341,7 +341,7 @@ describe("what the Color page says", () => {
     expect(groups.interaction).toEqual(["bgHover", "selected", "active", "focus", "link"]);
     expect(Object.keys(COLOR_VALUES.interaction.bgHover)).toEqual(["onSurface", "onPrimarySolid", "onAccentSolid"]);
     expect(groups.overlay).toEqual(["scrim"]);
-    expect(groups.shadow).toEqual(["floating", "lifted"]);
+    expect(groups.shadow).toEqual(["floating", "lifted", "resting"]);
     expect(groups.marker).toEqual(["fill", "ink"]);
     expect(Object.keys(OPACITY_ROLES)).toEqual(["disabled", "subdued"]);
   });
@@ -380,7 +380,7 @@ describe("color modes", () => {
   it("[foundations.theme.scope-roles] [foundations.theme.ground-roles] keeps ground roles to the focus ring and the shadow colours, all of them in the Color tree", () => {
     for (const role of GROUND_ROLES) expect(valueAt(COLOR_VALUES, role), role.join(".")).toBeDefined();
     const ground = pathsOf(COLOR_VALUES).filter((path) => isGroundRole(path.split(".")));
-    expect(ground).toEqual(["interaction.focus", "shadow.floating", "shadow.lifted"]);
+    expect(ground).toEqual(["interaction.focus", "shadow.floating", "shadow.lifted", "shadow.resting"]);
     expect(isGroundRole(["ink", "primary"])).toBe(false);
     expect(isGroundRole(["interaction", "link"])).toBe(false);
   });

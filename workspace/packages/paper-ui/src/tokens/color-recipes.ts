@@ -8,6 +8,7 @@ export const VARIANTS = [
   "solid",
   "soft",
   "hairline",
+  "dashed",
   "ghost",
   "muted",
 ] as const;
@@ -17,13 +18,21 @@ export type Variant = (typeof VARIANTS)[number];
 export const SELECTABLE_VARIANTS = ["hairline", "ghost", "muted"] as const satisfies readonly Variant[];
 export type SelectableVariant = (typeof SELECTABLE_VARIANTS)[number];
 
+// 면을 스스로 칠하지 않는 variant — 선과 글자만 정하고 면은 fill 이 고른다. 안 주면 놓인 곳이 비친다.
+export const FILLABLE_VARIANTS = ["hairline", "dashed", "ghost", "muted"] as const satisfies readonly Variant[];
+export type FillableVariant = (typeof FILLABLE_VARIANTS)[number];
+
+// 입력 틀의 가장자리 — 실선이거나 없거나. 점선은 넣을 자리를 말하는 표시라 입력에는 없다.
+export const INPUT_VARIANTS = ["hairline", "ghost"] as const satisfies readonly FillableVariant[];
+export type InputVariant = (typeof INPUT_VARIANTS)[number];
+
 type VariantRecipe = {
-  // 면: accent tone, 컨트롤과 같은 raised 면, 또는 없음(투명).
-  face: AccentTone | "raised" | "none";
+  // 면: accent tone, 또는 없음. 없으면 fill 이 고르고, 안 주면 놓인 곳이 비친다.
+  face: AccentTone | "none";
   // 글자: accent tone.
   ink: AccentTone;
-  // 경계: 없음(투명) 또는 base 경계.
-  border: "none" | "base";
+  // 경계: 없음(투명), 또는 base 색의 실선 · 점선.
+  border: "none" | "solid" | "dashed";
   // hover: 면 위에 tint를 얹거나 경계가 한 단계 진해진다.
   hover: "tint" | "border";
   // 선택된 variant가 바꿔 입는 면.
@@ -34,7 +43,8 @@ type VariantRecipe = {
 export const VARIANT_RECIPE = {
   solid: { face: "solid", ink: "wash", border: "none", hover: "tint" },
   soft: { face: "soft", ink: "ink", border: "none", hover: "tint" },
-  hairline: { face: "raised", ink: "ink", border: "base", hover: "border", selected: "soft" },
+  hairline: { face: "none", ink: "ink", border: "solid", hover: "border", selected: "soft" },
+  dashed: { face: "none", ink: "subtle", border: "dashed", hover: "border" },
   ghost: { face: "none", ink: "ink", border: "none", hover: "tint", selected: "soft" },
   muted: { face: "none", ink: "subtle", border: "none", hover: "tint", selected: "soft" },
 } as const satisfies Record<Variant, VariantRecipe>;
@@ -45,12 +55,13 @@ export type AccentProfile = {
   face: string;
   ink: string;
   border: string;
+  borderStyle: "solid" | "dashed";
   hover: { tint: string } | { border: string };
   selected?: { face: string; ink: string; border: string };
 };
 
-// Paperdown-style outlined surface shared by hairline and form controls. A status draws its border in its own
-// ink, and that border is also what the control keeps on hover.
+// The line a hairline and a form control share, and the face and ink of a form control. A status draws its border in its
+// own ink, and that border is also what the control keeps on hover.
 export const outlinedControlProfile = {
   face: COLOR.bg.raised,
   ink: COLOR.ink.primary,
@@ -94,17 +105,14 @@ const hoverTint = (accent: Accent, face: VariantRecipe["face"]): string =>
       ? COLOR.interaction.bgHover.onPrimarySolid
       : COLOR.interaction.bgHover.onAccentSolid;
 
-// primary의 raised 면 글자는 폼 컨트롤과 같은 outlinedControlProfile의 색을 따른다. 상태색은 자기 ink tone이다.
-const inkColor = (accent: Accent, recipe: VariantRecipe): string =>
-  recipe.face === "raised" && accent === "primary" ? outlinedControlProfile.ink : COLOR.accent[accent][recipe.ink];
-
 export const accentProfile = (accent: Accent, variant: Variant): AccentProfile => {
   const tones = COLOR.accent[accent];
   const recipe: VariantRecipe = VARIANT_RECIPE[variant];
   return {
-    face: recipe.face === "none" ? "transparent" : recipe.face === "raised" ? outlinedControlProfile.face : tones[recipe.face],
-    ink: inkColor(accent, recipe),
+    face: recipe.face === "none" ? "transparent" : tones[recipe.face],
+    ink: tones[recipe.ink],
     border: recipe.border === "none" ? "transparent" : outlinedControlProfile.border,
+    borderStyle: recipe.border === "dashed" ? "dashed" : "solid",
     hover: recipe.hover === "tint" ? { tint: hoverTint(accent, recipe.face) } : { border: outlinedControlProfile.hoverBorder },
     ...(recipe.selected ? { selected: { face: tones[recipe.selected], ink: tones.ink, border: "transparent" } } : {}),
   };

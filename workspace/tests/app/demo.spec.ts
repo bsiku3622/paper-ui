@@ -141,9 +141,9 @@ const PILL = "22px";
 
 test("avatars, day chips and the workspace mark are pills of the composition's own height around a body label", async ({ page }) => {
   const avatar = page.getByRole("navigation", { name: "작업 공간 메뉴" }).getByText("재", { exact: true }).locator("..");
-  await expectStyle(avatar, { fontSize: tokens.typography.role.body.size, height: PILL, paddingLeft: tokens.shape.inset.sm, paddingRight: tokens.shape.inset.sm, borderTopLeftRadius: tokens.shape.radius.full, ...profile("primary", "soft") });
+  await expectStyle(avatar, { fontSize: tokens.typography.role.body.size, height: PILL, paddingLeft: tokens.shape.inset.sm, paddingRight: tokens.shape.inset.sm, borderTopLeftRadius: tokens.shape.radius.pill, ...profile("primary", "soft") });
   const mark = page.getByRole("navigation", { name: "작업 공간 메뉴" }).getByText("S", { exact: true }).locator("..");
-  await expectStyle(mark, { height: PILL, borderTopLeftRadius: tokens.shape.radius.control });
+  await expectStyle(mark, { height: PILL, borderTopLeftRadius: tokens.shape.radius.text });
   const today = page.getByText("25", { exact: true }).locator("..");
   await expectStyle(today, { fontSize: tokens.typography.role.body.size, height: PILL, ...profile("primary", "solid") });
   await expect(today).toHaveAttribute("aria-current", "date");

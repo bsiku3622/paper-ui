@@ -14,11 +14,12 @@ import {
 import { joinClass } from "../internal/joinClass";
 import { Icon } from "../primitives/Icon";
 import { mergeProps } from "../primitives/composition";
-import { fieldPaint, selectArrowPaint, selectEmptyPaint } from "../primitives/paint/recipes.css";
+import { fieldLinelessPaint, fieldPaint, selectArrowPaint, selectEmptyPaint } from "../primitives/paint/recipes.css";
+import { restingShadow } from "../primitives/paint/Surface.css";
 import { resolveControlFontSize, resolveFill, resolvePreset } from "../resolvers";
-import { CONTROL_ICON, type ControlFontSize, type ControlShape, type ControlSize, type Status, type SurfaceFill } from "../tokens";
+import { CONTROL_ICON, type ControlFontSize, type ControlShape, type ControlSize, type InputVariant, type Status, type SurfaceFill } from "../tokens";
 import { useInputControl } from "./input-control";
-import { inputFrame, inputFramePill } from "./recipes/input-frame.css";
+import { inputFrame, inputFrameCorner, inputFramePill } from "./recipes/input-frame.css";
 import { selectRoot, selectSize, selectWrap, selectArrow, selectArrowSize } from "./Select.css";
 
 // className/style/data-testid target the visible wrapper; ref and native attributes target select.
@@ -27,7 +28,11 @@ export type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "classNa
   status?: Status;
   size?: ControlSize;
   // 면의 깊이 — Field 와 같다. raised 가 기본, sunken 은 canvas 안에서 살짝 눌린 선택.
-  fill?: Extract<SurfaceFill, "raised" | "sunken">;
+  fill?: SurfaceFill;
+  // 가장자리 — hairline(실선, 기본) · ghost(선 없음). 상태의 선은 ghost 에서도 남는다.
+  variant?: InputVariant;
+  // 제자리 그림자. 입력 틀은 늘 면이 있어 언제든 받는다.
+  shadow?: boolean;
   fontSize?: ControlFontSize;
   shape?: ControlShape;
   className?: string;
@@ -36,7 +41,7 @@ export type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "classNa
 };
 
 const SelectRoot = forwardRef<HTMLSelectElement, SelectProps>(function SelectRoot(
-  { children, status, size = "md", fill = "raised", fontSize, shape = "rounded", className, style, "data-testid": testid, id, disabled, required, "aria-invalid": ariaInvalid, "aria-describedby": describedBy, ...rest },
+  { children, status, size = "md", fill = "raised", variant = "hairline", shadow, fontSize, shape = "rounded", className, style, "data-testid": testid, id, disabled, required, "aria-invalid": ariaInvalid, "aria-describedby": describedBy, ...rest },
   ref,
 ) {
   const { controlProps, focusHandlers, frameProps } = useInputControl({ id, disabled, required, "aria-invalid": ariaInvalid, "aria-describedby": describedBy, status });
@@ -44,7 +49,7 @@ const SelectRoot = forwardRef<HTMLSelectElement, SelectProps>(function SelectRoo
     <span
       style={style}
       data-testid={testid}
-      className={joinClass(inputFrame, fieldPaint, selectEmptyPaint, selectWrap, resolveFill(fill), selectSize[size], resolvePreset("field", size), resolveControlFontSize(fontSize), shape === "pill" && inputFramePill, className)}
+      className={joinClass(inputFrame, inputFrameCorner[size], fieldPaint, variant === "ghost" && fieldLinelessPaint, selectEmptyPaint, selectWrap, resolveFill(fill), shadow && restingShadow, selectSize[size], resolvePreset("field", size), resolveControlFontSize(fontSize), shape === "pill" && inputFramePill, className)}
       {...frameProps}
     >
       <select ref={ref} className={selectRoot} {...mergeProps(rest, focusHandlers, controlProps)}>

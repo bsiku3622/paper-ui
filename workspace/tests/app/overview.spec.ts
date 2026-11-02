@@ -84,7 +84,7 @@ test("the Button section shows each variant, accent, size, state and shape as th
   const sizes = page.getByTestId("spec-button-sizes");
   await expect(sizes.getByRole("button")).toHaveCount(CONTROL_SIZES.length);
   for (const size of CONTROL_SIZES) {
-    await expectStyle(page.getByTestId(`btn-${size}`), { ...height(size), ...radius(tokens.shape.radius.control), paddingLeft: tokens.shape.control.inset.button[size] });
+    await expectStyle(page.getByTestId(`btn-${size}`), { ...height(size), ...radius(tokens.shape.radius.control[size]), paddingLeft: tokens.shape.control.inset.button[size] });
   }
 
   const disabled = page.getByTestId("btn-disabled");
@@ -99,8 +99,8 @@ test("the Button section shows each variant, accent, size, state and shape as th
   expect(await full.evaluate((element) => element.getBoundingClientRect().width)).toBe(await full.evaluate((element) => element.parentElement!.getBoundingClientRect().width));
 
   await expect(page.getByTestId("spec-button-shape").getByRole("button")).toHaveCount(4);
-  await expectStyle(page.getByTestId("btn-shape-default"), radius(tokens.shape.radius.control));
-  await expectStyle(page.getByTestId("btn-shape-pill"), radius(tokens.shape.radius.full));
+  await expectStyle(page.getByTestId("btn-shape-default"), radius(tokens.shape.radius.control.md));
+  await expectStyle(page.getByTestId("btn-shape-pill"), radius(tokens.shape.radius.pill));
 });
 
 test("a Field and a Button side by side share one height and one centre line", async ({ page }) => {
@@ -144,13 +144,13 @@ test("Field, Select and Button of one size share the ladder's height", async ({ 
     await boxStyle(group.getByLabel(`select ${size}`), height(size));
     await expectStyle(group.getByRole("button", { name: "Button" }), height(size));
   }
-  await boxStyle(page.getByTestId("spec-size-md").getByLabel("field md"), radius(tokens.shape.radius.control));
+  await boxStyle(page.getByTestId("spec-size-md").getByLabel("field md"), radius(tokens.shape.radius.control.md));
 });
 
 test("the controls of the base row share one corner and each its own inset", async ({ page }) => {
   await open(page);
   const row = page.getByTestId("spec-control-base");
-  const corner = radius(tokens.shape.radius.control);
+  const corner = radius(tokens.shape.radius.control.md);
   await expectStyle(row.getByTestId("base-button"), { ...corner, paddingLeft: tokens.shape.control.inset.button.md });
   await expectStyle(row.getByTestId("base-field"), { ...corner, paddingLeft: tokens.shape.control.inset.input.md });
   await boxStyle(row.getByTestId("base-select"), { ...corner, paddingLeft: tokens.shape.control.inset.input.md });
@@ -160,7 +160,7 @@ test("the controls of the base row share one corner and each its own inset", asy
 test("the pill row draws the Field, the Select and the Button with one full curve", async ({ page }) => {
   await open(page);
   const row = page.getByTestId("spec-pill-row");
-  const pill = radius(tokens.shape.radius.full);
+  const pill = radius(tokens.shape.radius.pill);
   await expectStyle(row.getByTestId("field-pill"), pill);
   await boxStyle(row.getByTestId("select-pill"), pill);
   await expectStyle(row.getByTestId("button-pill-row"), pill);
@@ -207,8 +207,8 @@ test("the Badge section shows each status in the soft recipe, the sizes by heigh
   }
 
   await expect(page.getByTestId("spec-badge-shape").locator("[data-testid^=badge-shape-]")).toHaveCount(2);
-  await expectStyle(page.getByTestId("badge-shape-default"), radius(tokens.shape.radius.control));
-  await expectStyle(page.getByTestId("badge-shape-pill"), radius(tokens.shape.radius.full));
+  await expectStyle(page.getByTestId("badge-shape-default"), radius(tokens.shape.radius.pill));
+  await expectStyle(page.getByTestId("badge-shape-rounded"), radius(tokens.shape.radius.control.md));
 });
 
 test("the Link takes the link role and the Icon the body artboard", async ({ page }) => {
@@ -247,7 +247,7 @@ test("every testid on the Overview is one the tests above bind to a value", asyn
     "checkbox",
     "spec-marks", "mark-checkbox", "mark-checkbox-off", "mark-radio", "mark-radio-off", "mark-switch", "mark-icon", "mark-spinner", "mark-badge", "mark-button",
     "formfield-field",
-    "badge-neutral", "spec-badge-size", "spec-badge-shape", "badge-shape-default", "badge-shape-pill",
+    "badge-neutral", "spec-badge-size", "spec-badge-shape", "badge-shape-default", "badge-shape-rounded",
     "link", "icon",
   ];
   const present = await page.locator("[data-testid]").evaluateAll((elements) => [...new Set(elements.map((element) => element.getAttribute("data-testid")!))]);

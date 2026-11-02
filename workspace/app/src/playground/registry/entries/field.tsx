@@ -1,12 +1,12 @@
 import { Field, Text, type FieldProps } from "@studio-baeks/paper-ui";
 
 import { glyph } from "../demo";
-import { boolControl, defineSpec, enumControl, flag, local, pick, sample, subset, textControl, vocab, words } from "../schema";
+import { boolControl, defineSpec, enumControl, flag, local, pick, sample, textControl, vocab, words } from "../schema";
 import { wide } from "./examples.css";
 
 export default defineSpec({
   name: "Field",
-  blurb: "input group입니다. raised·sunken 면과 leading·trailing 어도먼트(아이콘·$·단위), clear(×), 비밀번호 보기를 조합합니다. 래퍼가 테두리·키보드 focus ring·상태를 맡고 내부 input은 입력과 caret 렌더링을 맡습니다. 높이와 입력 여백은 size 사다리가 정합니다.",
+  blurb: "input group입니다. raised·canvas·sunken 면과 실선·무선 틀, leading·trailing 어도먼트(아이콘·$·단위), clear(×), 비밀번호 보기를 조합합니다. 래퍼가 테두리·키보드 focus ring·상태를 맡고 내부 input은 입력과 caret 렌더링을 맡습니다. 높이와 입력 여백은 size 사다리가 정합니다.",
   controls: [
     textControl<FieldProps, "placeholder">("placeholder", "검색…"),
     enumControl<FieldProps, "type">("type", sample(["text", "password"] as const, "the two input types the page shows; Field takes any input type")),
@@ -21,11 +21,13 @@ export default defineSpec({
     enumControl<FieldProps, "size">("size", vocab("CONTROL_SIZES")),
     enumControl<FieldProps, "fontSize">("fontSize", vocab("CONTROL_FONT_SIZES")),
     enumControl<FieldProps, "shape">("shape", vocab("CONTROL_SHAPES")),
-    enumControl<FieldProps, "fill">("fill", subset("SURFACE_FILLS", ["raised", "sunken"], "canvas is the page ground, not a face a field can have")),
+    enumControl<FieldProps, "variant">("variant", vocab("INPUT_VARIANTS")),
+    enumControl<FieldProps, "fill">("fill", vocab("SURFACE_FILLS")),
+    boolControl<FieldProps, "shadow">("shadow"),
     boolControl<FieldProps, "disabled">("disabled"),
     boolControl<FieldProps, "numeric">("numeric"),
   ],
-  defaults: { type: "text", size: "md", shape: "rounded", fill: "raised" },
+  defaults: { type: "text", size: "md", shape: "rounded", variant: "hairline", fill: "raised" },
   subject: (state) => (
     <Field
       placeholder={words(state, "placeholder") || undefined}
@@ -42,7 +44,9 @@ export default defineSpec({
       size={pick<NonNullable<FieldProps["size"]>>(state, "size")}
       fontSize={pick<NonNullable<FieldProps["fontSize"]>>(state, "fontSize")}
       shape={pick<NonNullable<FieldProps["shape"]>>(state, "shape")}
+      variant={pick<NonNullable<FieldProps["variant"]>>(state, "variant")}
       fill={pick<NonNullable<FieldProps["fill"]>>(state, "fill")}
+      shadow={flag(state, "shadow")}
       disabled={flag(state, "disabled")}
       numeric={flag(state, "numeric")}
     />

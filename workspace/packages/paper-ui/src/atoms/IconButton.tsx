@@ -7,13 +7,13 @@ import { forwardRef, type ElementType, type ReactElement } from "react";
 
 import { registerAtom } from "../internal/render-target";
 import type { IconProps } from "../primitives/Icon";
+import type { PaintFace } from "../primitives/paint/Paint";
 import type { PolymorphicProps } from "../primitives/polymorphic";
-import type { Accent, ControlShape, ControlSize, IconSize, Variant } from "../tokens";
+import type { Accent, ControlShape, ControlSize, IconSize } from "../tokens";
 import { ButtonBase, type ButtonBaseProps } from "./button-base";
 
-type IconButtonOwn = {
+type IconButtonOwn = PaintFace & {
   accent?: Accent;
-  variant?: Variant;
   size?: ControlSize;
   shape?: ControlShape;
   disabled?: boolean;

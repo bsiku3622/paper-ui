@@ -14,25 +14,30 @@ import { forwardRef, type TextareaHTMLAttributes } from "react";
 
 import { joinClass } from "../internal/joinClass";
 import { mergeProps } from "../primitives/composition";
-import { fieldPaint, fieldPlaceholderPaint } from "../primitives/paint/recipes.css";
+import { fieldLinelessPaint, fieldPaint, fieldPlaceholderPaint } from "../primitives/paint/recipes.css";
+import { restingShadow } from "../primitives/paint/Surface.css";
 import { resolveControlFontSize, resolveFill, resolvePreset } from "../resolvers";
-import type { ControlFontSize, ControlSize, Status, SurfaceFill } from "../tokens";
+import type { ControlFontSize, ControlSize, InputVariant, Status, SurfaceFill } from "../tokens";
 import { useInputControl } from "./input-control";
-import { inputFrame } from "./recipes/input-frame.css";
+import { inputFrame, inputFrameCorner } from "./recipes/input-frame.css";
 import { textareaRoot, textareaSize } from "./Textarea.css";
 
 export type TextareaProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "className"> & {
   status?: Status;
-  // 크기 3 단 (sm·md·lg). Button·Field·Select 와 같은 여백·글자 사다리.
+  // 크기 4 단 (xs·sm·md·lg). Button·Field·Select 와 같은 여백·글자 사다리.
   size?: ControlSize;
   // 면의 깊이 — Field 와 같다. raised 가 기본, sunken 은 canvas 안에서 살짝 눌린 입력.
-  fill?: Extract<SurfaceFill, "raised" | "sunken">;
+  fill?: SurfaceFill;
+  // 가장자리 — hairline(실선, 기본) · ghost(선 없음). 상태의 선은 ghost 에서도 남는다.
+  variant?: InputVariant;
+  // 제자리 그림자. 입력 틀은 늘 면이 있어 언제든 받는다.
+  shadow?: boolean;
   fontSize?: ControlFontSize;
   className?: string;
 };
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function Textarea(
-  { status, size = "md", fill = "raised", fontSize, rows = 4, className, id, disabled, required, "aria-invalid": ariaInvalid, "aria-describedby": describedBy, ...rest },
+  { status, size = "md", fill = "raised", variant = "hairline", shadow, fontSize, rows = 4, className, id, disabled, required, "aria-invalid": ariaInvalid, "aria-describedby": describedBy, ...rest },
   ref,
 ) {
   const { controlProps, focusHandlers, frameProps } = useInputControl({ id, disabled, required, "aria-invalid": ariaInvalid, "aria-describedby": describedBy, status, textInput: true });
@@ -40,7 +45,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
     <textarea
       ref={ref}
       rows={rows}
-      className={joinClass(inputFrame, fieldPaint, fieldPlaceholderPaint, textareaRoot, resolveFill(fill), textareaSize[size], resolvePreset("textarea", size), resolveControlFontSize(fontSize), className)}
+      className={joinClass(inputFrame, inputFrameCorner[size], fieldPaint, variant === "ghost" && fieldLinelessPaint, fieldPlaceholderPaint, textareaRoot, resolveFill(fill), shadow && restingShadow, textareaSize[size], resolvePreset("textarea", size), resolveControlFontSize(fontSize), className)}
       {...frameProps}
       {...mergeProps(rest, focusHandlers, controlProps)}
     />

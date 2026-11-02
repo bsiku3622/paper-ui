@@ -29,21 +29,26 @@ import { Pressable } from "../primitives/press/Pressable";
 import { Selectable } from "../primitives/select/Selectable";
 import { mergeProps } from "../primitives/composition";
 import { IconSizeContext } from "../primitives/icon-context";
-import { fieldActionPaint, fieldAdornmentPaint, fieldPaint, fieldPlaceholderPaint } from "../primitives/paint/recipes.css";
+import { fieldActionPaint, fieldAdornmentPaint, fieldLinelessPaint, fieldPaint, fieldPlaceholderPaint } from "../primitives/paint/recipes.css";
+import { restingShadow } from "../primitives/paint/Surface.css";
 import { resolveControlFontSize, resolvePreset, resolveFill } from "../resolvers";
 import { textNumericClass } from "../styles/typography.css";
-import { CONTROL_ICON, type Status, type ControlFontSize, type ControlShape, type ControlSize, type SurfaceFill } from "../tokens";
+import { CONTROL_ICON, type Status, type ControlFontSize, type ControlShape, type ControlSize, type InputVariant, type SurfaceFill } from "../tokens";
 import { useInputControl } from "./input-control";
 import { fieldWrap, fieldInput, fieldInputLeading, fieldSize, fieldAlign, fieldAdornment, fieldAction, fieldActionReach } from "./Field.css";
-import { inputFrame, inputFramePill } from "./recipes/input-frame.css";
+import { inputFrame, inputFrameCorner, inputFramePill } from "./recipes/input-frame.css";
 
 export type FieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "size" | "prefix"> & {
   status?: Status;
-  // 크기 3 단 (sm·md·lg). Button 과 같은 사다리 — 나란히 두면 높이가 맞는다.
+  // 크기 4 단 (xs·sm·md·lg). Button 과 같은 사다리 — 나란히 두면 높이가 맞는다.
   size?: ControlSize;
-  // 면의 깊이 — raised 가 기본, sunken 은 canvas 안에서 살짝 눌린 검색·필터 입력에 적합하다. 다크에서는
-  // sunken 이 canvas 와 같은 단계라 canvas 위에서는 border 가 구분하고, raised 위에서는 두 모드 모두 물러나 보인다.
-  fill?: Extract<SurfaceFill, "raised" | "sunken">;
+  // 면의 깊이 — raised 가 기본이다. sunken 은 면 안에서 살짝 눌린 검색 · 필터 입력에, canvas 는 흰 면 위의 옅은 칸에 맞다. 다크에서는
+  // sunken 과 canvas 가 같은 단계라 canvas 위에서는 border 가 구분하고, raised 위에서는 두 모드 모두 물러나 보인다.
+  fill?: SurfaceFill;
+  // 가장자리 — hairline(실선, 기본) · ghost(선 없음). 상태의 선은 ghost 에서도 남는다.
+  variant?: InputVariant;
+  // 제자리 그림자. 입력 틀은 늘 면이 있어 언제든 받는다.
+  shadow?: boolean;
   fontSize?: ControlFontSize;
   // 실루엣 — Button·Badge 와 같은 어휘. pill 은 알약(검색창 결).
   shape?: ControlShape;
@@ -88,6 +93,8 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
     status,
     size = "md",
     fill = "raised",
+    variant = "hairline",
+    shadow,
     fontSize,
     shape = "rounded",
     numeric,
@@ -154,7 +161,7 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
     // 진짜 컨트롤은 input 이라 role·키보드를 붙이는 게 오히려 틀리다.
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions -- 여백 클릭만 안쪽 input 으로 넘긴다
     <div
-      className={joinClass(inputFrame, fieldPaint, fieldWrap, resolveFill(fill), fieldSize[size], resolvePreset("field", size), resolveControlFontSize(fontSize), numeric && textNumericClass, shape === "pill" && inputFramePill, className)}
+      className={joinClass(inputFrame, inputFrameCorner[size], fieldPaint, variant === "ghost" && fieldLinelessPaint, fieldWrap, resolveFill(fill), shadow && restingShadow, fieldSize[size], resolvePreset("field", size), resolveControlFontSize(fontSize), numeric && textNumericClass, shape === "pill" && inputFramePill, className)}
       style={style}
       data-testid={testid}
       {...frameProps}

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { COLOR_MODES } from "./color-modes";
-import { ELEVATION, ELEVATION_NEST_LIMIT, elevationCast, elevationStack, elevationStyle, tokens } from "./index";
+import { ELEVATION, ELEVATION_NEST_LIMIT, elevationCast, restingCast, elevationStack, elevationStyle, tokens } from "./index";
 import { BREAKPOINTS, ELEVATIONS, LAYOUT_MODE_VALUES, LAYOUT_SOURCE, castShadow } from "./layout";
 import { themeVariables } from "./variables";
 
@@ -65,6 +65,11 @@ describe("An elevation is applied as one unit", () => {
     expect(ELEVATION.shadow.lifted).toBe(castShadow("lifted"));
     for (const tier of ["overlay", "modal", "toast"] as const) expect(ELEVATION.shadow[tier], tier).toBe(castShadow("floating"));
     expect(ELEVATION.shadow.sticky).toBe("none");
+  });
+
+  it("[foundations.layout.resting-shadow] gives the resting depth to no tier, and brings no position and no z with it", () => {
+    for (const { tier, depth } of tiers) expect(depth, tier).not.toBe("resting");
+    expect(restingCast).toEqual({ boxShadow: castShadow("resting") });
   });
 
   it("[foundations.layout.elevation-unit] keeps the unit out of the public roles", () => {

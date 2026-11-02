@@ -77,7 +77,7 @@ test("[guardrails.source-numbers.structural-only] every structural value, a role
     "{ aspectRatio: '1' }",
     "{ marginLeft: 'calc(var(--x) / 2)', marginTop: 'calc(var(--x) * -1)' }",
     "{ animationIterationCount: '1 !important' }",
-    "{ padding: tokens.shape.inset.lg, gap: tokens.layout.gap.md, borderRadius: tokens.shape.radius.control, fontSize: tokens.typography.role.body.size }",
+    "{ padding: tokens.shape.inset.lg, gap: tokens.layout.gap.md, borderRadius: tokens.shape.radius.control.md, fontSize: tokens.typography.role.body.size }",
     "{ fontWeight: emphasisRule('semibold').fontWeight, transition: transition('hover', 'color') }",
     "{ zIndex: 0 }",
     "{ width: 'var(--pui-shape-dimension-width-3xl)' }",

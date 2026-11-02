@@ -219,15 +219,15 @@ describe("what the Shape page says", () => {
   });
 
   it("[foundations.shape.target-table] draws the table of hit areas from the roles it names", () => {
-    expect(cells(docRow("`target.selection`").replace(/\| targetReach\([^|]*\) /, "")).slice(0, 3)).toEqual(bySize(SHAPE_RECIPES.target.selection));
-    expect(cells(docRow("`target.switchBlock`").replace(/\| targetReach\([^|]*\) /, "")).slice(0, 3)).toEqual(bySize(SHAPE_RECIPES.target.switchBlock));
-    expect(cells(docRow("`target.action`").replace(/\| targetReach\([^|]*\) /, "")).slice(0, 3)).toEqual(bySize(SHAPE_RECIPES.target.action));
+    expect(cells(docRow("`target.selection`").replace(/\| targetReach\([^|]*\) /, "")).slice(0, 4)).toEqual(bySize(SHAPE_RECIPES.target.selection));
+    expect(cells(docRow("`target.switchBlock`").replace(/\| targetReach\([^|]*\) /, "")).slice(0, 4)).toEqual(bySize(SHAPE_RECIPES.target.switchBlock));
+    expect(cells(docRow("`target.action`").replace(/\| targetReach\([^|]*\) /, "")).slice(0, 4)).toEqual(bySize(SHAPE_RECIPES.target.action));
   });
 
   it("[foundations.shape.radius-separate] keeps the surface family and the control corner apart, whatever their values", () => {
-    expect(tokens.shape.radius.surface.sm).not.toBe(tokens.shape.radius.control);
+    expect(tokens.shape.radius.surface.sm).not.toBe(tokens.shape.radius.control.sm);
     expect(declarations.has("--pui-shape-radius-surface-sm")).toBe(true);
-    expect(declarations.has("--pui-shape-radius-control")).toBe(true);
+    expect(declarations.has("--pui-shape-radius-control-sm")).toBe(true);
   });
 });
 
@@ -239,7 +239,7 @@ describe("controlGeometry is the one size entry of every sized Atom", () => {
 
   it("[foundations.shape.control-geometry] [foundations.shape.geometry-entry] names a rule for every control size in each entry", () => {
     expect(Object.keys(controlGeometry)).toEqual([
-      "button", "iconButton", "field", "fieldInput", "select", "selectArrow", "textarea", "selection", "checkbox", "radio", "switch", "selectionReach", "switchReach", "fieldActionReach", "badge", "spinner", "spinnerInline",
+      "corner", "button", "iconButton", "field", "fieldInput", "select", "selectArrow", "textarea", "selection", "checkbox", "radio", "switch", "selectionReach", "switchReach", "fieldActionReach", "badge", "spinner", "spinnerInline",
     ]);
     for (const [name, entry] of Object.entries(controlGeometry)) {
       if (name !== "spinnerInline") expect(Object.keys(entry), name).toEqual([...CONTROL_SIZES]);
@@ -319,8 +319,8 @@ describe("Layout shadow is geometry per mode, assembled where it is cast", () =>
     }
   });
 
-  it("[foundations.layout.shadow-geometry] has two depths, draws dark tighter than light layer by layer, and spreads dark's floating depth inward", () => {
-    expect([...DEPTHS].sort()).toEqual(["floating", "lifted"]);
+  it("[foundations.layout.shadow-geometry] has three depths, draws dark tighter than light layer by layer, and spreads dark's floating depth inward", () => {
+    expect([...DEPTHS].sort()).toEqual(["floating", "lifted", "resting"]);
     // How far a layer reaches past the box: its blur and its spread together.
     const reach = (layer: readonly number[]) => layer[2]! + layer[3]!;
     for (const depth of DEPTHS) {
@@ -332,7 +332,7 @@ describe("Layout shadow is geometry per mode, assembled where it is cast", () =>
   it("[foundations.layout.emission] [foundations.layout.shadow-geometry] emits the geometry as ground variables of each mode and nothing else of Layout per mode", () => {
     for (const mode of COLOR_MODES) {
       const layoutNames = Object.keys(modes[mode].ground).filter((name) => name.startsWith("--pui-layout-"));
-      expect(layoutNames, mode).toEqual(["--pui-layout-shadow-lifted-0", "--pui-layout-shadow-floating-0", "--pui-layout-shadow-floating-1"]);
+      expect(layoutNames, mode).toEqual(["--pui-layout-shadow-resting-0", "--pui-layout-shadow-lifted-0", "--pui-layout-shadow-floating-0", "--pui-layout-shadow-floating-1"]);
       expect(Object.keys(modes[mode].own).some((name) => name.startsWith("--pui-layout-")), mode).toBe(false);
     }
   });

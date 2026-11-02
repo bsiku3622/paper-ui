@@ -1,6 +1,8 @@
 // Button — 누르는 자리. accent는 resolver가 정한다: accent(의미) × variant(시각 무게).
 //   accent   primary(검정 일꾼) · info · success · warning · error
-//   variant  solid · soft · hairline · ghost · muted
+//   variant  solid · soft · hairline · dashed · ghost · muted
+//   fill     raised · canvas · sunken — hairline · dashed · ghost · muted 의 면. 안 주면 투명
+//   shadow   제자리 그림자. 면이 있을 때만 받는다
 //   shape    rounded(시스템 곡선) · pill(알약)
 //
 // 예) <Button>저장</Button>                        검정 solid (primary)
@@ -19,6 +21,7 @@
 import { forwardRef, type ElementType, type ReactElement, type ReactNode } from "react";
 
 import { registerAtom } from "../internal/render-target";
+import type { PaintFace } from "../primitives/paint/Paint";
 import type { PolymorphicProps } from "../primitives/polymorphic";
 import type { Accent, ControlFontSize, ControlShape, ControlSize, SelectableVariant, Variant } from "../tokens";
 import { ButtonBase, type ButtonBaseProps } from "./button-base";
@@ -29,11 +32,11 @@ type ButtonSelection = { variant?: Variant; selected?: undefined } | { variant: 
 type ButtonOwn = {
   // 큰 면을 채우는 기본은 검정(primary) — 색은 의미가 있을 때만.
   accent?: Accent;
-  // 크기 3 단 (sm·md·lg). md가 Demo 기준 anchor며 Field·Select와 같은 높이 사다리를 쓴다.
+  // 크기 4 단 (xs·sm·md·lg). md가 Demo 기준 anchor며 Field·Select와 같은 높이 사다리를 쓴다.
   size?: ControlSize;
   // 컨트롤 실루엣은 유지하고 라벨만 조정하는 통로. 기본값은 size 사다리를 따른다.
   fontSize?: ControlFontSize;
-  // 실루엣 — rounded 는 시스템 곡선(radius.control), pill 은 알약(높이의 절반).
+  // 실루엣 — rounded 는 크기에 맞는 시스템 곡선(radius.control), pill 은 알약(radius.pill).
   // 값이 둘뿐인 건 의도다 — 고르는 건 *알약이냐 아니냐* 지 곡선의 크기가 아니다.
   shape?: ControlShape;
   // 진행 중 — 스피너를 얹고 aria-busy 를 세우며 누름과 제출을 막는다. 포커스는 잃지 않고, 시작할 때 포커스가
@@ -45,7 +48,7 @@ type ButtonOwn = {
   disabled?: boolean;
   children?: ReactNode;
   className?: string;
-} & ButtonSelection;
+} & ButtonSelection & PaintFace;
 
 // `as` 로 이 자리가 실은 링크일 때의 통로 — <Button as={RouterLink} to="/docs">. 나머지 prop 은 그 대상의 것 그대로(as={RouterLink} 면 to·replace),
 // 행동 부품이면 그 부품의 prop 그대로다.

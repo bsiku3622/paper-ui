@@ -10,13 +10,20 @@
       "3xl": 48
     },
     "radius": {
-      "control": 4,
+      "control": {
+        "xs": 4,
+        "sm": 4,
+        "md": 4,
+        "lg": 4
+      },
       "selection": 3,
       "surface": {
         "sm": 4,
         "md": 6,
         "lg": 8
       },
+      "text": 4,
+      "pill": 999,
       "full": 999
     },
     "stroke": {
@@ -33,17 +40,20 @@
     },
     "control": {
       "height": {
+        "xs": 28,
         "sm": 30,
         "md": 32,
         "lg": 36
       },
       "inset": {
         "input": {
+          "xs": 6,
           "sm": 7,
           "md": 8,
           "lg": 10
         },
         "button": {
+          "xs": 8,
           "sm": 10,
           "md": 11,
           "lg": 14
@@ -51,6 +61,7 @@
       },
       "gap": 8,
       "icon": {
+        "xs": 16,
         "sm": 16,
         "md": 18,
         "lg": 20
@@ -58,6 +69,7 @@
     },
     "selection": {
       "size": {
+        "xs": 14,
         "sm": 15,
         "md": 16,
         "lg": 18
@@ -98,11 +110,13 @@
   "recipes": {
     "badge": {
       "height": {
+        "xs": 18,
         "sm": 20,
         "md": 22,
         "lg": 24
       },
       "inset": {
+        "xs": 4,
         "sm": 6,
         "md": 8,
         "lg": 10
@@ -113,11 +127,13 @@
     "checkbox": {
       "radius": 3,
       "mark": {
+        "xs": 7,
         "sm": 7.5,
         "md": 8,
         "lg": 9
       },
       "short": {
+        "xs": 3.5,
         "sm": 3.75,
         "md": 4,
         "lg": 4.5
@@ -126,6 +142,7 @@
       "markTransform": "rotate(-45deg) translate(calc(var(--pui-shape-stroke-emphasis) * var(--pui-shape-anatomy-checkbox-mark-shift-x)), calc(var(--pui-shape-stroke-emphasis) * var(--pui-shape-anatomy-checkbox-mark-shift-y)))",
       "dash": {
         "width": {
+          "xs": 7,
           "sm": 7.5,
           "md": 8,
           "lg": 9
@@ -136,6 +153,7 @@
     },
     "radio": {
       "dot": {
+        "xs": 7,
         "sm": 7.5,
         "md": 8,
         "lg": 9
@@ -143,22 +161,26 @@
     },
     "switch": {
       "width": {
+        "xs": 28,
         "sm": 30,
         "md": 32,
         "lg": 36
       },
       "height": {
+        "xs": 16,
         "sm": 17,
         "md": 18,
         "lg": 20
       },
       "thumb": {
+        "xs": 12,
         "sm": 13,
         "md": 14,
         "lg": 16
       },
       "inset": 2,
       "travel": {
+        "xs": 12,
         "sm": 13,
         "md": 14,
         "lg": 16
@@ -166,11 +188,13 @@
     },
     "select": {
       "arrowInset": {
+        "xs": 6,
         "sm": 7,
         "md": 8,
         "lg": 10
       },
       "paddingEnd": {
+        "xs": 30,
         "sm": 31,
         "md": 34,
         "lg": 38
@@ -178,6 +202,7 @@
     },
     "textarea": {
       "paddingBlock": {
+        "xs": 3,
         "sm": 4,
         "md": 5,
         "lg": 7
@@ -190,6 +215,7 @@
     },
     "spinner": {
       "size": {
+        "xs": 16,
         "sm": 16,
         "md": 18,
         "lg": 20
@@ -199,16 +225,19 @@
     },
     "target": {
       "selection": {
+        "xs": -5,
         "sm": -4.5,
         "md": -4,
         "lg": -3
       },
       "switchBlock": {
+        "xs": -4,
         "sm": -3.5,
         "md": -3,
         "lg": -2
       },
       "action": {
+        "xs": -4,
         "sm": -4,
         "md": -3,
         "lg": -2

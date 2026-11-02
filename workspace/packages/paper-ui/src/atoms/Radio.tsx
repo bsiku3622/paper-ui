@@ -13,7 +13,7 @@ import { selectionBox, selectionReach, selectionSize } from "./recipes/selection
 
 export type RadioProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "className" | "size"> & {
   status?: ChoiceStatus;
-  // 크기 3 단 (sm·md·lg). Checkbox 와 같은 변 사다리.
+  // 크기 4 단 (xs·sm·md·lg). Checkbox 와 같은 변 사다리.
   size?: ControlSize;
   className?: string;
 };

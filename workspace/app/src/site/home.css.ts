@@ -68,7 +68,7 @@ export const brandMark = style({
   justifyContent: "center",
   width: "1.5rem",
   height: "1.5rem",
-  borderRadius: tokens.shape.radius.control,
+  borderRadius: tokens.shape.radius.control.xs,
 });
 export const brandInitial = style({ ...emphasisRule("bold") });
 
@@ -80,7 +80,7 @@ export const navItem = style({
   gap: tokens.layout.gap.sm,
   height: tokens.shape.control.height.sm,
   paddingInline: tokens.shape.inset.sm,
-  borderRadius: tokens.shape.radius.control,
+  borderRadius: tokens.shape.radius.control.sm,
   ...emphasisRule("regular"),
   color: tokens.color.ink.secondary,
   selectors: {

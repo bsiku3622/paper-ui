@@ -7,16 +7,31 @@ import { Box } from "./Box";
 import { Paint, paintClass } from "./paint/Paint";
 import { Stack } from "./layout/Stack";
 import { Surface, surfaceClass } from "./paint/Surface";
-import { surfaceBorder, surfaceItem, surfaceRadius } from "./paint/Surface.css";
+import { restingShadow, surfaceBorder, surfaceItem, surfaceRadius } from "./paint/Surface.css";
 import { accentVariantClass, fillClass, hoverGate } from "../styles/color.css";
 import { spaceClass } from "../styles/space.css";
-import { ACCENTS, ELEVATIONS, SURFACE_FILLS, SURFACE_RADII, VARIANTS } from "../tokens";
+import { ACCENTS, ELEVATIONS, FILLABLE_VARIANTS, SURFACE_FILLS, SURFACE_RADII, VARIANTS } from "../tokens";
 import { stackRoot } from "./layout/flex.css";
 
 // Never rendered: each line only has to compile.
 const compiles = (...elements: ReactElement[]) => elements.length;
 
 describe("Surface", () => {
+  it("[primitives.surface.shadow] casts the resting shadow from a face, and leaves it to an elevation when there is one", () => {
+    expect(surfaceClass({ fill: "raised", shadow: true }).split(" ")).toContain(restingShadow);
+    expect(surfaceClass({ shadow: true }).split(" ")).not.toContain(restingShadow);
+    expect(surfaceClass({ fill: "raised", shadow: true, elevation: "overlay" }).split(" ")).not.toContain(restingShadow);
+    render(<Surface data-testid="themed" theme="dark" />);
+    expect(screen.getByTestId("themed").classList.contains(restingShadow)).toBe(false);
+    compiles(
+      <Surface fill="raised" shadow />,
+      <Surface fill="raised" />,
+      <Surface />,
+      // @ts-expect-error A box with no face has nothing to cast a shadow from.
+      <Surface shadow />,
+    );
+  });
+
   it("[primitives.surface.classes] turns fill, border, radius and elevation into the classes of their own maps", () => {
     render(<Surface data-testid="surface" fill="raised" border radius="md" elevation="overlay" padding="md" />);
     const element = screen.getByTestId("surface");
@@ -134,6 +149,37 @@ describe("Paint", () => {
     expect(paintClass({ variant: "soft" })).toBe("");
     expect(paintClass({ accent: "info", variant: "soft" })).not.toContain(hoverGate);
     expect(paintClass({ accent: "info", variant: "soft", hoverable: true })).toBe([accentVariantClass.info.soft, hoverGate].join(" "));
+  });
+
+  it("[primitives.paint.fill] paints a fill only on a variant with no face of its own, with the class a Surface uses", () => {
+    for (const variant of FILLABLE_VARIANTS) {
+      for (const fill of SURFACE_FILLS) expect(paintClass({ accent: "primary", variant, fill }).split(" "), `${variant} ${fill}`).toContain(fillClass[fill]);
+      for (const fill of SURFACE_FILLS) expect(paintClass({ accent: "primary", variant }).split(" "), variant).not.toContain(fillClass[fill]);
+    }
+    for (const variant of ["solid", "soft"] as const) expect(paintClass({ accent: "primary", variant, fill: "raised" }).split(" "), variant).not.toContain(fillClass.raised);
+    compiles(
+      <Paint variant="hairline" fill="sunken" />,
+      <Paint variant="ghost" />,
+      // @ts-expect-error A variant that paints its own face takes no fill.
+      <Paint variant="solid" fill="raised" />,
+      // @ts-expect-error The default variant is solid.
+      <Paint fill="raised" />,
+    );
+  });
+
+  it("[primitives.paint.shadow] casts the resting shadow only from a face, and draws what the types refuse no differently", () => {
+    for (const variant of ["solid", "soft"] as const) expect(paintClass({ accent: "primary", variant, shadow: true }).split(" "), variant).toContain(restingShadow);
+    for (const variant of FILLABLE_VARIANTS) {
+      expect(paintClass({ accent: "primary", variant, shadow: true }).split(" "), variant).not.toContain(restingShadow);
+      expect(paintClass({ accent: "primary", variant, fill: "raised", shadow: true }).split(" "), variant).toContain(restingShadow);
+    }
+    compiles(
+      <Paint variant="solid" shadow />,
+      <Paint variant="ghost" fill="raised" shadow />,
+      <Paint variant="hairline" fill="raised" shadow />,
+      // @ts-expect-error No fill, no face, no shadow.
+      <Paint variant="hairline" shadow />,
+    );
   });
 
   it("[primitives.paint.classes] renders one element that carries the paint classes beside its own", () => {

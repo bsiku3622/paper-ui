@@ -168,7 +168,7 @@ test("[atoms.link.underline] a link in a documentation page is the Link Atom: un
   await page.goto("/docs/atoms");
   const link = page.getByTestId("prose").locator("a").first();
   await expect(link).toBeVisible();
-  await expectStyle(link, { color: tokens.color.interaction.link, textDecorationLine: "underline", borderTopLeftRadius: tokens.shape.radius.control });
+  await expectStyle(link, { color: tokens.color.interaction.link, textDecorationLine: "underline", borderTopLeftRadius: tokens.shape.radius.text });
 });
 
 const FRAMES = ["field", "textarea", "select"] as const;

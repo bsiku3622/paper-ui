@@ -18,7 +18,7 @@ const ROLE_ROWS: readonly (readonly string[])[] = [
   ["ink.primary", "ink.secondary", "ink.tertiary"],
   ["border.base", "border.strong", "border.hover"],
   ["interaction.selected", "interaction.active"],
-  ["shadow.floating", "shadow.lifted"],
+  ["shadow.floating", "shadow.lifted", "shadow.resting"],
 ];
 
 // Steps of one ramp share its name: `neutral.900 · 700 · 650`. Steps of different ramps are written out.

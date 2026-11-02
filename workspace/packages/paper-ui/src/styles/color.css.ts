@@ -35,7 +35,7 @@ export const inkClass = utilities.styleVariants(INK_COLOR, (color) => ({ color }
 // ───── accent × variant — Paint 와 그 위의 Atom(Button · Badge)의 색 ───────
 //
 // 면은 backgroundColor 이다. 눌리는 것(hoverGate)은 그 위에 tint 한 겹(--pui-state-tint)이 더 깔려, 상태가 면을 바꾸지 않고
-// tint 만 옮긴다 — 전이가 면 위에서 합성되어 어느 면 위든 한 단계 어두워지고, hairline 은 대신 경계가 한 단계 진해진다.
+// tint 만 옮긴다 — 전이가 면 위에서 합성되어 어느 면 위든 한 단계 어두워지고, hairline · dashed 는 대신 경계가 한 단계 진해진다.
 // hover 는 hoverGate 가 함께 있을 때만 문다 — 눌리는 것(Button)만 gate 를 붙이고, 표시용(Badge)에는 안 붙여
 // 면 위에 tint 층도 hover 색도 없다. gate 는 paintClass({ hoverable }) 말고는 닿는 길이 없다(primitives/paint 밖에서는
 // import 하지 않는다). 터치는 hover 가 없으므로 `(hover: hover)` 안에서만, 눌릴 수 있는 대상(disabled · aria-disabled ·
@@ -54,12 +54,15 @@ const accentClass = (accent: Accent, variant: Variant): string => {
   const hover = "tint" in spec.hover ? withTint(spec.hover.tint) : { borderColor: spec.hover.border };
   const face = spec.selected;
   return components.style({
-    backgroundColor: spec.face,
+    // 면이 없는 variant 는 면을 정하지 않는다 — 여기서 투명을 칠하면 utilities 층의 fill 이 이 층에 진다.
+    ...(spec.face === "transparent" ? {} : { backgroundColor: spec.face }),
     color: spec.ink,
     borderColor: spec.border,
     // 선택된 면은 hover 로 경계가 올라오지 않고, 면 위에 tint 만 얹는다.
     selectors: {
       [gated]: stateStyle.tinted,
+      // 몸(Button · Badge)의 stylesheet 가 이 뒤에 실려 같은 특정도의 실선을 쓴다.
+      ...(spec.borderStyle === "dashed" ? { "&&": { borderStyle: spec.borderStyle } } : {}),
       ...(face ? { [selected]: { backgroundColor: face.face, color: face.ink, borderColor: face.border } } : {}),
     },
     "@media": {

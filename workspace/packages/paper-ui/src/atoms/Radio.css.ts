@@ -17,5 +17,5 @@ export const radioRoot = style({
   },
 });
 
-// size 3 단 — 점은 변의 절반. 변은 selectionSize 가 Checkbox 와 같이 준다.
+// size 4 단 — 점은 변의 절반. 변은 selectionSize 가 Checkbox 와 같이 준다.
 export const radioSize = styleVariants(controlGeometry.radio);

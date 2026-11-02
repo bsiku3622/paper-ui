@@ -38,7 +38,7 @@ section은 고정 gap 사다리의 선언된 유동 예외입니다. `start`는 
 ## Elevation — 위치와 쌓임과 그림자는 한 단위다
 
 [contract:foundations.layout.elevation-unit]: #
-tier 하나를 고르면 position, z, 그림자가 함께 정해집니다. z는 position이 있는 요소에서만 작동하므로 position도 tier가 정하고, 그림자는 떠 있는 tier만 갖습니다. 이 단위는 `elevation` class, Surface의 `elevation` prop, Floating, Switch 손잡이가 같은 레시피로 적용하며, 일부만 따로 가져다 쓰는 길은 공개하지 않습니다.
+tier 하나를 고르면 position, z, 그림자가 함께 정해집니다. z는 position이 있는 요소에서만 작동하므로 position도 tier가 정하고, tier의 그림자는 떠 있는 tier만 갖습니다. 이 단위는 `elevation` class, Surface의 `elevation` prop, Floating, Switch 손잡이가 같은 레시피로 적용하며, 일부만 따로 가져다 쓰는 길은 공개하지 않습니다.
 
 [contract:foundations.layout.elevation-table]: #
 
@@ -66,9 +66,12 @@ tier 사이는 10씩 띄우고 같은 tier 안의 한 걸음(nudge)은 1이라, 
 흐름 안에 그리는 견본과 목업은 `isolation: isolate`를 가진 무대 안에 둡니다. 무대가 쌓임 맥락을 가두므로 견본의 z가 sticky 헤더나 도구 위로 올라오지 않습니다. 같은 tier의 요소는 DOM 순서로 쌓이므로, 페이지 헤더 아래에서 따라 내려오는 sticky 레일은 `isolation: isolate`를 가진 프레임 안에 두어 헤더가 레일에 가려지지 않게 합니다.
 
 [contract:foundations.layout.shadow-geometry]: #
-그림자 깊이는 lifted와 floating 둘뿐입니다. 기하는 모드별로 Layout이 갖고(다크는 더 조이고, floating은 음의 spread를 씁니다), 그림자 색(shadow colour)은 Color의 `shadow.lifted` · `shadow.floating`이 칠합니다. 그림자는 tier마다 그림자 깊이의 겹별 기하 변수와 그림자 색 변수를 쓰이는 요소에서 이어 붙인 값이라, 테마 스코프가 기하나 색 어느 쪽을 바꿔도 그 아래의 그림자가 따라옵니다. 스코프 요소 자신이 드리우는 그림자는 바깥 지면의 모드로 그려집니다.
+그림자 깊이는 resting · lifted · floating 셋입니다. 기하는 모드별로 Layout이 갖고(다크는 더 조이고, floating은 음의 spread를 씁니다), 그림자 색(shadow colour)은 Color의 `shadow.resting` · `shadow.lifted` · `shadow.floating`이 칠합니다. 그림자는 tier마다 그림자 깊이의 겹별 기하 변수와 그림자 색 변수를 쓰이는 요소에서 이어 붙인 값이라, 테마 스코프가 기하나 색 어느 쪽을 바꿔도 그 아래의 그림자가 따라옵니다. 스코프 요소 자신이 드리우는 그림자는 바깥 지면의 모드로 그려집니다.
 
 Surface는 `elevation` prop으로 tier를 고릅니다. position, z, 그림자가 함께 붙습니다. Surface가 아닌 요소는 같은 class를 직접 받습니다.
+
+[contract:foundations.layout.resting-shadow]: #
+resting은 tier가 아닙니다. 제자리에 있는 면이 선 대신 가장자리를 세우는 그림자이고, `shadow` prop(Surface · Paint와 그 위의 Atom)으로 받으며 position도 z도 붙이지 않아 아무것도 덮지 않습니다. 면이 있는 요소만 받고, Surface에 `elevation`이 함께 있으면 tier의 그림자가 이깁니다. 다크 바탕은 이미 거의 검정이라 그림자가 떨어질 자리가 없어서, 다크의 resting은 흰색 15%의 1px 선입니다. 크기는 변하지 않습니다.
 
 ```tsx
 <Surface fill="raised" border radius="md" padding="md" elevation="overlay">…</Surface>

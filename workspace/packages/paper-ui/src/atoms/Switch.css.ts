@@ -29,7 +29,7 @@ export const switchRoot = style([controlReset, {
   "@media": { "(forced-colors: active)": { selectors: { "&::after": { boxShadow: "none" } } } },
 }]);
 
-// size 3 단 — 트랙(w·h) · 손잡이(thumb) · 여백 · 켜짐 이동.
+// size 4 단 — 트랙(w·h) · 손잡이(thumb) · 여백 · 켜짐 이동.
 //
 // 트랙 높이는 손잡이에 테(rim) 하나를 더한 값이고, 손잡이는 위아래·좌우 같은 테를 두고 앉는다. 그러면 켜짐 이동은
 // 손잡이 폭 그대로 떨어진다 — 트랙이나 손잡이를 바꿔도 손잡이가 반대쪽 끝에 정확히 붙는다.

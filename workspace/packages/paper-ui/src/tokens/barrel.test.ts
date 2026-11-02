@@ -14,7 +14,7 @@ import * as vocabulary from "./vocabulary";
 // Composition functions: they take a name or a role and return a declaration, a class-free style fragment or a string.
 const FUNCTIONS = [
   "elevationStack", "elevationCast", "elevationStyle", "accentProfile", "controlSizes", "strokeRing", "typographyRule", "monoRule", "codeRule", "presetRule", "emphasisRule",
-  "stateSelector", "stateAttributes", "transition", "isStylesheetLoaded", "unknownSourceVariables",
+  "stateSelector", "stateAttributes", "transition", "isStylesheetLoaded", "unknownSourceVariables", "overridesRule",
 ];
 
 // Names the package spells: attributes, selectors, queries, the system colours a component may ask for.
@@ -26,7 +26,7 @@ const NAMES = [
 // Composition: plain objects whose leaves refer to roles. A leaf is a variable reference, a formula or style
 // function over references, or a keyword (none, underline, a system colour) with no number in it.
 const COMPOSITION = [
-  "ELEVATION", "SHAPE_RECIPES", "markProfile", "markForcedProfile", "outlinedControlProfile", "itemProfile", "focusRing", "stateStyle", "linkStyle", "STATE_TINT",
+  "ELEVATION", "restingCast", "SHAPE_RECIPES", "markProfile", "markForcedProfile", "outlinedControlProfile", "itemProfile", "focusRing", "stateStyle", "linkStyle", "STATE_TINT",
 ];
 
 // Value roles: the few places a number is the role itself, with the reason.

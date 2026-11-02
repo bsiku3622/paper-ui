@@ -73,7 +73,7 @@ describe("Spinner", () => {
     render(<Spinner ref={ref} data-testid="spin" id="s" />);
     expect(ref.current).toBe(screen.getByTestId("spin"));
     expect(ref.current?.id).toBe("s");
-    expectTypeOf<SpinnerProps["size"]>().toEqualTypeOf<"sm" | "md" | "lg" | "inline" | undefined>();
+    expectTypeOf<SpinnerProps["size"]>().toEqualTypeOf<"xs" | "sm" | "md" | "lg" | "inline" | undefined>();
     expectTypeOf<SpinnerProps["ink"]>().toEqualTypeOf<"inherit" | undefined>();
   });
 });

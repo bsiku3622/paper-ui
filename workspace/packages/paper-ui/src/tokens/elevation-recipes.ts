@@ -29,6 +29,9 @@ export const elevationStack = (tier: Elevation, rank?: string) => ({
 // The shadow a tier casts — `none` for a tier that does not float.
 export const elevationCast = (tier: Elevation) => ({ boxShadow: ELEVATION.shadow[tier] });
 
+// The shadow of a face that stays where it is. It is no tier: it does not stack over anything, so it brings no position and no z.
+export const restingCast = { boxShadow: castShadow("resting") };
+
 // The whole unit, for an element that is not already positioned.
 export const elevationStyle = (tier: Elevation) => ({
   position: ELEVATION.position[tier],

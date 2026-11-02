@@ -22,8 +22,8 @@ import { useSelectable } from "../primitives/select/useSelectable";
 import { IconSizeContext } from "../primitives/icon-context";
 import { paintClass } from "../primitives/paint/Paint";
 import { resolveControlFontSize, resolvePreset } from "../resolvers";
-import { CONTROL_ICON, type Accent, type ControlFontSize, type ControlShape, type ControlSize, type IconSize, type Variant } from "../tokens";
-import { buttonFull, buttonIconSize, buttonPill, buttonRoot, buttonSize } from "./Button.css";
+import { CONTROL_ICON, type Accent, type ControlFontSize, type ControlShape, type ControlSize, type IconSize, type SurfaceFill, type Variant } from "../tokens";
+import { buttonCorner, buttonFull, buttonIconSize, buttonPill, buttonRoot, buttonSize } from "./Button.css";
 import { Spinner } from "./Spinner";
 
 export type ButtonBaseProps = {
@@ -31,6 +31,8 @@ export type ButtonBaseProps = {
   as?: ElementType;
   accent?: Accent;
   variant?: Variant;
+  fill?: SurfaceFill;
+  shadow?: boolean;
   size?: ControlSize;
   fontSize?: ControlFontSize;
   shape?: ControlShape;
@@ -53,7 +55,7 @@ const holdsSelection = (as: ElementType | undefined) => as === Selectable || as 
 // What the target takes beyond these (a router link's `to`) goes through to it untouched, so the Atoms type it by `as`.
 export const ButtonBase = forwardRef<HTMLElement, ButtonBaseProps>(function ButtonBase(
   {
-    anatomy, as, accent = "primary", variant = "solid", size = "md", fontSize, shape = "rounded", loading, loadingLabel, fullWidth,
+    anatomy, as, accent = "primary", variant = "solid", fill, shadow, size = "md", fontSize, shape = "rounded", loading, loadingLabel, fullWidth,
     selected, disabled = false, iconSize, children, className, ...rest
   },
   forwardedRef,
@@ -89,10 +91,11 @@ export const ButtonBase = forwardRef<HTMLElement, ButtonBaseProps>(function Butt
       aria-busy={busy || undefined}
       className={joinClass(
         buttonRoot,
+        buttonCorner[size],
         anatomy === "icon" ? buttonIconSize[size] : buttonSize[size],
         resolvePreset("button", size, variant === "solid" ? "strong" : "medium"),
         resolveControlFontSize(fontSize),
-        paintClass({ accent, variant, hoverable: true }),
+        paintClass({ accent, variant, fill, shadow, hoverable: true }),
         fullWidth && buttonFull,
         shape === "pill" && buttonPill,
         className,

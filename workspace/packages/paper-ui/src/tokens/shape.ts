@@ -31,20 +31,29 @@ export const SHAPE_SOURCE = {
   // both select from it. Steps run on the 4dp grid to xl, then on 8dp through page-level
   // distances (2xl · 3xl).
   space: { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, "2xl": 32, "3xl": 48 },
-  // Radius only takes the edge off, so each family keeps one corner across its sizes.
-  radius: { control: 4, selection: 3, surface: { sm: 4, md: 6, lg: 8 }, full: 999 },
+  // A control's corner follows its size: one curve reads far rounder on a small box than on a large one, so a Shape can
+  // set them apart. text hugs a line of text. pill is the label's form and a Shape may pull it down; full is a circle's
+  // geometry, and a Radio that read a lower value would stop being round.
+  radius: {
+    control: { xs: 4, sm: 4, md: 4, lg: 4 } satisfies Record<ControlSize, number>,
+    selection: 3,
+    surface: { sm: 4, md: 6, lg: 8 },
+    text: 4,
+    pill: 999,
+    full: 999,
+  },
   // border · emphasis are CSS px; icon is SVG user units on the 24-unit artboard.
   stroke: { border: 1, emphasis: 2, icon: 1.75 },
   focus: { width: 2, offset: 2 },
   // The smallest area a press may land on (WCAG 2.5.8). CSS px: a hit area does not follow the root font.
   target: { min: 24 },
   control: {
-    height: { sm: 30, md: 32, lg: 36 } satisfies Record<ControlSize, number>,
+    height: { xs: 28, sm: 30, md: 32, lg: 36 } satisfies Record<ControlSize, number>,
     // A button's label defines its box, so it sits wider than a typed value.
     buttonInsetRatio: 1.4,
   },
   // A selection mark stands beside a line of text, so its size doesn't follow how much room a control takes.
-  selection: { size: { sm: 15, md: 16, lg: 18 } satisfies Record<ControlSize, number> },
+  selection: { size: { xs: 14, sm: 15, md: 16, lg: 18 } satisfies Record<ControlSize, number> },
   // Icon artboards are named after the Text role they stand beside.
   icon: { label: 14, caption: 16, body: 18, subheading: 20 } satisfies Partial<Record<TextVariant, number>>,
   dimension: {
@@ -56,8 +65,8 @@ export const SHAPE_SOURCE = {
   // Component anatomy that no rule derives. Emitted, but reachable only through shape recipes.
   anatomy: {
     badge: {
-      height: { sm: 20, md: 22, lg: 24 } satisfies Record<ControlSize, number>,
-      inset: { sm: 6, md: 8, lg: 10 } satisfies Record<ControlSize, number>,
+      height: { xs: 18, sm: 20, md: 22, lg: 24 } satisfies Record<ControlSize, number>,
+      inset: { xs: 4, sm: 6, md: 8, lg: 10 } satisfies Record<ControlSize, number>,
     },
     // Turned onto its diagonal, the check keeps its visual mass low and left, so it shifts by these ratios of the
     // emphasis stroke (x to the right, y down).
@@ -80,14 +89,21 @@ export const ICON_SIZES = keys(SHAPE_SOURCE.icon);
 export type IconSize = keyof typeof SHAPE_SOURCE.icon;
 // Control icons follow the control height (30 → 16, 32 → 18, 36 → 20), not the text beside them:
 // control text is a preset (13 · 13 · 14) that no Text role matches.
-export const CONTROL_ICON = { sm: "caption", md: "body", lg: "subheading" } as const satisfies Record<ControlSize, IconSize>;
+export const CONTROL_ICON = { xs: "caption", sm: "caption", md: "body", lg: "subheading" } as const satisfies Record<ControlSize, IconSize>;
 
 const s = SHAPE_SOURCE;
 
 // Lengths scale with the root font; strokes, the focus ring and the pill corner stay in px.
 export const SHAPE_VALUES = {
   space: lengths(s.space),
-  radius: { control: rem(s.radius.control), selection: rem(s.radius.selection), surface: lengths(s.radius.surface), full: px(s.radius.full) },
+  radius: {
+    control: lengths(s.radius.control),
+    selection: rem(s.radius.selection),
+    surface: lengths(s.radius.surface),
+    text: rem(s.radius.text),
+    pill: px(s.radius.pill),
+    full: px(s.radius.full),
+  },
   stroke: { border: px(s.stroke.border), emphasis: px(s.stroke.emphasis), icon: String(s.stroke.icon) },
   focus: lengths(s.focus, px),
   target: lengths(s.target, px),

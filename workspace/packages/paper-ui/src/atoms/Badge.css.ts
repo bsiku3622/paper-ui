@@ -11,15 +11,14 @@ export const badgeRoot = style({
   display: "inline-flex",
   alignItems: "center",
   gap: geometry.badge.gap,
-  borderRadius: tokens.shape.radius.control,
+  borderRadius: tokens.shape.radius.pill,
   borderWidth: tokens.shape.stroke.border,
   borderStyle: "solid",
 });
 
-// 알약 — 모서리를 높이의 절반까지. 배지는 낱말 하나를 담는 라벨이라 알약이 자연스러운
-// 자리지만, 기본값은 아니다 — 표 안에서 버튼·입력과 같은 곡선으로 줄을 서야 한다.
-// badgeRoot 뒤에 와서 같은 특정도를 순서로 이긴다.
-export const badgePill = style({ borderRadius: tokens.shape.radius.full });
+// 배지는 낱말 하나를 담는 라벨이라 기본이 알약이다(badgeRoot). 표 안에서 버튼·입력과 같은 곡선으로
+// 줄을 서야 하면 rounded 가 같은 크기의 컨트롤 곡선을 고른다. badgeRoot 뒤에 와서 같은 특정도를 순서로 이긴다.
+export const badgeRounded = styleVariants(controlGeometry.corner);
 
 // 상태 점의 형태. 색은 dotPaint 가 입힌다. em 이라 size 에 비례.
 export const badgeDot = style({
@@ -29,7 +28,7 @@ export const badgeDot = style({
   flexShrink: 0,
 });
 
-// size 3 단 — 높이와 여백만 움직인다.
+// size 4 단 — 높이와 여백만 움직인다.
 //
 // **글자는 고정이다.** 배지도 컨트롤과 같은 규칙을 진다 — 밀도(height)와 가독성
 // (fontSize)은 다른 축이라, 배지가 작아진다고 글자가 따라 내려가지 않는다. 컨트롤의

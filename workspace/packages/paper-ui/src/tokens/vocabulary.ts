@@ -8,8 +8,8 @@ export type { Status, ChoiceStatus, Accent, AccentTone, SurfaceFill, InkLevel, I
 export { COLOR_MODES, THEME_PREFERENCES, SURFACE_THEMES } from "./color-modes";
 export type { ColorMode, ThemePreference, SurfaceTheme } from "./color-modes";
 
-export { VARIANTS, SELECTABLE_VARIANTS } from "./color-recipes";
-export type { Variant, SelectableVariant } from "./color-recipes";
+export { VARIANTS, SELECTABLE_VARIANTS, FILLABLE_VARIANTS, INPUT_VARIANTS } from "./color-recipes";
+export type { Variant, SelectableVariant, FillableVariant, InputVariant } from "./color-recipes";
 
 export { TEXT_VARIANTS, TEXT_FAMILIES, CONTROL_SIZES, CONTROL_FONT_SIZES, CONTROL_PRESETS, EMPHASES, LINK_UNDERLINES } from "./typography";
 export type { TextVariant, TextFamily, ControlSize, ControlFontSize, ControlPreset, Emphasis, LinkUnderline } from "./typography";

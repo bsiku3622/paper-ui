@@ -12,6 +12,6 @@ export const pill = style({
   paddingInline: tokens.shape.inset.sm,
   borderWidth: tokens.shape.stroke.border,
   borderStyle: "solid",
-  borderRadius: tokens.shape.radius.full,
+  borderRadius: tokens.shape.radius.pill,
 });
-export const square = style({ borderRadius: tokens.shape.radius.control });
+export const square = style({ borderRadius: tokens.shape.radius.text });

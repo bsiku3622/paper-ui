@@ -13,7 +13,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { INVENTORY } from "../inventory";
 import { FormField } from "../primitives/field/FormField";
 import { Icon } from "../primitives/Icon";
+import { fieldLinelessPaint } from "../primitives/paint/recipes.css";
+import { restingShadow } from "../primitives/paint/Surface.css";
 import { Text } from "../primitives/Text";
+import { fillClass } from "../styles/color.css";
 import { Badge } from "./Badge";
 import { Button } from "./Button";
 import { Checkbox } from "./Checkbox";
@@ -217,7 +220,7 @@ const DEFAULTS: Array<[name: string, plain: ReactElement, explicit: ReactElement
   ["Checkbox", <Checkbox aria-label="c" />, <Checkbox aria-label="c" size="md" />],
   ["Radio", <Radio aria-label="r" />, <Radio aria-label="r" size="md" />],
   ["Switch", <Switch aria-label="w" />, <Switch aria-label="w" size="md" />],
-  ["Badge", <Badge>x</Badge>, <Badge size="md" shape="rounded" accent="primary" variant="soft">x</Badge>],
+  ["Badge", <Badge>x</Badge>, <Badge size="md" shape="pill" accent="primary" variant="soft">x</Badge>],
 ];
 
 // What each Atom stands on, as what its source names: the Primitives and hooks of the table, and where its colour comes from.
@@ -378,5 +381,26 @@ describe("the selection marks", () => {
     for (const file of ["Checkbox.css.ts", "Radio.css.ts", "Switch.css.ts", "recipes/selection-control.css.ts", "Checkbox.tsx", "Radio.tsx", "Switch.tsx"]) {
       expect(read(file), file).not.toMatch(/tokens\.color\b|opacity\s*:|\b0\.[45]\b|:hover|:focus-visible|pointer-?focus|useHover/i);
     }
+  });
+});
+
+describe("the face of an input frame", () => {
+  const FRAMES = [
+    ["Field", (props: object) => <Field aria-label="f" data-testid="frame" {...props} />],
+    ["Textarea", (props: object) => <Textarea aria-label="t" data-testid="frame" {...props} />],
+    ["Select", (props: object) => <Select aria-label="s" data-testid="frame" {...props}><Select.Option value="a">A</Select.Option></Select>],
+  ] as const;
+
+  it.each(FRAMES)("[atoms.input.face] %s draws a line and a raised face by default, and takes the other line, any fill and a shadow", (_name, frame) => {
+    const { rerender } = render(frame({}));
+    const classes = () => screen.getByTestId("frame").classList;
+    expect(classes().contains(fillClass.raised)).toBe(true);
+    expect(classes().contains(fieldLinelessPaint)).toBe(false);
+    expect(classes().contains(restingShadow)).toBe(false);
+    rerender(frame({ variant: "ghost", fill: "canvas", shadow: true }));
+    expect(classes().contains(fillClass.canvas)).toBe(true);
+    expect(classes().contains(fieldLinelessPaint)).toBe(true);
+    expect(classes().contains(restingShadow)).toBe(true);
+    cleanup();
   });
 });

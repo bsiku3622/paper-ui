@@ -66,7 +66,7 @@ Box의 `padding` · `paddingX` · `paddingY`가 이 단계를 받습니다. 앱 
 
 ## Radius
 
-모서리는 날만 죽입니다. 그래서 한 가족은 크기와 무관하게 한 값을 씁니다.
+컨트롤의 모서리는 크기를 따릅니다. 같은 곡선이 작은 상자에서는 훨씬 둥글게 읽히기 때문입니다. 면은 Surface의 `radius`가 고르고, 글자 줄 곁의 링과 알약과 원은 크기와 무관하게 값 하나를 씁니다.
 
 [contract:foundations.shape.radius-table]: #
 
@@ -74,14 +74,22 @@ Box의 `padding` · `paddingX` · `paddingY`가 이 단계를 받습니다. 앱 
 <!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 | 역할 | 값 | 쓰는 곳 |
 | --- | --- | --- |
-| `radius.control` | 4 | Button · Field · Select · Textarea · Badge, 포커스 링 |
+| `radius.control.xs / sm / md / lg` | 4 / 4 / 4 / 4 | Button · IconButton · Field · Select · Textarea, `shape="rounded"`인 Badge |
 | `radius.selection` | 3 | Checkbox |
 | `radius.surface.sm / md / lg` | 4 / 6 / 8 | Surface의 `radius` prop |
-| `radius.full` | 999px | 알약, 원(Radio · Switch · Spinner) |
+| `radius.text` | 4 | 글자 줄 곁에 서는 것 — Link의 링 |
+| `radius.pill` | 999px | 알약 — Badge의 기본, `shape="pill"` |
+| `radius.full` | 999px | 원(Radio · Switch · Spinner), Surface의 `radius="full"` |
 <!-- /generated:shape-radius -->
 
+[contract:foundations.shape.corner-by-size]: #
+Button · IconButton · Field · Select · Textarea와 `shape="rounded"`인 Badge는 자기 크기의 `radius.control`을 읽습니다. 원본이 크기마다 따로 있어서 `PaperProvider`와 `sourceVars`로 크기별로 덮어쓸 수 있습니다.
+
+[contract:foundations.shape.pill-not-circle]: #
+`radius.pill`은 알약의 모양이고 `radius.full`은 원의 기하입니다. `radius.pill`을 낮추면 Badge와 `shape="pill"`만 따라오고, Radio · Switch · Spinner는 원으로 남습니다.
+
 [contract:foundations.shape.radius-separate]: #
-Surface의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값이 같아도 역할과 변수는 따로입니다.
+Surface의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control.sm`과 값이 같아도 역할과 변수는 따로입니다.
 
 ## Stroke · Focus
 
@@ -89,25 +97,25 @@ Surface의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값
 선과 포커스 링은 root 글자 크기를 따라 커지지 않도록 CSS px로 둡니다. `stroke.border` 1px은 테두리와 Divider, `stroke.emphasis` 2px은 체크 표시·Spinner 링·스위치 손잡이 둘레, `stroke.icon` 1.75는 24 artboard 위 SVG 선입니다. 포커스 링은 `focus.width` 2px · `focus.offset` 2px이고, 패키지의 모든 포커스 링은 한 스타일(`focusRing`)을 공유합니다. 링의 두께와 offset은 Shape, 색은 Color(`interaction.focus`)가 소유합니다. 안쪽에 그리는 1px 선은 `strokeRing(color)`가 `inset 0 0 0 stroke.border`로 한 곳에서 만들어, 요소의 크기를 바꾸지 않고 상자 안쪽에 선을 긋습니다.
 
 [contract:foundations.shape.focus-ring]: #
-링은 요소 자신의 곡률을 따릅니다. 전역 baseline(`:where(:focus-visible)`)은 링만 그리고 요소의 모양을 바꾸지 않으므로, 자기 곡률이 없는 요소(제목, 사이드바 링크)의 키보드 링은 각지게 그려집니다. 곡률은 링을 그리는 요소가 정합니다 — Button · Field · Select · Textarea와 Link는 `radius.control`을 가집니다. Field와 Select는 wrapper가 링을 그리는 틀이라 그 곡률을, Textarea는 자기 곡률을 따르고, 안쪽 native control은 곡률도 outline도 갖지 않습니다.
+링은 요소 자신의 곡률을 따릅니다. 전역 baseline(`:where(:focus-visible)`)은 링만 그리고 요소의 모양을 바꾸지 않으므로, 자기 곡률이 없는 요소(제목, 사이드바 링크)의 키보드 링은 각지게 그려집니다. 곡률은 링을 그리는 요소가 정합니다 — Button · Field · Select · Textarea는 자기 크기의 `radius.control`을, Link는 `radius.text`를 가집니다. Field와 Select는 wrapper가 링을 그리는 틀이라 그 곡률을, Textarea는 자기 곡률을 따르고, 안쪽 native control은 곡률도 outline도 갖지 않습니다.
 
 ## Control
 
 [contract:foundations.shape.control-geometry]: #
-컨트롤 원본은 <!-- generated:shape-source --><!-- 이 블록은 생성됩니다 — pnpm docs:sync -->높이 사다리(`control.height`: sm 30 · md 32 · lg 36)와 button inset 배율(`control.buttonInsetRatio`: 1.4), 표식 사다리(`selection.size`: sm 15 · md 16 · lg 18)이고, `anatomy`는 Badge 높이·inset(`anatomy.badge`)과 체크의 보정 비율(`anatomy.checkbox.markShift`: x 0.25 · y -0.5, `stroke.emphasis`의 배수)과 inline 점 · spinner 크기(`anatomy.inline`: 0.5em · 1em)입니다.<!-- /generated:shape-source --> 나머지는 높이와 컨트롤 글자 줄(Typography의 control preset이 읽는 글자 한 줄, 행간 16)에서 계산합니다. 입력값이 앉는 줄상자 `inputLeading` 20은 이 식의 입력이 아니라 caret 높이를 위한 값이라, 글자 줄 안쪽에서 중앙에 앉습니다.
+컨트롤 원본은 <!-- generated:shape-source --><!-- 이 블록은 생성됩니다 — pnpm docs:sync -->높이 사다리(`control.height`: xs 28 · sm 30 · md 32 · lg 36)와 button inset 배율(`control.buttonInsetRatio`: 1.4), 표식 사다리(`selection.size`: xs 14 · sm 15 · md 16 · lg 18)이고, `anatomy`는 Badge 높이·inset(`anatomy.badge`)과 체크의 보정 비율(`anatomy.checkbox.markShift`: x 0.25 · y -0.5, `stroke.emphasis`의 배수)과 inline 점 · spinner 크기(`anatomy.inline`: 0.5em · 1em)입니다.<!-- /generated:shape-source --> 나머지는 높이와 컨트롤 글자 줄(Typography의 control preset이 읽는 글자 한 줄, 행간 16)에서 계산합니다. 입력값이 앉는 줄상자 `inputLeading` 20은 이 식의 입력이 아니라 caret 높이를 위한 값이라, 글자 줄 안쪽에서 중앙에 앉습니다.
 
 [contract:foundations.shape.control-table]: #
 
 <!-- generated:shape-control -->
 <!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
-| 역할 | sm | md | lg | 식 |
-| --- | --- | --- | --- | --- |
-| `control.height` | 30 | 32 | 36 | 원본 |
-| `control.inset.input` | 7 | 8 | 10 | (높이 − preset 글자 줄) / 2 — 입력값은 글자 줄 사방에 같은 여백 |
-| `control.inset.button` | 10 | 11 | 14 | (높이 − 버튼 글자 줄) / 2 × `buttonInsetRatio` 1.4, 1px로 반올림 — 라벨이 상자를 정의하므로 더 넓게 |
-| `selection.size` | 15 | 16 | 18 | 원본 — Checkbox와 Radio의 상자. 컨트롤 높이와 따로 움직입니다 |
-| `control.icon` | 16 | 18 | 20 | 높이를 따르는 icon 크기 (caption · body · subheading) |
-| `control.gap` | 8 | 8 | 8 | 아이콘과 라벨 사이, inset sm |
+| 역할 | xs | sm | md | lg | 식 |
+| --- | --- | --- | --- | --- | --- |
+| `control.height` | 28 | 30 | 32 | 36 | 원본 |
+| `control.inset.input` | 6 | 7 | 8 | 10 | (높이 − preset 글자 줄) / 2 — 입력값은 글자 줄 사방에 같은 여백 |
+| `control.inset.button` | 8 | 10 | 11 | 14 | (높이 − 버튼 글자 줄) / 2 × `buttonInsetRatio` 1.4, 1px로 반올림 — 라벨이 상자를 정의하므로 더 넓게 |
+| `selection.size` | 14 | 15 | 16 | 18 | 원본 — Checkbox와 Radio의 상자. 컨트롤 높이와 따로 움직입니다 |
+| `control.icon` | 16 | 16 | 18 | 20 | 높이를 따르는 icon 크기 (caption · caption · body · subheading) |
+| `control.gap` | 8 | 8 | 8 | 8 | 아이콘과 라벨 사이, inset sm |
 <!-- /generated:shape-control -->
 
 [contract:foundations.shape.geometry-entry]: #
@@ -136,11 +144,11 @@ Surface의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control`과 값
 
 [contract:foundations.shape.target-table]: #
 
-| 대상 | 식 | sm | md | lg |
-|---|---|---|---|---|
-| `target.selection` | targetReach(`selection.size`) | −4.5 | −4 | −3 |
-| `target.switchBlock` | targetReach(Switch 트랙 높이) | −3.5 | −3 | −2 |
-| `target.action` | targetReach(`control.icon`) | −4 | −3 | −2 |
+| 대상 | 식 | xs | sm | md | lg |
+|---|---|---|---|---|---|
+| `target.selection` | targetReach(`selection.size`) | −5 | −4.5 | −4 | −3 |
+| `target.switchBlock` | targetReach(Switch 트랙 높이) | −4 | −3.5 | −3 | −2 |
+| `target.action` | targetReach(`control.icon`) | −4 | −4 | −3 | −2 |
 
 [contract:foundations.shape.hit-area]: #
 hit area를 갖는 Atom은 Checkbox · Radio · Switch와 Field의 지우기와 보기 버튼입니다. 보이지 않는 `::before`가 표식 밖으로 넓어지고 색을 칠하지 않습니다. Field의 버튼 안 아이콘은 `control.icon` 그대로 그려지고 `::before`가 `target.action`만큼 사방으로 넓어져 24px 정사각이 됩니다. 나란한 두 버튼은 `control.gap` 8을 사이에 두므로 서로의 hit area를 침범하지 않습니다. Checkbox · Radio는 `target.selection`만큼 사방으로, Switch는 `target.switchBlock`만큼 트랙 위아래로 넓어지고 가로는 트랙 폭이 이미 24px 이상이라 그대로입니다. 상자는 테두리를 가져 `::before`가 padding box에서 놓이므로 테두리 한 줄만큼 더 멀리서 시작합니다.

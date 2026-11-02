@@ -373,3 +373,30 @@ describe("locale", () => {
     expect(root.getAttribute("lang")).toBe("ko");
   });
 });
+
+// Last in the file: the server render configures the document's one store and nothing detaches it.
+describe("the sources a Provider is given", () => {
+  it("[install.provider.source-overrides] writes the sources it is given as one rule on the root, follows a change, and takes it away", () => {
+    mockMedia(false);
+    const rules = () => [...document.head.querySelectorAll("style[data-pui-overrides]")].map((style) => style.textContent);
+    const { rerender, unmount } = render(<PaperProvider storageKey={null} shape={{ radius: { control: { md: "10px" } } }} typography={undefined}><span /></PaperProvider>);
+    expect(rules()).toEqual([":root{--pui-shape-radius-control-md:10px}"]);
+    rerender(<PaperProvider storageKey={null} shape={{ radius: { control: { md: "6px" } } }} layout={{ container: { content: "80rem" } }}><span /></PaperProvider>);
+    expect(rules()).toEqual([":root{--pui-shape-radius-control-md:6px;--pui-layout-container-content:80rem}"]);
+    rerender(<PaperProvider storageKey={null}><span /></PaperProvider>);
+    expect(rules()).toEqual([]);
+    rerender(<PaperProvider storageKey={null} shape={{ radius: { control: { md: "4px" } } }}><span /></PaperProvider>);
+    unmount();
+    expect(rules()).toEqual([]);
+  });
+
+  it("[install.provider.source-overrides] lets an inner Provider's rule come later, so it wins", () => {
+    mockMedia(false);
+    render(<PaperProvider storageKey={null} shape={{ radius: { control: { md: "1px" } } }}><PaperProvider storageKey={null} shape={{ radius: { control: { md: "2px" } } }}><span /></PaperProvider></PaperProvider>);
+    expect([...document.head.querySelectorAll("style[data-pui-overrides]")].map((style) => style.textContent)).toEqual([":root{--pui-shape-radius-control-md:1px}", ":root{--pui-shape-radius-control-md:2px}"]);
+  });
+
+  it("[install.provider.source-overrides] draws the same markup on the server and writes nothing there", () => {
+    expect(renderToStaticMarkup(<PaperProvider storageKey={null} shape={{ radius: { control: { md: "10px" } } }}><span>x</span></PaperProvider>)).toBe("<span>x</span>");
+  });
+});

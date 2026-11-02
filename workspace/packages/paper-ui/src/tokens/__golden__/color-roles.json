@@ -45,6 +45,7 @@
     "overlay.scrim": "alpha30.neutral.950 #1111134d",
     "shadow.floating": "alpha10.neutral.950 #1111131a",
     "shadow.lifted": "alpha10.neutral.950 #1111131a",
+    "shadow.resting": "alpha10.neutral.950 #1111131a",
     "marker.fill": "marker #f4ff53",
     "marker.ink": "neutral.950 #111113"
   },
@@ -94,6 +95,7 @@
     "overlay.scrim": "alpha60.neutral.950 #11111399",
     "shadow.floating": "alpha60.neutral.950 #11111399",
     "shadow.lifted": "alpha45.neutral.950 #11111373",
+    "shadow.resting": "alpha15.neutral.0 #ffffff26",
     "marker.fill": "marker #f4ff53",
     "marker.ink": "neutral.950 #111113"
   },

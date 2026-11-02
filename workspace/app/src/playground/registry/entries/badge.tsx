@@ -1,6 +1,6 @@
 import { Badge, type BadgeProps } from "@studio-baeks/paper-ui";
 
-import { boolControl, defineSpec, enumControl, flag, pick, textControl, vocab, words } from "../schema";
+import { boolControl, defineSpec, enumControl, faceProps, flag, pick, textControl, vocab, words } from "../schema";
 
 export default defineSpec({
   name: "Badge",
@@ -8,17 +8,20 @@ export default defineSpec({
   controls: [
     enumControl<BadgeProps, "accent">("accent", vocab("ACCENTS")),
     enumControl<BadgeProps, "variant">("variant", vocab("VARIANTS")),
+    enumControl<BadgeProps, "fill">("fill", vocab("SURFACE_FILLS"), { behaviorOnly: "only hairline, dashed, ghost and muted have a face to choose" }),
+    boolControl<BadgeProps, "shadow">("shadow", false, { behaviorOnly: "only a face casts one: solid, soft, or a fill" }),
     boolControl<BadgeProps, "dot">("dot"),
     enumControl<BadgeProps, "size">("size", vocab("CONTROL_SIZES")),
     enumControl<BadgeProps, "fontSize">("fontSize", vocab("CONTROL_FONT_SIZES")),
     enumControl<BadgeProps, "shape">("shape", vocab("CONTROL_SHAPES")),
     textControl<BadgeProps, "children">("children", "진행"),
   ],
-  defaults: { accent: "primary", variant: "soft", size: "md", shape: "rounded" },
+  defaults: { accent: "primary", variant: "soft", size: "md", shape: "pill" },
   subject: (state) => (
     <Badge
       accent={pick<NonNullable<BadgeProps["accent"]>>(state, "accent")}
       variant={pick<NonNullable<BadgeProps["variant"]>>(state, "variant")}
+      {...faceProps(state)}
       dot={flag(state, "dot")}
       size={pick<NonNullable<BadgeProps["size"]>>(state, "size")}
       fontSize={pick<NonNullable<BadgeProps["fontSize"]>>(state, "fontSize")}

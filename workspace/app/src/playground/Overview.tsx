@@ -59,7 +59,7 @@ const MONO_DEMO: Partial<Record<(typeof TEXT_VARIANTS)[number], string>> = {
 };
 
 // What each rung of the control ladder is called beside its measured height.
-const SIZE_NAMES: Record<ControlSize, string> = { sm: "compact", md: "default", lg: "roomy" };
+const SIZE_NAMES: Record<ControlSize, string> = { xs: "tool", sm: "compact", md: "default", lg: "roomy" };
 
 export const Overview = () => {
   const [checked, setChecked] = useState(true);
@@ -244,7 +244,7 @@ export const Overview = () => {
         </Spec>
         {/* size 정렬 — Field·Select·Button 이 같은 사다리라 나란히 두면 높이가 맞는다 */}
         {CONTROL_SIZES.map((size) => (
-          <Spec key={size} label={`size ${size} — ${SIZE_NAMES[size]} ${px(tokens.shape.control.height[size])}${size === "md" ? ` · radius ${px(tokens.shape.radius.control)}` : ""}`} testid={`spec-size-${size}`}>
+          <Spec key={size} label={`size ${size} — ${SIZE_NAMES[size]} ${px(tokens.shape.control.height[size])} · radius ${px(tokens.shape.radius.control[size])}`} testid={`spec-size-${size}`}>
             <Box width="10rem">
               {size === "sm" ? <Field size={size} defaultValue="11.25" trailing="pt" aria-label={`field ${size}`} /> : <Field size={size} placeholder="Field" aria-label={`field ${size}`} />}
             </Box>
@@ -258,7 +258,7 @@ export const Overview = () => {
             Textarea 는 줄 수만큼 자라 높이로는 줄을 못 세우고, Select 는 화살표 때문에
             오른쪽만 넓다. 왼쪽 여백 하나가 넷을 한 세로선에 세운다. */}
         <Spec
-          label={<>base — radius {px(tokens.shape.radius.control)} · 라벨 padding <Computed value={tokens.shape.control.inset.button.md} /> · 값 padding <Computed value={tokens.shape.control.inset.input.md} /></>}
+          label={<>base — radius {px(tokens.shape.radius.control.md)} · 라벨 padding <Computed value={tokens.shape.control.inset.button.md} /> · 값 padding <Computed value={tokens.shape.control.inset.input.md} /></>}
           testid="spec-control-base"
         >
           <Button variant="hairline" size="md" data-testid="base-button">hairline</Button>
@@ -335,11 +335,11 @@ export const Overview = () => {
         <Spec label="Badge — size (높이만 움직이고 글자는 고정)" testid="spec-badge-size">
           {CONTROL_SIZES.map((size) => <Badge key={size} size={size} accent="info" data-testid={`badge-${size}`}>{size}</Badge>)}
         </Spec>
-        <Spec label="Badge — shape (Button 과 같은 어휘라 나란히 서면 곡선이 맞는다)" testid="spec-badge-shape">
+        <Spec label="Badge — shape (기본은 알약, rounded 는 같은 크기의 버튼과 같은 곡선)" testid="spec-badge-shape">
           <Badge accent="success" data-testid="badge-shape-default">완료</Badge>
-          <Badge accent="success" shape="pill" data-testid="badge-shape-pill">완료</Badge>
-          <Badge accent="error" variant="solid" shape="pill">3</Badge>
-          <Badge accent="info" dot shape="pill">진행</Badge>
+          <Badge accent="error" variant="solid">3</Badge>
+          <Badge accent="info" dot>진행</Badge>
+          <Badge accent="success" shape="rounded" data-testid="badge-shape-rounded">완료</Badge>
         </Spec>
         {/* Divider 는 세로로 세워 표본으로 보인다. 가로 한 줄을 그으면 섹션을 가르는
             선처럼 읽혀, 예제 화면이 줄무늬가 된다 — orientation 과 level 은 상세 페이지에서 전환한다. */}

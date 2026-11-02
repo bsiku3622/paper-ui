@@ -10,13 +10,15 @@ Atom은 같은 축 몇 개로 말합니다. 축의 값은 모두 Foundations에�
 
 | 축 | 값 | 출처 |
 | --- | --- | --- |
-| `size` | sm · md · lg, 기본 md | Shape control 사다리 |
+| `size` | xs · sm · md · lg, 기본 md | Shape control 사다리. xs는 아이콘이 줄지어 서는 도구막대의 자리 |
 | `accent` | primary · info · success · warning · error | Color accent |
-| `variant` | solid · soft · hairline · ghost · muted | Color [accent × variant](../foundations/color.md#accent--variant) |
+| `variant` | solid · soft · hairline · dashed · ghost · muted | Color [accent × variant](../foundations/color.md#accent--variant) |
+| `variant` (입력) | hairline · ghost, 기본 hairline. Field · Textarea · Select가 같은 축을 씀 | Color `border.base` 경계. 상태의 선은 ghost에서도 남음 |
 | `status` (입력) | info · success · warning · error, 생략하면 중립. Field · Textarea · Select가 같은 축을 씀 | Color accent `ink` 경계 |
 | `status` (선택 표식) | error만(`ChoiceStatus`), 생략하면 중립. Checkbox · Radio · Switch가 같은 축을 씀 | Color accent `error.ink` 테 |
-| `fill` (입력) | raised · sunken, 기본 raised. Field · Textarea · Select가 같은 축을 씀 | Color [Surface](../foundations/color.md) 면 — 다크에서 sunken은 canvas와 같은 단계 |
-| `shape` | rounded · pill, 기본 rounded | Shape `radius.control` · `radius.full` |
+| `fill` | raised · canvas · sunken. Button · IconButton · Badge는 hairline · dashed · ghost · muted에서만 받고 안 주면 투명, Field · Textarea · Select는 기본 raised | Color [Surface](../foundations/color.md) 면 — 다크에서 sunken은 canvas와 같은 단계 |
+| `shadow` | boolean. 면이 있을 때만 받음 | Layout [resting 깊이](../foundations/layout.md#elevation--위치와-쌓임과-그림자는-한-단위다) |
+| `shape` | rounded · pill, 기본 rounded. Badge만 기본 pill | Shape `radius.control` · `radius.pill` |
 | `fontSize` | `label` · `caption` · `body` (`CONTROL_FONT_SIZES`) | Typography — 글자 크기만 바꾸는 탈출구. 컨트롤 상자가 담을 수 있는 역할만 받음 |
 
 [contract:atoms.field.neutral-status]: #
@@ -31,17 +33,17 @@ Atom은 같은 축 몇 개로 말합니다. 축의 값은 모두 Foundations에�
 
 | Atom | 고유 축 | 기본값·동작 |
 | --- | --- | --- |
-| Button | as · accent · variant · size · fontSize · shape · selected · loading · loadingLabel · fullWidth | button / primary / solid / md / rounded, type=button. solid는 strong preset, 나머지는 medium. selected는 hairline · ghost · muted에서 aria-pressed와 선택된 면. loading은 spinner·aria-busy, 포커스는 유지하고 누름과 제출만 막음 |
-| IconButton | as · accent · variant · size · shape · disabled · iconSize · 필수 aria-label · 단일 children | 정사각형, 높이가 변. 안의 Icon은 iconSize를 주지 않으면 컨트롤 높이를 따름. loading · fullWidth · fontSize는 없음 |
-| Field | status · size · fill · fontSize · shape · numeric · align · leading / trailing · clearable · clearLabel · showPasswordToggle · showPasswordLabel · onClear | 중립 / md / raised / rounded, type=text. wrapper가 면·높이·상태·포커스를 소유. 지우기와 보기 버튼의 이름은 locale 문구이고 label prop으로 바꿈. 브라우저의 search 취소 ×와 Edge 비밀번호 보기 장치는 Field가 소유해 숨기고, number 증감·date 선택 장치는 브라우저에 남음 |
-| Textarea | status · size · fill · fontSize · rows · native textarea props | 중립 / md / raised, 기본 4줄. rows가 높이를 정하고(최소 높이 없음) 한 줄 = 같은 size Field, 세로 resize. pill 없음 |
-| Select | status · size · fill · fontSize · shape · children · native select props | 중립 / md / raised / rounded. native select와 Option·Group, multiple 없음. 화살표는 trailing Icon. className · style · data-testid는 wrapper |
+| Button | as · accent · variant · fill · shadow · size · fontSize · shape · selected · loading · loadingLabel · fullWidth | button / primary / solid / md / rounded, type=button. solid는 strong preset, 나머지는 medium. selected는 hairline · ghost · muted에서 aria-pressed와 선택된 면. loading은 spinner·aria-busy, 포커스는 유지하고 누름과 제출만 막음 |
+| IconButton | as · accent · variant · fill · shadow · size · shape · disabled · iconSize · 필수 aria-label · 단일 children | 정사각형, 높이가 변. 안의 Icon은 iconSize를 주지 않으면 컨트롤 높이를 따름. loading · fullWidth · fontSize는 없음 |
+| Field | status · size · variant · fill · shadow · fontSize · shape · numeric · align · leading / trailing · clearable · clearLabel · showPasswordToggle · showPasswordLabel · onClear | 중립 / md / hairline / raised / rounded, type=text. wrapper가 면·높이·상태·포커스를 소유. 지우기와 보기 버튼의 이름은 locale 문구이고 label prop으로 바꿈. 브라우저의 search 취소 ×와 Edge 비밀번호 보기 장치는 Field가 소유해 숨기고, number 증감·date 선택 장치는 브라우저에 남음 |
+| Textarea | status · size · variant · fill · shadow · fontSize · rows · native textarea props | 중립 / md / hairline / raised, 기본 4줄. rows가 높이를 정하고(최소 높이 없음) 한 줄 = 같은 size Field, 세로 resize. pill 없음 |
+| Select | status · size · variant · fill · shadow · fontSize · shape · children · native select props | 중립 / md / hairline / raised / rounded. native select와 Option·Group, multiple 없음. 화살표는 trailing Icon. className · style · data-testid는 wrapper |
 | Checkbox | status · size · indeterminate · native input props | md. 상자는 `selection.size`, 체크는 그 절반. 꺼진 경계는 `ink.tertiary` 테이고 `status="error"`면 error 잉크. 24px hit area |
 | Switch | status · size · native input props | md. input type=checkbox + role=switch. 트랙 폭 = 상자의 2배. 꺼진 트랙은 `ink.tertiary` 안쪽 테를 두름. 손잡이는 `inset-inline-start`로 움직여 RTL에서 저절로 뒤집힘 |
 | Radio | status · size · native input props | md. Checkbox와 같은 상자, 점은 상자의 절반. name·선택은 호출자가 조립. 한 묶음의 Radio는 모두 같은 `status`를 줌 |
 | Label | children · ref · native label props | Text의 label 역할 그대로. htmlFor 또는 내부 control로 연결 |
-| Badge | accent · variant · size · fontSize · dot · shape · ref | primary / soft / md / rounded. `Paint as="span"`이고 표시용이라 hover 없음. 높이는 Shape의 배지 사다리, 글자는 크기와 무관하게 고정 |
-| Spinner | size(sm · md · lg · inline) · ink(inherit) · label · decorative | md, label은 locale 문구('불러오는 중' · 'Loading'), role=progressbar. 지름은 컨트롤 아이콘 사다리, inline은 글자만큼. decorative는 aria-hidden |
+| Badge | accent · variant · size · fontSize · dot · shape · ref | primary / soft / md / pill. `Paint as="span"`이고 표시용이라 hover 없음. 높이는 Shape의 배지 사다리, 글자는 크기와 무관하게 고정 |
+| Spinner | size(xs · sm · md · lg · inline) · ink(inherit) · label · decorative | md, label은 locale 문구('불러오는 중' · 'Loading'), role=progressbar. 지름은 컨트롤 아이콘 사다리, inline은 글자만큼. decorative는 aria-hidden |
 | Divider | orientation=horizontal/vertical · level=base/strong · ref · native hr props | horizontal / base. `Box as="hr"` + aria-orientation. 선은 border로 긋고 level은 선의 색(`border.base` · `border.strong`), 두께는 border stroke |
 | Link | as · underline(always · hover) · native anchor props | a, `interaction.link` 잉크, 늘 밑줄(`always`), 단독 링크는 hover 때만(`hover`). 라우터의 Link는 `as`로 받음 |
 | Marker | native 속성 · ref | mark. 칠은 `marker.fill`, 글자는 `marker.ink`이고 글자의 크기와 굵기는 둘러싼 글자를 따름 |
@@ -153,6 +155,9 @@ Field · Textarea · Select는 오류를 하나의 규칙으로 말합니다. [F
 Field의 지우기는 값이 있고 Field를 쓸 수 있을 때만 보이는 버튼이고, 이름은 `clearLabel`(없으면 locale의 '지우기' · 'Clear')입니다. 누르면 native setter와 input 이벤트로 controlled · uncontrolled 양쪽의 `onChange`를 발화하고 `onClear`를 부른 뒤 포커스를 input으로 되돌립니다. 보기 토글은 `type="password"`와 `showPasswordToggle`일 때만 보이며 이름은 늘 같고(`showPasswordLabel`, 없으면 '비밀번호 보기' · 'Show password') 눌림 여부는 `aria-pressed`가 알립니다. Field가 비활성이면(FormField의 disabled 포함) 토글은 그려진 채 비활성이라 반응도 Tab 정지도 없고 지우기는 숨습니다. 두 버튼의 아이콘은 `size`를 주지 않으면 컨트롤 높이를 따르며(leading · trailing 어도먼트 안의 Icon도 같습니다), 보이는 크기와 별도로 최소 target까지 넓은 hit area를 가집니다(WCAG 2.5.8) — 나란한 두 버튼의 hit area는 겹치지 않습니다. 지우기(검색창의 ×)와 비밀번호 보기는 Field가 소유하므로 브라우저가 같은 일로 입력 안에 그리는 장치(search 취소 ×, Edge 보기)는 숨깁니다. number의 증감과 date의 선택 장치는 브라우저에 남습니다.
 
 [contract:atoms.textarea.rows]: #
+[contract:atoms.input.face]: #
+Field · Textarea · Select의 틀은 `variant`(hairline · ghost)로 선을, `fill`(raised · canvas · sunken)로 면을 고르고, 기본은 실선과 raised입니다. 글자를 넣는 칸이라 면이 늘 있으므로 `shadow`를 언제든 받습니다. `ghost`도 상태의 선은 그립니다.
+
 Textarea의 높이는 `rows`(기본 4)가 정하고 최소 높이는 없습니다. 한 줄(`rows={1}`)은 같은 size의 Field와 같은 높이이고, 기본 4줄은 sm 90 · md 92 · lg 96입니다. 면은 Field와 같은 `fill`(raised 기본, sunken)이 고르며, 틀은 Field · Select와 같은 `inputFrame`이라 Field의 stylesheet에는 기대지 않습니다.
 
 [contract:atoms.mark.roles]: #

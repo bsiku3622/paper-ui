@@ -112,7 +112,7 @@ export const FONT_STYLESHEETS = {
 //
 // Typography의 preset과 Shape의 geometry가 이 같은 축을 읽는다.
 
-export const CONTROL_SIZES = ["sm", "md", "lg"] as const;
+export const CONTROL_SIZES = ["xs", "sm", "md", "lg"] as const;
 export type ControlSize = (typeof CONTROL_SIZES)[number];
 
 // ───── Role · Preset — Palette 값을 고르는 명세 ────────────────────────────
@@ -153,16 +153,19 @@ export const LINK_UNDERLINES = ["always", "hover"] as const;
 export type LinkUnderline = (typeof LINK_UNDERLINES)[number];
 
 const BUTTON_MEDIUM = {
+  xs: { size: "12", weight: "medium", leading: "16", tracking: "normal" },
   sm: { size: "13", weight: "medium", leading: "16", tracking: "normal" },
   md: { size: "13", weight: "medium", leading: "16", tracking: "normal" },
   lg: { size: "14", weight: "medium", leading: "16", tracking: "normal" },
 } as const satisfies Record<ControlSize, StyleKeys>;
 const BUTTON_STRONG = {
+  xs: { ...BUTTON_MEDIUM.xs, weight: "strong" },
   sm: { ...BUTTON_MEDIUM.sm, weight: "strong" },
   md: { ...BUTTON_MEDIUM.md, weight: "strong" },
   lg: { ...BUTTON_MEDIUM.lg, weight: "strong" },
 } as const satisfies Record<ControlSize, StyleKeys>;
 const FIELD_FONT = {
+  xs: { size: "12", weight: "normal", leading: "16", tracking: "normal" },
   sm: { size: "13", weight: "normal", leading: "16", tracking: "normal" },
   md: { size: "13", weight: "normal", leading: "16", tracking: "normal" },
   lg: { size: "14", weight: "normal", leading: "16", tracking: "normal" },
@@ -170,11 +173,13 @@ const FIELD_FONT = {
 // leading 16 은 글자 한 줄이고 Shape 의 안쪽 여백이 읽는 값이다. inputLeading 은 입력값이 앉는 줄상자 —
 // caret 과 한글 fallback glyph 가 눌리지 않을 만큼 높다.
 const FIELD_CONTROL = {
+  xs: { ...FIELD_FONT.xs, inputLeading: "20" },
   sm: { ...FIELD_FONT.sm, inputLeading: "20" },
   md: { ...FIELD_FONT.md, inputLeading: "20" },
   lg: { ...FIELD_FONT.lg, inputLeading: "20" },
 } as const satisfies Record<ControlSize, StyleKeys & { inputLeading: keyof typeof TYPOGRAPHY_SOURCE.leading }>;
 const TEXTAREA_CONTROL = {
+  xs: { ...FIELD_FONT.xs, leading: "20" },
   sm: { ...FIELD_FONT.sm, leading: "20" },
   md: { ...FIELD_FONT.md, leading: "20" },
   lg: { ...FIELD_FONT.lg, leading: "20" },

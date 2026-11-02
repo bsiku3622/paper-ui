@@ -50,6 +50,14 @@
     },
     "shadow": {
       "light": {
+        "resting": [
+          [
+            0,
+            4,
+            16,
+            0
+          ]
+        ],
         "lifted": [
           [
             0,
@@ -74,6 +82,14 @@
         ]
       },
       "dark": {
+        "resting": [
+          [
+            0,
+            0,
+            0,
+            1
+          ]
+        ],
         "lifted": [
           [
             0,
@@ -111,6 +127,9 @@
   },
   "shadow": {
     "light": {
+      "resting": {
+        "0": "0px 4px 16px 0px"
+      },
       "lifted": {
         "0": "0px 1px 3px 0px"
       },
@@ -120,6 +139,9 @@
       }
     },
     "dark": {
+      "resting": {
+        "0": "0px 0px 0px 1px"
+      },
       "lifted": {
         "0": "0px 1px 2px 0px"
       },

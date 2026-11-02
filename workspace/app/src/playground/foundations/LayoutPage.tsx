@@ -1,4 +1,4 @@
-import { Text, elevation, useResolvedTheme } from "@studio-baeks/paper-ui";
+import { Surface, Text, elevation, useResolvedTheme } from "@studio-baeks/paper-ui";
 import { tokens, BREAKPOINTS, ELEVATIONS, SPACES, type Depth, type Elevation } from "@studio-baeks/paper-ui/tokens";
 import { ELEVATION_NEST_LIMIT, LAYOUT, LAYOUT_SOURCE } from "@paper-ui/inspect/layout";
 
@@ -14,7 +14,7 @@ const { section } = LAYOUT_SOURCE;
 const { tier, nudge } = LAYOUT_SOURCE.elevation;
 const tierSpan = tier.sticky.z - tier.lifted.z;
 
-// The levels that cast a given depth of shadow, in elevation order; the first one stands for the depth.
+// The levels that cast a given depth of shadow, in elevation order; the first one stands for the depth. Resting has none.
 const levelsOf = (depth: Depth) => ELEVATIONS.filter((level) => tier[level].depth === depth);
 
 const ELEVATION_USE: Record<Elevation, string> = {
@@ -30,6 +30,12 @@ const ELEVATION_USE: Record<Elevation, string> = {
 const ElevationCard = ({ level }: { level: Elevation }) => (
   <div className={s.elevationStage}>
     <div className={`${s.elevationCard} ${elevation[level]}`}><Text variant="caption" ink="secondary">{level}</Text></div>
+  </div>
+);
+
+const RestingCard = () => (
+  <div className={s.elevationStage}>
+    <Surface fill="raised" shadow className={s.elevationCard}><Text variant="caption" ink="secondary">resting</Text></Surface>
   </div>
 );
 
@@ -82,13 +88,16 @@ export const LayoutPage = () => {
             </BoardRow>
           </BoardGroup>
           <BoardGroup label={`Shadow geometry — x y blur spread (px), 지금 테마(${theme})의 기하 · 색은 Color의 shadow 색`}>
-            {(Object.keys(LAYOUT_SOURCE.shadow[theme]) as Depth[]).map((depth) => (
-              <BoardRow key={depth}>
-                <TokenCell name={`layout.shadow.${depth}`} note={`${levelsOf(depth).join(" · ")} tier`} />
-                <ElevationCard level={levelsOf(depth)[0]!} />
-                <ValueCell>{geometry(LAYOUT_SOURCE.shadow[theme][depth])}</ValueCell>
-              </BoardRow>
-            ))}
+            {(Object.keys(LAYOUT_SOURCE.shadow[theme]) as Depth[]).map((depth) => {
+              const [level] = levelsOf(depth);
+              return (
+                <BoardRow key={depth}>
+                  <TokenCell name={`layout.shadow.${depth}`} note={level ? `${levelsOf(depth).join(" · ")} tier` : "tier 없음 · shadow prop"} />
+                  {level ? <ElevationCard level={level} /> : <RestingCard />}
+                  <ValueCell>{geometry(LAYOUT_SOURCE.shadow[theme][depth])}</ValueCell>
+                </BoardRow>
+              );
+            })}
           </BoardGroup>
         </Board>
       </FoundationSection>

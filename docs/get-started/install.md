@@ -124,7 +124,7 @@ export const dense = style({
 });
 ```
 
-경로는 `shape` · `layout` · `typography` 원본에서 시작하고, 역할의 경로는 타입이 막고 모르는 경로는 실행 때 던집니다. 결과는 React의 `style`에도 그대로 들어갑니다. 그 영역에서 연 Floating의 panel도 덮어쓴 원본을 따라갑니다. 색 역할은 이 길로 덮어쓰지 않습니다 — 색은 테마 스코프가 정합니다([테마](theming.md)).
+경로는 `shape` · `layout` · `typography` 원본에서 시작하고, 역할의 경로는 타입이 막고 모르는 경로는 실행 때 던집니다. 결과는 React의 `style`에도 그대로 들어갑니다. 그 영역에서 연 Floating의 panel도 덮어쓴 원본을 따라갑니다. 색 역할은 이 길로 덮어쓰지 않습니다 — 색은 테마 스코프가 정하고([테마](theming.md)), 문서 전체의 색은 Provider의 `color`로 바꿉니다.
 
 [contract:install.overrides.ground-roles]: #
 포커스 링 색(`--pui-color-interaction-focus`), 그림자 색(`--pui-color-shadow-*`), 그림자 기하(`--pui-layout-shadow-*`)는 지면 역할이라 패키지가 테마 스코프의 자식마다 다시 선언합니다(`[data-pui-theme=…] > *`). 그래서 바꾸려면 그 자식까지 닿는 규칙을 써야 합니다. `:root`에만 쓰면 `<html>`에 모드가 있는 페이지(Provider나 부팅 스크립트를 쓰는 페이지)에서는 `<body>`가 다시 선언해 링에도 그림자에도 닿지 않습니다. `<html>`에 모드가 없는 페이지와 `<body>`, 영역의 wrapper에 쓴 규칙은 그 아래의 페이지에는 닿지만 테마 Surface의 자식과 Floating의 panel에는 닿지 않습니다. 모두에 닿는 규칙은 아래 하나이고, 레이어 밖에 두면 특정도와 상관없이 패키지의 선언을 이깁니다.
@@ -174,8 +174,39 @@ export const App = () => (
 [contract:install.provider.settings]: #
 `PaperProvider`가 고르는 설정은 테마, 언어(`locale`), 문구(`messages`)입니다. `defaultTheme`으로 `light`·`dark`·`system`(기본) 중 하나를 주고, `system`이면 OS 설정(`prefers-color-scheme`)을 따라갑니다. 사용자가 고른 값은 localStorage의 `storageKey`(기본 `pui-theme`)에 남아 다음 방문에 이깁니다. 첫 화면 전에 적용하는 부팅 스크립트와 저장 규칙은 [Theming](theming.md)에 있습니다. `locale`은 Atom이 스스로 말하는 문구의 언어를 정하고, 줄 때만 `<html lang>`과 `<html dir>`에 씁니다. 주지 않으면 `<html lang>`을 읽을 뿐 `<html>`을 건드리지 않습니다([테마와 언어](../primitives/README.md#테마와-언어)).
 
+[contract:install.provider.source-overrides]: #
+문서 전체의 값은 `PaperProvider`에서 바꿉니다. 그 위에 지은 역할이 모두 따라오고, 안쪽 Provider의 값이 바깥 값을 이깁니다. 페이지가 뜬 뒤에 쓰이므로, 서버에서 그리는 앱은 같은 값을 스타일시트에 둡니다.
+
+| prop | 바꾸는 것 | 경로 |
+| --- | --- | --- |
+| `shape` · `layout` · `typography` | 원본 | `sourceVars()`와 같습니다 |
+| `color` | 모드별 색 역할 | `tokens.color`의 경로를 `light` · `dark` 아래에 |
+| `palette` | 팔레트 단계. 그 단계를 고른 역할이 모두 따라옵니다. 값은 HEX 여섯 자리입니다 | `neutral` · `blue` · `green` · `amber` · `red` 아래의 단계와 `marker` |
+| `shadow` | 모드별 그림자 기하 | 깊이와 겹을 `light` · `dark` 아래에 |
+| `opacity` | 불투명도 역할 | `disabled` · `subdued` |
+
+움직임과 글자 역할 하나는 변수가 없어 받지 않습니다. 글자는 `typography`의 원본으로 바꿉니다. 모르는 경로는 타입이 막고 실행 때 던집니다.
+
+```tsx
+import { PaperProvider } from "@studio-baeks/paper-ui";
+
+export const App = () => (
+  <PaperProvider
+    shape={{ radius: { control: { md: "10px" } }, control: { height: { md: "40px" } } }}
+    color={{ light: { bg: { canvas: "#f3f3f5" } }, dark: { bg: { canvas: "#0c0c0e" } } }}
+    palette={{ blue: { "600": "#2f6bff" } }}
+    shadow={{ light: { resting: { "0": "0px 2px 8px 0px" } } }}
+  >
+    …
+  </PaperProvider>
+);
+```
+
+[contract:install.provider.color-overrides]: #
+색은 역할 하나, 팔레트 단계 하나씩 바꿉니다. 모드의 역할은 스타일시트가 선언하는 자리에 쓰이므로 테마 Surface와 Floating의 panel에도 닿습니다. 알파 역할은 원래 세기를 지킨 채 팔레트 단계를 따르고, `color`에 적은 역할이 팔레트보다 이깁니다.
+
 [contract:install.provider.no-primary-color]: #
-브랜드 색을 고르는 설정은 없습니다. 이 시스템엔 `primaryColor`가 없습니다 — 정체성이 색이 아니라 순백·검정·여백에서 나오기 때문입니다. 자세한 이유는 [원칙](philosophy.md)에 있습니다.
+색 하나로 화면 전체를 물들이는 설정은 없습니다. 이 시스템엔 `primaryColor`가 없습니다 — 정체성이 색이 아니라 순백·검정·여백에서 나오기 때문입니다. 자세한 이유는 [원칙](philosophy.md)에 있습니다.
 
 ## 테마 토글
 

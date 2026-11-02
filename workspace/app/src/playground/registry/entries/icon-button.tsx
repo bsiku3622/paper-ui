@@ -1,7 +1,7 @@
 import { IconButton, type IconButtonProps } from "@studio-baeks/paper-ui";
 
 import { glyph } from "../demo";
-import { boolControl, defineSpec, enumControl, flag, pick, vocab } from "../schema";
+import { boolControl, defineSpec, enumControl, faceProps, flag, pick, vocab } from "../schema";
 
 export default defineSpec({
   name: "IconButton",
@@ -9,6 +9,8 @@ export default defineSpec({
   controls: [
     enumControl<IconButtonProps, "accent">("accent", vocab("ACCENTS")),
     enumControl<IconButtonProps, "variant">("variant", vocab("VARIANTS")),
+    enumControl<IconButtonProps, "fill">("fill", vocab("SURFACE_FILLS"), { behaviorOnly: "only hairline, dashed, ghost and muted have a face to choose" }),
+    boolControl<IconButtonProps, "shadow">("shadow", false, { behaviorOnly: "only a face casts one: solid, soft, or a fill" }),
     enumControl<IconButtonProps, "size">("size", vocab("CONTROL_SIZES")),
     enumControl<IconButtonProps, "shape">("shape", vocab("CONTROL_SHAPES")),
     enumControl<IconButtonProps, "iconSize">("iconSize", vocab("ICON_SIZES"), { omitted: "auto", derived: "the omitted size is the control's own icon size, body at md, so naming it there changes nothing" }),
@@ -19,6 +21,7 @@ export default defineSpec({
     <IconButton
       accent={pick<NonNullable<IconButtonProps["accent"]>>(state, "accent")}
       variant={pick<NonNullable<IconButtonProps["variant"]>>(state, "variant")}
+      {...faceProps(state)}
       size={pick<NonNullable<IconButtonProps["size"]>>(state, "size")}
       shape={pick<NonNullable<IconButtonProps["shape"]>>(state, "shape")}
       iconSize={pick<NonNullable<IconButtonProps["iconSize"]>>(state, "iconSize")}

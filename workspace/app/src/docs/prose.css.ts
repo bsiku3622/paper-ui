@@ -33,7 +33,7 @@ globalStyle(`${prose} code`, {
   ...codeRule("inline"),
   background: tokens.color.bg.sunken,
   paddingInline: tokens.shape.inset.xs,
-  borderRadius: tokens.shape.radius.control,
+  borderRadius: tokens.shape.radius.text,
 });
 globalStyle(`${prose} pre`, {
   background: tokens.color.bg.sunken,

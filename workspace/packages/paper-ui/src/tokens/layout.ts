@@ -46,9 +46,9 @@ export const LAYOUT_SOURCE = {
   },
   // Shadow geometry per mode. Dark surfaces need tighter, negatively spread layers.
   shadow: {
-    light: { lifted: [[0, 1, 3, 0]], floating: [[0, 8, 24, 0], [0, 2, 6, 0]] },
-    dark: { lifted: [[0, 1, 2, 0]], floating: [[0, 8, 22, -5], [0, 3, 7, -2]] },
-  } satisfies Record<ColorMode, { lifted: readonly [ShadowLayer]; floating: readonly [ShadowLayer, ShadowLayer] }>,
+    light: { resting: [[0, 4, 16, 0]], lifted: [[0, 1, 3, 0]], floating: [[0, 8, 24, 0], [0, 2, 6, 0]] },
+    dark: { resting: [[0, 0, 0, 1]], lifted: [[0, 1, 2, 0]], floating: [[0, 8, 22, -5], [0, 3, 7, -2]] },
+  } satisfies Record<ColorMode, { resting: readonly [ShadowLayer]; lifted: readonly [ShadowLayer]; floating: readonly [ShadowLayer, ShadowLayer] }>,
 } as const;
 
 export const BREAKPOINTS = keys(LAYOUT_SOURCE.breakpoint);
@@ -89,8 +89,8 @@ const geometry = <const Layers extends readonly ShadowLayer[]>(layers: Layers) =
   Object.fromEntries(layers.map((layer, index) => [String(index), layer.map(px).join(" ")])) as Geometry<Layers>;
 
 export const LAYOUT_MODE_VALUES = Object.fromEntries(COLOR_MODES.map((mode) => [mode, {
-  shadow: { lifted: geometry(LAYOUT_SOURCE.shadow[mode].lifted), floating: geometry(LAYOUT_SOURCE.shadow[mode].floating) },
-}])) as Record<ColorMode, { shadow: { lifted: Geometry<readonly [ShadowLayer]>; floating: Geometry<readonly [ShadowLayer, ShadowLayer]> } }>;
+  shadow: { resting: geometry(LAYOUT_SOURCE.shadow[mode].resting), lifted: geometry(LAYOUT_SOURCE.shadow[mode].lifted), floating: geometry(LAYOUT_SOURCE.shadow[mode].floating) },
+}])) as Record<ColorMode, { shadow: { resting: Geometry<readonly [ShadowLayer]>; lifted: Geometry<readonly [ShadowLayer]>; floating: Geometry<readonly [ShadowLayer, ShadowLayer]> } }>;
 
 // A depth's shadow, assembled on the element that casts it: each layer's geometry beside the shadow
 // colour, both read where the element stands. No variable holds the result, so a scope that swaps the

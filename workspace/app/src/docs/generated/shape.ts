@@ -14,10 +14,12 @@ const entries = (record: Record<string, number | string>) => Object.entries(reco
 const inset = (kind: "input" | "button", size: (typeof SIZES)[number]) => String(resolveRole(tokens.shape.control.inset[kind][size]));
 
 const radiusRows = (): string[][] => [
-  ["`radius.control`", String(S.radius.control), "Button · Field · Select · Textarea · Badge, 포커스 링"],
+  ["`radius.control.xs / sm / md / lg`", SIZES.map((size) => S.radius.control[size]).join(" / "), "Button · IconButton · Field · Select · Textarea, `shape=\"rounded\"`인 Badge"],
   ["`radius.selection`", String(S.radius.selection), "Checkbox"],
   ["`radius.surface.sm / md / lg`", `${S.radius.surface.sm} / ${S.radius.surface.md} / ${S.radius.surface.lg}`, "Surface의 `radius` prop"],
-  ["`radius.full`", `${S.radius.full}px`, "알약, 원(Radio · Switch · Spinner)"],
+  ["`radius.text`", String(S.radius.text), "글자 줄 곁에 서는 것 — Link의 링"],
+  ["`radius.pill`", `${S.radius.pill}px`, "알약 — Badge의 기본, `shape=\"pill\"`"],
+  ["`radius.full`", `${S.radius.full}px`, "원(Radio · Switch · Spinner), Surface의 `radius=\"full\"`"],
 ];
 
 const controlRows = (): string[][] => [

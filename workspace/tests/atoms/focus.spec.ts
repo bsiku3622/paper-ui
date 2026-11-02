@@ -7,13 +7,13 @@ import { expectStyle } from "../support/style";
 
 // Each ring owner of the Button family, with the corner its ring follows.
 const OWNERS = [
-  ["solid", tokens.shape.radius.control],
-  ["hairline", tokens.shape.radius.control],
-  ["link-button", tokens.shape.radius.control],
-  ["pill", tokens.shape.radius.full],
-  ["icon-button", tokens.shape.radius.control],
-  ["pill-icon-button", tokens.shape.radius.full],
-  ["link", tokens.shape.radius.control],
+  ["solid", tokens.shape.radius.control.md],
+  ["hairline", tokens.shape.radius.control.md],
+  ["link-button", tokens.shape.radius.control.md],
+  ["pill", tokens.shape.radius.pill],
+  ["icon-button", tokens.shape.radius.control.md],
+  ["pill-icon-button", tokens.shape.radius.pill],
+  ["link", tokens.shape.radius.text],
 ] as const;
 
 const ringOf = {
@@ -69,9 +69,9 @@ test("[atoms.states.ring-channel] the ring stands outside the state chain: a sel
 
 // The input family: Field and Select draw the ring on their wrapper, Textarea on itself; the control the keyboard lands on is the native one.
 const INPUTS = [
-  ["Field", "field", tokens.shape.radius.control],
-  ["Textarea", "textarea", tokens.shape.radius.control],
-  ["Select", "select", tokens.shape.radius.control],
+  ["Field", "field", tokens.shape.radius.control.md],
+  ["Textarea", "textarea", tokens.shape.radius.control.md],
+  ["Select", "select", tokens.shape.radius.control.md],
 ] as const;
 
 for (const [label, id, corner] of INPUTS) {
@@ -135,7 +135,7 @@ test("[atoms.focus.ring] keyboard focus returning to a Field's input from its ow
   await tab(page);
   await expect(clear).toBeFocused();
   await expect(clear).toHaveAttribute("data-focus-visible", "true");
-  await expectStyle(clear, { ...ringOf, borderTopLeftRadius: tokens.shape.radius.control });
+  await expectStyle(clear, { ...ringOf, borderTopLeftRadius: tokens.shape.radius.control.xs });
   await expect(frame).not.toHaveAttribute("data-focus-visible", /.*/);
   await tab(page);
   await expect(reveal).toBeFocused();

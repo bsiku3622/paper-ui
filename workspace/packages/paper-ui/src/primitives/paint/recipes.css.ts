@@ -13,6 +13,10 @@ export const scrimPaint = style({ background: tokens.color.overlay.scrim });
 // border rising under a pointer. The face is the frame's Surface fill, so it is not set here.
 export const fieldPaint = style([stateStyle.field, { color: outlinedControlProfile.ink, borderColor: outlinedControlProfile.border }]);
 
+// A frame with no line at rest. A status still draws its own, because a colour on the edge is what says it. Doubled, so it
+// also holds against the hover border, which is in a media query of the same layer.
+export const fieldLinelessPaint = style({ selectors: { [`&&:not([${VALUE_ATTRIBUTE.status}])`]: { borderColor: "transparent" } } });
+
 // What stands inside an input frame: the placeholder is quiet, an adornment is secondary, and an action rests tertiary and
 // rises to primary under a pointer that can hover. A Select shows its empty choice as a placeholder, and its arrow follows.
 export const fieldPlaceholderPaint = style({ selectors: { "&::placeholder": { color: tokens.color.ink.tertiary } } });

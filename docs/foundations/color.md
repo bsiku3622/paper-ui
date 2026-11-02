@@ -75,7 +75,7 @@ Palette Token은 내부 이름입니다. 컴포넌트와 앱은 import하지 않
 | `interaction.focus` | blue.600 | blue.400 |
 | `interaction.link` | blue.700 | blue.300 |
 | `overlay.scrim` | alpha30.neutral.950 | alpha60.neutral.950 |
-| `shadow.floating` · `lifted` | alpha10.neutral.950 · alpha10.neutral.950 | alpha60.neutral.950 · alpha45.neutral.950 |
+| `shadow.floating` · `lifted` · `resting` | alpha10.neutral.950 · alpha10.neutral.950 · alpha10.neutral.950 | alpha60.neutral.950 · alpha45.neutral.950 · alpha15.neutral.0 |
 | `marker.fill` | marker | marker |
 | `marker.ink` | neutral.950 | neutral.950 |
 <!-- /generated:color-roles -->
@@ -188,13 +188,17 @@ Atom은 색을 직접 고르지 않고 `accent`와 `variant` 두 축을 말합�
 |---|---|---|---|---|
 | `solid` | `solid` | `wash` | `bgHover.onPrimarySolid`(primary) 또는 `onAccentSolid` tint | 없음 |
 | `soft` | `soft` | `ink` | `bgHover.onSurface` tint | 없음 |
-| `hairline` | `bg.raised` + `border.base` | `ink`(primary는 `ink.primary`) | `border.hover` | 그 accent의 `soft` 면, 경계는 투명 |
-| `ghost` | 투명 | `ink` | `bgHover.onSurface` tint | 그 accent의 `soft` 면 |
-| `muted` | 투명 | `subtle` | `bgHover.onSurface` tint | 그 accent의 `soft` 면, 글자는 `ink` |
+| `hairline` | `fill` + `border.base` 실선 | `ink` | `border.hover` | 그 accent의 `soft` 면, 경계는 투명 |
+| `dashed` | `fill` + `border.base` 점선 | `subtle` | `border.hover` | 없음 |
+| `ghost` | `fill` | `ink` | `bgHover.onSurface` tint | 그 accent의 `soft` 면 |
+| `muted` | `fill` | `subtle` | `bgHover.onSurface` tint | 그 accent의 `soft` 면, 글자는 `ink` |
 
-선택된 상태를 soft 면으로 알릴 수 있는 variant는 `SELECTABLE_VARIANTS`(`hairline` · `ghost` · `muted`)입니다. 면이 없거나 옅어서 선택된 모습이 따로 필요한 variant들이고, `solid`와 `soft`는 이미 면이 있어 selected가 없습니다. 선택은 `data-selected`나 `aria-current`가 알리고 `Paint`의 `selected`가 `data-selected`를 답니다. 선택된 면 위의 hover는 경계를 올리지 않고 tint만 얹습니다. tint는 면(`backgroundColor`)을 바꾸지 않고 면 위에 깔린 한 겹 `--pui-state-tint`를 옮기는 것이라, 전이가 면 위에서 합성됩니다([상태와 피드백](../atoms/states.md#tint와-색-profile)).
+[contract:foundations.color.variant-fill]: #
+`solid`와 `soft`만 면을 스스로 칠합니다. 나머지 넷(`FILLABLE_VARIANTS`)은 선과 글자만 정하고, 면은 `fill`이 Surface와 같은 사다리(raised · canvas · sunken)에서 고르며, 안 주면 놓인 곳이 비칩니다. 입력의 틀은 `hairline`과 `ghost`(`INPUT_VARIANTS`)만 받고, 글자를 넣는 칸이라 `fill` 기본값이 raised입니다.
 
-각 variant의 글자는 자기 면 위에서(면이 투명한 variant는 세 지면 위에서) 두 테마 모두 4.5:1 이상이고, hover tint를 얹어도 같습니다. 예외는 [Accent](#accent)에 적은 둘뿐입니다.
+선택된 상태를 soft 면으로 알릴 수 있는 variant는 `SELECTABLE_VARIANTS`(`hairline` · `ghost` · `muted`)입니다. 면이 없거나 옅어서 선택된 모습이 따로 필요한 variant들이고, `solid`와 `soft`는 이미 면이 있어, `dashed`는 넣을 자리를 말하는 표시라 selected가 없습니다. 선택은 `data-selected`나 `aria-current`가 알리고 `Paint`의 `selected`가 `data-selected`를 답니다. 선택된 면 위의 hover는 경계를 올리지 않고 tint만 얹습니다. tint는 면(`backgroundColor`)을 바꾸지 않고 면 위에 깔린 한 겹 `--pui-state-tint`를 옮기는 것이라, 전이가 면 위에서 합성됩니다([상태와 피드백](../atoms/states.md#tint와-색-profile)).
+
+각 variant의 글자는 자기 면 위에서(`fill`로 면을 고르는 variant는 세 지면 위에서) 두 테마 모두 4.5:1 이상이고, hover tint를 얹어도 같습니다. 예외는 [Accent](#accent)에 적은 둘뿐입니다.
 
 [contract:foundations.color.variant-solid]: #
 `solid`의 `wash` 글자는 `solid` 면 위에서 4.5:1 이상입니다. 예외는 light `warning`의 solid 하나입니다.
@@ -203,10 +207,13 @@ Atom은 색을 직접 고르지 않고 `accent`와 `variant` 두 축을 말합�
 `soft`의 `ink` 글자는 `soft` 면 위에서 4.5:1 이상입니다.
 
 [contract:foundations.color.variant-hairline]: #
-`hairline`의 글자는 `bg.raised` 위에서 4.5:1 이상입니다. hover는 tint가 아니라 경계라 글자 대비는 그대로입니다.
+`hairline`의 글자는 세 지면 어디서나 4.5:1 이상입니다. hover는 tint가 아니라 경계라 글자 대비는 그대로입니다.
+
+[contract:foundations.color.variant-dashed]: #
+`dashed`의 `subtle` 글자는 세 지면 어디서나 4.5:1 이상입니다. hover는 `hairline`처럼 경계라 글자 대비는 그대로입니다.
 
 [contract:foundations.color.variant-ghost]: #
-`ghost`의 `ink` 글자는 면이 투명하므로 세 지면 어디서나 4.5:1 이상이고, hover tint를 지면에 얹어도 같습니다.
+`ghost`의 `ink` 글자는 세 지면 어디서나 4.5:1 이상이고, hover tint를 지면에 얹어도 같습니다.
 
 [contract:foundations.color.variant-muted]: #
 `muted`의 `subtle` 글자는 세 지면 어디서나 4.5:1 이상이고, hover tint를 얹어도 같습니다. 예외는 다크 `error`의 raised 위 hover 하나입니다.

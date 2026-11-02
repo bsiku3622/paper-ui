@@ -5,7 +5,7 @@ import { paintClass } from "../primitives/paint/Paint";
 import { accentVariantClass } from "../styles/color.css";
 import { COLOR_MODES, type ColorMode } from "./color-modes";
 import { ACCENTS, COLOR_VALUES_BY_MODE, STATUSES, STATUS_EXCEPTIONS, SYSTEM_COLORS } from "./colors";
-import { SELECTABLE_VARIANTS, VARIANTS, VARIANT_RECIPE, accentProfile, itemProfile, markForcedProfile, markProfile, outlinedControlProfile, type Variant } from "./color-recipes";
+import { FILLABLE_VARIANTS, INPUT_VARIANTS, SELECTABLE_VARIANTS, VARIANTS, VARIANT_RECIPE, accentProfile, itemProfile, markForcedProfile, markProfile, outlinedControlProfile, type Variant } from "./color-recipes";
 import { pathToCssVar, walkValues } from "./helpers";
 import { tokens } from "./index";
 
@@ -25,7 +25,7 @@ describe("accent profile", () => {
     for (const accent of ACCENTS) {
       for (const variant of VARIANTS) {
         const keys = Object.keys(accentProfile(accent, variant)).sort();
-        expect(keys, `${accent} ${variant}`).toEqual((SELECTABLE_VARIANTS as readonly string[]).includes(variant) ? ["border", "face", "hover", "ink", "selected"] : ["border", "face", "hover", "ink"]);
+        expect(keys, `${accent} ${variant}`).toEqual((SELECTABLE_VARIANTS as readonly string[]).includes(variant) ? ["border", "borderStyle", "face", "hover", "ink", "selected"] : ["border", "borderStyle", "face", "hover", "ink"]);
       }
     }
   });
@@ -54,13 +54,25 @@ describe("muted color profile", () => {
     }
   });
 
-  it("[foundations.color.profile-shape] uses the shared form surface and neutral border for every hairline accent", () => {
+  it("[foundations.color.profile-shape] draws the neutral line over no face of its own for every hairline accent", () => {
     for (const accent of ACCENTS) {
       const profile = accentProfile(accent, "hairline");
-      expect(profile.face).toBe(tokens.color.bg.raised);
+      expect(profile.face).toBe("transparent");
       expect(profile.border).toBe(tokens.color.border.base);
+      expect(profile.borderStyle).toBe("solid");
       expect(profile.hover).toEqual({ border: tokens.color.border.hover });
-      expect(profile.ink).toBe(accent === "primary" ? tokens.color.ink.primary : tokens.color.accent[accent].ink);
+      expect(profile.ink).toBe(tokens.color.accent[accent].ink);
+    }
+  });
+
+  it("[foundations.color.profile-shape] dashes the same line for every dashed accent, with the quiet ink", () => {
+    for (const accent of ACCENTS) {
+      const profile = accentProfile(accent, "dashed");
+      expect(profile.face).toBe("transparent");
+      expect(profile.border).toBe(tokens.color.border.base);
+      expect(profile.borderStyle).toBe("dashed");
+      expect(profile.hover).toEqual({ border: tokens.color.border.hover });
+      expect(profile.ink).toBe(tokens.color.accent[accent].subtle);
     }
   });
 });
@@ -72,14 +84,20 @@ describe("variant recipe", () => {
       for (const variant of VARIANTS) {
         const recipe = VARIANT_RECIPE[variant];
         const profile = accentProfile(accent, variant);
-        const face = recipe.face === "none" ? "transparent" : recipe.face === "raised" ? color.bg.raised : color.accent[accent][recipe.face];
+        const face = recipe.face === "none" ? "transparent" : color.accent[accent][recipe.face];
         expect(profile.face, `${accent} ${variant} face`).toBe(face);
-        const ink = recipe.face === "raised" && accent === "primary" ? color.ink.primary : color.accent[accent][recipe.ink];
-        expect(profile.ink, `${accent} ${variant} ink`).toBe(ink);
+        expect(profile.ink, `${accent} ${variant} ink`).toBe(color.accent[accent][recipe.ink]);
+        expect(profile.borderStyle, `${accent} ${variant} line`).toBe(recipe.border === "dashed" ? "dashed" : "solid");
         expect(profile.border, `${accent} ${variant} border`).toBe(recipe.border === "none" ? "transparent" : color.border.base);
         expect(recipe.hover === "border" ? "border" in profile.hover : "tint" in profile.hover, `${accent} ${variant} hover`).toBe(true);
       }
     }
+  });
+
+  it("[foundations.color.variant-fill] leaves the face to fill exactly where the recipe has none, and gives an input the lines it can draw", () => {
+    expect(FILLABLE_VARIANTS).toEqual(VARIANTS.filter((variant) => VARIANT_RECIPE[variant].face === "none"));
+    expect(FILLABLE_VARIANTS).toEqual(["hairline", "dashed", "ghost", "muted"]);
+    expect(INPUT_VARIANTS).toEqual(["hairline", "ghost"]);
   });
 
   it("[foundations.color.profile-shape] tints a solid face with the tint that reads against its own colour", () => {
@@ -199,12 +217,13 @@ const holds = (variant: Variant) => {
 describe("the variants read in both themes, at rest and hovered", () => {
   it("[foundations.color.variant-solid] puts the wash on the solid face at 4.5:1 for every accent but the documented exception", () => holds("solid"));
   it("[foundations.color.variant-soft] puts the ink on the soft face at 4.5:1 for every accent", () => holds("soft"));
-  it("[foundations.color.variant-hairline] puts the ink on the raised surface at 4.5:1 for every accent", () => holds("hairline"));
+  it("[foundations.color.variant-hairline] puts the ink on every surface at 4.5:1 for every accent", () => holds("hairline"));
+  it("[foundations.color.variant-dashed] puts the subtle ink on every surface at 4.5:1 for every accent", () => holds("dashed"));
   it("[foundations.color.variant-ghost] puts the ink on every surface at 4.5:1 for every accent, and with the hover tint over it", () => holds("ghost"));
   it("[foundations.color.variant-muted] puts the subtle ink on every surface at 4.5:1 for every accent, and with the hover tint over it", () => holds("muted"));
 
-  it("[foundations.color.variant-solid] [foundations.color.variant-soft] [foundations.color.variant-hairline] [foundations.color.variant-ghost] [foundations.color.variant-muted] leaves no accent × variant unexamined", () => {
-    expect([...VARIANTS]).toEqual(["solid", "soft", "hairline", "ghost", "muted"]);
+  it("[foundations.color.variant-solid] [foundations.color.variant-soft] [foundations.color.variant-hairline] [foundations.color.variant-dashed] [foundations.color.variant-ghost] [foundations.color.variant-muted] leaves no accent × variant unexamined", () => {
+    expect([...VARIANTS]).toEqual(["solid", "soft", "hairline", "dashed", "ghost", "muted"]);
     for (const mode of COLOR_MODES) for (const accent of ACCENTS) for (const variant of VARIANTS) expect(readable(accent, variant, mode).length, `${mode} ${accent} ${variant}`).toBeGreaterThan(0);
   });
 

@@ -4,11 +4,11 @@ Paint Primitive는 Box 위에 색을 얹는 길입니다. 색이 오는 곳은 �
 
 | 컴포넌트 | 공개 축 | 기본값 |
 | --- | --- | --- |
-| Surface | Box 전체 + `fill` canvas / raised / sunken · `border` · `radius` · `elevation` · `theme` · `hoverable` · `selected` | div. 면 · 테두리 · 모서리 · 높이는 모두 opt-in, 테마가 있으면 fill 없이도 그 모드의 canvas |
-| Paint | Box 전체 + `accent` · `variant` · `hoverable` · `selected` | div. accent가 없으면 칠하지 않음 |
+| Surface | Box 전체 + `fill` canvas / raised / sunken · `border` · `radius` · `shadow` · `elevation` · `theme` · `hoverable` · `selected` | div. 면 · 테두리 · 모서리 · 높이는 모두 opt-in, 테마가 있으면 fill 없이도 그 모드의 canvas |
+| Paint | Box 전체 + `accent` · `variant` · `fill` · `shadow` · `hoverable` · `selected` | div. accent가 없으면 칠하지 않음 |
 
 [contract:primitives.paint.class-functions]: #
-Atom이 이 층에 닿는 길은 class 함수 둘뿐입니다. `surfaceClass({ fill, border, radius, elevation, hoverable })`는 theme을 뺀 Surface의 class를, `paintClass({ accent, variant, hoverable })`는 Paint의 class를 돌려줍니다. theme은 context가 필요해서 class만으로 만들 수 없습니다. 높이만 필요한 요소는 Surface를 거치지 않고 공개 class 지도 `elevation`(`@studio-baeks/paper-ui`)에서 tier의 class를 직접 받습니다. Surface의 `elevation` prop도 같은 지도입니다.
+Atom이 이 층에 닿는 길은 class 함수 둘뿐입니다. `surfaceClass({ fill, border, radius, elevation, shadow, hoverable })`는 theme을 뺀 Surface의 class를, `paintClass({ accent, variant, fill, shadow, hoverable })`는 Paint의 class를 돌려줍니다. theme은 context가 필요해서 class만으로 만들 수 없습니다. 높이만 필요한 요소는 Surface를 거치지 않고 공개 class 지도 `elevation`(`@studio-baeks/paper-ui`)에서 tier의 class를 직접 받습니다. Surface의 `elevation` prop도 같은 지도입니다.
 
 ## Surface — 면
 
@@ -21,6 +21,7 @@ Surface는 Box가 놓인 종이입니다. 어떤 면 위에 있는지(fill), 경
 | `fill` | canvas · raised · sunken (`SURFACE_FILLS`) | Color `bg.*` — 다크에서 sunken = canvas라, canvas 위에서는 border와 함께 |
 | `border` | boolean | Color `border.base`, Shape `stroke.border` |
 | `radius` | sm · md · lg · full (`SURFACE_RADII`) | Shape `radius.surface.*` · `radius.full` |
+| `shadow` | boolean | Layout resting 깊이 — 제자리 그림자. `fill`이 있을 때만 받고, `elevation`이 있으면 tier의 그림자가 이김 |
 | `elevation` | lifted · sticky · overlay · modal · toast (`ELEVATIONS`) | Layout `elevation` class — position과 z와 그림자를 함께 |
 | `theme` | light · dark · inverse (`SURFACE_THEMES`) | Color 모드 — 이 면과 안쪽만 그 모드. `inverse`는 주변 모드의 반대 |
 | `hoverable` | boolean | Color `interaction` — 면이 항목이 되어 hover · 눌림 · 선택이 중립 tint로 드러남 |
@@ -28,6 +29,9 @@ Surface는 Box가 놓인 종이입니다. 어떤 면 위에 있는지(fill), 경
 
 [contract:primitives.surface.classes]: #
 Surface의 `fill` · `border` · `radius` · `elevation`은 각자 지도 하나의 class가 되고, 주지 않은 축에는 class가 붙지 않습니다. `surfaceClass`는 같은 class를 theme만 빼고 돌려줍니다. `as`로 Stack · Inline · Grid 같은 primitive를 고르면 그 요소 하나가 면이 되어, `<Surface as={Stack} gap="md" fill="raised">`도 DOM 요소는 하나이고 Stack의 class와 prop이 그대로 남습니다. Box · Stack · Inline · Grid에 면 prop을 주면 타입이 막습니다.
+
+[contract:primitives.surface.shadow]: #
+`shadow`는 제자리 그림자입니다. 바탕 위 첫 면이 선 대신 가장자리를 세울 때 쓰고, 면 안의 면에는 주지 않습니다. 면이 없는 상자의 그림자는 속이 빈 고리로 보이므로 `fill`이 없으면 타입이 막고 그려지지도 않습니다.
 
 [contract:primitives.surface.theme]: #
 `theme`을 준 Surface는 자기 요소에 그 모드의 고유 역할을 걸고 안쪽을 그 모드로 읽게 합니다. `light` · `dark`는 주변과 무관하게 그 모드이고 `inverse`는 주변 모드의 반대라, 안쪽에 또 `inverse`를 두면 다시 뒤집힙니다. `fill`을 주지 않아도 그 모드의 `canvas`를 깔아 판이 늘 있고, 안쪽 글자 · Icon · Pressable과 Floating이 여는 층의 내용은 그 모드의 잉크를 받습니다. Surface 자신의 포커스 링과 그림자는 서 있는 바깥 지면의 모드로 그려집니다. `as={Stack}`처럼 Stack · Inline · Grid 위에서도 같고, 앱 전체의 테마는 [Theming](../get-started/theming.md)이 정합니다. 테마 속성을 `<html>` 아래에서 쓰는 길은 `theme/scope.ts`의 Surface와 [Portal](a11y.md#portal)뿐입니다.
@@ -48,14 +52,21 @@ Surface의 `fill` · `border` · `radius` · `elevation`은 각자 지도 하나
 Paint는 accent(의미)와 variant(시각 무게)를 고르면 그 조합의 색을 Box에 입힙니다. 조합은 지도 하나에서 오고, Button과 Badge가 같은 지도를 `paintClass`로 씁니다. 큰 면을 색으로 채우지 않는 것이 정체성이라, 의미가 있는 자리에만 씁니다.
 
 [contract:primitives.paint.classes]: #
-`accent`는 primary(중립)와 info · success · warning · error이고 `variant`는 solid · soft · hairline · ghost · muted입니다. variant를 생략하면 solid이고, accent를 주지 않으면 아무 것도 칠하지 않습니다. `paintClass`는 Atom이 accent class에 닿는 유일한 길이고, `hoverable`일 때만 hover gate를 함께 붙입니다.
+`accent`는 primary(중립)와 info · success · warning · error이고 `variant`는 solid · soft · hairline · dashed · ghost · muted입니다. variant를 생략하면 solid이고, accent를 주지 않으면 아무 것도 칠하지 않습니다. `paintClass`는 Atom이 accent class에 닿는 유일한 길이고, `hoverable`일 때만 hover gate를 함께 붙입니다.
+
+[contract:primitives.paint.fill]: #
+`solid`와 `soft`는 자기 면을 칠하고 `fill`을 받지 않습니다. 나머지 넷은 선과 글자만 정하고, 면은 `fill`이 Surface와 같은 class로 고르며, 안 주면 놓인 곳이 비칩니다.
+
+[contract:primitives.paint.shadow]: #
+`shadow`는 Surface와 같은 제자리 그림자이고 면이 있을 때만 받습니다. `solid`와 `soft`는 언제나, 나머지 넷은 `fill`이 있을 때만 받고, 그 밖의 조합은 타입이 막으며 그려지지도 않습니다. 선은 그림자와 상관없이 variant가 정합니다. 선 대신 그림자로 세우려면 `ghost`에 `fill`과 `shadow`를 줍니다.
 
 [contract:primitives.paint.hover]: #
-hover 색은 CSS가 그립니다. `hoverable` Paint는 면 위에 tint 한 겹(`--pui-state-tint`)을 깔고, `@media (hover: hover)` 안에서만, disabled · `aria-disabled` · `data-disabled`가 아닌 대상에만 그 tint를 옮깁니다(hairline은 대신 경계를 올립니다). 터치는 hover가 없으므로 탭이 남기는 `:hover`로도 색이 뜨지 않고, 막힌 대상은 포인터가 올라와도 뜨지 않습니다. 어떤 컴포넌트도 hover 속성을 내보내지 않습니다. 표시용(Badge)은 `hoverable`을 주지 않아 색이 뜨지 않습니다.
+hover 색은 CSS가 그립니다. `hoverable` Paint는 면 위에 tint 한 겹(`--pui-state-tint`)을 깔고, `@media (hover: hover)` 안에서만, disabled · `aria-disabled` · `data-disabled`가 아닌 대상에만 그 tint를 옮깁니다(hairline과 dashed는 대신 경계를 올립니다). 터치는 hover가 없으므로 탭이 남기는 `:hover`로도 색이 뜨지 않고, 막힌 대상은 포인터가 올라와도 뜨지 않습니다. 어떤 컴포넌트도 hover 속성을 내보내지 않습니다. 표시용(Badge)은 `hoverable`을 주지 않아 색이 뜨지 않습니다.
 
 [contract:primitives.paint.selected]: #
 `selected`는 `data-selected`만 답니다. 선택된 면은 그 속성(또는 `aria-current`)을 읽는 CSS가 입히고, `hairline` · `ghost` · `muted`만 그 accent의 `soft` 면을 입습니다. `solid`와 `soft`는 이미 면이 있어 모습이 그대로입니다. 선택된 `hairline`은 경계가 투명해지고, 선택된 면 위의 hover는 경계를 올리지 않고 tint만 얹습니다.
 
 ```tsx
 <Paint accent="info" variant="soft" hoverable padding="md">…</Paint>
+<Paint accent="info" variant="ghost" fill="raised" shadow padding="md">…</Paint>
 ```

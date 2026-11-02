@@ -95,6 +95,12 @@
   "presets": {
     "button": {
       "medium": {
+        "xs": {
+          "size": "0.75rem",
+          "weight": "500",
+          "leading": "1rem",
+          "tracking": "0"
+        },
         "sm": {
           "size": "0.8125rem",
           "weight": "500",
@@ -115,6 +121,12 @@
         }
       },
       "strong": {
+        "xs": {
+          "size": "0.75rem",
+          "weight": "650",
+          "leading": "1rem",
+          "tracking": "0"
+        },
         "sm": {
           "size": "0.8125rem",
           "weight": "650",
@@ -136,6 +148,13 @@
       }
     },
     "field": {
+      "xs": {
+        "size": "0.75rem",
+        "weight": "450",
+        "leading": "1rem",
+        "tracking": "0",
+        "inputLeading": "1.25rem"
+      },
       "sm": {
         "size": "0.8125rem",
         "weight": "450",
@@ -159,6 +178,12 @@
       }
     },
     "textarea": {
+      "xs": {
+        "size": "0.75rem",
+        "weight": "450",
+        "leading": "1.25rem",
+        "tracking": "0"
+      },
       "sm": {
         "size": "0.8125rem",
         "weight": "450",

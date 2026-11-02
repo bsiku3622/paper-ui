@@ -73,7 +73,7 @@ test("[foundations.override.rederives-roles] [foundations.shape.radius-separate]
   await mount(page);
   type Paper = { __paper: { sourceVars: (overrides: SourceOverrides) => Record<string, string> } };
   const overrides: SourceOverrides = {
-    shape: { control: { height: { md: "40px" } }, selection: { size: { md: "20px" } }, radius: { control: "9px", surface: { sm: "3px" } }, focus: { width: "5px" }, space: { md: "20px" } },
+    shape: { control: { height: { md: "40px" } }, selection: { size: { md: "20px" } }, radius: { control: { md: "9px" }, surface: { sm: "3px" } }, focus: { width: "5px" }, space: { md: "20px" } },
     // The field's glyph line is what the input inset subtracts from the control height.
     typography: { palette: { leading: { "16": "20px" } } },
   };
@@ -123,8 +123,8 @@ test("[foundations.override.rederives-roles] [foundations.shape.radius-separate]
 test("[foundations.override.source-paths-only] window.__paper.sourceVars names the variables of a source override, a region that wears them re-derives its controls, and a role path throws", async ({ page }) => {
   await openHarness(page, "overrides");
   type Paper = { __paper: { sourceVars: (overrides: SourceOverrides) => Record<string, string> } };
-  const vars = await page.evaluate(() => (window as unknown as Paper).__paper.sourceVars({ shape: { control: { height: { md: "40px" } }, radius: { control: "9px" } } }));
-  expect(vars).toEqual({ "--pui-shape-control-height-md": "40px", "--pui-shape-radius-control": "9px" });
+  const vars = await page.evaluate(() => (window as unknown as Paper).__paper.sourceVars({ shape: { control: { height: { md: "40px" } }, radius: { control: { md: "9px" } } } }));
+  expect(vars).toEqual({ "--pui-shape-control-height-md": "40px", "--pui-shape-radius-control-md": "9px" });
   expect((await measure(page.getByTestId("button"))).height).toBe(roleDp(tokens.shape.control.height.md));
   await page.getByTestId("override-region").evaluate((element, declarations) => {
     for (const [name, value] of Object.entries(declarations)) element.style.setProperty(name, value);
@@ -357,23 +357,53 @@ test("[foundations.shape.focus-ring] the baseline draws the ring on an element w
 
   // A link in prose is the Link Atom, whose stylesheet declares the corner its ring follows.
   await page.goto("/docs/foundations/shape");
-  const corner = px(roleDp(tokens.shape.radius.control));
+  const corner = px(roleDp(tokens.shape.radius.text));
   await expect(page.getByTestId("prose").locator("a").first()).toHaveCSS("border-top-left-radius", corner);
   // So is the one on the Link page.
   await openPlayground(page, "link", "Link");
   await expect(page.getByRole("link", { name: "링크", exact: true })).toHaveCSS("border-top-left-radius", corner);
 });
 
-test("[foundations.shape.radius-table] each control takes the corner its row names: control, selection and full, and a Surface the surface family", async ({ page }) => {
+test("[foundations.shape.radius-table] each control takes the corner its row names: control, selection, pill and full, and a Surface the surface family", async ({ page }) => {
   await mount(page);
   const { radius } = tokens.shape;
   const corner = (selector: string, role: string) => metrics(page, selector).then(({ radius: read }) => expect(read, selector).toBe(roleDp(role)));
-  for (const id of ["button-md", "field-md", "select-md", "badge-md"]) await corner(`[data-testid=${id}]`, radius.control);
-  await corner("textarea[aria-label=textarea-md]", radius.control);
+  for (const id of ["button-md", "icon-md", "field-md", "select-md", "badge-rounded-md"]) await corner(`[data-testid=${id}]`, radius.control.md);
+  await corner("textarea[aria-label=textarea-md]", radius.control.md);
+  await corner("[data-testid=badge-md]", radius.pill);
   await corner("[aria-label=checkbox-md]", radius.selection);
   await corner("[aria-label=radio-md]", radius.full);
   await corner("[aria-label=switch-md]", radius.full);
   await corner("[data-testid=surface-corner]", radius.surface.sm);
+});
+
+// Wears source overrides on the fixture, named by sourceVars as an app's would be.
+const wear = async (page: Page, overrides: SourceOverrides) => {
+  type Paper = { __paper: { sourceVars: (overrides: SourceOverrides) => Record<string, string> } };
+  const vars = await page.evaluate((given) => (window as unknown as Paper).__paper.sourceVars(given), overrides);
+  await page.locator("#shape-fixture").evaluate((element, declarations) => {
+    for (const [name, value] of Object.entries(declarations)) element.style.setProperty(name, value);
+  }, vars);
+};
+
+test("[foundations.shape.corner-by-size] a control and a rounded Badge read the corner of their own size", async ({ page }) => {
+  await mount(page);
+  const corners = { xs: 1, sm: 2, md: 3, lg: 5 } as const;
+  await wear(page, { shape: { radius: { control: { xs: "1px", sm: "2px", md: "3px", lg: "5px" } } } });
+  for (const size of CONTROL_SIZES) {
+    for (const id of ["button", "icon", "field", "select", "badge-rounded"]) {
+      expect((await metrics(page, `[data-testid=${id}-${size}]`)).radius, `${id}-${size}`).toBe(corners[size]);
+    }
+    expect((await metrics(page, `textarea[aria-label=textarea-${size}]`)).radius, `textarea-${size}`).toBe(corners[size]);
+  }
+});
+
+test("[foundations.shape.pill-not-circle] lowering radius.pill moves a pill and leaves a circle round", async ({ page }) => {
+  await mount(page);
+  await wear(page, { shape: { radius: { pill: "6px" } } });
+  expect((await metrics(page, "[data-testid=badge-md]")).radius).toBe(6);
+  expect((await metrics(page, "[aria-label=radio-md]")).radius).toBe(roleDp(tokens.shape.radius.full));
+  expect((await metrics(page, "[aria-label=switch-md]")).radius).toBe(roleDp(tokens.shape.radius.full));
 });
 
 test("[foundations.shape.switch-thumb] a Switch's thumb sits the rim from its end when unchecked and the rim from the other end when checked, and the ends swap right to left", async ({ page }) => {

@@ -1,7 +1,7 @@
 import { Badge, Button, Checkbox, Divider, Label, Marker, Radio, Spinner, Switch, Text } from "@studio-baeks/paper-ui";
 import type { CSSProperties, ReactNode } from "react";
+import { CONTROL_SIZES } from "@studio-baeks/paper-ui/tokens";
 
-const SIZES = ["sm", "md", "lg"] as const;
 // Every mark stands in a room of its own, so the hit area of one never reaches into the next.
 const ROOM: CSSProperties = { display: "flex", alignItems: "center", padding: 32 };
 const Room = ({ children }: { children: ReactNode }) => <div style={ROOM}>{children}</div>;
@@ -11,7 +11,7 @@ const Room = ({ children }: { children: ReactNode }) => <div style={ROOM}>{child
 export const MarksCase = () => (
   <>
     <Room><button type="button" data-testid="before">Before</button></Room>
-    {SIZES.map((size) => (
+    {CONTROL_SIZES.map((size) => (
       <div key={size} data-size={size} style={{ display: "flex", flexWrap: "wrap" }}>
         <Room><Checkbox size={size} aria-label={`checkbox-${size}`} data-testid={`checkbox-${size}`} /></Room>
         <Room><Radio size={size} name={`size-${size}`} aria-label={`radio-${size}`} data-testid={`radio-${size}`} /></Room>

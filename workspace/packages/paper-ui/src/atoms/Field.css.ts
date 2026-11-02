@@ -74,7 +74,7 @@ export const fieldAction = style([stateStyle.focusVisible, stateStyle.disabledCu
   alignItems: "center",
   justifyContent: "center",
   flexShrink: 0,
-  borderRadius: tokens.shape.radius.control,
+  borderRadius: tokens.shape.radius.control.xs,
   transition: transition("hover", "color"),
 }]);
 

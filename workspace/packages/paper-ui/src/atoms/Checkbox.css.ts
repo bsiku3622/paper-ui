@@ -25,5 +25,5 @@ export const checkboxRoot = style({
   },
 });
 
-// size 3 단 — 틱(mark 긴변·short 짧은변, 2:1)과 대시 길이. 변은 selectionSize 가 Radio 와 같이 준다. 모서리는 크기와 무관한 한 값.
+// size 4 단 — 틱(mark 긴변·short 짧은변, 2:1)과 대시 길이. 변은 selectionSize 가 Radio 와 같이 준다. 모서리는 크기와 무관한 한 값.
 export const checkboxSize = styleVariants(controlGeometry.checkbox);

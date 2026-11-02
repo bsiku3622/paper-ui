@@ -17,7 +17,7 @@ import type { ControlSize } from "../tokens";
 import { spinnerInline, spinnerRoot, spinnerSize } from "./Spinner.css";
 
 export type SpinnerProps = Omit<HTMLAttributes<HTMLSpanElement>, "className" | "children"> & {
-  // 크기 3 단 (sm·md·lg)은 Icon 과 같은 아이콘 사다리, inline 은 글줄 안에서 글자만큼(1em).
+  // 크기 4 단 (xs·sm·md·lg)은 Icon 과 같은 아이콘 사다리, inline 은 글줄 안에서 글자만큼(1em).
   size?: ControlSize | "inline";
   // inherit 는 둘러싼 글자색을 따라 도는 호(링은 없다). 안 주면 옅은 링에 잉크색 호.
   ink?: "inherit";

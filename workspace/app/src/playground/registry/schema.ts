@@ -119,6 +119,11 @@ export const textControl = <P, K extends keyof P & string>(prop: K, initial: str
 // Reading the state back as the types the subject needs.
 export const pick = <T extends string>(state: State, key: string): T | undefined => (typeof state[key] === "string" && state[key] !== "" ? (state[key] as T) : undefined);
 export const flag = (state: State, key: string): boolean => state[key] === true;
+
+// A face a control may be given. Only a variant with no face of its own takes a fill, and only a face casts a shadow: the
+// knob always sets the prop so the code panel reads back what it printed, and on the others that code is a type error and
+// nothing shows, which the controls' notes say.
+export const faceProps = (state: State) => ({ fill: pick(state, "fill"), shadow: flag(state, "shadow") }) as { fill?: undefined; shadow?: false };
 export const words = (state: State, key: string): string => (typeof state[key] === "string" ? state[key] : "");
 
 export type StageProps<H> = { subject: ReactElement; state: State; harness: H };

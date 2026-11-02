@@ -60,7 +60,7 @@ export const surfaceButton = styleVariants(
     height: tokens.shape.control.height.sm,
     padding: 0,
     border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`,
-    borderRadius: tokens.shape.radius.control,
+    borderRadius: tokens.shape.radius.control.sm,
     color: tokens.color.ink.primary,
     cursor: "pointer",
     ...face,

@@ -1,11 +1,10 @@
 import { Badge, Button, Checkbox, Field, Floating, Icon, IconButton, Inline, Radio, Select, Surface, Switch, Textarea } from "@studio-baeks/paper-ui";
-import { sourceVars } from "@studio-baeks/paper-ui/tokens";
+import { CONTROL_SIZES, sourceVars } from "@studio-baeks/paper-ui/tokens";
 import { useState } from "react";
 
 import { SELECT_OPTIONS } from "./options.js";
 import { ThemeBoxes } from "./theme.js";
 
-const SIZES = ["sm", "md", "lg"] as const;
 
 // A popover and a dialog, each holding a Button and a Field, that open from where the Trigger stands.
 const Panels = ({ id }: { id: string }) => (
@@ -31,7 +30,7 @@ export const GeometryCase = () => (
     <div id="shape-fixture">
       <form id="shape-form">
         <button type="button" id="before-select">Before</button>
-        {SIZES.map((size) => (
+        {CONTROL_SIZES.map((size) => (
           <div key={size} data-size={size}>
             <Button size={size} data-testid={`button-${size}`}>Button</Button>
             <IconButton size={size} aria-label={`icon-${size}`} data-testid={`icon-${size}`}>
@@ -46,6 +45,7 @@ export const GeometryCase = () => (
             <Radio size={size} defaultChecked aria-label={`radio-${size}`} />
             <Switch size={size} defaultChecked aria-label={`switch-${size}`} />
             <Badge size={size} data-testid={`badge-${size}`}>Badge</Badge>
+            <Badge size={size} shape="rounded" data-testid={`badge-rounded-${size}`}>Badge</Badge>
           </div>
         ))}
         <Surface radius="sm" data-testid="surface-corner">Surface</Surface>

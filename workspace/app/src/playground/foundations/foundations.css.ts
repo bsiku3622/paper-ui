@@ -35,15 +35,27 @@ export const presetFont = Object.fromEntries(
 export const spaceBar = variantsOf(SPACES, (step) => [bar, { width: shape.inset[step] }]);
 const radiusBase = style({ width: shape.dimension.width.xs, height: shape.control.height.lg, border: line, background: color.bg.sunken });
 export const radiusSample = styleVariants(
-  { control: shape.radius.control, selection: shape.radius.selection, "surface.sm": shape.radius.surface.sm, "surface.md": shape.radius.surface.md, "surface.lg": shape.radius.surface.lg, full: shape.radius.full },
+  {
+    "control.xs": shape.radius.control.xs,
+    "control.sm": shape.radius.control.sm,
+    "control.md": shape.radius.control.md,
+    "control.lg": shape.radius.control.lg,
+    selection: shape.radius.selection,
+    "surface.sm": shape.radius.surface.sm,
+    "surface.md": shape.radius.surface.md,
+    "surface.lg": shape.radius.surface.lg,
+    text: shape.radius.text,
+    pill: shape.radius.pill,
+    full: shape.radius.full,
+  },
   (borderRadius) => [radiusBase, { borderRadius }],
 );
 const strokeBase = style({ width: shape.dimension.width.sm, background: color.ink.primary });
 export const strokeLine = styleVariants({ border: shape.stroke.border, emphasis: shape.stroke.emphasis }, (height) => [strokeBase, { height }]);
-export const focusBox = style({ width: shape.control.height.md, height: shape.control.height.sm, borderRadius: shape.radius.control, border: line, ...focusRing });
-export const targetBox = style({ width: shape.target.min, height: shape.target.min, borderRadius: shape.radius.control, border: line, background: color.bg.sunken });
-const controlBase = style({ width: shape.dimension.width.sm, borderRadius: shape.radius.control, border: line, background: color.bg.sunken });
-export const controlBox = variantsOf(CONTROL_SIZES, (size) => [controlBase, { height: shape.control.height[size] }]);
+export const focusBox = style({ width: shape.control.height.md, height: shape.control.height.sm, borderRadius: shape.radius.control.sm, border: line, ...focusRing });
+export const targetBox = style({ width: shape.target.min, height: shape.target.min, borderRadius: shape.radius.control.xs, border: line, background: color.bg.sunken });
+const controlBase = style({ width: shape.dimension.width.sm, border: line, background: color.bg.sunken });
+export const controlBox = variantsOf(CONTROL_SIZES, (size) => [controlBase, { height: shape.control.height[size], borderRadius: shape.radius.control[size] }]);
 export const rule = style({ fontFamily: monoRule().fontFamily, fontSize: tokens.typography.role.caption.size, color: color.ink.secondary });
 export const recipeSample = style({ display: "flex", alignItems: "center", minHeight: shape.control.height.lg, minWidth: 0 });
 
@@ -65,7 +77,7 @@ export const elevationCard = style({ display: "flex", alignItems: "center", just
 export const gapSample = style({ display: "flex" });
 export const gapOf = variantsOf(SPACES, (step) => ({ gap: layout.gap[step] }));
 export const gutterFrame = style({ display: "flex", width: shape.dimension.width.sm, padding: layout.gutter, borderRadius: shape.radius.surface.sm, border: line, background: color.bg.sunken });
-globalStyle(`${gapSample} > span, ${gutterFrame} > span`, { display: "block", height: shape.control.height.sm, borderRadius: shape.radius.control, background: color.accent.primary.solid });
+globalStyle(`${gapSample} > span, ${gutterFrame} > span`, { display: "block", height: shape.control.height.sm, borderRadius: shape.radius.control.sm, background: color.accent.primary.solid });
 globalStyle(`${gapSample} > span`, { width: shape.control.height.md });
 globalStyle(`${gutterFrame} > span`, { flex: 1 });
 

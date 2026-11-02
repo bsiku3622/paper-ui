@@ -70,7 +70,7 @@ Field · Select의 wrapper와 Textarea 자신이 입력의 틀(`inputFrame`)입�
 ## Tint와 색 profile
 
 [contract:atoms.button.tint]: #
-눌리는 컨트롤(`hoverable`)의 `soft`·`ghost`·`muted`와 solid는 면(`backgroundColor`)을 직접 바꾸지 않습니다. 면 위에 `--pui-state-tint` 한 겹(`linear-gradient`)이 깔려 있고, hover가 그 변수를 `tokens.color.interaction.bgHover`로 옮깁니다. 그래서 raised·canvas·sunken 어느 면 위에서도 같은 방향으로 읽히고, 변수가 등록된 `<color>`라 면은 그대로 둔 채 tint만 전이합니다. `hairline`은 면 대신 경계를 `border.hover`로 올립니다. hover는 가장 약한 상태라 selector에 특정도를 더하지 않습니다.
+눌리는 컨트롤(`hoverable`)의 `soft`·`ghost`·`muted`와 solid는 면(`backgroundColor`)을 직접 바꾸지 않습니다. 면 위에 `--pui-state-tint` 한 겹(`linear-gradient`)이 깔려 있고, hover가 그 변수를 `tokens.color.interaction.bgHover`로 옮깁니다. 그래서 raised·canvas·sunken 어느 면 위에서도 같은 방향으로 읽히고, 변수가 등록된 `<color>`라 면은 그대로 둔 채 tint만 전이합니다. `hairline`과 `dashed`는 면 대신 경계를 `border.hover`로 올립니다. hover는 가장 약한 상태라 selector에 특정도를 더하지 않습니다.
 
 선택될 수 있는 variant(`hairline` · `ghost` · `muted`)는 `data-selected`나 `aria-current`가 있으면 그 accent의 `soft` 면을 입고, 그 위의 hover는 경계를 올리지 않고 tint만 얹습니다. 면이 이미 있는 `solid`와 `soft`에는 selected가 없습니다. 고대비(`forced-colors`)에서는 선택된 면이 Highlight 면이 되고 hover는 Highlight 경계를 얻으며, `prefers-contrast: more`에서는 선택된 면에 잉크 머리카락 선이 더해집니다. 중립 항목(행 · 메뉴 항목 · 분절)은 같은 일을 `stateStyle.item`이 합니다 — 눌림 > 선택 > hover 순으로 `--pui-state-tint`를 바꾸고, 선택된 항목의 글자는 `ink.primary`입니다([상태 recipe](../foundations/README.md#상태-recipe)).
 
@@ -98,7 +98,7 @@ Button · IconButton은 눌리는 동안 한 단계(`motion.press`의 변위, 1p
 
 | Atom | 링 주인 | hover | active(눌림) | selected | disabled | invalid | forced colors | target |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Button | 자신(자신의 곡률) | variant profile의 tint, hairline은 `border.hover` | 1px 변위 | `selected`(hairline · ghost · muted) · `aria-current` → soft 면 | `opacity.disabled` · `not-allowed`. 링크형은 `aria-disabled` · Tab 제외, 로딩은 포커스 유지 | — | hover는 Highlight 경계, selected는 Highlight 면, 비활성은 GrayText, 링은 Highlight | 높이 30 이상 |
+| Button | 자신(자신의 곡률) | variant profile의 tint, hairline · dashed는 `border.hover` | 1px 변위 | `selected`(hairline · ghost · muted) · `aria-current` → soft 면 | `opacity.disabled` · `not-allowed`. 링크형은 `aria-disabled` · Tab 제외, 로딩은 포커스 유지 | — | hover는 Highlight 경계, selected는 Highlight 면, 비활성은 GrayText, 링은 Highlight | 높이 30 이상 |
 | IconButton | Button과 같음 | Button과 같음 | Button과 같음 | Button과 같음 | Button과 같음 | — | Button과 같음 | 정사각형, 한 변이 컨트롤 높이 |
 | Field | 틀(wrapper) | status가 없을 때만 `border.hover` | — | — | 틀이 `opacity.disabled` · `not-allowed`, 보기 버튼은 그려진 채 반응 없음 | `status` · `aria-invalid` → 상태 잉크 경계 | 경계 CanvasText, hover는 Highlight | 지우기 · 보기 버튼 24px |
 | Textarea | 자신 | Field와 같음 | — | — | Field와 같음 | Field와 같음 | Field와 같음 | 컨트롤 전체 |
@@ -110,7 +110,7 @@ Button · IconButton은 눌리는 동안 한 단계(`motion.press`의 변위, 1p
 | Badge | 포커스 없음 | 없음 — `hoverable`을 주지 않아 hover 색이 없음 | 없음 | 없음 | 해당 없음 | 해당 없음 | 테두리로 남음, 점은 CanvasText | 해당 없음 |
 | Spinner | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 링 GrayText, 호 CanvasText | 해당 없음 |
 | Divider | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | border라 CanvasText로 남음 | 해당 없음 |
-| Link | 자신(`radius.control`) | `underline="hover"`면 밑줄이 뜸 | — | — | 링크에는 disabled가 없음 | — | LinkText | inline 예외 |
+| Link | 자신(`radius.text`) | `underline="hover"`면 밑줄이 뜸 | — | — | 링크에는 disabled가 없음 | — | LinkText | inline 예외 |
 | Marker | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | OS의 Mark · MarkText | 해당 없음 |
 
 ## Focus와 transition
@@ -118,7 +118,7 @@ Button · IconButton은 눌리는 동안 한 단계(`motion.press`의 변위, 1p
 focus ring은 패키지 전체가 하나의 스타일(`focusRing`)을 씁니다 — 색은 `interaction.focus`, 폭과 offset은 Shape의 `focus.width`·`focus.offset`(2px · 2px)입니다. Form wrapper가 focus의 주인이므로 안쪽 native control은 자기 outline을 끕니다. Pressable은 자기 판정에서 링을 그립니다([Press](../primitives/press.md#press)). 링 주인이 없는 요소는 전역 baseline `:where(:focus-visible)`이 링만 그리고 요소의 모양은 바꾸지 않으므로, 링은 요소 자신의 곡률을 따릅니다([Shape](../foundations/shape.md#stroke--focus)). 전이 시간은 Motion의 역할이 정합니다. Button · IconButton은 속성 묶음마다 역할을 고릅니다 — hover tint와 테두리는 `hover`(100ms), 면(`background-color`)과 글자색은 `state`(130ms), 눌림은 `press`(100ms)이고, 정본은 [Motion](../foundations/motion.md)입니다. `prefers-reduced-motion: reduce`에서는 전이가 즉시 끝납니다.
 
 [contract:atoms.focus.ring]: #
-Button · IconButton · Link는 키보드 포커스를 `useFocusRing`(Pressable 안에서도 같은 것)으로 판정해 자기 요소에 `data-focus-visible`을 달고, 링은 그 속성에서 자신의 곡률로 그립니다 — 알약 Button의 링은 알약이고 Link의 링은 `radius.control`입니다. 포인터로 포커스한 요소에는 링이 없습니다. 로딩 중인 Button도 포커스를 받으므로 키보드가 닿으면 링을 그립니다. Field · Select · Textarea도 같은 판정을 쓰며 링 주인이 입력의 틀입니다: 안쪽 native control이 `useFocusRing`(텍스트 입력은 `textInput`)을 받고 틀이 `data-focus-visible`을 답니다. Textarea는 틀이 자기 자신입니다. Field의 지우기나 보기 버튼에서 Shift+Tab으로 input에 돌아오면 wrapper가 링을 다시 그리고, 버튼의 링은 버튼 자신의 곡률(`radius.control`)을 따릅니다. Checkbox · Radio · Switch도 같은 판정을 쓰고 링 주인이 input 자신이라, 링이 상자 · 원 · 트랙의 곡률을 따릅니다.
+Button · IconButton · Link는 키보드 포커스를 `useFocusRing`(Pressable 안에서도 같은 것)으로 판정해 자기 요소에 `data-focus-visible`을 달고, 링은 그 속성에서 자신의 곡률로 그립니다 — 알약 Button의 링은 알약이고 Link의 링은 `radius.text`입니다. 포인터로 포커스한 요소에는 링이 없습니다. 로딩 중인 Button도 포커스를 받으므로 키보드가 닿으면 링을 그립니다. Field · Select · Textarea도 같은 판정을 쓰며 링 주인이 입력의 틀입니다: 안쪽 native control이 `useFocusRing`(텍스트 입력은 `textInput`)을 받고 틀이 `data-focus-visible`을 답니다. Textarea는 틀이 자기 자신입니다. Field의 지우기나 보기 버튼에서 Shift+Tab으로 input에 돌아오면 wrapper가 링을 다시 그리고, 버튼의 링은 버튼 자신의 곡률(`radius.control`)을 따릅니다. Checkbox · Radio · Switch도 같은 판정을 쓰고 링 주인이 input 자신이라, 링이 상자 · 원 · 트랙의 곡률을 따릅니다.
 
 ## 대비 · forced colors · prefers-contrast · target
 

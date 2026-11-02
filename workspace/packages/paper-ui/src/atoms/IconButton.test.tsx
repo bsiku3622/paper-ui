@@ -52,7 +52,7 @@ describe("IconButton", () => {
       </>,
     );
     const size = (name: string) => iconClass(name);
-    expect(CONTROL_ICON).toEqual({ sm: "caption", md: "body", lg: "subheading" });
+    expect(CONTROL_ICON).toEqual({ xs: "caption", sm: "caption", md: "body", lg: "subheading" });
     expect(size("sm")).not.toBe(size("md"));
     expect(size("md")).not.toBe(size("lg"));
     expect(size("sm")).toBe(size("own"));

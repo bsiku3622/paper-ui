@@ -9,6 +9,8 @@ const box = tokens.shape.selection.size;
 
 // Each sized Atom picks its role here; no stylesheet patches a size ladder of its own.
 export const controlGeometry = {
+  // Kept apart from the boxes below: a stylesheet declares its corner before its pill, so the pill wins by order.
+  corner: controlSizes((size) => ({ borderRadius: tokens.shape.radius.control[size] } satisfies StyleRule)),
   button: controlSizes((size) => ({ height: height[size], paddingInline: tokens.shape.control.inset.button[size] } satisfies StyleRule)),
   // A square the height of a control, with no inset: the label is an icon.
   iconButton: controlSizes((size) => ({ height: height[size], width: height[size], paddingInline: 0 } satisfies StyleRule)),
