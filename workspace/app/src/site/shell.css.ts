@@ -5,15 +5,14 @@
 
 import { createVar, globalStyle, style, styleVariants } from "@vanilla-extract/css";
 
-import { tokens } from "@studio-baeks/paper-ui/tokens";
+import { emphasisRule, tokens } from "@studio-baeks/paper-ui/tokens";
 
 // Below md the header is static, the sidebars fold into a disclosure and the content takes the gutter.
 export const narrow = `screen and (max-width: ${tokens.layout.breakpoint.md})`;
-const line = `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`;
 
-// ROW is the one length the shell owns: the header's single row, which no token names. The header's height is a
-// variable so a sticky sidebar can sit under it, and 0 once the header is static.
-const ROW = "52px";
+// The header's one row: a small control and the same air above and below it. Its height is a variable so a sticky sidebar can
+// sit under it, and 0 once the header is static.
+const ROW = `calc(${tokens.shape.control.height.sm} + ${tokens.shape.inset.lg} + ${tokens.shape.inset.lg})`;
 export const navHeight = createVar();
 globalStyle(":root", {
   vars: { [navHeight]: ROW },
@@ -37,13 +36,11 @@ export const frame = style({
 export const logoMark = style({ display: "block" });
 
 // ── Header ───────────────────────────────────────────────────────────────────
-// One row of the frame; below md the links drop to a second row under the brand instead of breaking per
-// character, and the header leaves the top of the screen with the rest of the page.
+// One row; below md the links drop to a second row under the brand instead of breaking per character, and the header
+// leaves the top of the screen with the rest of the page. The canvas under it is the only edge it needs.
 export const header = style({
-  top: 0,
   height: navHeight,
-  borderBottom: line,
-  "@media": { [narrow]: { position: "static", height: `calc(${ROW} + ${tokens.shape.control.height.md})` } },
+  "@media": { [narrow]: { position: "static", height: "auto" } },
 });
 
 export const headerInner = style([
@@ -59,20 +56,21 @@ export const headerInner = style([
       [narrow]: {
         gridTemplateColumns: "auto minmax(0, 1fr)",
         gridTemplateAreas: '"brand tools" "nav nav"',
-        gridTemplateRows: `${ROW} ${tokens.shape.control.height.md}`,
-        rowGap: 0,
+        rowGap: tokens.layout.gap.sm,
+        paddingBlock: tokens.shape.inset.md,
       },
     },
   },
 ]);
-export const brand = style({ gridArea: "brand", display: "inline-flex" });
-export const headerNav = style({ gridArea: "nav" });
+export const brand = style({ gridArea: "brand" });
+export const headerNav = style({ gridArea: "nav", justifySelf: "end", "@media": { [narrow]: { justifySelf: "start" } } });
 export const headerTools = style({ gridArea: "tools", justifySelf: "end" });
 
-// How a Link of the chrome is inked. `bar` is a link of the navigation bar; `plain` is the brand and the skip link.
+// How a Link of the chrome is inked. `bar` is a link of the navigation bar, whose words say where you are; `plain` is the
+// brand and the skip link.
 export const navLink = styleVariants({
   bar: {
-    padding: `${tokens.shape.inset.xs} ${tokens.shape.inset.sm}`,
+    ...emphasisRule("medium"),
     color: tokens.color.ink.secondary,
     selectors: { '&[aria-current="page"]': { color: tokens.color.ink.primary } },
   },
@@ -90,47 +88,48 @@ export const skipLink = style({
 });
 
 // ── Sidebar and content ──────────────────────────────────────────────────────
-// A column of navigation beside the content. The content column may shrink, so a wide table or code block
-// scrolls inside it instead of pushing the page. `isolation` keeps the sidebar (the sticky tier) under the header.
-export const sidebarFrame = style({
-  display: "grid",
-  gridTemplateColumns: `${tokens.shape.dimension.width.lg} minmax(0, 1fr)`,
-  width: "100%",
-  maxWidth: tokens.layout.container.content,
-  marginInline: "auto",
-  isolation: "isolate",
-  "@media": { [narrow]: { gridTemplateColumns: "minmax(0, 1fr)" } },
-});
+// A list of navigation beside the content, inside the page's frame. The content column may shrink, so a wide table or code
+// block scrolls inside it instead of pushing the page. `isolation` keeps the sidebar (the sticky tier) under the header.
+export const sidebarFrame = style([
+  frame,
+  {
+    display: "grid",
+    gridTemplateColumns: `${tokens.shape.dimension.width.lg} minmax(0, 1fr)`,
+    columnGap: tokens.layout.gap["3xl"],
+    isolation: "isolate",
+    "@media": { [narrow]: { gridTemplateColumns: "minmax(0, 1fr)", columnGap: 0, paddingInline: 0 } },
+  },
+]);
 
+// Where a row's words start inside its face.
+const rowInset = `calc(${tokens.shape.control.inset.button.sm} + ${tokens.shape.stroke.border})`;
+
+// The list stays under the header with its own scroll. It lies on the canvas with no face and no line. The words of its rows
+// stand on the brand's axis and their faces hang out into the page's margin. A row's focus ring would be cut by the scroll,
+// so the list keeps that much room around the rows.
 export const sidebar = style({
   top: navHeight,
   alignSelf: "start",
-  minHeight: `calc(100vh - ${navHeight})`,
-  maxHeight: `calc(100dvh - ${navHeight})`,
+  maxHeight: `calc(${tokens.layout.viewport} - ${navHeight})`,
   overflowY: "auto",
-  padding: tokens.layout.gutter,
-  borderRight: line,
+  marginInlineStart: `calc((${rowInset} + ${tokens.shape.inset.xs}) * -1)`,
+  paddingInline: tokens.shape.inset.xs,
+  paddingBlockStart: tokens.shape.inset.xl,
+  paddingBlockEnd: tokens.shape.inset.xl,
   "@media": {
-    [narrow]: { position: "static", minHeight: 0, maxHeight: "none", overflowY: "visible", borderRight: 0, borderBottom: line },
+    [narrow]: { position: "static", maxHeight: "none", overflowY: "visible", marginInlineStart: 0, paddingInline: tokens.layout.gutter, paddingBlock: 0 },
   },
 });
 
 export const content = style({
   minWidth: 0,
-  padding: tokens.shape.inset.xl,
-  "@media": { [narrow]: { paddingInline: tokens.layout.gutter } },
+  paddingBlockStart: tokens.shape.inset["2xl"],
+  paddingBlockEnd: tokens.shape.inset["3xl"],
+  "@media": { [narrow]: { paddingInline: tokens.layout.gutter, paddingBlockStart: tokens.shape.inset.xl } },
 });
 
-// An item of the sidebar. The face of the current one (and the pointer's tint) is the Surface's own; the rest ink
-// is set here and leaves the current item to that face, so it follows forced colours.
-export const navItem = style({
-  display: "block",
-  padding: `${tokens.shape.inset.sm} ${tokens.shape.inset.md}`,
-  textDecoration: "none",
-  selectors: { '&:not([aria-current="page"])': { color: tokens.color.ink.secondary } },
-});
-// A heading or a caption stands in line with the items' text.
-export const navHeading = style({ paddingInline: tokens.shape.inset.md });
+// A heading stands in line with the words of the rows.
+export const navHeading = style({ paddingInline: rowInset });
 
 // Under narrow the sidebar is a closed disclosure; its summary names the list and the page you are on.
 export const summary = style({

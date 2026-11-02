@@ -24,9 +24,6 @@ export const DOC_GROUPS: readonly DocGroup[] = [
   { id: "atoms", label: "Atoms", ko: "Atoms", docs: ["README", "states"] },
 ];
 
-// The heading of each order of the Primitives in the Playground sidebar, above the groups of that order.
-export const PRIMITIVE_ORDER_LABELS = { first: "1차 — 바탕", second: "2차 — Box + 능력 하나" } as const;
-
 // A doc as the Docs page lists it: `slug` is the path after /docs/ ('' for the overview).
 export type DocEntry = { slug: string; group: string; title: string; file: string };
 

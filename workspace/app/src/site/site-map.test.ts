@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { INVENTORY, PRIMITIVE_GROUPS, PRIMITIVE_ORDERS } from "@studio-baeks/paper-ui";
 
-import { DOC_GROUPS, FOUNDATIONS, PLAYGROUND_NAV, PRIMITIVE_ORDER_LABELS, SITE_NAV, docFile, docSlug, slugOf } from "./site-map";
+import { DOC_GROUPS, FOUNDATIONS, PLAYGROUND_NAV, SITE_NAV, docFile, docSlug, slugOf } from "./site-map";
 
 const unique = (values: readonly string[]) => values.filter((value, index) => values.indexOf(value) !== index);
 
@@ -43,7 +43,6 @@ describe("PLAYGROUND_NAV", () => {
       expect(sections.filter((section) => section.order === order).map((section) => section.label), order).toEqual([...groups]);
     }
     expect(sections.map((section) => section.order)).toEqual([...PRIMITIVE_ORDERS.first.map(() => "first"), ...PRIMITIVE_ORDERS.second.map(() => "second"), undefined]);
-    expect(Object.keys(PRIMITIVE_ORDER_LABELS)).toEqual(Object.keys(PRIMITIVE_ORDERS));
   });
 
   it("names Composition and Theme under Utilities, both known to the inventory", () => {

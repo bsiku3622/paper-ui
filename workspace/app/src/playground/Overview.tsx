@@ -11,6 +11,7 @@ import {
   Checkbox,
   Divider,
   Field,
+  Grid,
   IconButton,
   Inline,
   Label,
@@ -37,19 +38,22 @@ import { Computed, px } from "./foundations/kit";
 
 const Section = ({ id, title, children }: { id: string; title: string; children: ReactNode }) => (
   <Stack as="section" gap="lg" id={id}>
-    <SectionHeading title={title} variant="label" />
-    <Stack gap="md">{children}</Stack>
+    <SectionHeading title={title} />
+    <Stack gap="lg">{children}</Stack>
   </Stack>
 );
 
+// 캡션과 표본이 서는 두 칸. 모든 절이 같은 칸을 써서 표본이 세로 한 줄에서 시작한다.
+const ROW = { base: "minmax(0, 1fr)", lg: "12rem minmax(0, 1fr)" };
+
 // 한 표본 = 캡션 + 내용. testid 로 테스트가 집어낸다.
 const Spec = ({ label, testid, children }: { label: ReactNode; testid?: string; children: ReactNode }) => (
-  <Stack gap="sm" data-testid={testid}>
+  <Grid columns={ROW} gap="md" align="center" data-testid={testid}>
     <Text variant="caption">{label}</Text>
     <Inline gap="md" wrap align="center">
       {children}
     </Inline>
-  </Stack>
+  </Grid>
 );
 
 // family=mono 표본 — 해당 variant 행 바로 밑에 같은 크기 mono 로 깔아 sans 와 비교시킨다.
@@ -65,7 +69,7 @@ export const Overview = () => {
   const [checked, setChecked] = useState(true);
 
   return (
-    <Stack gap="xl">
+    <Stack gap="3xl">
       <PageHeader
         group="Playground"
         name="Overview"
@@ -76,26 +80,22 @@ export const Overview = () => {
       <Section id="sec-type" title="Type scale">
         {/* sans 기본. family="mono" 를 주면 어느 variant 에도 등폭이 교차한다 (· mono 행). */}
         <Text variant="caption" ink="secondary">sans 기본 · family=&quot;mono&quot; 는 어느 variant 에도 교차한다 (바로 밑 · mono 행에서 비교).</Text>
-        <Stack gap="sm">
+        <Stack gap="md">
           {TEXT_VARIANTS.map((v) => (
             <Fragment key={v}>
-              <Inline gap="lg" align="baseline">
-                <Box width="6rem">
-                  <Text variant="caption" as="span">{v}</Text>
-                </Box>
-                <Text variant={v} as="span" data-testid={`text-${v}`}>
-                  다람쥐 헌 쳇바퀴 Aa 0123
+              <Grid columns={ROW} gap="md" align="baseline">
+                <Text variant="caption" as="span">{v}</Text>
+                <Text variant={v} as="span" truncate data-testid={`text-${v}`}>
+                  {v === "hero" ? "다람쥐 헌 쳇바퀴" : "다람쥐 헌 쳇바퀴 Aa 0123"}
                 </Text>
-              </Inline>
+              </Grid>
               {MONO_DEMO[v] && (
-                <Inline gap="lg" align="baseline">
-                  <Box width="6rem">
-                    <Text variant="caption" as="span" ink="tertiary">{v} · mono</Text>
-                  </Box>
-                  <Text variant={v} family="mono" as="span" data-testid={v === "body" ? "text-mono" : undefined}>
+                <Grid columns={ROW} gap="md" align="baseline">
+                  <Text variant="caption" as="span" ink="tertiary">{v} · mono</Text>
+                  <Text variant={v} family="mono" as="span" truncate data-testid={v === "body" ? "text-mono" : undefined}>
                     {MONO_DEMO[v]}
                   </Text>
-                </Inline>
+                </Grid>
               )}
             </Fragment>
           ))}

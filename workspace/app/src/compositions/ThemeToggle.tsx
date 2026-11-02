@@ -17,7 +17,7 @@ export const ThemeToggle = () => {
   const { resolved, setTheme } = useTheme();
   const next: ColorMode = resolved === "dark" ? "light" : "dark";
   return (
-    <IconButton variant="hairline" aria-label={`${LABEL[next]} 테마로 전환`} title={`${LABEL[next]}로 전환`} onClick={() => setTheme(next)}>
+    <IconButton size="sm" shape="pill" variant="muted" aria-label={`${LABEL[next]} 테마로 전환`} title={`${LABEL[next]}로 전환`} onClick={() => setTheme(next)}>
       {resolved === "dark" ? <MoonIcon /> : <SunIcon />}
     </IconButton>
   );

@@ -28,15 +28,9 @@ export const SunIcon = glyph(
 );
 export const MoonIcon = glyph("Moon", <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />);
 export const CheckIcon = glyph("Check", <path d="m5 12 4 4L19 6" />);
-export const CircleCheckIcon = glyph("CircleCheck", <><circle cx="12" cy="12" r="9" /><path d="m8 12 2.5 2.5L16.5 9" /></>);
 export const GridIcon = glyph("Grid", <path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" />);
-export const InboxIcon = glyph("Inbox", <><path d="M4 5h16v14H4z" /><path d="M4 13h4l2 2h4l2-2h4" /></>);
 export const LayersIcon = glyph("Layers", <><path d="m12 3 9 5-9 5-9-5 9-5Z" /><path d="m3 12 9 5 9-5M3 16l9 5 9-5" /></>);
-export const CalendarIcon = glyph("Calendar", <><rect x="4" y="5" width="16" height="16" rx="2" /><path d="M8 3v4m8-4v4M4 10h16" /></>);
-export const MoreIcon = glyph("More", <><circle cx="5" cy="12" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /></>);
-export const SparkIcon = glyph("Spark", <path d="m12 3 2 7 7 2-7 2-2 7-2-7-7-2 7-2 2-7Z" />);
 export const ClockIcon = glyph("Clock", <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>);
-export const FilterIcon = glyph("Filter", <path d="M4 5h16l-6.5 7v5l-3 2v-7L4 5Z" />);
 export const CloseIcon = glyph("Close", <path d="m6 6 12 12M18 6 6 18" />);
 export const EditIcon = glyph("Edit", <path d="m14.7 6.3 3 3M4 20l4.2-.9L19.2 8a2.1 2.1 0 0 0-3-3L5.2 16.1 4 20Z" />);
 export const GripIcon = glyph(
@@ -48,3 +42,15 @@ export const GripIcon = glyph(
 );
 export const InfoIcon = glyph("Info", <><circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 8h.01" /></>);
 export const TrashIcon = glyph("Trash", <path d="M4 7h16M9 7V5h6v2M6 7l1 12h10l1-12" />);
+export const ChevronDownIcon = glyph("ChevronDown", <path d="m6 9 6 6 6-6" />);
+export const UpDownIcon = glyph("UpDown", <><path d="m8 9 4-4 4 4" /><path d="m8 15 4 4 4-4" /></>);
+export const StarIcon = glyph("Star", <path d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 17l-5.2 2.7 1-5.9-4.3-4.1 5.9-.8L12 3.5Z" />);
+export const BoxIcon = glyph("Box", <><path d="M21 8 12 3 3 8v8l9 5 9-5V8Z" /><path d="m3 8 9 5 9-5M12 13v8" /></>);
+export const DeployIcon = glyph("Deploy", <><path d="M12 19V6" /><path d="m6 11 6-6 6 6" /><path d="M5 21h14" /></>);
+export const ActivityIcon = glyph("Activity", <path d="M22 12h-4l-3 9L9 3l-3 9H2" />);
+export const CardIcon = glyph("Card", <><rect x="3" y="6" width="18" height="14" rx="3.5" /><path d="M3 10h18M16 15h.01" /></>);
+export const ShieldIcon = glyph("Shield", <path d="M12 3 5 6v6c0 4.5 3 7.5 7 9 4-1.5 7-4.5 7-9V6l-7-3Z" />);
+export const GearIcon = glyph("Gear", <><circle cx="12" cy="12" r="3" /><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1" /></>);
+export const BookIcon = glyph("Book", <><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H12v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z" /><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H12v16h5.5a2.5 2.5 0 0 1 2.5 2.5v-16Z" /></>);
+export const HelpIcon = glyph("Help", <><circle cx="12" cy="12" r="9" /><path d="M9.6 9.6a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1.1.9-1.1 1.7" /><path d="M12 17h.01" /></>);
+export const BellIcon = glyph("Bell", <><path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4l2-2Z" /><path d="M10 21h4" /></>);

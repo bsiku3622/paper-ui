@@ -1,28 +1,25 @@
-// The Playground sidebar: Overview, then Foundations → Primitives → Atoms as the site map lists them. The sections
-// of one order of the Primitives stand together under that order's heading; the Foundations pages are sections of
-// one link each, which keeps them one step further apart than the components.
+// The Playground sidebar: Overview, then Foundations → Primitives → Atoms as the site map lists them. A group is one
+// flat list; only the Primitives split, into their two orders and Utilities. An order has no heading: the gap parts it. The
+// section names (Element, Paint …) stay on the pages: over a list where most of them hold a single item, they read as more items.
 
-import { PLAYGROUND_NAV, PRIMITIVE_ORDER_LABELS, type PlaygroundGroup, type PlaygroundSection } from "../site/site-map";
+import { PLAYGROUND_NAV, type PlaygroundGroup, type PlaygroundSection } from "../site/site-map";
 import { SidebarNav, type SidebarBlock, type SidebarGroup } from "../site/SidebarNav";
 
 const linksOf = (section: PlaygroundSection) => section.items.map(({ name, slug }) => ({ label: name, to: `/playground/${slug}` }));
 
 const blocksOf = (group: PlaygroundGroup): SidebarBlock[] => {
-  if (group.id === "foundations") return [{ sections: group.sections.flatMap(linksOf).map((link) => ({ links: [link] })) }];
-  const blocks: { order?: PlaygroundSection["order"]; sections: PlaygroundSection[] }[] = [];
+  const blocks: (SidebarBlock & { runs: string })[] = [];
   for (const section of group.sections) {
+    const runs = section.order ?? section.label;
     const last = blocks.at(-1);
-    if (last && section.order !== undefined && last.order === section.order) last.sections.push(section);
-    else blocks.push({ order: section.order, sections: [section] });
+    if (last?.runs === runs) last.links.push(...linksOf(section));
+    else blocks.push({ runs, heading: section.order ? undefined : section.label || undefined, links: linksOf(section) });
   }
-  return blocks.map(({ order, sections }) => ({
-    heading: order ? PRIMITIVE_ORDER_LABELS[order] : undefined,
-    sections: sections.map((section) => ({ caption: section.label || undefined, links: linksOf(section) })),
-  }));
+  return blocks;
 };
 
 const GROUPS: SidebarGroup[] = [
-  { blocks: [{ sections: [{ links: [{ label: "Overview", to: "/playground" }] }] }] },
+  { blocks: [{ links: [{ label: "Overview", to: "/playground" }] }] },
   ...PLAYGROUND_NAV.map((group) => ({ label: group.label, blocks: blocksOf(group) })),
 ];
 

@@ -1,5 +1,5 @@
-// The site's header — the banner of every page that has the shell's chrome. The brand goes home, the
-// navigation names the four parts of the site, and the tools hold the theme switch and the version.
+// The site's header — the banner of every page that has the shell's chrome. The brand goes home with the version beside it,
+// and across the bar stand the four parts of the site and the theme switch. A link is its words: where you are is the ink.
 
 import { Link as RouterLink, useLocation } from "react-router-dom";
 
@@ -16,22 +16,22 @@ export const SiteHeader = () => {
   const { pathname } = useLocation();
   const active = SITE_NAV.find((entry) => isActive(pathname, entry.to))?.to;
   return (
-    <Surface as="header" fill="canvas" elevation="sticky" className={s.header}>
+    <Surface as="header" fill="canvas" elevation="sticky" top="none" className={s.header}>
       <Box className={s.headerInner}>
-        <Link as={RouterLink} to="/" underline="hover" className={`${s.navLink.plain} ${s.brand}`} aria-label="Paper UI 홈">
-          <Logo height={26} />
-        </Link>
-        <Inline as="nav" aria-label="주요 메뉴" gap="sm" align="center" className={s.headerNav}>
+        <Inline gap="md" className={s.brand}>
+          <Link as={RouterLink} to="/" underline="hover" className={s.navLink.plain} aria-label="Paper UI 홈">
+            <Logo height={24} />
+          </Link>
+          <Text as="span" variant="label" strong={false} ink="tertiary" numeric>{`v${__PAPER_UI_VERSION__}`}</Text>
+        </Inline>
+        <Inline as="nav" aria-label="주요 메뉴" gap="xl" className={s.headerNav}>
           {SITE_NAV.map(({ to, label }) => (
             <Link as={RouterLink} key={to} to={to} underline="hover" className={s.navLink.bar} aria-current={active === to ? "page" : undefined}>{label}</Link>
           ))}
         </Inline>
-        <Inline gap="sm" align="center" className={s.headerTools}>
+        <Box className={s.headerTools}>
           <ThemeToggle />
-          <Surface fill="sunken" radius="full" border paddingX="sm" paddingY="xs">
-            <Text variant="caption" as="span" ink="secondary" numeric>{`v${__PAPER_UI_VERSION__}`}</Text>
-          </Surface>
-        </Inline>
+        </Box>
       </Box>
     </Surface>
   );

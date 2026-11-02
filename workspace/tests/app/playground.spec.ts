@@ -1,10 +1,12 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
-import { INVENTORY, PRIMITIVE_GROUPS, PRIMITIVE_ORDERS } from "../../packages/paper-ui/src/inventory";
-import { FOUNDATIONS, PRIMITIVE_ORDER_LABELS } from "../../app/src/site/site-core";
+import { INVENTORY, PRIMITIVE_GROUPS } from "../../packages/paper-ui/src/inventory";
+import { FOUNDATIONS } from "../../app/src/site/site-core";
 import { COLOR_VALUES_BY_MODE } from "../../packages/paper-ui/src/tokens/colors";
 import { ALIGNS, SURFACE_RADII, SURFACE_THEMES, ICON_SIZES, JUSTIFIES, JUSTIFY_ITEMS, SPACES } from "../../packages/paper-ui/src/tokens/vocabulary";
+import { tokens } from "../../packages/paper-ui/src/tokens";
 import { pageErrors } from "../support/console";
+import { roleDp } from "../support/geometry";
 import { openPlayground } from "../support/harness";
 
 const kebab = (name: string) => name.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
@@ -28,14 +30,24 @@ test("the sidebar lists the Playground in the inventory's order, with Utilities 
   const nav = sidebar(page);
   await expect(nav.getByRole("link")).toHaveText(["Overview", ...EXPECTED]);
   const text = (await nav.innerText()).split("\n");
-  for (const heading of ["Foundations", "Primitives", ...Object.values(PRIMITIVE_ORDER_LABELS), ...PRIMITIVE_GROUPS, "Utilities", "Atoms"]) expect(text, heading).toContain(heading);
-  // Each order's heading stands above its groups: the first order's three, then the second order's eight.
-  const [first, second] = [PRIMITIVE_ORDER_LABELS.first, PRIMITIVE_ORDER_LABELS.second].map((heading) => text.indexOf(heading));
-  expect(first).toBeLessThan(text.indexOf("Element"));
-  expect(text.indexOf("A11y")).toBeLessThan(second!);
-  expect(second).toBeLessThan(text.indexOf("Paint"));
-  expect(text.indexOf("Utilities")).toBeGreaterThan(text.lastIndexOf(PRIMITIVE_ORDERS.second.at(-1)!));
+  // The headings are the three groups and Utilities: the section names stay on the pages, and the two orders have none.
+  expect(text.filter((line) => !["Overview", ...EXPECTED].includes(line) && line !== "").sort()).toEqual(["Atoms", "Foundations", "Primitives", "Utilities"]);
+  // What parts the orders is a wider gap than the one between two rows of an order.
+  const row = async (name: string) => (await nav.getByRole("link", { name, exact: true }).boundingBox())!;
+  const [liveRegion, surface, paint] = [await row("LiveRegion"), await row("Surface"), await row("Paint")];
+  expect(surface.y - (liveRegion.y + liveRegion.height)).toBeGreaterThan(paint.y - (surface.y + surface.height));
+  expect(text.indexOf("Utilities")).toBeGreaterThan(text.indexOf("Grid"));
   expect(text.indexOf("Utilities")).toBeLessThan(text.indexOf("Atoms"));
+});
+
+test("a page far down the list opens with its row in view, and a row is a small control tall", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 700 });
+  await page.goto("/playground/textarea");
+  const row = sidebar(page).getByRole("link", { name: "Textarea", exact: true });
+  await expect(row).toHaveAttribute("aria-current", "page");
+  await expect(row).toBeInViewport();
+  const { height } = (await row.boundingBox())!;
+  expect(height).toBe(roleDp(tokens.shape.control.height.sm));
 });
 
 test("a component page titles its sections with headings, like the Overview and the Foundations pages", async ({ page }) => {

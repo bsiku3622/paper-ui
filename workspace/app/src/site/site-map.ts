@@ -20,7 +20,7 @@ export const slugOf = (name: string): string => name.replace(/([a-z0-9])([A-Z])/
 
 // The Playground sidebar: Foundations → Primitives → Atoms. `slug` is the path after /playground/.
 // A group without sub-headings has one section with an empty label. A primitive section carries the order
-// it belongs to; the sidebar puts that order's heading above the first section of it.
+// it belongs to; the sidebar starts a new block where the order changes.
 export type PlaygroundItem = { name: string; slug: string };
 export type PlaygroundSection = { label: string; items: PlaygroundItem[]; order?: PrimitiveOrder };
 export type PlaygroundGroup = { id: "foundations" | "primitives" | "atoms"; label: string; sections: PlaygroundSection[] };

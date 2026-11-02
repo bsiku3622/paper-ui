@@ -8,7 +8,7 @@ import { docPath } from "./links";
 
 const GROUPS: SidebarGroup[] = DOC_GROUPS.map((group) => ({
   label: group.label || undefined,
-  blocks: [{ sections: [{ links: DOCS.filter((doc) => doc.group === group.id).map((doc) => ({ label: doc.title, to: docPath(doc.slug) })) }] }],
+  blocks: [{ links: DOCS.filter((doc) => doc.group === group.id).map((doc) => ({ label: doc.title, to: docPath(doc.slug) })) }],
 }));
 
 export const DocsNav = () => <SidebarNav label="문서 목차" groups={GROUPS} />;

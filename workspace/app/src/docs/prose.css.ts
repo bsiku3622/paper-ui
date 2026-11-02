@@ -8,21 +8,18 @@ import { codeRule, emphasisRule, tokens, typographyRule } from "@studio-baeks/pa
 
 const line = `${tokens.shape.stroke.border} solid`;
 
-export const prose = style({ color: tokens.color.ink.primary, ...typographyRule("body") });
+// Docs are read, not worked in, so their running text is a step up from the app's body: the subheading's size and line at
+// the regular weight.
+export const prose = style({ color: tokens.color.ink.primary, ...typographyRule("subheading"), ...emphasisRule("regular") });
 // The reading width is set per block: the table wrapper stays open to the column, so a table wider than the reading
 // width scrolls inside the wrapper instead of being cut, and only a narrow column makes it scroll.
 globalStyle(`${prose} > *`, { maxWidth: tokens.shape.measure.lg });
 globalStyle(`${prose} > *:first-child`, { marginTop: 0 });
 
 globalStyle(`${prose} h1`, { ...typographyRule("title"), margin: `0 0 ${tokens.layout.gap.sm}` });
-globalStyle(`${prose} h2`, {
-  ...typographyRule("heading"),
-  margin: `${tokens.layout.gap.xl} 0 ${tokens.layout.gap.md}`,
-  paddingTop: tokens.shape.inset.xl,
-  borderTop: `${line} ${tokens.color.border.base}`,
-});
-globalStyle(`${prose} h3`, { ...typographyRule("subheading"), margin: `${tokens.layout.gap.lg} 0 ${tokens.layout.gap.sm}` });
-globalStyle(`${prose} h4`, { ...typographyRule("subheading"), margin: `${tokens.layout.gap.md} 0 ${tokens.layout.gap.sm}` });
+globalStyle(`${prose} h2`, { ...typographyRule("title"), margin: `${tokens.layout.gap["3xl"]} 0 ${tokens.layout.gap.md}` });
+globalStyle(`${prose} h3`, { ...typographyRule("heading"), margin: `${tokens.layout.gap.xl} 0 ${tokens.layout.gap.sm}` });
+globalStyle(`${prose} h4`, { ...typographyRule("subheading"), margin: `${tokens.layout.gap.lg} 0 ${tokens.layout.gap.sm}` });
 
 globalStyle(`${prose} p`, { margin: `0 0 ${tokens.layout.gap.lg}` });
 globalStyle(`${prose} ul, ${prose} ol`, { margin: `0 0 ${tokens.layout.gap.lg}`, paddingLeft: tokens.shape.inset.xl });

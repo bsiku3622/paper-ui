@@ -81,14 +81,14 @@ test("the Demo is a product of its own: its header is the banner and its stack i
   await page.goto("/demo");
   await settled(page);
   await expect(header(page)).toHaveCount(1);
-  await expect(header(page).getByText("fieldnote")).toBeVisible();
+  await expect(header(page).getByRole("link", { name: "Paper UI" })).toBeVisible();
   await expect(main(page)).toHaveAttribute("id", "main");
   await tab(page);
   const skip = page.getByRole("link", { name: "본문으로 건너뛰기" });
   await expect(skip).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(main(page)).toBeFocused();
-  await header(page).getByRole("link", { name: "fieldnote" }).click();
+  await header(page).getByRole("link", { name: "Paper UI" }).click();
   await expect(page).toHaveURL(/\/$/);
 });
 
@@ -200,7 +200,9 @@ test("an item of a sidebar takes the pointer's tint, and the current one keeps i
     const current = nav(page).locator('a[aria-current="page"]');
     await expect(current).toHaveCount(1);
     await page.mouse.move(0, 0);
-    await expect.poll(() => current.evaluate((element) => getComputedStyle(element).backgroundImage), route).not.toBe(rest);
+    const faceOf = (row: Locator) => row.evaluate((element) => { const { backgroundColor, backgroundImage } = getComputedStyle(element); return `${backgroundColor} ${backgroundImage}`; });
+    const resting = await faceOf(item);
+    await expect.poll(() => faceOf(current), route).not.toBe(resting);
   }
 });
 
