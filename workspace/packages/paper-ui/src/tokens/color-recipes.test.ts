@@ -199,7 +199,10 @@ const readable = (accent: (typeof ACCENTS)[number], variant: Variant, mode: Colo
 };
 
 // The documented exception: a status whose solid or wash the exception table replaces in a mode.
-const excepted = (accent: (typeof ACCENTS)[number], mode: ColorMode) => mode in ((STATUS_EXCEPTIONS as Record<string, Record<string, object>>)[accent] ?? {});
+const excepted = (accent: (typeof ACCENTS)[number], mode: ColorMode) => {
+  const tones = (STATUS_EXCEPTIONS as Record<string, Record<string, object>>)[accent]?.[mode] ?? {};
+  return "solid" in tones || "wash" in tones;
+};
 
 // The one pair measured just under 4.5:1 that the documentation names: the dark error muted text with the hover tint
 // over the raised surface. The tint is already the faintest step, and lifting the ink would change a Color role.
@@ -228,7 +231,7 @@ describe("the variants read in both themes, at rest and hovered", () => {
   });
 
   it("[foundations.color.warning-solid-white-label] keeps the white label on the amber warning solid below 4.5:1 in light, a little better hovered, and nowhere else", () => {
-    expect(Object.keys(STATUS_EXCEPTIONS)).toEqual(["warning"]);
+    expect(COLOR_MODES.flatMap((mode) => ACCENTS.filter((accent) => excepted(accent, mode)).map((accent) => `${mode} ${accent}`))).toEqual(["light warning"]);
     expect(Object.keys(STATUS_EXCEPTIONS.warning)).toEqual(["light"]);
     const [rest, hovered] = readable("warning", "solid", "light");
     expect(rest!.ratio).toBeLessThan(4.5);

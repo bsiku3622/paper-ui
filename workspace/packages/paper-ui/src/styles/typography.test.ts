@@ -25,16 +25,14 @@ describe("the typography class maps", () => {
   });
 
   it("[foundations.typography.control-preset] share one class between presets that declare the same thing", () => {
-    for (const weight of ["medium", "strong"] as const) expect(presetClass.button[weight].sm, weight).toBe(presetClass.button[weight].md);
-    expect(presetClass.field.sm).toBe(presetClass.field.md);
-    expect(presetClass.textarea.sm).toBe(presetClass.textarea.md);
+    expect(presetClass.field.md).toBe(presetClass.field.lg);
+    expect(presetClass.textarea.md).toBe(presetClass.textarea.lg);
   });
 
   it("[foundations.typography.control-preset] keep presets that differ apart", () => {
-    expect(presetClass.button.medium.lg).not.toBe(presetClass.button.medium.md);
-    expect(presetClass.button.strong.md).not.toBe(presetClass.button.medium.md);
+    expect(presetClass.button.lg).not.toBe(presetClass.button.md);
     expect(presetClass.field.md).not.toBe(presetClass.textarea.md);
-    expect(presetClass.badge).not.toBe(presetClass.button.medium.md);
+    expect(presetClass.badge).not.toBe(presetClass.button.md);
   });
 
   it("[foundations.typography.font-size-escape] give every control font size a class of its own", () => {

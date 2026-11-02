@@ -55,8 +55,8 @@ export const paletteValue = (path: PalettePath): PaletteToken => {
 export const ACCENT_TONE_STEPS = {
   solid: ["600", "600"],
   wash: ["50", "50"],
-  ink: ["700", "300"],
-  soft: ["150", "925"],
+  ink: ["650", "300"],
+  soft: ["100", "925"],
   subtle: ["700", "400"],
 } as const satisfies Record<AccentTone, readonly [light: AccentStep, dark: AccentStep]>;
 
@@ -72,8 +72,10 @@ type ToneException = { accent: AccentStep } | { neutral: PaletteStep };
 type StatusExceptions = { [S in Status]?: { [M in ColorMode]?: Partial<Record<AccentTone, ToneException>> } };
 
 // Where a status leaves the tone table. Light warning is deliberate: amber.400 is the solid that
-// reads as a middle-bright orange, and white stays on it as the wash.
+// reads as a middle-bright orange, and white stays on it as the wash. Light error keeps a brighter ink: red.600 is the
+// one 600 that still reads at 4.5:1 on its soft face with the hover tint over it.
 export const STATUS_EXCEPTIONS = {
+  error: { light: { ink: { accent: "600" } } },
   warning: { light: { solid: { accent: "400" }, wash: { neutral: "0" } } },
 } as const satisfies StatusExceptions;
 

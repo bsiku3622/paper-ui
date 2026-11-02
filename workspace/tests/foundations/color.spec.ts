@@ -63,7 +63,10 @@ test("[foundations.color.accent-variants-readable] all 25 accent × variant Butt
   const mode = await modeOf(page);
   const canvas = await page.locator("body").evaluate((element) => getComputedStyle(element).backgroundColor);
   // The documented exception: a status whose solid and wash the exception table replaces in this mode.
-  const excepted = (accent: string) => mode in ((STATUS_EXCEPTIONS as Record<string, Record<string, object>>)[accent] ?? {});
+  const excepted = (accent: string) => {
+    const tones = (STATUS_EXCEPTIONS as Record<string, Record<string, object>>)[accent]?.[mode] ?? {};
+    return "solid" in tones || "wash" in tones;
+  };
   const solids: Record<string, string> = {};
   const softs: Record<string, string> = {};
   for (const accent of ACCENTS) {

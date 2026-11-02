@@ -99,7 +99,7 @@ Palette Token은 내부 이름입니다. 컴포넌트와 앱은 import하지 않
 `interaction`의 상태 역할은 뜻이 서로 다릅니다. `active`는 중립 항목이 눌리는 동안의 면, `selected`는 중립 항목이 선택된 면, `focus`는 입력이 향하는 자리 — 키보드 포커스 링과 drop 대상의 경계 — 입니다. 항목은 이 면을 `tokens/color-recipes.ts`의 `itemProfile`(hover는 `bgHover.onSurface`, 눌림은 `active`, 선택은 `selected`)에서 읽고, 눌림이 선택을, 선택이 hover를 이깁니다.
 
 [contract:foundations.color.link]: #
-링크의 색은 `interaction.link`입니다. 지금은 `accent.info.ink`와 같은 blue.700 · blue.300을 고르지만 뜻이 다른 역할입니다. info는 상태를 알리고 link는 눌러서 이동할 수 있다는 표시라, 상태색을 바꿔도 링크가 따라 움직이지 않습니다. 링크는 모든 면 위에서 4.5:1 이상입니다.
+링크의 색은 `interaction.link`입니다. 지금은 blue.700 · blue.300을 고르고, 다크에서는 `accent.info.ink`와 같은 단계지만 뜻이 다른 역할입니다. info는 상태를 알리고 link는 눌러서 이동할 수 있다는 표시라, 상태색을 바꿔도 링크가 따라 움직이지 않습니다. 링크는 모든 면 위에서 4.5:1 이상입니다.
 
 ## 테마 스코프
 
@@ -158,13 +158,13 @@ Windows 고대비처럼 OS가 색을 정하는 모드(`forced-colors: active`)�
 | --- | --- | --- | --- |
 | `solid` | 채운 면, 상태 점 | 600 (primary 950) | 600 (primary 50) |
 | `wash` | solid 위 글자 | 50 (primary 0) | 50 (primary 950) |
-| `ink` | soft·hairline·ghost 위 글자와 의미색 글자 (링크는 `interaction.link`) | 700 (primary 900) | 300 (primary 100) |
-| `soft` | soft variant의 옅은 면 | 150 (primary 200) | 925 (primary 875) |
+| `ink` | soft·hairline·ghost 위 글자와 의미색 글자 (링크는 `interaction.link`) | 650 (primary 900) | 300 (primary 100) |
+| `soft` | soft variant의 옅은 면 | 100 (primary 200) | 925 (primary 875) |
 | `subtle` | muted variant의 글자 | 700 (primary 700) | 400 (primary 500) |
 <!-- /generated:color-tones -->
 
 [contract:foundations.color.tone-steps]: #
-tone마다 고르는 단계는 `ACCENT_TONE_STEPS`(상태색)와 `PRIMARY_TONE_STEPS`(primary)의 [light, dark] 쌍입니다. 이 표를 벗어나는 조합은 `STATUS_EXCEPTIONS`에 status 이름으로 적고, pigment 이름으로는 분기하지 않습니다.
+tone마다 고르는 단계는 `ACCENT_TONE_STEPS`(상태색)와 `PRIMARY_TONE_STEPS`(primary)의 [light, dark] 쌍입니다. 이 표를 벗어나는 조합은 `STATUS_EXCEPTIONS`에 status 이름으로 적고, pigment 이름으로는 분기하지 않습니다. light `error`의 `ink`는 표보다 한 단 밝은 red.600입니다. soft 면에 hover tint가 얹혀도 4.5:1을 넘는 600은 빨강뿐이기 때문입니다.
 
 [contract:foundations.color.warning-solid-white-label]: #
 light `warning`은 의도된 예외입니다. `STATUS_EXCEPTIONS.warning`이 light의 `solid`를 amber.400, `wash`를 흰색(neutral.0)으로 바꿔 면 위의 흰 글자 대비가 4.5:1에 못 미치지만(hover에서는 tint가 면을 어둡게 해 조금 오르지만 역시 못 미칩니다), 중간 밝기의 주황 채움이 시각적으로 맞다고 판단해 남겨 두었습니다. 이 이유로 4.5:1 아래에 두는 조합은 이것 하나입니다.

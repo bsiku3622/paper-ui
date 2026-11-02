@@ -35,9 +35,9 @@ export const SHAPE_SOURCE = {
   // set them apart. text hugs a line of text. pill is the label's form and a Shape may pull it down; full is a circle's
   // geometry, and a Radio that read a lower value would stop being round.
   radius: {
-    control: { xs: 4, sm: 4, md: 4, lg: 4 } satisfies Record<ControlSize, number>,
-    selection: 3,
-    surface: { sm: 4, md: 6, lg: 8 },
+    control: { xs: 8, sm: 8, md: 12, lg: 12 } satisfies Record<ControlSize, number>,
+    selection: 4,
+    surface: { sm: 12, md: 16, lg: 20 },
     text: 4,
     pill: 999,
     full: 999,
@@ -48,12 +48,12 @@ export const SHAPE_SOURCE = {
   // The smallest area a press may land on (WCAG 2.5.8). CSS px: a hit area does not follow the root font.
   target: { min: 24 },
   control: {
-    height: { xs: 28, sm: 30, md: 32, lg: 36 } satisfies Record<ControlSize, number>,
+    height: { xs: 28, sm: 32, md: 40, lg: 44 } satisfies Record<ControlSize, number>,
     // A button's label defines its box, so it sits wider than a typed value.
     buttonInsetRatio: 1.4,
   },
   // A selection mark stands beside a line of text, so its size doesn't follow how much room a control takes.
-  selection: { size: { xs: 14, sm: 15, md: 16, lg: 18 } satisfies Record<ControlSize, number> },
+  selection: { size: { xs: 14, sm: 16, md: 18, lg: 20 } satisfies Record<ControlSize, number> },
   // Icon artboards are named after the Text role they stand beside.
   icon: { label: 14, caption: 16, body: 18, subheading: 20 } satisfies Partial<Record<TextVariant, number>>,
   dimension: {
@@ -74,7 +74,7 @@ export const SHAPE_SOURCE = {
     // Marks sized against the text they sit in (em).
     inline: { dot: 0.5, spinner: 1 },
     // The highlighter's band: its height and where it sits in the line box (%), and how far past the glyphs it runs (em).
-    marker: { height: 80, position: 67, overrun: 0.08 },
+    marker: { height: 84, position: 50, overrun: 0.08 },
   },
 } as const;
 
@@ -87,8 +87,8 @@ export const MEASURES = keys(SHAPE_SOURCE.measure);
 export type Measure = keyof typeof SHAPE_SOURCE.measure;
 export const ICON_SIZES = keys(SHAPE_SOURCE.icon);
 export type IconSize = keyof typeof SHAPE_SOURCE.icon;
-// Control icons follow the control height (30 → 16, 32 → 18, 36 → 20), not the text beside them:
-// control text is a preset (13 · 13 · 14) that no Text role matches.
+// Control icons follow the control height (28 and 32 → 16, 40 → 18, 44 → 20), not the text beside them:
+// control text is a preset (12 · 13 · 14 · 15) whose steps are not all Text roles.
 export const CONTROL_ICON = { xs: "caption", sm: "caption", md: "body", lg: "subheading" } as const satisfies Record<ControlSize, IconSize>;
 
 const s = SHAPE_SOURCE;
@@ -133,7 +133,7 @@ const height = source.control.height;
 // (inputLeading) is taller, for the caret, and the inset does not read it.
 const inputInset = controlSizes((size) => `calc((${height[size]} - ${TYPOGRAPHY.preset.field[size].leading}) / 2)`);
 const buttonInset = controlSizes((size) =>
-  `round(nearest, calc((${height[size]} - ${TYPOGRAPHY.preset.button.medium[size].leading}) / 2 * ${source.control.buttonInsetRatio}), 1px)`);
+  `round(nearest, calc((${height[size]} - ${TYPOGRAPHY.preset.button[size].leading}) / 2 * ${source.control.buttonInsetRatio}), 1px)`);
 
 export const SHAPE = {
   inset: SPACE,

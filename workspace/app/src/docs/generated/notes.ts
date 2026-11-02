@@ -34,11 +34,10 @@ export const ROLE_TAGS: Record<TextVariant, string> = {
   label: "span",
 };
 
-export type PresetName = "button.medium" | "button.strong" | "field" | "textarea" | "badge";
+export type PresetName = "button" | "field" | "textarea" | "badge";
 
 export const PRESET_USES: Record<PresetName, string> = {
-  "button.medium": "Button·IconButton (solid 외)",
-  "button.strong": "solid Button",
+  button: "Button · IconButton",
   field: "Field · Select",
   textarea: "Textarea",
   badge: "Badge",

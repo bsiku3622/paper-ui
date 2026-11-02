@@ -36,7 +36,7 @@ const expected = {
   // A typed value gets the same room on every side of its glyph line.
   inputInset: (size: ControlSize) => (source_.control.height[size] - lineOf(PRESET_SPEC.field[size].leading)) / 2,
   // A button's label defines its box, so its inset is the input inset widened by the ratio and snapped to a pixel.
-  buttonInset: (size: ControlSize) => Math.round(((source_.control.height[size] - lineOf(PRESET_SPEC.button.medium[size].leading)) / 2) * source_.control.buttonInsetRatio),
+  buttonInset: (size: ControlSize) => Math.round(((source_.control.height[size] - lineOf(PRESET_SPEC.button[size].leading)) / 2) * source_.control.buttonInsetRatio),
   icon: (size: ControlSize) => source_.icon[CONTROL_ICON[size]],
   selection: (size: ControlSize) => source_.selection.size[size],
   thumb: (size: ControlSize) => expected.selection(size) - source_.stroke.emphasis,
@@ -264,7 +264,7 @@ describe("controlGeometry is the one size entry of every sized Atom", () => {
   });
 
   it("[foundations.shape.recipe-geometry] sizes the switch track, its thumb at the rim, and the thumb's place once checked", () => {
-    expect(rules(controlGeometry.switch, prop("width"))).toEqual(each(expected.height));
+    expect(rules(controlGeometry.switch, prop("width"))).toEqual(each((size) => expected.selection(size) * 2));
     expect(rules(controlGeometry.switch, prop("height"))).toEqual(each(expected.trackHeight));
     expect(rules(controlGeometry.switch, nested("&::after", "width"))).toEqual(each(expected.thumb));
     expect(rules(controlGeometry.switch, nested("&::after", "height"))).toEqual(each(expected.thumb));

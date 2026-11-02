@@ -69,7 +69,7 @@ describe("Typography inspector", () => {
   });
 
   it("lists every preset once and notes each", () => {
-    expect(PRESET_PATHS).toEqual(["button.medium", "button.strong", "field", "textarea", "badge"]);
+    expect(PRESET_PATHS).toEqual(["button", "field", "textarea", "badge"]);
     expect(Object.keys(PRESET_NOTES).sort()).toEqual([...PRESET_PATHS].sort());
   });
 });

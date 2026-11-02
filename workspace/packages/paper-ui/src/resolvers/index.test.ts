@@ -75,10 +75,9 @@ describe("resolveText", () => {
 });
 
 describe("resolvePreset", () => {
-  it("[foundations.typography.control-preset] picks a class for every preset × size × weight", () => {
+  it("[foundations.typography.control-preset] picks a class for every preset × size", () => {
     for (const size of CONTROL_SIZES) {
-      expect(resolvePreset("button", size, "medium"), `button ${size} medium`).toBe(presetClass.button.medium[size]);
-      expect(resolvePreset("button", size, "strong"), `button ${size} strong`).toBe(presetClass.button.strong[size]);
+      expect(resolvePreset("button", size), `button ${size}`).toBe(presetClass.button[size]);
       expect(resolvePreset("field", size), `field ${size}`).toBe(presetClass.field[size]);
       expect(resolvePreset("textarea", size), `textarea ${size}`).toBe(presetClass.textarea[size]);
     }

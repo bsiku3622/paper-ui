@@ -8,7 +8,7 @@ import { SELECT_OPTIONS } from "./options.js";
 export const TypographyCase = () => (
   <div id="typography-fixture">
     <Button data-testid="button-md">Button</Button>
-    <Button variant="soft" data-testid="button-medium">Button</Button>
+    <Button variant="soft" data-testid="button-soft">Button</Button>
     <Button fontSize="body" data-testid="button-body">Button</Button>
     <Button fontSize="label" data-testid="button-label">Button</Button>
     <Badge data-testid="badge-md">Badge</Badge>
@@ -34,8 +34,8 @@ export const TypographyCase = () => (
       {TEXT_VARIANTS.map((variant) => <Text key={variant} variant={variant} family="mono" data-testid={`role-mono-${variant}`}>Role</Text>)}
       {CONTROL_SIZES.map((size) => (
         <span key={size}>
-          <Button size={size} data-testid={`preset-button-strong-${size}`}>Button</Button>
-          <Button size={size} variant="soft" data-testid={`preset-button-medium-${size}`}>Button</Button>
+          <Button size={size} data-testid={`preset-button-${size}`}>Button</Button>
+          <Button size={size} variant="soft" data-testid={`preset-button-soft-${size}`}>Button</Button>
           <Field size={size} aria-label={`preset ${size} field`} data-testid={`preset-field-${size}`} />
           <Textarea size={size} aria-label={`preset ${size} textarea`} data-testid={`preset-textarea-${size}`} />
         </span>

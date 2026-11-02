@@ -5,15 +5,15 @@
     "fontSize.12": "0.75rem",
     "fontSize.13": "0.8125rem",
     "fontSize.14": "0.875rem",
+    "fontSize.15": "0.9375rem",
     "fontSize.16": "1rem",
     "fontSize.20": "1.25rem",
     "fontSize.24": "1.5rem",
     "fontSize.32": "2rem",
-    "fontSize.hero": "clamp(2.25rem, 6vw, 3.75rem)",
+    "fontSize.hero": "clamp(2.75rem, 5.2vw, 4.75rem)",
     "weight.regular": "400",
     "weight.normal": "450",
     "weight.medium": "500",
-    "weight.strong": "650",
     "weight.semibold": "600",
     "weight.bold": "700",
     "leading.16": "1rem",
@@ -22,11 +22,11 @@
     "leading.28": "1.75rem",
     "leading.32": "2rem",
     "leading.40": "2.5rem",
-    "leading.hero": "1.04",
+    "leading.hero": "1.12",
     "tracking.mono": "-0.04em",
-    "tracking.tighter": "-0.035em",
+    "tracking.tightest": "-0.035em",
+    "tracking.tighter": "-0.03em",
     "tracking.tight": "-0.02em",
-    "tracking.snug": "-0.01em",
     "tracking.normal": "0",
     "tracking.wide": "0.01em",
     "decoration.underlineOffset": "0.2em",
@@ -37,24 +37,24 @@
   "roles": {
     "hero": {
       "ink": "primary",
-      "size": "clamp(2.25rem, 6vw, 3.75rem)",
-      "weight": "700",
-      "leading": "1.04",
+      "size": "clamp(2.75rem, 5.2vw, 4.75rem)",
+      "weight": "400",
+      "leading": "1.12",
       "tracking": "-0.035em"
     },
     "display": {
       "ink": "primary",
       "size": "2rem",
-      "weight": "700",
+      "weight": "400",
       "leading": "2.5rem",
-      "tracking": "-0.02em"
+      "tracking": "-0.03em"
     },
     "title": {
       "ink": "primary",
       "size": "1.5rem",
-      "weight": "700",
+      "weight": "600",
       "leading": "2rem",
-      "tracking": "-0.01em"
+      "tracking": "-0.02em"
     },
     "heading": {
       "ink": "primary",
@@ -94,57 +94,29 @@
   },
   "presets": {
     "button": {
-      "medium": {
-        "xs": {
-          "size": "0.75rem",
-          "weight": "500",
-          "leading": "1rem",
-          "tracking": "0"
-        },
-        "sm": {
-          "size": "0.8125rem",
-          "weight": "500",
-          "leading": "1rem",
-          "tracking": "0"
-        },
-        "md": {
-          "size": "0.8125rem",
-          "weight": "500",
-          "leading": "1rem",
-          "tracking": "0"
-        },
-        "lg": {
-          "size": "0.875rem",
-          "weight": "500",
-          "leading": "1rem",
-          "tracking": "0"
-        }
+      "xs": {
+        "size": "0.75rem",
+        "weight": "500",
+        "leading": "1rem",
+        "tracking": "0"
       },
-      "strong": {
-        "xs": {
-          "size": "0.75rem",
-          "weight": "650",
-          "leading": "1rem",
-          "tracking": "0"
-        },
-        "sm": {
-          "size": "0.8125rem",
-          "weight": "650",
-          "leading": "1rem",
-          "tracking": "0"
-        },
-        "md": {
-          "size": "0.8125rem",
-          "weight": "650",
-          "leading": "1rem",
-          "tracking": "0"
-        },
-        "lg": {
-          "size": "0.875rem",
-          "weight": "650",
-          "leading": "1rem",
-          "tracking": "0"
-        }
+      "sm": {
+        "size": "0.8125rem",
+        "weight": "500",
+        "leading": "1rem",
+        "tracking": "0"
+      },
+      "md": {
+        "size": "0.875rem",
+        "weight": "500",
+        "leading": "1rem",
+        "tracking": "0"
+      },
+      "lg": {
+        "size": "0.9375rem",
+        "weight": "500",
+        "leading": "1rem",
+        "tracking": "0"
       }
     },
     "field": {
@@ -163,7 +135,7 @@
         "inputLeading": "1.25rem"
       },
       "md": {
-        "size": "0.8125rem",
+        "size": "0.875rem",
         "weight": "450",
         "leading": "1rem",
         "tracking": "0",
@@ -191,7 +163,7 @@
         "tracking": "0"
       },
       "md": {
-        "size": "0.8125rem",
+        "size": "0.875rem",
         "weight": "450",
         "leading": "1.25rem",
         "tracking": "0"

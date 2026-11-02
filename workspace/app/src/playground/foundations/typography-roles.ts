@@ -10,7 +10,8 @@ type FontSize = keyof typeof TYPOGRAPHY_SOURCE.fontSize | keyof typeof TYPOGRAPH
 type Leading = keyof typeof TYPOGRAPHY_SOURCE.leading | keyof typeof TYPOGRAPHY_SOURCE.fluid;
 
 // Each font size is shown on the leading its role pairs it with.
-export const SIZE_LEADING = Object.fromEntries(Object.values(ROLE_SPEC).map((spec) => [spec.size, spec.leading])) as Record<FontSize, Leading>;
+// A size no role uses, like the large button's 15, takes the leading of the preset that does; a role's pair wins.
+export const SIZE_LEADING = Object.fromEntries([...Object.values(PRESET_SPEC.button), ...Object.values(ROLE_SPEC)].map((spec) => [spec.size, spec.leading])) as Record<FontSize, Leading>;
 
 // A fluid step is shown by the span it grows over and its unitless leading, not by the length it
 // resolves to at this viewport — and by a specimen short enough to stand on one line at its largest.
@@ -44,8 +45,7 @@ export const CODE_SCALE_NOTES: Record<keyof typeof TYPOGRAPHY_SOURCE.codeScale, 
 export const CODE_BLOCK = { spec: CODE_SPEC.block, note: "코드 블록의 글자와 줄 — 문단 속 코드와 달리 자기 크기를 갖는 mono" };
 
 export const PRESET_NOTES: Record<PresetPath, { role: string; sample: string }> = {
-  "button.medium": { role: "Button · medium", sample: "Continue" },
-  "button.strong": { role: "Button · strong", sample: "Save changes" },
+  button: { role: "Button · IconButton", sample: "Continue" },
   field: { role: "Field · Input / Select", sample: "Search projects" },
   textarea: { role: "Textarea", sample: "Add a description" },
   badge: { role: "크기와 무관한 고정 표식", sample: "In progress" },

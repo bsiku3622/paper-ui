@@ -134,7 +134,9 @@ describe("color systems", () => {
   });
 
   it("[foundations.color.accent-tones] [foundations.color.tone-steps] maps the five accent roles from the tone tables and the status exceptions", () => {
-    expect(Object.keys(STATUS_EXCEPTIONS)).toEqual(["warning"]);
+    expect(Object.keys(STATUS_EXCEPTIONS)).toEqual(["error", "warning"]);
+    expect(Object.keys(STATUS_EXCEPTIONS.error)).toEqual(["light"]);
+    expect(Object.keys(STATUS_EXCEPTIONS.error.light)).toEqual(["ink"]);
     expect(Object.keys(STATUS_EXCEPTIONS.warning)).toEqual(["light"]);
     expect(Object.keys(STATUS_EXCEPTIONS.warning.light)).toEqual(["solid", "wash"]);
     for (const mode of ["light", "dark"] as const) {
@@ -168,7 +170,8 @@ describe("color systems", () => {
     for (const [name, accent] of Object.entries(values.accent)) {
       expect(contrast(accent.ink, accent.soft), `${mode} ${name}.ink on its soft face`).toBeGreaterThanOrEqual(4.5);
       // A status the exception table lists (the white-on-amber light solid) is the one documented place the wash falls short.
-      const exception = mode in ((STATUS_EXCEPTIONS as Record<string, Record<string, object>>)[name] ?? {});
+      const tones = (STATUS_EXCEPTIONS as Record<string, Record<string, object>>)[name]?.[mode] ?? {};
+      const exception = "solid" in tones || "wash" in tones;
       if (exception) expect(contrast(accent.wash, accent.solid), `${mode} ${name} wash on solid, the documented exception`).toBeLessThan(4.5);
       else expect(contrast(accent.wash, accent.solid), `${mode} ${name} wash on solid`).toBeGreaterThanOrEqual(4.5);
       expect(accent.soft, `${mode} ${name} soft face differs from the wash`).not.toBe(accent.wash);

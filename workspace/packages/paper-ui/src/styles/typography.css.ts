@@ -46,10 +46,7 @@ const bySize = (rule: (size: ControlSize) => Parameters<typeof style>[0]) =>
   Object.fromEntries(CONTROL_SIZES.map((size) => [size, classOf(rule(size))])) as Record<ControlSize, string>;
 
 export const presetClass: Mirror<typeof tokens.typography.preset> = {
-  button: {
-    medium: bySize((size) => presetRule("button", size, "medium")),
-    strong: bySize((size) => presetRule("button", size, "strong")),
-  },
+  button: bySize((size) => presetRule("button", size)),
   field: bySize((size) => presetRule("field", size)),
   textarea: bySize((size) => presetRule("textarea", size)),
   badge: classOf(presetRule("badge")),

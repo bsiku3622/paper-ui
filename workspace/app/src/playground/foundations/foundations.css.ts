@@ -19,8 +19,7 @@ export const specimen = style({ margin: 0, minWidth: 0 });
 export const presetSample = style({ display: "block" });
 // A control preset as a sample is the preset's own declaration, one class per size.
 const PRESET_RULES: Record<PresetPath, (size: ControlSize) => ComplexStyleRule> = {
-  "button.medium": (size) => presetRule("button", size, "medium"),
-  "button.strong": (size) => presetRule("button", size, "strong"),
+  button: (size) => presetRule("button", size),
   field: (size) => presetRule("field", size),
   textarea: (size) => presetRule("textarea", size),
   badge: () => presetRule("badge"),

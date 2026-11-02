@@ -20,7 +20,7 @@
 //   -apple-system 을 앞에 두면 라틴만 San Francisco 로, 한글은 Apple SD Gothic Neo
 //   로 갈라져 같은 weight 라도 한글이 얇게 보인다 — Pretendard 는 SF 결을 모방하며
 //   한 몸으로 렌더해 그 어긋남이 없다. -apple-system 은 Pretendard 미로드 시 fallback.
-//   400 · 450 · 500 · 600 · 650 · 700 사다리는 Pretendard Variable 을 전제한다 — 서체가 없으면
+//   400 · 450 · 500 · 600 · 700 사다리는 Pretendard Variable 을 전제한다 — 서체가 없으면
 //   시스템 폰트가 가까운 굵기로 접는다 (행간이 고정이라 기하는 그대로다).
 //   mono 는 family 축이다 — 어느 크기에도 얹을 수 있고, 코드·토큰 같은 기술적
 //   자리에만 쓴다. 숫자를 무조건 등폭으로 두지 않는다 (표의 숫자 열은 sans + tabular-nums).
@@ -33,7 +33,7 @@ import { buildVarTree, em, keys, lengths, mapValues, rem } from "./helpers";
 // Navigation 등은 여기서 골라 역할별 preset을 완성한다.
 //
 // 450은 입력값을 위한 보정 단계다 — 작은 sans 글씨가 Retina에서 힘이 빠지지 않게 Field · Textarea 의
-// 값에만 쓴다. 읽기 본문은 500 이다. Button primary는 Demo 기준의 strong weight를 별도 사용한다.
+// 값에만 쓴다. 읽기 본문과 Button 은 500 이다.
 
 const FAMILY = {
   sans: "'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
@@ -47,20 +47,19 @@ const FAMILY = {
 
 export const TYPOGRAPHY_SOURCE = {
   family: FAMILY,
-  fontSize: { "12": 12, "13": 13, "14": 14, "16": 16, "20": 20, "24": 24, "32": 32 },
+  fontSize: { "12": 12, "13": 13, "14": 14, "15": 15, "16": 16, "20": 20, "24": 24, "32": 32 },
   // 유동 단계 — 크기가 뷰포트 폭(vw)을 따라 min 과 max 사이에서 자라고, 행간은 단위 없는 비율이다.
   // 고정 dp 사다리의 유일한 예외이며 hero 역할만 쓴다.
-  fluid: { hero: { min: 36, vw: 6, max: 60, leading: 1.04 } },
+  fluid: { hero: { min: 44, vw: 5.2, max: 76, leading: 1.12 } },
   weight: {
-    regular: 400, // caption처럼 가벼운 보조 정보
+    regular: 400, // 큰 제목(hero · display)과 caption처럼 가벼운 자리
     normal: 450, // 입력값 — Field · Textarea
     medium: 500, // 읽기 본문 · UI 컨트롤 — Button · Tab · Nav
-    strong: 650, // 기본 primary action — Demo button anchor
-    semibold: 600, // 라벨 · 소제목 · 활성/강조
-    bold: 700, // 제목 · 특대
+    semibold: 600, // 제목 · 라벨 · 소제목 · 활성/강조
+    bold: 700, // 문장 속 강조
   },
   leading: { "16": 16, "20": 20, "24": 24, "28": 28, "32": 32, "40": 40 },
-  tracking: { mono: -0.04, tighter: -0.035, tight: -0.02, snug: -0.01, normal: 0, wide: 0.01 },
+  tracking: { mono: -0.04, tightest: -0.035, tighter: -0.03, tight: -0.02, normal: 0, wide: 0.01 },
   // 밑줄은 글자의 장식이라 글자 크기(em)를 따른다.
   decoration: { underlineOffset: 0.2 },
   // mono는 sans 대비 시각 크기가 커 보여 동일한 잉크 크기를 위해 살짝 줄인다.
@@ -125,9 +124,9 @@ type StyleKeys = {
 };
 
 export const ROLE_SPEC = {
-  hero: { size: "hero", weight: "bold", leading: "hero", tracking: "tighter" },
-  display: { size: "32", weight: "bold", leading: "40", tracking: "tight" },
-  title: { size: "24", weight: "bold", leading: "32", tracking: "snug" },
+  hero: { size: "hero", weight: "regular", leading: "hero", tracking: "tightest" },
+  display: { size: "32", weight: "regular", leading: "40", tracking: "tighter" },
+  title: { size: "24", weight: "semibold", leading: "32", tracking: "tight" },
   heading: { size: "20", weight: "semibold", leading: "28", tracking: "normal" },
   subheading: { size: "16", weight: "semibold", leading: "24", tracking: "normal" },
   body: { size: "14", weight: "medium", leading: "20", tracking: "normal" },
@@ -152,22 +151,16 @@ export type Emphasis = (typeof EMPHASES)[number];
 export const LINK_UNDERLINES = ["always", "hover"] as const;
 export type LinkUnderline = (typeof LINK_UNDERLINES)[number];
 
-const BUTTON_MEDIUM = {
+const BUTTON_CONTROL = {
   xs: { size: "12", weight: "medium", leading: "16", tracking: "normal" },
   sm: { size: "13", weight: "medium", leading: "16", tracking: "normal" },
-  md: { size: "13", weight: "medium", leading: "16", tracking: "normal" },
-  lg: { size: "14", weight: "medium", leading: "16", tracking: "normal" },
-} as const satisfies Record<ControlSize, StyleKeys>;
-const BUTTON_STRONG = {
-  xs: { ...BUTTON_MEDIUM.xs, weight: "strong" },
-  sm: { ...BUTTON_MEDIUM.sm, weight: "strong" },
-  md: { ...BUTTON_MEDIUM.md, weight: "strong" },
-  lg: { ...BUTTON_MEDIUM.lg, weight: "strong" },
+  md: { size: "14", weight: "medium", leading: "16", tracking: "normal" },
+  lg: { size: "15", weight: "medium", leading: "16", tracking: "normal" },
 } as const satisfies Record<ControlSize, StyleKeys>;
 const FIELD_FONT = {
   xs: { size: "12", weight: "normal", leading: "16", tracking: "normal" },
   sm: { size: "13", weight: "normal", leading: "16", tracking: "normal" },
-  md: { size: "13", weight: "normal", leading: "16", tracking: "normal" },
+  md: { size: "14", weight: "normal", leading: "16", tracking: "normal" },
   lg: { size: "14", weight: "normal", leading: "16", tracking: "normal" },
 } as const satisfies Record<ControlSize, StyleKeys>;
 // leading 16 은 글자 한 줄이고 Shape 의 안쪽 여백이 읽는 값이다. inputLeading 은 입력값이 앉는 줄상자 —
@@ -187,7 +180,7 @@ const TEXTAREA_CONTROL = {
 const BADGE_PRESET = { size: "12", weight: "medium", leading: "16", tracking: "normal" } as const satisfies StyleKeys;
 
 export const PRESET_SPEC = {
-  button: { medium: BUTTON_MEDIUM, strong: BUTTON_STRONG },
+  button: BUTTON_CONTROL,
   field: FIELD_CONTROL,
   textarea: TEXTAREA_CONTROL,
   badge: BADGE_PRESET,
@@ -215,7 +208,7 @@ export const TYPOGRAPHY = {
   palette,
   role: mapValues(ROLE_SPEC, refsOf),
   preset: {
-    button: mapValues(PRESET_SPEC.button, (ladder) => mapValues(ladder, refsOf)),
+    button: mapValues(PRESET_SPEC.button, refsOf),
     field: mapValues(PRESET_SPEC.field, (spec) => ({ ...refsOf(spec), inputLeading: palette.leading[spec.inputLeading] })),
     textarea: mapValues(PRESET_SPEC.textarea, refsOf),
     badge: refsOf(PRESET_SPEC.badge),

@@ -11,16 +11,16 @@
     },
     "radius": {
       "control": {
-        "xs": 4,
-        "sm": 4,
-        "md": 4,
-        "lg": 4
+        "xs": 8,
+        "sm": 8,
+        "md": 12,
+        "lg": 12
       },
-      "selection": 3,
+      "selection": 4,
       "surface": {
-        "sm": 4,
-        "md": 6,
-        "lg": 8
+        "sm": 12,
+        "md": 16,
+        "lg": 20
       },
       "text": 4,
       "pill": 999,
@@ -41,22 +41,22 @@
     "control": {
       "height": {
         "xs": 28,
-        "sm": 30,
-        "md": 32,
-        "lg": 36
+        "sm": 32,
+        "md": 40,
+        "lg": 44
       },
       "inset": {
         "input": {
           "xs": 6,
-          "sm": 7,
-          "md": 8,
-          "lg": 10
+          "sm": 8,
+          "md": 12,
+          "lg": 14
         },
         "button": {
           "xs": 8,
-          "sm": 10,
-          "md": 11,
-          "lg": 14
+          "sm": 11,
+          "md": 17,
+          "lg": 20
         }
       },
       "gap": 8,
@@ -70,9 +70,9 @@
     "selection": {
       "size": {
         "xs": 14,
-        "sm": 15,
-        "md": 16,
-        "lg": 18
+        "sm": 16,
+        "md": 18,
+        "lg": 20
       }
     },
     "icon": {
@@ -125,27 +125,27 @@
       "dot": "0.5em"
     },
     "checkbox": {
-      "radius": 3,
+      "radius": 4,
       "mark": {
         "xs": 7,
-        "sm": 7.5,
-        "md": 8,
-        "lg": 9
+        "sm": 8,
+        "md": 9,
+        "lg": 10
       },
       "short": {
         "xs": 3.5,
-        "sm": 3.75,
-        "md": 4,
-        "lg": 4.5
+        "sm": 4,
+        "md": 4.5,
+        "lg": 5
       },
       "stroke": 2,
       "markTransform": "rotate(-45deg) translate(calc(var(--pui-shape-stroke-emphasis) * var(--pui-shape-anatomy-checkbox-mark-shift-x)), calc(var(--pui-shape-stroke-emphasis) * var(--pui-shape-anatomy-checkbox-mark-shift-y)))",
       "dash": {
         "width": {
           "xs": 7,
-          "sm": 7.5,
-          "md": 8,
-          "lg": 9
+          "sm": 8,
+          "md": 9,
+          "lg": 10
         },
         "height": 2,
         "radius": 999
@@ -154,63 +154,63 @@
     "radio": {
       "dot": {
         "xs": 7,
-        "sm": 7.5,
-        "md": 8,
-        "lg": 9
+        "sm": 8,
+        "md": 9,
+        "lg": 10
       }
     },
     "switch": {
       "width": {
         "xs": 28,
-        "sm": 30,
-        "md": 32,
-        "lg": 36
+        "sm": 32,
+        "md": 36,
+        "lg": 40
       },
       "height": {
         "xs": 16,
-        "sm": 17,
-        "md": 18,
-        "lg": 20
+        "sm": 18,
+        "md": 20,
+        "lg": 22
       },
       "thumb": {
         "xs": 12,
-        "sm": 13,
-        "md": 14,
-        "lg": 16
+        "sm": 14,
+        "md": 16,
+        "lg": 18
       },
       "inset": 2,
       "travel": {
         "xs": 12,
-        "sm": 13,
-        "md": 14,
-        "lg": 16
+        "sm": 14,
+        "md": 16,
+        "lg": 18
       }
     },
     "select": {
       "arrowInset": {
         "xs": 6,
-        "sm": 7,
-        "md": 8,
-        "lg": 10
+        "sm": 8,
+        "md": 12,
+        "lg": 14
       },
       "paddingEnd": {
         "xs": 30,
-        "sm": 31,
-        "md": 34,
-        "lg": 38
+        "sm": 32,
+        "md": 38,
+        "lg": 42
       }
     },
     "textarea": {
       "paddingBlock": {
         "xs": 3,
-        "sm": 4,
-        "md": 5,
-        "lg": 7
+        "sm": 5,
+        "md": 9,
+        "lg": 11
       }
     },
     "marker": {
-      "height": "80%",
-      "position": "67%",
+      "height": "84%",
+      "position": "50%",
       "overrun": "0.08em"
     },
     "spinner": {
@@ -226,15 +226,15 @@
     "target": {
       "selection": {
         "xs": -5,
-        "sm": -4.5,
-        "md": -4,
-        "lg": -3
+        "sm": -4,
+        "md": -3,
+        "lg": -2
       },
       "switchBlock": {
         "xs": -4,
-        "sm": -3.5,
-        "md": -3,
-        "lg": -2
+        "sm": -3,
+        "md": -2,
+        "lg": -1
       },
       "action": {
         "xs": -4,

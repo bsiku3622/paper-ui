@@ -55,15 +55,14 @@ const presetRows = (): string[][] => {
   ];
   const inputLine = ({ inputLeading }: Step) => (inputLeading === undefined ? "" : ` · 입력 줄상자 ${S.leading[inputLeading]}`);
   return [
-    row("button.medium", PRESET_SPEC.button.medium),
-    row("button.strong", PRESET_SPEC.button.strong),
+    row("button", PRESET_SPEC.button),
     row("field", PRESET_SPEC.field, inputLine),
     row("textarea", PRESET_SPEC.textarea),
     ["`badge`", `${presetCell(PRESET_SPEC.badge)} (크기 무관)`, "", "", PRESET_USES.badge],
   ];
 };
 
-const controlSizes = () => CONTROL_SIZES.map((size) => S.fontSize[PRESET_SPEC.button.medium[size].size]).join(" · ");
+const controlSizes = () => CONTROL_SIZES.map((size) => S.fontSize[PRESET_SPEC.button[size].size]).join(" · ");
 const roleSize = (role: keyof typeof ROLE_SPEC) => (ROLE_SPEC[role].size === "hero" ? `${FLUID.min}–${FLUID.max} 유동` : String(S.fontSize[ROLE_SPEC[role].size as keyof typeof S.fontSize]));
 
 export const LADDER_BLOCK: GeneratedBlock = {

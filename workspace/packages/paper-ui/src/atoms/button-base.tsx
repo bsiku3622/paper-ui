@@ -93,7 +93,7 @@ export const ButtonBase = forwardRef<HTMLElement, ButtonBaseProps>(function Butt
         buttonRoot,
         buttonCorner[size],
         anatomy === "icon" ? buttonIconSize[size] : buttonSize[size],
-        resolvePreset("button", size, variant === "solid" ? "strong" : "medium"),
+        resolvePreset("button", size),
         resolveControlFontSize(fontSize),
         paintClass({ accent, variant, fill, shadow, hoverable: true }),
         fullWidth && buttonFull,

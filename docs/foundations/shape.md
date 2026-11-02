@@ -74,9 +74,9 @@ Box의 `padding` · `paddingX` · `paddingY`가 이 단계를 받습니다. 앱 
 <!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 | 역할 | 값 | 쓰는 곳 |
 | --- | --- | --- |
-| `radius.control.xs / sm / md / lg` | 4 / 4 / 4 / 4 | Button · IconButton · Field · Select · Textarea, `shape="rounded"`인 Badge |
-| `radius.selection` | 3 | Checkbox |
-| `radius.surface.sm / md / lg` | 4 / 6 / 8 | Surface의 `radius` prop |
+| `radius.control.xs / sm / md / lg` | 8 / 8 / 12 / 12 | Button · IconButton · Field · Select · Textarea, `shape="rounded"`인 Badge |
+| `radius.selection` | 4 | Checkbox |
+| `radius.surface.sm / md / lg` | 12 / 16 / 20 | Surface의 `radius` prop |
 | `radius.text` | 4 | 글자 줄 곁에 서는 것 — Link의 링 |
 | `radius.pill` | 999px | 알약 — Badge의 기본, `shape="pill"` |
 | `radius.full` | 999px | 원(Radio · Switch · Spinner), Surface의 `radius="full"` |
@@ -102,7 +102,7 @@ Surface의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control.sm`과 
 ## Control
 
 [contract:foundations.shape.control-geometry]: #
-컨트롤 원본은 <!-- generated:shape-source --><!-- 이 블록은 생성됩니다 — pnpm docs:sync -->높이 사다리(`control.height`: xs 28 · sm 30 · md 32 · lg 36)와 button inset 배율(`control.buttonInsetRatio`: 1.4), 표식 사다리(`selection.size`: xs 14 · sm 15 · md 16 · lg 18)이고, `anatomy`는 Badge 높이·inset(`anatomy.badge`)과 체크의 보정 비율(`anatomy.checkbox.markShift`: x 0.25 · y -0.5, `stroke.emphasis`의 배수)과 inline 점 · spinner 크기(`anatomy.inline`: 0.5em · 1em)입니다.<!-- /generated:shape-source --> 나머지는 높이와 컨트롤 글자 줄(Typography의 control preset이 읽는 글자 한 줄, 행간 16)에서 계산합니다. 입력값이 앉는 줄상자 `inputLeading` 20은 이 식의 입력이 아니라 caret 높이를 위한 값이라, 글자 줄 안쪽에서 중앙에 앉습니다.
+컨트롤 원본은 <!-- generated:shape-source --><!-- 이 블록은 생성됩니다 — pnpm docs:sync -->높이 사다리(`control.height`: xs 28 · sm 32 · md 40 · lg 44)와 button inset 배율(`control.buttonInsetRatio`: 1.4), 표식 사다리(`selection.size`: xs 14 · sm 16 · md 18 · lg 20)이고, `anatomy`는 Badge 높이·inset(`anatomy.badge`)과 체크의 보정 비율(`anatomy.checkbox.markShift`: x 0.25 · y -0.5, `stroke.emphasis`의 배수)과 inline 점 · spinner 크기(`anatomy.inline`: 0.5em · 1em)입니다.<!-- /generated:shape-source --> 나머지는 높이와 컨트롤 글자 줄(Typography의 control preset이 읽는 글자 한 줄, 행간 16)에서 계산합니다. 입력값이 앉는 줄상자 `inputLeading` 20은 이 식의 입력이 아니라 caret 높이를 위한 값이라, 글자 줄 안쪽에서 중앙에 앉습니다.
 
 [contract:foundations.shape.control-table]: #
 
@@ -110,10 +110,10 @@ Surface의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control.sm`과 
 <!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 | 역할 | xs | sm | md | lg | 식 |
 | --- | --- | --- | --- | --- | --- |
-| `control.height` | 28 | 30 | 32 | 36 | 원본 |
-| `control.inset.input` | 6 | 7 | 8 | 10 | (높이 − preset 글자 줄) / 2 — 입력값은 글자 줄 사방에 같은 여백 |
-| `control.inset.button` | 8 | 10 | 11 | 14 | (높이 − 버튼 글자 줄) / 2 × `buttonInsetRatio` 1.4, 1px로 반올림 — 라벨이 상자를 정의하므로 더 넓게 |
-| `selection.size` | 14 | 15 | 16 | 18 | 원본 — Checkbox와 Radio의 상자. 컨트롤 높이와 따로 움직입니다 |
+| `control.height` | 28 | 32 | 40 | 44 | 원본 |
+| `control.inset.input` | 6 | 8 | 12 | 14 | (높이 − preset 글자 줄) / 2 — 입력값은 글자 줄 사방에 같은 여백 |
+| `control.inset.button` | 8 | 11 | 17 | 20 | (높이 − 버튼 글자 줄) / 2 × `buttonInsetRatio` 1.4, 1px로 반올림 — 라벨이 상자를 정의하므로 더 넓게 |
+| `selection.size` | 14 | 16 | 18 | 20 | 원본 — Checkbox와 Radio의 상자. 컨트롤 높이와 따로 움직입니다 |
 | `control.icon` | 16 | 16 | 18 | 20 | 높이를 따르는 icon 크기 (caption · caption · body · subheading) |
 | `control.gap` | 8 | 8 | 8 | 8 | 아이콘과 라벨 사이, inset sm |
 <!-- /generated:shape-control -->
@@ -146,8 +146,8 @@ Surface의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control.sm`과 
 
 | 대상 | 식 | xs | sm | md | lg |
 |---|---|---|---|---|---|
-| `target.selection` | targetReach(`selection.size`) | −5 | −4.5 | −4 | −3 |
-| `target.switchBlock` | targetReach(Switch 트랙 높이) | −4 | −3.5 | −3 | −2 |
+| `target.selection` | targetReach(`selection.size`) | −5 | −4 | −3 | −2 |
+| `target.switchBlock` | targetReach(Switch 트랙 높이) | −4 | −3 | −2 | −1 |
 | `target.action` | targetReach(`control.icon`) | −4 | −4 | −3 | −2 |
 
 [contract:foundations.shape.hit-area]: #

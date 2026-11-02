@@ -41,8 +41,8 @@ describe("Typography source is data", () => {
     const leaves: string[] = [];
     walkValues(TYPOGRAPHY.role, [], (_path, value) => leaves.push(value));
     walkValues(TYPOGRAPHY.preset, [], (_path, value) => leaves.push(value));
-    // Four values for each of the roles, the two button weights and the field, textarea and badge at every size, and the field's input line.
-    const perSize = CONTROL_SIZES.length * (2 + 1 + 1);
+    // Four values for each of the roles and the button, field and textarea at every size, the field's input line, and the badge.
+    const perSize = CONTROL_SIZES.length * (1 + 1 + 1);
     expect(leaves).toHaveLength(TEXT_VARIANTS.length * 4 + perSize * 4 + CONTROL_SIZES.length + 4);
     for (const leaf of leaves) expect(emitted.has(leaf.slice("var(".length, -1)), leaf).toBe(true);
     // Every leaf is the variable of a palette value the spec names, and no value stands in for one.
@@ -58,8 +58,7 @@ describe("Typography source is data", () => {
       if (spec.inputLeading) expect(Object.keys(TYPOGRAPHY_SOURCE.leading), "inputLeading").toContain(spec.inputLeading);
     };
     for (const role of Object.values(ROLE_SPEC)) steps(role);
-    for (const ladder of Object.values(PRESET_SPEC.button)) for (const spec of Object.values(ladder)) steps(spec);
-    for (const spec of [...Object.values(PRESET_SPEC.field), ...Object.values(PRESET_SPEC.textarea), PRESET_SPEC.badge]) steps(spec);
+    for (const spec of [...Object.values(PRESET_SPEC.button), ...Object.values(PRESET_SPEC.field), ...Object.values(PRESET_SPEC.textarea), PRESET_SPEC.badge]) steps(spec);
     const block = CODE_SPEC.block;
     expect(Object.keys(TYPOGRAPHY_SOURCE.fontSize)).toContain(block.size);
     expect(Object.keys(TYPOGRAPHY_SOURCE.weight)).toContain(block.weight);
@@ -71,7 +70,7 @@ describe("Typography source is data", () => {
     const line = (key: string) => (key in TYPOGRAPHY_SOURCE.leading ? TYPOGRAPHY_SOURCE.leading[key as keyof typeof TYPOGRAPHY_SOURCE.leading] : undefined);
     const specs: Spec[] = [
       ...Object.values(ROLE_SPEC),
-      ...Object.values(PRESET_SPEC.button).flatMap((ladder) => Object.values(ladder)),
+      ...Object.values(PRESET_SPEC.button),
       ...Object.values(PRESET_SPEC.field),
       ...Object.values(PRESET_SPEC.textarea),
       PRESET_SPEC.badge,
@@ -98,7 +97,7 @@ describe("Typography source is data", () => {
   it("[foundations.typography.palette-table] [foundations.typography.role-table] [foundations.typography.preset-table] records the resolved palette, role and preset values in typography-resolved.json", async () => {
     const roles = Object.fromEntries(TEXT_VARIANTS.map((variant) => [variant, { ink: TEXT_INK[variant], ...declared(TYPOGRAPHY.role[variant]) }]));
     const presets = {
-      button: Object.fromEntries(Object.entries(TYPOGRAPHY.preset.button).map(([weight, ladder]) => [weight, Object.fromEntries(CONTROL_SIZES.map((size) => [size, declared(ladder[size])]))])),
+      button: Object.fromEntries(CONTROL_SIZES.map((size) => [size, declared(TYPOGRAPHY.preset.button[size])])),
       field: Object.fromEntries(CONTROL_SIZES.map((size) => [size, declared(TYPOGRAPHY.preset.field[size])])),
       textarea: Object.fromEntries(CONTROL_SIZES.map((size) => [size, declared(TYPOGRAPHY.preset.textarea[size])])),
       badge: declared(TYPOGRAPHY.preset.badge),
@@ -232,16 +231,14 @@ describe("monoRule and codeRule", () => {
 });
 
 describe("presetRule", () => {
-  it("[foundations.typography.control-preset] names the button weights after the palette", () => {
-    expect(Object.keys(PRESET_SPEC.button)).toEqual(["medium", "strong"]);
-    expect(presetRule("button", "md", "medium").fontWeight).toBe(TYPOGRAPHY.palette.weight.medium);
-    expect(presetRule("button", "md", "strong").fontWeight).toBe(TYPOGRAPHY.palette.weight.strong);
+  it("[foundations.typography.control-preset] gives a Button one weight at every size", () => {
+    for (const size of CONTROL_SIZES) expect(presetRule("button", size).fontWeight, size).toBe(TYPOGRAPHY.palette.weight.medium);
   });
 
   it("[foundations.typography.single-line] keeps the label of a button or badge on one line and lets an input choose its own", () => {
     expect(PRESET_SINGLE_LINE).toEqual({ button: true, field: false, textarea: false, badge: true });
     expect(Object.keys(PRESET_SINGLE_LINE)).toEqual([...CONTROL_PRESETS]);
-    expect(presetRule("button", "sm", "medium").whiteSpace).toBe("nowrap");
+    expect(presetRule("button", "sm").whiteSpace).toBe("nowrap");
     expect(presetRule("badge").whiteSpace).toBe("nowrap");
     expect(presetRule("field", "md")).not.toHaveProperty("whiteSpace");
     expect(presetRule("textarea", "md")).not.toHaveProperty("whiteSpace");
@@ -255,7 +252,7 @@ describe("presetRule", () => {
 
   it("[foundations.typography.control-preset] builds every preset leaf, and the declaration carries no input line", () => {
     for (const size of ["xs", "sm", "md", "lg"] as const) {
-      for (const rule of [presetRule("button", size, "medium"), presetRule("button", size, "strong"), presetRule("field", size), presetRule("textarea", size)]) {
+      for (const rule of [presetRule("button", size), presetRule("field", size), presetRule("textarea", size)]) {
         expect(Object.keys(rule).sort()).toEqual(expect.arrayContaining(["fontFamily", "fontSize", "fontWeight", "lineHeight", "letterSpacing"]));
         expect(rule).not.toHaveProperty("inputLeading");
       }

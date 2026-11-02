@@ -4,7 +4,6 @@
 
 import {
   CODE_SPEC,
-  PRESET_SPEC,
   TYPOGRAPHY,
   TYPOGRAPHY_SOURCE,
   type ControlPreset,
@@ -78,15 +77,11 @@ const presetOf = (name: ControlPreset, refs: Refs): PresetRule => ({
   ...(PRESET_SINGLE_LINE[name] ? { whiteSpace: "nowrap" as const } : {}),
 });
 
-export type ButtonWeight = keyof typeof PRESET_SPEC.button;
-
-// 컨트롤 preset 의 선언. Button 은 크기와 굵기, Field · Textarea 는 크기, Badge 는 크기와 무관하다.
-export function presetRule(name: "button", size: ControlSize, weight: ButtonWeight): PresetRule;
-export function presetRule(name: "field" | "textarea", size: ControlSize): PresetRule;
+// 컨트롤 preset 의 선언. Button · Field · Textarea 는 크기를 따르고, Badge 는 크기와 무관하다.
+export function presetRule(name: "button" | "field" | "textarea", size: ControlSize): PresetRule;
 export function presetRule(name: "badge"): PresetRule;
-export function presetRule(name: ControlPreset, size?: ControlSize, weight?: ButtonWeight): PresetRule {
+export function presetRule(name: ControlPreset, size?: ControlSize): PresetRule {
   if (name === "badge") return presetOf(name, preset.badge);
-  if (name === "button") return presetOf(name, preset.button[weight!][size!]);
   return presetOf(name, preset[name][size!]);
 }
 

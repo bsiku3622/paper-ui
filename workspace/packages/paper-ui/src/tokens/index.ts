@@ -51,7 +51,7 @@ export { SHAPE_RECIPES, strokeRing } from "./shape-recipes";
 
 export { TEXT_INK } from "./typography";
 export { typographyRule, monoRule, codeRule, presetRule, emphasisRule } from "./typography-recipes";
-export type { CodeKind, ButtonWeight } from "./typography-recipes";
+export type { CodeKind } from "./typography-recipes";
 
 export { STATE_ATTRIBUTE, VALUE_ATTRIBUTE, MARKER_ATTRIBUTE, SELECTED_SELECTOR, ENABLED_SELECTOR, stateSelector, stateAttributes } from "./state";
 export type { StateAttributes } from "./state";

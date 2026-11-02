@@ -106,7 +106,9 @@ test("[atoms.focus.ring] [atoms.states.pointer-focus] typing in a Field or a Tex
     await expectStyle(page.getByTestId(id), { outlineStyle: "none" });
   }
   const field = page.getByTestId("field");
-  await field.click({ position: { x: 2, y: 2 } });
+  // The left padding at mid height: a point nearer the corner may fall outside the wrapper's curve.
+  const { height } = (await field.boundingBox())!;
+  await field.click({ position: { x: 2, y: height / 2 } });
   await expect(page.getByLabel("Field", { exact: true })).toBeFocused();
   await expect(field).not.toHaveAttribute("data-focus-visible", /.*/);
 });

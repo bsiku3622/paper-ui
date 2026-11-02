@@ -145,8 +145,8 @@ test("[foundations.typography.role-computed] every Text variant, sans and mono, 
     await expectType(page.getByTestId(`role-mono-${variant}`), resolved(ROLE_SPEC[variant], true), `mono ${variant}`);
   }
   for (const size of CONTROL_SIZES) {
-    await expectType(page.getByTestId(`preset-button-medium-${size}`), resolved(PRESET_SPEC.button.medium[size]), `button medium ${size}`);
-    await expectType(page.getByTestId(`preset-button-strong-${size}`), resolved(PRESET_SPEC.button.strong[size]), `button strong ${size}`);
+    await expectType(page.getByTestId(`preset-button-${size}`), resolved(PRESET_SPEC.button[size]), `button ${size}`);
+    await expectType(page.getByTestId(`preset-button-soft-${size}`), resolved(PRESET_SPEC.button[size]), `soft button ${size}`);
     // A field's wrapper holds the glyph line, and the value sits in the taller line box its input draws.
     await expectType(page.getByTestId(`preset-field-${size}`), resolved(PRESET_SPEC.field[size]), `field ${size}`);
     await expectType(page.getByLabel(`preset ${size} field`, { exact: true }), { ...resolved(PRESET_SPEC.field[size]), lineHeight: TYPOGRAPHY_SOURCE.leading[PRESET_SPEC.field[size].inputLeading] }, `field input ${size}`);
@@ -167,11 +167,11 @@ test.describe("control presets", () => {
     expect(await css(page.getByLabel("textarea-md"), "lineHeight")).toBe(px(TYPOGRAPHY_SOURCE.leading[PRESET_SPEC.textarea.md.leading]));
   });
 
-  test("[foundations.typography.control-preset] a solid Button is strong, the others are medium, and Badge keeps its own size", async ({ page }) => {
+  test("[foundations.typography.control-preset] a Button weighs the same whatever its variant, and Badge keeps its own size", async ({ page }) => {
     await mount(page);
     const weight = (name: keyof typeof TYPOGRAPHY_SOURCE.weight) => String(TYPOGRAPHY_SOURCE.weight[name]);
-    expect(await css(fixture(page, "button-md"), "fontWeight")).toBe(weight(PRESET_SPEC.button.strong.md.weight));
-    expect(await css(fixture(page, "button-medium"), "fontWeight")).toBe(weight(PRESET_SPEC.button.medium.md.weight));
+    expect(await css(fixture(page, "button-md"), "fontWeight")).toBe(weight(PRESET_SPEC.button.md.weight));
+    expect(await css(fixture(page, "button-soft"), "fontWeight")).toBe(weight(PRESET_SPEC.button.md.weight));
     expect(await css(fixture(page, "badge-md"), "fontSize")).toBe(px(TYPOGRAPHY_SOURCE.fontSize[PRESET_SPEC.badge.size]));
     expect(await css(page.getByLabel("field-md", { exact: true }), "fontWeight")).toBe(weight(PRESET_SPEC.field.md.weight));
   });
@@ -181,7 +181,7 @@ test.describe("control presets", () => {
     const button = fixture(page, "button-md");
     const sized = async (target: Locator) => ({ fontSize: await css(target, "fontSize"), lineHeight: await css(target, "lineHeight"), box: await metrics(target) });
     const base = await sized(button);
-    expect(base.fontSize).toBe(px(TYPOGRAPHY_SOURCE.fontSize[PRESET_SPEC.button.strong.md.size]));
+    expect(base.fontSize).toBe(px(TYPOGRAPHY_SOURCE.fontSize[PRESET_SPEC.button.md.size]));
 
     const bodySize = px(TYPOGRAPHY_SOURCE.fontSize[ROLE_SPEC.body.size]);
     const inputLine = px(TYPOGRAPHY_SOURCE.leading[PRESET_SPEC.textarea.md.leading]);

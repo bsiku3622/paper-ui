@@ -33,7 +33,7 @@ Atom은 같은 축 몇 개로 말합니다. 축의 값은 모두 Foundations에�
 
 | Atom | 고유 축 | 기본값·동작 |
 | --- | --- | --- |
-| Button | as · accent · variant · fill · shadow · size · fontSize · shape · selected · loading · loadingLabel · fullWidth | button / primary / solid / md / rounded, type=button. solid는 strong preset, 나머지는 medium. selected는 hairline · ghost · muted에서 aria-pressed와 선택된 면. loading은 spinner·aria-busy, 포커스는 유지하고 누름과 제출만 막음 |
+| Button | as · accent · variant · fill · shadow · size · fontSize · shape · selected · loading · loadingLabel · fullWidth | button / primary / solid / md / rounded, type=button. 글자는 variant와 무관하게 `button` preset. selected는 hairline · ghost · muted에서 aria-pressed와 선택된 면. loading은 spinner·aria-busy, 포커스는 유지하고 누름과 제출만 막음 |
 | IconButton | as · accent · variant · fill · shadow · size · shape · disabled · iconSize · 필수 aria-label · 단일 children | 정사각형, 높이가 변. 안의 Icon은 iconSize를 주지 않으면 컨트롤 높이를 따름. loading · fullWidth · fontSize는 없음 |
 | Field | status · size · variant · fill · shadow · fontSize · shape · numeric · align · leading / trailing · clearable · clearLabel · showPasswordToggle · showPasswordLabel · onClear | 중립 / md / hairline / raised / rounded, type=text. wrapper가 면·높이·상태·포커스를 소유. 지우기와 보기 버튼의 이름은 locale 문구이고 label prop으로 바꿈. 브라우저의 search 취소 ×와 Edge 비밀번호 보기 장치는 Field가 소유해 숨기고, number 증감·date 선택 장치는 브라우저에 남음 |
 | Textarea | status · size · variant · fill · shadow · fontSize · rows · native textarea props | 중립 / md / hairline / raised, 기본 4줄. rows가 높이를 정하고(최소 높이 없음) 한 줄 = 같은 size Field, 세로 resize. pill 없음 |

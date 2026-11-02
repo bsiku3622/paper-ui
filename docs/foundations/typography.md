@@ -13,10 +13,10 @@ Typography도 세 단계입니다. 원본 수치인 **Typography Palette**, 그�
 <!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 | 축 | 값 |
 | --- | --- |
-| `fontSize` | 12 · 13 · 14 · 16 · 20 · 24 · 32, 유동 단계 `hero` |
-| `leading` | 16 · 20 · 24 · 28 · 32 · 40, 단위 없는 `hero` 1.04 |
-| `weight` | `regular` 400 · `normal` 450 · `medium` 500 · `semibold` 600 · `strong` 650 · `bold` 700 |
-| `tracking` | `mono` −0.04em · `tighter` −0.035em · `tight` −0.02em · `snug` −0.01em · `normal` 0 · `wide` 0.01em |
+| `fontSize` | 12 · 13 · 14 · 15 · 16 · 20 · 24 · 32, 유동 단계 `hero` |
+| `leading` | 16 · 20 · 24 · 28 · 32 · 40, 단위 없는 `hero` 1.12 |
+| `weight` | `regular` 400 · `normal` 450 · `medium` 500 · `semibold` 600 · `bold` 700 |
+| `tracking` | `mono` −0.04em · `tightest` −0.035em · `tighter` −0.03em · `tight` −0.02em · `normal` 0 · `wide` 0.01em |
 | `family` | `sans` · `mono` |
 | `decoration` | `underlineOffset` 0.2em |
 | `monoSizeScale` | 0.95 |
@@ -24,10 +24,10 @@ Typography도 세 단계입니다. 원본 수치인 **Typography Palette**, 그�
 <!-- /generated:typography-palette -->
 
 [contract:foundations.typography.palette-names]: #
-크기와 행간은 실제 px 값을 이름으로 씁니다(`fontSize.14`). 서로 다른 단계 이름을 억지로 짝짓지 않기 위해서입니다. 450은 작은 sans 글자가 Retina에서 힘이 빠지지 않도록 둔 입력값용 보정이고, 650은 채워진 버튼처럼 강조가 필요한 라벨에 씁니다. 밑줄 offset은 글자의 장식이라 글자 크기(em)를 따릅니다. `codeScale`은 문장 속 코드가 둘러싼 글자에서 줄어드는 비율입니다.
+크기와 행간은 실제 px 값을 이름으로 씁니다(`fontSize.14`). 서로 다른 단계 이름을 억지로 짝짓지 않기 위해서입니다. 450은 작은 sans 글자가 Retina에서 힘이 빠지지 않도록 둔 입력값용 보정이고. 밑줄 offset은 글자의 장식이라 글자 크기(em)를 따릅니다. `codeScale`은 문장 속 코드가 둘러싼 글자에서 줄어드는 비율입니다.
 
 [contract:foundations.typography.hero-fluid]: #
-**고정 사다리의 선언된 예외는 `hero` 하나입니다.** `hero`의 크기는 뷰포트 폭을 따라 36px과 60px 사이에서 자라는 `clamp(2.25rem, 6vw, 3.75rem)`이고, 행간은 px이 아니라 단위 없는 비율 1.04입니다. 랜딩 첫 화면의 헤드라인처럼 화면 폭에 따라 크기가 달라져야 하는 한 자리만 이 예외를 씁니다. 다른 모든 크기와 행간은 px 고정값입니다.
+**고정 사다리의 선언된 예외는 `hero` 하나입니다.** `hero`의 크기는 뷰포트 폭을 따라 44px과 76px 사이에서 자라는 `clamp(2.75rem, 5.2vw, 4.75rem)`이고, 행간은 px이 아니라 단위 없는 비율 1.12입니다. 랜딩 첫 화면의 헤드라인처럼 화면 폭에 따라 크기가 달라져야 하는 한 자리만 이 예외를 씁니다. 다른 모든 크기와 행간은 px 고정값입니다.
 
 ## 서체
 
@@ -40,7 +40,7 @@ Typography도 세 단계입니다. 원본 수치인 **Typography Palette**, 그�
 
 Pretendard를 맨 앞에 둡니다. 라틴과 한글을 한 몸으로 그려, 섞인 문장도 굵기와 리듬이 갈라지지 않습니다. `-apple-system`을 앞에 두면 라틴만 San Francisco로, 한글은 Apple SD Gothic Neo로 갈라져 같은 굵기에서도 한글이 얇아 보입니다.
 
-서체는 Typography 계약의 일부입니다. 굵기 사다리(400 · 450 · 500 · 600 · 650 · 700)는 Pretendard Variable이 있다고 전제하고 세워져 있고, 서체가 없으면 시스템 폰트가 가까운 굵기로 접습니다 — Windows(Segoe UI·맑은 고딕)는 450·500이 400으로, 600·650이 700으로, Android(Roboto)는 450이 500으로, 600·650이 700으로 접힙니다. macOS는 대부분의 단계를 그대로 유지합니다. 행간이 px 고정값이라 접혀도 기하는 바뀌지 않습니다. 불러올 두 스타일시트의 주소는 `FONT_STYLESHEETS`(`/tokens`)이고, 그대로 옮긴 스니펫은 [설치 › 폰트](../get-started/install.md#폰트)에 있습니다.
+서체는 Typography 계약의 일부입니다. 굵기 사다리(400 · 450 · 500 · 600 · 700)는 Pretendard Variable이 있다고 전제하고 세워져 있고, 서체가 없으면 시스템 폰트가 가까운 굵기로 접습니다 — Windows(Segoe UI·맑은 고딕)는 450·500이 400으로, 600이 700으로, Android(Roboto)는 450이 500으로, 600이 700으로 접힙니다. macOS는 대부분의 단계를 그대로 유지합니다. 행간이 px 고정값이라 접혀도 기하는 바뀌지 않습니다. 불러올 두 스타일시트의 주소는 `FONT_STYLESHEETS`(`/tokens`)이고, 그대로 옮긴 스니펫은 [설치 › 폰트](../get-started/install.md#폰트)에 있습니다.
 
 [contract:foundations.typography.mono-axis]: #
 mono는 위계가 아니라 **family 축**입니다. `<Text family="mono">`로 어느 역할에도 얹고, 기술적인 자리에만 씁니다. 표의 숫자 열은 mono로 바꾸지 않고 sans에 `tabular-nums`만 줍니다. mono는 같은 px에서 sans보다 크게 읽혀 크기에 `monoSizeScale`(0.95)을 곱하고, 역할별 자간 대신 `tracking.mono`(−0.04em) 하나를 씁니다 — SF Mono와 D2Coding은 글자 폭이 넓어 UI에서 벌어져 보이기 때문입니다. 한글 mono를 쓰려면 앱이 D2Coding을 불러와야 합니다.
@@ -53,9 +53,9 @@ mono는 위계가 아니라 **family 축**입니다. `<Text family="mono">`로 �
 <!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 | 역할 | 크기 / 행간 | 굵기 | 자간 | 기본 잉크 | 기본 태그 | 쓰는 곳 |
 | --- | --- | --- | --- | --- | --- | --- |
-| `hero` | 36–60 유동 / 1.04 | 700 | tighter | primary | h1 | 랜딩 헤드라인 |
-| `display` | 32 / 40 | 700 | tight | primary | h1 | 큰 제목 |
-| `title` | 24 / 32 | 700 | snug | primary | h1 | 페이지 제목 |
+| `hero` | 44–76 유동 / 1.12 | 400 | tightest | primary | h1 | 랜딩 헤드라인 |
+| `display` | 32 / 40 | 400 | tighter | primary | h1 | 큰 제목 |
+| `title` | 24 / 32 | 600 | tight | primary | h1 | 페이지 제목 |
 | `heading` | 20 / 28 | 600 | normal | primary | h2 | 섹션 제목 |
 | `subheading` | 16 / 24 | 600 | normal | primary | h3 | 작은 제목 |
 | `body` | 14 / 20 | 500 | normal | primary | p | 본문 (기본값) |
@@ -125,10 +125,9 @@ body 요소는 body 역할 전체를 받습니다. 크기와 행간뿐 아니라
 <!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 | preset | xs | sm | md | lg | 쓰는 Atom |
 | --- | --- | --- | --- | --- | --- |
-| `button.medium` | 12 / 16 · 500 | 13 / 16 · 500 | 13 / 16 · 500 | 14 / 16 · 500 | Button·IconButton (solid 외) |
-| `button.strong` | 12 / 16 · 650 | 13 / 16 · 650 | 13 / 16 · 650 | 14 / 16 · 650 | solid Button |
-| `field` | 12 / 16 · 450 · 입력 줄상자 20 | 13 / 16 · 450 · 입력 줄상자 20 | 13 / 16 · 450 · 입력 줄상자 20 | 14 / 16 · 450 · 입력 줄상자 20 | Field · Select |
-| `textarea` | 12 / 20 · 450 | 13 / 20 · 450 | 13 / 20 · 450 | 14 / 20 · 450 | Textarea |
+| `button` | 12 / 16 · 500 | 13 / 16 · 500 | 14 / 16 · 500 | 15 / 16 · 500 | Button · IconButton |
+| `field` | 12 / 16 · 450 · 입력 줄상자 20 | 13 / 16 · 450 · 입력 줄상자 20 | 14 / 16 · 450 · 입력 줄상자 20 | 14 / 16 · 450 · 입력 줄상자 20 | Field · Select |
+| `textarea` | 12 / 20 · 450 | 13 / 20 · 450 | 14 / 20 · 450 | 14 / 20 · 450 | Textarea |
 | `badge` | 12 / 16 · 500 (크기 무관) |  |  | Badge |
 <!-- /generated:typography-presets -->
 
