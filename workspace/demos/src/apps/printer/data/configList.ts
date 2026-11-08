@@ -1,0 +1,27 @@
+// Snapshot of /config (server.files.list, root=config): [path, modified (unix seconds), size (bytes), permissions].
+
+export const CONFIG_LIST: readonly (readonly [path: string, modified: number, size: number, permissions: string])[] = [
+  [".moonraker.conf.bkp",1772301189,1495,"rw"],
+  ["crowsnest.conf",1793377200,2889,"rw"],
+  ["mainsail.cfg",1759525896,16493,"r"],
+  ["moonraker.conf",1772301187,2463,"rw"],
+  ["printer-20260301_031914.cfg",1772301853,8513,"rw"],
+  ["printer-20260301_043955.cfg",1772302755,8941,"rw"],
+  ["printer-20260329_232610.cfg",1772613943,8955,"rw"],
+  ["printer-20260426_222326.cfg",1774861672,8956,"rw"],
+  ["printer-20260426_222731.cfg",1777209848,8970,"rw"],
+  ["printer-20260426_222951.cfg",1777210052,8954,"rw"],
+  ["printer-20260427_002440.cfg",1777210191,8954,"rw"],
+  ["printer-20260605_024102.cfg",1777217080,8954,"rw"],
+  ["printer-20260605_024241.cfg",1780594863,8954,"rw"],
+  ["printer-20260605_024638.cfg",1780594961,8954,"rw"],
+  ["printer-20261019_002959.cfg",1780595199,8954,"rw"],
+  ["printer-20261019_010236.cfg",1792337400,8965,"rw"],
+  ["printer-20261019_214200.cfg",1792339356,8965,"rw"],
+  ["printer-20261019_215712.cfg",1792413720,8949,"rw"],
+  ["printer-20261019_223027.cfg",1792414632,8949,"rw"],
+  ["printer-20261019_224737.cfg",1792416628,8949,"rw"],
+  ["printer.cfg",1792598931,13126,"rw"],
+  ["sonar.conf",1759525992,771,"rw"],
+  ["timelapse.cfg",1759525988,22482,"r"]
+];

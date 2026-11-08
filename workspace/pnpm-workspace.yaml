@@ -1,6 +1,7 @@
 packages:
   - "packages/*"
   - "app"
+  - "demos"
   - "fixtures/*"
 
 allowBuilds:

@@ -1,0 +1,42 @@
+// Dialog — Floating's modal with a title row and a close button. It is in content/ only for its size: Paper's modal has no way
+// to be a given width and still fit a phone, or to keep one height while its content changes (see dialog.css.ts). Everything
+// inside a dialog is a screen's own.
+
+import type { ReactNode, RefObject } from "react";
+
+import { Floating, IconButton, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";
+
+import { Glyph } from "../../../kit";
+import { dialogSteady, dialogWidth } from "./dialog.css";
+
+export type DialogProps = {
+  open: boolean;
+  onClose: () => void;
+  title: string;
+  description?: ReactNode;
+  size?: keyof typeof dialogWidth;
+  // Keep one height whatever is inside, for a dialog whose content is swapped in place (the settings tabs).
+  steady?: boolean;
+  // What takes the focus when it opens, if not the first thing in it.
+  initialFocusRef?: RefObject<HTMLElement | null>;
+  children?: ReactNode;
+  footer?: ReactNode;
+};
+
+export const Dialog = ({ open, onClose, title, description, size = "md", steady = false, initialFocusRef, children, footer }: DialogProps) => (
+  <Floating open={open} onOpenChange={(next) => { if (!next) onClose(); }}>
+    <Floating.Content as={Surface} fill="raised" radius="lg" presentation="modal" aria-label={title} initialFocusRef={initialFocusRef} className={steady ? `${dialogWidth[size]} ${dialogSteady}` : dialogWidth[size]}>
+      <Stack gap="lg" padding="xl">
+        <Inline justify="between" align="start" gap="md">
+          <Stack gap="xs" minWidth={0}>
+            <Text as="h2" variant="heading">{title}</Text>
+            {description ? <Text ink="secondary">{description}</Text> : null}
+          </Stack>
+          <IconButton as={Floating.Close} variant="ghost" size="sm" aria-label="닫기"><Glyph name="x" /></IconButton>
+        </Inline>
+        {children}
+        {footer ? <Inline justify="end" gap="sm" wrap>{footer}</Inline> : null}
+      </Stack>
+    </Floating.Content>
+  </Floating>
+);

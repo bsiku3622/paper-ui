@@ -42,7 +42,7 @@ export default [
     rules: { ...tseslint.configs.recommended.rules },
   },
   {
-    files: ["packages/*/src/**/*.{ts,tsx}", "app/src/**/*.{ts,tsx}"],
+    files: ["packages/*/src/**/*.{ts,tsx}", "app/src/**/*.{ts,tsx}", "demos/src/**/*.{ts,tsx}"],
     plugins: { "react-hooks": reactHooks },
     rules: {
       "react-hooks/rules-of-hooks": "error",
@@ -56,7 +56,7 @@ export default [
   // 추상화하므로 polymorphicPropName 으로 `as` 를 실제 요소로 읽게 한다 — 안 그러면
   // 규칙이 Box 를 못 알아보고 통째로 건너뛴다.
   {
-    files: ["packages/*/src/**/*.{ts,tsx}", "app/src/**/*.{ts,tsx}"],
+    files: ["packages/*/src/**/*.{ts,tsx}", "app/src/**/*.{ts,tsx}", "demos/src/**/*.{ts,tsx}"],
     ignores: ["**/*.test.{ts,tsx}"],
     plugins: { "jsx-a11y": jsxA11y },
     settings: { "jsx-a11y": { polymorphicPropName: "as" } },
@@ -83,7 +83,7 @@ export default [
   // 색 원본은 palette.ts 의 OKLCH 좌표뿐이고 HEX 는 color-ladder.ts 가 생성한다. 어떤 파일도 색 리터럴을
   // 손으로 쓰지 않고, 이름 있는 색과 시스템 색도 SYSTEM_COLORS 를 거친다 — 원본 파일도 예외가 아니다.
   {
-    files: ["packages/paper-ui/src/**/*.{ts,tsx}", "app/src/**/*.{ts,tsx}"],
+    files: ["packages/paper-ui/src/**/*.{ts,tsx}", "app/src/**/*.{ts,tsx}", "demos/src/**/*.{ts,tsx}"],
     ignores: ["**/*.test.{ts,tsx}"],
     plugins: { paper },
     rules: { "paper/raw-color": "error" },
@@ -94,7 +94,7 @@ export default [
   // inspector 는 @paper-ui/inspect/<시스템> 하나를 글자와 kit 의 표시 부품으로만 보여 준다. 경로와 예외는
   // 모두 eslint-rules/manifest.js 에 있다. 테스트는 검증 코드라 이 규칙을 받지 않는다.
   {
-    files: ["packages/paper-ui/src/**/*.{ts,tsx}", "app/**/*.{ts,tsx}", "fixtures/**/*.{ts,tsx}"],
+    files: ["packages/paper-ui/src/**/*.{ts,tsx}", "app/**/*.{ts,tsx}", "demos/**/*.{ts,tsx}", "fixtures/**/*.{ts,tsx}"],
     plugins: { paper },
     rules: { "paper/source-isolation": "error" },
   },
@@ -103,7 +103,7 @@ export default [
   // .ts/.tsx 는 패키지와 상대 모듈에서 온 값을 `style` 로 넘기지 않고, DOM style 에도 쓰지 않는다. 실행 중에 정해지는 값을
   // 만드는 모듈(위치·눌림 style·원본 변수 운반)은 manifest 의 RUNTIME_STYLE 에 이유와 함께 선언한다.
   {
-    files: ["packages/paper-ui/src/**/*.{ts,tsx}", "app/src/**/*.{ts,tsx}"],
+    files: ["packages/paper-ui/src/**/*.{ts,tsx}", "app/src/**/*.{ts,tsx}", "demos/src/**/*.{ts,tsx}"],
     ignores: ["**/*.test.{ts,tsx}", "**/*.css.ts"],
     plugins: { paper },
     rules: { "paper/inline-token": "error" },
@@ -119,7 +119,7 @@ export default [
     rules: { "paper/source-numbers": ["error", { scope: "package" }] },
   },
   {
-    files: ["app/src/**/*.{ts,tsx}"],
+    files: ["app/src/**/*.{ts,tsx}", "demos/src/**/*.{ts,tsx}"],
     ignores: ["**/*.test.{ts,tsx}"],
     plugins: { paper },
     rules: { "paper/source-numbers": ["error", { scope: "app" }] },
@@ -139,7 +139,7 @@ export default [
   // 공유 축의 class 는 패키지의 typed map 이 고른다. 패키지 · 앱 · fixture · 테스트가 `pui-` 이름을 문자열로 알면 그
   // 이름이 약속이 되어 버린다. 변수(--pui-*)와 속성(data-pui-*)은 이름을 따로 약속하므로 통과한다.
   {
-    files: ["packages/paper-ui/src/**/*.{ts,tsx}", "app/src/**/*.{ts,tsx}", "fixtures/**/*.{ts,tsx}", "tests/**/*.{ts,tsx}"],
+    files: ["packages/paper-ui/src/**/*.{ts,tsx}", "app/src/**/*.{ts,tsx}", "demos/src/**/*.{ts,tsx}", "fixtures/**/*.{ts,tsx}", "tests/**/*.{ts,tsx}"],
     plugins: { paper },
     rules: { "paper/internal-class": "error" },
   },
@@ -148,7 +148,7 @@ export default [
   // globalStyle 의 selector 는 scoped class 에서 시작한다. 요소 · :root selector 는 manifest 의
   // GLOBAL_SELECTOR_FILES 에만 둔다.
   {
-    files: ["app/src/**/*.css.ts"],
+    files: ["app/src/**/*.css.ts", "demos/src/**/*.css.ts"],
     plugins: { paper },
     rules: { "paper/global-class": "error" },
   },

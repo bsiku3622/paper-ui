@@ -1,0 +1,42 @@
+// Dialog and ConfirmDialog. The dialog is Floating's modal with a title row and a close button (content/Dialog.tsx, which only
+// sets the width); a dialog that asks a question has a quiet way out and one main action, and one that would hurt says so with
+// the error accent.
+
+import type { ReactNode } from "react";
+
+import { Button } from "@studio-baeks/paper-ui";
+
+import { Dialog } from "../content/Dialog";
+
+export { Dialog, type DialogProps } from "../content/Dialog";
+
+export type ConfirmProps = {
+  open: boolean;
+  title: string;
+  description: ReactNode;
+  confirmLabel: string;
+  cancelLabel?: string;
+  danger?: boolean;
+  disabled?: boolean;
+  onConfirm: () => void;
+  onClose: () => void;
+  children?: ReactNode;
+};
+
+export const ConfirmDialog = ({ open, title, description, confirmLabel, cancelLabel = "취소", danger = false, disabled, onConfirm, onClose, children }: ConfirmProps) => (
+  <Dialog
+    open={open}
+    onClose={onClose}
+    title={title}
+    description={description}
+    size="sm"
+    footer={
+      <>
+        <Button variant="ghost" onClick={onClose}>{cancelLabel}</Button>
+        <Button accent={danger ? "error" : undefined} disabled={disabled} onClick={() => { onConfirm(); onClose(); }}>{confirmLabel}</Button>
+      </>
+    }
+  >
+    {children}
+  </Dialog>
+);
