@@ -11,6 +11,6 @@ export const PageHeader = ({ group, name, description }: { group: string; name: 
       <Text variant="caption" ink="secondary">{name}</Text>
     </Inline>
     <Text as="h1" variant="display" strong>{name}</Text>
-    {description ? <Text variant="subheading" as="p" strong={false} ink="secondary">{description}</Text> : null}
+    {description ? <Text variant="lead" ink="secondary">{description}</Text> : null}
   </Stack>
 );

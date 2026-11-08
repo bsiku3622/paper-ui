@@ -10,7 +10,10 @@ const components = (group: PrimitiveGroup) => INVENTORY.primitives[group].compon
 const hooks = (group: PrimitiveGroup) => INVENTORY.primitives[group].hooks;
 const second = PRIMITIVE_ORDERS.second;
 const functionsOf = (group: PrimitiveGroup): readonly string[] => (INVENTORY.primitives[group] as { functions?: readonly string[] }).functions ?? [];
-const classFunctions = INVENTORY.classes.filter((name) => name.endsWith("Class"));
+// controlClass is Control's; every other function that builds a class stands in the Paint row.
+const isControlClass = (name: string) => name === "controlClass";
+const controlClasses = INVENTORY.classes.filter(isControlClass);
+const paintClasses = INVENTORY.classes.filter((name) => name.endsWith("Class") && !isControlClass(name));
 // presence and loop are Motion's maps, written up in its own section; any other map stands in the Paint row.
 const MOTION_MAPS = new Set(["presence", "loop"]);
 const classMaps = INVENTORY.classes.filter((name) => !name.endsWith("Class") && !MOTION_MAPS.has(name));
@@ -18,10 +21,11 @@ const primitiveCount = (Object.keys(INVENTORY.primitives) as PrimitiveGroup[]).r
 
 type Format = (names: readonly string[]) => string;
 
-// The Paint row names its class helpers too: the functions that build a class and the map the stylesheet keeps.
+// The Paint and Control rows name their class helpers too: the functions that build a class and the map the stylesheet keeps.
 const extrasOf = (group: PrimitiveGroup, format: Format): string => {
   if (group === "A11y") return `함수 ${format(functionsOf(group))}`;
-  if (group === "Paint") return `class 함수 ${format(classFunctions)}, class 지도 ${format(classMaps)}`;
+  if (group === "Paint") return `class 함수 ${format(paintClasses)}, class 지도 ${format(classMaps)}`;
+  if (group === "Control") return `class 함수 ${format(controlClasses)}`;
   return "";
 };
 
@@ -42,7 +46,7 @@ const agentsRows = (): string[][] => {
 const hooksOf = (group: PrimitiveGroup): string => {
   const hookNames = hooks(group).length > 0 ? plain(hooks(group)) : "—";
   const extra = extrasOf(group, plain);
-  return extra && group === "Paint" ? `— (${extra})` : group === "A11y" ? `${hookNames} (${extra})` : hookNames;
+  return extra && group !== "A11y" ? `— (${extra})` : group === "A11y" ? `${hookNames} (${extra})` : hookNames;
 };
 const docLink = (group: string) => `[${group}](${group.toLowerCase()}.md)`;
 const primitiveRows = (): string[][] => [
@@ -88,7 +92,7 @@ export const INVENTORY_BLOCKS: GeneratedBlock[] = [
     files: ["README.md"],
     render: () =>
       table(["Part", "Count", "Exports"], [
-        ["Foundations", `${FOUNDATIONS.length} systems`, `\`${FOUNDATIONS.map(({ label }) => label).join(" → ")}\` — each reads only the ones before it`],
+        ["Foundations", `${FOUNDATIONS.length} systems`, `\`${FOUNDATIONS.map(({ label }) => label).join(" · ")}\` — the first order; Line, Control, Elevation and State are built from them`],
         ...PRIMITIVE_ORDERS.first.map((group, index) => [index === 0 ? "Primitives, first order" : "", `${group} ${components(group as PrimitiveGroup).length}`, list(components(group as PrimitiveGroup))]),
         ...second.map((group, index) => [index === 0 ? "Primitives, second order" : "", `${group} ${components(group as PrimitiveGroup).length}`, list(components(group as PrimitiveGroup))]),
         ["Atoms", String(INVENTORY.atoms.length), list(INVENTORY.atoms)],

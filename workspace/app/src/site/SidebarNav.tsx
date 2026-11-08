@@ -4,13 +4,16 @@
 //
 // A list is groups → blocks → links, two levels of heading at most. A row is a small Button at the body's size, and the gaps
 // are the structure: groups xl apart, blocks md, rows xs. There are no icons: forty glyphs would be noise.
+//
+// A group folds under its heading. What is folded is remembered in this browser, per list; the group that holds the page you
+// open unfolds, so the row you are on is never hidden.
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 
 import { Button, Stack, Surface, Text } from "@studio-baeks/paper-ui";
 
-import { ChevronRightIcon } from "../compositions/icons";
+import { ChevronDownIcon, ChevronRightIcon } from "../compositions/icons";
 import * as s from "./shell.css";
 import { useMediaQuery } from "./useMediaQuery";
 
@@ -32,19 +35,70 @@ const Block = ({ block, current }: { block: SidebarBlock; current: string }) => 
   </Stack>
 );
 
-const Group = ({ group, current }: { group: SidebarGroup; current: string }) => (
-  <Stack gap="sm">
-    {group.label ? <Text as="span" variant="subheading" className={s.navHeading}>{group.label}</Text> : null}
-    <Stack gap="md">
-      {group.blocks.map((block, index) => <Block key={block.heading ?? index} block={block} current={current} />)}
+const holds = (group: SidebarGroup, current: string) => group.blocks.some((block) => block.links.some((link) => link.to === current));
+
+const Group = ({ group, current, folded, onFold }: { group: SidebarGroup; current: string; folded: boolean; onFold: () => void }) => {
+  const body = useId();
+  return (
+    <Stack gap="sm">
+      {group.label ? (
+        <Button size="sm" variant="ghost" fullWidth justify="between" aria-expanded={!folded} aria-controls={body} onClick={onFold}>
+          <Text as="span" variant="subheading" ink="inherit">{group.label}</Text>
+          <ChevronDownIcon className={s.groupChevron} />
+        </Button>
+      ) : null}
+      {/* The fold is on a plain element: a Stack's display would win over the hidden attribute. */}
+      <div id={body} hidden={folded}>
+        <Stack gap="md">
+          {group.blocks.map((block, index) => <Block key={block.heading ?? index} block={block} current={current} />)}
+        </Stack>
+      </div>
     </Stack>
-  </Stack>
-);
+  );
+};
+
+// What is folded, kept in this browser under the list's name. Storage can be missing or refuse, and then nothing is remembered.
+const FOLDED_KEY = "paper-site:sidebar-folded";
+const readFolded = (list: string): string[] => {
+  try {
+    const all = JSON.parse(window.localStorage.getItem(FOLDED_KEY) ?? "{}") as Record<string, unknown>;
+    return Array.isArray(all[list]) ? (all[list] as unknown[]).filter((name): name is string => typeof name === "string") : [];
+  } catch {
+    return [];
+  }
+};
+const writeFolded = (list: string, folded: string[]) => {
+  try {
+    const all = JSON.parse(window.localStorage.getItem(FOLDED_KEY) ?? "{}") as Record<string, unknown>;
+    window.localStorage.setItem(FOLDED_KEY, JSON.stringify({ ...all, [list]: folded }));
+  } catch { /* Folding still works for this visit when storage is unavailable. */ }
+};
+
+const useFolded = (list: string, groups: SidebarGroup[], current: string) => {
+  const [folded, setFolded] = useState<string[]>(() => readFolded(list));
+  // The group that holds the page you open unfolds.
+  const opening = groups.find((group) => group.label && folded.includes(group.label) && holds(group, current))?.label;
+  useEffect(() => {
+    if (!opening) return;
+    setFolded((names) => {
+      const next = names.filter((name) => name !== opening);
+      writeFolded(list, next);
+      return next;
+    });
+  }, [list, opening]);
+  const toggle = useCallback((name: string) => setFolded((names) => {
+    const next = names.includes(name) ? names.filter((item) => item !== name) : [...names, name];
+    writeFolded(list, next);
+    return next;
+  }), [list]);
+  return [folded, toggle] as const;
+};
 
 // `label` names the list for assistive technology and, under md, the summary of the disclosure.
 export const SidebarNav = ({ label, groups }: { label: string; groups: SidebarGroup[] }) => {
   const current = here(useLocation().pathname);
   const wide = !useMediaQuery(s.narrow);
+  const [folded, toggle] = useFolded(label, groups, current);
   // The disclosure opens for one page: following a link closes it.
   const [openAt, setOpenAt] = useState<string>();
   const open = wide || openAt === current;
@@ -69,7 +123,9 @@ export const SidebarNav = ({ label, groups }: { label: string; groups: SidebarGr
           <ChevronRightIcon className={s.chevron} />
         </Surface>
         <Stack gap="xl" className={s.disclosureBody}>
-          {groups.map((group, index) => <Group key={group.label ?? index} group={group} current={current} />)}
+          {groups.map((group, index) => (
+            <Group key={group.label ?? index} group={group} current={current} folded={Boolean(group.label && folded.includes(group.label))} onFold={() => { if (group.label) toggle(group.label); }} />
+          ))}
         </Stack>
       </details>
     </Surface>

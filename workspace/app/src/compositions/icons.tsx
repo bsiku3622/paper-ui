@@ -54,3 +54,7 @@ export const GearIcon = glyph("Gear", <><circle cx="12" cy="12" r="3" /><path d=
 export const BookIcon = glyph("Book", <><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H12v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z" /><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H12v16h5.5a2.5 2.5 0 0 1 2.5 2.5v-16Z" /></>);
 export const HelpIcon = glyph("Help", <><circle cx="12" cy="12" r="9" /><path d="M9.6 9.6a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1.1.9-1.1 1.7" /><path d="M12 17h.01" /></>);
 export const BellIcon = glyph("Bell", <><path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4l2-2Z" /><path d="M10 21h4" /></>);
+export const ExternalIcon = glyph("External", <><path d="M14 4h6v6" /><path d="m20 4-9 9" /><path d="M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4" /></>);
+export const UndoIcon = glyph("Undo", <><path d="M9 14 4 9l5-5" /><path d="M4 9h10a6 6 0 0 1 0 12h-3" /></>);
+export const PanelIcon = glyph("Panel", <><rect x="3" y="4" width="18" height="16" rx="3" /><path d="M15 4v16" /></>);
+export const PointerIcon = glyph("Pointer", <path d="m5 4 14 6.5-6 1.8L10.5 19 5 4Z" />);

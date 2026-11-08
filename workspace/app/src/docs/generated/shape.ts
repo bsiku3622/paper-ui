@@ -25,7 +25,7 @@ const radiusRows = (): string[][] => [
 const controlRows = (): string[][] => [
   ["`control.height`", ...SIZES.map((size) => String(S.control.height[size])), "원본"],
   ["`control.inset.input`", ...SIZES.map((size) => inset("input", size)), "(높이 − preset 글자 줄) / 2 — 입력값은 글자 줄 사방에 같은 여백"],
-  ["`control.inset.button`", ...SIZES.map((size) => inset("button", size)), `(높이 − 버튼 글자 줄) / 2 × \`buttonInsetRatio\` ${S.control.buttonInsetRatio}, 1px로 반올림 — 라벨이 상자를 정의하므로 더 넓게`],
+  ["`control.inset.button`", ...SIZES.map((size) => inset("button", size)), "원본(`control.buttonInset`) — 크기마다 손으로 적습니다. 라벨이 상자를 정의하므로 입력값보다 넓게"],
   ["`selection.size`", ...SIZES.map((size) => String(S.selection.size[size])), "원본 — Checkbox와 Radio의 상자. 컨트롤 높이와 따로 움직입니다"],
   ["`control.icon`", ...SIZES.map((size) => String(S.icon[CONTROL_ICON[size]])), `높이를 따르는 icon 크기 (${Object.values(CONTROL_ICON).join(" · ")})`],
   ["`control.gap`", ...SIZES.map(() => String(S.space.sm)), "아이콘과 라벨 사이, inset sm"],
@@ -42,12 +42,12 @@ const sizingRows = (): string[][] => {
 };
 
 const controlLine = () => {
-  const { height, buttonInsetRatio } = S.control;
+  const { height, buttonInset } = S.control;
   const anatomy = S.anatomy.inline;
   const { x, y } = S.anatomy.checkbox.markShift;
   const mark = S.selection.size;
   const ladder = (values: Record<ControlSize, number>) => CONTROL_SIZES.map((size) => `${size} ${values[size]}`).join(" · ");
-  return `높이 사다리(\`control.height\`: ${ladder(height)})와 button inset 배율(\`control.buttonInsetRatio\`: ${buttonInsetRatio}), 표식 사다리(\`selection.size\`: ${ladder(mark)})이고, \`anatomy\`는 Badge 높이·inset(\`anatomy.badge\`)과 체크의 보정 비율(\`anatomy.checkbox.markShift\`: x ${x} · y ${y}, \`stroke.emphasis\`의 배수)과 inline 점 · spinner 크기(\`anatomy.inline\`: ${anatomy.dot}em · ${anatomy.spinner}em)입니다.`;
+  return `높이 사다리(\`control.height\`: ${ladder(height)})와 버튼 inset 사다리(\`control.buttonInset\`: ${ladder(buttonInset)}), 표식 사다리(\`selection.size\`: ${ladder(mark)})이고, \`anatomy\`는 Badge 높이·inset(\`anatomy.badge\`)과 체크의 보정 비율(\`anatomy.checkbox.markShift\`: x ${x} · y ${y}, \`stroke.emphasis\`의 배수)과 inline 점 · spinner 크기(\`anatomy.inline\`: ${anatomy.dot}em · ${anatomy.spinner}em)입니다.`;
 };
 
 export const SHAPE_BLOCKS: GeneratedBlock[] = [

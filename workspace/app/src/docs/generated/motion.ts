@@ -20,6 +20,7 @@ const SITUATIONS: Record<(typeof MOTION_ROLES)[number], string> = {
   state: "켜짐·선택처럼 머무는 상태, 면·배경의 전이, 스위치 손잡이",
   enter: "떠오르는 overlay",
   exit: "사라지는 overlay",
+  reveal: "화면에 처음 들어오는 덩어리 — 제목·섹션·카드",
   theme: "테마 전환 — 모드가 바뀌는 프레임에 모든 전이가 즉시 끝남",
 };
 
@@ -34,15 +35,18 @@ const lengthName = (length: string): string => {
 };
 
 const displacement = (role: (typeof MOTION_ROLES)[number]): string => {
-  const { offset, scale }: { duration: string; offset?: string; scale?: string } = MOTION[role];
+  const { offset, scale, blur }: { duration: string; offset?: string; scale?: string; blur?: string } = MOTION[role];
   if (offset === undefined) return "—";
-  return role === "press" ? `${lengthName(offset)} 만큼 아래로` : [lengthName(offset), scale === undefined ? "" : `scale ${scale}`].filter(Boolean).join(" · ");
+  return role === "press" ? `${lengthName(offset)} 만큼 아래로` : [lengthName(offset), scale === undefined ? "" : `scale ${scale}`, blur === undefined ? "" : `흐림 ${lengthName(blur)}`].filter(Boolean).join(" · ");
 };
+
+// A role no component of the package takes is the app's, through its class.
+const usedBy = (role: (typeof MOTION_ROLES)[number]): string => MOTION_CONSUMERS[role].join(" · ") || `앱 화면 — \`${role}\` class`;
 
 const motionRoleRows = (): string[][] =>
   MOTION_ROLES.map((role) => {
     const spec = MOTION[role];
-    return [`\`${role}\``, nameOf(DURATION, spec.duration), nameOf(EASING, spec.easing), displacement(role), SITUATIONS[role], MOTION_CONSUMERS[role].join(" · ")];
+    return [`\`${role}\``, nameOf(DURATION, spec.duration), nameOf(EASING, spec.easing), displacement(role), SITUATIONS[role], usedBy(role)];
   });
 
 export const MOTION_BLOCKS: GeneratedBlock[] = [

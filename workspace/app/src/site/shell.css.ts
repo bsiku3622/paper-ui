@@ -5,7 +5,7 @@
 
 import { createVar, globalStyle, style, styleVariants } from "@vanilla-extract/css";
 
-import { emphasisRule, tokens } from "@studio-baeks/paper-ui/tokens";
+import { emphasisRule, tokens, transition } from "@studio-baeks/paper-ui/tokens";
 
 // Below md the header is static, the sidebars fold into a disclosure and the content takes the gutter.
 export const narrow = `screen and (max-width: ${tokens.layout.breakpoint.md})`;
@@ -14,8 +14,11 @@ export const narrow = `screen and (max-width: ${tokens.layout.breakpoint.md})`;
 // sit under it, and 0 once the header is static.
 const ROW = `calc(${tokens.shape.control.height.sm} + ${tokens.shape.inset.lg} + ${tokens.shape.inset.lg})`;
 export const navHeight = createVar();
+// How wide the frame may grow and the gutter inside it. A page with a sidebar sets them again (wideFrame).
+const frameMax = createVar();
+const frameGutter = createVar();
 globalStyle(":root", {
-  vars: { [navHeight]: ROW },
+  vars: { [navHeight]: ROW, [frameMax]: tokens.layout.container.content, [frameGutter]: tokens.layout.gutter },
   "@media": { [narrow]: { vars: { [navHeight]: "0px" } } },
 });
 // An anchor lands below the sticky header. <main> takes focus from the skip link, and the page is no ring.
@@ -26,10 +29,19 @@ globalStyle("main:focus", { outline: "none" });
 // The page's width: container.content, with the gutter inside it.
 export const frame = style({
   width: "100%",
-  maxWidth: tokens.layout.container.content,
+  maxWidth: frameMax,
   marginInline: "auto",
-  paddingInline: tokens.layout.gutter,
+  paddingInline: frameGutter,
   boxSizing: "border-box",
+});
+
+// Around the header and the page: no box of its own, only the frame's width for what is inside. A page with a sidebar (Docs, the
+// Playground) lifts the cap, so its tables, previews and sheets take the screen, and keeps a step more gutter than the page's so
+// the brand and the sidebar stay off the window's edge. Docs prose keeps its own measure inside the wider column.
+export const frameScope = style({ display: "contents" });
+export const wideFrame = style({
+  vars: { [frameMax]: "none", [frameGutter]: tokens.layout.gap["2xl"] },
+  "@media": { [narrow]: { vars: { [frameGutter]: tokens.layout.gutter } } },
 });
 
 // The wordmark is a block, so the line box around it adds nothing to its height.
@@ -95,14 +107,15 @@ export const sidebarFrame = style([
   {
     display: "grid",
     gridTemplateColumns: `${tokens.shape.dimension.width.lg} minmax(0, 1fr)`,
-    columnGap: tokens.layout.gap["3xl"],
+    columnGap: tokens.layout.gap["2xl"],
     isolation: "isolate",
     "@media": { [narrow]: { gridTemplateColumns: "minmax(0, 1fr)", columnGap: 0, paddingInline: 0 } },
   },
 ]);
 
-// Where a row's words start inside its face.
-const rowInset = `calc(${tokens.shape.control.inset.button.sm} + ${tokens.shape.stroke.border})`;
+// Where a row's words start inside its face. A row is a ghost Button, which keeps no room for a line, so its words stand at the
+// button inset from the face's edge.
+const rowInset = tokens.shape.control.inset.button.sm;
 
 // The list stays under the header with its own scroll. It lies on the canvas with no face and no line. The words of its rows
 // stand on the brand's axis and their faces hang out into the page's margin. A row's focus ring would be cut by the scroll,
@@ -130,6 +143,13 @@ export const content = style({
 
 // A heading stands in line with the words of the rows.
 export const navHeading = style({ paddingInline: rowInset });
+
+// A group's heading is the button that folds it. The chevron points down while the group is open and turns to point at the heading
+// when it is folded.
+export const groupChevron = style({
+  transition: transition("state", "transform"),
+  selectors: { '[aria-expanded="false"] > &': { transform: "rotate(-90deg)" } },
+});
 
 // Under narrow the sidebar is a closed disclosure; its summary names the list and the page you are on.
 export const summary = style({

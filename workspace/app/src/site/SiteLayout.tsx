@@ -11,6 +11,7 @@ import { Outlet, ScrollRestoration } from "react-router-dom";
 import { Box, Link, Text, VisuallyHidden, surfaceClass } from "@studio-baeks/paper-ui";
 
 import { DocsNav } from "../docs/DocsNav";
+import { joinClass } from "../joinClass";
 import { PlaygroundNav } from "../playground/PlaygroundNav";
 import { useDocumentTitle, useSiteHandle } from "./handle";
 import { SiteHeader } from "./SiteHeader";
@@ -43,7 +44,7 @@ export const SiteLayout = () => {
     <>
       <SkipLink />
       {chrome === "none" ? page : (
-        <>
+        <div className={joinClass(s.frameScope, sidebar && s.wideFrame)}>
           <SiteHeader />
           {sidebar ? (
             <div className={s.sidebarFrame}>
@@ -53,7 +54,7 @@ export const SiteLayout = () => {
           ) : (
             <main id="main" tabIndex={-1} className={frame === "full" ? undefined : s.frame}>{page}</main>
           )}
-        </>
+        </div>
       )}
       <ScrollRestoration />
     </>

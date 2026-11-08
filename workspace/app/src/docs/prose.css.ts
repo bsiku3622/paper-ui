@@ -4,16 +4,12 @@
 
 import { globalStyle, style } from "@vanilla-extract/css";
 
-import { codeRule, emphasisRule, tokens, typographyRule } from "@studio-baeks/paper-ui/tokens";
+import { codeRule, emphasisRule, lineRule, tokens, typographyRule } from "@studio-baeks/paper-ui/tokens";
 
-const line = `${tokens.shape.stroke.border} solid`;
-
-// Docs are read, not worked in, so their running text is a step up from the app's body: the subheading's size and line at
-// the regular weight.
-export const prose = style({ color: tokens.color.ink.primary, ...typographyRule("subheading"), ...emphasisRule("regular") });
-// The reading width is set per block: the table wrapper stays open to the column, so a table wider than the reading
-// width scrolls inside the wrapper instead of being cut, and only a narrow column makes it scroll.
-globalStyle(`${prose} > *`, { maxWidth: tokens.shape.measure.lg });
+// Docs are read, not worked in, so their running text is the lead role, a step up from the app's body. Like the Playground they
+// take the whole column: the running text, a table and a code block fill it, and a table wider than the column scrolls inside
+// its wrapper instead of being cut.
+export const prose = style({ color: tokens.color.ink.primary, ...typographyRule("lead") });
 globalStyle(`${prose} > *:first-child`, { marginTop: 0 });
 
 globalStyle(`${prose} h1`, { ...typographyRule("title"), margin: `0 0 ${tokens.layout.gap.sm}` });
@@ -34,7 +30,7 @@ globalStyle(`${prose} code`, {
 });
 globalStyle(`${prose} pre`, {
   background: tokens.color.bg.sunken,
-  border: `${line} ${tokens.color.border.base}`,
+  ...lineRule(),
   borderRadius: tokens.shape.radius.surface.md,
   padding: tokens.shape.inset.lg,
   overflow: "auto",
@@ -46,24 +42,23 @@ globalStyle(`${prose} pre code`, { ...codeRule("block"), ...emphasisRule("regula
 globalStyle(`${prose} blockquote`, {
   margin: `0 0 ${tokens.layout.gap.lg}`,
   padding: `${tokens.shape.inset.md} ${tokens.shape.inset.lg}`,
-  borderLeft: `${tokens.shape.stroke.emphasis} solid ${tokens.color.border.strong}`,
+  ...lineRule({ side: "start", weight: "emphasis", level: "strong" }),
   color: tokens.color.ink.secondary,
 });
 
 // A table scrolls inside this wrapper, which carries the table's bottom margin.
 export const tableScroll = style({ overflowX: "auto", margin: `0 0 ${tokens.layout.gap.lg}` });
-globalStyle(`${prose} > ${tableScroll}`, { maxWidth: "none" });
-globalStyle(`${prose} table`, { width: `min(100%, ${tokens.shape.measure.lg})`, borderCollapse: "collapse" });
+globalStyle(`${prose} table`, { width: "100%", borderCollapse: "collapse" });
 globalStyle(`${prose} th`, {
   textAlign: "left",
   ...emphasisRule("semibold"),
   padding: `${tokens.shape.inset.sm} ${tokens.shape.inset.md}`,
   background: tokens.color.bg.sunken,
-  borderBottom: `${line} ${tokens.color.border.strong}`,
+  ...lineRule({ side: "bottom", level: "strong" }),
 });
 globalStyle(`${prose} td`, {
   padding: `${tokens.shape.inset.sm} ${tokens.shape.inset.md}`,
-  borderBottom: `${line} ${tokens.color.border.base}`,
+  ...lineRule({ side: "bottom" }),
 });
 globalStyle(`${prose} td code`, codeRule("compact"));
-globalStyle(`${prose} hr`, { border: "none", borderTop: `${line} ${tokens.color.border.base}`, margin: `${tokens.layout.gap.xl} 0` });
+globalStyle(`${prose} hr`, { border: "none", ...lineRule({ side: "top" }), margin: `${tokens.layout.gap.xl} 0` });

@@ -17,8 +17,20 @@ const docTitle = (path: string) => {
 };
 
 const Home = lazy(() => import("./pages/Home").then((m) => ({ default: m.Home })));
+const Studio = lazy(() => import("./pages/studio/Studio").then((m) => ({ default: m.Studio })));
 const Demo = lazy(() => import("./pages/demo/Demo").then((m) => ({ default: m.Demo })));
 const DashboardScreen = lazy(() => import("./pages/demo/DashboardScreen").then((m) => ({ default: m.DashboardScreen })));
+const OverviewScreen = lazy(() => import("./pages/demo/OverviewScreen").then((m) => ({ default: m.OverviewScreen })));
+const ProjectsScreen = lazy(() => import("./pages/demo/ProjectsScreen").then((m) => ({ default: m.ProjectsScreen })));
+const ProjectScreen = lazy(() => import("./pages/demo/ProjectsScreen").then((m) => ({ default: m.ProjectScreen })));
+const DeployScreen = lazy(() => import("./pages/demo/DeployScreen").then((m) => ({ default: m.DeployScreen })));
+const DeploymentScreen = lazy(() => import("./pages/demo/DeployScreen").then((m) => ({ default: m.DeploymentScreen })));
+const MonitoringScreen = lazy(() => import("./pages/demo/MonitoringScreen").then((m) => ({ default: m.MonitoringScreen })));
+const BillingScreen = lazy(() => import("./pages/demo/BillingScreen").then((m) => ({ default: m.BillingScreen })));
+const SecurityScreen = lazy(() => import("./pages/demo/SecurityScreen").then((m) => ({ default: m.SecurityScreen })));
+const DocsScreen = lazy(() => import("./pages/demo/DocsScreen").then((m) => ({ default: m.DocsScreen })));
+const ArticleScreen = lazy(() => import("./pages/demo/DocsScreen").then((m) => ({ default: m.ArticleScreen })));
+const SearchScreen = lazy(() => import("./pages/demo/SearchScreen").then((m) => ({ default: m.SearchScreen })));
 const LoginScreen = lazy(() => import("./pages/demo/LoginScreen").then((m) => ({ default: m.LoginScreen })));
 const SettingsScreen = lazy(() => import("./pages/demo/SettingsScreen").then((m) => ({ default: m.SettingsScreen })));
 const Overview = lazy(() => import("./playground/Overview").then((m) => ({ default: m.Overview })));
@@ -50,12 +62,37 @@ export const routes: RouteObject[] = [
       { index: true, element: <Home />, handle: handle({ frame: "full" }) },
       {
         path: "demo",
-        element: <Demo />,
         handle: handle({ title: "데모", chrome: "none" }),
         children: [
-          { index: true, element: <DashboardScreen /> },
-          { path: "login", element: <LoginScreen />, handle: handle({ title: "로그인 데모" }) },
-          { path: "settings", element: <SettingsScreen />, handle: handle({ title: "설정 폼 데모" }) },
+          // The studio: every demo screen, and the owner's apps where they run, in a preview that can be edited.
+          { index: true, element: <Studio />, handle: handle({ title: "데모 스튜디오" }) },
+          // Arcfield: the demo's own screens, which the studio shows.
+          {
+            path: "arcfield",
+            element: <Demo />,
+            children: [
+              // The dashboard is one frame (the sidebar, the bar, what its pages share) and each page is a route inside it.
+              {
+                element: <DashboardScreen />,
+                children: [
+                  { index: true, element: <OverviewScreen /> },
+                  { path: "projects", element: <ProjectsScreen />, handle: handle({ title: "프로젝트와 자원 데모" }) },
+                  { path: "projects/:projectId", element: <ProjectScreen />, handle: handle({ title: "프로젝트 데모" }) },
+                  { path: "deploy", element: <DeployScreen />, handle: handle({ title: "배포 데모" }) },
+                  { path: "deploy/:deployId", element: <DeploymentScreen />, handle: handle({ title: "배포 상세 데모" }) },
+                  { path: "monitoring", element: <MonitoringScreen />, handle: handle({ title: "모니터링 데모" }) },
+                  { path: "billing", element: <BillingScreen />, handle: handle({ title: "비용과 결제 데모" }) },
+                  { path: "security", element: <SecurityScreen />, handle: handle({ title: "보안과 접근 데모" }) },
+                  { path: "docs", element: <DocsScreen />, handle: handle({ title: "문서 데모" }) },
+                  { path: "docs/:slug", element: <ArticleScreen />, handle: handle({ title: "문서 읽기 데모" }) },
+                  { path: "search", element: <SearchScreen />, handle: handle({ title: "검색 데모" }) },
+                ],
+              },
+              // The sign-in and the settings form are screens of their own: the dashboard's sidebar and bar are not around them.
+              { path: "login", element: <LoginScreen />, handle: handle({ title: "로그인 데모" }) },
+              { path: "settings", element: <SettingsScreen />, handle: handle({ title: "설정 폼 데모" }) },
+            ],
+          },
         ],
       },
       {

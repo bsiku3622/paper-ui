@@ -1,7 +1,8 @@
 // The part of the site map that imports nothing: the Vite docs plugin loads it in Node, where the
 // package entry (components, CSS) cannot be imported. site-map.ts re-exports all of it.
 
-// The five Foundations systems, in the order they stack: each reads only the ones before it.
+// The five first-order Foundations systems. None reads another, except Layout on Shape's length scale; the
+// second order (docs/foundations/README.md) is built from them and has no page of its own here.
 export const FOUNDATIONS = [
   { id: "color", label: "Color", summary: "원본 palette와, semantic color role이 지금 테마에서 고르는 값을 확인합니다." },
   { id: "typography", label: "Typography", summary: "글자 크기, 굵기, 위계와 서체를 확인합니다." },
@@ -20,7 +21,7 @@ export const DOC_GROUPS: readonly DocGroup[] = [
   { id: "", label: "", ko: "", docs: ["README"] },
   { id: "get-started", label: "Getting Started", ko: "시작하기", docs: ["philosophy", "install", "theming"] },
   { id: "foundations", label: "Foundations", ko: "Foundations", docs: ["README", ...FOUNDATIONS.map(({ id }) => id)] },
-  { id: "primitives", label: "Primitives", ko: "Primitives", docs: ["README", "element", "content", "a11y", "paint", "press", "select", "float", "drag", "focus", "field", "layout"] },
+  { id: "primitives", label: "Primitives", ko: "Primitives", docs: ["README", "element", "content", "a11y", "paint", "control", "press", "select", "float", "drag", "focus", "field", "layout"] },
   { id: "atoms", label: "Atoms", ko: "Atoms", docs: ["README", "states"] },
 ];
 
