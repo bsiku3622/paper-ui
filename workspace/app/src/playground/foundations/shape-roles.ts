@@ -16,6 +16,7 @@ export const ROLE_ALIASES = {
   inset: { name: "shape.inset.xs ~ 3xl", rule: "= shape.space 같은 단계" },
   radius: { name: "shape.radius.*", rule: "= shape.radius 원본" },
   "control.height": { name: "shape.control.height", rule: "= 원본 사다리" },
+  "control.inset.button": { name: "shape.control.inset.button", rule: "= 원본 사다리 (control.buttonInset) — 라벨이 상자를 정의하므로 입력값보다 넓게" },
   "control.icon": { name: "shape.control.icon", rule: `= icon ${CONTROL_SIZES.map((size: ControlSize) => CONTROL_ICON[size]).join(" · ")}` },
   "control.gap": { name: "shape.control.gap", rule: `= shape.space.${controlGapStep}` },
   target: { name: "shape.target.min", rule: "= shape.target 원본" },
@@ -23,7 +24,6 @@ export const ROLE_ALIASES = {
 
 export const ROLE_FORMULAS = {
   "control.inset.input": { rule: "(control.height − 컨트롤 글자 줄) / 2", note: "입력값 글자 줄 사방에 같은 여백" },
-  "control.inset.button": { rule: `round(nearest, (control.height − 버튼 글자 줄) / 2 × ${SHAPE_SOURCE.control.buttonInsetRatio}, 1px)`, note: "라벨이 상자를 정의하므로 더 넓게" },
 } as const;
 
 // Roles the source board already lists under their own names.

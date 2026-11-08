@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 
-import { Button, Inline, Spinner, Surface, Switch, Text, loop, presence } from "@studio-baeks/paper-ui";
+import { Button, Inline, Spinner, Surface, Switch, Text, loop, presence, reveal, revealAfter } from "@studio-baeks/paper-ui";
 import { MOTION_CONSUMERS, MOTION_ROLES, tokens, transition, type MotionRole } from "@studio-baeks/paper-ui/tokens";
 import { DURATION, EASING, LOOP, LOOP_REDUCED } from "@paper-ui/inspect/motion";
 
@@ -53,14 +53,37 @@ const ThemeSwap = () => {
   );
 };
 
+// What first comes onto a screen: three tiles that come in a step apart, played again on each press.
+const REVEAL_TILES = ["제목", "본문", "카드"] as const;
+const RevealSpecimen = () => {
+  const [round, setRound] = useState(0);
+  return (
+    <div className={s.revealSpecimen}>
+      <Button size="sm" variant="hairline" onClick={() => setRound((value) => value + 1)}>다시 재생</Button>
+      <Inline key={round} gap="xs" data-testid="reveal-specimen">
+        {REVEAL_TILES.map((label, index) => (
+          <Surface key={label} className={`${reveal.load} ${revealAfter[index as keyof typeof revealAfter]}`} fill="raised" border radius="sm" paddingX="sm" paddingY="xs">
+            <Text variant="caption">{label}</Text>
+          </Surface>
+        ))}
+      </Inline>
+    </div>
+  );
+};
+
 const SPECIMENS: Record<MotionRole, ReactNode> = {
   press: <Button size="sm" variant="hairline">눌러 보기</Button>,
   hover: <Button size="sm" variant="hairline">포인터를 올려 보세요</Button>,
   state: <Switch size="sm" defaultChecked aria-label="상태 전이 예시" />,
   enter: <Presence mode="enter" />,
   exit: <Presence mode="exit" />,
+  reveal: <RevealSpecimen />,
   theme: <ThemeSwap />,
 };
+
+// The roles a component transitions with; reveal is the app's, for what first comes onto a screen.
+const COMPONENT_ROLES = MOTION_ROLES.filter((name) => name !== "reveal");
+const REVEAL_RESULT = `${timing(role.reveal)} · ${px(role.reveal.offset)} 아래에서 · 흐림 ${px(role.reveal.blur)}`;
 
 // The roles' presence recipe, as the two timings it joins.
 const PRESENCE_RESULT = `entering → enter ${timing(role.enter)} · exiting → exit ${timing(role.exit)}`;
@@ -68,8 +91,8 @@ const PRESENCE_USERS = [...new Set([...MOTION_CONSUMERS.enter, ...MOTION_CONSUME
 
 export const MotionPage = () => (
   <>
-    <FoundationSection title="Motion Source" description={`시간의 원본입니다. 조용한 밀도의 시스템이라 전이는 짧고 차분합니다(${roleRange(MOTION_ROLES.map((name) => role[name].duration))}). 다른 시스템과 달리 CSS 변수로 굽지 않고, stylesheet가 빌드 때 transition 문자열로 조립합니다.`}>
-      <Board columns={[{ label: "Token" }, { label: "Specimen" }, { label: "Value", align: "end" }]} template="minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr)" minWidth="36rem">
+    <FoundationSection title="Motion Source" description={`시간의 원본입니다. 조용한 밀도의 시스템이라 컴포넌트의 전이는 짧고 차분하고(${roleRange(COMPONENT_ROLES.map((name) => role[name].duration))}), 화면에 처음 들어오는 덩어리만 reveal로 ${role.reveal.duration}에 걸쳐 들어옵니다. 다른 시스템과 달리 CSS 변수로 굽지 않고, stylesheet가 빌드 때 transition 문자열로 조립합니다.`}>
+      <Board columns={[{ label: "Token", track: "minmax(0, 1fr)" }, { label: "Specimen", track: "minmax(0, 1.5fr)" }, { label: "Value", align: "end", track: "minmax(0, 1fr)" }]} minWidth="36rem">
         <BoardGroup label="Duration — 막대에 포인터를 올리면 그 시간으로 움직입니다">
           {Object.entries(DURATION).map(([name, value]) => (
             <BoardRow key={name}>
@@ -103,25 +126,25 @@ export const MotionPage = () => (
       </Board>
     </FoundationSection>
 
-    <FoundationSection title="Motion roles" description="컴포넌트는 시간과 곡선을 따로 고르지 않고, 지금이 어떤 상황의 움직임인지(role)만 고릅니다. reduced-motion에서 전이는 즉시 끝나고, 반복은 회전 대신 맥박으로 바뀝니다.">
-      <Board columns={[{ label: "Role" }, { label: "Specimen" }, { label: "Duration", align: "end" }, { label: "Easing", align: "end" }, { label: "Offset", align: "end" }]} template="minmax(0, 1.2fr) minmax(0, 1.3fr) minmax(4rem, auto) minmax(5rem, auto) minmax(5rem, auto)" minWidth="40rem">
+    <FoundationSection title="Motion roles" description="컴포넌트는 시간과 곡선을 따로 고르지 않고, 지금이 어떤 상황의 움직임인지(role)만 고릅니다. reduced-motion에서 전이는 즉시 끝나고, 반복은 회전 대신 맥박으로 바뀌며, reveal은 재생되지 않고 처음부터 제자리에 섭니다.">
+      <Board columns={[{ label: "Role", track: "minmax(0, 1.2fr)" }, { label: "Specimen", track: "minmax(0, 1.3fr)" }, { label: "Duration", align: "end", track: "minmax(4rem, auto)" }, { label: "Easing", align: "end", track: "minmax(5rem, auto)" }, { label: "Offset", align: "end", track: "minmax(5rem, auto)" }]} minWidth="40rem">
         {MOTION_ROLES.map((name) => {
-          const spec: { duration: string; easing: string; offset?: string; scale?: string } = role[name];
+          const spec: { duration: string; easing: string; offset?: string; scale?: string; blur?: string } = role[name];
           return (
             <BoardRow key={name} size="md">
               <TokenCell name={`motion.role.${name}`} note={roleNote(name)} />
               <Cell>{SPECIMENS[name]}</Cell>
               <ValueCell>{spec.duration}</ValueCell>
               <ValueCell title={spec.easing}>{easingName(spec.easing)}</ValueCell>
-              <ValueCell>{spec.offset ? [px(spec.offset), spec.scale].filter(Boolean).join(" · ") : "—"}</ValueCell>
+              <ValueCell>{spec.offset ? [px(spec.offset), spec.scale, spec.blur && `흐림 ${px(spec.blur)}`].filter(Boolean).join(" · ") : "—"}</ValueCell>
             </BoardRow>
           );
         })}
       </Board>
     </FoundationSection>
 
-    <FoundationSection title="Motion composition" description="역할 위에 얹은 조합입니다. 전이는 transition()이 속성마다 역할의 시간과 곡선을 이어 붙이고, 면의 등장·퇴장은 presence, 반복은 loop class가 겁니다. 쓰는 곳은 MOTION_CONSUMERS가 정합니다.">
-      <Board columns={[{ label: "Composition" }, { label: "Result" }, { label: "Used by", align: "end" }]} template="minmax(0, 1.2fr) minmax(0, 1.8fr) minmax(0, 1.2fr)" minWidth="40rem">
+    <FoundationSection title="Motion composition" description="역할 위에 얹은 조합입니다. 전이는 transition()이 속성마다 역할의 시간과 곡선을 이어 붙이고, 면의 등장·퇴장은 presence, 반복은 loop, 화면에 처음 들어오는 덩어리는 reveal class가 겁니다. 쓰는 곳은 MOTION_CONSUMERS가 정합니다.">
+      <Board columns={[{ label: "Composition", track: "minmax(0, 1.2fr)" }, { label: "Result", track: "minmax(0, 1.8fr)" }, { label: "Used by", align: "end", track: "minmax(0, 1.2fr)" }]} minWidth="40rem">
         <BoardGroup label="transition(role, …속성) — 역할의 시간과 곡선을 속성마다 붙입니다">
           {(Object.keys(TRANSITION_PROPERTIES) as (keyof typeof TRANSITION_PROPERTIES)[]).map((name) => (
             <BoardRow key={name}>
@@ -139,6 +162,23 @@ export const MotionPage = () => (
               <ValueCell>{PRESENCE_USERS}</ValueCell>
             </BoardRow>
           ))}
+        </BoardGroup>
+        <BoardGroup label="reveal — 화면에 처음 들어오는 덩어리에 reveal 역할을 겁니다. reduced-motion에서는 재생되지 않습니다">
+          <BoardRow>
+            <TokenCell name="reveal.load" note="마운트될 때 한 번" />
+            <Cell><Text variant="caption" family="mono" ink="secondary">{REVEAL_RESULT}</Text></Cell>
+            <ValueCell>앱 화면</ValueCell>
+          </BoardRow>
+          <BoardRow>
+            <TokenCell name="reveal.scroll" note="화면에 들어오는 동안 view timeline을 따라 — 없는 브라우저에서는 제자리" />
+            <Cell><Text variant="caption" family="mono" ink="secondary">{`${px(role.reveal.offset)} 아래에서 · 흐림 ${px(role.reveal.blur)} · ${easingName(role.reveal.easing)}`}</Text></Cell>
+            <ValueCell>앱 화면</ValueCell>
+          </BoardRow>
+          <BoardRow>
+            <TokenCell name="revealAfter[n]" note="함께 들어오는 형제는 n 걸음 늦게" />
+            <Cell><Text variant="caption" family="mono" ink="secondary">{`한 걸음 ${role.reveal.step}`}</Text></Cell>
+            <ValueCell>앱 화면</ValueCell>
+          </BoardRow>
         </BoardGroup>
         <BoardGroup label="loop — 반복. reduced-motion에서는 정해진 맥박으로 바뀝니다">
           {(Object.keys(LOOP) as (keyof typeof LOOP)[]).map((name) => (

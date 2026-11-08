@@ -96,8 +96,11 @@ describe("Motion inspector", () => {
     for (const role of MOTION_ROLES) expect(MOTION_NOTES[role].length, role).toBeGreaterThan(0);
   });
 
-  it("follows a role's note with the components that use it", () => {
-    for (const role of MOTION_ROLES) expect(roleNote(role), role).toBe([MOTION_NOTES[role], ...MOTION_CONSUMERS[role]].join(" · "));
+  it("follows a role's note with the components that use it, or with the app's screens for a role no component takes", () => {
+    for (const role of MOTION_ROLES) {
+      const users = MOTION_CONSUMERS[role].length > 0 ? MOTION_CONSUMERS[role] : [`앱 화면(${role} class)`];
+      expect(roleNote(role), role).toBe([MOTION_NOTES[role], ...users].join(" · "));
+    }
   });
 
   it("composes only the roles that transition: press, hover and state", () => {

@@ -31,4 +31,4 @@ export const entryBySlug = (slug: string): Entry | undefined => REGISTRY.find((e
 
 export { codeOf, stateFromCode } from "./code";
 export { named, printJsx } from "./jsx";
-export { initialState, normalized, type Control, type Spec, type State } from "./schema";
+export { initialState, normalized, type Control, type SheetAxis, type Spec, type State } from "./schema";

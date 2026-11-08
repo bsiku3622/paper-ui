@@ -64,8 +64,11 @@ type ControlBase = {
   // but it is not a `defaults` entry: stating it would add a class the root has no need of.
   rootDefault?: string;
   // What omitting the prop means when no value of it says so: the prop inherits from the page. The select names the
-  // omission with it, as "default (inherit)", and it is neither a stated default nor an option.
+  // omission with it, as "inherit (default)", and it is neither a stated default nor an option.
   omitted?: string;
+  // The type the Props table names, when the control stands in for a prop of another type: a switch that puts an example node
+  // in a ReactNode slot. registry.test holds a switch whose label is not its prop to naming it.
+  type?: string;
 };
 
 export type Control = ControlBase &
@@ -75,7 +78,7 @@ export type Control = ControlBase &
     | { kind: "text"; initial: string; bind: "children" | "attribute" }
   );
 
-type Extra = { key?: string; label?: string; target?: string; behaviorOnly?: string; derived?: string; rootDefault?: string; omitted?: string };
+type Extra = { key?: string; label?: string; target?: string; behaviorOnly?: string; derived?: string; rootDefault?: string; omitted?: string; type?: string };
 
 const base = (prop: string, extra: Extra): ControlBase => ({
   key: extra.key ?? prop,
@@ -86,6 +89,7 @@ const base = (prop: string, extra: Extra): ControlBase => ({
   ...(extra.derived ? { derived: extra.derived } : {}),
   ...(extra.rootDefault ? { rootDefault: extra.rootDefault } : {}),
   ...(extra.omitted ? { omitted: extra.omitted } : {}),
+  ...(extra.type ? { type: extra.type } : {}),
 });
 
 // Types the options against the prop: a value the prop does not accept fails typecheck.
@@ -132,6 +136,12 @@ export const words = (state: State, key: string): string => (typeof state[key] =
 
 export type StageProps<H> = { subject: ReactElement; state: State; harness: H };
 
+// The sheet under an Atom's code: every value of one axis against every value of another (`matrix`), and rows that move one more
+// axis at a time from the first view (`strips`). Each names a control by its key, a select or a switch. `with` is the state a strip
+// needs to show anything: a fill shows only on a variant with no face of its own.
+export type SheetAxis = { key: string; with?: State };
+export type Sheet = { matrix?: { rows: string; columns: string }; strips?: readonly SheetAxis[] };
+
 type SpecOf<H> = {
   name: string;
   // Says what the component is for. No digits: a number belongs to its source, not to a sentence.
@@ -151,6 +161,7 @@ type SpecOf<H> = {
   // App components the subject uses that the printer may name. A part wrapped in named() also has
   // its source printed above the tree.
   parts?: Readonly<Record<string, ElementType>>;
+  sheet?: Sheet;
 };
 
 export type Spec = Required<Pick<SpecOf<unknown>, "useHarness">> & Omit<SpecOf<unknown>, "useHarness">;

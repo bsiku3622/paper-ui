@@ -2,7 +2,7 @@
 
 import { globalStyle, style, styleVariants } from "@vanilla-extract/css";
 
-import { SURFACE_FILLS, codeRule, tokens } from "@studio-baeks/paper-ui/tokens";
+import { SURFACE_FILLS, codeRule, lineRule, tokens } from "@studio-baeks/paper-ui/tokens";
 
 import { navHeight } from "../site/shell.css";
 
@@ -37,7 +37,6 @@ export const previewStage = style({
   minHeight: tokens.shape.dimension.height.lg,
   padding: tokens.shape.inset["2xl"],
   borderRadius: tokens.shape.radius.surface.lg,
-  border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`,
   overflow: "auto",
   isolation: "isolate",
 });
@@ -56,11 +55,11 @@ export const surfaceButton = styleVariants(
   (face) => ({
     display: "grid",
     placeItems: "center",
-    width: tokens.shape.control.height.sm,
-    height: tokens.shape.control.height.sm,
+    width: tokens.shape.control.height.xs,
+    height: tokens.shape.control.height.xs,
     padding: 0,
-    border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`,
-    borderRadius: tokens.shape.radius.control.sm,
+    ...lineRule(),
+    borderRadius: tokens.shape.radius.full,
     color: tokens.color.ink.primary,
     cursor: "pointer",
     ...face,
@@ -80,11 +79,9 @@ export const previewStageFlush = style({
   borderRadius: 0,
 });
 
+// The code is a card of its own: its face and shadow are the Surface's. A line shows only when the code does not parse.
 export const codeBlock = style({
   position: "relative",
-  border: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`,
-  borderRadius: tokens.shape.radius.surface.md,
-  background: tokens.color.bg.raised,
   overflow: "hidden",
 });
 
@@ -107,8 +104,7 @@ export const codeEditor = style({
   tabSize: 2,
 });
 
-export const codeBlockError = style({ borderColor: tokens.color.accent.error.soft });
-export const codeBlockEditing = style({ background: tokens.color.bg.sunken });
+export const codeBlockError = style({ ...lineRule(), borderColor: tokens.color.accent.error.soft });
 export const codeError = style({ display: "block", paddingInline: tokens.shape.inset.lg, paddingBottom: tokens.shape.inset.sm });
 
 globalStyle(`${codeBlock} pre`, {

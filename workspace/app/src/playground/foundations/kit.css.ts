@@ -5,27 +5,26 @@
 // (AGENTS.md); the display parts at the end of the file are shared by every page.
 import { createVar, globalStyle, style, styleVariants } from "@vanilla-extract/css";
 
-import { SYSTEM_COLORS, tokens } from "@studio-baeks/paper-ui/tokens";
+import { SYSTEM_COLORS, lineRule, tokens } from "@studio-baeks/paper-ui/tokens";
 
 import { leafPaths, valueAt, type LeafPaths } from "./paths";
 
-const line = `${tokens.shape.stroke.border} solid ${tokens.color.border.base}`;
 const spanAll = { gridColumn: "1 / -1", display: "grid", gridTemplateColumns: "subgrid", alignItems: "center", minWidth: 0 } as const;
 
 export const page = style({ minWidth: 0 });
 export const section = style({ minWidth: 0 });
 export const board = style({ minWidth: 0, maxWidth: "100%", overflowX: "auto" });
 export const grid = style({ display: "grid", columnGap: tokens.layout.gap.md, alignItems: "center" });
-export const header = style({ ...spanAll, paddingBlock: tokens.shape.inset.sm, borderBottom: line });
+export const header = style({ ...spanAll, paddingBlock: tokens.shape.inset.sm, ...lineRule({ side: "bottom" }) });
 export const group = style({
   ...spanAll,
   paddingBlock: tokens.shape.inset.sm,
-  borderBottom: line,
+  ...lineRule({ side: "bottom" }),
   selectors: { "&:last-child": { borderBottom: 0, paddingBottom: 0 } },
 });
 export const groupLabel = style({ gridColumn: "2 / -2", paddingBlock: tokens.shape.inset.sm });
 
-const bordered = { borderBottom: line, selectors: { "&:last-child": { borderBottom: 0, paddingBottom: tokens.shape.inset.sm } } };
+const bordered = { ...lineRule({ side: "bottom" }), selectors: { "&:last-child": { borderBottom: 0, paddingBottom: tokens.shape.inset.sm } } };
 export const row = styleVariants({
   // Rows inside a group: the group draws the rule.
   sm: { ...spanAll, paddingBlock: tokens.shape.inset.sm },

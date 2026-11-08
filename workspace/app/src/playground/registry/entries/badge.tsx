@@ -14,9 +14,13 @@ export default defineSpec({
     enumControl<BadgeProps, "size">("size", vocab("CONTROL_SIZES")),
     enumControl<BadgeProps, "fontSize">("fontSize", vocab("CONTROL_FONT_SIZES")),
     enumControl<BadgeProps, "shape">("shape", vocab("CONTROL_SHAPES")),
+    enumControl<BadgeProps, "gap">("gap", vocab("SPACES"), { rootDefault: "xs", behaviorOnly: "it shows once the badge holds a dot beside its word" }),
+    enumControl<BadgeProps, "align">("align", vocab("ALIGNS"), { rootDefault: "center" }),
+    enumControl<BadgeProps, "justify">("justify", vocab("JUSTIFIES"), { rootDefault: "start", behaviorOnly: "it shows once the badge is wider than its content" }),
     textControl<BadgeProps, "children">("children", "진행"),
   ],
   defaults: { accent: "primary", variant: "soft", size: "md", shape: "pill" },
+  sheet: { matrix: { rows: "accent", columns: "variant" }, strips: [{ key: "size" }, { key: "shape" }] },
   subject: (state) => (
     <Badge
       accent={pick<NonNullable<BadgeProps["accent"]>>(state, "accent")}
@@ -26,6 +30,9 @@ export default defineSpec({
       size={pick<NonNullable<BadgeProps["size"]>>(state, "size")}
       fontSize={pick<NonNullable<BadgeProps["fontSize"]>>(state, "fontSize")}
       shape={pick<NonNullable<BadgeProps["shape"]>>(state, "shape")}
+      gap={pick<NonNullable<BadgeProps["gap"]>>(state, "gap")}
+      align={pick<NonNullable<BadgeProps["align"]>>(state, "align")}
+      justify={pick<NonNullable<BadgeProps["justify"]>>(state, "justify")}
     >
       {words(state, "children")}
     </Badge>

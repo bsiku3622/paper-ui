@@ -38,6 +38,7 @@ const TEXT_SAMPLES = {
   title: "큰 흐름을 한눈에 보여줍니다",
   heading: "필요한 정보에 집중할 수 있도록",
   subheading: "작업의 맥락을 놓치지 않게",
+  lead: "이 페이지가 무엇을 하는 곳인지 한두 문장으로 알려 줍니다.",
   body: "팀의 진행 상황과 다음 할 일을 한곳에서 확인하세요.",
   caption: "마지막 수정 · 오늘 오전 10:42",
   label: "담당자 · 진행 상태 · 마감일",
@@ -49,6 +50,7 @@ const TEXT_ROLES: Record<TextVariant, string> = {
   title: "페이지 제목",
   heading: "섹션 제목",
   subheading: "작은 제목",
+  lead: "읽는 글 · 첫머리 설명",
   body: "읽기 본문",
   caption: "보조 정보",
   label: "짧은 이름",
@@ -76,7 +78,7 @@ const sizeLeading = (variant: TextVariant) => {
 export const TypographyPage = () => (
   <>
     <FoundationSection title="Typography Palette" description="Text 역할과 Control preset이 함께 참조하는 원본 값입니다. 크기와 행간은 실제 px 값을 이름으로 씁니다.">
-      <Board columns={[{ label: "Token" }, { label: "Specimen" }, { label: "Value", align: "end" }]} template="minmax(22rem, 1fr) minmax(13.25rem, 1.5fr) minmax(13rem, 1fr)" minWidth="52.25rem">
+      <Board columns={[{ label: "Token", track: "minmax(22rem, 1fr)" }, { label: "Specimen", track: "minmax(13.25rem, 1.5fr)" }, { label: "Value", align: "end", track: "minmax(13rem, 1fr)" }]} minWidth="52.25rem">
         {PALETTE_GROUPS.map((group) => (
           <BoardGroup key={group.key} label={group.label}>
             {group.rows.map((row) => (
@@ -113,7 +115,7 @@ export const TypographyPage = () => (
     </FoundationSection>
 
     <FoundationSection title="Type scale" description="페이지 제목부터 보조 정보까지, 화면에서 맡은 역할로 크기와 굵기를 고릅니다.">
-      <Board columns={[{ label: "Role" }, { label: "Specimen" }, { label: "Weight", align: "end" }, { label: "Size / leading", align: "end" }]} template="minmax(6.75rem, auto) minmax(0, 1fr) minmax(4.5rem, auto) minmax(6.75rem, auto)" minWidth="36rem">
+      <Board columns={[{ label: "Role", track: "minmax(6.75rem, auto)" }, { label: "Specimen", track: "minmax(0, 1fr)" }, { label: "Weight", align: "end", track: "minmax(4.5rem, auto)" }, { label: "Size / leading", align: "end", track: "minmax(6.75rem, auto)" }]} minWidth="36rem">
         {TEXT_VARIANTS.map((variant) => (
           <BoardRow key={variant} size="md">
             <TokenCell name={`typography.role.${variant}`} note={TEXT_ROLES[variant]} />
@@ -126,7 +128,7 @@ export const TypographyPage = () => (
     </FoundationSection>
 
     <FoundationSection title="Control presets" description="비슷한 컴포넌트는 같은 완성 typography class를 공유합니다. size는 geometry와 함께 선택됩니다.">
-      <Board columns={[{ label: "Preset" }, ...CONTROL_SIZES.map((size) => ({ label: size, align: "center" as const }))]} template="minmax(15.5rem, 1.1fr) repeat(3, minmax(10rem, 1fr))" minWidth="50rem">
+      <Board columns={[{ label: "Preset", track: "minmax(11.5rem, 1.1fr)" }, ...CONTROL_SIZES.map((size) => ({ label: size, align: "center" as const, track: "minmax(min-content, 1fr)" }))]} minWidth="50rem">
         {PRESET_PATHS.map((path) => (
           <BoardRow key={path} size="lg">
             <TokenCell name={`typography.preset.${path}`} note={PRESET_NOTES[path].role} />

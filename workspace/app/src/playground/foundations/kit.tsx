@@ -11,7 +11,9 @@ import { SectionHeading } from "../../site/SectionHeading";
 import * as s from "./kit.css";
 
 type Align = keyof typeof s.align;
-export type Column = { label: string; align?: Align };
+// A column of a board: its heading, how its cells line up, and its track. A board's tracks are its columns', so it cannot name more
+// columns than it has tracks.
+export type Column = { label: string; align?: Align; track: string };
 
 export const FoundationSection = ({ title, description, children }: { title: string; description: string; children: ReactNode }) => (
   <Stack as="section" className={s.section} gap="md">
@@ -20,10 +22,10 @@ export const FoundationSection = ({ title, description, children }: { title: str
   </Stack>
 );
 
-// `template` is the board's column tracks; header, groups and rows inherit them.
-export const Board = ({ columns, template, minWidth, children }: { columns: Column[]; template: string; minWidth?: string; children: ReactNode }) => (
+// Header, groups and rows inherit the board's tracks.
+export const Board = ({ columns, minWidth, children }: { columns: Column[]; minWidth?: string; children: ReactNode }) => (
   <Surface className={s.board} fill="raised" border radius="lg" padding="md">
-    <div className={s.grid} style={{ gridTemplateColumns: `0 ${template} 0`, minWidth }}>
+    <div className={s.grid} style={{ gridTemplateColumns: `0 ${columns.map((column) => column.track).join(" ")} 0`, minWidth }}>
       <div className={s.header}>
         {columns.map((column) => <Text key={column.label} className={s.align[column.align ?? "start"]} variant="label" ink="primary">{column.label}</Text>)}
       </div>

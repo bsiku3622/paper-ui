@@ -1,6 +1,6 @@
-import { Badge, Button, Checkbox, Field, Icon, Marker, Radio, Select, Spinner, Switch, Text, Textarea } from "@studio-baeks/paper-ui";
+import { Badge, Button, Checkbox, Field, Icon, Marker, Radio, SegmentControl, Select, Slider, Spinner, Switch, Text, Textarea } from "@studio-baeks/paper-ui";
 import { tokens, CONTROL_SIZES, DIMENSIONS, ICON_SIZES, MEASURES, SPACES, type ControlSize } from "@studio-baeks/paper-ui/tokens";
-import { SHAPE_RECIPES, SHAPE_SOURCE } from "@paper-ui/inspect/shape";
+import { CONTROL, SHAPE_RECIPES, SHAPE_SOURCE } from "@paper-ui/inspect/shape";
 
 import { Board, BoardGroup, BoardRow, Cell, Computed, FoundationSection, Ladder, MatrixCell, Meter, TokenCell, ValueCell, resolved } from "./kit";
 import { PlusIcon } from "../../compositions/icons";
@@ -13,10 +13,8 @@ const r = SHAPE_RECIPES;
 const maxOf = (scale: Record<string, number>) => Math.max(...Object.values(scale));
 const Plus = () => <PlusIcon size="caption" />;
 
-const SOURCE_COLUMNS = [{ label: "Token" }, { label: "Specimen" }, { label: "Value", align: "end" as const }];
-const SOURCE_TEMPLATE = "minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr)";
-const ROLE_COLUMNS = [{ label: "Role" }, { label: "Rule" }, { label: "Value", align: "end" as const }];
-const ROLE_TEMPLATE = "minmax(0, 1fr) minmax(0, 1.2fr) minmax(11rem, auto)";
+const SOURCE_COLUMNS = [{ label: "Token", track: "minmax(0, 1fr)" }, { label: "Specimen", track: "minmax(0, 1.5fr)" }, { label: "Value", align: "end" as const, track: "minmax(0, 1fr)" }];
+const ROLE_COLUMNS = [{ label: "Role", track: "minmax(0, 1fr)" }, { label: "Rule", track: "minmax(0, 1.2fr)" }, { label: "Value", align: "end" as const, track: "minmax(11rem, auto)" }];
 
 const n = (dp: number, unit = "dp") => `${dp} ${unit}`;
 
@@ -29,7 +27,7 @@ const STROKE_SPECIMEN: Record<keyof typeof SHAPE_SOURCE.stroke, React.ReactNode>
 };
 
 const ShapeSource = () => (
-  <Board columns={SOURCE_COLUMNS} template={SOURCE_TEMPLATE} minWidth="36rem">
+  <Board columns={SOURCE_COLUMNS} minWidth="36rem">
     <BoardGroup label="Space — inset과 gap이 함께 고르는 길이">
       {SPACES.map((step) => (
         <BoardRow key={step}>
@@ -81,13 +79,15 @@ const ShapeSource = () => (
           <ValueCell>{resolved(shape.control.height[size])}</ValueCell>
         </BoardRow>
       ))}
-      <BoardRow>
-        <TokenCell name="shape.control.buttonInsetRatio" note="버튼 inset = (높이 − 버튼 글자 줄)/2 × 이 값" />
-        <Cell><Button size="md" variant="hairline">Button</Button></Cell>
-        <ValueCell>{SHAPE_SOURCE.control.buttonInsetRatio}</ValueCell>
-      </BoardRow>
+      {CONTROL_SIZES.map((size) => (
+        <BoardRow key={`button-inset-${size}`}>
+          <TokenCell name={`shape.control.buttonInset.${size}`} note={size === "xs" ? "버튼 좌우 여백 — 크기마다 손으로 적고, 높이를 따라가지 않습니다" : undefined} />
+          <Cell><Button size={size} variant="hairline">Button</Button></Cell>
+          <ValueCell>{SHAPE_SOURCE.control.buttonInset[size]}</ValueCell>
+        </BoardRow>
+      ))}
     </BoardGroup>
-    <BoardGroup label="Selection — Checkbox와 Radio의 상자. 스위치 트랙 폭은 이 값의 2배이고, 컨트롤 높이와 따로 움직입니다">
+    <BoardGroup label="Selection — Checkbox와 Radio의 상자. 스위치 트랙은 이 값에 테를 더한 높이에 폭은 그 1.5배이고, 손잡이는 둥근 원입니다. 컨트롤 높이와 따로 움직입니다">
       {CONTROL_SIZES.map((size) => (
         <BoardRow key={size}>
           <TokenCell name={`shape.selection.size.${size}`} />
@@ -135,6 +135,11 @@ const ShapeSource = () => (
         <ValueCell>{SHAPE_SOURCE.anatomy.checkbox.markShift.x} · {String(SHAPE_SOURCE.anatomy.checkbox.markShift.y).replace("-", "−")}</ValueCell>
       </BoardRow>
       <BoardRow>
+        <TokenCell name="shape.anatomy.switch.length" note="스위치 트랙 폭 — 트랙 높이의 배수. 짧고 뚱뚱해서 둥근 손잡이가 트랙을 거의 채웁니다" />
+        <Cell><Switch size="md" defaultChecked aria-label="Switch length" /></Cell>
+        <ValueCell>× {SHAPE_SOURCE.anatomy.switch.length}</ValueCell>
+      </BoardRow>
+      <BoardRow>
         <TokenCell name="shape.anatomy.marker.height · position · overrun" note="칠의 높이, 글자 상자 안 위치, 좌우로 넘는 길이" />
         <Cell><Text as="span" variant="body"><Marker>칠</Marker></Text></Cell>
         <ValueCell>{SHAPE_SOURCE.anatomy.marker.height}% · {SHAPE_SOURCE.anatomy.marker.position}% · {n(SHAPE_SOURCE.anatomy.marker.overrun, "em")}</ValueCell>
@@ -159,6 +164,7 @@ const ALIAS_VALUES: Record<keyof typeof ROLE_ALIASES, readonly string[]> = {
   inset: SPACES.map((step) => shape.inset[step]),
   radius: leafPaths(SHAPE_SOURCE.radius).map((name) => valueAt(shape.radius, name) as string),
   "control.height": sizes(shape.control.height),
+  "control.inset.button": sizes(shape.control.inset.button),
   "control.icon": sizes(shape.control.icon),
   "control.gap": [shape.control.gap],
   target: [shape.target.min],
@@ -166,11 +172,10 @@ const ALIAS_VALUES: Record<keyof typeof ROLE_ALIASES, readonly string[]> = {
 
 const FORMULA_VALUES: Record<keyof typeof ROLE_FORMULAS, readonly string[]> = {
   "control.inset.input": sizes(shape.control.inset.input),
-  "control.inset.button": sizes(shape.control.inset.button),
 };
 
 const ShapeRoles = () => (
-  <Board columns={ROLE_COLUMNS} template={ROLE_TEMPLATE} minWidth="36rem">
+  <Board columns={ROLE_COLUMNS} minWidth="36rem">
     <BoardGroup label="Alias — 원본 변수를 그대로 가리킵니다">
       {(Object.keys(ROLE_ALIASES) as (keyof typeof ROLE_ALIASES)[]).map((role) => (
         <BoardRow key={role}>
@@ -199,14 +204,42 @@ const C = ({ value }: { value: string }) => <Computed value={value} unit={false}
 const RECIPES: { name: string; note: string; render: (size: ControlSize) => React.ReactNode; caption: (size: ControlSize) => React.ReactNode }[] = [
   { name: "Button", note: "높이 · inset", render: (size) => <Button size={size} variant="hairline"><Plus />Button</Button>, caption: (size) => <>높이 <C value={shape.control.height[size]} /> · inset <C value={shape.control.inset.button[size]} /></> },
   { name: "Field", note: "높이 · inset", render: (size) => <Field size={size} aria-label={`Field ${size}`} placeholder="Field" />, caption: (size) => <>높이 <C value={shape.control.height[size]} /> · inset <C value={shape.control.inset.input[size]} /></> },
-  { name: "Select", note: "화살표 · 값이 멈추는 자리", render: (size) => <Select size={size} aria-label={`Select ${size}`}><Select.Option value="a">Select</Select.Option></Select>, caption: (size) => <>화살표 <C value={shape.control.icon[size]} /> · 끝 <C value={r.select.paddingEnd[size]} /></> },
-  { name: "Textarea", note: "위아래 여백 · 한 줄 = Field", render: (size) => <Textarea size={size} rows={1} aria-label={`Textarea ${size}`} placeholder="Textarea" />, caption: (size) => <>위아래 <C value={r.textarea.paddingBlock[size]} /></> },
+  { name: "Select", note: "화살표 · 값이 멈추는 자리", render: (size) => <Select size={size} aria-label={`Select ${size}`}><Select.Option value="a">Select</Select.Option></Select>, caption: (size) => <>화살표 <C value={shape.control.icon[size]} /> · 끝 <C value={CONTROL.select.paddingEnd[size]} /></> },
+  { name: "Textarea", note: "위아래 여백 · 한 줄 = Field", render: (size) => <Textarea size={size} rows={1} aria-label={`Textarea ${size}`} placeholder="Textarea" />, caption: (size) => <>위아래 <C value={CONTROL.area.paddingBlock[size]} /></> },
   { name: "Checkbox", note: "상자 · 체크 긴 변", render: (size) => <Checkbox size={size} defaultChecked aria-label={`Checkbox ${size}`} />, caption: (size) => <>상자 <C value={shape.selection.size[size]} /> · 체크 <C value={r.checkbox.mark[size]} /></> },
   { name: "Radio", note: "상자 · 점", render: (size) => <Radio size={size} defaultChecked aria-label={`Radio ${size}`} />, caption: (size) => <>상자 <C value={shape.selection.size[size]} /> · 점 <C value={r.radio.dot[size]} /></> },
-  { name: "Switch", note: "트랙 · 손잡이", render: (size) => <Switch size={size} defaultChecked aria-label={`Switch ${size}`} />, caption: (size) => <>트랙 <C value={r.switch.width[size]} />×<C value={r.switch.height[size]} /> · 손잡이 <C value={r.switch.thumb[size]} /></> },
+  { name: "Switch", note: "트랙 · 손잡이", render: (size) => <Switch size={size} defaultChecked aria-label={`Switch ${size}`} />, caption: (size) => <>트랙 <C value={r.switch.width[size]} />×<C value={r.switch.height[size]} /> · 손잡이 <C value={r.switch.thumbWidth[size]} />×<C value={r.switch.thumb[size]} /></> },
+  { name: "SegmentControl", note: "트랙 높이 · 칸이 들어앉는 거리", render: (size) => <SegmentControl size={size} aria-label={`SegmentControl ${size}`} defaultValue="a"><SegmentControl.Item value="a">하나</SegmentControl.Item><SegmentControl.Item value="b">둘</SegmentControl.Item></SegmentControl>, caption: (size) => <>높이 <C value={shape.control.height[size]} /> · 안쪽 <C value={r.segment.inset} /></> },
+  { name: "Slider", note: "막대 · 손잡이", render: (size) => <Slider size={size} aria-label={`Slider ${size}`} defaultValue={50} />, caption: (size) => <>막대 <C value={r.switch.height[size]} /> · 손잡이 <C value={r.slider.thumb[size]} /></> },
   { name: "Badge", note: "높이 · inset", render: (size) => <Badge size={size}>Badge</Badge>, caption: (size) => <>높이 <C value={r.badge.height[size]} /> · inset <C value={r.badge.inset[size]} /></> },
   { name: "Spinner", note: "지름", render: (size) => <Spinner size={size} />, caption: (size) => <>지름 <C value={r.spinner.size[size]} /></> },
 ];
+
+// One size across what a control is made of, read at a glance. The height, the button's inset, the corner and the icon are Shape's
+// roles, the text is Typography's control preset, and the marks follow that text rather than the height.
+const SIZE_COLUMNS = [
+  { label: "size", track: "minmax(5rem, 1fr)" },
+  ...["높이", "버튼 좌우", "모서리", "글자", "아이콘", "체크 · 라디오"].map((label) => ({ label, align: "end" as const, track: "minmax(0, 1fr)" })),
+];
+const sizeRow = (size: ControlSize) => [
+  shape.control.height[size],
+  shape.control.inset.button[size],
+  shape.radius.control[size],
+  tokens.typography.preset.button[size].size,
+  shape.control.icon[size],
+  shape.selection.size[size],
+];
+
+const ControlSizes = () => (
+  <Board columns={SIZE_COLUMNS} minWidth="36rem">
+    {CONTROL_SIZES.map((size) => (
+      <BoardRow key={size} size="md">
+        <TokenCell name={size} note={size === "md" ? "기본" : undefined} />
+        {sizeRow(size).map((value, index) => <ValueCell key={index}><Computed value={value} unit={false} /></ValueCell>)}
+      </BoardRow>
+    ))}
+  </Board>
+);
 
 export const ShapePage = () => (
   <>
@@ -216,8 +249,11 @@ export const ShapePage = () => (
     <FoundationSection title="Shape roles" description="컴포넌트와 앱이 고르는 이름입니다. 역할은 자기 변수를 갖지 않습니다 — 원본의 별칭이거나 원본 위의 식입니다.">
       <ShapeRoles />
     </FoundationSection>
+    <FoundationSection title="Control sizes" description="size 하나가 고르는 값을 한 표에 모았습니다. 높이 · 버튼 좌우 · 모서리 · 아이콘은 Shape의 역할이고 글자는 Typography의 control preset입니다. 체크 · 라디오는 높이가 아니라 옆 글자를 따라서, 글자가 같은 md와 lg는 같은 값입니다. 값은 브라우저가 계산한 px입니다.">
+      <ControlSizes />
+    </FoundationSection>
     <FoundationSection title="Recipes" description="역할이 컴포넌트 anatomy가 되는 자리입니다. recipe에는 구조 값(절반 /2, 45° 회전)만 쓰고, 광학 보정 비율은 원본 anatomy에 둡니다. 아래 값은 브라우저가 식을 계산한 결과입니다.">
-      <Board columns={[{ label: "Recipe" }, ...CONTROL_SIZES.map((size) => ({ label: size, align: "center" as const }))]} template="minmax(9rem, 1fr) repeat(3, minmax(10rem, 1fr))" minWidth="44rem">
+      <Board columns={[{ label: "Recipe", track: "minmax(9rem, 1fr)" }, ...CONTROL_SIZES.map((size) => ({ label: size, align: "center" as const, track: "minmax(min-content, 1fr)" }))]} minWidth="44rem">
         {RECIPES.map((recipe) => (
           <BoardRow key={recipe.name} size="lg">
             <TokenCell name={recipe.name} note={recipe.note} />

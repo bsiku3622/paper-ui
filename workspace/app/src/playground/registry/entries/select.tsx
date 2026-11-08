@@ -5,7 +5,7 @@ import { narrow } from "./examples.css";
 
 export default defineSpec({
   name: "Select",
-  blurb: "native select anatomy를 Select.Option과 Select.Group으로 드러냅니다. Button·Field와 같은 사다리와 status·variant·fill 축을 쓰고, option 안에는 native 계약에 맞게 텍스트만 둡니다.",
+  blurb: "native select anatomy를 Select.Option과 Select.Group으로 드러냅니다. Button·Field와 같은 사다리와 status·variant·fill 축을 쓰고, 면을 고르지 않으면 Field처럼 흰 면에 회색 선 한 줄로 서며, option 안에는 native 계약에 맞게 텍스트만 둡니다.",
   controls: [
     enumControl<SelectProps, "status">("status", vocab("STATUSES")),
     enumControl<SelectProps, "size">("size", vocab("CONTROL_SIZES")),
@@ -16,7 +16,8 @@ export default defineSpec({
     boolControl<SelectProps, "shadow">("shadow"),
     boolControl<SelectProps, "disabled">("disabled"),
   ],
-  defaults: { size: "md", shape: "rounded", variant: "hairline", fill: "raised" },
+  defaults: { size: "md", shape: "rounded", variant: "hairline" },
+  sheet: { matrix: { rows: "fill", columns: "variant" }, strips: [{ key: "shape" }, { key: "size" }, { key: "status" }] },
   subject: (state) => (
     <Select
       status={pick<NonNullable<SelectProps["status"]>>(state, "status")}

@@ -10,6 +10,7 @@ export default defineSpec({
     enumControl<DividerProps, "level">("level", vocab("DIVIDER_LEVELS")),
   ],
   defaults: { orientation: "horizontal", level: "base" },
+  sheet: { matrix: { rows: "level", columns: "orientation" } },
   subject: (state) => {
     const orientation = pick<NonNullable<DividerProps["orientation"]>>(state, "orientation");
     const level = pick<NonNullable<DividerProps["level"]>>(state, "level");

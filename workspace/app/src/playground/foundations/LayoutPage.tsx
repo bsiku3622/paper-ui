@@ -44,7 +44,7 @@ export const LayoutPage = () => {
   return (
     <>
       <FoundationSection title="Layout Source" description="요소 사이의 관계를 정하는 원본입니다. 거리는 Shape의 길이 scale을 그대로 쓰므로 여기에는 페이지 틀·구간·분기점·깊이만 있습니다.">
-        <Board columns={[{ label: "Token" }, { label: "Specimen" }, { label: "Value", align: "end" }]} template="minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr)" minWidth="36rem">
+        <Board columns={[{ label: "Token", track: "minmax(0, 1fr)" }, { label: "Specimen", track: "minmax(0, 1.5fr)" }, { label: "Value", align: "end", track: "minmax(0, 1fr)" }]} minWidth="36rem">
           <BoardGroup label="Container">
             <BoardRow>
               <TokenCell name="layout.container.content" note="사이트 본문 격자의 최대 폭" />
@@ -110,7 +110,7 @@ export const LayoutPage = () => {
       </FoundationSection>
 
       <FoundationSection title="Layout roles" description="형제 사이와 페이지 가장자리의 거리입니다. gap은 Shape inset과 같은 scale이라 같은 단계는 같은 길이입니다.">
-        <Board columns={[{ label: "Role" }, { label: "Specimen" }, { label: "Value", align: "end" }]} template="minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr)" minWidth="36rem">
+        <Board columns={[{ label: "Role", track: "minmax(0, 1fr)" }, { label: "Specimen", track: "minmax(0, 1.5fr)" }, { label: "Value", align: "end", track: "minmax(0, 1fr)" }]} minWidth="36rem">
           <BoardGroup label="Gap — Stack·Inline·Grid의 gap, margin, 위치 offset">
             {SPACES.map((step) => (
               <BoardRow key={step}>
@@ -131,7 +131,7 @@ export const LayoutPage = () => {
       </FoundationSection>
 
       <FoundationSection title="Elevation" description={`tier 하나가 position과 쌓임 순서(z)와 그림자를 함께 정합니다. 떠 있는 tier만 그림자를 갖고, 깊이는 lifted와 floating 둘뿐입니다. Surface는 elevation prop으로, 그 밖의 요소는 elevation class로 tier를 고릅니다. 지금 테마(${theme})의 그림자입니다.`}>
-        <Board columns={[{ label: "Level" }, { label: "z", align: "end" }, { label: "Specimen", align: "center" }]} template="minmax(0, 1.5fr) minmax(3rem, auto) minmax(12rem, 1fr)" minWidth="36rem">
+        <Board columns={[{ label: "Level", track: "minmax(0, 1.5fr)" }, { label: "z", align: "end", track: "minmax(3rem, auto)" }, { label: "Specimen", align: "center", track: "minmax(12rem, 1fr)" }]} minWidth="36rem">
           {ELEVATIONS.map((level) => (
             <BoardRow key={level} size="md">
               <TokenCell name={`layout.elevation.${level}`} note={ELEVATION_USE[level]} />

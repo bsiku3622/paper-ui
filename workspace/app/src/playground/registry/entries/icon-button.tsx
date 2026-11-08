@@ -13,11 +13,12 @@ export default defineSpec({
     boolControl<IconButtonProps, "shadow">("shadow", false, { behaviorOnly: "only a face casts one: solid, soft, or a fill" }),
     enumControl<IconButtonProps, "size">("size", vocab("CONTROL_SIZES")),
     enumControl<IconButtonProps, "shape">("shape", vocab("CONTROL_SHAPES")),
-    enumControl<IconButtonProps, "iconSize">("iconSize", vocab("ICON_SIZES"), { omitted: "auto", derived: "the omitted size is the control's own icon size, body at md, so naming it there changes nothing" }),
-    boolControl<IconButtonProps, "badge">("badge", false, { label: "badge(알림 숫자)" }),
+    enumControl<IconButtonProps, "iconSize">("iconSize", vocab("ICON_SIZES"), { omitted: "auto" }),
+    boolControl<IconButtonProps, "badge">("badge", false, { label: "badge(알림 숫자)", type: "ReactNode" }),
     boolControl<IconButtonProps, "disabled">("disabled"),
   ],
-  defaults: { accent: "primary", variant: "solid", size: "md", shape: "rounded" },
+  defaults: { accent: "primary", variant: "solid", size: "md", shape: "pill" },
+  sheet: { matrix: { rows: "accent", columns: "variant" }, strips: [{ key: "size" }, { key: "shape" }] },
   subject: (state) => (
     <IconButton
       accent={pick<NonNullable<IconButtonProps["accent"]>>(state, "accent")}

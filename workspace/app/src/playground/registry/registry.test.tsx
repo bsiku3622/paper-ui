@@ -9,6 +9,7 @@ import * as vocabulary from "@studio-baeks/paper-ui/tokens";
 import { PLAYGROUND_NAV, slugOf } from "../../site/site-map";
 import { REGISTRY, codeOf, initialState, normalized, stateFromCode, type Control, type Entry, type State } from ".";
 import { parseOpeningTag } from "./jsx";
+import { VariantSheet } from "../Reference";
 
 const FILES = import.meta.glob("./entries/*.tsx", { eager: true });
 const SOURCES = import.meta.glob<string>("./entries/*.tsx", { query: "?raw", import: "default", eager: true });
@@ -40,6 +41,41 @@ const valuesOf = (control: Control): (string | boolean | undefined)[] => {
 
 const vocabularyOf = (name: string): readonly string[] => (vocabulary as unknown as Record<string, readonly string[]>)[name]!;
 const enums = REGISTRY.flatMap((entry) => entry.controls.flatMap((control) => (control.kind === "enum" ? [{ entry, control }] : [])));
+
+describe("the references under an Atom", () => {
+  const axesOf = (entry: Entry) => [
+    ...(entry.sheet?.matrix ? [entry.sheet.matrix.rows, entry.sheet.matrix.columns] : []),
+    ...(entry.sheet?.strips ?? []).flatMap((strip) => [strip.key, ...Object.keys(strip.with ?? {})]),
+  ];
+
+  it("[app.playground.reference] crosses and moves only the selects and switches of its own entry, two different ones in a crossing", () => {
+    for (const entry of REGISTRY.filter((candidate) => candidate.sheet)) {
+      expect(entry.part, entry.name).toBe("atoms");
+      for (const key of axesOf(entry)) expect(entry.controls.find((control) => control.key === key)?.kind, `${entry.name}.${key}`).toMatch(/^(enum|bool)$/);
+      if (entry.sheet?.matrix) expect(entry.sheet.matrix.rows, entry.name).not.toBe(entry.sheet.matrix.columns);
+    }
+  });
+
+  it("[app.playground.reference] gives every Atom with a select of its own a sheet", () => {
+    for (const entry of REGISTRY.filter((candidate) => candidate.part === "atoms")) {
+      if (entry.controls.some((control) => control.kind === "enum" && control.target === undefined)) expect(entry.sheet, entry.name).toBeDefined();
+    }
+  });
+
+  it("[app.playground.reference] names the type a switch stands for when it puts an example in a slot", () => {
+    for (const entry of REGISTRY) {
+      for (const control of entry.controls) if (control.kind === "bool" && control.label !== control.prop) expect(control.type, `${entry.name}.${control.prop}`).toBeDefined();
+    }
+  });
+
+  it("[app.playground.reference] draws every sheet as a picture nothing can reach, without an error", () => {
+    for (const entry of REGISTRY.filter((candidate) => candidate.sheet)) {
+      const sheet = markup(createElement(VariantSheet, { entry, harness: harnessOf(entry), ground: "raised" }));
+      expect(sheet, entry.name).toContain('inert=""');
+      expect(sheet, entry.name).toContain('aria-hidden="true"');
+    }
+  });
+});
 
 describe("REGISTRY", () => {
   const items = PLAYGROUND_NAV.filter((group) => group.id !== "foundations").flatMap((group) => group.sections.flatMap((section) => section.items));

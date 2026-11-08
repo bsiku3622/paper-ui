@@ -2,13 +2,12 @@
 // each specimen only arranges the token it shows.
 import { globalStyle, style, styleVariants, type ComplexStyleRule } from "@vanilla-extract/css";
 
-import { SYSTEM_COLORS, CONTROL_SIZES, ELEVATIONS, SPACES, codeRule, focusRing, monoRule, presetRule, tokens, type ControlSize } from "@studio-baeks/paper-ui/tokens";
+import { SYSTEM_COLORS, CONTROL_SIZES, ELEVATIONS, SPACES, codeRule, focusRing, lineRule, monoRule, presetRule, tokens, type ControlSize } from "@studio-baeks/paper-ui/tokens";
 
 import { bar } from "./kit.css";
 import type { PresetPath } from "./typography-roles";
 
 const { shape, layout, color } = tokens;
-const line = `${shape.stroke.border} solid ${color.border.base}`;
 
 // One class per key of a vocabulary or a specimen map.
 const variantsOf = <K extends string>(keys: readonly K[], rule: (key: K) => ComplexStyleRule): Record<K, string> =>
@@ -32,13 +31,14 @@ export const presetFont = Object.fromEntries(
 
 // Shape
 export const spaceBar = variantsOf(SPACES, (step) => [bar, { width: shape.inset[step] }]);
-const radiusBase = style({ width: shape.dimension.width.xs, height: shape.control.height.lg, border: line, background: color.bg.sunken });
+const radiusBase = style({ width: shape.dimension.width.xs, height: shape.control.height.lg, ...lineRule(), background: color.bg.sunken });
 export const radiusSample = styleVariants(
   {
     "control.xs": shape.radius.control.xs,
     "control.sm": shape.radius.control.sm,
     "control.md": shape.radius.control.md,
     "control.lg": shape.radius.control.lg,
+    "control.xl": shape.radius.control.xl,
     selection: shape.radius.selection,
     "surface.sm": shape.radius.surface.sm,
     "surface.md": shape.radius.surface.md,
@@ -51,9 +51,9 @@ export const radiusSample = styleVariants(
 );
 const strokeBase = style({ width: shape.dimension.width.sm, background: color.ink.primary });
 export const strokeLine = styleVariants({ border: shape.stroke.border, emphasis: shape.stroke.emphasis }, (height) => [strokeBase, { height }]);
-export const focusBox = style({ width: shape.control.height.md, height: shape.control.height.sm, borderRadius: shape.radius.control.sm, border: line, ...focusRing });
-export const targetBox = style({ width: shape.target.min, height: shape.target.min, borderRadius: shape.radius.control.xs, border: line, background: color.bg.sunken });
-const controlBase = style({ width: shape.dimension.width.sm, border: line, background: color.bg.sunken });
+export const focusBox = style({ width: shape.control.height.md, height: shape.control.height.sm, borderRadius: shape.radius.control.sm, ...lineRule(), ...focusRing });
+export const targetBox = style({ width: shape.target.min, height: shape.target.min, borderRadius: shape.radius.control.xs, ...lineRule(), background: color.bg.sunken });
+const controlBase = style({ width: shape.dimension.width.sm, ...lineRule(), background: color.bg.sunken });
 export const controlBox = variantsOf(CONTROL_SIZES, (size) => [controlBase, { height: shape.control.height[size], borderRadius: shape.radius.control[size] }]);
 export const rule = style({ fontFamily: monoRule().fontFamily, fontSize: tokens.typography.role.caption.size, color: color.ink.secondary });
 export const recipeSample = style({ display: "flex", alignItems: "center", minHeight: shape.control.height.lg, minWidth: 0 });
@@ -66,16 +66,16 @@ export const zLayer = style({
   width: shape.control.height.md,
   height: shape.control.height.sm,
   borderRadius: shape.radius.surface.sm,
-  border: line,
+  ...lineRule(),
   background: color.bg.raised,
   selectors: Object.fromEntries(ELEVATIONS.map((_, index) => [`&:nth-child(${index + 1})`, { insetInlineStart: `calc(${shape.inset.md} * ${index})` }])),
 });
 export const elevationStage = style({ display: "flex", justifyContent: "center", padding: shape.inset.md, borderRadius: shape.radius.surface.sm, background: color.bg.canvas, isolation: "isolate" });
-export const elevationCard = style({ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: shape.control.height.lg, borderRadius: shape.radius.surface.md, border: line, background: color.bg.raised });
+export const elevationCard = style({ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: shape.control.height.lg, borderRadius: shape.radius.surface.md, ...lineRule(), background: color.bg.raised });
 // Two blocks a gap apart; a frame whose content sits a gutter in.
 export const gapSample = style({ display: "flex" });
 export const gapOf = variantsOf(SPACES, (step) => ({ gap: layout.gap[step] }));
-export const gutterFrame = style({ display: "flex", width: shape.dimension.width.sm, padding: layout.gutter, borderRadius: shape.radius.surface.sm, border: line, background: color.bg.sunken });
+export const gutterFrame = style({ display: "flex", width: shape.dimension.width.sm, padding: layout.gutter, borderRadius: shape.radius.surface.sm, ...lineRule(), background: color.bg.sunken });
 globalStyle(`${gapSample} > span, ${gutterFrame} > span`, { display: "block", height: shape.control.height.sm, borderRadius: shape.radius.control.sm, background: color.accent.primary.solid });
 globalStyle(`${gapSample} > span`, { width: shape.control.height.md });
 globalStyle(`${gutterFrame} > span`, { flex: 1 });
@@ -87,3 +87,4 @@ export const pulseDot = style({ display: "inline-block", width: dot, height: dot
 export const presence = style({ display: "flex", alignItems: "center", gap: layout.gap.md, isolation: "isolate" });
 export const themeSwap = style({ display: "flex", alignItems: "center", gap: layout.gap.md });
 export const presenceIdle = style({ visibility: "hidden" });
+export const revealSpecimen = style({ display: "flex", alignItems: "center", gap: layout.gap.md });

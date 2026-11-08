@@ -14,6 +14,7 @@ export default defineSpec({
     textControl<LinkProps, "children">("children", "링크"),
   ],
   defaults: { as: "a", underline: "always" },
+  sheet: { strips: [{ key: "underline" }] },
   subject: (state) => {
     const underline = pick<NonNullable<LinkProps["underline"]>>(state, "underline");
     return pick(state, "as") === "span" ? <Link as="span" underline={underline}>{words(state, "children")}</Link> : <Link href="#" onClick={stay} underline={underline}>{words(state, "children")}</Link>;
