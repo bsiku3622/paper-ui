@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-// /demo is the system's own test: a screen says what it wants through Paper's parts and props, or it goes without and the
+// /demo/arcfield is the system's own test: a screen says what it wants through Paper's parts and props, or it goes without and the
 // gap shows. So its files hold no stylesheet, no className, no inline style and no element of their own.
 const SOURCES = import.meta.glob("./*.tsx", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
 
@@ -8,7 +8,10 @@ const ALLOWED = [/^@studio-baeks\/paper-ui(\/tokens)?$/, /^react$/, /^react-rout
 
 describe("the demo's screens are Paper alone", () => {
   it("finds the screens", () => {
-    expect(Object.keys(SOURCES).sort()).toEqual(["./DashboardScreen.tsx", "./Demo.tsx", "./LoginScreen.tsx", "./SettingsScreen.tsx", "./parts.tsx"]);
+    expect(Object.keys(SOURCES).sort()).toEqual([
+      "./BillingScreen.tsx", "./DashboardScreen.tsx", "./Demo.tsx", "./DeployScreen.tsx", "./DocsScreen.tsx", "./LoginScreen.tsx", "./MonitoringScreen.tsx", "./OverviewScreen.tsx",
+      "./ProjectsScreen.tsx", "./SearchScreen.tsx", "./SecurityScreen.tsx", "./SettingsScreen.tsx", "./parts.tsx",
+    ]);
   });
 
   for (const [path, source] of Object.entries(SOURCES)) {

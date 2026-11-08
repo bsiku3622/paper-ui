@@ -7,7 +7,13 @@ import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
 
 import { DOC_GROUPS } from "./src/site/site-core";
 import { paperDocs } from "./vite/paper-docs";
+import { studioParts } from "./vite/studio-parts";
 import { themeBoot } from "./vite/theme-boot";
+
+// The parts the studio (/demo) can pick on the Arcfield screens: Paper's own, as the screens write them.
+const STUDIO_PARTS = new Set([
+  "Badge", "Box", "Button", "Checkbox", "Divider", "Field", "Grid", "Icon", "IconButton", "Inline", "Label", "Link", "Marker", "Paint", "Radio", "Select", "Spinner", "Stack", "Surface", "Switch", "Text", "Textarea",
+]);
 
 const workspace = fileURLToPath(new URL("..", import.meta.url));
 const docs = fileURLToPath(new URL("../../docs", import.meta.url));
@@ -24,7 +30,13 @@ const { version } = JSON.parse(readFileSync(new URL("../packages/paper-ui/packag
 // 사이트가 보여 주는 버전은 패키지의 package.json 이 정본이다 — __PAPER_UI_VERSION__ 이 그것을 빌드 때 박는다.
 export default defineConfig({
   define: { __PAPER_UI_VERSION__: JSON.stringify(version) },
-  plugins: [react(), vanillaExtractPlugin(), paperDocs({ dir: docs, groups: DOC_GROUPS }), themeBoot()],
+  plugins: [
+    studioParts({ src: fileURLToPath(new URL("./src/", import.meta.url)), include: /^pages\/demo\//, tags: STUDIO_PARTS, runtime: "/src/pages/studio/mark.ts" }),
+    react(),
+    vanillaExtractPlugin(),
+    paperDocs({ dir: docs, groups: DOC_GROUPS }),
+    themeBoot(),
+  ],
   resolve: {
     alias: [
       { find: "@docs", replacement: docs },
@@ -32,9 +44,11 @@ export default defineConfig({
     ],
     conditions: ["paper-ui-source", ...defaultClientConditions],
   },
-  // A test file that runs in node resolves through the server conditions, and the source condition has to be there
-  // too: dist does not exist on a clean checkout, and when it does exist it may be older than the source.
-  ssr: { resolve: { conditions: ["paper-ui-source", ...defaultServerConditions] } },
+  // A test file that runs in node and an app stylesheet being compiled both resolve through the server conditions, and the
+  // source condition has to be there too: dist does not exist on a clean checkout, and when it does exist it may be older than
+  // the source. It sits on the environment and not under `ssr`, because the vanilla-extract compiler starts its own server
+  // from this file and replaces `ssr` with its own.
+  environments: { ssr: { resolve: { conditions: ["paper-ui-source", ...defaultServerConditions] } } },
   server: { fs: { allow: [workspace, docs] } },
   test: { environment: "jsdom", globals: true },
 });
