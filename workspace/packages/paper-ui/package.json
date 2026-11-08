@@ -4,14 +4,21 @@
   "type": "module",
   "description": "A design system for complex web apps. White and black carry the structure; colour appears only where it means something.",
   "license": "MIT",
-  "author": "Jaewon Baek",
-  "homepage": "https://github.com/bsiku3622/paper-ui",
+  "author": {
+    "name": "Jaewon Baek",
+    "email": "jaewon@bsiku.dev",
+    "url": "https://github.com/bsiku3622"
+  },
+  "homepage": "https://paper-ui.studiobaeks.com",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bsiku3622/paper-ui.git",
     "directory": "workspace/packages/paper-ui"
   },
   "bugs": "https://github.com/bsiku3622/paper-ui/issues",
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "react",
     "design-system",

@@ -111,10 +111,10 @@ fixed, so geometry stays identical. D2Coding supplies Korean monospace glyphs.
 
 ## Browser support
 
-Chrome and Edge 125, Firefox 121 and Safari 16.4 (iOS included) or newer. `round()`
-sets the floor of Chrome and Edge and `:has()` that of Firefox: button insets and the empty
-choice of a Select depend on them. Safari's floor is the release that brought `@property`,
-which gives the hover tint its fade. CSS features newer
+Chrome and Edge 125, Firefox 121 and Safari 16.4 (iOS included) or newer. `:has()` sets
+the floor of Firefox: the empty choice of a Select depends on it. Safari's floor is the
+release that brought `@property`, which gives the hover tint its fade. The floor of Chrome
+and Edge is declared above what the stylesheet needs today. CSS features newer
 than the floor are used only as enhancements, so a browser at the floor loses motion
 and nothing else.
 
@@ -147,8 +147,8 @@ Under `prefers-contrast: more` the `pui.theme` selectors redeclare the border ro
 |  | Exports |
 | --- | --- |
 | Primitives, first order | `Box · Text · Icon · FocusScope · VisuallyHidden · Portal · LiveRegion` (and `announce · clearAnnouncements`) |
-| Primitives, second order | `Surface · Paint · Pressable · Selectable · SelectableGroup · Floating · Draggable · Droppable · RovingFocus · FormField · Stack · Inline · Grid` |
-| Atoms | `Button · IconButton · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Spinner · Divider · Link · Marker` |
+| Primitives, second order | `Surface · Paint · Control · Pressable · Selectable · SelectableGroup · Floating · Draggable · Droppable · RovingFocus · FormField · Stack · Inline · Grid` |
+| Atoms | `Button · IconButton · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Spinner · Divider · Link · Marker · SegmentControl · Slider` |
 | `/tokens` | `tokens`, and the vocabulary: one constant and one type for each axis (`ACCENTS` · `Accent`, `VARIANTS` · `Variant`, `SPACES` · `Space` …) |
 <!-- /generated:inventory.package -->
 
@@ -195,8 +195,16 @@ Versions follow semver. While the package is 0.x, removing or renaming an export
 
 ## Documentation
 
-The principles behind visual decisions and the token reference live in the repository:
-<https://github.com/bsiku3622/paper-ui>
+The docs, the Playground and a live demo: <https://paper-ui.studiobaeks.com>. The principles behind visual decisions and the
+token reference also live in the repository: <https://github.com/bsiku3622/paper-ui>
+
+## Author
+
+Jaewon Baek (백재원)
+
+- GitHub: [@bsiku3622](https://github.com/bsiku3622)
+- Instagram: [@_baek.jw](https://www.instagram.com/_baek.jw/)
+- Email: [jaewon@bsiku.dev](mailto:jaewon@bsiku.dev)
 
 ## Licence
 

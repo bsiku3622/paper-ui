@@ -13,6 +13,8 @@ Atlassian, finished like SwiftUI.
 
 The seven principles behind every visual decision: **[docs/get-started/philosophy.md](docs/get-started/philosophy.md)**.
 
+The docs, the Playground and a live demo: **<https://paper-ui.studiobaeks.com>**.
+
 - **Primitive and Atom foundation.** The package currently stops at composable layout
   primitives and single-purpose controls. Page-level compositions stay in the consuming app
   until repeated product use gives them a clear, shared shape.
@@ -31,11 +33,12 @@ The system stacks in three parts, and the docs and the playground are organised 
 <!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 | Part | Count | Exports |
 | --- | --- | --- |
-| Foundations | 5 systems | `Color → Typography → Shape → Layout → Motion` — each reads only the ones before it |
+| Foundations | 5 systems | `Color · Typography · Shape · Layout · Motion` — the first order; Line, Control, Elevation and State are built from them |
 | Primitives, first order | Element 1 | `Box` |
 |  | Content 2 | `Text · Icon` |
 |  | A11y 4 | `FocusScope · VisuallyHidden · Portal · LiveRegion` |
 | Primitives, second order | Paint 2 | `Surface · Paint` |
+|  | Control 1 | `Control` |
 |  | Press 1 | `Pressable` |
 |  | Select 2 | `Selectable · SelectableGroup` |
 |  | Float 1 | `Floating` |
@@ -43,7 +46,7 @@ The system stacks in three parts, and the docs and the playground are organised 
 |  | Focus 1 | `RovingFocus` |
 |  | Field 1 | `FormField` |
 |  | Layout 3 | `Stack · Inline · Grid` |
-| Atoms | 14 | `Button · IconButton · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Spinner · Divider · Link · Marker` |
+| Atoms | 16 | `Button · IconButton · Field · Textarea · Select · Checkbox · Switch · Radio · Label · Badge · Spinner · Divider · Link · Marker · SegmentControl · Slider` |
 <!-- /generated:inventory.en -->
 
 Atoms are built on the Primitives and on shared recipes: each stands on the Primitives that give it its element, its press or selection and its field relations, and takes its colour from the Paint primitives.
@@ -79,6 +82,14 @@ Set `E2E_APP_PORT` or `E2E_HARNESS_PORT` to move them. Firefox and WebKit come f
 ## Versioning
 
 Versions follow semver, and the first release is 0.1.0. While the package is 0.x, removing or renaming an exported name raises the minor version and adding one raises the patch; from 1.0 on they raise the major and the minor. `workspace/packages/paper-ui/api/surface.json` records every name the four entries export, the token paths, the CSS variables and the cascade layers. `api.test.ts` computes the same record from the source, so a change to the public surface shows up as a diff of that file, and `pnpm api:update` rewrites it. A released version's record (`api/released/<version>.json`, written at publish time) never changes: the command refuses, and a new version needs the bump its changes call for and a `## <version>` heading in `workspace/packages/paper-ui/CHANGELOG.md`.
+
+## Author
+
+Jaewon Baek (백재원)
+
+- GitHub: [@bsiku3622](https://github.com/bsiku3622)
+- Instagram: [@_baek.jw](https://www.instagram.com/_baek.jw/)
+- Email: [jaewon@bsiku.dev](mailto:jaewon@bsiku.dev)
 
 ## Licence
 
