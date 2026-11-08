@@ -7,17 +7,12 @@ import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
 
 import { DOC_GROUPS } from "./src/site/site-core";
 import { paperDocs } from "./vite/paper-docs";
-import { studioParts } from "./vite/studio-parts";
 import { themeBoot } from "./vite/theme-boot";
-
-// The parts the studio (/demo) can pick on the Arcfield screens: Paper's own, as the screens write them.
-const STUDIO_PARTS = new Set([
-  "Badge", "Box", "Button", "Checkbox", "Divider", "Field", "Grid", "Icon", "IconButton", "Inline", "Label", "Link", "Marker", "Paint", "Radio", "Select", "Spinner", "Stack", "Surface", "Switch", "Text", "Textarea",
-]);
 
 const workspace = fileURLToPath(new URL("..", import.meta.url));
 const docs = fileURLToPath(new URL("../../docs", import.meta.url));
 const inspect = fileURLToPath(new URL("../packages/paper-ui/src/tokens/inspect/", import.meta.url));
+const DEMOS_PORT = 5310;
 const { version } = JSON.parse(readFileSync(new URL("../packages/paper-ui/package.json", import.meta.url), "utf-8")) as { version: string };
 
 // workspace 의 @studio-baeks/paper-ui 를 dist 가 아니라 *source* 로 해결한다 — package.json exports 의
@@ -31,7 +26,6 @@ const { version } = JSON.parse(readFileSync(new URL("../packages/paper-ui/packag
 export default defineConfig({
   define: { __PAPER_UI_VERSION__: JSON.stringify(version) },
   plugins: [
-    studioParts({ src: fileURLToPath(new URL("./src/", import.meta.url)), include: /^pages\/demo\//, tags: STUDIO_PARTS, runtime: "/src/pages/studio/mark.ts" }),
     react(),
     vanillaExtractPlugin(),
     paperDocs({ dir: docs, groups: DOC_GROUPS }),
@@ -49,6 +43,8 @@ export default defineConfig({
   // the source. It sits on the environment and not under `ssr`, because the vanilla-extract compiler starts its own server
   // from this file and replaces `ssr` with its own.
   environments: { ssr: { resolve: { conditions: ["paper-ui-source", ...defaultServerConditions] } } },
-  server: { fs: { allow: [workspace, docs] } },
+  // The demo apps (workspace/demos) are their own Vite app under /demos/: the site's dev server hands those paths to theirs
+  // (`pnpm --filter @paper-ui/demos dev`), and a build puts theirs inside this one's dist.
+  server: { fs: { allow: [workspace, docs] }, proxy: { "/demos": { target: `http://localhost:${DEMOS_PORT}`, changeOrigin: false } } },
   test: { environment: "jsdom", globals: true },
 });

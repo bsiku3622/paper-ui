@@ -6,13 +6,16 @@
 // is not listed, a listed doc without a file, a group without docs and a doc without a `# Title` first line
 // all throw — as the dev overlay while serving and as a failed `vite build`. A change under docs/ reloads
 // the page, so the sidebar and the text follow edits without a restart.
+//
+// docs/en/ holds English translations at the same paths: a doc may have one, and a translation without its Korean original throws
+// as an unlisted doc does.
 
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { normalizePath, type Plugin } from "vite";
 
 import { parseDoc } from "../src/docs/parse";
-import { docFile, docSlug, type DocEntry, type DocGroup } from "../src/site/site-core";
+import { EN_DOCS_DIR, docFile, docSlug, type DocEntry, type DocGroup } from "../src/site/site-core";
 
 export type PaperDocsOptions = { dir: string; groups: readonly DocGroup[] };
 
@@ -30,7 +33,9 @@ const markdownFiles = async (dir: string, base = ""): Promise<string[]> => {
 };
 
 export const collectDocs = async ({ dir, groups }: PaperDocsOptions): Promise<DocEntry[]> => {
-  const unlisted = new Set(await markdownFiles(dir));
+  const all = await markdownFiles(dir);
+  const translations = new Set(all.filter((file) => file.startsWith(`${EN_DOCS_DIR}/`)).map((file) => file.slice(EN_DOCS_DIR.length + 1)));
+  const unlisted = new Set(all.filter((file) => !file.startsWith(`${EN_DOCS_DIR}/`)));
   const docs: DocEntry[] = [];
   const problems: string[] = [];
   for (const group of groups) {
@@ -42,13 +47,16 @@ export const collectDocs = async ({ dir, groups }: PaperDocsOptions): Promise<Do
         continue;
       }
       try {
-        docs.push({ slug: docSlug(group.id, doc), group: group.id, title: parseDoc(await readFile(join(dir, file), "utf-8")).title, file });
+        const entry: DocEntry = { slug: docSlug(group.id, doc), group: group.id, title: parseDoc(await readFile(join(dir, file), "utf-8")).title, file };
+        if (translations.delete(file)) entry.titleEn = parseDoc(await readFile(join(dir, EN_DOCS_DIR, file), "utf-8")).title;
+        docs.push(entry);
       } catch (error) {
         problems.push(`docs/${file}: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
   }
   for (const file of [...unlisted].sort()) problems.push(`docs/${file} is not listed in DOC_GROUPS`);
+  for (const file of [...translations].sort()) problems.push(`docs/${EN_DOCS_DIR}/${file} translates no listed doc`);
   if (problems.length > 0) throw new Error(`docs do not match DOC_GROUPS (app/src/site/site-core.ts):\n- ${problems.join("\n- ")}`);
   return docs;
 };
@@ -61,7 +69,10 @@ export const paperDocs = (options: PaperDocsOptions): Plugin => {
     async load(id) {
       if (id !== RESOLVED_ID) return null;
       const docs = await collectDocs(options);
-      for (const { file } of docs) this.addWatchFile(join(options.dir, file));
+      for (const { file, titleEn } of docs) {
+        this.addWatchFile(join(options.dir, file));
+        if (titleEn !== undefined) this.addWatchFile(join(options.dir, EN_DOCS_DIR, file));
+      }
       return `export const DOCS = ${JSON.stringify(docs)};`;
     },
     configureServer(server) {

@@ -4,7 +4,7 @@ import { SHAPE_SOURCE } from "../../packages/paper-ui/src/tokens/shape";
 import { pageErrors } from "../support/console";
 import { nativeSelect } from "../support/select";
 
-// /demo is the studio (pages/studio/): every demo app in a preview that can be edited. Arcfield (/demo/arcfield) is the
+// /demo is the showcase (pages/showcase/): one demo app at a time in a frame. Arcfield (/demo/arcfield) is the
 // demo's own product, drawn with nothing but Paper (pages/demo/pure.test.ts holds it to that). Its screens own their landmarks
 // (chrome 'none'), so these tests read them the way a user does.
 
@@ -25,62 +25,39 @@ const SCREENS = [
 
 const signIn = (page: Page) => page.getByRole("form", { name: "로그인" });
 
-test("the studio at /demo has one banner holding its h1, one main, and previews the Arcfield dashboard", async ({ page }) => {
+test("/demo has one banner holding its h1, one main, and shows the Arcfield dashboard in its frame", async ({ page }) => {
   const errors = pageErrors(page);
   await page.goto("/demo");
-  await expect(page).toHaveTitle("데모 스튜디오 — paper-ui");
+  await expect(page).toHaveTitle("데모 — paper-ui");
   await expect(page.getByRole("banner")).toHaveCount(1);
-  await expect(page.getByRole("banner").getByRole("heading", { level: 1 })).toHaveText("데모 스튜디오");
+  await expect(page.getByRole("banner").getByRole("heading", { level: 1 })).toHaveText("데모");
   await expect(page.getByRole("main")).toHaveCount(1);
-  // Arcfield is a link the studio lists, so a crawl reaches it, and its pages through it, from here.
-  await expect(page.locator(`a[href="${ARCFIELD}"]`).first()).toBeAttached();
-  const preview = page.frameLocator("iframe").first();
-  await expect(preview.getByRole("main").getByRole("heading", { level: 1 })).toHaveText("개요");
+  const frame = page.frameLocator("iframe").first();
+  await expect(frame.getByRole("main").getByRole("heading", { level: 1 })).toHaveText("개요");
   expect(errors).toEqual([]);
 });
 
-test("the studio's top bar lists apps, not their pages, and the widths stand where an address row would", async ({ page }) => {
+test("the app list holds Arcfield and the eight demo apps, and the one shown is current", async ({ page }) => {
   await page.goto("/demo");
-  const apps = page.getByRole("banner").getByRole("navigation", { name: "앱" });
+  const apps = page.getByRole("navigation", { name: "앱" });
+  await expect(apps.getByRole("link")).toHaveCount(9);
   await expect(apps.getByRole("link", { name: "Arcfield" })).toHaveAttribute("aria-current", "page");
-  await expect(apps.locator(`a[href^="${ARCFIELD}"]`)).toHaveCount(1);
-  await expect(page.getByRole("complementary", { name: "편집" })).toBeVisible();
-  await expect(page.getByRole("navigation", { name: "화면 목록" })).toHaveCount(0);
-  await expect(page.getByRole("textbox", { name: "주소" })).toHaveCount(0);
-  await expect(page.getByRole("radiogroup", { name: "화면 폭" }).getByRole("radio", { name: "1440" })).toBeChecked();
+  await expect(page.locator("iframe")).toHaveAttribute("src", ARCFIELD);
+  await expect(page.getByRole("link", { name: "새 탭에서 열기" })).toHaveAttribute("href", ARCFIELD);
 });
 
-test("새 창으로 열기 opens the previewed page in a window of its own, and the window takes what the studio turns", async ({ page }) => {
+test("picking an app puts it in the address and the frame opens it under /demos/", async ({ page }) => {
   await page.goto("/demo");
-  await expect(page.frameLocator("iframe").first().getByRole("main").getByRole("heading", { level: 1 })).toHaveText("개요");
-  const [popup] = await Promise.all([page.waitForEvent("popup"), page.getByRole("button", { name: "새 창으로 열기" }).click()]);
-  await expect(popup.getByRole("main").getByRole("heading", { level: 1 })).toHaveText("개요");
-  await expect(popup.locator("html")).toHaveAttribute("data-pui-theme", "light");
-  // The theme is not in the window's address once it is open: only the bridge can turn it.
-  await page.getByRole("radiogroup", { name: "미리보기 테마" }).getByRole("radio", { name: "다크" }).click();
-  await expect(popup.locator("html")).toHaveAttribute("data-pui-theme", "dark");
+  await page.getByRole("navigation", { name: "앱" }).getByRole("link", { name: "Doodle" }).click();
+  await expect(page).toHaveURL(/\/demo\?app=doodle$/);
+  await expect(page.getByRole("navigation", { name: "앱" }).getByRole("link", { name: "Doodle" })).toHaveAttribute("aria-current", "page");
+  await expect(page.locator("iframe")).toHaveAttribute("src", "/demos/doodle/");
+  await expect(page.getByRole("link", { name: "새 탭에서 열기" })).toHaveAttribute("href", "/demos/doodle/");
 });
 
-test("a preview that leaves its app is sent back to it, and the studio never opens inside its own preview", async ({ page }) => {
-  // A path saved while a preview had wandered off opens the app's first page.
-  await page.addInitScript(() => {
-    if (window.top === window && !sessionStorage.getItem("seeded")) {
-      sessionStorage.setItem("seeded", "1");
-      localStorage.setItem("paper-studio:v1", JSON.stringify({ v: 1, view: { item: "arcfield", path: "/demo", width: 1440, theme: "light", compare: "off", panel: true, tab: "levers" } }));
-    }
-  });
-  await page.goto("/demo");
-  const preview = page.frameLocator("iframe").first();
-  await expect(preview.getByRole("main").getByRole("heading", { level: 1 })).toHaveText("개요");
-  // The page in the frame goes to the site's home by itself: the studio brings it back to the app.
-  const frame = page.frames().find((one) => one !== page.mainFrame() && one.url().includes("/demo/arcfield"))!;
-  await frame.evaluate(() => {
-    window.history.pushState(null, "", "/");
-    window.dispatchEvent(new PopStateEvent("popstate"));
-  });
-  await expect.poll(() => new URL(frame.url()).pathname).toBe("/demo/arcfield");
-  await expect(preview.getByRole("main").getByRole("heading", { level: 1 })).toHaveText("개요");
-  await expect(preview.getByRole("heading", { name: "데모 스튜디오" })).toHaveCount(0);
+test("an address naming no app shows Arcfield", async ({ page }) => {
+  await page.goto("/demo?app=nothing");
+  await expect(page.locator("iframe")).toHaveAttribute("src", ARCFIELD);
 });
 
 for (const { path, heading } of SCREENS) {
