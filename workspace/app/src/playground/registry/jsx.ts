@@ -6,6 +6,8 @@ import { Fragment, isValidElement, type ElementType, type ReactElement, type Rea
 
 import * as paperUi from "@studio-baeks/paper-ui";
 
+import type { Bilingual } from "../../site/locale";
+
 const CODES = new WeakMap<object, string>();
 const SPREADS = new WeakMap<object, { code: string; keys: readonly string[] }[]>();
 
@@ -159,7 +161,14 @@ export const printJsx = (element: ReactElement, options: PrintOptions): string =
 export type AttrValue = boolean | number | string | { element: string } | { expression: string };
 export type OpeningTag = { attrs: Record<string, AttrValue>; end: number; selfClosing: boolean };
 
-export class ParseError extends Error {}
+// A reading that failed, said in both languages. `message` is the Korean, the language the sources are written in.
+export class ParseError extends Error {
+  readonly words: Bilingual<string>;
+  constructor(words: Bilingual<string>) {
+    super(words.ko);
+    this.words = words;
+  }
+}
 
 // The index of the brace that closes the one at `open`, skipping strings.
 const closing = (code: string, open: number): number => {
@@ -172,7 +181,7 @@ const closing = (code: string, open: number): number => {
     } else if (ch === "{") depth += 1;
     else if (ch === "}" && --depth === 0) return i;
   }
-  throw new ParseError("괄호가 닫히지 않았습니다.");
+  throw new ParseError({ ko: "괄호가 닫히지 않았습니다.", en: "A brace is not closed." });
 };
 
 const interpret = (raw: string): AttrValue => {
@@ -194,12 +203,12 @@ export const parseOpeningTag = (code: string, name: string): OpeningTag | undefi
   let i = start + name.length + 1;
   for (;;) {
     while (/\s/.test(code[i] ?? "")) i += 1;
-    if (i >= code.length) throw new ParseError("태그가 닫히지 않았습니다.");
+    if (i >= code.length) throw new ParseError({ ko: "태그가 닫히지 않았습니다.", en: "A tag is not closed." });
     if (code.startsWith("/>", i)) return { attrs, end: i + 2, selfClosing: true };
     if (code[i] === ">") return { attrs, end: i + 1, selfClosing: false };
     if (code[i] === "{") { i = closing(code, i) + 1; continue; }
     const key = /^[^\s=/>{]+/.exec(code.slice(i))?.[0];
-    if (!key) throw new ParseError("속성을 읽을 수 없습니다.");
+    if (!key) throw new ParseError({ ko: "속성을 읽을 수 없습니다.", en: "A prop cannot be read." });
     i += key.length;
     while (/\s/.test(code[i] ?? "")) i += 1;
     if (code[i] !== "=") { attrs[key] = true; continue; }
@@ -208,14 +217,14 @@ export const parseOpeningTag = (code: string, name: string): OpeningTag | undefi
     const quote = code[i];
     if (quote === '"' || quote === "'") {
       const stop = code.indexOf(quote, i + 1);
-      if (stop < 0) throw new ParseError("따옴표가 닫히지 않았습니다.");
+      if (stop < 0) throw new ParseError({ ko: "따옴표가 닫히지 않았습니다.", en: "A quotation mark is not closed." });
       attrs[key] = code.slice(i + 1, stop);
       i = stop + 1;
     } else if (quote === "{") {
       const stop = closing(code, i);
       attrs[key] = interpret(code.slice(i + 1, stop).trim());
       i = stop + 1;
-    } else throw new ParseError(`${key} 값을 읽을 수 없습니다.`);
+    } else throw new ParseError({ ko: `${key} 값을 읽을 수 없습니다.`, en: `The value of ${key} cannot be read.` });
   }
 };
 

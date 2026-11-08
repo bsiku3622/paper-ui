@@ -37,7 +37,10 @@ describe("Color inspector", () => {
   it("notes every role the selection table has, and only those", () => {
     const roles = leafPaths(NON_ACCENT);
     expect(Object.keys(ROLE_NOTES).sort()).toEqual([...roles].sort());
-    for (const role of roles) expect(ROLE_NOTES[role].length, role).toBeGreaterThan(0);
+    for (const role of roles) {
+      expect(ROLE_NOTES[role].ko.length, role).toBeGreaterThan(0);
+      expect(ROLE_NOTES[role].en, role).toMatch(/^[^\uAC00-\uD7A3]+$/);
+    }
   });
 
   it("shows every role in exactly one group, in selection order", () => {
@@ -77,7 +80,7 @@ describe("Typography inspector", () => {
 describe("Shape inspector", () => {
   it("notes every target value the source has, and only those", () => {
     expect(Object.keys(TARGET_NOTES)).toEqual(Object.keys(SHAPE_SOURCE.target));
-    for (const [name, note] of Object.entries(TARGET_NOTES)) expect(note.length, name).toBeGreaterThan(0);
+    for (const [name, note] of Object.entries(TARGET_NOTES)) expect(note.ko.length, name).toBeGreaterThan(0);
   });
 
   it("shows every role in tokens.shape on a board, and no role that isn't there", () => {
@@ -93,13 +96,14 @@ describe("Motion inspector", () => {
   it("notes every role the vocabulary has, in its order, and every loop", () => {
     expect(Object.keys(MOTION_NOTES)).toEqual([...MOTION_ROLES]);
     expect(Object.keys(LOOP_NOTES)).toEqual(Object.keys(LOOP));
-    for (const role of MOTION_ROLES) expect(MOTION_NOTES[role].length, role).toBeGreaterThan(0);
+    for (const role of MOTION_ROLES) expect(MOTION_NOTES[role].ko.length, role).toBeGreaterThan(0);
   });
 
   it("follows a role's note with the components that use it, or with the app's screens for a role no component takes", () => {
     for (const role of MOTION_ROLES) {
       const users = MOTION_CONSUMERS[role].length > 0 ? MOTION_CONSUMERS[role] : [`앱 화면(${role} class)`];
-      expect(roleNote(role), role).toBe([MOTION_NOTES[role], ...users].join(" · "));
+      expect(roleNote(role), role).toBe([MOTION_NOTES[role].ko, ...users].join(" · "));
+      expect(roleNote(role, "en"), role).not.toMatch(/[\uAC00-\uD7A3]/);
     }
   });
 

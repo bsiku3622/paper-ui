@@ -92,7 +92,7 @@ describe("DOC_GROUPS", () => {
 describe("FOUNDATIONS and SITE_NAV", () => {
   it("lists the five Foundations systems once each, in the order they stack", () => {
     expect(FOUNDATIONS.map(({ id }) => id)).toEqual(["color", "typography", "shape", "layout", "motion"]);
-    for (const foundation of FOUNDATIONS) expect(foundation.summary, foundation.id).not.toBe("");
+    for (const foundation of FOUNDATIONS) for (const words of Object.values(foundation.summary)) expect(words, foundation.id).not.toBe("");
   });
 
   it("lists each top-level route once", () => {

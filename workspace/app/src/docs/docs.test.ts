@@ -31,6 +31,10 @@ import { parseDoc } from "./parse";
 const DOCS_DIR = fileURLToPath(new URL("../../../../docs", import.meta.url));
 const FILES = readdirSync(DOCS_DIR, { recursive: true, encoding: "utf-8" }).filter((path) => path.endsWith(".md")).map((path) => path.split("\\").join("/")).sort();
 const read = (file: string) => readFileSync(join(DOCS_DIR, file), "utf-8");
+// docs/en/ translates the originals at the same paths; the rest of docs/ is the originals.
+const TRANSLATED = (file: string) => file.startsWith("en/");
+const ORIGINALS = FILES.filter((file) => !TRANSLATED(file));
+const TRANSLATIONS = FILES.filter(TRANSLATED).map((file) => file.slice("en/".length));
 
 type Node = { type: string; url?: string; value?: string; children?: Node[] };
 const walk = (node: Node, visit: (node: Node) => void) => {
@@ -75,25 +79,30 @@ describe("docs/", () => {
     for (const file of FILES) expect(parseDoc(read(file)).title, file).not.toBe("");
   });
 
-  it("is listed in DOC_GROUPS one to one, in group order", async () => {
+  it("is listed in DOC_GROUPS one to one, in group order, and every translation has its original", async () => {
     const docs = await collectDocs({ dir: DOCS_DIR, groups: DOC_GROUPS });
-    expect(docs.map((doc) => doc.file).sort()).toEqual(FILES);
+    expect(docs.map((doc) => doc.file).sort()).toEqual(ORIGINALS);
+    expect(docs.filter((doc) => doc.titleEn !== undefined).map((doc) => doc.file).sort()).toEqual(TRANSLATIONS.sort());
     expect(docs.map((doc) => doc.group)).toEqual(DOC_GROUPS.flatMap((group) => group.docs.map(() => group.id)));
     expect(new Set(docs.map((doc) => doc.slug)).size).toBe(docs.length);
   });
 
-  it("links to docs and headings that exist", async () => {
+  // The English pages link among themselves: a link in a translation reaches the target's translation when it has one, and the
+  // Korean original when it has not, as the Docs page shows them.
+  it.each(["originals", "translations"] as const)("links to docs and headings that exist, in the %s", async (which) => {
     const docs = await collectDocs({ dir: DOCS_DIR, groups: DOC_GROUPS });
-    const headingIds = new Map(docs.map((doc) => [doc.slug, headingIdsOf(parseDoc(read(doc.file)).body)]));
+    const english = which === "translations";
+    const shown = (doc: (typeof docs)[number]) => (english && doc.titleEn !== undefined ? `en/${doc.file}` : doc.file);
+    const headingIds = new Map(docs.map((doc) => [doc.slug, headingIdsOf(parseDoc(read(shown(doc))).body)]));
     const broken: string[] = [];
-    for (const doc of docs) {
-      for (const url of linksOf(parseDoc(read(doc.file)).body)) {
+    for (const doc of docs.filter((one) => !english || one.titleEn !== undefined)) {
+      for (const url of linksOf(parseDoc(read(shown(doc))).body)) {
         const target = resolveDocHref(doc.file, url);
         const [slug, hash] = target.kind === "anchor" ? [doc.slug, target.hash] : target.kind === "doc" ? [target.slug, target.hash] : [];
         if (slug === undefined) continue;
         const ids = headingIds.get(slug);
-        if (!ids) broken.push(`${doc.file}: ${url} points at no doc`);
-        else if (hash && !ids.has(decodeURIComponent(hash))) broken.push(`${doc.file}: ${url} points at no heading`);
+        if (!ids) broken.push(`${shown(doc)}: ${url} points at no doc`);
+        else if (hash && !ids.has(decodeURIComponent(hash))) broken.push(`${shown(doc)}: ${url} points at no heading`);
       }
     }
     expect(broken).toEqual([]);
@@ -122,7 +131,10 @@ describe("docs/", () => {
 const GENERATED = /<!-- generated:[\w.-]+ -->[\s\S]*?<!-- \/generated:[\w.-]+ -->/g;
 const FENCE = /^```[\s\S]*?^```/gm;
 const proseOf = (markdown: string) => parseDoc(markdown).body.replace(GENERATED, "").replace(FENCE, "");
-const PROSE = FILES.map((file) => [file, proseOf(read(file))] as const);
+// The units and the dropped phrases are the originals' to state: a translation repeats the numbers and has its own words. Hex colours
+// are kept out of both.
+const PROSE = ORIGINALS.map((file) => [file, proseOf(read(file))] as const);
+const ALL_PROSE = FILES.map((file) => [file, proseOf(read(file))] as const);
 
 const PACKAGE_DIR = fileURLToPath(new URL("../../../packages/paper-ui/", import.meta.url));
 
@@ -147,7 +159,7 @@ describe("docs metadata", () => {
   });
 
   it("the prose states no hex colour", () => {
-    const hits = PROSE.flatMap(([file, text]) => [...text.matchAll(/(?<![\w/&])#(?:[0-9a-fA-F]{3}){1,2}(?![\w-])/g)].map(([hex]) => `${file}: ${hex}`));
+    const hits = ALL_PROSE.flatMap(([file, text]) => [...text.matchAll(/(?<![\w/&])#(?:[0-9a-fA-F]{3}){1,2}(?![\w-])/g)].map(([hex]) => `${file}: ${hex}`));
     expect(hits).toEqual([]);
   });
 

@@ -14,19 +14,23 @@ import { DocsNav } from "../docs/DocsNav";
 import { joinClass } from "../joinClass";
 import { PlaygroundNav } from "../playground/PlaygroundNav";
 import { useDocumentTitle, useSiteHandle } from "./handle";
+import { useWords } from "./locale";
 import { SiteHeader } from "./SiteHeader";
 import * as s from "./shell.css";
+
+const SKIP = { ko: "본문으로 건너뛰기", en: "Skip to content" } as const;
+const LOADING = { ko: "불러오는 중…", en: "Loading…" } as const;
 
 // Hidden until its link has focus, then a raised plate at the top left, at the toast tier so nothing covers it.
 const SkipLink = () => (
   <VisuallyHidden focusable className={`${surfaceClass({ fill: "raised", border: true, elevation: "toast" })} ${s.skipLink}`}>
-    <Link href="#main" underline="hover" className={s.navLink.plain}>본문으로 건너뛰기</Link>
+    <Link href="#main" underline="hover" className={s.navLink.plain}>{useWords(SKIP)}</Link>
   </VisuallyHidden>
 );
 
 const PageLoading = () => (
   <Box paddingX="xl" paddingY="xl">
-    <Text variant="caption">불러오는 중…</Text>
+    <Text variant="caption">{useWords(LOADING)}</Text>
   </Box>
 );
 

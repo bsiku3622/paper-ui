@@ -8,9 +8,9 @@ type RowsControl = { rows?: string };
 
 export default defineSpec({
   name: "Textarea",
-  blurb: "여러 줄 입력입니다. Field와 같은 status·size·variant·fill 축을 갖고, 면을 고르지 않으면 Field처럼 흰 면에 회색 선 한 줄로 서며, 세로로만 resize합니다. size는 여백과 글자만 움직이고 높이는 rows가 정합니다.",
+  blurb: { ko: "여러 줄 입력입니다. Field와 같은 status·size·variant·fill 축을 갖고, 면을 고르지 않으면 Field처럼 흰 면에 회색 선 한 줄로 서며, 세로로만 resize합니다. size는 여백과 글자만 움직이고 높이는 rows가 정합니다.", en: "A multi-line input. It has the same status, size, variant and fill axes as Field; without a face it stands like Field, a white face with one grey line, and it resizes vertically only. size moves only padding and text; rows sets the height." },
   controls: [
-    textControl<TextareaProps, "placeholder">("placeholder", "여러 줄 입력…"),
+    textControl<TextareaProps, "placeholder">("placeholder", { ko: "여러 줄 입력…", en: "Multi-line input…" }),
     enumControl<RowsControl, "rows">("rows", sample(["1", "2", "3", "4", "6"] as const, "rows takes any positive integer")),
     enumControl<TextareaProps, "status">("status", vocab("STATUSES")),
     enumControl<TextareaProps, "size">("size", vocab("CONTROL_SIZES")),

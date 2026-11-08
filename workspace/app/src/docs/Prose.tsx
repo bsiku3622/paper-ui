@@ -43,10 +43,11 @@ const componentsFor = (file: string): Components => ({
   table: ({ children }) => <div className={s.tableScroll} data-testid="prose-table"><table>{children}</table></div>,
 });
 
-export const Prose = ({ file, children }: { file: string; children: string }) => {
+// `lang` is the language of the text when it may differ from the page's: a Korean original shown to an English reader.
+export const Prose = ({ file, lang, children }: { file: string; lang?: string; children: string }) => {
   const components = useMemo(() => componentsFor(file), [file]);
   return (
-    <div className={s.prose} data-testid="prose">
+    <div className={s.prose} data-testid="prose" lang={lang}>
       <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins} components={components}>
         {children}
       </ReactMarkdown>

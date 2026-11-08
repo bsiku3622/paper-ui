@@ -4,6 +4,9 @@ import { tokens } from "../../packages/paper-ui/src/tokens";
 import { MOTION } from "../../packages/paper-ui/src/tokens/motion-recipes";
 import { expectStyle, profile } from "../support/style";
 
+// The landing page in English; tests/app/locale.spec.ts reads it in Korean.
+test.use({ locale: "en-US" });
+
 test("[atoms.link.target] the hero Buttons that are links carry no underline, and the demo link is a Link with an arrow icon that underlines under the pointer", async ({ page }) => {
   await page.goto("/");
   for (const name of ["Read the docs", "Explore the Playground"]) await expect(page.getByRole("link", { name, exact: true })).toHaveCSS("text-decoration-line", "none");
@@ -45,7 +48,7 @@ test("[app.home.motion] shows the Arcfield demo itself on the stage, as a pictur
   await expect(demo.getByRole("navigation", { name: "제품 메뉴" })).toBeVisible();
   await expect(demo.locator("html")).toHaveAttribute("data-pui-theme", "light");
   // The link under it opens the demo to use.
-  await expect(page.getByRole("link", { name: "Open the demo", exact: true })).toHaveAttribute("href", /\/demo\/arcfield$/);
+  await expect(page.getByRole("link", { name: "Open the demo", exact: true })).toHaveAttribute("href", /\/demo$/);
 });
 
 // The landing page's motion: what comes in, in what order, and what stands in place at once where less motion is asked.

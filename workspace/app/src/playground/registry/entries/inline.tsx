@@ -5,7 +5,7 @@ import { boolControl, defineSpec, enumControl, flag, pick, vocab } from "../sche
 
 export default defineSpec({
   name: "Inline",
-  blurb: "가로로 늘어놓습니다. gap·rowGap·columnGap으로 간격을, justify·align·wrap으로 한 줄 안의 배치를 정합니다.",
+  blurb: { ko: "가로로 늘어놓습니다. gap·rowGap·columnGap으로 간격을, justify·align·wrap으로 한 줄 안의 배치를 정합니다.", en: "Lays out horizontally. gap, rowGap and columnGap set the spacing; justify, align and wrap set the arrangement within a line." },
   controls: [
     enumControl<InlineProps, "gap">("gap", vocab("SPACES"), { initial: "sm" }),
     enumControl<InlineProps, "rowGap">("rowGap", vocab("SPACES")),

@@ -7,7 +7,14 @@ import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode }
 
 import { Stack, Surface, Text } from "@studio-baeks/paper-ui";
 
+import { pick as inLocale, useSiteLocale, useWords, type Bilingual } from "../../site/locale";
 import { SectionHeading } from "../../site/SectionHeading";
+
+// The visitor's half of words written in both languages, for a page that builds many of them inline.
+export const useT = () => {
+  const { locale } = useSiteLocale();
+  return <T,>(words: Bilingual<T>): T => inLocale(words, locale);
+};
 import * as s from "./kit.css";
 
 type Align = keyof typeof s.align;
@@ -135,8 +142,9 @@ export const Meter = ({ value, max }: { value: number; max: number }) => (
 );
 
 // A dot that crosses its track while the pointer is over it, with the given timing.
+const TRAVEL_TITLE: Bilingual = { ko: "포인터를 올리면 움직입니다", en: "Moves when the pointer is over it" };
 export const Travel = ({ duration, easing }: { duration: string; easing: string }) => (
-  <div className={s.travelTrack} title="포인터를 올리면 움직입니다">
+  <div className={s.travelTrack} title={useWords(TRAVEL_TITLE)}>
     <span className={s.travelDot} style={{ transitionDuration: duration, transitionTimingFunction: easing }} />
   </div>
 );

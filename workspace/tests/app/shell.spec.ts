@@ -70,11 +70,11 @@ test("a page's title is its name, and it follows a client-side navigation", asyn
   await page.goto("/playground/foundations/motion");
   await expect(page).toHaveTitle("Motion — paper-ui");
   await page.goto("/playground");
-  await expect(page).toHaveTitle("Playground — paper-ui");
+  await expect(page).toHaveTitle("플레이그라운드 — paper-ui");
   await playgroundNav(page).getByRole("link", { name: "Badge", exact: true }).click();
   await expect(page).toHaveTitle("Badge — paper-ui");
   await page.goto("/demo");
-  await expect(page).toHaveTitle("데모 스튜디오 — paper-ui");
+  await expect(page).toHaveTitle("데모 — paper-ui");
   await page.goto("/demo/arcfield");
   await expect(page).toHaveTitle("데모 — paper-ui");
 });
@@ -206,8 +206,8 @@ test("the head of a Docs page and of a Playground page is a crumb above the titl
   const crumb = (title: string) => main(page).getByRole("heading", { level: 1, name: title, exact: true }).locator("xpath=preceding-sibling::*[1]/*");
   for (const [route, title, expected] of [
     ["/docs/foundations/color", "Color", ["Foundations", "/", "Color"]],
-    ["/docs", "Overview", ["Documentation", "/", "Overview"]],
-    ["/playground", "Overview", ["Playground", "/", "Overview"]],
+    ["/docs", "Overview", ["문서", "/", "Overview"]],
+    ["/playground", "Overview", ["플레이그라운드", "/", "Overview"]],
     ["/playground/button", "Button", ["Atoms", "/", "Button"]],
   ] as const) {
     await page.goto(route);

@@ -12,7 +12,7 @@ const ScopeReadout = () => {
 
 export default defineSpec({
   name: "Theme",
-  blurb: "Surface의 theme은 하위 트리 하나에 테마를 겁니다. useTheme은 사용자의 선택과 적용된 값을 읽고 바꾸고, useResolvedTheme은 가장 가까운 theme이 정한 값을 읽습니다.",
+  blurb: { ko: "Surface의 theme은 하위 트리 하나에 테마를 겁니다. useTheme은 사용자의 선택과 적용된 값을 읽고 바꾸고, useResolvedTheme은 가장 가까운 theme이 정한 값을 읽습니다.", en: "The theme of a Surface sets the theme on one subtree. useTheme reads and changes the user's choice and the applied value, and useResolvedTheme reads the value set by the nearest theme." },
   controls: [
     enumControl<SurfaceProps, "theme">("theme", vocab("SURFACE_THEMES"), { target: "Surface", initial: "inverse", required: true }),
   ],

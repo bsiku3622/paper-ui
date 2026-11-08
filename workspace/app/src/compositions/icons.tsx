@@ -27,6 +27,7 @@ export const SunIcon = glyph(
   </>,
 );
 export const MoonIcon = glyph("Moon", <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />);
+export const LanguagesIcon = glyph("Languages", <path d="m5 8 6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6" />);
 export const CheckIcon = glyph("Check", <path d="m5 12 4 4L19 6" />);
 export const GridIcon = glyph("Grid", <path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" />);
 export const LayersIcon = glyph("Layers", <><path d="m12 3 9 5-9 5-9-5 9-5Z" /><path d="m3 12 9 5 9-5M3 16l9 5 9-5" /></>);

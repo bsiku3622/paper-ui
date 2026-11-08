@@ -4,7 +4,7 @@ import { boolControl, defineSpec, enumControl, faceProps, flag, pick, textContro
 
 export default defineSpec({
   name: "Badge",
-  blurb: "상태 한 낱말입니다. accent × variant로 그리고, muted는 고른 accent의 subtle 글자입니다. dot은 앞에 상태 점을 붙입니다. 표시용이라 hover가 없습니다.",
+  blurb: { ko: "상태 한 낱말입니다. accent × variant로 그리고, muted는 고른 accent의 subtle 글자입니다. dot은 앞에 상태 점을 붙입니다. 표시용이라 hover가 없습니다.", en: "One word of status. Drawn by accent × variant; muted is the chosen accent's subtle ink. dot puts a status dot in front. It is display only, so it has no hover." },
   controls: [
     enumControl<BadgeProps, "accent">("accent", vocab("ACCENTS")),
     enumControl<BadgeProps, "variant">("variant", vocab("VARIANTS")),
@@ -17,7 +17,7 @@ export default defineSpec({
     enumControl<BadgeProps, "gap">("gap", vocab("SPACES"), { rootDefault: "xs", behaviorOnly: "it shows once the badge holds a dot beside its word" }),
     enumControl<BadgeProps, "align">("align", vocab("ALIGNS"), { rootDefault: "center" }),
     enumControl<BadgeProps, "justify">("justify", vocab("JUSTIFIES"), { rootDefault: "start", behaviorOnly: "it shows once the badge is wider than its content" }),
-    textControl<BadgeProps, "children">("children", "진행"),
+    textControl<BadgeProps, "children">("children", { ko: "진행", en: "In progress" }),
   ],
   defaults: { accent: "primary", variant: "soft", size: "md", shape: "pill" },
   sheet: { matrix: { rows: "accent", columns: "variant" }, strips: [{ key: "size" }, { key: "shape" }] },

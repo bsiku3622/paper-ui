@@ -142,7 +142,8 @@ const TEST_FILES = [
 export const readRepository = (workspace = fileURLToPath(new URL("..", import.meta.url))) => {
   const root = join(workspace, "..");
   const read = (path) => ({ path: relative(root, path).split(sep).join("/"), text: readFileSync(path, "utf8") });
-  const docs = walk(join(root, "docs")).filter((path) => path.endsWith(".md")).map(read);
+  // docs/en/ translates the docs; the contracts are stated once, in the Korean originals.
+  const docs = walk(join(root, "docs")).filter((path) => path.endsWith(".md")).map(read).filter(({ path }) => !path.startsWith("docs/en/"));
   const tests = walk(workspace)
     .filter((path) => TEST_FILES.some((pattern) => pattern.test(relative(workspace, path).split(sep).join("/"))))
     .map(read);

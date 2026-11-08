@@ -5,6 +5,8 @@ import { Navigate, useParams } from "react-router-dom";
 
 import { Stack } from "@studio-baeks/paper-ui";
 
+import { useT } from "./kit";
+import type { Bilingual } from "../../site/locale";
 import { PageHeader } from "../../site/PageHeader";
 import { FOUNDATIONS, type FoundationId } from "../../site/site-map";
 import { ColorPage } from "./ColorPage";
@@ -13,6 +15,8 @@ import { MotionPage } from "./MotionPage";
 import { ShapePage } from "./ShapePage";
 import { TypographyPage } from "./TypographyPage";
 import * as s from "./kit.css";
+
+const READS_TOKENS: Bilingual = { ko: "실제 tokens.*에서 값을 읽으며 현재 테마에 따라 갱신됩니다.", en: "Values are read from the real tokens.* and follow the current theme." };
 
 const PAGES: Record<FoundationId, () => React.ReactElement> = {
   color: ColorPage,
@@ -23,6 +27,7 @@ const PAGES: Record<FoundationId, () => React.ReactElement> = {
 };
 
 export const Foundations = () => {
+  const t = useT();
   const { section: slug } = useParams<{ section: string }>();
   const foundation = FOUNDATIONS.find(({ id }) => id === slug);
   if (!foundation) return <Navigate to={`/playground/foundations/${FOUNDATIONS[0].id}`} replace />;
@@ -30,7 +35,7 @@ export const Foundations = () => {
   const Page = PAGES[id];
   return (
     <Stack className={s.page} gap="xl">
-      <PageHeader group="Foundations" name={label} description={`${summary} 실제 tokens.*에서 값을 읽으며 현재 테마에 따라 갱신됩니다.`} />
+      <PageHeader group="Foundations" name={label} description={`${t(summary)} ${t(READS_TOKENS)}`} />
       <Page />
     </Stack>
   );

@@ -13,6 +13,7 @@ import { CONTROL_SIZES, previewAttributes, tokens, type ChoiceStatus, type Contr
 
 import { joinClass } from "../joinClass";
 import { ControlRow } from "./ControlRow";
+import { pick as inLocale, useSiteLocale, useWords, type Bilingual, type SiteLocale } from "../site/locale";
 import { px } from "./foundations/kit";
 import { axisValues } from "./Reference";
 import { entryBySlug, initialState, normalized, type Entry, type State } from "./registry";
@@ -21,11 +22,37 @@ import * as b from "./boards.css";
 
 // The states a board can draw: at rest, the three a preview shows, and disabled, which is the prop.
 export type BoardState = "rest" | PreviewState | "disabled";
-export const STATE_LABELS: Record<BoardState, string> = { rest: "기본", hover: "hover", active: "눌림", focus: "포커스", disabled: "꺼짐" };
+export const STATE_LABELS: Record<BoardState, Bilingual> = {
+  rest: { ko: "기본", en: "Rest" },
+  hover: { ko: "hover", en: "hover" },
+  active: { ko: "눌림", en: "Pressed" },
+  focus: { ko: "포커스", en: "Focus" },
+  disabled: { ko: "꺼짐", en: "Disabled" },
+};
+
+const BOARD_WORDS = {
+  ko: {
+    touch: (name: string) => `${name} 쪽에서 만지기`,
+    state: "상태",
+    stateOf: (name: string) => `${name} 상태`,
+    spread: "모든 상태 펼치기",
+    stateless: (name: string) => `${name}는 표시용이라 상태가 없습니다.`,
+  },
+  en: {
+    touch: (name: string) => `Try it on the ${name} page`,
+    state: "State",
+    stateOf: (name: string) => `${name} state`,
+    spread: "Spread all states",
+    stateless: (name: string) => `${name} is for display and has no states.`,
+  },
+} as const;
+
+// The period buttons of the segment drawing.
+const PERIODS: Bilingual<readonly [string, string, string]> = { ko: ["1일", "7일", "1달"], en: ["1 day", "7 days", "1 month"] };
 
 type Row = { key: string; label: string; isDefault?: boolean; state: State };
 // One drawing's props, the preview it is drawn in, and its name: the board, the row and the size.
-type Cell = { state: State; preview?: PreviewState; name: string };
+type Cell = { state: State; preview?: PreviewState; name: string; locale: SiteLocale };
 type BoardSpec = {
   slug: string;
   // The axis down the side: one of the entry's selects or switches, or rows of its own when one row takes more than one prop.
@@ -72,13 +99,14 @@ const drawSwitch = (cell: Cell) => <Switch {...markProps(cell)} />;
 
 // A segment control's states live on its items: the pointer is over the item that is not chosen, and the keyboard is on the chosen
 // one. A preview of the whole control would light every item at once.
-const drawSegments = ({ state, preview, name }: Cell) => {
+const drawSegments = ({ state, preview, name, locale }: Cell) => {
+  const [day, week, month] = inLocale(PERIODS, locale);
   const on = (item: "pointer" | "keyboard") => (preview === "hover" && item === "pointer") || (preview === "focus" && item === "keyboard") ? previewAttributes(preview) : {};
   return (
     <SegmentControl aria-label={name} defaultValue="7d" variant={pick<SegmentVariant>(state, "variant")} size={pick<ControlSize>(state, "size")} shape={pick<ControlShape>(state, "shape")} disabled={flag(state, "disabled")}>
-      <SegmentControl.Item value="1d" {...on("pointer")}>1일</SegmentControl.Item>
-      <SegmentControl.Item value="7d" {...on("keyboard")}>7일</SegmentControl.Item>
-      <SegmentControl.Item value="1m">1달</SegmentControl.Item>
+      <SegmentControl.Item value="1d" {...on("pointer")}>{day}</SegmentControl.Item>
+      <SegmentControl.Item value="7d" {...on("keyboard")}>{week}</SegmentControl.Item>
+      <SegmentControl.Item value="1m">{month}</SegmentControl.Item>
     </SegmentControl>
   );
 };
@@ -123,8 +151,10 @@ const ValueHead = ({ row, className }: { row: Row; className: string }) => (
 );
 
 const AtomBoard = ({ entry, board }: { entry: Entry; board: BoardSpec }) => {
+  const { locale } = useSiteLocale();
+  const w = useWords(BOARD_WORDS);
   const harness = entry.useHarness();
-  const [values, setValues] = useState<State>(() => normalized(entry, { ...initialState(entry), ...board.base }));
+  const [values, setValues] = useState<State>(() => normalized(entry, { ...initialState(entry, locale), ...board.base }));
   const [state, setState] = useState<BoardState>("rest");
   const [all, setAll] = useState(false);
   const rows = rowsOf(entry, board);
@@ -139,8 +169,8 @@ const AtomBoard = ({ entry, board }: { entry: Entry; board: BoardSpec }) => {
   const draw = (group: BoardState | undefined, row: Row, size: ControlSize) => {
     const preview = group === "hover" || group === "active" || group === "focus" ? group : undefined;
     const held = normalized(entry, { ...values, ...row.state, size, ...(group === "disabled" ? { disabled: true } : {}) });
-    const name = `${entry.name} ${row.key} ${size}${all && group ? ` ${STATE_LABELS[group]}` : ""}`;
-    const subject = board.draw ? board.draw({ state: held, preview, name }) : entry.subject(held, harness);
+    const name = `${entry.name} ${row.key} ${size}${all && group ? ` ${inLocale(STATE_LABELS[group], locale)}` : ""}`;
+    const subject = board.draw ? board.draw({ state: held, preview, name, locale }) : entry.subject(held, harness, locale);
     const drawing = board.named ? cloneElement(subject as ReactElement<{ "aria-label"?: string }>, { "aria-label": name }) : subject;
     // A pointer that presses is over what it presses, so a press is drawn with the hover under it.
     const previewed = preview === "active" ? previewAttributes("hover", "active") : preview ? previewAttributes(preview) : {};
@@ -160,13 +190,13 @@ const AtomBoard = ({ entry, board }: { entry: Entry; board: BoardSpec }) => {
             <Text variant="caption" family="mono" ink="secondary">{`${rowsName} × size`}</Text>
           </Stack>
           <Link as={RouterLink} to={`/playground/${entry.slug}`} underline="hover">
-            <Text variant="caption" as="span" ink="inherit">{`${entry.name} 쪽에서 만지기`}</Text>
+            <Text variant="caption" as="span" ink="inherit">{w.touch(entry.name)}</Text>
           </Link>
         </Inline>
         <div className={b.scroller}>
           {(groups.length > 0 ? groups : [undefined]).map((group) => (
             <Fragment key={group ?? "rest"}>
-              {all && group ? <Text className={b.groupHead} variant="label" ink="secondary">{STATE_LABELS[group]}</Text> : null}
+              {all && group ? <Text className={b.groupHead} variant="label" ink="secondary">{inLocale(STATE_LABELS[group], locale)}</Text> : null}
               {/* One order of children serves both ways round: the sizes' heads, then each value's head and its drawings. Sizes along
                   the top fill it row by row; sizes down the side fill it column by column. */}
               <div className={joinClass(b.matrix, board.sizesDown ? b.sizesDown : b.sizesAcross)} data-board-sheet={group ?? "rest"}>
@@ -186,17 +216,17 @@ const AtomBoard = ({ entry, board }: { entry: Entry; board: BoardSpec }) => {
       <div className={b.panel}>
         {board.states.length > 0 ? (
           <Stack gap="xs">
-            <Text variant="label">상태</Text>
-            <SegmentControl aria-label={`${entry.name} 상태`} variant="outline" shape="rounded" size="sm" fullWidth value={state} onValueChange={(next) => setState(next as BoardState)} disabled={all}>
-              {board.states.map((option) => <SegmentControl.Item key={option} value={option}>{STATE_LABELS[option]}</SegmentControl.Item>)}
+            <Text variant="label">{w.state}</Text>
+            <SegmentControl aria-label={w.stateOf(entry.name)} variant="outline" shape="rounded" size="sm" fullWidth value={state} onValueChange={(next) => setState(next as BoardState)} disabled={all}>
+              {board.states.map((option) => <SegmentControl.Item key={option} value={option}>{inLocale(STATE_LABELS[option], locale)}</SegmentControl.Item>)}
             </SegmentControl>
             <Inline as="label" justify="between" align="center" gap="sm">
-              <Text variant="label" as="span">모든 상태 펼치기</Text>
+              <Text variant="label" as="span">{w.spread}</Text>
               <Switch checked={all} onChange={(event) => setAll(event.currentTarget.checked)} />
             </Inline>
           </Stack>
         ) : (
-          <Text variant="caption" ink="secondary">{`${entry.name}는 표시용이라 상태가 없습니다.`}</Text>
+          <Text variant="caption" ink="secondary">{w.stateless(entry.name)}</Text>
         )}
         {axes.map((control) => (
           <ControlRow key={control.key} control={control} value={values[control.key]} defaults={entry.defaults} onChange={(next) => setValues((current) => normalized(entry, { ...current, [control.key]: next }))} />
@@ -206,12 +236,16 @@ const AtomBoard = ({ entry, board }: { entry: Entry; board: BoardSpec }) => {
   );
 };
 
-export const Boards = () => (
+export const Boards = () => {
+  const { locale } = useSiteLocale();
+  return (
   <>
     {BOARDS.map((board) => {
       const entry = entryBySlug(board.slug);
       if (!entry) throw new Error(`The Overview has a board for ${board.slug}, which is not in the registry.`);
-      return <AtomBoard key={board.slug} entry={entry} board={board} />;
+      // A board starts again in the other language: the words its drawings hold come from the state it started with.
+      return <AtomBoard key={`${board.slug}:${locale}`} entry={entry} board={board} />;
     })}
   </>
-);
+  );
+};

@@ -6,18 +6,20 @@ import { Navigate, type RouteObject } from "react-router-dom";
 import { DOCS } from "virtual:paper-docs";
 
 import type { SiteHandle } from "./site/handle";
+import type { SiteLocale } from "./site/locale";
 import { DOC_GROUPS, FOUNDATIONS, PLAYGROUND_NAV } from "./site/site-map";
 import { SiteLayout } from "./site/SiteLayout";
 
 // Every group's overview is a README headed Overview; in a tab or in history, its group tells them apart.
-const docTitle = (path: string) => {
+const docTitle = (path: string, locale: SiteLocale) => {
   const doc = DOCS.find(({ slug }) => slug === path);
   const group = DOC_GROUPS.find(({ id }) => id !== "" && id === path);
-  return doc && group ? `${group.label} ${doc.title}` : doc?.title;
+  const title = doc && (locale === "en" ? (doc.titleEn ?? doc.title) : doc.title);
+  return doc && group ? `${locale === "ko" ? group.ko : group.label} ${title}` : title;
 };
 
 const Home = lazy(() => import("./pages/Home").then((m) => ({ default: m.Home })));
-const Studio = lazy(() => import("./pages/studio/Studio").then((m) => ({ default: m.Studio })));
+const Showcase = lazy(() => import("./pages/showcase/Showcase").then((m) => ({ default: m.Showcase })));
 const Demo = lazy(() => import("./pages/demo/Demo").then((m) => ({ default: m.Demo })));
 const DashboardScreen = lazy(() => import("./pages/demo/DashboardScreen").then((m) => ({ default: m.DashboardScreen })));
 const OverviewScreen = lazy(() => import("./pages/demo/OverviewScreen").then((m) => ({ default: m.OverviewScreen })));
@@ -62,11 +64,11 @@ export const routes: RouteObject[] = [
       { index: true, element: <Home />, handle: handle({ frame: "full" }) },
       {
         path: "demo",
-        handle: handle({ title: "데모", chrome: "none" }),
+        handle: handle({ title: { ko: "데모", en: "Demo" }, chrome: "none" }),
         children: [
-          // The studio: every demo screen, and the owner's apps where they run, in a preview that can be edited.
-          { index: true, element: <Studio />, handle: handle({ title: "데모 스튜디오" }) },
-          // Arcfield: the demo's own screens, which the studio shows.
+          // The showcase: the demo apps, one at a time, in a frame.
+          { index: true, element: <Showcase />, handle: handle({ title: { ko: "데모", en: "Demo" } }) },
+          // Arcfield: the demo's own screens, which the showcase shows.
           {
             path: "arcfield",
             element: <Demo />,
@@ -99,13 +101,13 @@ export const routes: RouteObject[] = [
         path: "playground",
         handle: handle({ sidebar: "playground" }),
         children: [
-          { index: true, element: <Overview />, handle: handle({ title: "Playground" }) },
+          { index: true, element: <Overview />, handle: handle({ title: { ko: "플레이그라운드", en: "Playground" } }) },
           ...Object.entries(REDIRECTS).map(([from, to]): RouteObject => ({ path: from, element: <Navigate to={`/playground/${to}`} replace /> })),
           { path: "foundations/:section", element: <Foundations />, handle: handle({ title: (params) => FOUNDATIONS.find(({ id }) => id === params.section)?.label }) },
           { path: ":slug", element: <ComponentDetail />, handle: handle({ title: (params) => NAMES.get(params.slug ?? "") }) },
         ],
       },
-      { path: "docs/*", element: <Docs />, handle: handle({ sidebar: "docs", title: (params) => docTitle((params["*"] ?? "").replace(/\/$/, "")) }) },
+      { path: "docs/*", element: <Docs />, handle: handle({ sidebar: "docs", title: (params, locale) => docTitle((params["*"] ?? "").replace(/\/$/, ""), locale) }) },
       { path: "*", element: <Navigate to="/" replace /> },
     ],
   },

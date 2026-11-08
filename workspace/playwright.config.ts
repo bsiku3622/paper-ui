@@ -44,6 +44,9 @@ export default defineConfig({
   use: {
     baseURL: app(),
     colorScheme: "light",
+    // The site speaks the browser's language when the visitor has not chosen one; the specs read it in Korean, the language its
+    // sources are written in, and the ones about English ask for it themselves.
+    locale: "ko-KR",
   },
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },

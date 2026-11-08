@@ -7,7 +7,7 @@ import { answer, answerControl, boolControl, defineSpec, enumControl, faceProps,
 
 export default defineSpec({
   name: "Button",
-  blurb: "accent × variant가 서로 독립된 시각 무게 축입니다. primary도 neutral accent family라 모든 accent가 같은 다섯 slot 계약을 공유합니다. hairline · dashed · ghost · muted의 면은 fill이 고르고 안 주면 투명이며, 그림자는 면이 있을 때만 받습니다. fontSize는 버튼 실루엣과 별도로 글자만 조절합니다. 높이와 가로 여백은 size 사다리가, 모서리는 컨트롤 곡률(shape)이 정합니다. selected는 hairline · ghost · muted에서 선택된 면과 aria-pressed를 입힙니다. loading은 포커스를 잃지 않고 누름과 제출만 막으며, 시작할 때 포커스가 있으면 loadingLabel을 한 번 알립니다.",
+  blurb: { ko: "accent × variant가 서로 독립된 시각 무게 축입니다. primary도 neutral accent family라 모든 accent가 같은 다섯 slot 계약을 공유합니다. hairline · dashed · ghost · muted의 면은 fill이 고르고 안 주면 투명이며, 그림자는 면이 있을 때만 받습니다. fontSize는 버튼 실루엣과 별도로 글자만 조절합니다. 높이와 가로 여백은 size 사다리가, 모서리는 컨트롤 곡률(shape)이 정합니다. selected는 hairline · ghost · muted에서 선택된 면과 aria-pressed를 입힙니다. loading은 포커스를 잃지 않고 누름과 제출만 막으며, 시작할 때 포커스가 있으면 loadingLabel을 한 번 알립니다.", en: "accent × variant are independent axes of visual weight. primary is also a neutral accent family, so every accent shares the same five-slot contract. The face of hairline, dashed, ghost and muted is chosen by fill and is transparent without one; a shadow lands only on a face. fontSize changes the text alone, apart from the button's silhouette. Height and horizontal padding come from the size ladder, corners from the control curvature (shape). selected puts the selected face and aria-pressed on hairline, ghost and muted. loading blocks only press and submit without losing focus, and announces loadingLabel once if it had focus when it started." },
   controls: [
     enumControl<ButtonProps, "accent">("accent", vocab("ACCENTS")),
     enumControl<ButtonProps, "variant">("variant", vocab("VARIANTS")),
@@ -23,11 +23,11 @@ export default defineSpec({
     enumControl<ButtonProps, "gap">("gap", vocab("SPACES"), { rootDefault: "sm", behaviorOnly: "it shows once the button holds an icon beside its label" }),
     enumControl<ButtonProps, "align">("align", vocab("ALIGNS"), { rootDefault: "center" }),
     enumControl<ButtonProps, "justify">("justify", vocab("JUSTIFIES"), { rootDefault: "center", behaviorOnly: "it shows once the button is wider than its content" }),
-    boolControl<ButtonProps, "badge">("badge", false, { label: "badge(알림 숫자)", type: "ReactNode" }),
+    boolControl<ButtonProps, "badge">("badge", false, { example: { ko: "알림 숫자", en: "count" }, type: "ReactNode" }),
     enumControl<ButtonProps, "shape">("shape", vocab("CONTROL_SHAPES")),
     boolControl<ButtonProps, "disabled">("disabled"),
     enumControl<ButtonProps<ElementType>, "as">("as", sample(["button", "a"] as const, "the two elements a button-shaped control renders as; as takes any tag")),
-    textControl<ButtonProps, "children">("children", "버튼"),
+    textControl<ButtonProps, "children">("children", { ko: "버튼", en: "Button" }),
   ],
   defaults: { accent: "primary", variant: "solid", size: "md", shape: "pill", as: "button" },
   sheet: { matrix: { rows: "accent", columns: "variant" }, strips: [{ key: "size" }, { key: "shape" }, { key: "fill", with: { variant: "hairline" } }] },

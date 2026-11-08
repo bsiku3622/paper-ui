@@ -4,8 +4,10 @@
 
 import { Field, Inline, SegmentControl, Select, Stack, Switch, Text } from "@studio-baeks/paper-ui";
 
+import { useSiteLocale } from "../site/locale";
 import { DEFAULT_MARK } from "./Reference";
 import type { Control } from "./registry";
+import { labelOf } from "./registry/schema";
 
 // prop 토글 한 줄.
 //
@@ -23,10 +25,12 @@ import type { Control } from "./registry";
 const OMITTED = "__pui_default__";
 
 export const ControlRow = ({ control, value, defaults, onChange }: { control: Control; value: string | boolean | undefined; defaults: Readonly<Record<string, unknown>>; onChange: (v: string | boolean | undefined) => void }) => {
+  const { locale } = useSiteLocale();
+  const label = labelOf(control, locale);
   if (control.kind === "bool") {
     return (
       <Inline as="label" justify="between" align="center" gap="sm">
-        <Text variant="label" as="span">{control.label}</Text>
+        <Text variant="label" as="span">{label}</Text>
         <Switch checked={Boolean(value)} onChange={(e) => onChange(e.currentTarget.checked)} />
       </Inline>
     );
@@ -38,9 +42,9 @@ export const ControlRow = ({ control, value, defaults, onChange }: { control: Co
   if (control.kind === "enum" && control.options.length <= 3 && (control.required || control.options.includes(resting))) {
     return (
       <Stack gap="xs">
-        <Text variant="label">{control.label}</Text>
+        <Text variant="label">{label}</Text>
         <SegmentControl
-          aria-label={control.label}
+          aria-label={label}
           variant="outline"
           shape="rounded"
           size="sm"
@@ -58,11 +62,11 @@ export const ControlRow = ({ control, value, defaults, onChange }: { control: Co
   const shown = value !== undefined ? String(value) : restingChoice ? resting : OMITTED;
   return (
     <Stack gap="xs">
-      <Text variant="label">{control.label}</Text>
+      <Text variant="label">{label}</Text>
       {control.kind === "enum" ? (
         <Select
           size="sm"
-          aria-label={control.label}
+          aria-label={label}
           value={shown}
           onChange={(e) => {
             const next = e.currentTarget.value;
@@ -79,7 +83,7 @@ export const ControlRow = ({ control, value, defaults, onChange }: { control: Co
           size="sm"
           value={value === undefined ? "" : String(value)}
           onChange={(e) => onChange(e.currentTarget.value)}
-          aria-label={control.label}
+          aria-label={label}
         />
       )}
     </Stack>

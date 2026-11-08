@@ -29,7 +29,7 @@ test("the docs sidebar lists the groups of DOC_GROUPS in order, one link per doc
   await page.goto("/docs");
   const sidebar = page.getByRole("navigation", { name: "문서 목차" });
   await expect(sidebar.getByRole("link")).toHaveCount(DOC_GROUPS.reduce((total, group) => total + group.docs.length, 0));
-  const labels = DOC_GROUPS.map((group) => group.label).filter(Boolean);
+  const labels = DOC_GROUPS.map((group) => group.ko).filter(Boolean);
   expect((await sidebar.innerText()).split("\n").filter((line) => labels.includes(line))).toEqual(labels);
 });
 

@@ -16,6 +16,7 @@ import { SURFACE_FILLS, type SurfaceFill } from "@studio-baeks/paper-ui/tokens";
 
 import { CheckIcon, CloseIcon, EditIcon } from "../compositions/icons";
 import { joinClass } from "../joinClass";
+import { pick as inLocale, useSiteLocale, useWords, type Bilingual } from "../site/locale";
 import { PageHeader } from "../site/PageHeader";
 import { SectionHeading } from "../site/SectionHeading";
 import { codeOf, entryBySlug, initialState, normalized, stateFromCode, type State } from "./registry";
@@ -32,7 +33,12 @@ type PreviewBackground = (typeof PREVIEW_BACKGROUNDS)[number];
 const PREVIEW_SURFACE_KEY = "paper-ui-preview-surface";
 // In dark the sunken surface is the canvas (the surface ladder); the button for sunken says so.
 const FOLDED = { surface: "sunken", into: "canvas" } as const satisfies Record<string, SurfaceFill>;
-const FOLDED_TITLE = "다크에서는 canvas와 같은 단계";
+const FOLDED_TITLE: Bilingual = { ko: "다크에서는 canvas와 같은 단계", en: "In dark, the same step as canvas" };
+
+const DETAIL_WORDS = {
+  ko: { copied: "복사됨", copy: "복사", closeEdit: "코드 편집 닫기", edit: "코드 편집", editor: "컴포넌트 코드 편집", background: "미리보기 배경", code: "코드", reset: "초기화", none: "토글할 prop 이 없는 컴포넌트입니다. 위 미리보기가 기본 형태입니다." },
+  en: { copied: "Copied", copy: "Copy", closeEdit: "Close code editor", edit: "Edit code", editor: "Edit component code", background: "Preview background", code: "Code", reset: "Reset", none: "This component has no props to toggle. The preview above is its default form." },
+} as const satisfies Bilingual<Record<string, string>>;
 
 const readPreviewBackground = (): PreviewBackground => {
   try {
@@ -64,6 +70,7 @@ const useFoldedSurfaces = () => {
 };
 
 const CodeBlock = ({ code, onChange, error }: { code: string; onChange: (code: string) => void; error?: string }) => {
+  const w = useWords(DETAIL_WORDS);
   const [copied, setCopied] = useState(false);
   const [editing, setEditing] = useState(false);
   const copy = () => {
@@ -78,18 +85,18 @@ const CodeBlock = ({ code, onChange, error }: { code: string; onChange: (code: s
   return (
     <Surface fill={editing ? "sunken" : "raised"} radius="md" shadow className={joinClass(s.codeBlock, error && s.codeBlockError)} data-testid="code-block">
       <div className={s.codeActions}>
-        <Button variant="soft" size="sm" fontSize="label" onClick={copy}>{copied ? "복사됨" : "복사"}</Button>
+        <Button variant="soft" size="sm" fontSize="label" onClick={copy}>{copied ? w.copied : w.copy}</Button>
         <IconButton
           variant="soft"
           size="sm"
-          aria-label={editing ? "코드 편집 닫기" : "코드 편집"}
+          aria-label={editing ? w.closeEdit : w.edit}
           className={s.codeEdit}
           onClick={() => setEditing((current) => !current)}
         >
           {editing ? <CloseIcon /> : <EditIcon />}
         </IconButton>
       </div>
-      {editing ? <textarea className={s.codeEditor} value={code} onChange={(event) => onChange(event.currentTarget.value)} spellCheck={false} aria-label="컴포넌트 코드 편집" /> : <pre><code>{code}</code></pre>}
+      {editing ? <textarea className={s.codeEditor} value={code} onChange={(event) => onChange(event.currentTarget.value)} spellCheck={false} aria-label={w.editor} /> : <pre><code>{code}</code></pre>}
       {error ? <Text variant="caption" ink="error" className={s.codeError}>{error}</Text> : null}
     </Surface>
   );
@@ -98,14 +105,16 @@ const CodeBlock = ({ code, onChange, error }: { code: string; onChange: (code: s
 // 상태를 든 몸통. slug 마다 remount(key) 돼 첫 화면으로 새로 시작한다.
 const DetailView = ({ entry }: { entry: Entry }) => {
   const { useHarness, Stage } = entry;
+  const { locale } = useSiteLocale();
+  const w = useWords(DETAIL_WORDS);
   const harness = useHarness();
-  const [state, setState] = useState<State>(() => normalized(entry, initialState(entry)));
+  const [state, setState] = useState<State>(() => normalized(entry, initialState(entry, locale)));
   const [previewBackground, setPreviewBackground] = useState<PreviewBackground>(readPreviewBackground);
   const [draft, setDraft] = useState<string>();
   const [codeError, setCodeError] = useState<string>();
   const { probes, folded } = useFoldedSurfaces();
-  const subject = entry.subject(state, harness);
-  const code = draft ?? codeOf(entry, state, harness);
+  const subject = entry.subject(state, harness, locale);
+  const code = draft ?? codeOf(entry, state, harness, locale);
   const selectPreviewBackground = (background: PreviewBackground) => {
     setPreviewBackground(background);
     try { window.localStorage.setItem(PREVIEW_SURFACE_KEY, background); } catch { /* Keep the current page usable when storage is unavailable. */ }
@@ -117,7 +126,7 @@ const DetailView = ({ entry }: { entry: Entry }) => {
   };
   const editCode = (nextCode: string) => {
     setDraft(nextCode);
-    const parsed = stateFromCode(entry, nextCode, state);
+    const parsed = stateFromCode(entry, nextCode, state, locale);
     if ("error" in parsed) {
       setCodeError(parsed.error);
       return;
@@ -128,7 +137,7 @@ const DetailView = ({ entry }: { entry: Entry }) => {
 
   return (
     <Stack gap="xl">
-      <PageHeader group={entry.part === "atoms" ? "Atoms" : `Primitives / ${entry.group}`} name={entry.name} description={entry.blurb} />
+      <PageHeader group={entry.part === "atoms" ? "Atoms" : `Primitives / ${entry.group}`} name={entry.name} description={inLocale(entry.blurb, locale)} />
 
       <div className={s.detailBody}>
         {/* preview + code, and under them an Atom's props and every combination of its axes */}
@@ -150,7 +159,7 @@ const DetailView = ({ entry }: { entry: Entry }) => {
               )}
               <SelectableGroup
                 className={s.surfaceSwitcher}
-                aria-label="미리보기 배경"
+                aria-label={w.background}
                 selectionRequired
                 selectedValues={[previewBackground]}
                 onSelectedValuesChange={(values) => {
@@ -165,7 +174,7 @@ const DetailView = ({ entry }: { entry: Entry }) => {
                     value={background}
                     className={s.surfaceButton[background]}
                     aria-label={`${background} background`}
-                    title={background === FOLDED.surface && folded ? FOLDED_TITLE : `${background} background`}
+                    title={background === FOLDED.surface && folded ? inLocale(FOLDED_TITLE, locale) : `${background} background`}
                   >
                     {previewBackground === background ? <CheckIcon size="caption" /> : null}
                   </Pressable>
@@ -173,7 +182,7 @@ const DetailView = ({ entry }: { entry: Entry }) => {
               </SelectableGroup>
             </div>
             <Stack gap="xs">
-              <SectionHeading title="코드" variant="label" />
+              <SectionHeading title={w.code} variant="label" />
               <CodeBlock code={code} onChange={editCode} error={codeError} />
             </Stack>
           </Stack>
@@ -192,13 +201,13 @@ const DetailView = ({ entry }: { entry: Entry }) => {
               <SectionHeading title="Props" variant="label" />
               {/* 손으로 꾸민 raw <button> 이었다 — muted 변형이 바로 그 자리다. */}
               {entry.controls.length > 0 && (
-                <Button variant="muted" size="sm" onClick={() => { setState(normalized(entry, initialState(entry))); setDraft(undefined); setCodeError(undefined); }}>
-                  초기화
+                <Button variant="muted" size="sm" onClick={() => { setState(normalized(entry, initialState(entry, locale))); setDraft(undefined); setCodeError(undefined); }}>
+                  {w.reset}
                 </Button>
               )}
             </Inline>
             {entry.controls.length === 0 ? (
-              <Text variant="caption" ink="secondary">토글할 prop 이 없는 컴포넌트입니다. 위 미리보기가 기본 형태입니다.</Text>
+              <Text variant="caption" ink="secondary">{w.none}</Text>
             ) : (
               <Stack gap="md">
                 {entry.controls.map((c) => (
@@ -216,7 +225,8 @@ const DetailView = ({ entry }: { entry: Entry }) => {
 export const ComponentDetail = () => {
   const { slug = "" } = useParams();
   const entry = entryBySlug(slug);
+  const { locale } = useSiteLocale();
   if (!entry) return <Navigate to="/playground" replace />;
-  // key=slug — 컴포넌트가 바뀌면 상태를 새로 시작
-  return <DetailView entry={entry} key={entry.slug} />;
+  // key=slug — 컴포넌트가 바뀌면 상태를 새로 시작. 언어가 바뀌어도 새로 시작한다: 글자 칸의 첫 글자와 예시의 낱말이 그 언어의 것이다.
+  return <DetailView entry={entry} key={`${entry.slug}:${locale}`} />;
 };

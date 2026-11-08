@@ -3,6 +3,7 @@
 // section names (Element, Paint …) stay on the pages: over a list where most of them hold a single item, they read as more items.
 
 import { PLAYGROUND_NAV, type PlaygroundGroup, type PlaygroundSection } from "../site/site-map";
+import { useWords } from "../site/locale";
 import { SidebarNav, type SidebarBlock, type SidebarGroup } from "../site/SidebarNav";
 
 const linksOf = (section: PlaygroundSection) => section.items.map(({ name, slug }) => ({ label: name, to: `/playground/${slug}` }));
@@ -23,4 +24,6 @@ const GROUPS: SidebarGroup[] = [
   ...PLAYGROUND_NAV.map((group) => ({ label: group.label, blocks: blocksOf(group) })),
 ];
 
-export const PlaygroundNav = () => <SidebarNav label="플레이그라운드 목차" groups={GROUPS} />;
+const NAV_LABEL = { ko: "플레이그라운드 목차", en: "Playground contents" };
+
+export const PlaygroundNav = () => <SidebarNav label={useWords(NAV_LABEL)} groups={GROUPS} />;

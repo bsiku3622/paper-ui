@@ -6,7 +6,7 @@ const CELLS = [1, 2, 3, 4, 5, 6];
 
 export default defineSpec({
   name: "Grid",
-  blurb: "Box의 여백·크기·ref 계약에 grid 배치를 더합니다. columns는 양의 정수 또는 CSS track 선언이고, base · sm · md · lg · xl로 분기점마다 다른 값을 줄 수 있습니다.",
+  blurb: { ko: "Box의 여백·크기·ref 계약에 grid 배치를 더합니다. columns는 양의 정수 또는 CSS track 선언이고, base · sm · md · lg · xl로 분기점마다 다른 값을 줄 수 있습니다.", en: "Adds grid placement to Box's spacing, size and ref contract. columns is a positive integer or a CSS track declaration, and base, sm, md, lg and xl can each give a different value per breakpoint." },
   controls: [
     enumControl<GridProps, "columns">("columns", sample(["1", "2", "3"] as const, "columns takes any positive integer or track list"), { initial: "3", rootDefault: "1" }),
     enumControl<GridProps, "rowGap">("rowGap", vocab("SPACES")),

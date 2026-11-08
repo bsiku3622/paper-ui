@@ -5,7 +5,7 @@ import { paintSample } from "./examples.css";
 
 export default defineSpec({
   name: "Paint",
-  blurb: "Box 위에 accent × variant를 입히는 primitive입니다. accent는 의미를, variant는 시각 무게를 고르고 둘의 조합은 하나의 지도에서 옵니다. accent를 주지 않으면 칠하지 않습니다. solid와 soft는 자기 면을 칠하고, 나머지 넷의 면은 fill이 고르며 안 주면 투명입니다. 그림자는 면이 있을 때만 받습니다. hoverable은 포인터가 올라갈 수 있는 환경에서, 막히지 않은 대상에만 hover 색을 띄웁니다. selected는 data-selected를 달고, hairline·ghost·muted는 그 속성을 읽어 선택된 면을 입습니다. Button과 Badge가 이 위에 섭니다.",
+  blurb: { ko: "Box 위에 accent × variant를 입히는 primitive입니다. accent는 의미를, variant는 시각 무게를 고르고 둘의 조합은 하나의 지도에서 옵니다. accent를 주지 않으면 칠하지 않습니다. solid와 soft는 자기 면을 칠하고, 나머지 넷의 면은 fill이 고르며 안 주면 투명입니다. 그림자는 면이 있을 때만 받습니다. hoverable은 포인터가 올라갈 수 있는 환경에서, 막히지 않은 대상에만 hover 색을 띄웁니다. selected는 data-selected를 달고, hairline·ghost·muted는 그 속성을 읽어 선택된 면을 입습니다. Button과 Badge가 이 위에 섭니다.", en: "The primitive that puts accent × variant on a Box. accent chooses the meaning and variant the visual weight, and their combination comes from one map. Without accent nothing is painted. solid and soft paint their own face; the face of the other four is chosen by fill and is transparent without one. A shadow lands only on a face. hoverable shows the hover colour only in environments where a pointer can hover, and only on targets that are not blocked. selected sets data-selected, and hairline, ghost and muted read it to wear the selected face. Button and Badge stand on this." },
   controls: [
     enumControl<PaintProps, "accent">("accent", vocab("ACCENTS"), { initial: "primary" }),
     enumControl<PaintProps, "variant">("variant", vocab("VARIANTS")),

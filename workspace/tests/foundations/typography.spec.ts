@@ -353,10 +353,10 @@ test.describe("the docs, the Playground and the landing page take their type fro
     await expect(lines).toHaveCount(2);
     await expectStyle(lines.nth(0), { color: tokens.color.ink.primary });
     await expectStyle(lines.nth(1), { color: tokens.color.ink.secondary });
-    await expect(headline).toHaveAccessibleName("Complex web apps on quiet ground.");
+    await expect(headline).toHaveAccessibleName("복잡한 웹앱을 위한 조용한 바탕.");
     const hero = headline.locator("xpath=..");
     await expectStyle(hero, { paddingTop: tokens.layout.section.start, paddingBottom: tokens.layout.section.end, maxWidth: tokens.shape.measure.xl });
-    await expectStyle(page.getByText("Layout starts with Primitives"), { maxWidth: tokens.shape.measure.md });
+    await expectStyle(page.getByText("레이아웃은 Primitive로"), { maxWidth: tokens.shape.measure.md });
     await expectStyle(page.locator("footer svg"), { opacity: tokens.color.opacity.subdued });
     await expect(page.locator("footer svg")).toHaveCSS("opacity", OPACITY_VALUES.subdued);
   });

@@ -37,7 +37,7 @@ const CONTROLS: Record<BoxAxis, Control> = {
 
 export default defineSpec({
   name: "Box",
-  blurb: "바탕이 되는 칸입니다. padding을 얹고, width·height·min/max·overflow로 box model을 정합니다. 이름 있는 크기(dimension, measure, container, 키워드)는 class가 되고, 그 밖의 CSS 길이만 화면 고유 layout을 위해 inline으로 갑니다. 면·테두리·모서리·높이·테마는 Surface가, 색은 Paint가 맡으므로 Box에는 어떤 색도 없고, flex·position·gap 책임도 열지 않습니다.",
+  blurb: { ko: "바탕이 되는 칸입니다. padding을 얹고, width·height·min/max·overflow로 box model을 정합니다. 이름 있는 크기(dimension, measure, container, 키워드)는 class가 되고, 그 밖의 CSS 길이만 화면 고유 layout을 위해 inline으로 갑니다. 면·테두리·모서리·높이·테마는 Surface가, 색은 Paint가 맡으므로 Box에는 어떤 색도 없고, flex·position·gap 책임도 열지 않습니다.", en: "The base cell. It adds padding and sets the box model with width, height, min/max and overflow. Named sizes (dimension, measure, container, keywords) become classes; only other CSS lengths go inline, for a screen's own layout. Face, border, corners, elevation and theme belong to Surface and colour to Paint, so Box holds no colour and takes no flex, position or gap duties." },
   controls: Object.values(CONTROLS),
   defaults: {},
   subject: (state) => (

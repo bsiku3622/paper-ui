@@ -7,7 +7,7 @@ type Props = TextProps<TextVariant>;
 
 export default defineSpec({
   name: "Text",
-  blurb: "variant가 크기·굵기·잉크를 정하고, family가 서체(sans·mono)를 정합니다. 제목 위계와 텍스트 역할이 한 축에 있고, strong은 역할이 정한 강조 굵기를 켜고 끄며, numeric은 숫자 글리프의 자리만 맞춥니다. truncate는 줄을 바꾸는 대신 한 줄로 자릅니다.",
+  blurb: { ko: "variant가 크기·굵기·잉크를 정하고, family가 서체(sans·mono)를 정합니다. 제목 위계와 텍스트 역할이 한 축에 있고, strong은 역할이 정한 강조 굵기를 켜고 끄며, numeric은 숫자 글리프의 자리만 맞춥니다. truncate는 줄을 바꾸는 대신 한 줄로 자릅니다.", en: "variant sets size, weight and ink, and family sets the typeface (sans, mono). The heading hierarchy and the text roles share one axis; strong turns the role's emphasis weight on and off, and numeric only aligns the digit glyphs. truncate cuts to one line instead of wrapping." },
   controls: [
     enumControl<Props, "variant">("variant", vocab("TEXT_VARIANTS")),
     enumControl<Props, "family">("family", vocab("TEXT_FAMILIES")),

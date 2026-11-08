@@ -4,6 +4,7 @@
 import type { TextVariant } from "@studio-baeks/paper-ui/tokens";
 import { CODE_SPEC, PRESET_SPEC, ROLE_SPEC, TYPOGRAPHY_SOURCE } from "@paper-ui/inspect/typography";
 
+import type { Bilingual } from "../../site/locale";
 import { valueAt } from "./paths";
 
 type FontSize = keyof typeof TYPOGRAPHY_SOURCE.fontSize | keyof typeof TYPOGRAPHY_SOURCE.fluid;
@@ -36,17 +37,17 @@ const walk = (tree: object, prefix: string): string[] =>
 export const PRESET_PATHS = walk(PRESET_SPEC, "") as PresetPath[];
 export const isLadder = (path: PresetPath): boolean => "sm" in (valueAt(PRESET_SPEC, path) as object);
 
-export const CODE_SCALE_NOTES: Record<keyof typeof TYPOGRAPHY_SOURCE.codeScale, string> = {
-  inline: "문단 속 코드가 둘러싼 글자에서 줄어드는 비율",
-  compact: "표 칸 속 코드가 둘러싼 글자에서 줄어드는 비율",
+export const CODE_SCALE_NOTES: Record<keyof typeof TYPOGRAPHY_SOURCE.codeScale, Bilingual> = {
+  inline: { ko: "문단 속 코드가 둘러싼 글자에서 줄어드는 비율", en: "How much code in a paragraph shrinks from the text around it" },
+  compact: { ko: "표 칸 속 코드가 둘러싼 글자에서 줄어드는 비율", en: "How much code in a table cell shrinks from the text around it" },
 };
 
 // The code block is a pick from Palette, not a Palette value of its own: it is shown next to the scales.
-export const CODE_BLOCK = { spec: CODE_SPEC.block, note: "코드 블록의 글자와 줄 — 문단 속 코드와 달리 자기 크기를 갖는 mono" };
+export const CODE_BLOCK = { spec: CODE_SPEC.block, note: { ko: "코드 블록의 글자와 줄 — 문단 속 코드와 달리 자기 크기를 갖는 mono", en: "The text and line of a code block: mono with a size of its own, unlike code in a paragraph" } };
 
-export const PRESET_NOTES: Record<PresetPath, { role: string; sample: string }> = {
-  button: { role: "Button · IconButton", sample: "Continue" },
-  field: { role: "Field · Input / Select", sample: "Search projects" },
-  textarea: { role: "Textarea", sample: "Add a description" },
-  badge: { role: "크기와 무관한 고정 표식", sample: "In progress" },
+export const PRESET_NOTES: Record<PresetPath, { role: Bilingual; sample: string }> = {
+  button: { role: { ko: "Button · IconButton", en: "Button · IconButton" }, sample: "Continue" },
+  field: { role: { ko: "Field · Input / Select", en: "Field · Input / Select" }, sample: "Search projects" },
+  textarea: { role: { ko: "Textarea", en: "Textarea" }, sample: "Add a description" },
+  badge: { role: { ko: "크기와 무관한 고정 표식", en: "A fixed mark, independent of size" }, sample: "In progress" },
 };

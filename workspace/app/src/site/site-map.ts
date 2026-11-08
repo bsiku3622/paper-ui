@@ -9,10 +9,10 @@ import { FOUNDATIONS } from "./site-core";
 export * from "./site-core";
 
 export const SITE_NAV = [
-  { to: "/", label: "Home" },
-  { to: "/demo", label: "Demo" },
-  { to: "/playground", label: "Playground" },
-  { to: "/docs", label: "Docs" },
+  { to: "/", label: { ko: "홈", en: "Home" } },
+  { to: "/demo", label: { ko: "데모", en: "Demo" } },
+  { to: "/playground", label: { ko: "플레이그라운드", en: "Playground" } },
+  { to: "/docs", label: { ko: "문서", en: "Docs" } },
 ] as const;
 
 // PascalCase component name → URL slug.

@@ -6,6 +6,7 @@ import { beforeAll, describe, expect, it, vi } from "vitest";
 import { PaperProvider } from "@studio-baeks/paper-ui";
 import * as vocabulary from "@studio-baeks/paper-ui/tokens";
 
+import { SiteLocaleProvider } from "../../site/locale";
 import { PLAYGROUND_NAV, slugOf } from "../../site/site-map";
 import { REGISTRY, codeOf, initialState, normalized, stateFromCode, type Control, type Entry, type State } from ".";
 import { parseOpeningTag } from "./jsx";
@@ -64,7 +65,7 @@ describe("the references under an Atom", () => {
 
   it("[app.playground.reference] names the type a switch stands for when it puts an example in a slot", () => {
     for (const entry of REGISTRY) {
-      for (const control of entry.controls) if (control.kind === "bool" && control.label !== control.prop) expect(control.type, `${entry.name}.${control.prop}`).toBeDefined();
+      for (const control of entry.controls) if (control.kind === "bool" && control.example !== undefined) expect(control.type, `${entry.name}.${control.prop}`).toBeDefined();
     }
   });
 
@@ -99,7 +100,7 @@ describe("REGISTRY", () => {
   });
 
   it("writes blurbs without digits", () => {
-    for (const entry of REGISTRY) expect(entry.blurb, entry.name).toMatch(/^[^0-9]*$/);
+    for (const entry of REGISTRY) for (const blurb of Object.values(entry.blurb)) expect(blurb, entry.name).toMatch(/^[^0-9]*$/);
   });
 
   it("gives each control one key per entry", () => {
@@ -211,7 +212,7 @@ describe("defaults", () => {
       const harness = harnessOf(entry);
       const omitted = { ...base(entry), [control.key]: undefined };
       const stated = { ...base(entry), [control.key]: String(own) };
-      expect(markup(entry.subject(stated, harness)), `${entry.name}.${control.prop}`).toBe(markup(entry.subject(omitted, harness)));
+      expect(markup(entry.subject(stated, harness, "ko")), `${entry.name}.${control.prop}`).toBe(markup(entry.subject(omitted, harness, "ko")));
     }
   });
 
@@ -248,10 +249,10 @@ describe("defaults", () => {
       const harness = harnessOf(entry);
       for (const control of entry.controls) {
         if (control.kind === "text" || control.behaviorOnly || entry.defaults[control.prop] !== undefined || (control.kind === "enum" && control.required)) continue;
-        const omitted = markup(entry.subject({ ...base(entry), [control.key]: control.kind === "bool" ? false : undefined }, harness));
+        const omitted = markup(entry.subject({ ...base(entry), [control.key]: control.kind === "bool" ? false : undefined }, harness, "ko"));
         const values = control.kind === "bool" ? [true] : control.options;
         // A derived prop has one option that says what omitting it already means; every other option shows.
-        const unchanged = values.filter((value) => markup(entry.subject({ ...base(entry), [control.key]: value }, harness)) === omitted);
+        const unchanged = values.filter((value) => markup(entry.subject({ ...base(entry), [control.key]: value }, harness, "ko")) === omitted);
         expect(unchanged.length, `${entry.name}.${control.prop} leaves ${JSON.stringify(unchanged)} as omitted`).toBe(control.derived ? 1 : 0);
       }
     }
@@ -264,7 +265,7 @@ describe("stage", () => {
       const { Stage } = entry;
       const harness = harnessOf(entry);
       const state = base(entry);
-      const subject = entry.subject(state, harness);
+      const subject = entry.subject(state, harness, "ko");
       if (!Stage) continue;
       const staged = markup(createElement(Stage, { subject, state, harness }));
       if (entry.gated) {
@@ -273,6 +274,37 @@ describe("stage", () => {
       }
       expect(staged, entry.name).toContain(markup(subject));
     }
+  });
+});
+
+// The Playground speaks English to a visitor who reads English: what an entry says in its blurb, its controls and its example
+// (the preview and the code panel are printed from the same tree) holds no Hangul. A Korean type specimen is Korean on purpose.
+describe("English", () => {
+  const HANGUL = /[\u1100-\u11ff\u3130-\u318f\uac00-\ud7a3]/;
+  const SPECIMENS: ReadonlySet<string> = new Set(["text"]);
+  const english = ({ children }: { children?: React.ReactNode }) => <SiteLocaleProvider initial="en"><PaperProvider>{children}</PaperProvider></SiteLocaleProvider>;
+
+  it("says every blurb in English", () => {
+    for (const entry of REGISTRY) expect(entry.blurb.en, entry.name).not.toMatch(HANGUL);
+  });
+
+  it("draws every example, its code and its controls' words in English", () => {
+    for (const entry of REGISTRY) {
+      if (SPECIMENS.has(entry.slug)) continue;
+      const harness = renderHook(() => entry.useHarness(), { wrapper: english }).result.current;
+      const state = normalized(entry, initialState(entry, "en"));
+      expect(markup(entry.subject(state, harness, "en")), entry.name).not.toMatch(HANGUL);
+      expect(codeOf(entry, state, harness, "en"), entry.name).not.toMatch(HANGUL);
+      for (const control of entry.controls) {
+        if (control.example) expect(control.example.en, `${entry.name}.${control.prop}`).not.toMatch(HANGUL);
+        if (control.kind === "text") expect(control.initial.en, `${entry.name}.${control.prop}`).not.toMatch(HANGUL);
+      }
+    }
+  });
+
+  it("reads a broken code panel's error in English", () => {
+    const box = REGISTRY.find((entry) => entry.slug === "box")!;
+    expect(stateFromCode(box, "const x = 1;", base(box), "en")).toEqual({ error: "Box JSX cannot be read." });
   });
 });
 

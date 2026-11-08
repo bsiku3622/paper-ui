@@ -34,7 +34,9 @@ const markdownFiles = (dir) =>
     .filter((entry) => entry.isFile() && entry.name.endsWith(".md"))
     .map((entry) => join(entry.parentPath, entry.name));
 
-const files = [...markdownFiles(join(REPO, "docs")), join(REPO, "README.md"), join(REPO, "workspace/packages/paper-ui/README.md")];
+// docs/en/ translates the docs with the same code blocks, so the originals are the ones compiled.
+const translations = join(REPO, "docs", "en");
+const files = [...markdownFiles(join(REPO, "docs")).filter((file) => !file.startsWith(`${translations}/`)), join(REPO, "README.md"), join(REPO, "workspace/packages/paper-ui/README.md")];
 const FENCE = /^```(tsx?)\n([\s\S]*?)^```/gm;
 const MODULE = /^\s*(import|export)\b/m;
 

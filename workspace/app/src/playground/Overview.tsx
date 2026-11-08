@@ -31,6 +31,7 @@ import { CONTROL_SIZES, STATUSES, SURFACE_FILLS, TEXT_VARIANTS, tokens, type Con
 
 import { Dot } from "../compositions/Dot";
 import { InfoIcon, SearchIcon } from "../compositions/icons";
+import { useWords, type Bilingual } from "../site/locale";
 import { PageHeader } from "../site/PageHeader";
 import { SectionHeading } from "../site/SectionHeading";
 import { Boards } from "./Boards";
@@ -102,17 +103,160 @@ const MONO_DEMO: Partial<Record<(typeof TEXT_VARIANTS)[number], string>> = {
 // What each rung of the control ladder is called beside its measured height.
 const SIZE_NAMES: Record<ControlSize, string> = { xs: "tool", sm: "compact", md: "default", lg: "roomy", xl: "spacious" };
 
-export const Overview = () => (
+type OverviewWords = {
+  description: string;
+  typeNote: string;
+  fillLabel: string;
+  accentLabel: string;
+  surfaceTitle: string;
+  surfaceLabel: string;
+  radiusLabel: (sm: string, md: string, lg: string) => string;
+  atomsDescription: string;
+  togetherTitle: string;
+  alignLabel: string;
+  searchPlaceholder: string;
+  search: string;
+  run: string;
+  serif: string;
+  baseLabel: string;
+  valueLabel: string;
+  pillLabel: string;
+  all: string;
+  marksLabel: string;
+  checkboxOff: string;
+  radioOff: string;
+  info: string;
+  badge: string;
+  button: string;
+  adornmentsLabel: string;
+  clearable: string;
+  recessedLabel: string;
+  taskSearch: string;
+  taskSearchLabel: string;
+  labelFieldLabel: string;
+  name: string;
+  input: string;
+  noSpaces: string;
+  amount: string;
+  digitsOnly: string;
+  fullWidthLabel: string;
+  fullWidth: string;
+  otherTitle: string;
+  link: string;
+  linkLabel: string;
+  markerLead: string;
+  markerWord: string;
+  markerTail: string;
+};
+
+const OVERVIEW: Bilingual<OverviewWords> = {
+  ko: {
+    description: "Paper UI의 토큰과 기반 요소, 개별 컨트롤을 한곳에서 살펴봅니다.",
+    typeNote: "숫자는 그려진 글자를 잰 크기 / 줄 · 굵기입니다. · mono 줄은 바로 위 역할에 family=\"mono\"를 준 모습입니다.",
+    fillLabel: "fill — 면의 깊이 (Surface 의 구조 축, 색 아님)",
+    accentLabel: "accent — 상태 점(solid) · 잉크 · Badge",
+    surfaceTitle: "Surface · 면",
+    surfaceLabel: "fill + border (붙은 면의 헤어라인) · inverse (검은 판)",
+    radiusLabel: (sm, md, lg) => `radius — 작은 면 ${sm} · 카드 ${md} · 큰 면 ${lg}`,
+    atomsDescription: "크기가 있는 Atom마다 한 판입니다. 왼쪽은 한 축의 모든 값을 다섯 크기에 맞세운 표이고, 오른쪽은 그 표를 그릴 상태와 나머지 prop입니다. 상태는 포인터나 키보드 없이 미리보기로 그리고, 모든 상태를 펼치면 표가 상태마다 되풀이됩니다.",
+    togetherTitle: "정렬 · 조합",
+    alignLabel: "정렬 (Field ⇄ Button, 같은 baseline)",
+    searchPlaceholder: "검색…",
+    search: "검색",
+    run: "실행",
+    serif: "본명조",
+    baseLabel: "라벨 padding",
+    valueLabel: "값 padding",
+    pillLabel: "shape=pill — 검색 한 줄 (Field · Select · Button 같은 곡선)",
+    all: "전체",
+    marksLabel: "작은 표식 — 한 줄에 세웠을 때 (md)",
+    checkboxOff: "꺼진 체크박스",
+    radioOff: "꺼진 라디오",
+    info: "정보",
+    badge: "배지",
+    button: "버튼",
+    adornmentsLabel: "Field 어도먼트 — 아이콘 · clear · 비밀번호 · prefix/suffix",
+    clearable: "지울 값",
+    recessedLabel: "Field recessed — sunken surface · leading icon · trailing shortcut",
+    taskSearch: "작업 검색...",
+    taskSearchLabel: "작업 검색",
+    labelFieldLabel: "Label · Field — 화면에서 필요한 조합을 구성합니다",
+    name: "이름",
+    input: "입력",
+    noSpaces: "공백 없이 입력하세요",
+    amount: "금액",
+    digitsOnly: "숫자만 입력하세요",
+    fullWidthLabel: "fullWidth — 폼 · 모바일에서 가로를 채운다",
+    fullWidth: "가로 꽉",
+    otherTitle: "그 밖의 Atom",
+    link: "링크",
+    linkLabel: "Link · Divider · Icon",
+    markerLead: "문장 속 낱말에 ",
+    markerWord: "칠",
+    markerTail: "을 깝니다",
+  },
+  en: {
+    description: "Paper UI's tokens, foundations and individual controls in one place.",
+    typeNote: "The numbers are the measured size / line · weight of the drawn text. The mono row is the role just above it with family=\"mono\".",
+    fillLabel: "fill — depth of a face (Surface's structural axis, not a color)",
+    accentLabel: "accent — status dot (solid) · ink · Badge",
+    surfaceTitle: "Surface",
+    surfaceLabel: "fill + border (hairline on a flat face) · inverse (the dark slab)",
+    radiusLabel: (sm, md, lg) => `radius — small face ${sm} · card ${md} · large face ${lg}`,
+    atomsDescription: "One board for every Atom that has a size. On the left, every value of one axis against the five sizes; on the right, the state the table is drawn in and the remaining props. States are drawn by preview, without a pointer or keyboard; spread all states and the table repeats once per state.",
+    togetherTitle: "Alignment and combinations",
+    alignLabel: "Alignment (Field ⇄ Button, same baseline)",
+    searchPlaceholder: "Search…",
+    search: "Search",
+    run: "Run",
+    serif: "Serif",
+    baseLabel: "label padding",
+    valueLabel: "value padding",
+    pillLabel: "shape=pill — one search row (Field · Select · Button, the same curve)",
+    all: "All",
+    marksLabel: "Small marks — side by side in one row (md)",
+    checkboxOff: "Unchecked checkbox",
+    radioOff: "Unchecked radio",
+    info: "Info",
+    badge: "Badge",
+    button: "Button",
+    adornmentsLabel: "Field adornments — icon · clear · password · prefix/suffix",
+    clearable: "Value to clear",
+    recessedLabel: "Field recessed — sunken surface · leading icon · trailing shortcut",
+    taskSearch: "Search tasks...",
+    taskSearchLabel: "Search tasks",
+    labelFieldLabel: "Label · Field — compose the combination a screen needs",
+    name: "Name",
+    input: "Enter",
+    noSpaces: "Enter without spaces",
+    amount: "Amount",
+    digitsOnly: "Enter digits only",
+    fullWidthLabel: "fullWidth — fills the row in forms and on mobile",
+    fullWidth: "Full width",
+    otherTitle: "Other Atoms",
+    link: "Link",
+    linkLabel: "Link · Divider · Icon",
+    markerLead: "Mark a word ",
+    markerWord: "like this",
+    markerTail: " inside a sentence",
+  },
+};
+
+const PLAYGROUND = { ko: "플레이그라운드", en: "Playground" } as const;
+
+export const Overview = () => {
+  const w = useWords(OVERVIEW);
+  return (
   <Stack gap="3xl">
     <PageHeader
-      group="Playground"
+      group={useWords(PLAYGROUND)}
       name="Overview"
-      description="Paper UI의 토큰과 기반 요소, 개별 컨트롤을 한곳에서 살펴봅니다."
+      description={w.description}
     />
 
     {/* ── Tokens ─────────────────────────────────────────── */}
     <Section id="sec-type" title="Type scale">
-      <Text variant="caption" ink="secondary">숫자는 그려진 글자를 잰 크기 / 줄 · 굵기입니다. · mono 줄은 바로 위 역할에 family=&quot;mono&quot;를 준 모습입니다.</Text>
+      <Text variant="caption" ink="secondary">{w.typeNote}</Text>
       <Stack gap="md">
         {TEXT_VARIANTS.map((v) => (
           <Fragment key={v}>
@@ -124,7 +268,7 @@ export const Overview = () => (
     </Section>
 
     <Section id="sec-color" title="Color">
-      <Spec label="fill — 면의 깊이 (Surface 의 구조 축, 색 아님)">
+      <Spec label={w.fillLabel}>
         {SURFACE_FILLS.map((s) => (
           <Surface key={s} fill={s} border radius="md" padding="lg" data-testid={`swatch-paper-${s}`}
             minWidth="5rem">
@@ -132,7 +276,7 @@ export const Overview = () => (
           </Surface>
         ))}
       </Spec>
-      <Spec label="accent — 상태 점(solid) · 잉크 · Badge">
+      <Spec label={w.accentLabel}>
         {STATUSES.map((a) => (
           <Inline key={a} gap="sm" align="center">
             <Dot status={a} size="md" data-testid={`dot-${a}`} />
@@ -144,8 +288,8 @@ export const Overview = () => (
     </Section>
 
     {/* ── Primitives · Surface ───────────────────────────── */}
-    <Section id="sec-surface" title="Surface · 면">
-      <Spec label="fill + border (붙은 면의 헤어라인) · inverse (검은 판)">
+    <Section id="sec-surface" title={w.surfaceTitle}>
+      <Spec label={w.surfaceLabel}>
         <Surface fill="raised" padding="md" radius="md">
           <Text variant="caption" as="span">raised</Text>
         </Surface>
@@ -159,7 +303,7 @@ export const Overview = () => (
           <Text variant="caption" as="span">inverse</Text>
         </Surface>
       </Spec>
-      <Spec label={`radius — 작은 면 ${px(tokens.shape.radius.surface.sm)} · 카드 ${px(tokens.shape.radius.surface.md)} · 큰 면 ${px(tokens.shape.radius.surface.lg)}`} testid="spec-layout-radius">
+      <Spec label={w.radiusLabel(px(tokens.shape.radius.surface.sm), px(tokens.shape.radius.surface.md), px(tokens.shape.radius.surface.lg))} testid="spec-layout-radius">
         <Surface fill="raised" border radius="sm" padding="md" data-testid="radius-small"><Text variant="caption">{px(tokens.shape.radius.surface.sm)} · small</Text></Surface>
         <Surface fill="raised" border radius="md" padding="md" data-testid="radius-card"><Text variant="caption">{px(tokens.shape.radius.surface.md)} · card</Text></Surface>
         <Surface fill="raised" border radius="lg" padding="md" data-testid="radius-large"><Text variant="caption">{px(tokens.shape.radius.surface.lg)} · large</Text></Surface>
@@ -170,19 +314,19 @@ export const Overview = () => (
     <Stack as="section" gap="lg" id="sec-atoms">
       <SectionHeading
         title="Atoms"
-        description="크기가 있는 Atom마다 한 판입니다. 왼쪽은 한 축의 모든 값을 다섯 크기에 맞세운 표이고, 오른쪽은 그 표를 그릴 상태와 나머지 prop입니다. 상태는 포인터나 키보드 없이 미리보기로 그리고, 모든 상태를 펼치면 표가 상태마다 되풀이됩니다."
+        description={w.atomsDescription}
       />
       <Boards />
     </Stack>
 
     {/* ── 나란히 서야 보이는 것 ─────────────────────────── */}
-    <Section id="sec-together" title="정렬 · 조합">
+    <Section id="sec-together" title={w.togetherTitle}>
       {/* 정렬 표본 — Field 와 Button 이 같은 높이/기준선에 앉는가 */}
-      <Spec label="정렬 (Field ⇄ Button, 같은 baseline)" testid="spec-align">
+      <Spec label={w.alignLabel} testid="spec-align">
         <Box width="16rem">
-          <Field placeholder="검색…" aria-label="검색" data-testid="align-field" />
+          <Field placeholder={w.searchPlaceholder} aria-label={w.search} data-testid="align-field" />
         </Box>
-        <Button data-testid="align-button">실행</Button>
+        <Button data-testid="align-button">{w.run}</Button>
       </Spec>
       {/* size 정렬 — Field·Select·Button 이 같은 사다리라 나란히 두면 높이가 맞는다 */}
       {CONTROL_SIZES.map((size) => (
@@ -191,7 +335,7 @@ export const Overview = () => (
             {size === "sm" ? <Field size={size} defaultValue="11.25" trailing="pt" aria-label={`field ${size}`} /> : <Field size={size} placeholder="Field" aria-label={`field ${size}`} />}
           </Box>
           <Box width="9rem">
-            <Select size={size} aria-label={`select ${size}`}><Select.Option value="a">{size === "sm" ? "본명조" : "Select"}</Select.Option></Select>
+            <Select size={size} aria-label={`select ${size}`}><Select.Option value="a">{size === "sm" ? w.serif : "Select"}</Select.Option></Select>
           </Box>
           <Button size={size}>Button</Button>
         </Spec>
@@ -200,7 +344,7 @@ export const Overview = () => (
           Textarea 는 줄 수만큼 자라 높이로는 줄을 못 세우고, Select 는 화살표 때문에
           오른쪽만 넓다. 왼쪽 여백 하나가 넷을 한 세로선에 세운다. */}
       <Spec
-        label={<>base — radius {px(tokens.shape.radius.control.md)} · 라벨 padding <Computed value={tokens.shape.control.inset.button.md} /> · 값 padding <Computed value={tokens.shape.control.inset.input.md} /></>}
+        label={<>base — radius {px(tokens.shape.radius.control.md)} · {w.baseLabel} <Computed value={tokens.shape.control.inset.button.md} /> · {w.valueLabel} <Computed value={tokens.shape.control.inset.input.md} /></>}
         testid="spec-control-base"
       >
         <Button variant="hairline" size="md" shape="rounded" data-testid="base-button">hairline</Button>
@@ -212,39 +356,39 @@ export const Overview = () => (
           한 줄에 셋이 나란히 서는 게 이 어휘가 있는 이유고, 여백은 안 움직인다
           (shape 은 실루엣 축이지 밀도 축이 아니다).
           Textarea 에는 없다 — 알약은 "높이의 절반" 이라 한 줄짜리에서만 성립한다. */}
-      <Spec label="shape=pill — 검색 한 줄 (Field · Select · Button 같은 곡선)" testid="spec-pill-row">
+      <Spec label={w.pillLabel} testid="spec-pill-row">
         <Box width="12rem">
-          <Field shape="pill" placeholder="검색" aria-label="검색" data-testid="field-pill"
+          <Field shape="pill" placeholder={w.search} aria-label={w.search} data-testid="field-pill"
             leading={<SearchIcon size="caption" />} />
         </Box>
         <Box width="8rem">
-          <Select shape="pill" data-testid="select-pill"><Select.Option value="a">전체</Select.Option></Select>
+          <Select shape="pill" data-testid="select-pill"><Select.Option value="a">{w.all}</Select.Option></Select>
         </Box>
-        <Button shape="pill" data-testid="button-pill-row">검색</Button>
+        <Button shape="pill" data-testid="button-pill-row">{w.search}</Button>
       </Spec>
       {/* 작은 표식들이 한 줄에 섰을 때 서로 같은 무게로 읽히는지 — 숫자가 같은 것과
           같아 보이는 것은 다르다. 아이콘은 24 아트보드 안에서 여백을 갖고, 스위치는
           폭이 넓어 같은 높이여도 더 크게 읽힌다. */}
-      <Spec label="작은 표식 — 한 줄에 세웠을 때 (md)" testid="spec-marks">
+      <Spec label={w.marksLabel} testid="spec-marks">
         <Inline gap="lg" align="center">
           <Checkbox defaultChecked data-testid="mark-checkbox" />
           {/* 꺼진 상태 — 경계가 유일한 단서인 자리라 비텍스트 대비 계약(3:1, color.md)이 여기 걸린다. tokens/color.test.ts 가 값을, overview.spec 이 이 표식들을 지킨다. */}
-          <Checkbox data-testid="mark-checkbox-off" aria-label="꺼진 체크박스" />
+          <Checkbox data-testid="mark-checkbox-off" aria-label={w.checkboxOff} />
           <Radio name="mark" defaultChecked data-testid="mark-radio" />
-          <Radio name="mark-off" data-testid="mark-radio-off" aria-label="꺼진 라디오" />
+          <Radio name="mark-off" data-testid="mark-radio-off" aria-label={w.radioOff} />
           <Switch defaultChecked data-testid="mark-switch" />
-          <InfoIcon aria-label="정보" data-testid="mark-icon" />
+          <InfoIcon aria-label={w.info} data-testid="mark-icon" />
           <Spinner data-testid="mark-spinner" />
-          <Badge data-testid="mark-badge">배지</Badge>
-          <Button size="sm" data-testid="mark-button">버튼</Button>
+          <Badge data-testid="mark-badge">{w.badge}</Badge>
+          <Button size="sm" data-testid="mark-button">{w.button}</Button>
         </Inline>
       </Spec>
-      <Spec label="Field 어도먼트 — 아이콘 · clear · 비밀번호 · prefix/suffix">
+      <Spec label={w.adornmentsLabel}>
         <Box width="12rem">
-          <Field placeholder="검색" leading={<SearchIcon size="caption" />} />
+          <Field placeholder={w.search} leading={<SearchIcon size="caption" />} />
         </Box>
         <Box width="12rem">
-          <Field defaultValue="지울 값" clearable data-testid="field-clearable" />
+          <Field defaultValue={w.clearable} clearable data-testid="field-clearable" />
         </Box>
         <Box width="12rem">
           <Field type="password" showPasswordToggle defaultValue="secret" data-testid="field-password" />
@@ -256,49 +400,50 @@ export const Overview = () => (
           <Field numeric textAlign="end" placeholder="0" trailing="kg" />
         </Box>
       </Spec>
-      <Spec label="Field recessed — sunken surface · leading icon · trailing shortcut">
+      <Spec label={w.recessedLabel}>
         <Box width="22rem">
           <Field
             type="search"
             fill="sunken"
             clearable
-            placeholder="작업 검색..."
-            aria-label="작업 검색"
+            placeholder={w.taskSearch}
+            aria-label={w.taskSearchLabel}
             leading={<SearchIcon size="body" aria-hidden />}
             trailing={<Surface as="kbd" fill="raised" border radius="sm" paddingX="xs"><Text variant="caption">⌘ K</Text></Surface>}
           />
         </Box>
       </Spec>
-      <Spec label="Label · Field — 화면에서 필요한 조합을 구성합니다">
+      <Spec label={w.labelFieldLabel}>
         <Stack gap="xs" width="16rem">
-          <Label htmlFor="playground-name">이름</Label>
-          <Field id="playground-name" placeholder="입력" data-testid="formfield-field" />
-          <Text variant="caption" ink="secondary">공백 없이 입력하세요</Text>
+          <Label htmlFor="playground-name">{w.name}</Label>
+          <Field id="playground-name" placeholder={w.input} data-testid="formfield-field" />
+          <Text variant="caption" ink="secondary">{w.noSpaces}</Text>
         </Stack>
         <Stack gap="xs" width="16rem">
-          <Label htmlFor="playground-amount">금액</Label>
+          <Label htmlFor="playground-amount">{w.amount}</Label>
           <Field id="playground-amount" numeric textAlign="end" status="error" placeholder="0" />
-          <Text variant="caption" ink="error">숫자만 입력하세요</Text>
+          <Text variant="caption" ink="error">{w.digitsOnly}</Text>
         </Stack>
       </Spec>
-      <Spec label="fullWidth — 폼 · 모바일에서 가로를 채운다">
+      <Spec label={w.fullWidthLabel}>
         <Box width="20rem">
-          <Button fullWidth data-testid="btn-fullwidth">가로 꽉</Button>
+          <Button fullWidth data-testid="btn-fullwidth">{w.fullWidth}</Button>
         </Box>
       </Spec>
     </Section>
 
-    <Section id="sec-other" title="그 밖의 Atom">
+    <Section id="sec-other" title={w.otherTitle}>
       {/* Divider 는 세로로 세워 표본으로 보인다. 가로 한 줄을 그으면 섹션을 가르는
           선처럼 읽혀, 예제 화면이 줄무늬가 된다 — orientation 과 level 은 상세 페이지에서 전환한다. */}
-      <Spec label="Link · Divider · Icon">
-        <Link href="#/" data-testid="link">링크</Link>
+      <Spec label={w.linkLabel}>
+        <Link href="#/" data-testid="link">{w.link}</Link>
         <Divider orientation="vertical" />
-        <InfoIcon aria-label="정보" data-testid="icon" />
+        <InfoIcon aria-label={w.info} data-testid="icon" />
       </Spec>
       <Spec label="Marker">
-        <Text variant="body">문장 속 낱말에 <Marker>칠</Marker>을 깝니다</Text>
+        <Text variant="body">{w.markerLead}<Marker>{w.markerWord}</Marker>{w.markerTail}</Text>
       </Spec>
     </Section>
   </Stack>
-);
+  );
+};
