@@ -2,7 +2,8 @@ import { expect, test } from "@playwright/test";
 
 import { tokens } from "../../packages/paper-ui/src/tokens";
 import { roleDp } from "../support/geometry";
-import { openHarness, openPlayground } from "../support/harness";
+import { chooseProp, openHarness, openPlayground } from "../support/harness";
+import { chooseOption } from "../support/select";
 import { tab } from "../support/keyboard";
 
 test("[primitives.roving-focus.tab-stop] roving focus has one Tab stop, supports keys and recovers after removal", async ({ page }) => {
@@ -19,7 +20,7 @@ test("[primitives.roving-focus.tab-stop] roving focus has one Tab stop, supports
   await expect(toolbar.getByRole("button", { name: "밑줄", exact: true })).toBeFocused();
   await tab(page);
   await expect(page.getByRole("button", { name: "항목 복원" })).toBeFocused();
-  await page.getByRole("combobox", { name: "dir", exact: true }).selectOption("rtl");
+  await chooseProp(page, "dir", "rtl");
   await first.focus();
   await page.keyboard.press("ArrowLeft");
   await expect(toolbar.getByRole("button", { name: "밑줄", exact: true })).toBeFocused();
@@ -28,7 +29,7 @@ test("[primitives.roving-focus.tab-stop] roving focus has one Tab stop, supports
 test("[primitives.roving-focus.direction] the dir control starts at its omission, and an inherited right-to-left page mirrors the arrows", async ({ page }) => {
   await page.goto("/playground/roving-focus");
   const dir = page.getByRole("combobox", { name: "dir", exact: true });
-  await expect(dir.locator("option:checked")).toHaveText("default (inherit)");
+  await expect(dir).toHaveText("inherit (default)");
   const toolbar = page.getByRole("toolbar", { name: "텍스트 도구" });
   await expect(toolbar).not.toHaveAttribute("dir", /./);
   await page.evaluate(() => { document.documentElement.dir = "rtl"; });
@@ -36,7 +37,7 @@ test("[primitives.roving-focus.direction] the dir control starts at its omission
   await first.focus();
   await page.keyboard.press("ArrowLeft");
   await expect(toolbar.getByRole("button", { name: "밑줄", exact: true })).toBeFocused();
-  await dir.selectOption("ltr");
+  await chooseOption(dir, "ltr");
   await expect(toolbar).toHaveAttribute("dir", "ltr");
 });
 
@@ -48,7 +49,7 @@ test("[primitives.live-region.roles] the LiveRegion page keeps its region mounte
   await expect(region).toHaveAttribute("aria-atomic", "true");
   await page.getByRole("button", { name: "영역 내용 바꾸기", exact: true }).click();
   await expect(region).toHaveText("1번째로 저장했습니다.");
-  await page.getByRole("combobox", { name: "politeness", exact: true }).selectOption("assertive");
+  await chooseProp(page, "politeness", "assertive");
   await expect(region).toHaveAttribute("role", "alert");
   await expect(region).toHaveAttribute("aria-live", "assertive");
 });

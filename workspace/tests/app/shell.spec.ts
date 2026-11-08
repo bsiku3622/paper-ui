@@ -74,22 +74,22 @@ test("a page's title is its name, and it follows a client-side navigation", asyn
   await playgroundNav(page).getByRole("link", { name: "Badge", exact: true }).click();
   await expect(page).toHaveTitle("Badge — paper-ui");
   await page.goto("/demo");
+  await expect(page).toHaveTitle("데모 스튜디오 — paper-ui");
+  await page.goto("/demo/arcfield");
   await expect(page).toHaveTitle("데모 — paper-ui");
 });
 
-test("the Demo is a product of its own: its header is the banner and its stack is the main landmark the skip link reaches", async ({ page }) => {
-  await page.goto("/demo");
+test("the Demo is a product of its own: its toolbar is the banner and its stack is the main landmark the skip link reaches", async ({ page }) => {
+  await page.goto("/demo/arcfield");
   await settled(page);
   await expect(header(page)).toHaveCount(1);
-  await expect(header(page).getByRole("link", { name: "Paper UI" })).toBeVisible();
+  await expect(header(page).getByRole("search")).toBeVisible();
   await expect(main(page)).toHaveAttribute("id", "main");
   await tab(page);
   const skip = page.getByRole("link", { name: "본문으로 건너뛰기" });
   await expect(skip).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(main(page)).toBeFocused();
-  await header(page).getByRole("link", { name: "Paper UI" }).click();
-  await expect(page).toHaveURL(/\/$/);
 });
 
 test("the first Tab shows the skip link at the top left, and Enter moves focus to the main landmark", async ({ page }) => {
@@ -161,6 +161,34 @@ test("the sidebars are one frame: Docs, the Playground, and every page body fill
     widths[route] = Math.round(column);
   }
   expect(new Set(Object.values(widths)).size, JSON.stringify(widths)).toBe(1);
+});
+
+test("[app.shell.wide-frame] a page with a sidebar takes the screen past container.content, the header with it, a doc's text and tables fill it, and Home stays inside it", async ({ page }) => {
+  const content = roleDp(tokens.layout.container.content);
+  const edge = roleDp(tokens.layout.gap["2xl"]);
+  await page.setViewportSize({ width: content + 400, height: 900 });
+  const clientWidth = () => page.evaluate(() => document.documentElement.clientWidth);
+  for (const route of ["/playground/button", "/docs/foundations/color"]) {
+    await page.goto(route);
+    await settled(page);
+    const width = await clientWidth();
+    const brand = (await header(page).getByRole("link").first().boundingBox())!;
+    expect(Math.round(brand.x), `${route}: the brand`).toBe(edge);
+    const column = (await main(page).boundingBox())!;
+    expect(Math.round(column.x + column.width), `${route}: the column`).toBe(width - edge);
+  }
+  // A doc fills the column as the Playground does: its running text and its tables reach the column's end.
+  const prose = page.getByTestId("prose");
+  const end = async (target: Locator) => { const box = (await target.boundingBox())!; return Math.round(box.x + box.width); };
+  await page.goto("/docs/foundations/typography");
+  await settled(page);
+  const proseEnd = await end(prose);
+  expect(await end(prose.locator(":scope > p").first()), "running text").toBe(proseEnd);
+  expect(await end(prose.getByTestId("prose-table").first().locator("table")), "a table").toBe(proseEnd);
+  await page.goto("/");
+  await settled(page);
+  const brand = (await header(page).getByRole("link").first().boundingBox())!;
+  expect(Math.round(brand.x)).toBe(Math.round(((await clientWidth()) - content) / 2 + roleDp(tokens.layout.gutter)));
 });
 
 test("Home's content starts where the header's content starts, at every width", async ({ page }) => {

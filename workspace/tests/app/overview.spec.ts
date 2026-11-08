@@ -1,9 +1,15 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import { INVENTORY } from "../../packages/paper-ui/src/inventory";
+import { accentProfile } from "../../packages/paper-ui/src/tokens/color-recipes";
 import { SHAPE_SOURCE } from "../../packages/paper-ui/src/tokens/shape";
 import { TYPOGRAPHY } from "../../packages/paper-ui/src/tokens/typography";
-import { tokens, CONTROL_SIZES, STATUSES, SURFACE_FILLS, TEXT_VARIANTS, VARIANTS, type ControlSize, type TextVariant } from "../../packages/paper-ui/src/tokens";
+import {
+  tokens, CHOICE_STATUSES, CONTROL_SIZES, INPUT_VARIANTS, SEGMENT_VARIANTS, STATUSES, SURFACE_FILLS, TEXT_VARIANTS, VARIANTS, type ControlSize, type TextVariant,
+} from "../../packages/paper-ui/src/tokens";
 import { pageErrors } from "../support/console";
+import { roleDp } from "../support/geometry";
+import { chooseOption } from "../support/select";
 import { expectStyle, profile, type Style } from "../support/style";
 
 // The Overview is the index of specimens: every kept testid is bound here to the computed value its
@@ -18,8 +24,10 @@ const radius = (value: string): Style => ({ borderTopLeftRadius: value, borderTo
 const height = (size: ControlSize): Style => ({ height: tokens.shape.control.height[size] });
 const px = (value: string) => `${parseFloat(value)}px`;
 
-// A field-like control stands in a wrapper: the style of an input or a select is the style of its parent.
-const boxStyle = async (control: Locator, expected: Style) => expectStyle(control.locator("xpath=self::*[not(self::select or self::input)] | self::select/.. | self::input/.."), expected);
+// A field-like control stands in a wrapper: the style of an input, a select or a Select's button is the style of its parent.
+const boxStyle = async (control: Locator, expected: Style) => expectStyle(control.locator("xpath=self::*[not(self::select or self::input or @role='combobox')] | self::select/.. | self::input/.. | self::*[@role='combobox']/.."), expected);
+// Where a control's content starts from its outer edge: the padding and the room its line takes. An inset is measured from there.
+const edgeInset = (target: Locator) => target.evaluate((element) => { const s = getComputedStyle(element); return parseFloat(s.paddingLeft) + parseFloat(s.borderLeftWidth); });
 
 const open = async (page: Page) => {
   const errors = pageErrors(page);
@@ -28,7 +36,131 @@ const open = async (page: Page) => {
   return errors;
 };
 
-const SECTIONS = ["Type scale", "Color", "Surface · 면", "Button", "Field · Label · Select · Checkbox", "Badge · Divider · Link · Icon"];
+// The roles the Type scale also draws in mono, under their sans row.
+const MONO_ROWS = ["title", "body"] as const;
+
+const SECTIONS = ["Type scale", "Color", "Surface · 면", "Atoms", "정렬 · 조합", "그 밖의 Atom"];
+
+// The boards: every Atom with a size, in the Overview's order, and how many values the axis down its side has.
+const BOARDS = {
+  Button: { slug: "button", rows: VARIANTS.length },
+  IconButton: { slug: "icon-button", rows: VARIANTS.length },
+  Badge: { slug: "badge", rows: VARIANTS.length },
+  Field: { slug: "field", rows: INPUT_VARIANTS.length },
+  Select: { slug: "select", rows: INPUT_VARIANTS.length },
+  Textarea: { slug: "textarea", rows: INPUT_VARIANTS.length },
+  // Off, on and, for a checkbox, neither.
+  Checkbox: { slug: "checkbox", rows: 3 },
+  Radio: { slug: "radio", rows: 2 },
+  Switch: { slug: "switch", rows: 2 },
+  SegmentControl: { slug: "segment-control", rows: SEGMENT_VARIANTS.length },
+  // No status, then each a choice can take.
+  Slider: { slug: "slider", rows: CHOICE_STATUSES.length + 1 },
+  Spinner: { slug: "spinner", rows: 1 },
+} as const;
+// The Atoms that have no size, so no board: they stand in the last section.
+const SIZELESS = ["Label", "Divider", "Link", "Marker"];
+
+const board = (page: Page, name: keyof typeof BOARDS) => page.getByTestId(`board-${BOARDS[name].slug}`);
+const cell = (page: Page, name: keyof typeof BOARDS, key: string) => board(page, name).locator(`[data-cell="${key}"]`);
+const choose = (page: Page, name: keyof typeof BOARDS, state: string) => board(page, name).getByRole("radiogroup", { name: `${name} 상태` }).getByRole("radio", { name: state, exact: true }).click();
+const tint = (color: string): Style => ({ backgroundImage: `linear-gradient(${color}, ${color})` });
+const hoverTint = (variant: "solid" | "soft") => {
+  const { hover } = accentProfile("primary", variant);
+  if (!("tint" in hover)) throw new Error(`${variant} answers a hover by its border`);
+  return hover.tint;
+};
+const ring: Style = { outlineStyle: "solid", outlineColor: tokens.color.interaction.focus, outlineWidth: tokens.shape.focus.width };
+
+test("[app.playground.overview-boards] gives every Atom with a size a board: its name, every value of its axis against every size, and the way to its page", async ({ page }) => {
+  await open(page);
+  expect(Object.keys(BOARDS).sort()).toEqual(INVENTORY.atoms.filter((atom) => !SIZELESS.includes(atom)).sort());
+  await expect(page.locator("[data-testid^=board-]")).toHaveCount(Object.keys(BOARDS).length);
+  for (const [name, { slug, rows }] of Object.entries(BOARDS) as [keyof typeof BOARDS, (typeof BOARDS)[keyof typeof BOARDS]][]) {
+    const here = board(page, name);
+    await expect(here.getByRole("heading", { level: 3, name, exact: true })).toBeVisible();
+    await expect(here.locator("[data-cell]"), name).toHaveCount(rows * CONTROL_SIZES.length);
+    await expect(here.getByRole("link", { name: `${name} 쪽에서 만지기` })).toHaveAttribute("href", `/playground/${slug}`);
+  }
+  // A drawing stands at the height of its size.
+  for (const size of CONTROL_SIZES) {
+    await expectStyle(cell(page, "Button", `rest solid ${size}`).getByRole("button"), { height: tokens.shape.control.height[size] });
+    await expectStyle(cell(page, "Field", `rest hairline ${size}`).locator("input").locator("xpath=.."), { height: tokens.shape.control.height[size] });
+  }
+});
+
+test("[app.playground.overview-boards] draws every cell in the state its segment chooses, and lays the crossing out once per state on request", async ({ page }) => {
+  await open(page);
+  const solid = (state: string) => cell(page, "Button", `${state} solid md`).getByRole("button");
+  await expectStyle(solid("rest"), { ...profile("primary", "solid"), ...tint("transparent"), transform: "none", outlineStyle: "none" });
+  await choose(page, "Button", "hover");
+  await expectStyle(solid("hover"), tint(hoverTint("solid")));
+  await expectStyle(cell(page, "Button", "hover hairline md").getByRole("button"), { borderTopColor: tokens.color.border.hover });
+  // A pointer that presses is over what it presses.
+  await choose(page, "Button", "눌림");
+  await expectStyle(solid("active"), { transform: `translateY(${tokens.motion.role.press.offset})`, ...tint(hoverTint("solid")) });
+  await choose(page, "Button", "포커스");
+  await expectStyle(solid("focus"), ring);
+  await choose(page, "Button", "꺼짐");
+  await expect(solid("disabled")).toBeDisabled();
+  await expectStyle(solid("disabled"), { opacity: tokens.color.opacity.disabled });
+  // Every state at once: the same crossing, under each state's name.
+  await board(page, "Button").getByRole("switch", { name: "모든 상태 펼치기" }).check();
+  await expect(board(page, "Button").locator("[data-board-sheet]")).toHaveCount(5);
+  await expect(board(page, "Button").locator("[data-cell]")).toHaveCount(5 * VARIANTS.length * CONTROL_SIZES.length);
+  await expectStyle(solid("hover"), tint(hoverTint("solid")));
+  await expectStyle(solid("rest"), tint("transparent"));
+
+  // A mark has no hover; its press is the halo outside it.
+  await expect(board(page, "Checkbox").getByRole("radio", { name: "hover", exact: true })).toHaveCount(0);
+  await choose(page, "Checkbox", "눌림");
+  const { focus } = tokens.shape;
+  await expectStyle(cell(page, "Checkbox", "active off md").getByRole("checkbox"), { outlineStyle: "solid", outlineWidth: `calc(${focus.width} + ${focus.offset})`, outlineColor: tokens.color.interaction.active });
+  // An input frame rises under hover and rings under focus.
+  await choose(page, "Field", "hover");
+  await expectStyle(cell(page, "Field", "hover hairline md").locator("input").locator("xpath=.."), { borderTopColor: tokens.color.border.hover });
+  await choose(page, "Field", "포커스");
+  await expectStyle(cell(page, "Field", "focus hairline md").locator("input").locator("xpath=.."), ring);
+  // A segment control's state is on its items: the pointer over the one not chosen, the keyboard on the chosen one.
+  await choose(page, "SegmentControl", "포커스");
+  const segments = cell(page, "SegmentControl", "focus track md");
+  await expectStyle(segments.getByRole("radio", { name: "7일" }), ring);
+  await expectStyle(segments.getByRole("radio", { name: "1일" }), { outlineStyle: "none" });
+  // A Badge and a Spinner show what they are; they have no state to choose.
+  for (const name of ["Badge", "Spinner"] as const) {
+    await expect(board(page, name).getByRole("radiogroup", { name: `${name} 상태` })).toHaveCount(0);
+    await expect(board(page, name)).toContainText(`${name}는 표시용이라 상태가 없습니다.`);
+  }
+});
+
+test("[app.playground.overview-boards] moves every cell with the props on its panel", async ({ page }) => {
+  await open(page);
+  await chooseOption(board(page, "Button").getByRole("combobox", { name: "accent" }), "error");
+  for (const size of CONTROL_SIZES) await expectStyle(cell(page, "Button", `rest solid ${size}`).getByRole("button"), profile("error", "solid"));
+  await board(page, "Button").getByRole("radiogroup", { name: "shape" }).getByRole("radio", { name: "rounded" }).click();
+  await expectStyle(cell(page, "Button", "rest solid md").getByRole("button"), { borderTopLeftRadius: tokens.shape.radius.control.md });
+  await chooseOption(board(page, "Field").getByRole("combobox", { name: "status" }), "error");
+  await expectStyle(cell(page, "Field", "rest hairline md").locator("input").locator("xpath=.."), { borderTopColor: tokens.color.accent.error.ink });
+});
+
+test("[app.playground.overview-boards] keeps every drawing live: the pointer hovers it, a mark turns on, and each control is named by its place", async ({ page }) => {
+  await open(page);
+  const soft = cell(page, "Button", "rest soft md").getByRole("button");
+  await soft.hover();
+  await expectStyle(soft, tint(hoverTint("soft")));
+  await page.mouse.move(0, 0);
+  const off = board(page, "Checkbox").getByRole("checkbox", { name: "Checkbox off md", exact: true });
+  await expect(off).not.toBeChecked();
+  await off.click();
+  await expect(off).toBeChecked();
+  const field = board(page, "Field").getByRole("textbox", { name: "Field hairline md", exact: true });
+  await field.fill("값");
+  await expect(field).toHaveValue("값");
+  await expect(board(page, "Select").getByRole("combobox", { name: "Select ghost lg", exact: true })).toBeVisible();
+  // Laid out once per state, a name says the state as well.
+  await board(page, "Switch").getByRole("switch", { name: "모든 상태 펼치기" }).check();
+  await expect(board(page, "Switch").getByRole("switch", { name: "Switch on xs 꺼짐", exact: true })).toBeDisabled();
+});
 
 test("every section of the Overview is a heading with specimens under it and renders without an error", async ({ page }) => {
   const errors = await open(page);
@@ -36,7 +168,7 @@ test("every section of the Overview is a heading with specimens under it and ren
     const heading = page.getByRole("heading", { level: 2, name: title, exact: true });
     await expect(heading).toBeVisible();
     const section = page.locator("section").filter({ has: heading });
-    expect(await section.locator("[data-testid]").count(), title).toBeGreaterThan(index === 0 ? 5 : 2);
+    expect(await section.locator("[data-testid]").count(), title).toBeGreaterThan(index === 0 ? 5 : 1);
   }
   expect(errors).toEqual([]);
 });
@@ -44,8 +176,24 @@ test("every section of the Overview is a heading with specimens under it and ren
 test("the Type scale shows each text role as its role", async ({ page }) => {
   await open(page);
   for (const variant of TEXT_VARIANTS) await expectStyle(page.getByTestId(`text-${variant}`), role(variant));
-  const { fontWeight, lineHeight } = role("body");
-  await expectStyle(page.getByTestId("text-mono"), { fontWeight, lineHeight, fontFamily: TYPOGRAPHY.palette.family.mono });
+  for (const variant of MONO_ROWS) {
+    const { fontWeight, lineHeight } = role(variant);
+    await expectStyle(page.getByTestId(`text-${variant}-mono`), { fontWeight, lineHeight, fontFamily: TYPOGRAPHY.palette.family.mono });
+  }
+});
+
+test("the Type scale names under each role what its specimen is drawn at: size / line · weight", async ({ page }) => {
+  await open(page);
+  for (const id of [...TEXT_VARIANTS, ...MONO_ROWS.map((variant) => `${variant}-mono`)]) {
+    const drawn = await page.getByTestId(`text-${id}`).evaluate((element) => {
+      const style = getComputedStyle(element);
+      return `${Math.round(parseFloat(style.fontSize))} / ${Math.round(parseFloat(style.lineHeight))} · ${style.fontWeight}`;
+    });
+    await expect(page.getByTestId(`drawn-${id}`), id).toHaveText(drawn);
+  }
+  // The titles step down at one weight, from the hero to the subheading.
+  const weights = await Promise.all(["hero", "headline", "display", "title", "heading", "subheading"].map((variant) => page.getByTestId(`text-${variant}`).evaluate((element) => getComputedStyle(element).fontWeight)));
+  expect(new Set(weights).size).toBe(1);
 });
 
 test("the Color section shows each surface and each accent's solid and ink", async ({ page }) => {
@@ -72,37 +220,6 @@ test("the Surface section draws the hairline and the three surface radii from th
   }
 });
 
-test("the Button section shows each variant, accent, size, state and shape as the recipes and the ladder say", async ({ page }) => {
-  await open(page);
-  const variants = page.getByTestId("spec-button-variants");
-  await expect(variants.getByRole("button")).toHaveCount(VARIANTS.length);
-  for (const variant of VARIANTS) await expectStyle(page.getByTestId(`btn-${variant}`), profile("primary", variant));
-  await expectStyle(page.getByTestId("btn-danger"), profile("error", "solid"));
-  await expectStyle(page.getByTestId("btn-soft-success"), profile("success", "soft"));
-  await expectStyle(page.getByTestId("btn-soft-warning"), profile("warning", "soft"));
-
-  const sizes = page.getByTestId("spec-button-sizes");
-  await expect(sizes.getByRole("button")).toHaveCount(CONTROL_SIZES.length);
-  for (const size of CONTROL_SIZES) {
-    await expectStyle(page.getByTestId(`btn-${size}`), { ...height(size), ...radius(tokens.shape.radius.control[size]), paddingLeft: tokens.shape.control.inset.button[size] });
-  }
-
-  const disabled = page.getByTestId("btn-disabled");
-  await expect(disabled).toBeDisabled();
-  await expectStyle(disabled, { cursor: "not-allowed" });
-  const loading = page.getByTestId("btn-loading");
-  await expect(loading).toBeDisabled();
-  await expect(loading).toHaveAttribute("aria-busy", "true");
-  expect(await loading.locator("[aria-hidden]").evaluate((element) => getComputedStyle(element).animationName)).not.toBe("none");
-  await expectStyle(page.getByTestId("btn-icononly"), { width: tokens.shape.control.height.md, ...height("md") });
-  const full = page.getByTestId("btn-fullwidth");
-  expect(await full.evaluate((element) => element.getBoundingClientRect().width)).toBe(await full.evaluate((element) => element.parentElement!.getBoundingClientRect().width));
-
-  await expect(page.getByTestId("spec-button-shape").getByRole("button")).toHaveCount(4);
-  await expectStyle(page.getByTestId("btn-shape-default"), radius(tokens.shape.radius.control.md));
-  await expectStyle(page.getByTestId("btn-shape-pill"), radius(tokens.shape.radius.pill));
-});
-
 test("a Field and a Button side by side share one height and one centre line", async ({ page }) => {
   await open(page);
   const group = page.getByTestId("spec-align");
@@ -114,12 +231,8 @@ test("a Field and a Button side by side share one height and one centre line", a
   expect(await centre(field)).toBeCloseTo(await centre(button), 0);
 });
 
-test("the Field specimens show their status, their adornments and the password toggle", async ({ page }) => {
+test("the Field specimens show their adornments and the password toggle", async ({ page }) => {
   await open(page);
-  await expectStyle(page.getByTestId("field-default"), { borderTopColor: tokens.color.border.base });
-  await expectStyle(page.getByTestId("field-invalid"), { borderTopColor: tokens.color.accent.error.ink });
-  await expect(page.getByTestId("field-invalid").locator("input")).toHaveAttribute("aria-invalid", "true");
-
   const clearable = page.getByTestId("field-clearable");
   await expect(clearable.locator("input")).toHaveValue("지울 값");
   await clearable.getByRole("button").click();
@@ -130,10 +243,8 @@ test("the Field specimens show their status, their adornments and the password t
   await password.getByRole("button").click();
   await expect(password.locator("input")).toHaveAttribute("type", "text");
 
-  // The test id stands on the wrapper; the native select is inside it.
-  const select = page.getByTestId("select").locator("select");
-  expect(await select.evaluate((element) => element.tagName)).toBe("SELECT");
-  expect(await select.locator("option").evaluateAll((options) => options.map((option) => (option as HTMLOptionElement).value))).toEqual(["", "a", "b"]);
+  const full = page.getByTestId("btn-fullwidth");
+  expect(await full.evaluate((element) => element.getBoundingClientRect().width)).toBe(await full.evaluate((element) => element.parentElement!.getBoundingClientRect().width));
 });
 
 test("Field, Select and Button of one size share the ladder's height", async ({ page }) => {
@@ -151,11 +262,15 @@ test("the controls of the base row share one corner and each its own inset", asy
   await open(page);
   const row = page.getByTestId("spec-control-base");
   const corner = radius(tokens.shape.radius.control.md);
-  await expectStyle(row.getByTestId("base-button"), { ...corner, paddingLeft: tokens.shape.control.inset.button.md });
-  await expectStyle(row.getByTestId("base-field"), { ...corner, paddingLeft: tokens.shape.control.inset.input.md });
+  await expectStyle(row.getByTestId("base-button"), corner);
+  expect(await edgeInset(row.getByTestId("base-button"))).toBe(roleDp(tokens.shape.control.inset.button.md));
+  await expectStyle(row.getByTestId("base-field"), corner);
+  expect(await edgeInset(row.getByTestId("base-field"))).toBe(roleDp(tokens.shape.control.inset.input.md));
   await boxStyle(row.getByTestId("base-select"), corner);
-  // The inset belongs to the native select, which fills the frame.
-  await expectStyle(row.getByTestId("base-select").locator("select"), { paddingLeft: tokens.shape.control.inset.input.md });
+  // The inset belongs to the button, which fills the frame inside its line.
+  const selectFrame = row.getByTestId("base-select");
+  const frameLine = await selectFrame.evaluate((element) => parseFloat(getComputedStyle(element).borderLeftWidth));
+  expect(await edgeInset(selectFrame.getByRole("combobox")) + frameLine).toBe(roleDp(tokens.shape.control.inset.input.md));
   await expectStyle(row.getByTestId("base-textarea"), corner);
 });
 
@@ -168,23 +283,13 @@ test("the pill row draws the Field, the Select and the Button with one full curv
   await expectStyle(row.getByTestId("button-pill-row"), pill);
 });
 
-test("the Checkbox specimen follows its checked state from the surface to the primary solid", async ({ page }) => {
-  await open(page);
-  const checkbox = page.getByTestId("checkbox");
-  await expect(checkbox).toBeChecked();
-  await expectStyle(checkbox, { backgroundColor: tokens.color.accent.primary.solid });
-  await checkbox.click();
-  await expect(checkbox).not.toBeChecked();
-  await expectStyle(checkbox, { backgroundColor: "transparent", borderTopColor: tokens.color.border.base });
-});
-
-test("the marks stand at their boundaries and sizes, the off ones in the input's line", async ({ page }) => {
+test("the marks stand at their boundaries and sizes, the off ones in the base line", async ({ page }) => {
   await open(page);
   const marks = page.getByTestId("spec-marks");
   await expectStyle(marks.getByTestId("mark-checkbox"), { backgroundColor: tokens.color.accent.primary.solid });
-  await expectStyle(marks.getByTestId("mark-checkbox-off"), { backgroundColor: "transparent", borderTopColor: tokens.color.border.base });
-  await expectStyle(marks.getByTestId("mark-radio"), { borderTopColor: tokens.color.accent.primary.solid });
-  await expectStyle(marks.getByTestId("mark-radio-off"), { backgroundColor: "transparent", borderTopColor: tokens.color.border.base });
+  await expectStyle(marks.getByTestId("mark-checkbox-off"), { borderTopColor: tokens.color.border.base });
+  await expectStyle(marks.getByTestId("mark-radio"), { backgroundColor: tokens.color.accent.primary.solid });
+  await expectStyle(marks.getByTestId("mark-radio-off"), { borderTopColor: tokens.color.border.base });
   await expectStyle(marks.getByTestId("mark-switch"), { backgroundColor: tokens.color.accent.primary.solid });
   await expectStyle(marks.getByTestId("mark-icon"), { width: tokens.shape.icon.size.body, height: tokens.shape.icon.size.body });
   await expectStyle(marks.getByTestId("mark-spinner"), { width: tokens.shape.control.icon.md, height: tokens.shape.control.icon.md });
@@ -197,22 +302,6 @@ test("a Label points at its Field", async ({ page }) => {
   await expect(page.getByTestId("formfield-field").locator("input")).toHaveAccessibleName("이름");
 });
 
-test("the Badge section shows each status in the soft recipe, the sizes by height and the shapes by curve", async ({ page }) => {
-  await open(page);
-  for (const status of STATUSES) await expectStyle(page.getByTestId(`badge-${status}`), profile(status, "soft"));
-  await expectStyle(page.getByTestId("badge-neutral"), profile("primary", "soft"));
-
-  const sizes = page.getByTestId("spec-badge-size");
-  await expect(sizes.locator("[data-testid^=badge-]")).toHaveCount(CONTROL_SIZES.length);
-  for (const size of CONTROL_SIZES) {
-    await expectStyle(page.getByTestId(`badge-${size}`), { height: `${SHAPE_SOURCE.anatomy.badge.height[size]}px`, fontSize: tokens.typography.preset.badge.size });
-  }
-
-  await expect(page.getByTestId("spec-badge-shape").locator("[data-testid^=badge-shape-]")).toHaveCount(2);
-  await expectStyle(page.getByTestId("badge-shape-default"), radius(tokens.shape.radius.pill));
-  await expectStyle(page.getByTestId("badge-shape-rounded"), radius(tokens.shape.radius.control.md));
-});
-
 test("the Link takes the link role and the Icon the body artboard", async ({ page }) => {
   await open(page);
   await expectStyle(page.getByTestId("link"), { color: tokens.color.interaction.link });
@@ -222,8 +311,6 @@ test("the Link takes the link role and the Icon the body artboard", async ({ pag
 test("the specimen groups name their members", async ({ page }) => {
   await open(page);
   for (const [group, members] of Object.entries({
-    "spec-button-sizes": CONTROL_SIZES.map((size) => `btn-${size}`),
-    "spec-badge-size": CONTROL_SIZES.map((size) => `badge-${size}`),
     "spec-marks": ["mark-checkbox", "mark-checkbox-off", "mark-radio", "mark-radio-off", "mark-switch", "mark-icon", "mark-spinner", "mark-badge", "mark-button"],
     "spec-align": ["align-field", "align-button"],
   })) {
@@ -235,21 +322,18 @@ test("the specimen groups name their members", async ({ page }) => {
 test("every testid on the Overview is one the tests above bind to a value", async ({ page }) => {
   await open(page);
   const bound = [
-    ...TEXT_VARIANTS.map((variant) => `text-${variant}`), "text-mono",
+    ...TEXT_VARIANTS.flatMap((variant) => [`text-${variant}`, `drawn-${variant}`]), ...MONO_ROWS.flatMap((variant) => [`text-${variant}-mono`, `drawn-${variant}-mono`]),
     ...SURFACE_FILLS.map((surface) => `swatch-paper-${surface}`),
-    ...STATUSES.flatMap((status) => [`dot-${status}`, `ink-${status}`, `badge-${status}`]),
+    ...STATUSES.flatMap((status) => [`dot-${status}`, `ink-${status}`]),
     "surface-border", "spec-layout-radius", "radius-small", "radius-card", "radius-large",
-    "spec-button-variants", ...VARIANTS.map((variant) => `btn-${variant}`), "btn-danger", "btn-soft-success", "btn-soft-warning",
-    "spec-button-sizes", ...CONTROL_SIZES.flatMap((size) => [`btn-${size}`, `spec-size-${size}`, `badge-${size}`]),
-    "btn-disabled", "btn-loading", "btn-icononly", "btn-fullwidth", "spec-button-shape", "btn-shape-default", "btn-shape-pill",
+    ...Object.values(BOARDS).map((board) => `board-${board.slug}`),
+    ...CONTROL_SIZES.map((size) => `spec-size-${size}`),
     "spec-align", "align-field", "align-button",
-    "field-default", "field-invalid", "field-clearable", "field-password", "select",
+    "field-clearable", "field-password", "btn-fullwidth",
     "spec-control-base", "base-button", "base-field", "base-select", "base-textarea",
     "spec-pill-row", "field-pill", "select-pill", "button-pill-row",
-    "checkbox",
     "spec-marks", "mark-checkbox", "mark-checkbox-off", "mark-radio", "mark-radio-off", "mark-switch", "mark-icon", "mark-spinner", "mark-badge", "mark-button",
     "formfield-field",
-    "badge-neutral", "spec-badge-size", "spec-badge-shape", "badge-shape-default", "badge-shape-rounded",
     "link", "icon",
   ];
   const present = await page.locator("[data-testid]").evaluateAll((elements) => [...new Set(elements.map((element) => element.getAttribute("data-testid")!))]);

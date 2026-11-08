@@ -2,9 +2,10 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { INVENTORY } from "../../packages/paper-ui/src/inventory";
 import { STATE_TINT_PROPERTY } from "../../packages/paper-ui/src/tokens";
-import { DURATION, LOOP, MOTION, MOTION_CONSUMERS, MOTION_ROLES, type MotionRole } from "../../packages/paper-ui/src/tokens/motion";
+import { DURATION, LOOP, MOTION_CONSUMERS, MOTION_ROLES, type MotionRole } from "../../packages/paper-ui/src/tokens/motion";
+import { MOTION } from "../../packages/paper-ui/src/tokens/motion-recipes";
 import { px, roleDp } from "../support/geometry";
-import { openHarness, openPlayground } from "../support/harness";
+import { chooseProp, openHarness, openPlayground } from "../support/harness";
 
 // The chromium project runs the role timings and the presence recipe as authored; chromium-reduced-motion runs the
 // same page with prefers-reduced-motion and checks what the policy does to them.
@@ -57,7 +58,7 @@ const animationOf = (target: Locator) =>
 // The Floating example of the Playground, opened from its trigger. A panel on the page is the node with its presentation.
 const openFloating = async (page: Page, presentation?: "modal") => {
   await page.goto("/playground/floating");
-  if (presentation) await page.getByRole("combobox", { name: "presentation", exact: true }).selectOption(presentation);
+  if (presentation) await chooseProp(page, "presentation", presentation);
   await page.getByRole("button", { name: "설정 열기", exact: true }).click();
   return page.locator("[data-presentation]");
 };
@@ -82,7 +83,9 @@ const ATOM_TRANSITIONS: Row[] = [
   { atom: "Select", target: (page) => page.getByLabel("Select", { exact: true }).locator(".."), properties: { "border-color": "hover", "background-color": "state" } },
   { atom: "Textarea", target: (page) => page.getByLabel("Textarea", { exact: true }), properties: { "border-color": "hover", "background-color": "state" } },
   { atom: "Checkbox", target: (page) => page.getByRole("checkbox"), properties: { "background-color": "state", "border-color": "state" } },
-  { atom: "Radio", target: (page) => page.getByRole("radio"), properties: { "border-color": "state" } },
+  { atom: "Radio", target: (page) => page.getByRole("radio", { name: "Radio" }), properties: { "background-color": "state", "border-color": "state" } },
+  { atom: "SegmentControl", target: (page) => page.getByRole("radio", { name: "Choice" }), properties: { color: "state" } },
+  { atom: "SegmentControl", target: (page) => page.getByTestId("segment-motion").locator("span[aria-hidden=true]"), properties: { transform: "state", width: "state" } },
   { atom: "Switch", target: (page) => page.getByRole("switch"), properties: { "background-color": "state", "box-shadow": "state" } },
   { atom: "Switch", target: (page) => page.getByRole("switch"), pseudo: "::after", properties: { "inset-inline-start": "state" } },
 ];
@@ -161,7 +164,7 @@ test.describe("with motion", () => {
     await expect(popover).toHaveCount(0);
 
     await playbackRate(page, 0.1);
-    await page.getByRole("combobox", { name: "presentation", exact: true }).selectOption("modal");
+    await chooseProp(page, "presentation", "modal");
     await page.getByRole("button", { name: "설정 열기", exact: true }).click();
     const dialog = page.locator("[data-presentation=modal]");
     const scrim = dialog.locator("xpath=..");
@@ -203,6 +206,30 @@ test.describe("with motion", () => {
     await expect(panel).not.toHaveAttribute("aria-hidden", /.*/);
     await playbackRate(page, 1);
     await expect(page.getByRole("heading", { name: "설정", exact: true })).toBeFocused();
+  });
+
+  test("[foundations.motion.reveal] brings the reveal specimen in with the reveal role, a step apart, and leaves it in place where less motion is asked", async ({ page, contextOptions }) => {
+    await openPlayground(page, "foundations/motion", "Motion");
+    const tiles = page.getByTestId("reveal-specimen").locator(":scope > *");
+    await expect(tiles).toHaveCount(3);
+    const step = parseFloat(MOTION.reveal.step);
+    for (const index of [0, 1, 2]) {
+      const tile = tiles.nth(index);
+      const animation = await animationOf(tile);
+      if (isReduced({ contextOptions })) {
+        expect(animation.name, `tile ${index}`).toBe("none");
+        await expect(tile).toHaveCSS("opacity", "1");
+        continue;
+      }
+      expect(animation.name, `tile ${index}`).not.toBe("none");
+      expect(animation.duration, `tile ${index}`).toBeCloseTo(timing("reveal").duration, 3);
+      expect(animation.easing, `tile ${index}`).toBe(timing("reveal").easing);
+      expect(animation.fill, `tile ${index}`).toBe("both");
+      expect(await tile.evaluate((element) => parseFloat(getComputedStyle(element).animationDelay) * 1000), `tile ${index}`).toBeCloseTo(step * index, 3);
+    }
+    // Played again, the tiles mount anew and stand in place once they are in.
+    await page.getByRole("button", { name: "다시 재생", exact: true }).click();
+    await expect(tiles.last()).toHaveCSS("opacity", "1");
   });
 
   test("[foundations.motion.roles] [foundations.pages.derived-rows] draws one row per role on the Motion page, in the vocabulary's order", async ({ page }) => {

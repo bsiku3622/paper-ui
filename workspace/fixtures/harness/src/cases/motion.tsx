@@ -1,4 +1,4 @@
-import { Button, Checkbox, Field, Icon, IconButton, Radio, Select, Spinner, Switch, Textarea, loop, presence } from "@studio-baeks/paper-ui";
+import { Button, Checkbox, Field, Icon, IconButton, Radio, SegmentControl, Select, Spinner, Switch, Textarea, loop, presence } from "@studio-baeks/paper-ui";
 
 import { SELECT_OPTIONS } from "./options.js";
 
@@ -14,6 +14,7 @@ export const MotionCase = () => (
     <Checkbox aria-label="Checkbox" />
     <Radio aria-label="Radio" />
     <Switch aria-label="Switch" />
+    <SegmentControl aria-label="Segment" defaultValue="a" data-testid="segment-motion"><SegmentControl.Item value="a">Choice</SegmentControl.Item></SegmentControl>
     <Button loading>Saving</Button>
     <Spinner label="Spinner" />
     <span className={loop.spin} data-testid="loop-spin" />

@@ -32,13 +32,15 @@ export const GeometryCase = () => (
         <button type="button" id="before-select">Before</button>
         {CONTROL_SIZES.map((size) => (
           <div key={size} data-size={size}>
-            <Button size={size} data-testid={`button-${size}`}>Button</Button>
-            <IconButton size={size} aria-label={`icon-${size}`} data-testid={`icon-${size}`}>
+            <Button size={size} shape="rounded" data-testid={`button-${size}`}>Button</Button>
+            <IconButton size={size} shape="rounded" aria-label={`icon-${size}`} data-testid={`icon-${size}`}>
               <Icon><path d="M12 4v16M4 12h16" /></Icon>
             </IconButton>
             <Field size={size} aria-label={`field-${size}`} data-testid={`field-${size}`} />
             <Field size={size} type="password" showPasswordToggle clearable defaultValue="secret" aria-label={`actions-${size}`} data-testid={`actions-${size}`} />
             <Select size={size} name={`select-${size}`} aria-label={`select-${size}`} data-testid={`select-${size}`}>{SELECT_OPTIONS}</Select>
+            <Field size={size} shape="pill" aria-label={`field-pill-${size}`} data-testid={`field-pill-${size}`} />
+            <Select size={size} shape="pill" aria-label={`select-pill-${size}`} data-testid={`select-pill-${size}`}>{SELECT_OPTIONS}</Select>
             <Textarea size={size} aria-label={`textarea-${size}`} />
             <Textarea size={size} rows={1} aria-label={`textarea-row-${size}`} />
             <Checkbox size={size} defaultChecked aria-label={`checkbox-${size}`} />

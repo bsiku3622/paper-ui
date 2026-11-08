@@ -6,8 +6,8 @@ export const LayersCase = () => (
   <>
     <Button className="consumer-button">Consumer button</Button>
     <Button>Package button</Button>
-    <Field className="consumer-field" data-testid="consumer-field" aria-label="Consumer field" />
-    <Field data-testid="package-field" aria-label="Package field" />
+    <Field className="consumer-field" variant="hairline" data-testid="consumer-field" aria-label="Consumer field" />
+    <Field variant="hairline" data-testid="package-field" aria-label="Package field" />
     <Box className="consumer-box" width="md" data-testid="consumer-box" />
     <Box width="md" data-testid="package-box" />
     <Text variant="caption" ink="primary">Caption with primary ink</Text>

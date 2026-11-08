@@ -11,7 +11,7 @@ export const ProviderOverridesCase = () => (
     shadow={{ light: { resting: { "0": "0px 1px 2px 3px" } } }}
     opacity={{ disabled: "0.25" }}
   >
-    <Button data-testid="button">Button</Button>
+    <Button shape="rounded" data-testid="button">Button</Button>
     <Button data-testid="info" accent="info">Info</Button>
     <Button data-testid="disabled" disabled>Disabled</Button>
     <Surface data-testid="light-face" fill="raised" shadow>Light</Surface>

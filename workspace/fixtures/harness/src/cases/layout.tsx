@@ -33,6 +33,8 @@ export const LayoutCase = () => (
     <Surface elevation="sticky" top="lg" fill="raised" shadow data-testid="sticky-top" />
     <Surface elevation="sticky" top="none" data-testid="sticky-none" />
     <Surface elevation="overlay" top="lg" data-testid="top-unread" />
+    <Surface border="bottom" data-testid="border-bottom">Bottom</Surface>
+    <Surface border data-testid="border-all">All</Surface>
     <Stack as="ul" data-testid="list-stack"><li>One</li></Stack>
     <Inline as="ol" data-testid="list-inline"><li>One</li></Inline>
     <Grid as="ul" data-testid="list-grid"><li>One</li></Grid>

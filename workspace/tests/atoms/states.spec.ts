@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
-import { tokens } from "../../packages/paper-ui/src/tokens";
+import { insetCast, tokens } from "../../packages/paper-ui/src/tokens";
 import { accentProfile, itemProfile } from "../../packages/paper-ui/src/tokens/color-recipes";
 import { SHAPE_SOURCE } from "../../packages/paper-ui/src/tokens/shape";
 import { SHAPE_RECIPES, strokeRing } from "../../packages/paper-ui/src/tokens/shape-recipes";
@@ -8,6 +8,7 @@ import type { Accent, Variant } from "../../packages/paper-ui/src/tokens";
 import { px, roleDp } from "../support/geometry";
 import { openHarness } from "../support/harness";
 import { tab } from "../support/keyboard";
+import { chooseOption, optionValues } from "../support/select";
 import { expectStyle } from "../support/style";
 
 // What a hoverable control lays over its own face: the computed gradient of the tint property.
@@ -102,6 +103,28 @@ test("[atoms.button.disabled] [atoms.states.atom-table] [atoms.states.priority] 
   await expect(page.getByTestId("disabled-link-button")).toHaveAttribute("tabindex", "-1");
 });
 
+test("[atoms.states.preview] a preview draws the hover, the press and the keyboard ring a pointer or a key would, keeps the order of states, and leaves a disabled target alone", async ({ page }) => {
+  await page.mouse.move(0, 0);
+  // Hover: the tint over a solid face, the risen border of a hairline and of an input frame.
+  await expectStyle(page.getByTestId("preview-hover"), { backgroundColor: accentProfile("primary", "solid").face, ...tint(hoverTint("primary", "solid")) });
+  await expectStyle(page.getByTestId("preview-hover-hairline"), { borderTopColor: tokens.color.border.hover });
+  await expectStyle(page.getByTestId("preview-hover-field"), { borderTopColor: tokens.color.border.hover });
+  // The order holds: a selected Button keeps its selected face and takes the tint over it, and a disabled one takes nothing.
+  const selected = accentProfile("primary", "ghost").selected!;
+  await expectStyle(page.getByTestId("preview-hover-selected"), { backgroundColor: selected.face, color: selected.ink, borderTopColor: selected.border, ...tint(itemProfile.hoverTint) });
+  await expectStyle(page.getByTestId("preview-hover-disabled"), { opacity: tokens.color.opacity.disabled, ...tint("transparent") });
+  // Press: the one-stroke sink a pointer gives.
+  await expectStyle(page.getByTestId("preview-active"), { transform: `translateY(${tokens.motion.role.press.offset})` });
+  // Focus: the keyboard ring, on a Button and on an input's frame, with nothing focused.
+  await expect(page.locator(":focus")).toHaveCount(0);
+  for (const id of ["preview-focus", "preview-focus-field"]) {
+    await expectStyle(page.getByTestId(id), { outlineStyle: "solid", outlineColor: tokens.color.interaction.focus, outlineWidth: tokens.shape.focus.width, outlineOffset: tokens.shape.focus.offset });
+  }
+  // Out of a preview, the same controls rest.
+  await expectStyle(page.getByTestId("solid"), tint("transparent"));
+  await expectStyle(page.getByTestId("field"), { borderTopColor: tokens.color.border.base, outlineStyle: "none" });
+});
+
 test("[atoms.link.target] a Link drawn as a button looks like the Link: none of the browser's button chrome, and the same letters, ink and underline", async ({ page }) => {
   await openHarness(page, "states");
   const anchor = page.getByTestId("link");
@@ -173,7 +196,7 @@ test("[atoms.link.underline] a link in a documentation page is the Link Atom: un
 
 const FRAMES = ["field", "textarea", "select"] as const;
 
-test("[atoms.field.frame] [atoms.states.hover-table] [atoms.states.atom-table] a neutral input rests on the base border and rises to the hover border under a pointer, and a status keeps its own border", async ({ page }) => {
+test("[atoms.field.frame] [atoms.states.hover-table] [atoms.states.atom-table] an input rests on the base border and rises to the hover border, a ghost one has no line at rest or under a pointer, and a status keeps its own border", async ({ page }) => {
   for (const id of FRAMES) {
     const frame = page.getByTestId(id);
     await page.mouse.move(0, 0);
@@ -182,6 +205,16 @@ test("[atoms.field.frame] [atoms.states.hover-table] [atoms.states.atom-table] a
     await expectStyle(frame, { borderTopColor: tokens.color.border.hover });
     await page.mouse.move(0, 0);
     await expectStyle(frame, { borderTopColor: tokens.color.border.base });
+  }
+  for (const id of FRAMES) {
+    const frame = page.getByTestId(`${id}-ghost`);
+    await page.mouse.move(0, 0);
+    await expectStyle(frame, { borderTopColor: "transparent" });
+    await frame.hover();
+    // What a hover would start is a transition from the resting value, so this waits it out before reading.
+    await page.evaluate(() => new Promise(requestAnimationFrame));
+    await frame.evaluate((element) => Promise.all(element.getAnimations().map((animation) => animation.finished)));
+    await expectStyle(frame, { borderTopColor: "transparent" });
   }
   for (const [id, accent] of [["field-error", "error"], ["textarea-error", "error"], ["select-error", "error"], ["field-warning", "warning"]] as const) {
     const frame = page.getByTestId(id);
@@ -311,22 +344,30 @@ test("[atoms.icon-button.keeps-square] an IconButton holds its square when its r
 
 test("[atoms.select.natural-width] a Select with no width of its own is as wide as its longest option, and one with a width fills it", async ({ page }) => {
   const auto = page.getByTestId("select-auto");
-  const room = await auto.locator("select").evaluate((select: HTMLSelectElement) => {
-    const style = getComputedStyle(select);
+  const trigger = auto.getByRole("combobox");
+  const room = await trigger.evaluate((button: HTMLElement) => {
+    const style = getComputedStyle(button);
     const canvas = document.createElement("canvas").getContext("2d")!;
     canvas.font = style.font;
-    const widest = Math.max(...[...select.options].map((option) => canvas.measureText(option.text).width));
-    return { widest, inner: select.clientWidth - parseFloat(style.paddingInlineStart) - parseFloat(style.paddingInlineEnd) };
+    const widest = Math.max(...[...button.parentElement!.querySelector("select")!.options].map((option) => canvas.measureText(option.text).width));
+    return { widest, inner: button.clientWidth - parseFloat(style.paddingInlineStart) - parseFloat(style.paddingInlineEnd) };
   });
   // A canvas measures without the preset's tracking and hinting, so it runs a little over what the engine laid out.
   expect(room.inner).toBeGreaterThan(room.widest - 3);
+  // Every option's words stand in the value's one cell, so whichever is chosen the frame keeps its width.
+  const width = (await auto.boundingBox())!.width;
+  const values = await optionValues(trigger);
+  for (const value of [values.at(-1)!, values[0]!]) {
+    await chooseOption(trigger, value);
+    expect((await auto.boundingBox())!.width, value).toBe(width);
+  }
 
   const frame = (await page.getByTestId("select-fills").boundingBox())!;
   expect(frame.width).toBe(320);
-  // The native select fills the frame inside its border, so the frame opens it anywhere.
-  const native = (await page.getByTestId("select-fills").locator("select").boundingBox())!;
-  expect(native.width).toBe(frame.width - 2 * SHAPE_SOURCE.stroke.border);
-  expect(native.height).toBe(frame.height - 2 * SHAPE_SOURCE.stroke.border);
+  // The button fills the frame inside its border, so the frame opens it anywhere.
+  const button = (await page.getByTestId("select-fills").getByRole("combobox").boundingBox())!;
+  expect(button.width).toBe(frame.width - 2 * SHAPE_SOURCE.stroke.border);
+  expect(button.height).toBe(frame.height - 2 * SHAPE_SOURCE.stroke.border);
 });
 
 test("[atoms.button.justify] justify moves a wide button's content along it, over the root's own centring", async ({ page }) => {
@@ -357,22 +398,22 @@ test.describe("the selection marks", () => {
     await openHarness(page, "marks");
   });
 
-  test("[atoms.mark.ring] [atoms.states.atom-table] an unchecked Checkbox and Radio rest in the input's line on no face, a hover leaves it there, and a checked one wears the primary solid", async ({ page }) => {
+  test("[atoms.mark.ring] [atoms.states.atom-table] an unchecked Checkbox and Radio rest on their white face in the base line, a hover leaves them there, and a checked one wears the primary solid", async ({ page }) => {
     for (const id of ["checkbox-md", "radio-md"]) {
       const mark = page.getByTestId(id);
       await page.mouse.move(0, 0);
-      await expectStyle(mark, { backgroundColor: "transparent", borderTopColor: color.border.base });
+      await expectStyle(mark, { backgroundColor: color.control.mark, borderTopColor: color.border.base });
       await mark.hover();
-      await expectStyle(mark, { backgroundColor: "transparent", borderTopColor: color.border.base });
+      await expectStyle(mark, { backgroundColor: color.control.mark, borderTopColor: color.border.base });
     }
     await expectStyle(page.getByTestId("checkbox-on"), { backgroundColor: color.accent.primary.solid, borderTopColor: color.accent.primary.solid });
     await expectStyle(page.getByTestId("checkbox-mixed"), { backgroundColor: color.accent.primary.solid, borderTopColor: color.accent.primary.solid });
-    await expectStyle(page.getByTestId("radio-on"), { borderTopColor: color.accent.primary.solid });
+    await expectStyle(page.getByTestId("radio-on"), { backgroundColor: color.accent.primary.solid, borderTopColor: color.accent.primary.solid });
   });
 
-  test("[atoms.mark.ring] an off Switch keeps its track inside the input's line, a ring that is part of its own box, and an on one is the primary solid with no ring to show", async ({ page }) => {
+  test("[atoms.mark.ring] an off Switch is its grooved track with no ring, an error's ring is part of its own box, and an on one is the primary solid", async ({ page }) => {
     const off = page.getByTestId("switch-md");
-    await expectStyle(off, { backgroundColor: color.control.track, ...ring(color.border.base) });
+    await expectStyle(off, { backgroundColor: color.control.track, boxShadow: insetCast.boxShadow });
     const box = await off.boundingBox();
     expect(box!.width, "the ring adds no size").toBe(roleDp(SHAPE_RECIPES.switch.width.md));
     expect(box!.height).toBe(roleDp(SHAPE_RECIPES.switch.height.md));
@@ -380,11 +421,11 @@ test.describe("the selection marks", () => {
     await off.check();
     await expectStyle(off, { backgroundColor: color.accent.primary.solid, ...ring("transparent") });
     await off.uncheck();
-    await expectStyle(off, { backgroundColor: color.control.track, ...ring(color.border.base) });
+    await expectStyle(off, { backgroundColor: color.control.track, boxShadow: insetCast.boxShadow });
   });
 
   test("[atoms.mark.ring] an error draws the unchecked ring in the error ink and leaves what is checked as it was", async ({ page }) => {
-    await expectStyle(page.getByTestId("checkbox-error"), { backgroundColor: "transparent", borderTopColor: color.accent.error.ink });
+    await expectStyle(page.getByTestId("checkbox-error"), { backgroundColor: color.control.mark, borderTopColor: color.accent.error.ink });
     await expectStyle(page.getByTestId("radio-error"), { borderTopColor: color.accent.error.ink });
     await expectStyle(page.getByTestId("switch-error"), { backgroundColor: color.control.track, ...ring(color.accent.error.ink) });
     await expectStyle(page.getByTestId("checkbox-error-on"), { backgroundColor: color.accent.primary.solid, borderTopColor: color.accent.primary.solid });
@@ -392,6 +433,40 @@ test.describe("the selection marks", () => {
       await expect(page.getByTestId(id)).toHaveAttribute("aria-invalid", "true");
       await expect(page.getByTestId(id)).toHaveAttribute("data-status", "error");
     }
+  });
+
+  test("[atoms.mark.press] a pointer pressing a mark rings it in the active tint over the focus ring's room, letting go takes it away, and the keyboard's press keeps the ring", async ({ page }) => {
+    const { focus } = tokens.shape;
+    const halo = { outlineStyle: "solid", outlineWidth: `calc(${focus.width} + ${focus.offset})`, outlineOffset: "0px", outlineColor: color.interaction.active };
+    const pressOn = async (mark: Locator) => {
+      const box = (await mark.boundingBox())!;
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+      await page.mouse.down();
+    };
+    for (const id of ["checkbox-md", "radio-md", "switch-md", "checkbox-on", "switch-on"]) {
+      const mark = page.getByTestId(id);
+      await expectStyle(mark, { outlineStyle: "none" });
+      await pressOn(mark);
+      await expectStyle(mark, halo);
+      await page.mouse.up();
+      await expectStyle(mark, { outlineStyle: "none" });
+    }
+    // A disabled mark is not pressed.
+    const disabled = page.getByTestId("checkbox-disabled");
+    await pressOn(disabled);
+    await expectStyle(disabled, { outlineStyle: "none" });
+    await page.mouse.up();
+    // The keyboard's press keeps the ring: Space on a mark the keyboard reached shows the focus ring, never the halo.
+    const keyed = page.getByTestId("checkbox-md");
+    await keyed.evaluate((element) => {
+      const tabbable = [...document.querySelectorAll<HTMLElement>("button, a[href], input, [tabindex]")].filter((candidate) => !candidate.hasAttribute("disabled") && candidate.tabIndex >= 0);
+      tabbable[tabbable.indexOf(element as HTMLElement) - 1]?.focus();
+    });
+    await tab(page);
+    await expect(keyed).toHaveAttribute("data-focus-visible", "true");
+    await page.keyboard.down("Space");
+    await expectStyle(keyed, { outlineColor: color.interaction.focus, outlineWidth: focus.width, outlineOffset: focus.offset });
+    await page.keyboard.up("Space");
   });
 
   test("[atoms.mark.disabled] a disabled mark, off or on, is dimmed by the opacity role and shows the not-allowed cursor", async ({ page }) => {

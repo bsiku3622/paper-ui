@@ -1,7 +1,7 @@
 import {
-  Badge, Box, Button, Checkbox, Divider, Draggable, Droppable, Field, Floating, FocusScope, FormField, Grid, Icon, IconButton, INVENTORY, PRIMITIVE_GROUPS, PRIMITIVE_ORDERS, Inline, Label, Link, Marker, LiveRegion, Paint, PaperProvider, Portal, Pressable,
-  Radio, RovingFocus, Select, Selectable, SelectableGroup, Spinner, Stack, Surface, Switch, Text, Textarea, VisuallyHidden,
-  announce, clearAnnouncements, composeEventHandlers, elevation, loop, mergeProps, mergeRefs, paintClass, presence, surfaceClass,
+  Badge, Box, Button, Checkbox, Control, Divider, Draggable, Droppable, Field, Floating, FocusScope, FormField, Grid, Icon, IconButton, INVENTORY, PRIMITIVE_GROUPS, PRIMITIVE_ORDERS, Inline, Label, Link, Marker, LiveRegion, Paint, PaperProvider, Portal, Pressable,
+  Radio, RovingFocus, SegmentControl, Select, Selectable, SelectableGroup, Slider, Spinner, Stack, Surface, Switch, Text, Textarea, VisuallyHidden,
+  announce, clearAnnouncements, composeEventHandlers, controlClass, elevation, loop, mergeProps, mergeRefs, paintClass, presence, reveal, revealAfter, surfaceClass,
   useDraggable, useDroppable, useFloating, useFloatingContext, useFocusRing, useFocusWithin, useFormField, useFormFieldControl, usePressable, useResolvedTheme, useRovingFocusItem, useSelectable, useSelectableGroup, useTheme,
 } from "@studio-baeks/paper-ui";
 import { THEME_ATTRIBUTE, THEME_STORAGE_KEY, themeBootScript, type ThemeBootOptions } from "@studio-baeks/paper-ui/theme-boot";
@@ -27,6 +27,7 @@ const COMPONENTS: Record<ComponentName, ReactNode> = {
   LiveRegion: <LiveRegion>LiveRegion</LiveRegion>,
   Surface: <Surface fill="raised" border radius="md" padding="sm">Surface</Surface>,
   Paint: <Paint accent="primary" variant="hairline" padding="sm">Paint</Paint>,
+  Control: <Control>control</Control>,
   Pressable: <Pressable>Pressable</Pressable>,
   Selectable: <Selectable>Selectable</Selectable>,
   SelectableGroup: (
@@ -67,6 +68,8 @@ const COMPONENTS: Record<ComponentName, ReactNode> = {
   Label: <Label>Label</Label>,
   Badge: <Badge>Badge</Badge>,
   Spinner: <Spinner />,
+  SegmentControl: <SegmentControl aria-label="SegmentControl" defaultValue="a"><SegmentControl.Item value="a">A</SegmentControl.Item></SegmentControl>,
+  Slider: <Slider aria-label="Slider" />,
   Divider: <Divider />,
   Link: <Link href="#link">Link</Link>,
   Marker: <Marker>Marker</Marker>,
@@ -148,9 +151,12 @@ const ClassProbes = () => (
   <>
     <Probe name="surfaceClass"><span className={surfaceClass({ fill: "raised", border: true })}>surfaceClass</span></Probe>
     <Probe name="paintClass"><span className={paintClass({ accent: "primary", variant: "hairline" })}>paintClass</span></Probe>
+    <Probe name="controlClass"><span className={controlClass({ size: "sm" })}>controlClass</span></Probe>
     <Probe name="elevation"><span className={elevation.overlay}>elevation</span></Probe>
     <Probe name="presence"><span className={presence.surface}>presence</span></Probe>
     <Probe name="loop"><span className={loop.pulse}>loop</span></Probe>
+    <Probe name="reveal"><span className={reveal.load}>reveal</span></Probe>
+    <Probe name="revealAfter"><span className={revealAfter[1]}>revealAfter</span></Probe>
   </>
 );
 

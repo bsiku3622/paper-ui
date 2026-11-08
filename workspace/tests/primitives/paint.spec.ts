@@ -1,10 +1,11 @@
 import { expect, test } from "@playwright/test";
 
-import { STATE_TINT_PROPERTY, SURFACE_FILLS, restingCast, tokens } from "../../packages/paper-ui/src/tokens";
+import { STATE_TINT_PROPERTY, SURFACE_FILLS, VARIANTS, restingCast, tokens } from "../../packages/paper-ui/src/tokens";
 import { roleDp } from "../support/geometry";
 import { accentProfile, itemProfile } from "../../packages/paper-ui/src/tokens/color-recipes";
-import { MOTION } from "../../packages/paper-ui/src/tokens/motion";
-import { openHarness, openPlayground } from "../support/harness";
+import { MOTION } from "../../packages/paper-ui/src/tokens/motion-recipes";
+import { chooseProp, openHarness, openPlayground } from "../support/harness";
+import { chooseOption } from "../support/select";
 import { expectStyle } from "../support/style";
 
 // The tint an item lays over its face, as the computed background image.
@@ -65,11 +66,25 @@ test("[primitives.surface.item] [atoms.states.hover-table] a hoverable Surface t
   await expectStyle(surface, { ...tint(itemProfile.selectedTint), color: itemProfile.selectedInk });
 });
 
+test("[primitives.paint.frame] every variant keeps one frame, so changing the variant does not move the box", async ({ page }) => {
+  await openPlayground(page, "paint", "Paint");
+  const paint = page.getByTestId("paint-example");
+  const variant = page.getByRole("combobox", { name: "variant", exact: true });
+  const sizes = new Set<string>();
+  for (const name of VARIANTS) {
+    await chooseOption(variant, name);
+    await expectStyle(paint, { borderTopWidth: tokens.shape.stroke.border, borderTopStyle: name === "dashed" ? "dashed" : "solid" });
+    const box = await paint.boundingBox();
+    sizes.add(`${box?.width} x ${box?.height}`);
+  }
+  expect([...sizes]).toHaveLength(1);
+});
+
 test("[primitives.paint.selected] a selected ghost or hairline Paint wears its accent's soft face, and a hover over it adds a tint but no border", async ({ page }) => {
   await openPlayground(page, "paint", "Paint");
   const paint = page.getByTestId("paint-example");
-  await page.getByRole("combobox", { name: "accent", exact: true }).selectOption("info");
-  await page.getByRole("combobox", { name: "variant", exact: true }).selectOption("hairline");
+  await chooseProp(page, "accent", "info");
+  await chooseProp(page, "variant", "hairline");
   await page.getByRole("switch", { name: "hoverable", exact: true }).check();
   const rest = accentProfile("info", "hairline");
   await page.mouse.move(0, 0);
@@ -85,7 +100,7 @@ test("[primitives.paint.selected] a selected ghost or hairline Paint wears its a
   await page.mouse.move(0, 0);
   await expectStyle(paint, { backgroundColor: selected.face, color: selected.ink, borderTopColor: selected.border, ...tint("transparent") });
   // A variant with a face of its own has no selected look.
-  await page.getByRole("combobox", { name: "variant", exact: true }).selectOption("solid");
+  await chooseProp(page, "variant", "solid");
   const solid = accentProfile("info", "solid");
   await expectStyle(paint, { backgroundColor: solid.face, color: solid.ink });
 });
@@ -117,4 +132,15 @@ test("[foundations.state.recipes] a label too long for one line grows the exampl
   await expect(control).toBeVisible();
   const { clientHeight, scrollHeight } = await control.evaluate((element) => ({ clientHeight: element.clientHeight, scrollHeight: element.scrollHeight }));
   expect(scrollHeight).toBeLessThanOrEqual(clientHeight);
+});
+
+test("[primitives.surface.border-side] a side draws its line alone, and true goes all the way round in the one grey", async ({ page }) => {
+  await openHarness(page, "layout");
+  const bottom = page.getByTestId("border-bottom");
+  await expect(bottom).toHaveCSS("border-bottom-width", "1px");
+  await expect(bottom).toHaveCSS("border-bottom-style", "solid");
+  await expect(bottom).toHaveCSS("border-top-width", "0px");
+  const all = page.getByTestId("border-all");
+  for (const side of ["top", "right", "bottom", "left"]) await expect(all, side).toHaveCSS(`border-${side}-width`, "1px");
+  await expectStyle(bottom, { borderBottomColor: tokens.color.border.base });
 });

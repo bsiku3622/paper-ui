@@ -4,7 +4,8 @@ import { tokens } from "../../packages/paper-ui/src/tokens";
 import { LAYOUT_SOURCE } from "../../packages/paper-ui/src/tokens/layout";
 import { SHAPE_SOURCE } from "../../packages/paper-ui/src/tokens/shape";
 import { px, roleDp } from "../support/geometry";
-import { openHarness, openPlayground } from "../support/harness";
+import { chooseProp, openHarness, openPlayground } from "../support/harness";
+import { chooseOption } from "../support/select";
 
 const control = (page: Page, name: string) => page.getByRole("combobox", { name, exact: true });
 
@@ -15,10 +16,10 @@ test("[primitives.grid.token-gap] Grid's computed column and row gap are the gap
   // The example's gap is sm, as the Playground prints it.
   const sm = `${roleDp(tokens.layout.gap.sm)}px`;
   expect(await gaps()).toEqual({ column: sm, row: sm, tracks: 3 });
-  await page.getByRole("combobox", { name: "columns", exact: true }).selectOption("2");
+  await chooseProp(page, "columns", "2");
   expect(await gaps()).toEqual({ column: sm, row: sm, tracks: 2 });
   // A step named for one axis moves that axis alone; the other keeps the step `gap` names.
-  await page.getByRole("combobox", { name: "rowGap", exact: true }).selectOption("lg");
+  await chooseProp(page, "rowGap", "lg");
   expect(await gaps()).toEqual({ column: sm, row: `${roleDp(tokens.layout.gap.lg)}px`, tracks: 2 });
 });
 
@@ -80,14 +81,14 @@ test("[primitives.layout.axis-classes] Grid's justifyItems places each item in i
   const [stretched, container] = await widths();
   expect(stretched).toBeLessThan(container!);
 
-  await control(page, "justifyItems").selectOption("start");
+  await chooseOption(control(page, "justifyItems"), "start");
   await expect(grid).toHaveCSS("justify-items", "start");
   const [shrunk] = await widths();
   expect(shrunk).toBeLessThan(stretched!);
   await expect(grid).toHaveCSS("justify-content", "normal");
 
-  await control(page, "justifyItems").selectOption("stretch");
-  await control(page, "justify").selectOption("between");
+  await chooseOption(control(page, "justifyItems"), "stretch");
+  await chooseOption(control(page, "justify"), "between");
   await expect(grid).toHaveCSS("justify-content", "space-between");
   await expect(grid).toHaveCSS("justify-items", "stretch");
   expect((await widths())[0]).toBe(stretched);

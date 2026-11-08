@@ -4,8 +4,9 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { tokens, type TextVariant } from "../../packages/paper-ui/src/tokens";
 import { OPACITY_VALUES } from "../../packages/paper-ui/src/tokens/colors";
 import { LAYOUT_SOURCE } from "../../packages/paper-ui/src/tokens/layout";
-import { SHAPE_RECIPES } from "../../packages/paper-ui/src/tokens/shape-recipes";
-import { CODE_SPEC, CONTROL_SIZES, FONT_STYLESHEETS, PRESET_SPEC, ROLE_SPEC, TEXT_VARIANTS, TYPOGRAPHY, TYPOGRAPHY_SOURCE } from "../../packages/paper-ui/src/tokens/typography";
+import { CONTROL_SIZES } from "../../packages/paper-ui/src/tokens/control-sizes";
+import { CONTROL } from "../../packages/paper-ui/src/tokens/control-recipes";
+import { CODE_SPEC, FONT_STYLESHEETS, PRESET_SPEC, ROLE_SPEC, TEXT_VARIANTS, TYPOGRAPHY, TYPOGRAPHY_SOURCE } from "../../packages/paper-ui/src/tokens/typography";
 import { pageErrors } from "../support/console";
 import { metrics, px, roleDp } from "../support/geometry";
 import { openHarness } from "../support/harness";
@@ -297,7 +298,7 @@ test.describe("fonts", () => {
     const { control: shape } = tokens.shape;
     expect(await control("[data-testid=button-md]")).toMatchObject({ height: roleDp(shape.height.md), padding: roleDp(shape.inset.button.md) });
     expect(await control("[data-testid=field-md]")).toMatchObject({ height: roleDp(shape.height.md), padding: roleDp(shape.inset.input.md) });
-    expect((await control("textarea[aria-label=textarea-md]")).blockPadding).toBe(roleDp(SHAPE_RECIPES.textarea.paddingBlock.md));
+    expect((await control("textarea[aria-label=textarea-md]")).blockPadding).toBe(roleDp(CONTROL.area.paddingBlock.md));
 
     await page.setViewportSize({ width: 1440, height: 900 });
     for (const path of ["/playground", "/playground/foundations/typography", "/docs/foundations/typography"]) {
@@ -347,11 +348,15 @@ test.describe("the docs, the Playground and the landing page take their type fro
     const headline = page.getByRole("heading", { level: 1 });
     await expectStyle(headline, { ...role("hero"), color: tokens.color.ink.primary });
     await expectType(headline, resolved(ROLE_SPEC.hero, false, WIDTH), "headline");
-    // The period is part of the headline's ink: nothing inside it is coloured on its own.
-    await expect(headline.locator(":scope > :not(br)")).toHaveCount(0);
+    // Two lines, the second a step back in the secondary ink, and the heading is named by its words alone.
+    const lines = headline.locator(":scope > span");
+    await expect(lines).toHaveCount(2);
+    await expectStyle(lines.nth(0), { color: tokens.color.ink.primary });
+    await expectStyle(lines.nth(1), { color: tokens.color.ink.secondary });
+    await expect(headline).toHaveAccessibleName("Complex web apps on quiet ground.");
     const hero = headline.locator("xpath=..");
     await expectStyle(hero, { paddingTop: tokens.layout.section.start, paddingBottom: tokens.layout.section.end, maxWidth: tokens.shape.measure.xl });
-    await expectStyle(page.getByText("레이아웃은 Primitive로"), { maxWidth: tokens.shape.measure.md });
+    await expectStyle(page.getByText("Layout starts with Primitives"), { maxWidth: tokens.shape.measure.md });
     await expectStyle(page.locator("footer svg"), { opacity: tokens.color.opacity.subdued });
     await expect(page.locator("footer svg")).toHaveCSS("opacity", OPACITY_VALUES.subdued);
   });

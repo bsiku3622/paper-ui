@@ -1,55 +1,125 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import { SHAPE_SOURCE } from "../../packages/paper-ui/src/tokens/shape";
 import { pageErrors } from "../support/console";
+import { nativeSelect } from "../support/select";
 
-// /demo is three product screens drawn with nothing but Paper (pages/demo/pure.test.ts holds them to that). They own their
-// landmarks (chrome 'none'), so these tests read them the way a user does.
+// /demo is the studio (pages/studio/): every demo app in a preview that can be edited. Arcfield (/demo/arcfield) is the
+// demo's own product, drawn with nothing but Paper (pages/demo/pure.test.ts holds it to that). Its screens own their landmarks
+// (chrome 'none'), so these tests read them the way a user does.
 
+const ARCFIELD = "/demo/arcfield";
+const SECURITY = `${ARCFIELD}/security`;
+const SEARCH = `${ARCFIELD}/search`;
+const LOGIN = `${ARCFIELD}/login`;
+const SETTINGS = `${ARCFIELD}/settings`;
+
+// The search page is reached by typing, not by a link, so the site's crawl does not find it: it is named here instead.
 const SCREENS = [
-  { path: "/demo", label: "대시보드", heading: "보안과 접근" },
-  { path: "/demo/login", label: "로그인", heading: "다시 이어서 만들어 볼까요?" },
-  { path: "/demo/settings", label: "설정 폼", heading: "설정" },
+  { path: ARCFIELD, heading: "개요" },
+  { path: SECURITY, heading: "보안과 접근" },
+  { path: SEARCH, heading: "검색" },
+  { path: LOGIN, heading: "다시 이어서 만들어 볼까요?" },
+  { path: SETTINGS, heading: "설정" },
 ] as const;
 
-const bar = (page: Page) => page.getByRole("navigation", { name: "데모 화면" });
 const signIn = (page: Page) => page.getByRole("form", { name: "로그인" });
 
-for (const { path, label, heading } of SCREENS) {
-  test(`${label}: one banner, one main, its h1, and the bar marks it`, async ({ page }) => {
+test("the studio at /demo has one banner holding its h1, one main, and previews the Arcfield dashboard", async ({ page }) => {
+  const errors = pageErrors(page);
+  await page.goto("/demo");
+  await expect(page).toHaveTitle("데모 스튜디오 — paper-ui");
+  await expect(page.getByRole("banner")).toHaveCount(1);
+  await expect(page.getByRole("banner").getByRole("heading", { level: 1 })).toHaveText("데모 스튜디오");
+  await expect(page.getByRole("main")).toHaveCount(1);
+  // Arcfield is a link the studio lists, so a crawl reaches it, and its pages through it, from here.
+  await expect(page.locator(`a[href="${ARCFIELD}"]`).first()).toBeAttached();
+  const preview = page.frameLocator("iframe").first();
+  await expect(preview.getByRole("main").getByRole("heading", { level: 1 })).toHaveText("개요");
+  expect(errors).toEqual([]);
+});
+
+test("the studio's top bar lists apps, not their pages, and the widths stand where an address row would", async ({ page }) => {
+  await page.goto("/demo");
+  const apps = page.getByRole("banner").getByRole("navigation", { name: "앱" });
+  await expect(apps.getByRole("link", { name: "Arcfield" })).toHaveAttribute("aria-current", "page");
+  await expect(apps.locator(`a[href^="${ARCFIELD}"]`)).toHaveCount(1);
+  await expect(page.getByRole("complementary", { name: "편집" })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "화면 목록" })).toHaveCount(0);
+  await expect(page.getByRole("textbox", { name: "주소" })).toHaveCount(0);
+  await expect(page.getByRole("radiogroup", { name: "화면 폭" }).getByRole("radio", { name: "1440" })).toBeChecked();
+});
+
+test("새 창으로 열기 opens the previewed page in a window of its own, and the window takes what the studio turns", async ({ page }) => {
+  await page.goto("/demo");
+  await expect(page.frameLocator("iframe").first().getByRole("main").getByRole("heading", { level: 1 })).toHaveText("개요");
+  const [popup] = await Promise.all([page.waitForEvent("popup"), page.getByRole("button", { name: "새 창으로 열기" }).click()]);
+  await expect(popup.getByRole("main").getByRole("heading", { level: 1 })).toHaveText("개요");
+  await expect(popup.locator("html")).toHaveAttribute("data-pui-theme", "light");
+  // The theme is not in the window's address once it is open: only the bridge can turn it.
+  await page.getByRole("radiogroup", { name: "미리보기 테마" }).getByRole("radio", { name: "다크" }).click();
+  await expect(popup.locator("html")).toHaveAttribute("data-pui-theme", "dark");
+});
+
+test("a preview that leaves its app is sent back to it, and the studio never opens inside its own preview", async ({ page }) => {
+  // A path saved while a preview had wandered off opens the app's first page.
+  await page.addInitScript(() => {
+    if (window.top === window && !sessionStorage.getItem("seeded")) {
+      sessionStorage.setItem("seeded", "1");
+      localStorage.setItem("paper-studio:v1", JSON.stringify({ v: 1, view: { item: "arcfield", path: "/demo", width: 1440, theme: "light", compare: "off", panel: true, tab: "levers" } }));
+    }
+  });
+  await page.goto("/demo");
+  const preview = page.frameLocator("iframe").first();
+  await expect(preview.getByRole("main").getByRole("heading", { level: 1 })).toHaveText("개요");
+  // The page in the frame goes to the site's home by itself: the studio brings it back to the app.
+  const frame = page.frames().find((one) => one !== page.mainFrame() && one.url().includes("/demo/arcfield"))!;
+  await frame.evaluate(() => {
+    window.history.pushState(null, "", "/");
+    window.dispatchEvent(new PopStateEvent("popstate"));
+  });
+  await expect.poll(() => new URL(frame.url()).pathname).toBe("/demo/arcfield");
+  await expect(preview.getByRole("main").getByRole("heading", { level: 1 })).toHaveText("개요");
+  await expect(preview.getByRole("heading", { name: "데모 스튜디오" })).toHaveCount(0);
+});
+
+for (const { path, heading } of SCREENS) {
+  test(`${path}: one banner, one main, and its h1`, async ({ page }) => {
     const errors = pageErrors(page);
     await page.goto(path);
     await expect(page.getByRole("banner")).toHaveCount(1);
     await expect(page.getByRole("main")).toHaveCount(1);
     await expect(page.getByRole("main").getByRole("heading", { level: 1 })).toHaveText(heading);
-    await expect(bar(page).getByRole("link", { name: label })).toHaveAttribute("aria-current", "page");
-    await expect(bar(page).locator('[aria-current="page"]')).toHaveCount(1);
     expect(errors).toEqual([]);
   });
 }
 
-test("the bar moves between the screens and leaves for the site", async ({ page }) => {
-  await page.goto("/demo");
-  await bar(page).getByRole("link", { name: "설정 폼" }).click();
-  await expect(page).toHaveURL(/\/demo\/settings$/);
+test("the settings form is opened from the sidebar and leads back, and the sign-in is reached by signing out", async ({ page }) => {
+  await page.goto(ARCFIELD);
+  await page.getByRole("navigation", { name: "계정 메뉴" }).getByRole("link", { name: "설정" }).click();
+  await expect(page).toHaveURL(/\/demo\/arcfield\/settings$/);
   await expect(page).toHaveTitle("설정 폼 데모 — paper-ui");
-  await bar(page).getByRole("link", { name: "로그인" }).click();
-  await expect(page).toHaveURL(/\/demo\/login$/);
-  await page.getByRole("banner").getByRole("link", { name: "Paper UI" }).click();
-  await expect(page).toHaveURL(/\/$/);
+  await page.getByRole("banner").getByRole("link", { name: "대시보드" }).click();
+  await expect(page).toHaveURL(/\/demo\/arcfield$/);
+  await page.getByRole("button", { name: "내 계정" }).click();
+  await page.getByRole("link", { name: "로그아웃" }).click();
+  await expect(page).toHaveURL(/\/demo\/arcfield\/login$/);
+  await expect(page.getByRole("main").getByRole("heading", { level: 1 })).toHaveText("다시 이어서 만들어 볼까요?");
 });
 
-test("the dashboard's table is a table to assistive technology: seven headers over seven rows of seven cells", async ({ page }) => {
-  await page.goto("/demo");
+test("the findings table is a table to assistive technology: seven headers over a page of ten rows of seven cells", async ({ page }) => {
+  await page.goto(SECURITY);
   const table = page.getByRole("table", { name: "점검 결과" });
   await expect(table.getByRole("columnheader")).toHaveCount(7);
-  await expect(table.getByRole("row")).toHaveCount(8);
+  // The header row and one page of ten findings.
+  await expect(table.getByRole("row")).toHaveCount(11);
   await expect(table.getByRole("row").nth(1).getByRole("cell")).toHaveCount(7);
   await expect(table.getByRole("row").nth(1)).toContainText("SEC-1042");
 });
 
 test("the window scrolls and the dashboard's sidebar stands still beside it, a gap from the column and inside the window", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 500 });
-  await page.goto("/demo");
+  await page.goto(ARCFIELD);
   const sidebar = page.getByRole("complementary");
   const main = page.getByRole("main");
   const boxOf = async (locator: Locator) => (await locator.boundingBox())!;
@@ -66,32 +136,34 @@ test("the window scrolls and the dashboard's sidebar stands still beside it, a g
 
 test("below the md breakpoint the sidebar leaves and the column takes the whole width", async ({ page }) => {
   await page.setViewportSize({ width: 767, height: 800 });
-  await page.goto("/demo");
+  await page.goto(ARCFIELD);
   await expect(page.getByRole("complementary")).toBeHidden();
-  expect((await page.getByRole("main").boundingBox())!.width).toBe(767 - 32);
+  // The column holds the xl inset on both sides.
+  expect((await page.getByRole("main").boundingBox())!.width).toBe(767 - 2 * SHAPE_SOURCE.space.xl);
   await page.setViewportSize({ width: 768, height: 800 });
   await expect(page.getByRole("complementary")).toBeVisible();
 });
 
 test("a long word in a table cell is cut by an ellipsis instead of breaking the row", async ({ page }) => {
-  await page.goto("/demo");
+  await page.goto(SECURITY);
   const title = page.getByRole("table", { name: "점검 결과" }).getByRole("cell").filter({ hasText: "SEC-1042" }).getByText("공개 읽기가 허용된 버킷");
   await expect(title).toHaveCSS("text-overflow", "ellipsis");
   await expect(title).toHaveCSS("white-space", "nowrap");
 });
 
-test("the dashboard's sidebar marks one page, and picking another moves the mark", async ({ page }) => {
-  await page.goto("/demo");
+test("the dashboard's sidebar links mark one page, and following another moves the mark", async ({ page }) => {
+  await page.goto(SECURITY);
   const nav = page.getByRole("navigation", { name: "제품 메뉴" });
-  const here = (name: string) => expect(nav.getByRole("button", { name })).toHaveAttribute("aria-current", "page");
+  const here = (name: string) => expect(nav.getByRole("link", { name })).toHaveAttribute("aria-current", "page");
   await here("보안과 접근");
-  await nav.getByRole("button", { name: "배포" }).click();
+  await nav.getByRole("link", { name: "배포" }).click();
+  await expect(page).toHaveURL(/\/demo\/arcfield\/deploy$/);
   await here("배포");
   await expect(nav.locator('[aria-current="page"]')).toHaveCount(1);
 });
 
 test("a tablist is one tab stop: arrow keys move focus and the panel, and each panel is named by its tab", async ({ page }) => {
-  await page.goto("/demo");
+  await page.goto(SECURITY);
   const list = page.getByRole("tablist", { name: "보안과 접근" });
   const first = list.getByRole("tab", { name: "점검 결과" });
   await expect(first).toHaveAttribute("aria-selected", "true");
@@ -105,7 +177,7 @@ test("a tablist is one tab stop: arrow keys move focus and the panel, and each p
 });
 
 test("signing in with nothing says what is missing and puts the focus on the first of it", async ({ page }) => {
-  await page.goto("/demo/login");
+  await page.goto(LOGIN);
   await signIn(page).getByRole("button", { name: "로그인" }).click();
   await expect(page.getByText("이메일을 입력해주세요.")).toBeVisible();
   await expect(page.getByText("비밀번호를 입력해주세요.")).toBeVisible();
@@ -116,21 +188,21 @@ test("signing in with nothing says what is missing and puts the focus on the fir
 });
 
 test("the failing account gets a notice it can dismiss, and a good one gets its welcome", async ({ page }) => {
-  await page.goto("/demo/login");
+  await page.goto(LOGIN);
   const form = signIn(page);
   await form.getByLabel("이메일").fill("wrong@paper.ui");
   await form.getByLabel("비밀번호", { exact: true }).fill("paper2026");
   await form.getByRole("button", { name: "로그인" }).click();
-  await expect(page.getByText("이메일 또는 비밀번호가 맞지 않아요")).toBeVisible();
+  await expect(page.getByText("이메일 또는 비밀번호가 맞지 않습니다")).toBeVisible();
   await page.getByRole("button", { name: "알림 닫기" }).click();
-  await expect(page.getByText("이메일 또는 비밀번호가 맞지 않아요")).toBeHidden();
+  await expect(page.getByText("이메일 또는 비밀번호가 맞지 않습니다")).toBeHidden();
   await form.getByLabel("이메일").fill("name@paper.ui");
   await form.getByRole("button", { name: "로그인" }).click();
-  await expect(page.getByText("name님, 다시 만나서 반가워요.")).toBeVisible();
+  await expect(page.getByText("name님, 다시 만나서 반갑습니다.")).toBeVisible();
 });
 
 test("the password reset is a modal: the field takes the focus and Escape closes it", async ({ page }) => {
-  await page.goto("/demo/login");
+  await page.goto(LOGIN);
   await page.getByRole("button", { name: "비밀번호 찾기" }).click();
   const dialog = page.getByRole("dialog", { name: "비밀번호 찾기" });
   await expect(dialog).toBeVisible();
@@ -139,24 +211,34 @@ test("the password reset is a modal: the field takes the focus and Escape closes
   await expect(dialog).toHaveCount(0);
 });
 
-test("the sign-up tab holds its own form and its own errors", async ({ page }) => {
-  await page.goto("/demo/login");
-  await page.getByRole("tab", { name: "회원가입" }).click();
+test("the sign-in has no tabs: a line under it leads to the sign-up, which holds its own form and its own errors and leads back", async ({ page }) => {
+  await page.goto(LOGIN);
+  await expect(page.getByRole("tablist")).toHaveCount(0);
+  await page.getByRole("button", { name: "회원가입하기" }).click();
+  await expect(page).toHaveURL(/step=signup/);
+  await expect(signIn(page)).toHaveCount(0);
   const form = page.getByRole("form", { name: "회원가입" });
   await form.getByRole("button", { name: "가입하기" }).click();
-  await expect(form.getByText("약관에 동의해야 가입할 수 있어요.")).toBeVisible();
+  await expect(form.getByText("약관에 동의해야 가입할 수 있습니다.")).toBeVisible();
   await form.getByLabel("이메일").fill("name@paper.ui");
   await form.getByLabel("비밀번호", { exact: true }).fill("paper2026");
   await form.getByLabel("비밀번호 확인").fill("paper2026");
   await form.getByRole("checkbox").check();
   await form.getByRole("button", { name: "가입하기" }).click();
-  await expect(page.getByText("가입을 마쳤어요")).toBeVisible();
+  await expect(page.getByText("가입을 마쳤습니다")).toBeVisible();
+});
+
+test("the sign-up leads back to the sign-in by the line under it", async ({ page }) => {
+  await page.goto(`${LOGIN}?step=signup`);
+  await page.getByRole("button", { name: "로그인하기" }).click();
+  await expect(signIn(page)).toBeVisible();
+  await expect(page.getByRole("form", { name: "회원가입" })).toHaveCount(0);
 });
 
 test("the settings form ties every label to its control, and the field in error says so", async ({ page }) => {
-  await page.goto("/demo/settings");
-  await expect(page.getByLabel("이름")).toHaveValue("백재원");
-  await expect(page.getByLabel("언어")).toHaveValue("ko");
+  await page.goto(SETTINGS);
+  await expect(page.getByLabel("이름")).toHaveValue("한서윤");
+  await expect(nativeSelect(page.getByLabel("언어"))).toHaveValue("ko");
   await expect(page.getByRole("textbox", { name: "웹사이트" }).locator("..")).toHaveAttribute("data-status", "error");
   await expect(page.getByLabel("소개")).toBeVisible();
   const site = page.getByLabel("웹사이트");

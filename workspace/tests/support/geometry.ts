@@ -15,10 +15,20 @@ export type Metrics = {
 // A length as the browser computes it.
 export const px = (value: number) => `${value}px`;
 
-// The computed geometry of an element, or of one of its pseudo-elements, in CSS px.
+// The computed geometry of an element, or of one of its pseudo-elements, in CSS px. padding and blockPadding are where the content
+// starts from the outer edge: an inset is measured from there, and a line takes its room out of the padding, so the two are read
+// together.
 export const metrics = (target: Locator, pseudo?: string): Promise<Metrics> => target.evaluate((element, pseudo) => {
   const s = getComputedStyle(element, pseudo);
-  return { width: parseFloat(s.width), height: parseFloat(s.height), padding: parseFloat(s.paddingInlineStart), blockPadding: parseFloat(s.paddingBlockStart), radius: parseFloat(s.borderRadius), transform: s.transform, inset: parseFloat(s.insetInlineStart) };
+  return {
+    width: parseFloat(s.width),
+    height: parseFloat(s.height),
+    padding: parseFloat(s.paddingInlineStart) + parseFloat(s.borderInlineStartWidth),
+    blockPadding: parseFloat(s.paddingBlockStart) + parseFloat(s.borderBlockStartWidth),
+    radius: parseFloat(s.borderRadius),
+    transform: s.transform,
+    inset: parseFloat(s.insetInlineStart),
+  };
 }, pseudo);
 
 // A role or recipe in dp, resolved from the sources the stylesheet emits at the default root, with the source overrides

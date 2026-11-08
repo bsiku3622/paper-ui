@@ -20,14 +20,18 @@ for (const width of [LAYOUT_SOURCE.breakpoint.md, 1440]) {
     const rows = await matrix.evaluate((el) => {
       const children = Array.from(el.children);
       const columns = getComputedStyle(el).gridTemplateColumns.split(" ").length;
+      // Each cell's vertical centre: the swatches grow with the column, so their tops move away from a label's while the centres stay.
       return Array.from({ length: children.length / columns }, (_, row) =>
-        children.slice(row * columns, (row + 1) * columns).map((child) => child.getBoundingClientRect().top));
+        children.slice(row * columns, (row + 1) * columns).map((child) => {
+          const box = child.getBoundingClientRect();
+          return box.top + box.height / 2;
+        }));
     });
     expect(rows).toHaveLength(ACCENT_PALETTES.length + 2);
     for (const row of rows) {
       expect(row).toHaveLength(ACCENT_STEPS.length + 1);
       // Labels are vertically centered in the swatch row.
-      expect(Math.max(...row) - Math.min(...row)).toBeLessThan(20);
+      expect(Math.max(...row) - Math.min(...row)).toBeLessThan(2);
     }
   });
 }

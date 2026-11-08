@@ -7,11 +7,11 @@ import { expectStyle } from "../support/style";
 
 // Each ring owner of the Button family, with the corner its ring follows.
 const OWNERS = [
-  ["solid", tokens.shape.radius.control.md],
-  ["hairline", tokens.shape.radius.control.md],
-  ["link-button", tokens.shape.radius.control.md],
+  ["solid", tokens.shape.radius.pill],
+  ["hairline", tokens.shape.radius.pill],
+  ["link-button", tokens.shape.radius.pill],
   ["pill", tokens.shape.radius.pill],
-  ["icon-button", tokens.shape.radius.control.md],
+  ["icon-button", tokens.shape.radius.pill],
   ["pill-icon-button", tokens.shape.radius.pill],
   ["link", tokens.shape.radius.text],
 ] as const;
@@ -74,9 +74,12 @@ const INPUTS = [
   ["Select", "select", tokens.shape.radius.control.md],
 ] as const;
 
+// A Select's control is its button. While its list is open the list bears the same name, so the button is found by its role.
+const controlOf = (page: Page, label: string) => (label === "Select" ? page.getByRole("combobox", { name: label, exact: true }) : page.getByLabel(label, { exact: true }));
+
 for (const [label, id, corner] of INPUTS) {
   test(`[atoms.focus.ring] [atoms.focus.input-modality] [atoms.states.pointer-focus] [atoms.states.hover-table] ${label} shows no ring for a click, and Tab away then Shift+Tab back draws the focus ring on its frame`, async ({ page }) => {
-    const control = page.getByLabel(label, { exact: true });
+    const control = controlOf(page, label);
     const frame = page.getByTestId(id);
     await control.click();
     await expect(control).toBeFocused();
@@ -115,7 +118,7 @@ test("[atoms.focus.ring] [atoms.states.pointer-focus] typing in a Field or a Tex
 
 test("[atoms.focus.ring] [atoms.states.pointer-focus] a key that is not typing counts as the keyboard after a click: Escape in a clicked text input and a key on a clicked Select draw the frame ring", async ({ page }) => {
   for (const [label, id] of [["Field", "field"], ["Textarea", "textarea"], ["Select", "select"]] as const) {
-    const control = page.getByLabel(label, { exact: true });
+    const control = controlOf(page, label);
     const frame = page.getByTestId(id);
     await control.click();
     await expect(control).toBeFocused();

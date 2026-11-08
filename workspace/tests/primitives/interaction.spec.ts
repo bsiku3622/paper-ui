@@ -4,7 +4,7 @@ import { THEME_ATTRIBUTE, tokens } from "../../packages/paper-ui/src/tokens";
 import { LAYOUT_SOURCE } from "../../packages/paper-ui/src/tokens/layout";
 import { accentProfile } from "../../packages/paper-ui/src/tokens/color-recipes";
 import { SHAPE_SOURCE } from "../../packages/paper-ui/src/tokens/shape";
-import { openHarness, openPlayground } from "../support/harness";
+import { chooseProp, openHarness, openPlayground } from "../support/harness";
 import { tab } from "../support/keyboard";
 import { expectStyle } from "../support/style";
 
@@ -124,7 +124,7 @@ test("[primitives.draggable.input-paths] move supports Escape cancellation, keyb
   await handle.focus();
   await page.keyboard.press("ArrowRight");
   await expect(page.getByTestId("position")).not.toHaveText("x: 0, y: 0");
-  await page.getByRole("combobox", { name: "axis", exact: true }).selectOption("x");
+  await chooseProp(page, "axis", "x");
   const before = await page.getByTestId("position").textContent();
   await handle.focus();
   await page.keyboard.press("ArrowDown");
@@ -158,7 +158,7 @@ test("[primitives.draggable.input-paths] a disabled Draggable shows the not-allo
   await openPlayground(page, "draggable", "Draggable");
   const panel = page.getByTestId("moving-panel");
   const handle = page.getByRole("button", { name: "패널 이동", exact: true });
-  await page.getByRole("combobox", { name: "activation", exact: true }).selectOption("surface");
+  await chooseProp(page, "activation", "surface");
   await expect(panel).not.toHaveAttribute("data-disabled", "true");
   await expect(panel).toHaveCSS("cursor", "grab");
   await page.getByRole("switch", { name: "disabled", exact: true }).check();
@@ -273,7 +273,7 @@ test("[primitives.selectable-group.multiple] group selection separates focus, su
   await expect(left).toHaveAttribute("aria-pressed", "true");
   await page.keyboard.press("Space");
   await expect(left).toHaveAttribute("aria-pressed", "false");
-  await page.getByRole("combobox", { name: "selectionMode", exact: true }).selectOption("multiple");
+  await chooseProp(page, "selectionMode", "multiple");
   await left.click();
   await group.getByRole("button", { name: "오른쪽", exact: true }).click();
   await expect(page.getByText("선택: center, left, right", { exact: true })).toBeVisible();
@@ -321,7 +321,7 @@ test("[primitives.floating.portal] [primitives.portal.root] [primitives.floating
 
 test("[primitives.floating.nesting] [primitives.floating.focus-restore] nested modal closes only the top panel, contains focus and restores each trigger", async ({ page }) => {
   await page.goto("/playground/floating");
-  await page.getByRole("combobox", { name: "presentation", exact: true }).selectOption("modal");
+  await chooseProp(page, "presentation", "modal");
   const trigger = page.getByRole("button", { name: "설정 열기", exact: true });
   await trigger.click();
   const outer = page.getByRole("dialog", { name: "설정", exact: true });
@@ -377,13 +377,13 @@ test("[primitives.floating.geometry] a popover keeps the sm gap from its trigger
   expect(await gapOf(trigger, panel)).toBeCloseTo(SHAPE_SOURCE.space.sm, 1);
   await page.keyboard.press("Escape");
   await expect(gone).toHaveCount(0);
-  await page.getByRole("combobox", { name: "offset", exact: true }).selectOption("md");
+  await chooseProp(page, "offset", "md");
   await trigger.click();
   await expect(panel).toBeVisible();
   expect(await gapOf(trigger, panel)).toBeCloseTo(SHAPE_SOURCE.space.md, 1);
   await page.keyboard.press("Escape");
   await expect(gone).toHaveCount(0);
-  await page.getByRole("combobox", { name: "offset", exact: true }).selectOption("none");
+  await chooseProp(page, "offset", "none");
   await trigger.click();
   await expect(panel).toBeVisible();
   expect(await gapOf(trigger, panel)).toBeCloseTo(0, 1);
@@ -429,7 +429,7 @@ test("[primitives.floating.presentation] [primitives.floating.content-state] a p
   await expect(panel).toHaveAttribute("data-placement", /^(top|bottom)$/);
   await page.keyboard.press("Escape");
   await expect(page.locator("[data-presentation]")).toHaveCount(0);
-  await page.getByRole("combobox", { name: "presentation", exact: true }).selectOption("modal");
+  await chooseProp(page, "presentation", "modal");
   await page.getByRole("button", { name: "설정 열기", exact: true }).click();
   await expect(panel).toHaveAttribute("data-presentation", "modal");
   await expect(panel).not.toHaveAttribute("data-placement", /.*/);
@@ -442,7 +442,7 @@ test("[primitives.draggable.keyboard-step] an arrow key moves the box by a step 
   await handle.focus();
   await page.keyboard.press("ArrowRight");
   await expect(position).toHaveText(`x: ${SHAPE_SOURCE.space.sm}, y: 0`);
-  await page.getByRole("combobox", { name: "keyboardStep", exact: true }).selectOption("md");
+  await chooseProp(page, "keyboardStep", "md");
   await handle.focus();
   await page.keyboard.press("ArrowDown");
   await expect(position).toHaveText(`x: ${SHAPE_SOURCE.space.sm}, y: ${SHAPE_SOURCE.space.md}`);

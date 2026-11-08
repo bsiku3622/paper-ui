@@ -1,5 +1,5 @@
 import { Badge, Box, Button, Field, Grid, Icon, IconButton, Inline, Link, Select, Textarea } from "@studio-baeks/paper-ui";
-import { JUSTIFIES } from "@studio-baeks/paper-ui/tokens";
+import { JUSTIFIES, previewAttributes } from "@studio-baeks/paper-ui/tokens";
 import { useState } from "react";
 
 import { SELECT_OPTIONS } from "./options.js";
@@ -54,6 +54,7 @@ export const StatesCase = () => (
     <Link href="#target" underline="hover" aria-disabled data-testid="link-hover-disabled">Blocked hover link</Link>
     <Submits />
     <Field aria-label="Field" data-testid="field" />
+    <Field aria-label="Field ghost" variant="ghost" data-testid="field-ghost" />
     <button type="button">After field</button>
     <Field aria-label="Field error" status="error" data-testid="field-error" />
     <Field aria-label="Field warning" status="warning" data-testid="field-warning" />
@@ -62,14 +63,29 @@ export const StatesCase = () => (
     <Field aria-label="Secret" type="password" showPasswordToggle clearable defaultValue="secret" data-testid="secret" />
     <Field aria-label="Locked" type="password" showPasswordToggle disabled defaultValue="secret" data-testid="locked" />
     <Textarea aria-label="Textarea" data-testid="textarea" />
+    <Textarea aria-label="Textarea ghost" variant="ghost" data-testid="textarea-ghost" />
     <button type="button">After textarea</button>
     <Textarea aria-label="Textarea error" status="error" data-testid="textarea-error" />
     <Textarea aria-label="Textarea disabled" disabled data-testid="textarea-disabled" />
     <Select aria-label="Select" data-testid="select">{SELECT_OPTIONS}</Select>
+    <Select aria-label="Select ghost" variant="ghost" data-testid="select-ghost">{SELECT_OPTIONS}</Select>
     <button type="button">After select</button>
     <Select aria-label="Select error" status="error" data-testid="select-error">{SELECT_OPTIONS}</Select>
     <Select aria-label="Select disabled" disabled data-testid="select-disabled">{SELECT_OPTIONS}</Select>
     <Grid columns="minmax(0, 1fr) auto" width="40rem"><Box /><Select aria-label="Select in an auto track" data-testid="select-auto">{SELECT_OPTIONS}</Select></Grid>
     <Box width="20rem"><Select aria-label="Select in a set width" data-testid="select-fills">{SELECT_OPTIONS}</Select></Box>
+    {/* The same controls under a preview, in a state no pointer or key holds; the states spec reads them against the real states above. */}
+    <div {...previewAttributes("hover")}>
+      <Button data-testid="preview-hover">Solid</Button>
+      <Button variant="hairline" data-testid="preview-hover-hairline">Hairline</Button>
+      <Button variant="ghost" selected data-testid="preview-hover-selected">Selected ghost</Button>
+      <Button disabled data-testid="preview-hover-disabled">Disabled</Button>
+      <Field aria-label="Field under a hover preview" data-testid="preview-hover-field" />
+    </div>
+    <Button {...previewAttributes("active")} data-testid="preview-active">Pressed</Button>
+    <div {...previewAttributes("focus")}>
+      <Button data-testid="preview-focus">Focused</Button>
+      <Field aria-label="Field under a focus preview" data-testid="preview-focus-field" />
+    </div>
   </>
 );

@@ -87,22 +87,32 @@ test.describe("the selection marks", () => {
     expect(dash.backgroundColor).not.toBe(mixed.backgroundColor);
   });
 
-  test("[atoms.mark.forced-colors] a Radio is Canvas in a ButtonText ring, and Highlight with a Highlight dot once checked", async ({ page }) => {
-    const { Canvas: canvas, ButtonText: buttonText, Highlight: highlight } = await systems(page, "Canvas", "ButtonText", "Highlight");
+  test("[atoms.mark.forced-colors] a Radio is Canvas in a ButtonText ring, and a Highlight face with a HighlightText dot once checked", async ({ page }) => {
+    const { Canvas: canvas, ButtonText: buttonText, Highlight: highlight, HighlightText: highlightText } = await systems(page, "Canvas", "ButtonText", "Highlight", "HighlightText");
     const off = await painted(page.getByTestId("radio-md"));
     expect([off.backgroundColor, off.borderTopColor]).toEqual([canvas, buttonText]);
     const on = await painted(page.getByTestId("radio-on"));
-    expect(on.borderTopColor).toBe(highlight);
+    expect([on.backgroundColor, on.borderTopColor]).toEqual([highlight, highlight]);
     const dot = await painted(page.getByTestId("radio-on"), "::after");
-    expect(dot.backgroundColor).toBe(highlight);
-    expect(dot.backgroundColor).not.toBe(canvas);
+    expect(dot.backgroundColor).toBe(highlightText);
+  });
+
+  test("[atoms.mark.press] [atoms.mark.forced-colors] a pressed mark's halo is Highlight, the colour the OS gives what is under the pointer", async ({ page }) => {
+    for (const id of ["checkbox-md", "switch-md"]) {
+      const mark = page.getByTestId(id);
+      const box = (await mark.boundingBox())!;
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+      await page.mouse.down();
+      await expectStyle(mark, { outlineStyle: "solid", outlineColor: "Highlight" });
+      await page.mouse.up();
+    }
   });
 
   test("[atoms.mark.forced-colors] [foundations.color.forced-colors] a disabled mark is GrayText, checked or not", async ({ page }) => {
     const gray = await system(page, "GrayText");
     for (const id of ["checkbox-disabled", "checkbox-on-disabled", "radio-disabled", "radio-on-disabled", "radio-error-disabled"]) expect((await painted(page.getByTestId(id))).borderTopColor, id).toBe(gray);
     expect((await painted(page.getByTestId("checkbox-on-disabled"))).backgroundColor).toBe(gray);
-    expect((await painted(page.getByTestId("radio-on-disabled"), "::after")).backgroundColor).toBe(gray);
+    expect((await painted(page.getByTestId("radio-on-disabled"))).backgroundColor).toBe(gray);
     expect((await painted(page.getByTestId("switch-disabled"))).boxShadow).toContain(gray);
     expect((await painted(page.getByTestId("switch-error-disabled"))).boxShadow).toContain(gray);
     expect((await painted(page.getByTestId("switch-on-disabled"))).backgroundColor).toBe(gray);
@@ -123,11 +133,11 @@ test.describe("the selection marks", () => {
     expect((await painted(page.getByTestId("switch-error"))).boxShadow).toContain(buttonText);
   });
 
-  test("[atoms.mark.forced-colors] a Spinner's arc and its ring are two colours, and a Divider is a visible solid border, one stroke wide", async ({ page }) => {
-    const { CanvasText: canvasText, GrayText: grayText, Canvas: canvas } = await systems(page, "CanvasText", "GrayText", "Canvas");
-    const spinner = await painted(page.getByTestId("spinner"));
-    expect(spinner.borderTopColor).not.toBe(spinner.borderRightColor);
-    expect([spinner.borderTopColor, spinner.borderRightColor]).toEqual([canvasText, grayText]);
+  test("[atoms.mark.forced-colors] a Spinner's tail is CanvasText, and a Divider is a visible solid border, one stroke wide", async ({ page }) => {
+    const { CanvasText: canvasText, Canvas: canvas } = await systems(page, "CanvasText", "Canvas");
+    const spinner = await page.getByTestId("spinner").evaluate((element) => getComputedStyle(element).backgroundImage);
+    expect(spinner).toContain("conic-gradient");
+    expect(spinner).toContain(canvasText);
     const rule = await page.getByTestId("divider").evaluate((element) => {
       const style = getComputedStyle(element);
       return { width: style.borderTopWidth, style: style.borderTopStyle, color: style.borderTopColor };
@@ -176,6 +186,25 @@ test.describe("the input frames", () => {
       await expectStyle(frame, { borderTopColor: "Highlight" });
     });
   }
+
+  test("[atoms.select.listbox] [atoms.states.atom-table] a Select's list draws the option it points at in Highlight, as the OS draws a hover", async ({ page }) => {
+    await openHarness(page, "states");
+    await page.getByTestId("select").getByRole("combobox").click();
+    const options = page.getByRole("listbox").getByRole("option");
+    await expectStyle(options.first(), { backgroundColor: "Highlight", color: "HighlightText" });
+    await expectStyle(options.last(), { color: "CanvasText" });
+  });
+});
+
+test.describe("the room a control keeps for its line", () => {
+  test.skip(({ contextOptions }) => !isForced({ contextOptions }), "forced colours are emulated only by chromium-forced-colors");
+
+  test("[foundations.shape.control-line-room] forced colours give a control with no line its room back, so the OS can draw its edge", async ({ page }) => {
+    await openHarness(page, "ground");
+    for (const id of ["field-ghost", "button-solid"]) {
+      await expectStyle(page.getByTestId(id), { borderTopWidth: px(SHAPE_SOURCE.stroke.border), borderTopStyle: "solid" });
+    }
+  });
 });
 
 test.describe("the display Atoms", () => {
@@ -232,7 +261,7 @@ test.describe("the app's compositions", () => {
   test("an ink Dot stays drawn as a status Dot does", async ({ page }) => {
     await page.goto("/");
     const { CanvasText } = await systems(page, "CanvasText");
-    const dot = page.getByTestId("home-mockup-side").getByText("보드", { exact: true }).locator("> *").first();
+    const dot = page.getByTestId("home-live-dot");
     await expect(dot).toBeVisible();
     expect(await face(dot)).toBe(CanvasText);
   });

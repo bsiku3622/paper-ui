@@ -4,7 +4,7 @@ import { ELEVATION, ELEVATION_NEST_LIMIT } from "../../packages/paper-ui/src/tok
 import { BREAKPOINTS, ELEVATIONS, LAYOUT_SOURCE, LAYOUT_VALUES, type Elevation } from "../../packages/paper-ui/src/tokens/layout";
 import type { SourceOverrides } from "../../packages/paper-ui/src/tokens/overrides";
 import { px } from "../support/geometry";
-import { openHarness, openPlayground } from "../support/harness";
+import { chooseProp, openHarness, openPlayground } from "../support/harness";
 import { expectStyle } from "../support/style";
 
 // CDP runs in chromium only, so this spec is not part of the cross-engine set.
@@ -27,12 +27,14 @@ test("[foundations.layout.breakpoint-em] a breakpoint follows the browser's defa
   const { md } = LAYOUT_SOURCE.breakpoint;
   const { content } = LAYOUT_SOURCE.container;
   await page.setViewportSize({ width: Math.round((md + md * ratio) / 2), height: 900 });
-  const sidebar = page.getByTestId("home-mockup-side");
+  // The principles' head sets its title and its paragraph side by side above md, and one over the other below it.
+  const head = page.getByTestId("home-principles-head");
+  const tracks = () => head.evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(" ").length);
   const column = page.getByTestId("home-column");
 
   await page.goto("/");
   await expect(column).toBeVisible();
-  await expect(sidebar).toBeVisible();
+  expect(await tracks()).toBe(2);
   await expect(column).toHaveCSS("max-width", px(content));
 
   const cdp = await page.context().newCDPSession(page);
@@ -40,7 +42,7 @@ test("[foundations.layout.breakpoint-em] a breakpoint follows the browser's defa
   await page.reload();
   await expect(column).toBeVisible();
   await expect(page.locator("html")).toHaveCSS("font-size", px(FONT));
-  await expect(sidebar).toBeHidden();
+  expect(await tracks()).toBe(1);
   await expect(column).toHaveCSS("max-width", px(content * ratio));
 });
 
@@ -129,7 +131,7 @@ test("[foundations.layout.elevation-nesting] the Floating example's popover stan
 
 test("[foundations.layout.elevation-nesting] a modal Floating stands at the modal tier, and one nested in it a nudge above", async ({ page }) => {
   await openPlayground(page, "floating", "Floating");
-  await page.getByRole("combobox", { name: "presentation", exact: true }).selectOption("modal");
+  await chooseProp(page, "presentation", "modal");
   await page.getByRole("button", { name: "설정 열기", exact: true }).click();
   const outer = page.getByRole("dialog", { name: "설정", exact: true });
   await expect(outer.locator("xpath=..")).toHaveCSS("z-index", z("modal"));
@@ -177,7 +179,7 @@ test("[foundations.layout.elevation-nesting] a toast paints above an open modal 
 test("[foundations.layout.elevation-nesting] [foundations.layout.stage-isolation] a previewed Surface at the toast tier stays under the GNB, because the preview stage isolates its content", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 500 });
   await openPlayground(page, "surface", "Surface");
-  await page.getByRole("combobox", { name: "elevation", exact: true }).selectOption("toast");
+  await chooseProp(page, "elevation", "toast");
   const sample = page.getByTestId("surface-example");
   await expect(sample).toHaveCSS("z-index", z("toast"));
   await expect(page.locator("[data-preview-background]")).toHaveCSS("isolation", "isolate");

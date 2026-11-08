@@ -2,6 +2,7 @@ import { expect, type Page } from "@playwright/test";
 
 import type { CaseName } from "../../fixtures/harness/src/case-names";
 import { pageErrors } from "./console";
+import { chooseOption } from "./select";
 
 // The two servers the e2e run starts: the app and the @paper-ui/harness page. Each has a fixed port with
 // --strictPort and no reuse, so a server from another worktree or branch never answers for this one.
@@ -21,6 +22,17 @@ export const harness = (name?: CaseName, params: Record<string, string> = {}) =>
 export const openPlayground = async (page: Page, slug: string, name: string) => {
   await page.goto(`/playground/${slug}`);
   await expect(page.getByRole("heading", { name, exact: true })).toBeVisible();
+};
+
+// A Props control is a Select, or a segment (a radio group) when its choices are few and its resting value is one of them. A spec that
+// drives a component through its props picks a value either way; which of the two a prop gets is the Playground's own contract, and
+// app/playground.spec.ts checks it.
+export const chooseProp = async (page: Page, name: string, value: string) => {
+  const select = page.getByRole("combobox", { name, exact: true });
+  const segment = page.getByRole("radiogroup", { name, exact: true });
+  await expect(select.or(segment)).toBeVisible();
+  if ((await select.count()) > 0) await chooseOption(select, value);
+  else await segment.getByRole("radio", { name: value, exact: true }).click();
 };
 
 // A harness case, once it has rendered. The page must mount without an error.
