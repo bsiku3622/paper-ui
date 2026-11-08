@@ -1,0 +1,59 @@
+# Float
+
+The Float Primitive is the second-order primitive that owns the position and elevation (z and shadow) of a floating layer, its opening and closing motion, and the way it is dismissed. It connects the open state through Trigger · Content · Close, delegates input normalization, placement, nested dismissal, background inert and scroll locking to React Aria, and Paper owns the public API and the connection to state (all types, including `Placement`, are declared by Paper). Floating owns one unit of elevation (z and shadow) and the modal's scrim and its gutter by itself, and puts on no other colour: the surface, border, corners and padding are specified by the className of Content (choose fill · border · radius with `surfaceClass()`), and only the modal's scrim uses `scrimPaint` of the Paint layer. Trigger and Close are native buttons that take `onClick`, so they hold no press inside.
+
+| Component | Hook | Responsibility | Default |
+| --- | --- | --- | --- |
+| Floating | useFloating · useFloatingContext | open/defaultOpen/onOpenChange. The presentation of Content (popover · modal) | popover. Connects Portal, placement, opening and closing motion, dismissal and focus through Trigger · Content · Close |
+
+## Floating
+
+Floating connects the open state with Trigger · Content · Close. Root holds only the open state and makes no DOM wrapper, and when Content opens it mounts the [Portal](a11y.md#portal) and the focus scope. The surface, padding, border and corners of Content are decided by the caller: draw the panel as a surface with `as={Surface}` or give a className. The default popover stands in the overlay tier and the modal in the modal tier, and both draw the floating shadow themselves. A class the app passes beats the package styles by layer, not by load order ([Precedence](../get-started/install.md#priority)).
+
+An example that provides a name and a close button to an explicitly opened modal.
+
+```tsx
+<Floating>
+  <Floating.Trigger>Open settings</Floating.Trigger>
+  <Floating.Content as={Surface} fill="raised" radius="lg" padding="xl" presentation="modal" aria-label="Settings">
+    <Field aria-label="Display name" />
+    <Floating.Close>Close</Floating.Close>
+  </Floating.Content>
+</Floating>
+```
+
+The open/defaultOpen/onOpenChange of Root choose controlled or uncontrolled state. useFloating is a state hook that accepts the same options and returns `FloatingResult` (isOpen · setOpen · open · close · toggle), and it does not notify when the value is the same. A part inside Floating reads the same result with `useFloatingContext()` and opens and closes with a button it made itself. The DOM behaviour is connected by Content. Trigger · Close (`FloatingTriggerProps` · `FloatingCloseProps`) are native buttons with `type="button"` and accept the props of a native button. `as` can choose another target, `disabled` follows the projection of the [shared contract](README.md#shared-contract), and a tag that received `role="button"` can also be pressed with Enter · Space. The caller's `onClick` runs first and opening or closing follows ([Composition tools](README.md#composition-tools)), and if the caller calls `preventDefault()`, it neither opens nor closes. Trigger is the opener that focus returns to, so it takes focus by itself on click, because Safari does not give focus to a clicked button. When `onPress` and `data-active` are needed, lift it onto the Pressable of [Press](press.md) with `as` (`<Pressable as={Floating.Trigger}>`). There is one element and one press mechanism, and opening happens only once. The aria-haspopup=dialog · aria-expanded · aria-controls of Trigger are connected to Content.
+
+The children of Content are either a node or a function that receives `FloatingContentState`: `{ isOpen, presentation, placement, elevation }`, where `presentation` is `popover` or `modal`, `placement` is which side of the anchor the panel settled on (`top` · `bottom` · `start` · `end`, mirrored on a right-to-left page following the direction of the anchor element, and undefined for a modal because it has none), and `elevation` is `{ tier, rank }`. Opening and closing are done with `useFloatingContext()`, not with the snapshot. Content cuts the context of FormField, so an input inside a panel opened from a field has no relation to that field ([Field](field.md)).
+
+Content stands in one of two ways through `presentation`. `popover` (the default) stands beside the anchor, and `modal` stands in the centre over a scrim. It is chosen by Content, not by Root, so the open state and the way of standing are separate. A popover chooses its anchor with `anchorRef`, and when not given, Floating.Trigger is the anchor. If neither exists, it raises a development error (`[paper-ui] Floating.Content (popover) needs Floating.Trigger or anchorRef.`) once and draws nothing. It is natural to put Trigger before Content, but even if it comes after, Content settles its position once more. A modal has no anchor, and gets `aria-modal`, a scrim, background inert and scroll locking. Content sets `data-presentation`, and a popover sets the side it settled on as `data-placement`. The props of the two shapes are split by type: `anchorRef` · `placement` · `offset` · `crossOffset` · `flip` · `fitAnchor` exist only on popover (`FloatingPopoverProps`), and `underlayClassName` only on modal (`FloatingModalProps`).
+
+The Content role is dialog / alertdialog / listbox, and the default is dialog. Provide a name with aria-label or aria-labelledby. Only a modal gets aria-modal=true. A listbox is a list that another control opens and points to (the list of Select): it neither takes focus nor returns it, so focus stays on that control (the defaults of `autoFocus` · `restoreFocus` are false), and that control reads the panel's id with `useFloatingContentId()` and points to it with `aria-controls`. The semantics of Menu, Tooltip and so on are not given arbitrarily to this API.
+
+| Content option | Default | Contract |
+| --- | --- | --- |
+| presentation | popover | `popover` (beside the anchor) or `modal` (centre over a scrim) |
+| as | div | The element or component that draws the panel. With `as={Surface}`, the panel itself becomes the surface and no extra surface layer is put inside |
+| dismissable | true | Dismiss on outside pointer interaction |
+| keyboardDismissDisabled | false | If true, dismissal with Escape is off. Escape is heard only while focus is inside the panel |
+| closeOnBlur | false | Request closing when focus leaves |
+| autoFocus / restoreFocus | true / true, false / false for listbox | Entering / restoring after release |
+| initialFocusRef | none | An explicit focus target inside |
+| anchorRef | Trigger | The element a popover stands beside. It does not close even when an outside interaction happens on this element |
+| placement | bottom start | Direction and alignment (`Placement`, a logical direction, so it is mirrored on a right-to-left page) |
+| offset / crossOffset | sm / none | The gap between the anchor and the panel. A gap step name (`xs`~`3xl`) or `none` |
+| flip | true | Switch direction when there is not enough room |
+| fitAnchor | false | If true, the panel is no narrower than the anchor. It does not become wider than the space between the `layout.gutter` on both sides of the window, though. It measures the anchor's width while open, and measures again when the anchor changes size |
+| portalContainer | document.body | The Element to attach the Portal to |
+| closeOnInteractOutside | none | Filter for outside interaction |
+| underlayClassName | none | Modal scrim class |
+
+`offset` and `crossOffset` are not numbers but [gap step](../foundations/layout.md#source--role) names, and for React Aria, which takes pixel numbers, Floating measures that step at the place where the panel stands and passes it on (`internal/measure`). So even if a subtree overrides the spacing scale, or the root font size differs, the spacing follows, and it is measured again when the window size changes. The margin left when the panel meets the edge of the viewport is `layout.gutter` (16).
+
+Initial focus goes in the order initialFocusRef, the first inner target, and Content when there is no target. To move explicitly to a heading, provide tabIndex=-1. With autoFocus=false, there is no automatic move. The Portal root re-applies the theme of the place where it was opened, so moved content also keeps Paper's resolved theme. The same root also carries the direction of the place where it was opened, so the placement of the panel and the arrow keys inside read the same direction ([Portal](a11y.md#portal)). The Shape · Layout · Typography sources that the opening place (Trigger) overrode are also placed on the same root and carried over, so a control inside a panel opened from a region with narrowed spacing is drawn at that region's size ([Shape](../foundations/shape.md#source--role--recipe)). `portalContainer` decides only where the DOM is attached, and the theme and sources belong to the opening place wherever it is attached. A panel that is open from the start (`defaultOpen` or an `open` that is true from the start) stands after the page is committed and before it is painted. So whether Trigger is written above or below Content, and wherever focus is, it receives that Trigger's sources and is placed in its position from the first frame. However, the panel does not yet exist during the parent effect of the first render, so decide the initial focus with `initialFocusRef`.
+
+## Opening and closing motion
+
+When Content opens, the panel (the scrim and the panel for a modal) appears rising in Motion's `enter` role (`data-presence="entering"`), and a popover starts after it has settled its position. When it closes, it sinks in the `exit` role (`data-presence="exiting"`) and stays mounted until that animation ends. Meanwhile the root is `inert` and `aria-hidden`, so it disappears from input and assistive technology at once, and the focus trap is released. When the animation ends, the node is taken down and focus returns to Trigger. If it is reopened during exit, a new panel opens from the start (position, focus and source transport are decided again). Under `prefers-reduced-motion` the movement shrinks to an instant and it is taken down at once, and in an environment without animation it is taken down the moment it closes. The timing is decided by the `presence` of [Motion](../foundations/motion.md#compositions).
+
+Modal uses React Aria's focus containment, background inert and scroll locking. Nested Floating handles Escape from the inside out and restores each previous target. Nesting is reflected by the elevation nudge: a panel opened over a panel of the same tier rises one step at a time (up to `ELEVATION_NEST_LIMIT`) and never reaches the next tier, and a panel opened over a higher tier follows that tier. So the scrim of a modal opened over a popover covers that popover, and a popover opened over a modal stands above that scrim. The z of the panel placed by React Aria is not used. When the last modal is released, the background and scrolling are restored. Dismissable and Escape are independent. If both are off, an explicit means of closing must be provided. Escape is heard only while focus is inside the panel, because the place that listens is the panel itself. A modal traps focus, so it always listens, but a popover opened without focus by `autoFocus={false}` (like a coachmark) is not closed by Escape pressed on the page. To close such a panel with Escape, the app attaches a listener to `document` and closes it. The product-specific destination and routing after the calling button is removed are decided by the consumer.

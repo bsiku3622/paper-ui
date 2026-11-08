@@ -70,7 +70,7 @@ Box의 `padding` · `paddingX` · `paddingY`가 이 단계를 받습니다. 앱 
 <!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 | 역할 | 값 | 쓰는 곳 |
 | --- | --- | --- |
-| `radius.control.xs / sm / md / lg` | 8 / 12 / 12 / 12 / 12 | Button · IconButton · Field · Select · Textarea, `shape="rounded"`인 Badge |
+| `radius.control.xs / sm / md / lg / xl` | 8 / 12 / 12 / 12 / 12 | Button · IconButton · Field · Select · Textarea, `shape="rounded"`인 Badge |
 | `radius.selection` | 4 | Checkbox |
 | `radius.surface.sm / md / lg` | 12 / 16 / 20 | Surface의 `radius` prop |
 | `radius.text` | 4 | 글자 줄 곁에 서는 것 — Link의 링 |

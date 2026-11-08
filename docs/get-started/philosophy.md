@@ -72,9 +72,9 @@ Paper UI가 쓰는 색은 blue · green · amber · red 넷뿐입니다. 이 넷
 
 복잡한 화면은 원래 정보가 많으므로 Paper UI는 밀도를 지킵니다. 본문은 14px(`body`)이고, 간격은 촘촘합니다. shadcn, Atlassian, Linear가 앉은 자리입니다. 개발자가 콘텐츠 사이트의 16px로 키우면 밀도가 풀려 대시보드가 블로그처럼 늘어집니다.
 
-Paper UI는 밀도를 다룰 때 두 어휘를 직교시킵니다. **Space**는 Box의 padding과 Stack·Inline·Grid의 gap을 하나의 길이 scale(`xs`~`3xl`)에서 고릅니다. **ControlSize**는 Button·Field·Select 같은 단일 컨트롤의 크기를 `xs` · `sm` · `md` · `lg` 가운데서 고릅니다. 간격은 세밀하게, 컨트롤 크기는 단순하게 유지합니다.
+Paper UI는 밀도를 다룰 때 두 어휘를 직교시킵니다. **Space**는 Box의 padding과 Stack·Inline·Grid의 gap을 하나의 길이 scale(`xs`~`3xl`)에서 고릅니다. **ControlSize**는 Button·Field·Select 같은 단일 컨트롤의 크기를 `xs` · `sm` · `md` · `lg` · `xl` 다섯 단 가운데서 고릅니다. 간격은 세밀하게, 컨트롤 크기는 단순하게 유지합니다.
 
-글자 크기는 컨트롤 크기와 따로 선택합니다. ControlSize는 geometry를 정하고, typography preset은 역할별 글자 스타일을 고릅니다. 컨트롤의 기본 md는 36px 높이와 14px 글자를 기준으로 둡니다. lg는 같은 글자에 40px, xl은 15px 글자에 44px입니다.
+글자 크기는 컨트롤 크기와 따로 선택합니다. ControlSize는 geometry를 정하고, typography preset은 역할별 글자 스타일을 고릅니다. 컨트롤의 기본 md는 40px 높이에 14px 글자입니다. 높이는 xs부터 32 · 36 · 40 · 44 · 48이고, 글자는 13 · 14 · 14 · 15 · 16입니다.
 
 밀도가 곧 각짐은 아닙니다. 조작부는 크기에 따라 8·12px, layout 면은 12·16·20px 곡선을 씁니다. 전체 height와 radius를 크게 키우지 않고 여백과 면으로 편안함을 만듭니다. hover는 면보다 경계가 한 단 또렷해지게 하며, keyboard focus는 파란 링으로 보입니다.
 

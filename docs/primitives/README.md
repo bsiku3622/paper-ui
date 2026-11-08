@@ -167,7 +167,7 @@ locale은 Provider의 `locale`, 없으면 `<html lang>`, 그것도 없으면 `en
 ## 합성 도구
 
 [contract:primitives.composition.own-tools]: #
-`mergeProps` · `mergeRefs` · `composeEventHandlers`는 위 열한 분류와 함께 쓰는 합성 도구이고, 계약은 React Aria가 아니라 Paper의 것입니다. 소비자가 hook이 돌려준 props를 한 요소에 합칠 때 같은 도구를 쓰도록 `primitives/composition.ts` 하나가 정의합니다.
+`mergeProps` · `mergeRefs` · `composeEventHandlers`는 위 열두 분류와 함께 쓰는 합성 도구이고, 계약은 React Aria가 아니라 Paper의 것입니다. 소비자가 hook이 돌려준 props를 한 요소에 합칠 때 같은 도구를 쓰도록 `primitives/composition.ts` 하나가 정의합니다.
 
 [contract:primitives.composition.merge-props]: #
 `mergeProps(...sets)`는 prop 묶음을 왼쪽부터 합치고, 규칙은 다섯입니다. `on[A-Z]*` handler는 모두 인자 순서대로 실행합니다. `className`은 이어 붙입니다. `style`은 키별로 합치고 뒤쪽 키가 이깁니다. `ref`는 `mergeRefs`로 하나로 만들고, null ref는 앞의 ref를 지우지 못합니다. 나머지 키는 undefined가 아닌 마지막 값을 쓰므로 undefined는 앞의 값을 지우지 못하고, `id`도 따로 합치지 않습니다. 한 handler의 preventDefault가 뒤 handler를 막지는 않습니다.
