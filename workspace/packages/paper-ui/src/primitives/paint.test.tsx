@@ -43,17 +43,25 @@ describe("Surface", () => {
     expect(surfaceClass({ elevation: "sticky", top: "none" })).toBe([elevation.sticky, stickyTop.none].join(" "));
   });
 
+  it("[primitives.surface.border-side] draws its line all the way round, or along the side it names", () => {
+    render(<><Surface data-testid="all" border /><Surface data-testid="side" border="bottom" /><Surface data-testid="none" /></>);
+    expect(screen.getByTestId("all").classList.contains(surfaceBorder.all)).toBe(true);
+    expect(screen.getByTestId("side").classList.contains(surfaceBorder.bottom)).toBe(true);
+    expect(screen.getByTestId("side").classList.contains(surfaceBorder.all)).toBe(false);
+    for (const line of Object.values(surfaceBorder)) expect(screen.getByTestId("none").classList.contains(line)).toBe(false);
+  });
+
   it("[primitives.surface.classes] turns fill, border, radius and elevation into the classes of their own maps", () => {
     render(<Surface data-testid="surface" fill="raised" border radius="md" elevation="overlay" padding="md" />);
     const element = screen.getByTestId("surface");
-    for (const className of [fillClass.raised, surfaceBorder, surfaceRadius.md, elevation.overlay, spaceClass.padding.md]) {
+    for (const className of [fillClass.raised, surfaceBorder.all, surfaceRadius.md, elevation.overlay, spaceClass.padding.md]) {
       expect(element.classList.contains(className), className).toBe(true);
     }
   });
 
   it("[primitives.surface.classes] [primitives.paint.class-functions] gives surfaceClass the same classes for everything but the theme", () => {
     expect(surfaceClass({ fill: "sunken", border: true, radius: "full", elevation: "modal" })).toBe(
-      [fillClass.sunken, surfaceBorder, surfaceRadius.full, elevation.modal].join(" "),
+      [fillClass.sunken, surfaceBorder.all, surfaceRadius.full, elevation.modal].join(" "),
     );
     expect(surfaceClass({})).toBe("");
     for (const fill of SURFACE_FILLS) expect(surfaceClass({ fill }), fill).toBe(fillClass[fill]);
@@ -65,7 +73,7 @@ describe("Surface", () => {
     expect(container.querySelectorAll("*")).toHaveLength(1);
     const element = screen.getByTestId("surface");
     expect(ref.current).toBe(element);
-    for (const className of [stackRoot, spaceClass.gap.md, fillClass.raised, surfaceBorder]) expect(element.classList.contains(className), className).toBe(true);
+    for (const className of [stackRoot, spaceClass.gap.md, fillClass.raised, surfaceBorder.all]) expect(element.classList.contains(className), className).toBe(true);
   });
 
   it("[primitives.surface.classes] takes each tier's class from the public elevation map, and nothing else with it", () => {

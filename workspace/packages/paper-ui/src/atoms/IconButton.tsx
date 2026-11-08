@@ -6,18 +6,16 @@
 import { forwardRef, type ElementType, type ReactElement, type ReactNode } from "react";
 
 import { registerAtom } from "../internal/render-target";
+import type { ControlForm } from "../primitives/control/Control";
 import type { IconProps } from "../primitives/Icon";
 import type { PaintFace } from "../primitives/paint/Paint";
 import type { PolymorphicProps } from "../primitives/polymorphic";
-import type { Accent, ControlShape, ControlSize, IconSize } from "../tokens";
+import type { Accent } from "../tokens";
 import { ButtonBase, type ButtonBaseProps } from "./button-base";
 
-type IconButtonOwn = PaintFace & {
+type IconButtonOwn = Pick<ControlForm, "size" | "shape" | "iconSize"> & PaintFace & {
   accent?: Accent;
-  size?: ControlSize;
-  shape?: ControlShape;
   disabled?: boolean;
-  iconSize?: IconSize;
   // 모서리 표식 — 보통 Badge 하나. 이름은 aria-label 이 말하므로 숫자도 거기에 적는다("알림 3개").
   badge?: ReactNode;
   "aria-label": string;

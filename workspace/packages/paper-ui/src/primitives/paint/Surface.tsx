@@ -9,7 +9,7 @@ import { joinClass } from "../../internal/joinClass";
 import { resolveFill } from "../../resolvers";
 import { elevation as elevationClass, stickyTop, type StickyTop } from "../../styles/elevation.css";
 import { useThemeScope } from "../../theme/scope";
-import { stateAttributes, type Elevation, type SurfaceFill, type SurfaceRadius, type SurfaceTheme } from "../../tokens";
+import { stateAttributes, type Elevation, type LineSide, type SurfaceFill, type SurfaceRadius, type SurfaceTheme } from "../../tokens";
 import { Box, type BoxOwnProps } from "../Box";
 import type { PolymorphicComponent, PolymorphicProps } from "../polymorphic";
 import { restingShadow, surfaceBorder, surfaceItem, surfaceRadius } from "./Surface.css";
@@ -21,8 +21,8 @@ export type SurfaceOwnProps = BoxOwnProps & SurfaceFace & {
   // fill 은 면의 깊이 — canvas · raised · sunken. 테마가 있는 Surface 는 fill 을 안 줘도 그 테마의 canvas 를 깐다.
   // shadow 는 제자리에 있는 면의 그림자 — 선 대신 가장자리를 세운다. 떠서 무언가를 덮는 면은 elevation 이고, elevation 의 그림자가 있으면 그것이 이긴다.
   // sticky 는 그림자가 없는 tier 라 shadow 를 그대로 받는다 — 창에 붙어 서는 사이드바도 바탕 위 첫 면이다.
-  // 카드 헤어라인 — 켜면 border.base 로 얇은 선. 면 위에 얹는다.
-  border?: boolean;
+  // 선 — 켜면 둘레 전체, top · bottom · start · end 면 그 면만. 색은 border.base 로 고정이고 면 위에 얹는다.
+  border?: boolean | LineSide;
   // 모서리 — 안 주면 각지게 둔다. full 은 알약(높이의 절반).
   radius?: SurfaceRadius;
   // 높이 — position · 쌓임 순서(z) · 그림자를 한 번에 정한다. 그림자는 떠 있는 층만 갖고, 지면에 붙은 면은 prop 을 생략한다.
@@ -43,7 +43,7 @@ export type SurfaceProps<As extends ElementType = "div"> = PolymorphicProps<Surf
 
 // theme 이 필요로 하는 context 를 뺀 나머지 — class 로 갈 수 있는 모든 것.
 export const surfaceClass = ({ fill, border, radius, elevation, top, hoverable, shadow }: Pick<SurfaceOwnProps, "border" | "radius" | "elevation" | "top" | "hoverable"> & { fill?: SurfaceFill; shadow?: boolean }): string =>
-  joinClass(resolveFill(fill), border && surfaceBorder, radius && surfaceRadius[radius], elevation && elevationClass[elevation], elevation === "sticky" && top && stickyTop[top], shadow && fill && (!elevation || elevation === "sticky") && restingShadow, hoverable && surfaceItem);
+  joinClass(resolveFill(fill), border && surfaceBorder[border === true ? "all" : border], radius && surfaceRadius[radius], elevation && elevationClass[elevation], elevation === "sticky" && top && stickyTop[top], shadow && fill && (!elevation || elevation === "sticky") && restingShadow, hoverable && surfaceItem);
 
 const SurfaceImpl = forwardRef<HTMLElement, Omit<SurfaceProps, "as" | "ref"> & { as?: ElementType }>(function Surface({
   fill,

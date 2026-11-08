@@ -56,6 +56,10 @@ function useContextValue() {
 export function useFloatingContext(): FloatingResult {
   return useContextValue().state;
 }
+/** The id the panel of the Floating a part stands in takes: for an opener of its own that says what it controls (`aria-controls`). */
+export function useFloatingContentId(): string {
+  return useContextValue().contentId;
+}
 export type FloatingProps = FloatingOptions & { children: ReactNode };
 function Root({ children, ...options }: FloatingProps) {
   const state = useFloating(options);
@@ -93,7 +97,8 @@ const Trigger = registerPart(TriggerImpl) as PolymorphicComponent<FloatingButton
 
 type FloatingCommonProps = {
   children: ReactNode | ((state: FloatingContentState) => ReactNode);
-  role?: "dialog" | "alertdialog";
+  // A listbox is a list a control of its own opens and points into (a Select): it takes no focus and its opener says what it controls.
+  role?: "dialog" | "alertdialog" | "listbox";
   id?: never;
   dismissable?: boolean;
   keyboardDismissDisabled?: boolean;
@@ -113,6 +118,8 @@ type FloatingPopoverOwnProps = FloatingCommonProps & {
   offset?: Space | "none";
   crossOffset?: Space | "none";
   flip?: boolean;
+  /** At least as wide as the anchor: a list that opens under the control it belongs to. */
+  fitAnchor?: boolean;
   underlayClassName?: never;
 };
 /** A dialog over a scrim: centred, with the page behind it inert and its scroll locked. */
@@ -124,6 +131,7 @@ type FloatingModalOwnProps = FloatingCommonProps & {
   offset?: never;
   crossOffset?: never;
   flip?: never;
+  fitAnchor?: never;
 };
 type FloatingContentOwnProps = FloatingPopoverOwnProps | FloatingModalOwnProps;
 // The panel is one element. Floating draws its elevation and nothing else, so `as={Surface}` is how the panel gets a face.
@@ -190,9 +198,13 @@ type ShownProps = ContentImplProps & { rootRef: RefObject<HTMLDivElement | null>
 // A Content while it is on the page: opening and closing animate through it, and it is gone when the exit has played.
 function Shown({ rootRef, isExiting, forwardedRef, ...props }: ShownProps) {
   const { state, triggerRef, contentId } = useContextValue();
-  const { as = "div", presentation = "popover", role = "dialog", dismissable = true, keyboardDismissDisabled = false, closeOnBlur = false, autoFocus = true, restoreFocus = true,
+  const { as = "div", presentation = "popover", role = "dialog", dismissable = true, keyboardDismissDisabled = false, closeOnBlur = false, autoFocus: autoFocusProp, restoreFocus: restoreFocusProp,
     initialFocusRef, closeOnInteractOutside, portalContainer, anchorRef, placement = "bottom start", offset = "sm", crossOffset = "none", flip = true,
-    underlayClassName, className, style, children, ...attributes } = props;
+    fitAnchor = false, underlayClassName, className, style, children, ...attributes } = props;
+  // A dialog takes the focus and gives it back. A listbox leaves it on the control that opened it, which points into the list.
+  const takesFocus = role !== "listbox";
+  const autoFocus = autoFocusProp ?? takesFocus;
+  const restoreFocus = restoreFocusProp ?? takesFocus;
   const modal = presentation === "modal";
   const anchor = anchorRef ?? triggerRef;
   const panelRef = useRef<HTMLDivElement>(null);
@@ -207,7 +219,7 @@ function Shown({ rootRef, isExiting, forwardedRef, ...props }: ShownProps) {
   const offsetPx = useMeasuredSpace(offset, element, placed);
   const crossOffsetPx = useMeasuredSpace(crossOffset, element, placed);
   const containerPaddingPx = useMeasuredSpace("gutter", element, placed);
-  const position = useAnchoredPosition({ anchor, overlay: panelRef, open: placed, placement, offsetPx, crossOffsetPx, flip, containerPaddingPx });
+  const position = useAnchoredPosition({ anchor, overlay: panelRef, open: placed, placement, offsetPx, crossOffsetPx, flip, containerPaddingPx, fitAnchor });
   // A popover starts entering once it has been placed.
   const isEntering = useAriaEnter(rootRef, modal || position.placement !== null);
 

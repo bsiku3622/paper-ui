@@ -7,7 +7,7 @@ import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
-import { controlReset, selectionBox } from "./recipes/selection-control.css";
+import { markBox, markReset } from "./recipes/mark.css";
 
 const atoms = dirname(fileURLToPath(import.meta.url));
 const stylesheets = (dir: string): string[] =>
@@ -24,6 +24,6 @@ describe("the Atom stylesheets", () => {
   });
 
   it("let a selection box compose its reset instead of repeating it", () => {
-    expect(selectionBox.split(" ")).toContain(controlReset);
+    expect(markBox.split(" ")).toContain(markReset);
   });
 });

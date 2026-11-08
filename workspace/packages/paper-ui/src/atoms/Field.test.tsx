@@ -5,7 +5,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { FormField } from "../primitives/field/FormField";
 import { Icon } from "../primitives/Icon";
 import { iconSize } from "../primitives/Icon.css";
-import { CONTROL_ICON, CONTROL_SIZES, STATUSES } from "../tokens";
+import { CONTROL_SIZES, STATUSES } from "../tokens";
+import { controlSize } from "../primitives/control/Control.css";
 import { Field } from "./Field";
 import { fieldActionReach } from "./Field.css";
 
@@ -32,14 +33,15 @@ describe("Field", () => {
     expect(screen.getByText("⌘ K").tagName).toBe("KBD");
   });
 
-  it("[atoms.field.neutral-status] 기본 fill은 raised다: 생략한 것과 fill=\"raised\"가 같은 class이고, sunken만 다르다", () => {
+  it("[atoms.field.neutral-status] 기본 면은 바닥이 정한다: 생략한 것과 fill을 고른 것이 다르고, 고른 면끼리도 다르다", () => {
     const { rerender } = render(<Field aria-label="field" />);
     const wrapper = () => screen.getByLabelText("field").parentElement!.className;
     const byDefault = wrapper();
     rerender(<Field aria-label="field" fill="raised" />);
-    expect(wrapper()).toBe(byDefault);
+    const raised = wrapper();
+    expect(raised).not.toBe(byDefault);
     rerender(<Field aria-label="field" fill="sunken" />);
-    expect(wrapper()).not.toBe(byDefault);
+    expect(wrapper()).not.toBe(raised);
   });
 
   it("[atoms.field.neutral-status] status 를 생략하면 data-status 를 그리지 않는다", () => {
@@ -122,26 +124,21 @@ describe("Field", () => {
     expect((screen.getByRole("button", { name: "Show password" }) as HTMLButtonElement).disabled).toBe(true);
   });
 
-  it("[atoms.field.actions] draws the action icons at the control's icon size, and an adornment's own size wins", () => {
-    const sizes = CONTROL_SIZES.map((size) => {
-      const { unmount } = render(<Field aria-label={size} size={size} clearable defaultValue="x" type="password" showPasswordToggle leading={<Icon size="label" data-testid="own" />} />);
-      const classes = screen.getAllByRole("button").map((button) => button.querySelector("svg")!.getAttribute("class")!);
-      const own = screen.getByTestId("own").getAttribute("class")!;
-      unmount();
-      return { size, classes, own };
-    });
-    for (const { size, classes, own } of sizes) {
-      for (const icon of classes) expect(icon.split(" "), size).toContain(iconSize[CONTROL_ICON[size]]);
-      expect(own.split(" "), size).toContain(iconSize.label);
+  it("[atoms.field.actions] lets the action icons read the control's icon size, and an adornment's own size wins", () => {
+    render(<Field aria-label="field" size="lg" clearable defaultValue="x" type="password" showPasswordToggle leading={<Icon size="label" data-testid="own"><path d="M1 1h2" /></Icon>} />);
+    for (const button of screen.getAllByRole("button")) {
+      const icon = button.querySelector("svg")!.classList;
+      for (const name of Object.values(iconSize)) expect(icon.contains(name)).toBe(false);
     }
-    expect(new Set(sizes.map(({ classes }) => classes[0])).size).toBe(3);
+    expect(screen.getByTestId("own").classList.contains(iconSize.label)).toBe(true);
+    expect(screen.getByLabelText("field").parentElement!.classList.contains(controlSize.lg)).toBe(true);
   });
 
-  it("[atoms.field.actions] gives each action the hit area of its size, and a native button of its own type", () => {
+  it("[atoms.field.actions] gives each action the hit area that follows its icon, and a native button of its own type", () => {
     for (const size of CONTROL_SIZES) {
       const { unmount } = render(<Field aria-label={size} size={size} clearable defaultValue="x" type="password" showPasswordToggle />);
       for (const action of screen.getAllByRole("button")) {
-        expect(action.classList.contains(fieldActionReach[size]), size).toBe(true);
+        expect(action.classList.contains(fieldActionReach), size).toBe(true);
         expect(action.getAttribute("type"), size).toBe("button");
       }
       unmount();

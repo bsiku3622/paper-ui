@@ -9,11 +9,10 @@ import { inkClass } from "../styles/color.css";
 import { Icon } from "./Icon";
 import { Text } from "./Text";
 import { iconRoot, iconSize } from "./Icon.css";
-import { IconSizeContext } from "./icon-context";
 
 describe("Text", () => {
   it("[primitives.text.default-tag] draws its role with the tag that role implies, hero and display as the page's h1", () => {
-    const tags = { hero: "H1", headline: "H1", display: "H1", title: "H1", heading: "H2", subheading: "H3", body: "P", caption: "P", label: "SPAN" };
+    const tags = { hero: "H1", headline: "H1", display: "H1", title: "H1", heading: "H2", subheading: "H3", lead: "P", body: "P", caption: "P", label: "SPAN" };
     expect(Object.keys(tags)).toEqual([...TEXT_VARIANTS]);
     for (const variant of TEXT_VARIANTS) {
       const view = render(<Text variant={variant}>{variant}</Text>);
@@ -86,20 +85,15 @@ describe("Text", () => {
 describe("Icon", () => {
   const path = <path d="M1 1h2" />;
 
-  it("[primitives.icon.size-precedence] [foundations.shape.geometry-entry] takes an explicit size over the size its container gives it, and that over body", () => {
+  it("[primitives.icon.size-precedence] [foundations.shape.geometry-entry] carries a class for an explicit size only, so without one it reads what its container set", () => {
     render(
       <>
         <Icon data-testid="alone">{path}</Icon>
-        <IconSizeContext.Provider value="caption">
-          <Icon data-testid="inherits">{path}</Icon>
-          <Icon data-testid="explicit" size="label">{path}</Icon>
-        </IconSizeContext.Provider>
+        <Icon data-testid="explicit" size="label">{path}</Icon>
       </>,
     );
     const has = (id: string, size: keyof typeof iconSize) => screen.getByTestId(id).classList.contains(iconSize[size]);
-    expect(has("alone", "body")).toBe(true);
-    expect(has("inherits", "caption")).toBe(true);
-    expect(has("inherits", "body")).toBe(false);
+    for (const size of Object.keys(iconSize) as (keyof typeof iconSize)[]) expect(has("alone", size), size).toBe(false);
     expect(has("explicit", "label")).toBe(true);
     expect(has("explicit", "caption")).toBe(false);
   });
@@ -124,7 +118,7 @@ describe("Icon", () => {
     expect(screen.queryByRole("img")).toBeNull();
   });
 
-  it("[primitives.content.axes] draws body in sans on a p by default, and an Icon at the body artboard on the 24 viewBox", () => {
+  it("[primitives.content.axes] draws body in sans on a p by default, and an Icon on the 24 viewBox", () => {
     render(<><Text data-testid="text">Body</Text><Icon data-testid="icon">{path}</Icon></>);
     const text = screen.getByTestId("text");
     expect(text.tagName).toBe("P");
@@ -132,7 +126,6 @@ describe("Icon", () => {
     expect(text.classList.contains(textMonoClass.body)).toBe(false);
     const icon = screen.getByTestId("icon");
     expect(icon.getAttribute("viewBox")).toBe("0 0 24 24");
-    expect(icon.classList.contains(iconSize.body)).toBe(true);
   });
 
   it("[primitives.icon.artboard] takes the path it is given and names its sizes after Text roles, a class per size", () => {

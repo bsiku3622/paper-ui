@@ -4,8 +4,8 @@
 // 태그든 라우터 Link 든 그냥 대상이고, 눌림 장치는 그 위에 한 벌만 얹힌다. Atom 의 모양을 행동에 입히는 길은
 // <Button as={부품}> 이고, 반대(<부품 as={Button}>)는 개발 오류다(internal/render-target).
 //
-// 눌림의 모습(변위 · 커서 · 비활성)은 Pressable 의 motion="press", 색은 paintClass, 선택은 useSelectable 이 정하고
-// 이 모듈은 크기와 글자와 로딩만 더한다.
+// 눌림의 모습(변위 · 커서 · 비활성)은 Pressable 의 motion="press", 크기와 글자는 controlClass, 색은 paintClass, 선택은
+// useSelectable 이 정하고 이 모듈은 로딩만 더한다.
 
 import { forwardRef, useEffect, useRef, type ElementType, type HTMLAttributes, type ReactNode } from "react";
 
@@ -19,31 +19,25 @@ import { Selectable } from "../primitives/select/Selectable";
 import { SelectableGroup } from "../primitives/select/SelectableGroup";
 import { announce } from "../primitives/a11y/LiveRegion";
 import { useSelectable } from "../primitives/select/useSelectable";
-import { IconSizeContext } from "../primitives/icon-context";
+import { controlClass, type ControlForm } from "../primitives/control/Control";
+import { controlLineRoom } from "../primitives/control/Control.css";
 import { paintClass } from "../primitives/paint/Paint";
-import { resolveControlFontSize, resolveControlStrong, resolvePreset } from "../resolvers";
-import { CONTROL_ICON, type Accent, type ControlFontSize, type ControlShape, type ControlSize, type IconSize, type Justify, type SurfaceFill, type Variant } from "../tokens";
-import { buttonAnchored, buttonBadge, buttonCorner, buttonFull, buttonIconSize, buttonJustify, buttonPill, buttonRoot, buttonSize } from "./Button.css";
+import { VARIANT_LINE, type Accent, type ControlAnatomy, type SurfaceFill, type Variant } from "../tokens";
+import { buttonAnchored, buttonBadge, buttonFull, buttonRoot } from "./Button.css";
 import { Spinner } from "./Spinner";
 
-export type ButtonBaseProps = {
-  anatomy: "label" | "icon";
+export type ButtonBaseProps = Omit<ControlForm, "anatomy"> & {
+  anatomy: Extract<ControlAnatomy, "label" | "icon">;
   as?: ElementType;
   accent?: Accent;
   variant?: Variant;
   fill?: SurfaceFill;
   shadow?: boolean;
-  size?: ControlSize;
-  fontSize?: ControlFontSize;
-  strong?: boolean;
-  justify?: Justify;
-  shape?: ControlShape;
   loading?: boolean;
   loadingLabel?: string;
   fullWidth?: boolean;
   selected?: boolean;
   disabled?: boolean;
-  iconSize?: IconSize;
   badge?: ReactNode;
   children?: ReactNode;
   className?: string;
@@ -58,7 +52,7 @@ const holdsSelection = (as: ElementType | undefined) => as === Selectable || as 
 // What the target takes beyond these (a router link's `to`) goes through to it untouched, so the Atoms type it by `as`.
 export const ButtonBase = forwardRef<HTMLElement, ButtonBaseProps>(function ButtonBase(
   {
-    anatomy, as, accent = "primary", variant = "solid", fill, shadow, size = "md", fontSize, strong, justify, shape = "rounded", loading, loadingLabel, fullWidth,
+    anatomy, as, accent = "primary", variant = "solid", fill, shadow, size, fontSize, strong, gap, align, justify, shape = "pill", loading, loadingLabel, fullWidth,
     selected, disabled = false, iconSize, badge, children, className, ...rest
   },
   forwardedRef,
@@ -94,15 +88,10 @@ export const ButtonBase = forwardRef<HTMLElement, ButtonBaseProps>(function Butt
       aria-busy={busy || undefined}
       className={joinClass(
         buttonRoot,
-        buttonCorner[size],
-        anatomy === "icon" ? buttonIconSize[size] : buttonSize[size],
-        resolvePreset("button", size),
-        resolveControlFontSize(fontSize),
-        resolveControlStrong(strong),
+        controlClass({ size, anatomy, shape, fontSize, strong, gap, align, justify, iconSize }),
         paintClass({ accent, variant, fill, shadow, hoverable: true }),
+        controlLineRoom[VARIANT_LINE[variant]],
         fullWidth && buttonFull,
-        justify && buttonJustify[justify],
-        shape === "pill" && buttonPill,
         badge != null && buttonAnchored,
         className,
       )}
@@ -110,8 +99,7 @@ export const ButtonBase = forwardRef<HTMLElement, ButtonBaseProps>(function Butt
       {...rest}
     >
       {busy ? <Spinner size="inline" ink="inherit" decorative /> : null}
-      {/* A control's icons follow the control, not the text beside them; an explicit size on the Icon still wins. */}
-      <IconSizeContext.Provider value={iconSize ?? CONTROL_ICON[size]}>{children}</IconSizeContext.Provider>
+      {children}
       {badge != null ? <span className={buttonBadge}>{badge}</span> : null}
     </Pressable>
   );

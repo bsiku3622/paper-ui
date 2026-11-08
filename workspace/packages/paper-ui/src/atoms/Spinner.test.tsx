@@ -8,7 +8,8 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, expectTypeOf, it } from "vitest";
 
 import { Spinner, type SpinnerProps } from "./Spinner";
-import { spinnerInline, spinnerSize } from "./Spinner.css";
+import { spinnerInline } from "./Spinner.css";
+import { controlAnatomy, controlSize } from "../primitives/control/Control.css";
 import { spinnerPaint } from "../primitives/paint/recipes.css";
 import { loop } from "../styles/motion.css";
 
@@ -53,11 +54,12 @@ describe("Spinner", () => {
     );
     const [small, inline, plain] = [...container.children].map((node) => node.className.split(" "));
     for (const classes of [small, inline, plain]) expect(classes).toContain(loop.spin);
-    expect(small).toContain(spinnerSize.sm);
+    expect(small).toContain(controlSize.sm);
+    expect(small).toContain(controlAnatomy.spinner);
     expect(inline).toContain(spinnerInline);
     expect(inline).toContain(spinnerPaint.inherit);
     expect(inline).not.toContain(spinnerPaint.ink);
-    expect(plain).toContain(spinnerSize.md);
+    expect(plain).toContain(controlSize.md);
     expect(plain).toContain(spinnerPaint.ink);
   });
 
@@ -73,7 +75,7 @@ describe("Spinner", () => {
     render(<Spinner ref={ref} data-testid="spin" id="s" />);
     expect(ref.current).toBe(screen.getByTestId("spin"));
     expect(ref.current?.id).toBe("s");
-    expectTypeOf<SpinnerProps["size"]>().toEqualTypeOf<"xs" | "sm" | "md" | "lg" | "inline" | undefined>();
+    expectTypeOf<SpinnerProps["size"]>().toEqualTypeOf<"xs" | "sm" | "md" | "lg" | "xl" | "inline" | undefined>();
     expectTypeOf<SpinnerProps["ink"]>().toEqualTypeOf<"inherit" | undefined>();
   });
 });

@@ -14,7 +14,7 @@ import { Selectable } from "../primitives/select/Selectable";
 import { SelectableGroup } from "../primitives/select/SelectableGroup";
 import type { ControlFontSize } from "../tokens";
 import { Button, type ButtonProps } from "./Button";
-import { buttonSize } from "./Button.css";
+import { controlSize } from "../primitives/control/Control.css";
 
 const announcer = vi.hoisted(() => ({ announce: vi.fn(), clearAnnouncer: vi.fn() }));
 vi.mock("@react-aria/live-announcer", () => announcer);
@@ -303,7 +303,7 @@ describe("Button · fontSize", () => {
   it("[atoms.contract.font-size] 글자를 바꿔도 geometry 는 고른 size 를 따른다", () => {
     render(<Button size="lg" fontSize="label">크게</Button>);
     const classes = screen.getByRole("button", { name: "크게" }).classList;
-    for (const name of buttonSize.lg.split(" ")) expect(classes.contains(name)).toBe(true);
+    expect(classes.contains(controlSize.lg)).toBe(true);
   });
 
   it("[atoms.contract.axes] takes only the roles a control box can hold", () => {

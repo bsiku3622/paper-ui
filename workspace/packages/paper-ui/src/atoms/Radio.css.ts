@@ -1,21 +1,21 @@
-import { controlGeometry } from "../internal/shape";
-
-import { tokens, transition } from "../tokens";
+import { controlVars } from "../primitives/control/Control.css";
+import { markParts, tokens, transition } from "../tokens";
 import { layered } from "../tokens/layers.css";
 
-const { style, styleVariants } = layered("components");
+const { style } = layered("components");
 
-// 하나만 고르는 원. 고르면 가운데 점이 앉는다 — 점의 색은 markPaint.radio 가 입힌다.
+const { dot } = markParts(controlVars.mark);
+
+// 하나만 고르는 원. 고르면 검은 면 가운데 흰 점이 앉는다 — 색은 markPaint.radio 가 입히고, 점의 크기는 원본 anatomy 의 비율이다.
 export const radioRoot = style({
   borderRadius: tokens.shape.radius.full,
-  transition: transition("state", "border-color"),
+  transition: transition("state", "background-color", "border-color"),
   selectors: {
     "&:checked::after": {
       content: "''",
+      width: dot,
+      height: dot,
       borderRadius: tokens.shape.radius.full,
     },
   },
 });
-
-// size 4 단 — 점은 변의 절반. 변은 selectionSize 가 Checkbox 와 같이 준다.
-export const radioSize = styleVariants(controlGeometry.radio);

@@ -3,33 +3,25 @@
 //
 // ref 는 native input 을 가리킨다. 키보드 포커스는 useFocusRing 이 input 에서 판정하고, 링도 input 이 그린다.
 
-import { forwardRef, useEffect, useLayoutEffect, useRef, type InputHTMLAttributes } from "react";
+import { forwardRef, useEffect, useLayoutEffect, useRef } from "react";
 
 import { joinClass } from "../internal/joinClass";
 import { useMergedRef } from "../internal/refs";
-import { mergeProps } from "../primitives/composition";
-import { markPaint } from "../primitives/paint/recipes.css";
-import type { ChoiceStatus, ControlSize } from "../tokens";
-import { useInputControl } from "./input-control";
-import { checkboxRoot, checkboxSize } from "./Checkbox.css";
-import { selectionBox, selectionReach, selectionSize } from "./recipes/selection-control.css";
+import { controlClass } from "../primitives/control/Control";
+import { markPaint, markPressPaint } from "../primitives/paint/recipes.css";
+import { useInputControl, type MarkProps } from "./input-control";
+import { checkboxMark, checkboxRoot } from "./Checkbox.css";
+import { markBox } from "./recipes/mark.css";
 
 const useIsomorphicLayoutEffect = typeof document === "undefined" ? useEffect : useLayoutEffect;
 
-export type CheckboxProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "className" | "size"> & {
-  status?: ChoiceStatus;
-  // 크기 4 단 (xs·sm·md·lg). 큰 폼에서 라벨과 함께 커진다.
-  size?: ControlSize;
+export type CheckboxProps = MarkProps & {
   // 부분 선택 — "전체 선택"의 일부만 켜진 상태. DOM 프로퍼티라 ref 로만 세운다.
   indeterminate?: boolean;
-  className?: string;
 };
 
-export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Checkbox(
-  { status, size = "md", indeterminate, className, id, disabled, required, "aria-invalid": ariaInvalid, "aria-describedby": describedBy, ...rest },
-  ref,
-) {
-  const { controlProps, focusHandlers, frameProps } = useInputControl({ id, disabled, required, "aria-invalid": ariaInvalid, "aria-describedby": describedBy, status });
+export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Checkbox({ status, size, indeterminate, className, ...rest }, ref) {
+  const { inputProps, frameProps } = useInputControl(rest, { status });
   const input = useRef<HTMLInputElement>(null);
   const setRef = useMergedRef(ref, input);
   // indeterminate 는 속성이 아니라 프로퍼티라 element 에 직접 세운다. 넘어온 ref 는 그대로 두고 값이 바뀔 때만 다시 쓴다.
@@ -41,9 +33,9 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
     <input
       type="checkbox"
       ref={setRef}
-      className={joinClass(selectionBox, markPaint.checkbox, checkboxRoot, selectionSize[size], selectionReach[size], checkboxSize[size], className)}
+      className={joinClass(controlClass({ size, anatomy: "mark" }), markBox, markPaint.checkbox, markPressPaint, checkboxRoot, checkboxMark, className)}
       {...frameProps}
-      {...mergeProps(rest, focusHandlers, controlProps)}
+      {...inputProps}
     />
   );
 });

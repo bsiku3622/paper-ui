@@ -3,7 +3,7 @@
 //   status   info · success · warning · error (테두리 색, 생략하면 중립). error 는 aria-invalid 도.
 //   shape    rounded · pill — Button·Badge 와 같은 어휘. 검색창이 이 어휘의 본진이다.
 //   numeric  포맷 축 — 숫자 글리프만 등폭(tabular-nums). 정렬은 안 건드린다. 래퍼가 달고 input 이 이어받는다.
-//   align    정렬 축 — start · center · end. numeric 과 직교 (우측정렬 숫자열은 numeric + align="end").
+//   textAlign 입력값의 글자 정렬 — start · center · end. numeric 과 직교 (우측정렬 숫자열은 numeric + textAlign="end").
 //   leading  왼쪽 어도먼트 (검색 아이콘 · "$" 프리픽스 등)
 //   trailing 오른쪽 어도먼트 (단위 "kg" · 아이콘 등)
 //   clearable  값이 있으면 × 로 지우기 (controlled·uncontrolled 양쪽). 이름은 clearLabel.
@@ -27,33 +27,16 @@ import { useMergedRef } from "../internal/refs";
 import { Icon } from "../primitives/Icon";
 import { Pressable } from "../primitives/press/Pressable";
 import { Selectable } from "../primitives/select/Selectable";
-import { mergeProps } from "../primitives/composition";
-import { IconSizeContext } from "../primitives/icon-context";
-import { fieldActionPaint, fieldAdornmentPaint, fieldLinelessPaint, fieldPaint, fieldPlaceholderPaint } from "../primitives/paint/recipes.css";
-import { restingShadow } from "../primitives/paint/Surface.css";
-import { resolveControlFontSize, resolvePreset, resolveFill } from "../resolvers";
+import type { ControlForm } from "../primitives/control/Control";
+import { fieldActionPaint, fieldAdornmentPaint, fieldPlaceholderPaint } from "../primitives/paint/recipes.css";
 import { textNumericClass } from "../styles/typography.css";
-import { CONTROL_ICON, type Status, type ControlFontSize, type ControlShape, type ControlSize, type InputVariant, type SurfaceFill } from "../tokens";
-import { useInputControl } from "./input-control";
-import { fieldWrap, fieldInput, fieldInputLeading, fieldSize, fieldAlign, fieldAdornment, fieldAction, fieldActionReach } from "./Field.css";
-import { inputFrame, inputFrameCorner, inputFramePill } from "./recipes/input-frame.css";
+import { inputFrameClass, useInputControl, type InputFrameProps } from "./input-control";
+import { fieldWrap, fieldInput, fieldTextAlign, fieldAdornment, fieldAction, fieldActionReach } from "./Field.css";
 
-export type FieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "size" | "prefix"> & {
-  status?: Status;
-  // 크기 4 단 (xs·sm·md·lg). Button 과 같은 사다리 — 나란히 두면 높이가 맞는다.
-  size?: ControlSize;
-  // 면의 깊이 — raised 가 기본이다. sunken 은 면 안에서 살짝 눌린 검색 · 필터 입력에, canvas 는 흰 면 위의 옅은 칸에 맞다. 다크에서는
-  // sunken 과 canvas 가 같은 단계라 canvas 위에서는 border 가 구분하고, raised 위에서는 두 모드 모두 물러나 보인다.
-  fill?: SurfaceFill;
-  // 가장자리 — hairline(실선, 기본) · ghost(선 없음). 상태의 선은 ghost 에서도 남는다.
-  variant?: InputVariant;
-  // 제자리 그림자. 입력 틀은 늘 면이 있어 언제든 받는다.
-  shadow?: boolean;
-  fontSize?: ControlFontSize;
-  // 실루엣 — Button·Badge 와 같은 어휘. pill 은 알약(검색창 결).
-  shape?: ControlShape;
+export type FieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "size" | "prefix"> & InputFrameProps & Pick<ControlForm, "shape" | "gap"> & {
   numeric?: boolean;
-  align?: "start" | "center" | "end";
+  // 입력값의 글자 정렬. 안쪽 요소의 세로 정렬인 Control 의 align 과 다른 축이라 이름을 나눴다.
+  textAlign?: "start" | "center" | "end";
   leading?: ReactNode;
   trailing?: ReactNode;
   clearable?: boolean;
@@ -91,14 +74,15 @@ const EyeOffIcon = (
 export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
   {
     status,
-    size = "md",
-    fill = "raised",
-    variant = "hairline",
+    size,
+    fill,
+    variant,
     shadow,
     fontSize,
-    shape = "rounded",
+    shape,
+    gap,
     numeric,
-    align,
+    textAlign,
     leading,
     trailing,
     clearable,
@@ -110,11 +94,6 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
     value,
     defaultValue,
     onChange,
-    id,
-    disabled,
-    required,
-    "aria-invalid": ariaInvalid,
-    "aria-describedby": describedBy,
     className,
     style,
     "data-testid": testid,
@@ -123,7 +102,7 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
   ref,
 ) {
   const messages = useMessages();
-  const { controlProps, focusHandlers, frameProps } = useInputControl({ id, disabled, required, "aria-invalid": ariaInvalid, "aria-describedby": describedBy, status, textInput: true });
+  const { inputProps, frameProps, isDisabled } = useInputControl(rest, { status, textInput: true });
   const input = useRef<HTMLInputElement>(null);
   const setRef = useMergedRef(ref, input);
 
@@ -152,16 +131,15 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
     el.focus();
   };
 
-  const isDisabled = controlProps.disabled === true;
   const showClear = !!clearable && hasValue && !isDisabled;
-  const actionClass = joinClass(fieldAction, fieldActionPaint, fieldActionReach[size]);
+  const actionClass = joinClass(fieldAction, fieldActionPaint, fieldActionReach);
 
   return (
     // 래퍼는 위젯이 아니라 여백 클릭을 안쪽 input 으로 넘기는 표현용 컨테이너다 —
     // 진짜 컨트롤은 input 이라 role·키보드를 붙이는 게 오히려 틀리다.
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions -- 여백 클릭만 안쪽 input 으로 넘긴다
-    <div
-      className={joinClass(inputFrame, inputFrameCorner[size], fieldPaint, variant === "ghost" && fieldLinelessPaint, fieldWrap, resolveFill(fill), shadow && restingShadow, fieldSize[size], resolvePreset("field", size), resolveControlFontSize(fontSize), numeric && textNumericClass, shape === "pill" && inputFramePill, className)}
+    <span
+      className={joinClass(inputFrameClass({ size, anatomy: "input", shape, fontSize, gap, fill, variant, shadow }), fieldWrap, numeric && textNumericClass, className)}
       style={style}
       data-testid={testid}
       {...frameProps}
@@ -174,17 +152,15 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
         }
       }}
     >
-      {/* 컨트롤 안의 아이콘은 옆 글자가 아니라 컨트롤을 따른다. */}
-      <IconSizeContext.Provider value={CONTROL_ICON[size]}>
-        {leading ? <span className={joinClass(fieldAdornment, fieldAdornmentPaint)}>{leading}</span> : null}
+      {leading ? <span className={joinClass(fieldAdornment, fieldAdornmentPaint)}>{leading}</span> : null}
         <input
           ref={setRef}
           type={effectiveType}
           value={value}
           defaultValue={defaultValue}
           onChange={handleChange}
-          className={joinClass(fieldInput, fieldPlaceholderPaint, fieldInputLeading[size], align && fieldAlign[align])}
-          {...mergeProps(rest, focusHandlers, controlProps)}
+          className={joinClass(fieldInput, fieldPlaceholderPaint, textAlign && fieldTextAlign[textAlign])}
+          {...inputProps}
         />
         {showClear ? (
           <Pressable className={actionClass} onPress={clear} aria-label={clearLabel ?? messages.clear}>
@@ -197,7 +173,6 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
           </Pressable>
         ) : null}
         {trailing ? <span className={joinClass(fieldAdornment, fieldAdornmentPaint)}>{trailing}</span> : null}
-      </IconSizeContext.Provider>
-    </div>
+    </span>
   );
 });

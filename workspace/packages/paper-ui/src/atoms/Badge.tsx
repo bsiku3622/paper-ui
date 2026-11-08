@@ -11,30 +11,26 @@
 import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import { joinClass } from "../internal/joinClass";
+import { controlClass, type ControlForm } from "../primitives/control/Control";
+import { controlLineRoom } from "../primitives/control/Control.css";
 import { Paint, type PaintFace } from "../primitives/paint/Paint";
 import { dotPaint } from "../primitives/paint/recipes.css";
-import { resolveControlFontSize, resolvePreset } from "../resolvers";
-import type { Accent, ControlFontSize, ControlShape, ControlSize } from "../tokens";
-import { badgeRoot, badgeSize, badgeDot, badgeRounded } from "./Badge.css";
+import { VARIANT_LINE, type Accent } from "../tokens";
+import { badgeDot } from "./Badge.css";
 
-// 시각 무게는 variant — 기본 soft(옅은 면). solid · hairline · dashed · ghost · muted 도 된다.
-export type BadgeProps = Omit<HTMLAttributes<HTMLSpanElement>, "className"> & PaintFace & {
+// 시각 무게는 variant — 기본 soft(옅은 면). solid · hairline · dashed · ghost · muted 도 된다. 실루엣은 기본이 알약이고(shape), 점과 글자 사이는
+// 기본 xs 다.
+export type BadgeProps = Omit<HTMLAttributes<HTMLSpanElement>, "className"> & PaintFace & Pick<ControlForm, "size" | "fontSize" | "shape" | "gap" | "align" | "justify"> & {
   // 의미 색 (info·success·warning·error). 안 주면 뉴트럴 회색.
   accent?: Accent;
-  // 크기 4 단 (xs·sm·md·lg). 높이는 Shape 의 배지 사다리.
-  size?: ControlSize;
-  fontSize?: ControlFontSize;
   // 앞에 작은 색 점(상태 표시자). 글자색(currentColor)을 따른다.
   dot?: boolean;
-  // 실루엣 — 기본은 알약(radius.pill), rounded 는 같은 크기의 컨트롤 곡선(radius.control).
-  // Button 과 같은 어휘라 나란히 서는 두 알약이 같은 곡선을 갖는다.
-  shape?: ControlShape;
   children?: ReactNode;
   className?: string;
 };
 
 export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
-  { accent = "primary", variant = "soft", fill, shadow, size = "md", fontSize, shape = "pill", dot, children, className, ...rest },
+  { accent = "primary", variant = "soft", fill, shadow, size, fontSize, shape = "pill", gap, align, justify, dot, children, className, ...rest },
   ref,
 ) {
   return (
@@ -43,14 +39,7 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
       ref={ref}
       accent={accent}
       {...({ variant, fill, shadow } as PaintFace)}
-      className={joinClass(
-        badgeRoot,
-        badgeSize[size],
-        resolvePreset("badge"),
-        resolveControlFontSize(fontSize),
-        shape === "rounded" && badgeRounded[size],
-        className,
-      )}
+      className={joinClass(controlClass({ size, anatomy: "badge", shape, fontSize, gap, align, justify }), controlLineRoom[VARIANT_LINE[variant]], className)}
       {...rest}
     >
       {dot ? <span className={joinClass(badgeDot, dotPaint)} aria-hidden /> : null}

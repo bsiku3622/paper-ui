@@ -4,13 +4,13 @@ import { createRef, forwardRef, type AnchorHTMLAttributes } from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
+import { controlIconSize, controlSize } from "../primitives/control/Control.css";
 import { Floating } from "../primitives/float/Floating";
 import { Icon } from "../primitives/Icon";
 import { CONTROL_ICON, tokens } from "../tokens";
 import { IconButton } from "./IconButton";
 
 const glyph = <Icon><path d="M4 12h16" /></Icon>;
-const iconClass = (name: string) => screen.getByRole("button", { name }).querySelector("svg")!.getAttribute("class")!;
 
 describe("IconButton", () => {
   it("[atoms.icon-button.axes] [atoms.contract.axes] opens exactly the axes of a square: as, accent, variant, size, shape, disabled, iconSize", () => {
@@ -48,22 +48,18 @@ describe("IconButton", () => {
     expect(screen.getByRole("link", { name: "이동" }).getAttribute("href")).toBe("/there");
   });
 
-  it("[atoms.icon-button.axes] [foundations.shape.geometry-entry] gives the Icon inside the control's own size at each control size, and lets an explicit size win", () => {
+  it("[atoms.icon-button.axes] [foundations.shape.geometry-entry] takes the control's size on the button, and an iconSize beside it, so the Icon inside only reads them", () => {
     render(
       <>
-        <IconButton aria-label="sm" size="sm">{glyph}</IconButton>
-        <IconButton aria-label="md" size="md">{glyph}</IconButton>
         <IconButton aria-label="lg" size="lg">{glyph}</IconButton>
         <IconButton aria-label="forced" size="lg" iconSize="label">{glyph}</IconButton>
-        <IconButton aria-label="own" size="lg"><Icon size="caption"><path d="M4 12h16" /></Icon></IconButton>
       </>,
     );
-    const size = (name: string) => iconClass(name);
-    expect(CONTROL_ICON).toEqual({ xs: "caption", sm: "caption", md: "body", lg: "subheading" });
-    expect(size("sm")).not.toBe(size("md"));
-    expect(size("md")).not.toBe(size("lg"));
-    expect(size("sm")).toBe(size("own"));
-    expect(size("forced")).not.toBe(size("lg"));
+    const button = (name: string) => screen.getByRole("button", { name }).classList;
+    expect(button("lg").contains(controlSize.lg)).toBe(true);
+    expect(button("lg").contains(controlIconSize.label)).toBe(false);
+    expect(button("forced").contains(controlIconSize.label)).toBe(true);
+    expect(CONTROL_ICON).toEqual({ xs: "caption", sm: "caption", md: "body", lg: "subheading", xl: "subheading" });
     expect(tokens.shape.control.icon.sm).not.toBe(tokens.shape.control.icon.lg);
   });
 
@@ -99,10 +95,8 @@ describe("IconButton", () => {
     expect(screen.getByRole("button", { name: "Named" })).toBeTruthy();
   });
 
-  it("[atoms.icon-button.axes] forwards iconSize to the Icon inside, over the size its control would give", () => {
+  it("[atoms.icon-button.axes] sets iconSize on the button for the Icon inside to read, over the size its control would give", () => {
     render(<IconButton aria-label="Large glyph" size="sm" iconSize="subheading"><Icon><path d="M2 2h4" /></Icon></IconButton>);
-    const svg = screen.getByRole("button", { name: "Large glyph" }).querySelector("svg")!;
-    const small = render(<IconButton aria-label="Own size" size="sm"><Icon><path d="M2 2h4" /></Icon></IconButton>).container.querySelector("svg")!;
-    expect(svg.getAttribute("class")).not.toBe(small.getAttribute("class"));
+    expect(screen.getByRole("button", { name: "Large glyph" }).classList.contains(controlIconSize.subheading)).toBe(true);
   });
 });

@@ -1,4 +1,4 @@
-import { tokens, type Orientation } from "../tokens";
+import { lineFrame, type Orientation } from "../tokens";
 import { layered } from "../tokens/layers.css";
 
 const { style, styleVariants } = layered("components");
@@ -12,6 +12,6 @@ export const dividerRoot = style({
 });
 
 export const dividerOrientation = styleVariants({
-  horizontal: { height: 0, width: "100%", borderBlockStartWidth: tokens.shape.stroke.border, borderBlockStartStyle: "solid" },
-  vertical: { width: 0, alignSelf: "stretch", borderInlineStartWidth: tokens.shape.stroke.border, borderInlineStartStyle: "solid" },
+  horizontal: { height: 0, width: "100%", ...lineFrame({ side: "top" }) },
+  vertical: { width: 0, alignSelf: "stretch", ...lineFrame({ side: "start" }) },
 } as const satisfies Record<Orientation, object>);

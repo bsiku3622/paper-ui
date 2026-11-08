@@ -1,4 +1,4 @@
-import { tokens, restingCast, stateStyle, transition, STATE_TINT_PROPERTY, type SurfaceRadius } from "../../tokens";
+import { LINE_SIDES, lineRule, tokens, insetCast, restingCast, stateStyle, transition, STATE_TINT_PROPERTY, type LineSide, type SurfaceRadius } from "../../tokens";
 import { layered } from "../../tokens/layers.css";
 
 const { style, styleVariants } = layered("components");
@@ -12,10 +12,11 @@ export const surfaceItem = style([stateStyle.item, { transition: transition("hov
 // `shadow` prop → 제자리에 있는 면의 그림자. position 도 z 도 없으니 아무것도 덮지 않는다. Paint 와 입력 틀도 이 class 를 쓴다.
 export const restingShadow = style(restingCast);
 
-// Surface `border` prop → 카드 헤어라인. 면(fill) 위에 얇은 뉴트럴 선.
-// 불리언이라 CSS 값 주입과 헷갈리지 않는다 — 선이 필요하면 켜고, 색은 border.base 로 고정.
-export const surfaceBorder = style({
-  borderWidth: tokens.shape.stroke.border,
-  borderStyle: "solid",
-  borderColor: tokens.color.border.base,
+// 트랙(Switch · SegmentControl · Slider)은 어디에 놓이든 파인 홈이다. 고리를 그리는 상태(켜짐 · 오류 · 대비 · 강제 색)는 Paint가 더 강한 selector로 이긴다.
+export const trackInset = style({ ...insetCast, "@media": { "(forced-colors: active)": { boxShadow: "none" } } });
+
+// Surface `border` prop → 뉴트럴 선 한 줄. 켜면 둘레 전체, 면 이름을 주면 그 면만. 색은 border.base 로 고정 — 지면의 선은 하나다.
+export const surfaceBorder = styleVariants({
+  all: lineRule(),
+  ...(Object.fromEntries(LINE_SIDES.map((side) => [side, lineRule({ side })])) as Record<LineSide, ReturnType<typeof lineRule>>),
 });

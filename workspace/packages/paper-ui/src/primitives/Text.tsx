@@ -36,6 +36,7 @@ const DEFAULT_TEXT_TAG = {
   title: "h1",
   heading: "h2",
   subheading: "h3",
+  lead: "p",
   body: "p",
   caption: "p",
   label: "span",

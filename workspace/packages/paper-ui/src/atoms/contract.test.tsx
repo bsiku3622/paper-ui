@@ -13,7 +13,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { INVENTORY } from "../inventory";
 import { FormField } from "../primitives/field/FormField";
 import { Icon } from "../primitives/Icon";
-import { fieldLinelessPaint } from "../primitives/paint/recipes.css";
+import { fieldFace, fieldLinelessPaint } from "../primitives/paint/recipes.css";
 import { restingShadow } from "../primitives/paint/Surface.css";
 import { Text } from "../primitives/Text";
 import { fillClass } from "../styles/color.css";
@@ -27,7 +27,9 @@ import { Label } from "./Label";
 import { Link } from "./Link";
 import { Marker } from "./Marker";
 import { Radio } from "./Radio";
+import { SegmentControl } from "./SegmentControl";
 import { Select } from "./Select";
+import { Slider } from "./Slider";
 import { Spinner } from "./Spinner";
 import { Switch } from "./Switch";
 import { Textarea } from "./Textarea";
@@ -114,8 +116,10 @@ describe("the input family", () => {
       render(element);
       const control = screen.getByLabelText("control");
       const frame = screen.getByTestId("frame");
-      expect(ref.current).toBe(control);
-      expect(control.getAttribute("name")).toBe("who");
+      // A Select's ref and form attributes are its native select's, which the form reads; what is labelled is the button.
+      const formControl = input.name === "Select" ? frame.querySelector("select")! : control;
+      expect(ref.current).toBe(formControl);
+      expect(formControl.getAttribute("name")).toBe("who");
       expect(frame).toBe(input.frame(control));
       expect(frame.classList.contains("mine")).toBe(true);
       expect(frame.style.width).toBe("240px");
@@ -188,10 +192,11 @@ describe("the input family's stylesheets", () => {
   });
 });
 
-// Every Atom, and where it sends what a caller gives it. `semantic` is the element the ref and the native attributes reach; `visible`
-// is the box that carries className, style and data-testid. They are one element for every Atom but Field and Select, whose
-// visible box is the frame around the native control.
-type Target = { name: string; element: (props: Record<string, unknown>) => ReactElement; semantic: (root: HTMLElement) => HTMLElement; visible: (semantic: HTMLElement) => HTMLElement };
+// Every Atom, and where it sends what a caller gives it. `semantic` is the element the native attributes reach, and the ref unless
+// `ref` names another: a Select's ref is the native select the form reads, while its button is what is labelled and described.
+// `visible` is the box that carries className, style and data-testid. They are one element for every Atom but Field and Select, whose
+// visible box is the frame around the control.
+type Target = { name: string; element: (props: Record<string, unknown>) => ReactElement; semantic: (root: HTMLElement) => HTMLElement; ref?: (root: HTMLElement) => HTMLElement; visible: (semantic: HTMLElement) => HTMLElement };
 const same = (semantic: HTMLElement) => semantic;
 const TARGETS: Target[] = [
   { name: "Button", element: (props) => <Button {...props}>B</Button>, semantic: (root) => root.querySelector("button")!, visible: same },
@@ -199,7 +204,7 @@ const TARGETS: Target[] = [
   { name: "Link", element: (props) => <Link href="#x" {...props}>L</Link>, semantic: (root) => root.querySelector("a")!, visible: same },
   { name: "Field", element: (props) => <Field aria-label="f" {...props} />, semantic: (root) => root.querySelector("input")!, visible: parent },
   { name: "Textarea", element: (props) => <Textarea aria-label="t" {...props} />, semantic: (root) => root.querySelector("textarea")!, visible: same },
-  { name: "Select", element: (props) => <Select aria-label="s" {...props}><Select.Option value="a">A</Select.Option></Select>, semantic: (root) => root.querySelector("select")!, visible: parent },
+  { name: "Select", element: (props) => <Select aria-label="s" {...props}><Select.Option value="a">A</Select.Option></Select>, semantic: (root) => root.querySelector("[role=combobox]")!, ref: (root) => root.querySelector("select")!, visible: parent },
   { name: "Checkbox", element: (props) => <Checkbox aria-label="c" {...props} />, semantic: (root) => root.querySelector("input")!, visible: same },
   { name: "Radio", element: (props) => <Radio aria-label="r" {...props} />, semantic: (root) => root.querySelector("input")!, visible: same },
   { name: "Switch", element: (props) => <Switch aria-label="w" {...props} />, semantic: (root) => root.querySelector("input")!, visible: same },
@@ -208,38 +213,44 @@ const TARGETS: Target[] = [
   { name: "Spinner", element: (props) => <Spinner {...props} />, semantic: (root) => root.querySelector("span")!, visible: same },
   { name: "Divider", element: (props) => <Divider {...props} />, semantic: (root) => root.querySelector("hr")!, visible: same },
   { name: "Marker", element: (props) => <Marker {...props}>M</Marker>, semantic: (root) => root.querySelector("mark")!, visible: same },
+  { name: "SegmentControl", element: (props) => <SegmentControl aria-label="g" {...props}><SegmentControl.Item value="a">A</SegmentControl.Item></SegmentControl>, semantic: (root) => root.querySelector("[role=radiogroup]")!, visible: same },
+  { name: "Slider", element: (props) => <Slider aria-label="v" {...props} />, semantic: (root) => root.querySelector("input")!, visible: same },
 ];
 
 // The axes an Atom names, with each at the default the table gives: the two draw the same classes.
 const DEFAULTS: Array<[name: string, plain: ReactElement, explicit: ReactElement]> = [
-  ["Button", <Button>x</Button>, <Button size="md" shape="rounded" accent="primary" variant="solid">x</Button>],
-  ["IconButton", <IconButton aria-label="i"><Icon><path d="M4 12h16" /></Icon></IconButton>, <IconButton aria-label="i" size="md" shape="rounded" accent="primary" variant="solid"><Icon><path d="M4 12h16" /></Icon></IconButton>],
-  ["Field", <Field aria-label="f" />, <Field aria-label="f" size="md" fill="raised" shape="rounded" />],
-  ["Textarea", <Textarea aria-label="t" />, <Textarea aria-label="t" size="md" fill="raised" />],
-  ["Select", <Select aria-label="s"><Select.Option value="a">A</Select.Option></Select>, <Select aria-label="s" size="md" fill="raised" shape="rounded"><Select.Option value="a">A</Select.Option></Select>],
+  ["Button", <Button>x</Button>, <Button size="md" shape="pill" accent="primary" variant="solid">x</Button>],
+  ["IconButton", <IconButton aria-label="i"><Icon><path d="M4 12h16" /></Icon></IconButton>, <IconButton aria-label="i" size="md" shape="pill" accent="primary" variant="solid"><Icon><path d="M4 12h16" /></Icon></IconButton>],
+  ["Field", <Field aria-label="f" />, <Field aria-label="f" size="md" variant="hairline" shape="rounded" />],
+  ["Textarea", <Textarea aria-label="t" />, <Textarea aria-label="t" size="md" variant="hairline" />],
+  ["Select", <Select aria-label="s"><Select.Option value="a">A</Select.Option></Select>, <Select aria-label="s" size="md" variant="hairline" shape="rounded"><Select.Option value="a">A</Select.Option></Select>],
   ["Checkbox", <Checkbox aria-label="c" />, <Checkbox aria-label="c" size="md" />],
   ["Radio", <Radio aria-label="r" />, <Radio aria-label="r" size="md" />],
   ["Switch", <Switch aria-label="w" />, <Switch aria-label="w" size="md" />],
   ["Badge", <Badge>x</Badge>, <Badge size="md" shape="pill" accent="primary" variant="soft">x</Badge>],
+  ["SegmentControl", <SegmentControl aria-label="g"><SegmentControl.Item value="a">A</SegmentControl.Item></SegmentControl>, <SegmentControl aria-label="g" size="md" shape="pill"><SegmentControl.Item value="a">A</SegmentControl.Item></SegmentControl>],
+  ["Slider", <Slider aria-label="v" />, <Slider aria-label="v" size="md" />],
 ];
 
 // What each Atom stands on, as what its source names: the Primitives and hooks of the table, and where its colour comes from.
 const STANDS_ON: Record<string, readonly string[]> = {
-  "button-base.tsx": ["Pressable", 'motion="press"', "useSelectable", "paintClass"],
+  "button-base.tsx": ["Pressable", 'motion="press"', "useSelectable", "controlClass", "paintClass"],
   "Link.tsx": ["useFocusRing", "linkPaint"],
   "Marker.tsx": ["markerPaint"],
-  "Field.tsx": ["inputFrame", "fieldPaint", "<Icon", "<Pressable", "as={Selectable}"],
-  "Textarea.tsx": ["inputFrame", "fieldPaint"],
-  "Select.tsx": ["inputFrame", "fieldPaint", "<Icon"],
-  "input-control.ts": ["useFormFieldControl", "useFocusRing"],
-  "Checkbox.tsx": ["markPaint"],
-  "Radio.tsx": ["markPaint"],
-  "Switch.tsx": ["markPaint"],
+  "Field.tsx": ["inputFrameClass", "<Icon", "<Pressable", "as={Selectable}"],
+  "Textarea.tsx": ["inputFrameClass"],
+  "Select.tsx": ["inputFrameClass", "<Icon", "<Floating", "Floating.Content"],
+  "input-control.ts": ["useFormFieldControl", "useFocusRing", "inputFrame", "fieldPaint", "controlClass"],
+  "Checkbox.tsx": ["controlClass", "markPaint"],
+  "Radio.tsx": ["controlClass", "markPaint"],
+  "Switch.tsx": ["controlClass", "markPaint"],
   "Label.tsx": ["<Text"],
-  "Badge.tsx": ["<Paint", 'as="span"'],
+  "Badge.tsx": ["<Paint", 'as="span"', "controlClass"],
   "Divider.tsx": ["<Box", 'as="hr"', "linePaint"],
-  "Spinner.tsx": ["<Box", 'as="span"', "spinnerPaint"],
+  "Spinner.tsx": ["<Box", 'as="span"', "controlClass", "spinnerPaint"],
   "Spinner.css.ts": ["loop.spin"],
+  "SegmentControl.tsx": ["SelectableGroup", "<Pressable", "controlClass", "segmentPaint"],
+  "Slider.tsx": ["useInputControl", "controlClass", "sliderPaint"],
 };
 
 describe("every Atom", () => {
@@ -256,11 +267,11 @@ describe("every Atom", () => {
     }
   });
 
-  it("[foundations.shape.control-geometry] builds no size ladder in its stylesheet: the sizes come from controlGeometry", () => {
+  it("[foundations.shape.control-geometry] builds no size ladder in its stylesheet: the sizes come from controlClass", () => {
     const sheets = (dir: string) => readdirSync(join(here, dir)).filter((file) => file.endsWith(".css.ts")).map((file) => join(dir, file));
     const files = [...sheets("."), ...sheets("recipes")];
     expect(files.length).toBeGreaterThan(0);
-    for (const file of files) expect(read(file), file).not.toMatch(/CONTROL_SIZES\s*\.\s*map|\bcontrolSizes\s*\(|styleVariants\(\s*geometry\./);
+    for (const file of files) expect(read(file), file).not.toMatch(/CONTROL_SIZES\s*\.\s*map|\bcontrolSizes\s*\(|styleVariants\(\s*SHAPE_RECIPES\./);
   });
 
   it("[atoms.contract.stands-on] stands on the Primitives its row names, and takes its colour from the paint tier", () => {
@@ -282,7 +293,7 @@ describe("every Atom", () => {
       const view = render(target.element({ ref, id: "the-id", "data-x": "x", "aria-describedby": "help", className: "mine", style: { width: 77 }, "data-testid": "box" }));
       const semantic = target.semantic(view.container);
       const visible = screen.getByTestId("box");
-      expect(ref.current).toBe(semantic);
+      expect(ref.current).toBe(target.ref?.(view.container) ?? semantic);
       expect(visible).toBe(target.visible(semantic));
       expect(semantic.id).toBe("the-id");
       expect(semantic.getAttribute("data-x")).toBe("x");
@@ -378,7 +389,7 @@ describe("the selection marks", () => {
   }
 
   it("[atoms.mark.paint] hold geometry only: no colour, no opacity literal, no state selector and no pointer-focus flag in the stylesheets and the Atoms", () => {
-    for (const file of ["Checkbox.css.ts", "Radio.css.ts", "Switch.css.ts", "recipes/selection-control.css.ts", "Checkbox.tsx", "Radio.tsx", "Switch.tsx"]) {
+    for (const file of ["Checkbox.css.ts", "Radio.css.ts", "Switch.css.ts", "recipes/mark.css.ts", "Checkbox.tsx", "Radio.tsx", "Switch.tsx"]) {
       expect(read(file), file).not.toMatch(/tokens\.color\b|opacity\s*:|\b0\.[45]\b|:hover|:focus-visible|pointer-?focus|useHover/i);
     }
   });
@@ -391,15 +402,19 @@ describe("the face of an input frame", () => {
     ["Select", (props: object) => <Select aria-label="s" data-testid="frame" {...props}><Select.Option value="a">A</Select.Option></Select>],
   ] as const;
 
-  it.each(FRAMES)("[atoms.input.face] %s draws a line and a raised face by default, and takes the other line, any fill and a shadow", (_name, frame) => {
+  it.each(FRAMES)("[atoms.input.face] %s stands on its own face in the one line by default, and takes no line, any fill and a shadow", (_name, frame) => {
     const { rerender } = render(frame({}));
     const classes = () => screen.getByTestId("frame").classList;
-    expect(classes().contains(fillClass.raised)).toBe(true);
+    expect(classes().contains(fieldFace)).toBe(true);
     expect(classes().contains(fieldLinelessPaint)).toBe(false);
     expect(classes().contains(restingShadow)).toBe(false);
-    rerender(frame({ variant: "ghost", fill: "canvas", shadow: true }));
-    expect(classes().contains(fillClass.canvas)).toBe(true);
+    rerender(frame({ variant: "ghost", fill: "sunken" }));
+    expect(classes().contains(fillClass.sunken)).toBe(true);
     expect(classes().contains(fieldLinelessPaint)).toBe(true);
+    expect(classes().contains(fieldFace)).toBe(false);
+    expect(classes().contains(restingShadow)).toBe(false);
+    rerender(frame({ fill: "canvas", shadow: true }));
+    expect(classes().contains(fillClass.canvas)).toBe(true);
     expect(classes().contains(restingShadow)).toBe(true);
     cleanup();
   });

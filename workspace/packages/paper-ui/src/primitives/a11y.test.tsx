@@ -325,7 +325,10 @@ describe("field control", () => {
       const element = screen.getByLabelText(name) as HTMLInputElement;
       expect(element.id, name).toBe(`id-${name}`);
       expect(element.getAttribute("aria-describedby"), name).toBe(screen.getByText("Help").id);
-      expect(element.required, name).toBe(true);
+      // A Select says required on its button and holds it on the native select its form reads.
+      const formControl = name === "Select" ? (element.parentElement!.querySelector("select") as HTMLSelectElement) : element;
+      if (name === "Select") expect(element.getAttribute("aria-required"), name).toBe("true");
+      expect(formControl.required, name).toBe(true);
       expect(element.disabled, name).toBe(true);
       view.unmount();
     }

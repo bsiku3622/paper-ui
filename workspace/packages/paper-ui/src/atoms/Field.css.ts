@@ -1,16 +1,16 @@
-import { stateStyle, tokens, transition } from "../tokens";
-import { controlGeometry } from "../internal/shape";
+import { iconSizeVar } from "../primitives/Icon.css";
+import { controlVars } from "../primitives/control/Control.css";
+import { stateStyle, targetReach, tokens, transition } from "../tokens";
 import { layered } from "../tokens/layers.css";
 
 const { style, styleVariants } = layered("components");
 
 // Field 는 input group — 래퍼가 틀(inputFrame: 테두리·모서리·포커스링·비활성)을 지고, 그 색은 fieldPaint,
 // 면은 Surface fill 이 입힌다. 안쪽 input 은 투명·무테로 값만 담고, leading/trailing 어도먼트(아이콘·$·단위)와
-// 액션(clear·비밀번호)이 input 양옆에 앉는다. 크기(height·paddingInline·fontSize)는 fieldSize 가 래퍼에 준다.
+// 액션(clear·비밀번호)이 input 양옆에 앉는다. 크기(height·paddingInline·fontSize)와 그 사이 간격은 controlClass 가 래퍼에 준다.
 export const fieldWrap = style({
   display: "flex",
   alignItems: "center",
-  gap: tokens.shape.control.gap,
   width: "100%",
   cursor: "text",
 });
@@ -34,8 +34,9 @@ export const fieldInput = style({
   outline: "none",
   font: "inherit",
   // control line-height까지 물려받으면 브라우저 caret와 한글 fallback glyph가
-  // 한 줄 상자에 눌려 위아래가 잘릴 수 있다. 입력 줄상자는 fieldInputLeading 이 따로 주고 래퍼 안에서
+  // 한 줄 상자에 눌려 위아래가 잘릴 수 있다. 입력 줄상자는 따로 주고(preset 의 글자 줄은 안쪽 여백이 읽는 값이다) 래퍼 안에서
   // 중앙 정렬해 caret 높이만 확보한다.
+  lineHeight: controlVars.inputLine,
   letterSpacing: "inherit",
   color: "inherit",
   padding: 0,
@@ -47,16 +48,6 @@ export const fieldInput = style({
     "&::-ms-clear, &::-ms-reveal": { display: "none" },
   },
 });
-
-// Shared input geometry and the field typography preset.
-export const fieldSize = styleVariants(
-  controlGeometry.field,
-);
-
-// 입력값이 앉는 줄상자. preset 의 글자 줄은 Shape 의 안쪽 여백이 읽는 값이라, caret 의 높이는 따로 둔다.
-export const fieldInputLeading = styleVariants(
-  controlGeometry.fieldInput,
-);
 
 // 어도먼트 — leading/trailing 슬롯(아이콘·$·단위). 축소 안 됨. 색은 fieldAdornmentPaint.
 export const fieldAdornment = style({
@@ -79,10 +70,12 @@ export const fieldAction = style([stateStyle.focusVisible, stateStyle.disabledCu
 }]);
 
 // 액션의 보이지 않는 hit area — 아이콘이 최소 target 에 못 미친 만큼 사방으로. 형제 액션과 겹치지 않는다.
-export const fieldActionReach = styleVariants(controlGeometry.fieldActionReach);
+export const fieldActionReach = style({
+  selectors: { "&::before": { content: "''", position: "absolute", inset: targetReach(iconSizeVar) } },
+});
 
-// 정렬 축 — numeric 과 직교. 논리값(start·center·end)이라 RTL 도 따라간다. 우측정렬 숫자열 = numeric + end.
-export const fieldAlign = styleVariants({
+// 글자 정렬 — numeric 과 직교. 논리값(start·center·end)이라 RTL 도 따라간다. 우측정렬 숫자열 = numeric + end.
+export const fieldTextAlign = styleVariants({
   start: { textAlign: "start" },
   center: { textAlign: "center" },
   end: { textAlign: "end" },

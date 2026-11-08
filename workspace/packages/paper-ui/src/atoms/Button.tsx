@@ -3,7 +3,7 @@
 //   variant  solid · soft · hairline · dashed · ghost · muted
 //   fill     raised · canvas · sunken — hairline · dashed · ghost · muted 의 면. 안 주면 투명
 //   shadow   제자리 그림자. 면이 있을 때만 받는다
-//   shape    rounded(시스템 곡선) · pill(알약)
+//   shape    pill(알약, 기본) · rounded(시스템 곡선)
 //
 // 예) <Button>저장</Button>                        검정 solid (primary)
 //     <Button variant="soft">미리보기</Button>      회색 secondary
@@ -11,7 +11,7 @@
 //     <Button accent="error" variant="ghost">…</Button>  빨강 텍스트
 //     <Button variant="muted">취소</Button>  accent subtle 보조 텍스트
 //     <Button loading>저장 중</Button>              스피너 + aria-busy, 포커스는 그대로
-//     <Button shape="pill">시작하기</Button>        알약 (hero CTA 자리)
+//     <Button shape="rounded">시작하기</Button>     시스템 곡선 (네모가 어울리는 자리)
 //     <Button fullWidth justify="start" strong={here}>개요</Button>  사이드바의 항목
 //     <Button variant="ghost" selected={on}>보기</Button>   선택된 면 + aria-pressed
 //     <Button as={RouterLink} to="/docs">문서 읽기</Button>  누르면 이동하는 자리
@@ -22,40 +22,30 @@
 import { forwardRef, type ElementType, type ReactElement, type ReactNode } from "react";
 
 import { registerAtom } from "../internal/render-target";
+import type { ControlForm } from "../primitives/control/Control";
 import type { PaintFace } from "../primitives/paint/Paint";
 import type { PolymorphicProps } from "../primitives/polymorphic";
-import type { Accent, ControlFontSize, ControlShape, ControlSize, Justify, SelectableVariant, Variant } from "../tokens";
+import type { Accent, SelectableVariant, Variant } from "../tokens";
 import { ButtonBase, type ButtonBaseProps } from "./button-base";
 
 // 선택은 면이 없거나 옅어서 선택된 면을 soft 로 알릴 수 있는 variant(hairline · ghost · muted)만 한다.
 type ButtonSelection = { variant?: Variant; selected?: undefined } | { variant: SelectableVariant; selected: boolean };
 
-type ButtonOwn = {
+type ButtonOwn = Pick<ControlForm, "size" | "fontSize" | "strong" | "shape" | "gap" | "align" | "justify"> & ButtonSelection & PaintFace & {
   // 큰 면을 채우는 기본은 검정(primary) — 색은 의미가 있을 때만.
   accent?: Accent;
-  // 크기 4 단 (xs·sm·md·lg). md가 Demo 기준 anchor며 Field·Select와 같은 높이 사다리를 쓴다.
-  size?: ControlSize;
-  // 컨트롤 실루엣은 유지하고 라벨만 조정하는 통로. 기본값은 size 사다리를 따른다.
-  fontSize?: ControlFontSize;
-  // 라벨의 강조 한 비트 — preset 이 이미 강조된 굵기라 false 만 뜻이 있고 regular 가 된다. 사이드바의 조용한 항목처럼. 상자의 기하는 그대로다.
-  strong?: boolean;
-  // 실루엣 — rounded 는 크기에 맞는 시스템 곡선(radius.control), pill 은 알약(radius.pill).
-  // 값이 둘뿐인 건 의도다 — 고르는 건 *알약이냐 아니냐* 지 곡선의 크기가 아니다.
-  shape?: ControlShape;
   // 진행 중 — 스피너를 얹고 aria-busy 를 세우며 누름과 제출을 막는다. 포커스는 잃지 않고, 시작할 때 포커스가
   // 버튼에 있으면 loadingLabel 을 한 번 알린다.
   loading?: boolean;
   loadingLabel?: string;
   // 가로 꽉 — 폼·모바일.
   fullWidth?: boolean;
-  // 내용의 가로 배치 — 기본은 가운데. 폭이 내용보다 넓을 때(fullWidth) 뜻이 생긴다. 끝에 숫자가 붙는 항목은 between.
-  justify?: Justify;
   // 모서리 표식 — 보통 Badge 하나. 색과 크기는 그 Badge 가 정하고, 버튼의 크기는 그대로다.
   badge?: ReactNode;
   disabled?: boolean;
   children?: ReactNode;
   className?: string;
-} & ButtonSelection & PaintFace;
+};
 
 // `as` 로 이 자리가 실은 링크일 때의 통로 — <Button as={RouterLink} to="/docs">. 나머지 prop 은 그 대상의 것 그대로(as={RouterLink} 면 to·replace),
 // 행동 부품이면 그 부품의 prop 그대로다.

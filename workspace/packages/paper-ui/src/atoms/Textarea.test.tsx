@@ -39,13 +39,15 @@ describe("Textarea", () => {
     expect(textarea.rows).toBe(1);
   });
 
-  it("[atoms.textarea.rows] takes its face from the fill prop, raised unless it is sunken", () => {
-    const { rerender } = render(<Textarea aria-label="raised" />);
-    const raised = screen.getByLabelText("raised").className;
-    rerender(<Textarea aria-label="raised" fill="sunken" />);
-    expect(screen.getByLabelText("raised").className).not.toBe(raised);
-    rerender(<Textarea aria-label="raised" fill="raised" />);
-    expect(screen.getByLabelText("raised").className).toBe(raised);
+  it("[atoms.textarea.rows] takes its face from the fill prop, and from its ground when it is given none", () => {
+    const { rerender } = render(<Textarea aria-label="face" />);
+    const byDefault = screen.getByLabelText("face").className;
+    rerender(<Textarea aria-label="face" fill="sunken" />);
+    const sunken = screen.getByLabelText("face").className;
+    expect(sunken).not.toBe(byDefault);
+    rerender(<Textarea aria-label="face" fill="raised" />);
+    expect(screen.getByLabelText("face").className).not.toBe(sunken);
+    expect(screen.getByLabelText("face").className).not.toBe(byDefault);
   });
 
   it("[atoms.textarea.rows] stands on its own stylesheet: no import from Field, and no height floor of its own", () => {

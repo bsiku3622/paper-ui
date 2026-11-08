@@ -12,14 +12,15 @@ import { forwardRef, type HTMLAttributes } from "react";
 import { joinClass } from "../internal/joinClass";
 import { useMessages } from "../internal/locale";
 import { Box } from "../primitives/Box";
+import { controlClass } from "../primitives/control/Control";
 import { spinnerPaint } from "../primitives/paint/recipes.css";
 import type { ControlSize } from "../tokens";
-import { spinnerInline, spinnerRoot, spinnerSize } from "./Spinner.css";
+import { spinnerInline, spinnerRoot } from "./Spinner.css";
 
 export type SpinnerProps = Omit<HTMLAttributes<HTMLSpanElement>, "className" | "children"> & {
-  // 크기 4 단 (xs·sm·md·lg)은 Icon 과 같은 아이콘 사다리, inline 은 글줄 안에서 글자만큼(1em).
+  // 크기 5 단 (xs·sm·md·lg·xl)은 Icon 과 같은 아이콘 사다리, inline 은 글줄 안에서 글자만큼(1em).
   size?: ControlSize | "inline";
-  // inherit 는 둘러싼 글자색을 따라 도는 호(링은 없다). 안 주면 옅은 링에 잉크색 호.
+  // inherit 는 둘러싼 글자색을 따라 도는 호. 안 주면 primary 잉크의 호. 어느 쪽이든 꼬리가 옅어지는 호 하나다.
   ink?: "inherit";
   // 이름. 안 주면 PaperProvider 의 locale 이 고른 문구('불러오는 중' · 'Loading').
   label?: string;
@@ -38,7 +39,7 @@ export const Spinner = forwardRef<HTMLSpanElement, SpinnerProps>(function Spinne
       as="span"
       ref={ref}
       {...(decorative ? { "aria-hidden": true } : { role: "progressbar", "aria-label": label ?? messages.loading })}
-      className={joinClass(spinnerRoot, size === "inline" ? spinnerInline : spinnerSize[size], spinnerPaint[ink ?? "ink"], className)}
+      className={joinClass(spinnerRoot, size === "inline" ? spinnerInline : controlClass({ size, anatomy: "spinner" }), spinnerPaint[ink ?? "ink"], className)}
       {...rest}
     />
   );
