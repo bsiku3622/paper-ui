@@ -63,6 +63,7 @@ rules, and the vocabulary, one constant and one type for each axis (`Accent`, `V
 cd workspace
 pnpm install
 pnpm dev          # site, playground, docs and the demo screen
+pnpm dev:demos    # the eight demo apps on port 5310; the site's dev server shows them under /demos/
 pnpm check        # lint, typecheck, unit tests and the contract check: the fast loop while working
 pnpm verify       # check, then the package and app builds, the tarball smoke, then e2e: what CI and prepublish run
 pnpm typecheck
@@ -72,6 +73,9 @@ pnpm test:e2e     # e2e on computed values: six projects across Chromium, Firefo
 pnpm smoke:dist   # packs the package and runs React 19 and React 18.2 consumers against the tarball
 pnpm api:update   # rewrites api/surface.json after an intended change to an exported name
 ```
+
+`pnpm build` puts the site and the demo apps into one static folder, `workspace/app/dist`, with the demos under `demos/`
+and the rewrites a static host needs in `vercel.json`.
 
 `pnpm test:e2e` starts its own two servers: the app on port 41731 and the test harness
 (`workspace/fixtures/harness`) on 41732. Both run with `--strictPort` and are never reused,
