@@ -1,7 +1,3 @@
-// 파일 · 폴더 올리기: pick files or a folder (or drop them), choose how they are shared, and watch them go. Nothing leaves the
-// page: a "upload" is a progress that fills for as long as that many bytes would take, and then a row on the shelf. The
-// chosen files are only listed by name and size; their bytes are never read. A password typed here is checked and dropped.
-
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Box, Button, Divider, Droppable, Field, FormField, Grid, Inline, Paint, Radio, Select, Stack, Surface, Text, type DropEvent } from "@studio-baeks/paper-ui";
@@ -80,7 +76,6 @@ export const UploadDialog = ({ open, onClose, sample = false }: { open: boolean;
     setError(null);
   }, []);
 
-  // The demo's own files, for trying the dialog without looking for a file. They are offered once each time it opens.
   const sampled = useRef(false);
   useEffect(() => {
     if (!open) {

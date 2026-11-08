@@ -1,7 +1,3 @@
-// Paper has no file input. This is the native one, hidden, with a render prop that hands the screen an `open` function to
-// call from any Paper button. It keeps only what the hub shows of a file (its name, its path inside a folder, its size);
-// the bytes are never read and nothing is sent anywhere.
-
 import type { ReactNode } from "react";
 import { useRef } from "react";
 

@@ -1,13 +1,9 @@
-// index.ts — the whole wiki read at once: every article's latest text, who links to whom, which links lead nowhere, which
-// articles nothing links to, who belongs to which category. It is rebuilt when a visitor saves an edit.
-
 import { parse, type Parsed } from "../lib/markup";
 import { collator, sizeOf } from "../lib/text";
 import { SEED_REVS, SEEDS } from "./seeds";
 import type { Rev, UserRev } from "./types";
 
 const cache = new Map<string, Parsed>();
-// Text read once is kept: seeds are read on every rebuild, edits only when they are saved.
 export const parsedOf = (text: string): Parsed => {
   let hit = cache.get(text);
   if (!hit) {
@@ -19,7 +15,6 @@ export const parsedOf = (text: string): Parsed => {
 
 export type ArticleInfo = {
   title: string;
-  // Every revision, oldest first.
   revs: Rev[];
   rev: Rev;
   parsed: Parsed;
@@ -30,23 +25,19 @@ export type ArticleInfo = {
   redirect: string | null;
   categories: string[];
   links: string[];
-  // Titles of the articles that link here (a link to a redirect to this article counts).
   inbound: string[];
 };
 
 export type WikiIndex = {
   articles: Map<string, ArticleInfo>;
   titles: string[];
-  // The article a title leads to, following redirects; null when there is no such article.
   resolve: (title: string) => string | null;
   wanted: { title: string; from: string[] }[];
   orphans: string[];
   categories: Map<string, string[]>;
-  // Every revision of every article, newest first.
   revs: Rev[];
 };
 
-// The front page is where readers start, so nothing has to link to it.
 const FRONT = "대문";
 
 export const buildIndex = (userRevs: readonly UserRev[]): WikiIndex => {

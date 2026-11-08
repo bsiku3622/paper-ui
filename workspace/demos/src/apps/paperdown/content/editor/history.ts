@@ -1,6 +1,3 @@
-// Content: the paper's undo history. The browser's own history cannot be trusted once the editor has rewritten blocks
-// itself, so each step is the paper's HTML and where the selection was (a textblock's number and a position in it).
-
 import { renderMath } from "./commands";
 import { placeSelection, readCarets, textblocks } from "./dom";
 
@@ -10,7 +7,6 @@ export type Snap = { html: string; start: Mark | null; end: Mark | null };
 const MERGE_MS = 700;
 const LIMIT = 200;
 
-// What the paper holds, without what only the screen adds (the gaps that move blocks onto the next page).
 export const cleanHtml = (root: HTMLElement): string => {
   const copy = root.cloneNode(true) as HTMLElement;
   for (const element of Array.from(copy.querySelectorAll<HTMLElement>("[data-pgap]"))) {
@@ -31,7 +27,6 @@ export const cleanHtml = (root: HTMLElement): string => {
   return copy.innerHTML;
 };
 
-// Give a paper its formulas (they are stored as their LaTeX) and the paragraph an empty paper needs.
 export const hydrate = (root: HTMLElement) => {
   for (const element of Array.from(root.querySelectorAll<HTMLElement>("[data-type$='-math']"))) renderMath(element);
   if (root.children.length === 0) {
@@ -92,7 +87,6 @@ export class History {
     this.kind = "";
   }
 
-  // The state after a change. Typing in a row is one step; anything else is a step of its own.
   record(snap: Snap, kind: "type" | "edit") {
     if (snap.html === this.current.html) {
       this.current = snap;

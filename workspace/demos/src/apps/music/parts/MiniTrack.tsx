@@ -1,5 +1,3 @@
-// MiniTrack — 작은 표지, 제목, 아티스트 한 줄. 대화상자와 대기열의 행이 같은 모습입니다.
-
 import type { ReactNode } from "react";
 
 import { Inline, Stack, Text } from "@studio-baeks/paper-ui";

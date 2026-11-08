@@ -1,6 +1,3 @@
-// 접속 기기 — every browser or phone that is signed in, with the address it came from and when it was last used. Cutting one
-// off makes that device sign in again. The addresses are in the ranges set aside for documentation; none of them is real.
-
 import { Badge, Button, IconButton, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";
 
 import { Empty, Glyph, relative, useToast } from "../../../../kit";

@@ -15,14 +15,6 @@ const inspect = fileURLToPath(new URL("../packages/paper-ui/src/tokens/inspect/"
 const DEMOS_PORT = 5310;
 const { version } = JSON.parse(readFileSync(new URL("../packages/paper-ui/package.json", import.meta.url), "utf-8")) as { version: string };
 
-// workspace 의 @studio-baeks/paper-ui 를 dist 가 아니라 *source* 로 해결한다 — package.json exports 의
-// "paper-ui-source" 조건(tsconfig customConditions 와 같은 이름)을 먼저 본다. 그래서 vanilla-extract
-// plugin 이 패키지 .css.ts 를 직접 컴파일하고, "@studio-baeks/paper-ui/styles.css" 는
-// src/styles/global.css.ts 로 풀린다. 앱 stylesheet(.css.ts)는 "@studio-baeks/paper-ui/tokens" 를 읽는다.
-// Foundations inspector 는 "@paper-ui/inspect/<시스템>" 으로 원본을 읽는다 — src/tokens/inspect/<시스템>.ts 로 풀리는
-// 앱 전용 alias 이고, tsconfig 의 paths 와 같은 하나다.
-// 문서는 레포 루트의 docs/ 에서 곧바로 읽는다 — paperDocs 가 목록을, "@docs" 가 본문을 준다.
-// 사이트가 보여 주는 버전은 패키지의 package.json 이 정본이다 — __PAPER_UI_VERSION__ 이 그것을 빌드 때 박는다.
 export default defineConfig({
   define: { __PAPER_UI_VERSION__: JSON.stringify(version) },
   plugins: [
@@ -38,13 +30,9 @@ export default defineConfig({
     ],
     conditions: ["paper-ui-source", ...defaultClientConditions],
   },
-  // A test file that runs in node and an app stylesheet being compiled both resolve through the server conditions, and the
-  // source condition has to be there too: dist does not exist on a clean checkout, and when it does exist it may be older than
-  // the source. It sits on the environment and not under `ssr`, because the vanilla-extract compiler starts its own server
-  // from this file and replaces `ssr` with its own.
+  // The source condition is needed here too, since a clean checkout has no dist.
+  // It is set on the environment because the vanilla-extract compiler replaces `ssr`.
   environments: { ssr: { resolve: { conditions: ["paper-ui-source", ...defaultServerConditions] } } },
-  // The demo apps (workspace/demos) are their own Vite app under /demos/: the site's dev server hands those paths to theirs
-  // (`pnpm --filter @paper-ui/demos dev`), and a build puts theirs inside this one's dist.
   server: { fs: { allow: [workspace, docs] }, proxy: { "/demos": { target: `http://localhost:${DEMOS_PORT}`, changeOrigin: false } } },
   test: { environment: "jsdom", globals: true },
 });

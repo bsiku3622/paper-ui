@@ -1,6 +1,3 @@
-// The temperature chart. Paper has no chart: this draws the heaters' last minutes as lines (2px, one axis, hairline grid),
-// with a crosshair that snaps to the nearest second and one readout that lists every series. Colours are Paper tokens.
-
 import { useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 
 import { Box, elevation } from "@studio-baeks/paper-ui";
@@ -12,7 +9,6 @@ import { useSize } from "./useSize";
 export type ChartSeries = {
   id: string;
   label: string;
-  // Which of Paper's accents draws the line: primary is ink.
   tone: "primary" | "info" | "success" | "warning" | "error";
   temp: readonly number[];
   target: readonly number[];
@@ -22,7 +18,6 @@ export type ChartSeries = {
 type Props = {
   series: readonly ChartSeries[];
   minutes: number;
-  // The mock clock (ms) of the newest sample.
   now: number;
   hour12: boolean;
   showTargets: boolean;
@@ -52,7 +47,6 @@ const niceMax = (value: number) => {
 export const TempChart = ({ series: given, minutes, now, hour12, showTargets, showPower, height = 208 }: Props) => {
   const [ref, size] = useSize<HTMLDivElement>();
   const [off, setOff] = useState<readonly string[]>([]);
-  // The second under the pointer, and where its readout stands in the chart.
   const [at, setAt] = useState<{ index: number; left: number; top: number; flip: boolean } | null>(null);
   const series = given;
   const visible = series.filter((item) => !off.includes(item.id));

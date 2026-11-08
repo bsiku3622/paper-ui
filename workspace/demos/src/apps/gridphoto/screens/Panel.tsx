@@ -1,6 +1,3 @@
-// The panel beside the photo: where this page sits in the document and what became of it, then how it is shown and filtered,
-// and under it the one summary of the document with the buttons that save it.
-
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useId } from "react";
 
@@ -13,7 +10,6 @@ import { paths } from "../paths";
 import { useGridphoto } from "../state/document";
 import { Notice } from "./Notice";
 
-// Where this page sits in the document, and the means to change that.
 const PageTools = ({ page }: { page: Page }) => {
   const { pages, movePage, removePage } = useGridphoto();
   const index = pages.findIndex((item) => item.id === page.id);
@@ -151,7 +147,6 @@ const ResultCard = ({ page, view }: { page: Page; view: "result" | "source" }) =
   );
 };
 
-// The one summary of the document, and the buttons that save it. Nothing is written: a save is a bar that fills.
 const ExportBlock = ({ page }: { page: Page }) => {
   const g = useGridphoto();
   const { ready, busy, saving, pages } = g;

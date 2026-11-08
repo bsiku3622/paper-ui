@@ -1,6 +1,3 @@
-// The source trees the AGENTS tree names: every directory under the two src folders with the note DIR_NOTES gives
-// it, and the files FILE_NOTES describes under their directory. A directory without a note, or a described file that
-// is gone, throws, so the tree cannot grow a folder nobody described or keep a line for a file that was renamed.
 import { existsSync, readdirSync } from "node:fs";
 
 import type { GeneratedBlock } from "./markers";

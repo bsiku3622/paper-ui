@@ -1,7 +1,3 @@
-// The Color inspector's data: which roles each group shows, what each role is for, and the Palette
-// Token it selects in a theme. Rows come from walking the selection table, so a role added there
-// shows up here and ROLE_NOTES makes its missing note a type error.
-
 import type { ColorMode } from "@studio-baeks/paper-ui/tokens";
 import { COLOR_SELECTION, paletteValue, type PalettePath } from "@paper-ui/inspect/color";
 
@@ -54,7 +50,6 @@ export const GROUPS: { title: string; description: Bilingual; branches: Branch[]
   { title: "Marker", description: { ko: "형광펜입니다. 장식이고 상태를 말하지 않습니다.", en: "The highlighter. It is decoration and says nothing about state." }, branches: ["marker"] },
 ];
 
-// The Palette Token a role selects, as the cards name it.
 export const formatPalettePath = (path: PalettePath): string => path;
 
 export const rolesOf = (branches: readonly Branch[]): RolePath[] =>

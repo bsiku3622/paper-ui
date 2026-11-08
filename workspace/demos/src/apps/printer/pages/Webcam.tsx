@@ -1,5 +1,3 @@
-// The webcam page: the camera as large as the column allows. With more than one camera turned on, a switch chooses between them.
-
 import { useState } from "react";
 
 import { Badge, Box, Button, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";

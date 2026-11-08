@@ -1,8 +1,3 @@
-// The references under an Atom's code. The Props table names each prop the page moves, with its type and its default; the sheet
-// draws every value of the axes the entry chose, crossed and one at a time, on the preview's ground. Both read the registry, so a
-// value added to a vocabulary shows here without an edit. The sheet is a picture: nothing in it takes focus or a press, and
-// assistive technology skips it.
-
 import { Fragment } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -17,10 +12,8 @@ import { Board, BoardRow, Cell, TokenCell, ValueCell } from "./foundations/kit";
 import { initialState, normalized, type Control, type Entry, type SheetAxis, type State } from "./registry";
 import * as r from "./reference.css";
 
-// A default is named on its own value, as the Props panel names it: "solid (default)".
 export const DEFAULT_MARK = " (default)";
 
-// The example a switch puts in a slot: "leading" holds a search icon.
 const exampleOf = (control: Control, locale: SiteLocale): string | undefined => (control.example ? inLocale(control.example, locale) : undefined);
 
 const REFERENCE_WORDS = {
@@ -46,14 +39,12 @@ const REFERENCE_WORDS = {
   },
 } as const;
 
-// A select of "true" and "false" is a boolean with three answers: left out, the component decides.
 const isAnswer = (control: Control) => control.kind === "enum" && control.options.length === 2 && control.options.includes("true") && control.options.includes("false");
 
 const typeOf = (control: Control): string => {
   if (control.type) return control.type;
   if (control.kind === "bool" || isAnswer(control)) return "boolean";
   if (control.kind === "text") return control.bind === "children" ? "ReactNode" : "string";
-  // A sample shows some values of an open type; the others are as good.
   return `${control.options.join(" · ")}${control.source.kind === "sample" ? " …" : ""}`;
 };
 
@@ -68,7 +59,6 @@ const restingOf = (control: Control, defaults: Readonly<Record<string, unknown>>
 export const PropsTable = ({ entry }: { entry: Entry }) => {
   const { locale } = useSiteLocale();
   const w = useWords(REFERENCE_WORDS);
-  // A control that sets a prop of another element (a label's words) is the demo's, not the component's.
   const own = entry.controls.filter((control, index, all) => control.target === undefined && all.findIndex((other) => other.target === undefined && other.prop === control.prop) === index);
   return (
     <Stack as="section" gap="sm">
@@ -96,7 +86,6 @@ export const PropsTable = ({ entry }: { entry: Entry }) => {
 
 type AxisValue = { value: string | boolean | undefined; label: string };
 
-// Every value an axis takes, the default named on its own. The omission comes first when no value of the axis says it.
 export const axisValues = (entry: Entry, key: string): AxisValue[] => {
   const control = entry.controls.find((candidate) => candidate.key === key);
   if (!control || control.kind === "text") throw new Error(`${entry.name}'s sheet names ${key}, which is not one of its selects or switches.`);
@@ -121,7 +110,6 @@ export const VariantSheet = ({ entry, harness, ground }: { entry: Entry; harness
   const { sheet, Stage } = entry;
   if (!sheet) return null;
   const base = normalized(entry, initialState(entry, locale));
-  // Each drawing is the page's subject in the first view with the cell's values, in the same stage as the preview.
   const draw = (values: State) => {
     const state = normalized(entry, { ...base, ...values });
     const subject = entry.subject(state, harness, locale);

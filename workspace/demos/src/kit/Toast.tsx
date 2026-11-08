@@ -1,6 +1,3 @@
-// Toast — a short word after an action ("저장했습니다"), at the bottom of the window for a few seconds, also read aloud.
-// const toast = useToast(); toast("복사했습니다"); toast("삭제했습니다", { action: { label: "되돌리기", onSelect } }).
-
 import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from "react";
 
 import { announce, Box, Button, elevation, Inline, Portal, Stack, Surface, Text } from "@studio-baeks/paper-ui";

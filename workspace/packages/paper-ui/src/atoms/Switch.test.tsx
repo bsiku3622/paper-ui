@@ -12,7 +12,6 @@ describe("Switch", () => {
     expect(control.tagName).toBe("INPUT");
     expect(control.type).toBe("checkbox");
     expect(control.checked).toBe(false);
-    // The state is not written a second time as aria-checked: assistive technology reads the native checked.
     expect(control.hasAttribute("aria-checked")).toBe(false);
     fireEvent.click(control);
     expect(control.checked).toBe(true);

@@ -1,5 +1,3 @@
-// What the mock server answers when it says no. The original hub's ApiError carried a message, a code and a status.
-
 export class ApiError extends Error {
   readonly code: string;
   readonly status: number;

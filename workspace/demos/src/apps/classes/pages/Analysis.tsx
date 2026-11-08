@@ -1,10 +1,3 @@
-// 통계 — the term's numbers counted in the browser: how many students take each subject, how the weeks and the subject
-// counts are spread, how much the teachers teach and the rooms are used, and a tool that lays students' timetables over one
-// another to find the periods they all have free.
-//
-// The four numbers on top are the summary (the Anchor); below them the sections are tabs, one at a time — the original had
-// seven closed accordions. The tab and the students being compared live in the address (?tab=compare&ids=25-307,25-310).
-
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -27,15 +20,12 @@ export const AnalysisPage = () => {
   const [params, setParams] = useSearchParams();
   const cohorts = useMemo(() => Object.keys(data.cohorts), [data]);
   const [years, setYears] = useState<string[]>(cohorts);
-  // ?by=cohort starts with the people of each cohort written under every bar.
   const [perCohort, setPerCohort] = useState(params.get("by") === "cohort");
-  // ?state=loading holds the recount that "새로고침" starts, for a screenshot of it.
   const [busy, setBusy] = useState(params.get("state") === "loading");
   const [updated, setUpdated] = useState(clock.minute);
   const timer = useRef<number | undefined>(undefined);
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
-  // The students being compared, and the tab, are read from the address.
   const index = termIndex(data);
   const ids = useMemo(
     () =>
@@ -64,7 +54,6 @@ export const AnalysisPage = () => {
       else next.delete("ids");
     });
 
-  // everything counted from the term
   const counts = useMemo(() => subjectCounts(data, years), [data, years]);
   const loads = useMemo(() => studentLoads(data, years), [data, years]);
   const teachers = useMemo(() => teacherLoads(data), [data]);

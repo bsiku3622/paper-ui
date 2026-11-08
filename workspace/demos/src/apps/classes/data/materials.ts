@@ -1,7 +1,3 @@
-// 자료실: files students share for a subject (notes, worksheets, past assignments) and the syllabi. Everything starts as
-// "pending" and is shown once a manager approves it. The files here are made up — there is nothing behind them but a name,
-// a type, a size and a number of pages the preview draws.
-
 import { pick, random, shuffle } from "../../../kit";
 import { termData, TERMS } from "./build";
 import { ME } from "./people";
@@ -16,7 +12,6 @@ export type MaterialFile = { id: number; name: string; mediaType: string; sizeBy
 export type Material = {
   id: number;
   term: string;
-  // the subject's name as the term lists it
   subject: string;
   title: string;
   category: MaterialCategory;
@@ -78,9 +73,7 @@ export const firstMaterials = (): Material[] => {
   let id = 1;
   let fileId = 1;
   const handles = shuffle(r, HANDLES);
-  // n counts days from 1 October 2026 (0–33 reach 3 November)
   const day = (n: number) => `${n < 31 ? `2026-10-${String(n + 1).padStart(2, "0")}` : `2026-11-${String(n - 30).padStart(2, "0")}`}T${String(9 + Math.floor(r() * 10)).padStart(2, "0")}:${String(Math.floor(r() * 60)).padStart(2, "0")}:00+09:00`;
-  // a syllabus for most subjects
   for (const subject of names) {
     if (r() < 0.35) continue;
     const when = day(1 + Math.floor(r() * 12));
@@ -89,7 +82,6 @@ export const firstMaterials = (): Material[] => {
       files: [makeFile(r, fileId++, `${subject}_강의계획서`, "pdf", 0)], createdAt: when, updatedAt: when, uploader: { username: "office", stuId: "관리자" }, decidedAt: when,
     });
   }
-  // what students shared
   const shared = shuffle(r, names).slice(0, 34);
   for (const subject of shared) {
     const category = pick(r, ["lecture_note", "lecture_note", "worksheet", "assignment", "reference", "other"] as const);
@@ -106,7 +98,6 @@ export const firstMaterials = (): Material[] => {
       createdAt: when, updatedAt: when, uploader: { username: handle, stuId: `25-${320 + (out.length % 30)}` }, decidedAt: status === "pending" ? null : when,
     });
   }
-  // two of mine
   for (const [subject, status, title] of [["정보과학3", "approved", "그래프 탐색 정리"], ["일반지구과학", "pending", "판구조론 요약"]] as const) {
     const when = day(status === "approved" ? 28 : 33);
     out.push({

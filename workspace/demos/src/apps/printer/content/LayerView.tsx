@@ -1,8 +1,3 @@
-// The G-code viewer's canvas: one layer of the file as a top view of the bed. Mainsail renders the whole file in 3D with a
-// WebGL viewer; Paper has no canvas, so this draws the layer as SVG paths (see layers.ts for where they come from): the
-// bed with its grid, the layer before it faintly, the walls, infill and solid infill, the travel moves, and the nozzle when
-// the layer is the one being printed. Colours are Paper tokens.
-
 import { useMemo } from "react";
 
 import { axisText, bed, clip, faint, frame, gridMajor, gridMinor, halo, nozzleDot, plot, strokeOf, type Tone } from "./charts.css";
@@ -18,14 +13,12 @@ type Props = {
   travel: boolean;
   previous: boolean;
   grid: boolean;
-  // Frame the part instead of the whole bed.
   fit: boolean;
   lineScale: number;
   quality: Quality;
   nozzle: { x: number; y: number } | null;
 };
 
-// Speed in mm/s of each feature in the mock, as a share of the fastest.
 const SPEED = { outer: 45, inner: 80, infill: 120, solid: 70 } as const;
 const share = (speed: number) => 35 + 65 * ((speed - 30) / 120);
 
@@ -47,7 +40,6 @@ export const LayerView = ({ name, layer, total, layerHeight, mode, travel, previ
   const y0 = fit ? clamp(part.centre[1] - span / 2, 0, BED - span) : 0;
   const k = inner / span;
   const f = total <= 1 ? 0 : (layer - 1) / (total - 1);
-  // What a feature's stroke is drawn in: its colour (a class) and how strongly (a share of it, so a slow or an early line is paler).
   const paint = (feature: keyof typeof featureTone) => {
     if (mode === "feature") return { className: strokeOf[featureTone[feature]], strokeOpacity: 1 };
     if (mode === "speed") return { className: strokeOf.info, strokeOpacity: share(SPEED[feature]) / 100 };

@@ -12,7 +12,6 @@ import { SURFACE_FILLS, THEME_ATTRIBUTE, type SurfaceTheme } from "../tokens";
 
 const root = document.documentElement;
 
-// The mode the nearest scope gives, written out so a test can read what context carries.
 const Mode = ({ id }: { id: string }) => <span data-testid={id}>{useResolvedTheme()}</span>;
 
 beforeEach(() => {

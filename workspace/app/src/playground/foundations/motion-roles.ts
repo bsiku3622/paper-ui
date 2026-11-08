@@ -1,6 +1,3 @@
-// The Motion inspector's notes: what the page says about values it cannot derive a reason for. Each map is
-// keyed by its source, so a role or loop added there fails typecheck until it has a note.
-
 import { MOTION_CONSUMERS, STATE_TINT_PROPERTY, type MotionRole } from "@studio-baeks/paper-ui/tokens";
 import { pick as inLocale, type Bilingual, type SiteLocale } from "../../site/locale";
 import type { Loop } from "@paper-ui/inspect/motion";
@@ -17,14 +14,9 @@ export const MOTION_NOTES: Record<MotionRole, Bilingual> = {
 
 const APP_SCREENS = (role: MotionRole): Bilingual => ({ ko: `앱 화면(${role} class)`, en: `App screens (${role} class)` });
 
-// A role's note, then the components that use it; a role no component takes is the app's screens', through its class.
 export const roleNote = (role: MotionRole, locale: SiteLocale = "ko"): string =>
   [inLocale(MOTION_NOTES[role], locale), ...(MOTION_CONSUMERS[role].length > 0 ? MOTION_CONSUMERS[role] : [inLocale(APP_SCREENS(role), locale)])].join(" · ");
 
-// The properties each transition role animates across its consumers, as the Atoms' stylesheets write them (state
-// is the union: a Switch fades a ring and moves a thumb, and a mark turns its border with its face, while a Button's
-// and an input frame's border rise on hover). enter and exit move a surface through presence, and theme ends every
-// transition at once, so they have no transition string.
 export const TRANSITION_PROPERTIES = {
   press: ["transform"],
   hover: [STATE_TINT_PROPERTY, "border-color", "color"],
@@ -36,7 +28,6 @@ export const LOOP_NOTES: Record<Loop, { note: Bilingual; usedBy: Bilingual }> = 
   pulse: { note: { ko: "대기 중인 표식", en: "A mark that is waiting" }, usedBy: { ko: "reduced-motion의 모든 반복", en: "Every loop under reduced-motion" } },
 };
 
-// The span of the roles' durations in ms, the instant one (theme) left out: "100~200ms".
 export const roleRange = (durations: readonly string[]): string => {
   const ms = durations.map(parseFloat).filter((value) => value > 0);
   return `${Math.min(...ms)}~${Math.max(...ms)}ms`;

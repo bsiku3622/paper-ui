@@ -1,5 +1,3 @@
-// 컴포넌트 상세 — preview·controls·code 레이아웃. 전부 tokens.* (raw 값 없음).
-
 import { globalStyle, style, styleVariants } from "@vanilla-extract/css";
 
 import { SURFACE_FILLS, codeRule, lineRule, tokens } from "@studio-baeks/paper-ui/tokens";
@@ -19,16 +17,14 @@ export const detailBody = style({
   },
 });
 
-// preview 와 코드의 칼럼. 줄어들 수 있어야 넓은 코드가 칼럼 안에서 스크롤한다.
+// minWidth 0 lets the column shrink, so wide code scrolls inside it.
 export const previewColumn = style({ minWidth: 0 });
 
-// Props 패널은 스크롤을 따라 헤더 아래에 머문다. 헤더가 정적인 좁은 폭에서는 본문 흐름에 놓인다.
 export const propsPanel = style({
   top: `calc(${navHeight} + ${tokens.layout.gap.xl})`,
   "@media": { [narrow]: { position: "static" } },
 });
 
-// preview 무대 — 세 surface와 control track 배경에서 가독성을 비교한다.
 export const previewFrame = style({ position: "relative" });
 export const previewStage = style({
   display: "flex",
@@ -70,7 +66,6 @@ export const surfaceButton = styleVariants(
   }),
 );
 
-// 자기 면과 외곽이 사용성의 일부인 미리보기(Draggable 무대)는 무대 테두리 안에 다시 가두지 않는다.
 export const previewStageFlush = style({
   justifyContent: "stretch",
   minHeight: "auto",
@@ -79,7 +74,6 @@ export const previewStageFlush = style({
   borderRadius: 0,
 });
 
-// The code is a card of its own: its face and shadow are the Surface's. A line shows only when the code does not parse.
 export const codeBlock = style({
   position: "relative",
   overflow: "hidden",

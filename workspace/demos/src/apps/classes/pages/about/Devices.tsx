@@ -1,7 +1,3 @@
-// 로그인한 기기 — one account can be signed in on five devices at once; past that the one used longest ago is dropped.
-// Here you see them, cut one off, or cut every other one off. A device that has been dropped finds out the next time it
-// asks, and is sent back to the sign-in page. The list is made up.
-
 import { useState } from "react";
 
 import { Badge, Button, IconButton, Inline, Spinner, Stack, Text } from "@studio-baeks/paper-ui";

@@ -67,9 +67,7 @@ test("[primitives.control.arrangement] gap, align and justify lay out the conten
     await expect(box, id).toHaveCSS("align-items", "flex-end");
     await expect(box, id).toHaveCSS("justify-content", "space-between");
   }
-  // The size stays what it was.
   await expect(page.getByTestId("control-arranged")).toHaveCSS("height", px(roleDp(tokens.shape.control.height.md)));
-  // Untold, each anatomy holds its own.
   const bare = page.getByTestId("control-bare");
   await expect(bare).toHaveCSS("column-gap", px(roleDp(tokens.shape.control.gap)));
   await expect(bare).toHaveCSS("align-items", "center");
@@ -108,12 +106,10 @@ test("[primitives.control.parts] what an Atom draws inside its control reads the
   for (const name of SIZES) {
     const frame = page.getByTestId(`select-${name}`);
     const button = frame.getByRole("combobox");
-    // The value stops at its end inset from the frame's edge; the frame's line takes its room out of the button's padding.
     const frameLine = await frame.evaluate((element) => parseFloat(getComputedStyle(element).borderInlineEndWidth));
     expect(await button.evaluate((element) => parseFloat(getComputedStyle(element).paddingInlineEnd)) + frameLine, name).toBe(roleDp(CONTROL.select.paddingEnd[name]));
     await expect(frame.locator("svg"), name).toHaveCSS("width", px(roleDp(tokens.shape.control.icon[name])));
     await expect(page.getByLabel(`field-${name}`, { exact: true }), name).toHaveCSS("line-height", px(roleDp(CONTROL.inputLine[name])));
-    // One row of a Textarea is exactly a control tall.
     const area = (await page.getByTestId(`textarea-${name}`).boundingBox())!;
     expect(area.height, name).toBe(roleDp(tokens.shape.control.height[name]));
   }

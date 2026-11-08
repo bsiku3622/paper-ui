@@ -1,6 +1,3 @@
-// The site's header — the banner of every page that has the shell's chrome. The brand goes home with the version beside it,
-// and across the bar stand the four parts of the site and the theme switch. A link is its words: where you are is the ink.
-
 import { Link as RouterLink, useLocation } from "react-router-dom";
 
 import { Box, Inline, Link, Surface, Text } from "@studio-baeks/paper-ui";

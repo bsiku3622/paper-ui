@@ -1,7 +1,3 @@
-// 전공 조사 — how many students answered the question about their major, and how many chose each track. Counts only: who chose
-// what is not sent to this screen at all. The demo account's own answer is added live from the app's state, so changing the
-// major on the settings page moves a bar here.
-
 import { Button, Grid, Stack } from "@studio-baeks/paper-ui";
 
 import { Glyph, Meter, Stat, StatRow, useToast } from "../../../../kit";

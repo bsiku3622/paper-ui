@@ -4,7 +4,6 @@ import { tokens } from "../../packages/paper-ui/src/tokens";
 import { MOTION } from "../../packages/paper-ui/src/tokens/motion-recipes";
 import { expectStyle, profile } from "../support/style";
 
-// The landing page in English; tests/app/locale.spec.ts reads it in Korean.
 test.use({ locale: "en-US" });
 
 test("[atoms.link.target] the hero Buttons that are links carry no underline, and the demo link is a Link with an arrow icon that underlines under the pointer", async ({ page }) => {
@@ -26,7 +25,6 @@ test("the footer's links are Link Atoms in a quiet ink: no mark at rest, an unde
   await expectStyle(link, { textDecorationLine: "underline" });
 });
 
-// The brand label is not a status: a neutral badge on the primary soft face.
 test("the brand label is a neutral badge", async ({ page }) => {
   await page.goto("/");
   const brand = page.getByText("Studio Baeks", { exact: true }).first();
@@ -34,7 +32,6 @@ test("the brand label is a neutral badge", async ({ page }) => {
   await expectStyle(brand, { backgroundColor: tokens.color.accent.primary.soft });
 });
 
-// The stage is the Arcfield demo itself, not a drawing of a screen: a frame of /demo/arcfield, inert, in the page's theme.
 test("[app.home.motion] shows the Arcfield demo itself on the stage, as a picture the page scrolls past", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "light" });
   await page.goto("/");
@@ -47,11 +44,9 @@ test("[app.home.motion] shows the Arcfield demo itself on the stage, as a pictur
   const demo = page.frameLocator("iframe");
   await expect(demo.getByRole("navigation", { name: "제품 메뉴" })).toBeVisible();
   await expect(demo.locator("html")).toHaveAttribute("data-pui-theme", "light");
-  // The link under it opens the demo to use.
   await expect(page.getByRole("link", { name: "Open the demo", exact: true })).toHaveAttribute("href", /\/demo$/);
 });
 
-// The landing page's motion: what comes in, in what order, and what stands in place at once where less motion is asked.
 const playing = (target: Locator) => target.evaluate((element) => {
   const style = getComputedStyle(element);
   return { name: style.animationName, delay: parseFloat(style.animationDelay) * 1000, direction: style.animationDirection };
@@ -63,7 +58,6 @@ test("[app.home.motion] brings the hero in a step at a time and opens the slot l
   const headline = page.getByRole("heading", { level: 1 });
   const hero = headline.locator("xpath=..");
   const lines = headline.locator(":scope > span");
-  // The meta line, the two lines of the headline, the paragraph and the actions, one step of the reveal role apart.
   const parts = [hero.locator(":scope > *").first(), lines.nth(0), lines.nth(1), hero.locator(":scope > p"), hero.locator(":scope > *").last()];
   const slot = lines.nth(1).locator(":scope > span");
   const step = parseFloat(MOTION.reveal.step);
@@ -92,7 +86,6 @@ test("[app.home.motion] the slot's switch is the page's theme, and the demo on t
   await toggle.click();
   await expect(html).toHaveAttribute("data-pui-theme", "dark");
   await expect(toggle).toBeChecked();
-  // The stage takes no theme of its own, and the demo in it comes up in the page's.
   await expect(page.locator("[data-pui-theme]")).toHaveCount(1);
   await page.locator("iframe").scrollIntoViewIfNeeded();
   await expect(page.frameLocator("iframe").locator("html")).toHaveAttribute("data-pui-theme", "dark");
@@ -102,7 +95,6 @@ test("[app.home.motion] lights the statement up as it comes up the screen, and l
   await page.goto("/");
   test.skip(!(await viewTimelines(page)), "the lighting follows a view timeline");
   const words = page.getByTestId("home-statement").locator(":scope > span");
-  // Below the fold the words wait in the quiet ink, and in the middle of the screen they are lit.
   await expectStyle(words.first(), { color: tokens.color.ink.tertiary });
   await words.first().evaluate((element) => element.scrollIntoView({ block: "center" }));
   await expectStyle(words.first(), { color: tokens.color.ink.primary });
@@ -118,7 +110,6 @@ test("[app.home.motion] lays a wall of real components in four columns that drif
   const wall = page.getByTestId("home-wall");
   const columns = wall.locator(":scope > div");
   await expect(columns).toHaveCount(4);
-  // The controls are the Atoms themselves, and they work.
   const mention = wall.getByRole("switch", { name: "When I'm mentioned" });
   await expect(mention).toBeChecked();
   await mention.click();

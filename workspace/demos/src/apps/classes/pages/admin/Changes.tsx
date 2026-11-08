@@ -1,6 +1,3 @@
-// What changed between two revisions of a term: how many classes, times and enrolments came and went, and the names behind
-// the biggest moves. Never a student's name — a revision only says how many places were added or removed in each class.
-
 import type { ReactNode } from "react";
 
 import { Grid, Inline, Stack, Text } from "@studio-baeks/paper-ui";
@@ -10,7 +7,6 @@ import type { ChangeSummary, Move } from "../../data/admin";
 
 const MAX_ROWS = 6;
 
-// +3, −2 — nothing for 0.
 const Delta = ({ value }: { value: number }) =>
   value === 0 ? null : (
     <Text as="span" ink={value > 0 ? "success" : "error"} numeric>{value > 0 ? "+" : "−"}{Math.abs(value)}</Text>
@@ -70,7 +66,6 @@ const Moves = ({ title, items }: { title: string; items: readonly Move[] }) =>
 export const Changes = ({ data }: { data: ChangeSummary }) => {
   if (!data.changed) return <Text ink="tertiary">직전 회차와 같습니다.</Text>;
   const { classes, times, enrollments, students } = data;
-  // A revision that only corrected a name has nothing to say about classes, times or places.
   const shifted = classes.added.length + classes.removed.length + classes.moved.length + classes.swapped.length + times.added + times.removed + enrollments.added + enrollments.removed > 0;
   return (
     <Stack gap="lg">

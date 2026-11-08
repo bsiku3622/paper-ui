@@ -1,10 +1,3 @@
-// 홈 — what to do right now: the class you are in, how long is left, where to go next, today's list, the week, the
-// cafeteria, what the calendar says about today, and the subjects you take.
-//
-// Everything is drawn from one minute of the day. The "시연 상태" switch moves that minute (and the date) so the screens that
-// depend on it — in a class, a free period, before the first bell, a weekend, a holiday, a vacation — can be seen on a day
-// that is none of them; the school's own clock is the default.
-
 import { useEffect, useMemo, useState } from "react";
 import { Link as RouterLink, useSearchParams } from "react-router-dom";
 
@@ -38,7 +31,6 @@ const DEMOS = [
   { id: "vacation", label: "방학", key: "2026-12-20", minute: 10 * 60 },
 ] as const;
 
-// A line for a day without classes. Chosen by the date, so it does not change while you read it.
 const OFF_LINES = {
   vacation: ["오늘 1교시는 없습니다. 2교시도 없습니다.", "시간표가 쉬는 중입니다.", "방학에는 늦잠이 시간표입니다."],
   weekend: ["주말이 천천히 지나가길 바랍니다.", "오늘은 시간표를 덮어 둬도 됩니다.", "교시 번호가 없는 하루입니다."],
@@ -47,7 +39,6 @@ const OFF_LINES = {
 
 export const Home = () => {
   const { data, me, clock, events, term, tradeOpen } = useClasses();
-  // ?demo=class|free|before|after|weekend|holiday|vacation arrives in that state; ?view=plan opens on the plan
   const params = useSearchParams()[0];
   const asked = params.get("demo");
   const [demoId, setDemoId] = useState<(typeof DEMOS)[number]["id"]>(DEMOS.find((item) => item.id === asked)?.id ?? "real");
@@ -55,7 +46,6 @@ export const Home = () => {
   const at = demo.id === "real" ? clock : { key: demo.key, minute: demo.minute };
   const current = useMemo(() => buildHome(data, me.stuId, at.key, at.minute, events), [data, me.stuId, at.key, at.minute, events]);
 
-  // During the course-change window the page can show the plan kept on the 수강 정정 page in place of the timetable.
   const plannedSections = usePlannedSections(data, me.stuId, tradeOpen);
   const [shown, setShown] = useStored<"current" | "plan">("classes:home-timetable", "current");
   const wanted = params.get("view");
@@ -66,7 +56,6 @@ export const Home = () => {
   const departments = useMemo(() => new Map(data.subjects.map((subject) => [subject.subject, subject.department])), [data]);
   const home = useMemo(() => (planned && plannedSections ? planHome(current, plannedSections, departments) : current), [planned, plannedSections, current, departments]);
   const view = deriveHomeView(home);
-  // the exam timetable is announced a week before the exams and stays until they end
   const exam = EXAM_PERIODS.find((item) => home.date >= item.visibleFrom && home.date <= item.visibleUntil);
   const subjects = useMemo(() => collectSubjects(home.week), [home.week]);
   const markers = useMemo(() => weekMarkers(events), [events]);
@@ -77,7 +66,6 @@ export const Home = () => {
   const blocks = dayBlocks(home);
   const upcoming = blocks.filter((block) => block.start.start > home.minute).length;
 
-  // my sections only (the planned ones while a plan is shown), for the list at the bottom
   const mine = useMemo(() => {
     const planIds = planned && plannedSections ? new Set(plannedSections.map((section) => section.id)) : null;
     return data.subjects

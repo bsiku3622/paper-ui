@@ -1,26 +1,8 @@
-// smoke-dist.mjs — runs the distribution contract on the tarball a consumer installs, not on the workspace.
-//
-//   1. packs the package (prepack builds it) into a temporary directory;
-//   2. checks the tarball with publint and attw (the package's check:package);
-//   3. checks the client boundary: dist/index.js opens with "use client", and dist/tokens.js and dist/theme-boot.js, with
-//      every chunk they load, import no react and carry no "use client";
-//   4. scans the tarball's dist/paper-ui.css against the browser floor (scripts/browser-baseline.mjs);
-//   5. for React 19 and React 18, copies the e2e harness into a temporary consumer that installs the tarball and
-//      nothing of vanilla-extract, type-checks it under both module resolutions with skipLibCheck off, builds it with
-//      Vite, and imports /tokens and /theme-boot under the react-server condition;
-//   6. runs playwright.dist.config.ts, which serves both builds with `vite preview` on strict ports and holds the
-//      built stylesheet to the rules the docs declare.
-//
-// The helpers below are pure so scripts/smoke-dist.test.mjs holds the checks themselves to their contract without
-// building anything. Everything runs only when this file is the entry.
-
 import { execFileSync } from "node:child_process";
 import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
-
-// ───── The checks ──────────────────────────────────────────────────────────────────────────────────────────
 
 const CLIENT_DIRECTIVE = /^\s*(?:\/\*[\s\S]*?\*\/\s*|\/\/[^\n]*\n\s*)*["']use client["']/;
 const SPECIFIER = /\b(?:import|export)\b[^"'`;]*?\bfrom\s*["']([^"']+)["']|\bimport\s*["']([^"']+)["']|\bimport\(\s*["']([^"']+)["']\s*\)/g;
@@ -28,10 +10,8 @@ const SPECIFIER = /\b(?:import|export)\b[^"'`;]*?\bfrom\s*["']([^"']+)["']|\bimp
 export const hasClientDirective = (code) => CLIENT_DIRECTIVE.test(code);
 export const specifiersOf = (code) => [...code.matchAll(SPECIFIER)].map((match) => match[1] ?? match[2] ?? match[3]);
 
-// What a server-safe entry must never load: React, anything built on it, or a stylesheet.
 const isReactBound = (specifier) => /^(?:react|react-dom)(?:\/|$)/.test(specifier) || specifier.startsWith("@react-aria/") || /\.css$/.test(specifier);
 
-// The files an entry loads at import time: itself, and every relative module reached from it.
 export const loadedFiles = (entry, read) => {
   const seen = new Map();
   const queue = [entry];
@@ -47,7 +27,6 @@ export const loadedFiles = (entry, read) => {
   return seen;
 };
 
-// The problems of the client boundary in a built package. `read` maps a path inside the package to its text.
 export const boundaryProblems = (read) => {
   const problems = [];
   if (!hasClientDirective(read("dist/index.js"))) problems.push('dist/index.js does not open with "use client"');
@@ -60,18 +39,13 @@ export const boundaryProblems = (read) => {
   return problems;
 };
 
-// The react-server import that proves an entry loads without React, as a node -e script: it exits 1 unless the
-// entry's main export is there.
 export const serverImport = (entry, name) => `import(${JSON.stringify(entry)}).then((m) => { if (!m[${JSON.stringify(name)}]) process.exit(1); })`;
 
-// The entries a server component imports, each with the export that shows it loaded.
 export const SERVER_ENTRIES = [
   ["@studio-baeks/paper-ui/tokens", "tokens"],
   ["@studio-baeks/paper-ui/theme-boot", "themeBootScript"],
 ];
 
-// The consumer's package.json: the tarball, React at the version under test, the matching types, the build tools,
-// and no vanilla-extract — the stylesheet is built, so a consumer needs nothing to compile it.
 export const consumerManifest = ({ react, range, tarball }) => ({
   name: `paper-ui-consumer-react${react}`,
   private: true,
@@ -90,16 +64,13 @@ export const consumerManifest = ({ react, range, tarball }) => ({
   },
 });
 
-// What pnpm 11 needs of a Vite app to finish its first install; docs/get-started/install.md gives the same lines.
+// The same lines as docs/get-started/install.md; pnpm 11 needs them to finish a Vite app's first install.
 export const CONSUMER_WORKSPACE = "allowBuilds:\n  esbuild: true\n";
 
-// React 19 as a caret range; React 18 at the floor of the peer range, so the lowest React the package claims runs.
 export const CONSUMERS = [
   { react: 19, range: "^19.0.0", port: Number(process.env.E2E_DIST_PORT_19 ?? 41741) },
   { react: 18, range: "18.2.0", port: Number(process.env.E2E_DIST_PORT_18 ?? 41742) },
 ];
-
-// ───── The run ─────────────────────────────────────────────────────────────────────────────────────────────
 
 const workspace = fileURLToPath(new URL("..", import.meta.url));
 const packageDir = join(workspace, "packages/paper-ui");

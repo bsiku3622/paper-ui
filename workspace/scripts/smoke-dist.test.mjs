@@ -5,7 +5,6 @@ import { test } from "node:test";
 
 import { CONSUMERS, CONSUMER_WORKSPACE, SERVER_ENTRIES, boundaryProblems, consumerManifest, hasClientDirective, loadedFiles, serverImport, specifiersOf } from "./smoke-dist.mjs";
 
-// A built package as a map of path → text.
 const built = (files) => (path) => {
   assert.ok(path in files, `${path} is read but not in the fixture`);
   return files[path];

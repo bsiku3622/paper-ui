@@ -1,6 +1,3 @@
-// Bar.tsx — the bar across the top of the window: the name, the menus, a shuffle button, the search box, the account.
-// The green of the reference has no Paper colour; the bar is Paper's inverse face (black on a light page, white on a dark one).
-
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link as RouterLink, matchPath, useLocation, useNavigate } from "react-router-dom";
 
@@ -29,7 +26,6 @@ export const Bar = () => {
   const [query, setQuery] = useState("");
   const field = useRef<HTMLInputElement>(null);
 
-  // “/” jumps to the search box, as long as you are not typing somewhere already.
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;

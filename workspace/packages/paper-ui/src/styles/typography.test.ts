@@ -5,7 +5,6 @@ import { controlFontSizeClass, presetClass, textMonoClass, textNumericClass, tex
 
 const distinct = (classes: readonly string[]) => new Set(classes).size === classes.length && classes.every(Boolean);
 
-// Every leaf of a class tree, with the path that reaches it.
 const leaves = (tree: object, path: string[] = []): [string, string][] =>
   Object.entries(tree).flatMap(([key, node]) => (typeof node === "string" ? [[[...path, key].join("."), node] as [string, string]] : leaves(node, [...path, key])));
 
@@ -35,7 +34,6 @@ describe("the typography class maps", () => {
         expect(a.className === b.className, `${a.name} · ${b.name}`).toBe(same);
       }
     }
-    // Some pair has to declare the same thing, or the sharing goes untested.
     expect(shared).toBeGreaterThan(0);
   });
 

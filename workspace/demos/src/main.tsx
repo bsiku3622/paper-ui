@@ -9,8 +9,6 @@ import { PaperProvider } from "@studio-baeks/paper-ui";
 import { App } from "./App";
 import { ToastProvider } from "./kit";
 
-// In the showcase's frame (/demo) the page sets the theme through ?theme= and the frame keeps no choice of its own; opened on its
-// own, a demo remembers the visitor's theme as any app would.
 const framed = window.self !== window.top;
 const asked = new URLSearchParams(window.location.search).get("theme");
 const theme = asked === "dark" || asked === "light" ? asked : undefined;

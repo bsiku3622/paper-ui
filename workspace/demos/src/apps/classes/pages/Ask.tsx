@@ -1,7 +1,3 @@
-// Ask — ask the school in your own words. "오늘 형3404 빈 교시 뭐 있어?" is turned into a lookup (a room's timetable, your
-// own week, the calendar, the exam table), and the answer says what was looked up. The same conversation is also in the
-// small window in the top bar, and it is kept in memory only. `?demo=done` opens with a finished conversation.
-
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 

@@ -13,12 +13,10 @@ test("[primitives.grid.token-gap] Grid's computed column and row gap are the gap
   await openPlayground(page, "grid", "Grid");
   const grid = page.getByTestId("grid-example");
   const gaps = () => grid.evaluate((node) => ({ column: getComputedStyle(node).columnGap, row: getComputedStyle(node).rowGap, tracks: getComputedStyle(node).gridTemplateColumns.split(" ").length }));
-  // The example's gap is sm, as the Playground prints it.
   const sm = `${roleDp(tokens.layout.gap.sm)}px`;
   expect(await gaps()).toEqual({ column: sm, row: sm, tracks: 3 });
   await chooseProp(page, "columns", "2");
   expect(await gaps()).toEqual({ column: sm, row: sm, tracks: 2 });
-  // A step named for one axis moves that axis alone; the other keeps the step `gap` names.
   await chooseProp(page, "rowGap", "lg");
   expect(await gaps()).toEqual({ column: sm, row: `${roleDp(tokens.layout.gap.lg)}px`, tracks: 2 });
 });
@@ -31,19 +29,16 @@ test("[primitives.grid.steps] a Grid's tracks follow the width: the base below i
   await openHarness(page, "layout");
   expect(await tracks("grid-steps")).toBe(1);
   expect(await tracks("grid-no-base")).toBe(1);
-  // Rows with no base are the implicit one the content makes.
   expect(await page.getByTestId("grid-steps").evaluate((node) => getComputedStyle(node).gridTemplateRows)).not.toContain("32px");
   await page.setViewportSize({ width: md, height: 800 });
   expect(await tracks("grid-steps")).toBe(2);
   expect(await tracks("grid-no-base")).toBe(3);
   await expect(page.getByTestId("grid-steps")).toHaveCSS("grid-template-rows", "32px 48px");
-  // A step that names no value keeps the one before it.
   await page.setViewportSize({ width: lg - 1, height: 800 });
   expect(await tracks("grid-steps")).toBe(2);
   await page.setViewportSize({ width: lg, height: 800 });
   expect(await tracks("grid-steps")).toBe(3);
   expect(await tracks("grid-no-base")).toBe(3);
-  // An inner Grid reads only the steps it was given, not the outer one's variables.
   await page.setViewportSize({ width: md, height: 800 });
   expect(await tracks("grid-outer")).toBe(2);
   expect(await tracks("grid-inner")).toBe(1);

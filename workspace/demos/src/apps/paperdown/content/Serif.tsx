@@ -1,5 +1,3 @@
-// Content: text in the serif the original uses for its name, its titles and the sheet. See serif.css.ts.
-
 import type { ReactNode } from "react";
 
 import { Text } from "@studio-baeks/paper-ui";
@@ -12,7 +10,6 @@ export type SerifProps = {
   variant?: TextVariant;
   strong?: boolean;
   ink?: Ink;
-  // Cut after three lines.
   lines?: boolean;
   children: ReactNode;
 };
@@ -23,7 +20,6 @@ export const Serif = ({ as = "span", variant = "body", strong, ink, lines = fals
   </Text>
 );
 
-// The name of the app, as the header sets it. On a phone the original sets it a size smaller.
 export const Wordmark = ({ small = false }: { small?: boolean }) => (
   <Text as="span" variant={small ? "heading" : "title"} className={wordmark}>
     Paperdown

@@ -1,7 +1,3 @@
-// manifest.js — where the guardrails' boundaries are declared. Every rule in paper.js and every block of
-// eslint.config.js reads its paths from here, and an exception is added here, with its reason, or nowhere.
-// Paths are relative to the workspace (the folder holding eslint.config.js) and written with "/".
-
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -11,75 +7,40 @@ export const WORKSPACE = path.resolve(path.dirname(fileURLToPath(import.meta.url
 const PACKAGE = "packages/paper-ui";
 const SRC = `${PACKAGE}/src`;
 
-// ── The token layer ──────────────────────────────────────────────────────────
-
-// The only place a raw value exists, and the only place a source module may be imported.
 export const TOKEN_LAYER = `${SRC}/tokens`;
-// What the rest of the package imports from it: roles, vocabulary and composition, never a source or a helper.
 export const TOKEN_BARREL = `${SRC}/tokens/index.ts`;
-// The cascade layer names and the layered() wrappers hold no values, so every package .css.ts may import them
-// with bindings.
 export const LAYER_MODULE = `${SRC}/tokens/layers.css.ts`;
 
-// ── The inspector alias ──────────────────────────────────────────────────────
-
-// '@paper-ui/inspect/<system>' resolves to src/tokens/inspect/<system>.ts in the app's Vite and tsconfig.
 export const INSPECT_ALIAS = "@paper-ui/inspect/";
 export const INSPECT_DIR = `${SRC}/tokens/inspect`;
 export const INSPECT_SYSTEMS = ["color", "typography", "shape", "layout", "motion"];
 
-// A system's inspector page, and what belongs to it. The system is the capture, lowercased.
 export const INSPECTOR_PAGE = /^app\/src\/playground\/foundations\/([A-Z]\w*)Page\.tsx$/;
 export const INSPECT_CONSUMERS = [
-  // The page, and the data module it reads beside it (<system>-roles.ts).
   { pattern: INSPECTOR_PAGE, system: (match) => match[1].toLowerCase() },
   { pattern: /^app\/src\/playground\/foundations\/([a-z]+)-roles\.ts$/, system: (match) => match[1] },
-  // The docs generators (S29) read sources the same way.
   { pattern: /^app\/src\/docs\/generated\/([a-z]+)\.ts$/, system: (match) => match[1] },
-  // The studio (/demo) edits the system's own values, so it has to know them: where each source sits in the tree an override is
-  // written in, and the palette steps the colour picker offers. One data module per system, no JSX (pages/studio/<system>-source.ts).
   { pattern: /^app\/src\/pages\/studio\/([a-z]+)-source\.ts$/, system: (match) => match[1] },
 ];
 
-// ── Tests ────────────────────────────────────────────────────────────────────
-
-// Tests are verification code. They import package sources and assert emitted names.
 export const TEST_FILES = [/\.test\.[cm]?[jt]sx?$/, /^tests\//];
-
-// ── The package's entries ────────────────────────────────────────────────────
 
 const PACKAGE_JSON = JSON.parse(readFileSync(path.join(WORKSPACE, PACKAGE, "package.json"), "utf8"));
 export const PACKAGE_NAME = PACKAGE_JSON.name;
-// The subpaths an app may import ("." is the package itself).
 export const PACKAGE_EXPORTS = Object.keys(PACKAGE_JSON.exports);
 
-// React Aria is an implementation detail: every import of it lives in src/internal/aria.
 export const ARIA_HOME = `${SRC}/internal/aria`;
 export const ARIA_BOUNDARY = {
   group: ["@react-aria/*", "@react-stately/*", "@react-types/*", "react-aria", "react-aria/*", "react-aria-components", "react-aria-components/*", "react-stately", "react-stately/*"],
   message: "React Aria 는 packages/paper-ui/src/internal/aria 안에서만 import 한다. 밖에서는 Paper 의 hook · 타입을 쓴다.",
 };
 
-// ── Depth ────────────────────────────────────────────────────────────────────
-
-// zIndex and a depth shadow are written in these two files, or spread from elevationStack / elevationCast /
-// elevationStyle. Nothing else states depth.
-// Motion's stylesheet blurs what a reveal brings in, out of focus to in: the one filter that is not a surface's depth.
 export const ELEVATION_OWNERS = [`${SRC}/primitives/paint/Surface.css.ts`, `${SRC}/primitives/float/Floating.css.ts`, `${SRC}/styles/motion.css.ts`];
-// The one file that writes a border's width and style, and the mark that draws its glyph with a border rather than a line.
 export const LINE_OWNERS = [`${SRC}/tokens/line-recipes.ts`, `${SRC}/atoms/Checkbox.css.ts`];
-// The one other boxShadow a file may state: the inset stroke ring, by the function that draws it.
 export const STROKE_OWNER = { file: `${SRC}/tokens/shape-recipes.ts`, name: "strokeRing" };
 
-// The colour rules live in the Paint primitives. The package reads `tokens.color` only in these files and folders: the
-// Paint primitives (Surface, Paint and the paints other parts borrow), Icon's own ink, and the class maps of styles/.
-// primitives/orders.test.ts and atoms/color-ownership.test.ts hold the same line as a backstop.
 export const COLOR_OWNERS = [`${SRC}/primitives/paint`, `${SRC}/primitives/Icon.css.ts`, `${SRC}/styles`];
 
-// ── Declared exceptions ──────────────────────────────────────────────────────
-
-// Modules whose values are a moment's, not the system's. paper/inline-token does not follow what they compute.
-// The keys are paths inside src; the reasons are the documented runtime list.
 export const RUNTIME_STYLE = {
   "internal/aria/**": "anchored position and Aria press styles",
   "internal/measure.ts": "measured lengths of the moment",
@@ -88,20 +49,14 @@ export const RUNTIME_STYLE = {
   "primitives/float/nestElevation.ts": "the Floating's nesting rank",
 };
 
-// An app module that holds one page's content dimensions. paper/source-numbers leaves it alone.
 export const APP_DIMENSION_MODULES = [];
 
-// Files that run outside Vite's resolver and so reach a package source by path.
 export const TOOLING = [
   { file: "app/vite/theme-boot.ts", imports: `${SRC}/theme/boot.ts`, reason: "vite.config.ts is loaded before Vite resolves anything, so the boot plugin imports the boot script by relative path." },
 ];
 
-// The app files that may name an element or :root in globalStyle(). Every other selector starts from a scoped class.
 export const GLOBAL_SELECTOR_FILES = ["app/src/site/shell.css.ts"];
 
-// ── The rules ────────────────────────────────────────────────────────────────
-
-// The rules as the docs state them. `eslint` names what runs each; S29 renders the docs from this list.
 export const RULES = [
   {
     id: "raw-color",
@@ -153,26 +108,20 @@ export const RULES = [
   },
 ];
 
-// ── Path helpers ─────────────────────────────────────────────────────────────
-
 export const toPosix = (value) => value.split(path.sep).join("/");
 
-// The workspace-relative path of a linted file.
 export const workspacePath = (filename) => toPosix(path.relative(WORKSPACE, filename));
 
 export const isInside = (target, directory) => target === directory || target.startsWith(`${directory}/`);
 
 export const isTestFile = (file) => TEST_FILES.some((pattern) => pattern.test(file));
 
-// The workspace path an import resolves to, without its extension and without a trailing /index; undefined
-// for a specifier that is not a path.
 export const resolveRelative = (file, specifier) => {
   if (!specifier.startsWith(".")) return undefined;
   const joined = path.posix.normalize(path.posix.join(path.posix.dirname(file), specifier));
   return joined.replace(/\.(?:[cm]?[jt]sx?)$/, "").replace(/\/index$/, "");
 };
 
-// The system an inspector file is allowed to import, if it is one.
 export const inspectSystemOf = (file) => {
   for (const { pattern, system } of INSPECT_CONSUMERS) {
     const match = pattern.exec(file);

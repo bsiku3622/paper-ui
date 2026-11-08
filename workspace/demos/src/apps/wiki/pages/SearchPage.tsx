@@ -1,6 +1,3 @@
-// SearchPage.tsx — a search over titles, categories and text. If the words are exactly a title there is a way straight to it;
-// every result shows the sentence the words were found in, with them marked.
-
 import { Fragment, useEffect, useMemo, useState, type FormEvent } from "react";
 import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
 

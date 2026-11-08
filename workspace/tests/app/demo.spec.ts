@@ -4,17 +4,12 @@ import { SHAPE_SOURCE } from "../../packages/paper-ui/src/tokens/shape";
 import { pageErrors } from "../support/console";
 import { nativeSelect } from "../support/select";
 
-// /demo is the showcase (pages/showcase/): one demo app at a time in a frame. Arcfield (/demo/arcfield) is the
-// demo's own product, drawn with nothing but Paper (pages/demo/pure.test.ts holds it to that). Its screens own their landmarks
-// (chrome 'none'), so these tests read them the way a user does.
-
 const ARCFIELD = "/demo/arcfield";
 const SECURITY = `${ARCFIELD}/security`;
 const SEARCH = `${ARCFIELD}/search`;
 const LOGIN = `${ARCFIELD}/login`;
 const SETTINGS = `${ARCFIELD}/settings`;
 
-// The search page is reached by typing, not by a link, so the site's crawl does not find it: it is named here instead.
 const SCREENS = [
   { path: ARCFIELD, heading: "개요" },
   { path: SECURITY, heading: "보안과 접근" },
@@ -88,7 +83,6 @@ test("the findings table is a table to assistive technology: seven headers over 
   await page.goto(SECURITY);
   const table = page.getByRole("table", { name: "점검 결과" });
   await expect(table.getByRole("columnheader")).toHaveCount(7);
-  // The header row and one page of ten findings.
   await expect(table.getByRole("row")).toHaveCount(11);
   await expect(table.getByRole("row").nth(1).getByRole("cell")).toHaveCount(7);
   await expect(table.getByRole("row").nth(1)).toContainText("SEC-1042");
@@ -107,7 +101,6 @@ test("the window scrolls and the dashboard's sidebar stands still beside it, a g
   const after = await boxOf(sidebar);
   expect(after.y).toBe(before.y);
   expect(after.height).toBe(before.height);
-  // The space between them is the grid's gap, the 24 of xl.
   expect((await boxOf(main)).x - (before.x + before.width)).toBe(24);
 });
 
@@ -115,7 +108,6 @@ test("below the md breakpoint the sidebar leaves and the column takes the whole 
   await page.setViewportSize({ width: 767, height: 800 });
   await page.goto(ARCFIELD);
   await expect(page.getByRole("complementary")).toBeHidden();
-  // The column holds the xl inset on both sides.
   expect((await page.getByRole("main").boundingBox())!.width).toBe(767 - 2 * SHAPE_SOURCE.space.xl);
   await page.setViewportSize({ width: 768, height: 800 });
   await expect(page.getByRole("complementary")).toBeVisible();

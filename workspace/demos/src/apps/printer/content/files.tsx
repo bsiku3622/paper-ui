@@ -1,6 +1,3 @@
-// Paper has no file input and no way to hand the browser a download. These are the two small pieces of the page that
-// need the DOM: a hidden file input that a Paper Button can open, and a text file saved from a string.
-
 import { useRef, type ReactNode } from "react";
 
 export const FilePicker = ({ accept, multiple = false, onPick, children }: { accept?: string; multiple?: boolean; onPick: (files: File[]) => void; children: (open: () => void) => ReactNode }) => {

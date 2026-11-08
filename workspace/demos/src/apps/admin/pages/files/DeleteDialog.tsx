@@ -1,5 +1,3 @@
-// 정말 지울까요? One file or several. The words are the original's: the link goes with the file, and there is no way back.
-
 import { useRef, useState } from "react";
 
 import { Button, Stack, Text } from "@studio-baeks/paper-ui";
@@ -18,7 +16,6 @@ export const DeleteDialog = ({ ids, onClose, onDone }: { ids: readonly string[] 
   const toast = useToast();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // The words stay while the dialog fades out, after the ids are gone.
   const last = useRef<AdminFile[]>([]);
   const targets = files.filter((file) => ids?.includes(file.id));
   if (targets.length > 0) last.current = targets;

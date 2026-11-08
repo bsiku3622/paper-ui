@@ -1,12 +1,3 @@
-// Spinner — 진행 중 표시. 세 가지로 쓴다.
-//   <Spinner />                     혼자 서는 진행 표시 — progressbar 이고 이름(label)을 갖는다
-//   <Spinner decorative />          컨트롤 안의 장식 — aria-hidden, 알림은 컨트롤(aria-busy)이 맡는다
-//   <Spinner size="inline" ink="inherit" />   글줄 안에서 글자만큼, 글자색을 따라
-//
-// progressbar 는 이름을 만든 사람의 글에서 받으니 숨은 라벨 요소를 두지 않고 aria-label 로 이름 붙인다. 값(aria-valuenow)이
-// 없으니 얼마나 걸릴지 모르는 진행이다. 나머지 속성(...rest)은 span 으로 흘려 보낸다 — Atom 이 span 하나를 그리면서
-// span 의 속성을 막으면 쓰는 쪽이 감싸는 div 를 하나 더 만들게 된다.
-
 import { forwardRef, type HTMLAttributes } from "react";
 
 import { joinClass } from "../internal/joinClass";
@@ -18,13 +9,9 @@ import type { ControlSize } from "../tokens";
 import { spinnerInline, spinnerRoot } from "./Spinner.css";
 
 export type SpinnerProps = Omit<HTMLAttributes<HTMLSpanElement>, "className" | "children"> & {
-  // 크기 5 단 (xs·sm·md·lg·xl)은 Icon 과 같은 아이콘 사다리, inline 은 글줄 안에서 글자만큼(1em).
   size?: ControlSize | "inline";
-  // inherit 는 둘러싼 글자색을 따라 도는 호. 안 주면 primary 잉크의 호. 어느 쪽이든 꼬리가 옅어지는 호 하나다.
   ink?: "inherit";
-  // 이름. 안 주면 PaperProvider 의 locale 이 고른 문구('불러오는 중' · 'Loading').
   label?: string;
-  // 장식이면 aria-hidden 이고 role 도 이름도 없다.
   decorative?: boolean;
   className?: string;
 };

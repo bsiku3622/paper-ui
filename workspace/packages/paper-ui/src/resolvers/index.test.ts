@@ -1,5 +1,3 @@
-// resolver는 공유 축의 이름을 typed class map에서 고른다; 렌더 값은 tests/*.spec.ts가 본다.
-
 import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";

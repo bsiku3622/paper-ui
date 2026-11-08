@@ -1,6 +1,3 @@
-// 대체 시간표 — a date that follows another weekday's timetable, for a make-up day or a Saturday class. A date can carry one
-// of these only; adding a second for the same day is refused. A deleted one comes back with the toast's 되돌리기.
-
 import { useState } from "react";
 
 import { Badge, Button, Field, FormField, Grid, IconButton, Inline, Select, Stack, Surface, Text } from "@studio-baeks/paper-ui";

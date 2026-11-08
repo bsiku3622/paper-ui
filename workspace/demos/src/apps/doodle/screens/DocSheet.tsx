@@ -1,7 +1,3 @@
-// A Markdown document lying on the canvas: a paper with its own top line ("Markdown document" and 편집/완료), the text drawn
-// or the text to write, and a foot with the document's name and a more menu. The paper stays white in the dark theme, as the
-// prototype's did (a Surface in Paper's light theme); its words are Paper's roles, drawn by content/Markdown.
-
 import { memo } from "react";
 
 import { Box, Button, Divider, Field, Inline, Stack, Surface, Text, Textarea } from "@studio-baeks/paper-ui";

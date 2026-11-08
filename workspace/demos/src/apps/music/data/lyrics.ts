@@ -1,6 +1,3 @@
-// 가사. 곡마다 시드로 짠 짧은 가사입니다. 문장은 모두 이 앱을 위해 새로 쓴 것이고, 실제 노래의 가사는 하나도 없습니다.
-// 곡의 제목이 후렴의 첫 줄과 마지막 줄이 되고, 줄마다 시간이 붙어서 재생 위치에 따라 지금 줄이 바뀝니다.
-
 import { random, shuffle, pick } from "../../../kit";
 import type { Track } from "./catalog";
 
@@ -90,7 +87,6 @@ const EN: Record<Theme, readonly string[]> = {
 
 const cache = new Map<string, Lyrics | null>();
 
-// 곡의 가사. 가사가 없는 곡(연주곡)은 null입니다.
 export const lyricsOf = (track: Track): Lyrics | null => {
   if (track.instrumental) return null;
   const hit = cache.get(track.id);
@@ -112,7 +108,6 @@ export const lyricsOf = (track: Track): Lyrics | null => {
     lines.push(...section);
   });
 
-  // 앞부분은 연주, 끝은 여운. 그 사이에 줄을 고르게 놓되 단락 사이는 숨을 한 줄 더 줍니다.
   const intro = 9 + r() * 8;
   const outro = 9 + r() * 5;
   const span = Math.max(30, track.duration - intro - outro);
@@ -129,7 +124,6 @@ export const lyricsOf = (track: Track): Lyrics | null => {
   return lyrics;
 };
 
-// 지금 줄: 재생 위치를 지난 마지막 줄. 첫 줄 전에는 -1입니다.
 export const lineAt = (lyrics: Lyrics, position: number) => {
   let found = -1;
   for (let i = 0; i < lyrics.lines.length; i++) {

@@ -1,9 +1,3 @@
-// Text — 글자. variant 가 크기·굵기·잉크 농도를 한 번에 정하고, family 가 서체를 정한다.
-//
-// 크기와 굵기 이름, 색을 따로 고르는 prop 은 없다. Text 역할 variant 중 하나를 고르면 저절로 일관된다. 그 위에 서체는
-// family 축(sans 기본 · mono)으로 교차하고, 강조는 strong 한 비트가 역할이 정한 굵기를 켜고, 숫자 글리프의 자리는 numeric 이
-// 맞춘다. 줄바꿈은 서체가 정한다 — sans 는 어절 사이에서, mono 는 어디서든 끊는다. truncate 는 줄바꿈 대신 한 줄로 자른다.
-
 import { forwardRef, type ElementType, type ReactElement, type ReactNode } from "react";
 
 import { joinClass } from "../internal/joinClass";
@@ -13,22 +7,15 @@ import type { PolymorphicProps } from "./polymorphic";
 
 type TextOwnProps<V extends TextVariant> = {
   variant?: V;
-  // 잉크 농도만 variant 기본값 위로 덮을 수 있다 (보조 글자를 secondary 로 내릴 때).
   ink?: Ink;
-  // 서체 축 — variant 위에 교차한다. mono 는 등폭 + 자간 리셋 + 어디서든 줄바꿈.
   family?: TextFamily;
-  // 숫자 글리프만 등폭(tabular-nums) — 표의 숫자 열이나 버전처럼 자리를 맞추는 곳에.
   numeric?: boolean;
-  // 강조 한 비트 — 생략하면 역할의 굵기, true 면 역할이 정한 강조 굵기, false 면 regular. 12 짜리 보조 글자는 label 에 false.
   strong?: boolean;
-  // 줄을 바꾸지 않고 한 줄로 자른다. 넘치는 글자는 말줄임표가 되고, 읽어 주는 글자는 그대로다.
   truncate?: boolean;
   children?: ReactNode;
   className?: string;
 };
 
-// 시각 위계(variant)와 의미 태그(as)는 직교한다. 기본만 깔아두고 필요하면 as 로 덮는다. 타입도 같은 표를
-// 읽으므로 <Text variant="label" ref={spanRef}> 의 ref 는 span 이다.
 const DEFAULT_TEXT_TAG = {
   hero: "h1",
   headline: "h1",

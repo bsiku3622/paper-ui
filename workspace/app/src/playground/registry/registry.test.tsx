@@ -26,7 +26,6 @@ const harnessOf = (entry: Entry): unknown => {
   return harnesses.get(entry.slug);
 };
 
-// useId's format depends on the tree position and the React version; two renders of one subject differ only there.
 const IDS = /«[^»]*»|_r_[a-z0-9]+_|:r[a-z0-9]+:/gi;
 const markup = (node: ReactElement) => renderToStaticMarkup(createElement(PaperProvider, null, node)).replace(IDS, "ID");
 
@@ -181,7 +180,6 @@ describe("code", () => {
       const own = entry.defaults[control.prop];
       if (own === undefined || control.kind !== "enum" || !control.options.includes(String(own))) continue;
       const state: State = { ...base(entry), [control.key]: String(own) };
-      // The element the control sets: a nested element of the example may state the same prop for its own reasons.
       const tag = parseOpeningTag(codeOf(entry, state, harnessOf(entry)), control.target ?? entry.name);
       expect(tag, `${entry.name}.${control.prop}`).toBeDefined();
       expect(Object.keys(tag!.attrs), `${entry.name}.${control.prop}`).not.toContain(control.prop);
@@ -251,7 +249,6 @@ describe("defaults", () => {
         if (control.kind === "text" || control.behaviorOnly || entry.defaults[control.prop] !== undefined || (control.kind === "enum" && control.required)) continue;
         const omitted = markup(entry.subject({ ...base(entry), [control.key]: control.kind === "bool" ? false : undefined }, harness, "ko"));
         const values = control.kind === "bool" ? [true] : control.options;
-        // A derived prop has one option that says what omitting it already means; every other option shows.
         const unchanged = values.filter((value) => markup(entry.subject({ ...base(entry), [control.key]: value }, harness, "ko")) === omitted);
         expect(unchanged.length, `${entry.name}.${control.prop} leaves ${JSON.stringify(unchanged)} as omitted`).toBe(control.derived ? 1 : 0);
       }
@@ -277,8 +274,6 @@ describe("stage", () => {
   });
 });
 
-// The Playground speaks English to a visitor who reads English: what an entry says in its blurb, its controls and its example
-// (the preview and the code panel are printed from the same tree) holds no Hangul. A Korean type specimen is Korean on purpose.
 describe("English", () => {
   const HANGUL = /[\u1100-\u11ff\u3130-\u318f\uac00-\ud7a3]/;
   const SPECIMENS: ReadonlySet<string> = new Set(["text"]);

@@ -1,7 +1,3 @@
-// 자료실 — what students and the school shared for each subject of the term: syllabi, notes, worksheets. Only what a manager
-// approved shows here. Filter by kind, subject or a word; a row opens its pages in a preview (the pages are drawn, there is
-// no real file). `?subject=<id>` arrives from a subject's "강의계획서와 자료" link.
-
 import { useEffect, useMemo, useState } from "react";
 import { Link as RouterLink, useSearchParams } from "react-router-dom";
 
@@ -31,7 +27,6 @@ export const FilesPage = () => {
   const [subject, setSubject] = useState(subjectName ?? "");
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<(typeof SORTS)[number]["id"]>("new");
-  // ?open=<id> opens that material's preview on arrival
   const asked = Number(params.get("open")) || null;
   const [open, setOpen] = useState<Material | null>(() => materials.find((item) => item.id === asked && item.status === "approved") ?? null);
   const [limit, setLimit] = useState(PAGE);

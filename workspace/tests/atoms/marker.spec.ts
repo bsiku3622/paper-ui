@@ -6,8 +6,6 @@ import { contrast } from "../support/contrast";
 import { openHarness } from "../support/harness";
 import { expectStyle } from "../support/style";
 
-// The highlighter in a sentence. It is drawn in the marks case, in a narrow line so that it wraps.
-
 test.beforeEach(async ({ page }) => {
   await openHarness(page, "marks");
 });

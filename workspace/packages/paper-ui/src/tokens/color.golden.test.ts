@@ -3,13 +3,8 @@ import { describe, expect, it } from "vitest";
 import { COLOR_SELECTION, COLOR_VALUES, COLOR_VALUES_DARK, OPACITY_ROLES, OPACITY_VALUES, paletteValue, type PalettePath } from "./colors";
 import { ACCENT_IDENTITIES, OKLCH_PALETTE, PALETTE_TOKENS } from "./palette";
 
-// The design values of Color, written down: which palette step each role selects in each theme, the OKLCH source of
-// the palette and the HEX it generates. The invariants live in color.test.ts and hold for any design; these files say
-// which design this is. A change to one is deliberate: review the diff, then `vitest -u` rewrites the files.
-
 const json = (value: unknown) => `${JSON.stringify(value, null, 2)}\n`;
 
-// Every role as a dotted path, with the palette step it selects and the HEX that step generates.
 const roles = (mode: "light" | "dark") => {
   const found: Record<string, string> = {};
   const walk = (tree: object, prefix: string[]) => {

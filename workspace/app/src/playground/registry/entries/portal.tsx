@@ -12,10 +12,8 @@ const WORDS = {
   en: { open: "Open Portal", close: "Close Portal", note: "Content moved to body · useResolvedTheme(): " },
 };
 
-// The words come in as props, so the printed tree and the declaration above it agree in either language.
 type PortalExampleProps = { openLabel: string; closeLabel: string; note: string };
 
-// Reads the mode the portal root re-established where its children landed.
 const PortalExample = ({ openLabel, closeLabel, note }: PortalExampleProps) => {
   const [open, setOpen] = useState(false);
   const mode = useResolvedTheme();

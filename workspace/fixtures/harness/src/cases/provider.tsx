@@ -2,8 +2,6 @@ import { useState, type CSSProperties } from "react";
 
 import { Button, PaperProvider } from "@studio-baeks/paper-ui";
 
-// A Provider that mounts with what the spec hands it already on the page: ?css= a stylesheet of its own, ?sheet= the
-// address of one to load first, ?custom= a custom property written in an element's style.
 export const ProviderCase = () => {
   const params = new URLSearchParams(window.location.search);
   const sheet = params.get("sheet");

@@ -1,7 +1,3 @@
-// DataTable and Pager — Mainsail's tables (files, jobs, config files): columns that sort, a checkbox column to select,
-// rows that open, a footer that pages. Paper has no table, so a row is a Grid with the same tracks as the header (the way the
-// demo's findings table is), and the table scrolls sideways rather than breaking its words when the window is narrow.
-
 import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent, ReactNode } from "react";
 
 import { Box, Checkbox, Divider, Grid, IconButton, Inline, Pressable, Select, Surface, Text } from "@studio-baeks/paper-ui";
@@ -12,7 +8,6 @@ import { useSettings } from "../settings";
 export type Column<T> = {
   id: string;
   header: string;
-  // A grid track: "minmax(12rem, 2fr)".
   track: string;
   sortable?: boolean;
   cell: (row: T, dim: boolean) => ReactNode;

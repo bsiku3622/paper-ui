@@ -1,6 +1,3 @@
-// threads.ts — discussions that were already going on when the wiki opened for the demo. A thread belongs to an article; its
-// comments may use the inline markup ([[문서]], '''굵게''').
-
 import { NOW } from "../../../kit";
 import type { Thread } from "./types";
 
@@ -12,9 +9,7 @@ type Draft = {
   article: string;
   title: string;
   status: "open" | "closed";
-  // Days before the demo's present that the thread was opened.
   days: number;
-  // [author, minutes after the thread was opened, text]. The first comment is the opener's.
   comments: readonly (readonly [string, number, string])[];
 };
 

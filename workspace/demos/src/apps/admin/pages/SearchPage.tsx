@@ -1,7 +1,3 @@
-// 찾기: one box for everything the hub holds — services, files, VPN peers, machines to wake, bypass domains, the phone's
-// shots and the activity log. The top bar's search lands here. Matches are marked with the highlighter; each result is a
-// link to the page that owns it.
-
 import { useEffect, useState, type FormEvent } from "react";
 import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
 
@@ -19,7 +15,6 @@ import { Loading } from "../ui/Parts";
 type Hit = { id: string; glyph: GlyphName; title: string; sub?: string; to: string };
 type Group = { id: string; label: string; hits: Hit[] };
 
-// The matched part of a line, marked.
 const Marked = ({ text, query }: { text: string; query: string }) => {
   const word = query.trim();
   const at = word ? text.toLowerCase().indexOf(word.toLowerCase()) : -1;

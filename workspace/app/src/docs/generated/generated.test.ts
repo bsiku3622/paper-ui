@@ -21,8 +21,6 @@ describe("generated docs", () => {
     for (const block of GENERATED_BLOCKS) expect(block.files.length, block.id).toBeGreaterThan(0);
   });
 
-  // CommonMark reads a line that starts with a comment as an HTML block to its end, so any text after the comment
-  // on that line would show raw. A comment that opens a line stands alone.
   it("never lets a marker start a line that goes on with text", () => {
     const files = [...new Set(GENERATED_BLOCKS.flatMap((block) => block.files))];
     const hits = files.flatMap((file) =>

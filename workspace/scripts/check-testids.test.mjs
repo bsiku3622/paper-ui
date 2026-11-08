@@ -32,7 +32,6 @@ test("[guardrails.testids.no-orphans] reads no id in what a lookup by role, labe
     'screen.getByTestId("x"); screen.getByLabelText("textarea"); screen.queryByRole("textarea"); screen.findAllByText("textarea");',
   ];
   for (const code of lookups) assert.deepEqual(read(code).filter((id) => id !== "x"), [], code);
-  // The same word kept in a table the file loops over is still a read.
   assert.ok(read('const IDS = ["textarea"]; for (const id of IDS) page.getByTestId(id); page.getByRole("button");').includes("textarea"));
 });
 

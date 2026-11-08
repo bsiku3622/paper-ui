@@ -1,5 +1,3 @@
-// Every generated block of the docs: the text the sources state, written between markers in the files named.
-// `pnpm docs:sync` rewrites them; generated.test.ts fails while any of them is stale.
 import { COLOR_BLOCKS } from "./color";
 import { FONT_BLOCK } from "./install";
 import { LAYOUT_BLOCKS } from "./layout";

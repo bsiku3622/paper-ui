@@ -1,6 +1,3 @@
-// diff.ts — what changed between two revisions: lines first, then the words inside a changed line. The file has no imports so
-// a script can load it on its own.
-
 export type Op = { kind: "same" | "del" | "add"; text: string };
 export type Seg = { text: string; changed: boolean };
 
@@ -55,7 +52,6 @@ const diffSeq = (a: readonly string[], b: readonly string[]): Op[] => {
 
 export const diffLines = (before: string, after: string): Op[] => diffSeq(before.split("\n"), after.split("\n"));
 
-// The words of two lines, marking the ones that are not shared. Long lines are not split any further.
 export const diffWords = (before: string, after: string): { old: Seg[]; next: Seg[] } => {
   const tokens = (text: string) => text.match(/\s+|[^\s]+/g) ?? [];
   const a = tokens(before);
@@ -81,8 +77,6 @@ export type Line =
   | { kind: "change"; oldNo: number | null; newNo: number | null; old: string | null; next: string | null }
   | { kind: "gap"; count: number };
 
-// Rows to show: a removed and an added line next to each other become one changed row, and long runs that did not change
-// shrink to a gap with `context` lines kept beside each change.
 export const diffRows = (before: string, after: string, context = 2): Line[] => {
   const ops = diffLines(before, after);
   const rows: Line[] = [];

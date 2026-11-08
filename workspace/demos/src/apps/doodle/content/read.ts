@@ -1,7 +1,3 @@
-// A small Markdown reader: text in, plain data out (no HTML). The prototype drew documents with react-markdown and GFM; this
-// reads what that was used for — headings, paragraphs, lists with check boxes, quotes, code, tables, links, **bold**,
-// *italic*, ~~strike~~ and `code` — so Markdown.tsx can draw it without a dependency.
-
 export type Inline =
   | { t: "text"; v: string }
   | { t: "strong" | "em" | "del"; c: Inline[] }
@@ -48,7 +44,6 @@ const closing = (src: string, delim: string, from: number) => {
   for (let j = from; j < src.length; j++) {
     if (src[j] === "\\") { j++; continue; }
     if (src.startsWith(delim, j) && j > from && !/\s/.test(src[j - 1] ?? "")) {
-      // *a* inside **b** is not the end of an emphasis that began with one star
       if (delim.length === 1 && src[j + 1] === delim) continue;
       return j;
     }
@@ -91,7 +86,6 @@ export const parseInline = (source: string): Inline[] => {
       }
     }
     if ((ch === "*" || ch === "_") && !/\s/.test(src[i + 1] ?? " ")) {
-      // underscores inside a word are just underscores
       const wordy = ch === "_" && /\w/.test(src[i - 1] ?? " ");
       const end = wordy ? -1 : closing(src, ch, i + 1);
       if (end > 0) { flush(); out.push({ t: "em", c: parseInline(src.slice(i + 1, end)) }); i = end + 1; continue; }

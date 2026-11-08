@@ -1,6 +1,3 @@
-// MiscPages.tsx — the small pages: the articles a reader starred (문서함), the articles that link to one (역링크), and what is
-// shown for an address the wiki does not have.
-
 import { Link as RouterLink, useParams } from "react-router-dom";
 
 import { Button, IconButton, Inline, Link, Stack, Text } from "@studio-baeks/paper-ui";

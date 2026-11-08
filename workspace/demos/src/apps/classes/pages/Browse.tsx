@@ -1,7 +1,3 @@
-// 탐색 — the school laid out: every student, every teacher, the whole curriculum as a prerequisite graph, and your friends.
-// Students and teachers are rows of one list; a row opens that person's week in the search. The graph (content/CourseGraph)
-// is the one drawing Paper cannot do: a line from a course to the course that needs it.
-
 import { useMemo, useState } from "react";
 import { Link as RouterLink, useSearchParams } from "react-router-dom";
 
@@ -19,8 +15,6 @@ import { Card, Count, Eyebrow, Hint, ScrollTabs, searchHref } from "../ui/parts"
 import { Friends } from "./browse/Friends";
 
 const PAGE = 40;
-
-// ── students and teachers: one list each ─────────────────────────────────────
 
 const Row = ({ to, lead, name, sub, trailing }: { to: string; lead?: string; name: string; sub: string; trailing: string }) => (
   <Button as={RouterLink} to={to} variant="ghost" size="lg" fontSize="body" strong={false} fullWidth justify="between" aria-label={`${name} 보기`}>
@@ -113,8 +107,6 @@ const Teachers = () => {
   );
 };
 
-// ── the curriculum ───────────────────────────────────────────────────────────
-
 const Courses = () => {
   const [department, setDepartment] = useState(ALL_DEPARTMENTS);
   const [focused, setFocused] = useState<string | null>(null);
@@ -171,8 +163,6 @@ const Courses = () => {
   );
 };
 
-// ── the page ─────────────────────────────────────────────────────────────────
-
 export const BrowsePage = () => {
   const { data, friends } = useClasses();
   const [params, setParams] = useSearchParams();
@@ -187,7 +177,6 @@ export const BrowsePage = () => {
           label="탐색 구역"
           value={tab}
           onChange={(id) => setParams({ tab: id }, { replace: true })}
-          // only the open tab is drawn: the curriculum graph is a hundred and forty boxes
           items={[
             { id: "students", label: "학생", count: index.students.size, glyph: "users", panel: tab === "students" ? <Students /> : null },
             { id: "teachers", label: "교사", count: index.teachers.size, glyph: "user", panel: tab === "teachers" ? <Teachers /> : null },

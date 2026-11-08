@@ -1,7 +1,3 @@
-// The exam week of one period, as the days it spans: a column each where there is room (two, three or five), one under the other
-// on a phone. A day without an exam stays and says so — the whole week is what is read. Each exam shows its real start and end,
-// the subject, the section and the room; an exam with no date is set apart as 별도 실시, in the school's own words.
-
 import { Badge, Divider, Grid, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";
 
 import { Glyph } from "../../../../kit";
@@ -11,7 +7,6 @@ import { duration, weekdayOf } from "../../lib/utils";
 
 const timeOf = (exam: MyExam) => (exam.start !== null && exam.end !== null ? `${hhmm(exam.start)}–${hhmm(exam.end)}` : null);
 
-// Where the exam is held: the room the section's rule names, or — when the rule does not decide — the rule itself.
 const Room = ({ exam }: { exam: MyExam }) => (
   <Inline gap="xs" align="start">
     <Glyph name="map-pin" ink="secondary" />
@@ -84,7 +79,6 @@ export const Days = ({ days, today, conflicts }: { days: readonly ExamDay[]; tod
   </Grid>
 );
 
-// Exams with no date or time: the school says to look for a separate notice, and so does this.
 export const Separate = ({ exams }: { exams: readonly MyExam[] }) => (
   <Stack gap="md">
     <Stack gap="xs">

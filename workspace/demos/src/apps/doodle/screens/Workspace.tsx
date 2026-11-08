@@ -1,7 +1,3 @@
-// The one screen: an infinite canvas. Markdown documents lie in a row on it, text boxes, pictures and videos are put anywhere,
-// the pen draws over everything, and 오늘의 흐름 (to-dos, routines, a calendar) stands at the right. Everything the prototype
-// kept is kept here, in the browser: documents, boxes, strokes, to-dos, routines and events come back when it is reopened.
-
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { Badge, Button, Grid, Inline, Text } from "@studio-baeks/paper-ui";
@@ -24,11 +20,8 @@ import { ZoomBar } from "./ZoomBar";
 
 const STORAGE = "doodle:workspace";
 
-// The prototype put the first document 142px under the window's top; the top bar is 57px of that.
 const HOME_TOP = 85;
-// The right panel and its margin take 310px of the window: the view's middle is what is left of it.
 const PANEL_SPACE = 310;
-// The middle of the first document is 305 across; a document placed in view is centred on it.
 const SHEET_MIDDLE = SHEET.width / 2;
 
 const HINTS: Record<Tool, string> = {
@@ -64,9 +57,6 @@ export const Workspace = () => {
   const [panelOpen, setPanelOpen] = useState(true);
   const [asked, setAsked] = useState<Asked | null>(null);
 
-  // Sync ---------------------------------------------------------------------------------------------------------------
-  // The prototype saved to its dev server a moment after each change. Here a change is "saving" for that moment, and the
-  // browser being offline is "오프라인".
   const [online, setOnline] = useState(() => navigator.onLine);
   const [saving, setSaving] = useState(false);
   const seen = useRef(data);
@@ -89,7 +79,6 @@ export const Workspace = () => {
   }, []);
   const sync: Sync = !online ? "offline" : saving ? "saving" : "connected";
 
-  // The camera ---------------------------------------------------------------------------------------------------------
   const [camera, setCamera] = useState<Camera>({ x: 0, y: HOME_TOP, zoom: 1 });
   const home = useCallback(() => {
     const view = stage.current?.size();
@@ -103,7 +92,6 @@ export const Workspace = () => {
   }, [panelOpen]);
   const zoomBy = (step: number) => stage.current?.zoomTo(camera.zoom + step, middle());
 
-  // Documents ----------------------------------------------------------------------------------------------------------
   const changeDoc = useCallback((id: string, patch: Partial<Pick<Doc, "title" | "markdown">>) => change((previous) => ({ ...previous, docs: previous.docs.map((doc) => (doc.id === id ? { ...doc, ...patch } : doc)) })), [change]);
   const addDoc = useCallback((side: "left" | "right") => {
     const xs = data.docs.map((doc) => doc.x);
@@ -115,7 +103,6 @@ export const Workspace = () => {
     if (centre) setCamera((previous) => ({ ...previous, x: centre.x - (x + SHEET_MIDDLE) * previous.zoom, y: HOME_TOP - 2 }));
   }, [data.docs, change, middle]);
 
-  // Boxes --------------------------------------------------------------------------------------------------------------
   const addBlock = (kind: BlockKind, x: number, y: number, content: string) => {
     const id = uid();
     change((previous) => ({ ...previous, blocks: [...previous.blocks, { id, kind, x, y, content }] }));
@@ -138,7 +125,6 @@ export const Workspace = () => {
     }
   };
 
-  // Ink, to-dos, events --------------------------------------------------------------------------------------------------
   const addStroke = (points: { x: number; y: number }[]) => change((previous) => ({ ...previous, strokes: [...previous.strokes, { id: uid(), points }] }));
   const toggleTask = (which: "todos" | "routines", id: string) => change((previous) => ({ ...previous, [which]: previous[which].map((task) => (task.id === id ? { ...task, done: !task.done } : task)) }));
   const addTask = (which: "todos" | "routines", text: string) => change((previous) => ({ ...previous, [which]: [...previous[which], { id: uid(), text, done: false }] }));

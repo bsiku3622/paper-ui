@@ -1,5 +1,3 @@
-// 아티스트 화면: 큰 둥근 표지와 이름, 재생 · 팔로우 · 라디오, 인기 곡, 앨범과 EP, 소개, 비슷한 아티스트.
-
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 

@@ -1,8 +1,5 @@
-// Which way text runs: at an element that is on the page, and for a locale before anything is rendered.
-
 export type Direction = "ltr" | "rtl";
 
-// The nearest dir attribute that names a direction, then the direction the element computes, then left to right.
 export function directionOf(element: Element): Direction {
   const attribute = element.closest("[dir]")?.getAttribute("dir");
   if (attribute === "ltr" || attribute === "rtl") return attribute;

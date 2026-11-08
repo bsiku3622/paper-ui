@@ -1,17 +1,12 @@
-// A ring that fills as a value rises: a print's progress in the status header, the CPU and memory loads of the host.
-// Paper has the kit's linear Meter and an indeterminate Spinner, but no round gauge, so it is drawn here from Paper's tokens.
-
 import type { ReactNode } from "react";
 
 import { ringArc, ringLabel, ringRoot, ringSize, ringSvg, ringTrack, type Tone } from "./charts.css";
 
 type Props = {
-  // 0 to 1.
   value: number;
   tone?: Exclude<Tone, "neutral">;
   size?: "sm" | "md" | "lg";
   label?: string;
-  // Drawn in the middle of the ring.
   children?: ReactNode;
 };
 

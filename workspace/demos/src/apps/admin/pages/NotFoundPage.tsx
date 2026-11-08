@@ -1,5 +1,3 @@
-// 없는 주소입니다. The original showed a title and a link home; the kit's Empty says the same with the one thing to do.
-
 import { Link as RouterLink } from "react-router-dom";
 
 import { Button } from "@studio-baeks/paper-ui";

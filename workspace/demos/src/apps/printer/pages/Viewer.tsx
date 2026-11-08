@@ -1,7 +1,3 @@
-// The G-code viewer: one layer of a file, seen from above, with a slider through the layers. The mock holds only the numbers
-// of each file, so the layer is a simplified drawing made from them (see content/layers.ts), not the file's own path. The
-// current file is the one being printed; a local file is read for its name only. While a print runs the layer can follow it.
-
 import { useState } from "react";
 
 import { Badge, Box, Button, Divider, Grid, IconButton, Inline, Select, Spinner, Stack, Switch, Text } from "@studio-baeks/paper-ui";

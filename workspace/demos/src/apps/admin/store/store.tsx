@@ -1,6 +1,3 @@
-// The mock server's memory. Everything the hub shows lives here, seeded from data/ and kept in the browser (useStored,
-// keys "admin:v2:…", see keys.ts) so what a user makes in the demo is still there after a reload. "처음 상태로" puts the seeds back.
-
 import { createContext, useCallback, useContext, useMemo, type Dispatch, type ReactNode, type SetStateAction } from "react";
 
 import { useStored } from "../../../kit";
@@ -30,7 +27,6 @@ export type Store = {
   setMedia: Setter<MediaRow[]>;
   events: ActivityEvent[];
   log: (event: NewEvent) => void;
-  // Events newer than this are the bell's unread ones.
   seenAt: number;
   markSeen: () => void;
   reset: () => void;
@@ -38,7 +34,6 @@ export type Store = {
 
 const Context = createContext<Store | null>(null);
 
-// Kept outside the component so useStored's reset keeps one identity.
 const firstVisit = () => Date.now();
 const firstSeen = () => before(9 * HOUR);
 

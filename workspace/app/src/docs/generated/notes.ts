@@ -1,6 +1,3 @@
-// The prose the generators cannot read from a source. Each map is keyed by a source key or a repository path,
-// so a renamed key or a new directory is a type error or a failing test, not a stale sentence.
-
 import type { AccentTone, TextVariant } from "@studio-baeks/paper-ui/tokens";
 
 export const TONE_USES: Record<AccentTone, string> = {
@@ -24,7 +21,6 @@ export const ROLE_USES: Record<TextVariant, string> = {
   label: "필드 라벨·표 머리·짧은 이름",
 };
 
-// The default tag a Text variant renders as (Text.tsx).
 export const ROLE_TAGS: Record<TextVariant, string> = {
   hero: "h1",
   headline: "h1",
@@ -47,8 +43,6 @@ export const PRESET_USES: Record<PresetName, string> = {
   badge: "Badge",
 };
 
-// Directories of the two source trees the AGENTS tree names, each with its note. A directory without a note
-// fails generated.test.ts, so the tree cannot grow a folder nobody described.
 export const DIR_NOTES: Record<string, string> = {
   "packages/paper-ui/src/atoms": "Atom 14개 — 한 가지 역할의 컨트롤, 모두 Primitive 위에 섭니다",
   "packages/paper-ui/src/atoms/recipes": "Atom이 함께 쓰는 형태와 상태 조각(input-frame · mark) — 색은 없고, 색은 primitives/paint/recipes.css.ts에서 옵니다",
@@ -84,8 +78,6 @@ export const DIR_NOTES: Record<string, string> = {
   "app/src/site": "사이트 셸 — SiteLayout · 헤더 · 사이드바 · 사이트 지도(site-map.ts)",
 };
 
-// The files that carry a fact the directory note cannot: an entry, a barrel, an owner. The keys are paths from
-// workspace/, and a file that no longer exists fails the tree, so a rename cannot leave a stale line.
 export const FILE_NOTES: Record<string, string> = {
   "packages/paper-ui/src/index.ts": "entry `.` — 컴포넌트 · hook · Provider (`\"use client\"`). 공개 이름을 한 곳에 다 적은 목록이고 `export *`가 없습니다",
   "packages/paper-ui/src/inventory.ts": "이름 · 분류 · 순서의 정본 — import가 없고 inventory.test가 export와 대조합니다",

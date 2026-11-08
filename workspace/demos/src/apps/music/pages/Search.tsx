@@ -1,6 +1,3 @@
-// 검색: 곡 · 앨범 · 아티스트 · 플레이리스트로 나눠 보여 줍니다. 한글은 초성으로도 찾아집니다(ㅅㅂㄴ).
-// 검색어는 주소의 ?q=에 있어서 되돌아가기와 공유가 됩니다. 비어 있으면 최근 검색과 장르를 보여 줍니다.
-
 import { useEffect, useMemo, useRef } from "react";
 import { Link as RouterLink, useSearchParams } from "react-router-dom";
 
@@ -19,7 +16,6 @@ import { usePlayer } from "../state/player";
 
 const GRID = "repeat(auto-fill, minmax(10rem, 1fr))";
 
-// 가장 일치하는 결과: 이름이 거의 같은 아티스트가 있으면 그 아티스트, 없으면 맨 위의 곡.
 const Top = ({ artist, track, ids }: { artist?: Artist; track?: Track; ids: readonly string[] }) => {
   const player = usePlayer();
   if (artist) {

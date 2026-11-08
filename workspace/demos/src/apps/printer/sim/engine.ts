@@ -1,8 +1,3 @@
-// The mock printer. The state starts at the moment the demo begins (a print at 95%, the nozzle at 210 degrees,
-// the bed at 60) and moves on a one-second tick: the print advances, the heaters hold their targets with a little ripple,
-// the temperature series scrolls. Nothing here touches a network. The G-code a button would send is run by gcode.ts on
-// this same state.
-
 import { HISTORY, type HistoryJob } from "../data/history";
 import { MESH_INTERPOLATED, MESH_PROBED } from "../data/mesh";
 import { BED_POWER, BED_TEMPERATURE, EXTRUDER_POWER, EXTRUDER_TEMPERATURE } from "../data/temperatures";
@@ -12,18 +7,15 @@ import type { Axes, FileMeta, Heater, HeaterId, LogEntry, LogKind, PrintInfo, Se
 import { printing } from "../model";
 
 export const AMBIENT = 24;
-// The cross-section of 1.75 mm filament, mm2: a feed of 1 mm/s is 2.405 mm3/s.
 export const FILAMENT_AREA = 2.405;
 export const MIN_EXTRUDE_TEMP = 170;
 export const MAX_TEMP: Record<HeaterId, number> = { extruder: 270, bed: 100 };
 export const AXIS_MIN = [-6, -14, -3] as const;
 export const AXIS_MAX = [230, 230, 250] as const;
-// What printer.cfg says; the machine panel offers a reset when a limit has been changed from it.
 export const CONFIG_LIMITS = { velocity: 250, squareCornerVelocity: 5, accel: 2000, minCruiseRatio: 0.5 } as const;
 export const SERIES_LENGTH = 1200;
 const FIRST_LAYER = 0.2;
 
-// A repeatable pseudo-random number in [0, 1) for a moment and a channel, so the ripple is the same on every load.
 export const noise = (t: number, k: number) => {
   const x = Math.sin(t * 12.9898 + k * 78.233) * 43758.5453;
   return x - Math.floor(x);
@@ -31,8 +23,6 @@ export const noise = (t: number, k: number) => {
 const wave = (t: number, period: number, phase = 0) => Math.sin((t / period) * Math.PI * 2 + phase);
 
 export const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
-
-// ---- the log
 
 export const addLog = (s: SimState, kind: LogKind, text: string, time: number = s.clock): SimState => {
   const entry: LogEntry = { id: s.logSeq + 1, time, kind, text };
@@ -42,8 +32,6 @@ export const addLog = (s: SimState, kind: LogKind, text: string, time: number = 
 
 type Event = { t: number; kind: LogKind; text: string; auto?: boolean };
 
-// The console as the printer left it: for every job the command that started it, what Klipper answered and, when the
-// print finished, the line that says so (the console shows no line for a cancelled job).
 const seedLog = (history: readonly HistoryJob[]): { log: LogEntry[]; seq: number } => {
   const events: Event[] = [];
   const jobs = [...history].reverse();
@@ -73,8 +61,6 @@ const seedLog = (history: readonly HistoryJob[]): { log: LogEntry[]; seq: number
   return { log, seq: log.length };
 };
 
-// ---- the print
-
 const HEX = (value: number) => value.toString(16).toUpperCase().padStart(6, "0");
 export const nextJobId = (history: readonly HistoryJob[]) => HEX(history.reduce((top, job) => Math.max(top, parseInt(job.id, 16)), 0) + 1);
 
@@ -89,7 +75,6 @@ export const heightAt = (print: PrintInfo, objectHeight: number) => {
   return clamp(anchor.z + ratio * (objectHeight - anchor.z), anchor.z, Math.max(anchor.z, objectHeight));
 };
 
-// Mainsail counts layers from the nozzle height: (z - first layer) / layer height, plus one.
 export const layerAt = (z: number, layerHeight: number) => Math.max(1, Math.round((z - FIRST_LAYER) / layerHeight) + 1);
 
 export const layersOf = (s: SimState): { current: number; total: number } => {
@@ -101,7 +86,6 @@ export const layersOf = (s: SimState): { current: number; total: number } => {
   return { current: Math.min(meta.layerCount, layerAt(z, meta.layerHeight)), total: meta.layerCount };
 };
 
-// Three ways to say how long is left: by the file position, by the filament used, and by the slicer's own estimate.
 export const estimates = (s: SimState) => {
   const { print } = s;
   const meta = metaOf(s, print.file);
@@ -196,8 +180,6 @@ export const finishPrint = (s: SimState, how: "completed" | "cancelled"): SimSta
   return next;
 };
 
-// ---- the tick
-
 const stepHeater = (heater: Heater, id: HeaterId, tick: number): Heater => {
   const k = id === "extruder" ? 1 : 2;
   const { target } = heater;
@@ -229,7 +211,6 @@ const stepSeries = (series: Series, heater: Heater): Series => ({
   target: push(series.target, heater.target),
 });
 
-// The nozzle's path while printing: loops inside the object's footprint, and the live position a little behind.
 const pathAt = (t: number): readonly [number, number] => [
   115 + 14 * wave(t, 71) + 38 * wave(t, 7.3),
   115 + 10 * wave(t, 53, 1) + 32 * wave(t, 5.1, 2),
@@ -288,8 +269,6 @@ export const step = (s: SimState, dt = 1): SimState => {
   }
   return next;
 };
-
-// ---- the first state
 
 const series = (temp: readonly number[], power: readonly number[], target: number): Series => ({ temp, power, target: temp.map(() => target) });
 

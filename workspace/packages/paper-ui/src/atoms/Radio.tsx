@@ -1,6 +1,3 @@
-// Radio — 여럿 중 하나. 관련 선택지는 사용하는 화면에서 묶는다.
-//   status  error — 경계가 오류 잉크로 바뀐다. 한 묶음의 Radio 는 모두 같은 status 를 주거나 radiogroup 에 aria-invalid 를 준다.
-
 import { forwardRef } from "react";
 
 import { joinClass } from "../internal/joinClass";

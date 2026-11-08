@@ -1,7 +1,3 @@
-// The stand-in for the engine. A photo here is a name, and its name decides what the "engine" finds in it, the same way every
-// time: a sheet and the grid on it, a plain sheet, a lined page, an object on a grid, a sheet it is unsure of, nothing at
-// all, or a file it cannot open. Nothing reads real pixels.
-
 import { random } from "../../../kit";
 import { clampQuad, cellsQuad, outsideFraction, quadSides, sliceWin, wholePhoto } from "./geometry";
 import type { Doc, Fit, Page, Photo, Quad, Scenario, Settings, Win } from "./types";
@@ -11,8 +7,6 @@ export const DEFAULT_SETTINGS: Settings = { filter: "scan", rotation: 0, ratio: 
 export const HEIC_PROBLEM = "이 파일은 사진으로 열 수 없습니다. JPEG, PNG, WebP를 올려 주세요. HEIC는 브라우저에 따라 열리지 않습니다.";
 export const MEMORY_PROBLEM = "사진을 처리하지 못했습니다. 사진이 너무 크면 이 기기의 메모리가 모자랄 수 있습니다.";
 
-// Where the mock camera stood for a photo of an object on the grid: close enough that no edge of the paper is in view, with
-// whole cells 1 to 11 across and 1 to 8 down inside it.
 const OBJECT_WIN: Win = [16, 11, 84, 62];
 
 export type Shot = { scenario: Scenario; landscape?: boolean; big?: boolean; problem?: string };
@@ -46,7 +40,6 @@ export const newPage = (id: string, name: string, shot: Shot): Page => ({
   settings: { ...DEFAULT_SETTINGS },
 });
 
-// The common papers, measured a little off as perspective makes them.
 const PAPERS = [Math.SQRT1_2, 8.5 / 11, 0.62, 0.857];
 const paperOf = (name: string, scenario: Scenario) => {
   const r = random(`${name}:paper`);
@@ -74,7 +67,6 @@ const sheetFit = (page: Page, confidence: number, amount: number): { fit: Fit; f
   };
 };
 
-// The largest block of whole cells that lies inside the photo: a page running off the frame is aligned only where it is seen.
 const cellsInside = (photo: Photo) => {
   const inside = (u: number, v: number) => {
     const p = cellsQuad(photo, u, v, u, v)[0];
@@ -94,20 +86,15 @@ const cellsInside = (photo: Photo) => {
   return best;
 };
 
-// The sheet again, pulled along what is printed on it. A graph's cells come out square; ruled lines come out straight.
-// Corners someone placed by hand are taken as the sheet's outline, with the whole page's lines inside them.
 export const alignedFit = (page: Page, lines: "grid" | "ruled", outline?: Quad): Fit => {
   const { photo } = page;
   const found = cellsInside(photo);
   const quad = outline ?? cellsQuad(photo, found.u0, found.v0, found.u1, found.v1);
   const rows = outline ? 12 : found.v1 - found.v0;
   const { across, down } = quadSides(quad, photo.width, photo.height);
-  // A lined page counts lines down it, and the same distance across it.
   const cols = lines === "grid" ? (outline ? 12 : found.u1 - found.u0) : Math.max(1, Math.round((across * rows) / down));
   return { kind: "grid", origin: "auto", lines, quad, cols, rows, rect: true, pxPerCell: pitchOf(photo, quad, cols, rows), confidence: lines === "grid" ? 0.96 : 0.88 };
 };
-
-// ── Corners placed by hand. ──
 
 export const manualSheet = (page: Page, quad: Quad): Fit => {
   const { across, down } = quadSides(quad, page.photo.width, page.photo.height);
@@ -124,10 +111,8 @@ export const manualGrid = (page: Page, quad: Quad, cols: number, rows: number): 
   confidence: 1,
 });
 
-// Whether a plain sheet turns out to have something printed on it when someone asks for a search.
 export const printedOn = (page: Page): "grid" | "ruled" | null => (page.photo.grid ? "grid" : page.scenario === "lined" ? "ruled" : null);
 
-// What a page becomes when its steps are over.
 export const finish = (page: Page): Page => {
   const { photo, name, scenario } = page;
   const base: Page = { ...page, stepIndex: 0 };
@@ -150,8 +135,6 @@ export const finish = (page: Page): Page => {
   return { ...base, status: "ready", fit: found.fit, aligned: null, gridSearched: false, filled: found.filled, settings: { ...page.settings, filter: "scan", align: false } };
 };
 
-// ── The document a first visit opens: a session of scanning a notebook. ──
-
 const SEED_SHOTS: { name: string; shot: Shot; settings?: Partial<Settings> }[] = [
   { name: "IMG_4412", shot: { scenario: "graph" } },
   { name: "IMG_4413", shot: { scenario: "graph" }, settings: { filter: "bw" } },
@@ -165,7 +148,6 @@ const SEED_SHOTS: { name: string; shot: Shot; settings?: Partial<Settings> }[] =
   { name: "IMG_4421", shot: { scenario: "graph", big: true }, settings: { rotation: 0 } },
 ];
 
-// The seed counts as photos added already, so the names go on after it; the mock picker's order starts after it too.
 export const SEED_COUNT = SEED_SHOTS.length;
 
 export const seedDocument = (): Doc => {
@@ -178,9 +160,6 @@ export const seedDocument = (): Doc => {
 
 export const emptyDocument = (imported: number): Doc => ({ pages: [], currentId: null, imported, format: "png", showGrid: true });
 
-// ── What a button press or a drop brings in. ──
-
-// The mock picker hands out photos in this order, three at a time, so a few batches show every outcome.
 const BATCH: Shot[] = [
   { scenario: "graph" },
   { scenario: "sheet" },
@@ -200,7 +179,6 @@ export const nameAfter = (count: number) => `IMG_${4412 + count}`;
 
 export const mockShot = (index: number): Shot => BATCH[((index % BATCH.length) + BATCH.length) % BATCH.length]!;
 
-// A dropped or pasted file keeps its own name; what is found in it follows from the name.
 export const shotForFile = (fileName: string): Shot => {
   if (/\.(heic|heif)$/i.test(fileName)) return { scenario: "broken", problem: HEIC_PROBLEM };
   const r = random(fileName)();

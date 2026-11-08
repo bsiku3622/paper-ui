@@ -1,11 +1,3 @@
-// TrackTable — 곡의 표. 플레이리스트 · 앨범 · 보관함의 노래 · 검색 결과 · 아티스트의 인기 곡 · 차트가 모두 이것입니다.
-//
-//   cover   작은 표지 + 제목과 한 줄, 아티스트 열, 시간 (플레이리스트 화면의 모습)
-//   number  곡 번호 + 제목, 시간 (앨범 화면의 모습)
-//
-// 줄은 grid의 행이라 열이 줄마다 같은 자리에 섭니다. 표지(또는 번호)를 누르면 그 곡부터 재생하고, 줄을 두 번 눌러도 됩니다.
-// 지금 곡은 조용한 선택 면과 굵은 제목으로만 표시합니다.
-
 import type { MouseEvent, ReactNode } from "react";
 
 import { Box, Divider, Grid, IconButton, Inline, Pressable, Stack, Surface, Text } from "@studio-baeks/paper-ui";
@@ -27,14 +19,10 @@ type Extra = "artist" | "album" | "plays";
 type Props = {
   label: string;
   tracks: readonly Track[];
-  // 재생할 때 대기열이 될 목록. 기본은 tracks 그대로입니다.
   context?: readonly string[];
   layout?: "cover" | "number";
-  // 제목 옆의 열. 기본은 아티스트입니다.
   columns?: readonly Extra[];
-  // 제목 아래에 아티스트 이름을 보입니다. 한 아티스트의 곡만 모인 표(앨범, 아티스트 화면)에서는 끕니다.
   artistLine?: boolean;
-  // 맨 앞의 좁은 열에 넣을 것(차트의 순위). 번호 모양에서는 곡 번호가 들어갑니다.
   lead?: (track: Track, index: number) => ReactNode;
   playlist?: Playlist;
   sort?: Sort;
@@ -44,7 +32,6 @@ type Props = {
 
 const EXTRA_LABEL: Record<Extra, string> = { artist: "아티스트", album: "앨범", plays: "재생 수" };
 
-// 열의 폭. 줄마다 같은 트랙을 써서 열이 맞습니다. 좁은 화면에서는 맨 앞 열, 제목, 시간만 남습니다.
 const template = (lead: boolean, layout: "cover" | "number", extra: readonly Extra[]) => ({
   base: `${lead ? "2.5rem " : ""}minmax(0, 1fr) 6.5rem`,
   md: [lead ? "2.5rem" : null, layout === "number" ? "minmax(0, 1fr)" : "minmax(0, 5fr)", ...extra.map((item) => (item === "plays" ? "6rem" : "minmax(0, 3fr)")), "9rem"].filter(Boolean).join(" "),
@@ -56,7 +43,6 @@ const Cell = ({ children, wide = false }: { children: ReactNode; wide?: boolean 
 
 type HeadProps = { label: string; sortKey?: SortKey; sort?: Sort; onSort?: (key: SortKey) => void; rule?: boolean; end?: boolean };
 
-// 머리 칸의 글자는 칸이 시작하는 자리에 서서 줄의 글자와 맞고, 칸 사이의 세로선은 칸의 오른쪽 끝(열 사이의 간격 안)에 놓입니다.
 const Head = ({ label, sortKey, sort, onSort, rule = false, end = false }: HeadProps) => {
   const active = sortKey !== undefined && sort?.key === sortKey;
   const text = <Text as="span" variant="label" strong={active} ink={active ? "primary" : "tertiary"}>{label}</Text>;
@@ -102,7 +88,6 @@ export const TrackTable = ({ label, tracks, context, layout = "cover", columns =
           const album = ALBUM_BY_ID.get(track.albumId)!;
           const artist = ARTIST_BY_ID.get(track.artistId)!;
           const play = () => player.playTrack(track.id, ids);
-          // 제목 아래의 한 줄: 아티스트 열이 없으면 아티스트, 있으면 앨범. 그 열이 따로 있으면 비웁니다.
           const hasArtistColumn = columns.includes("artist");
           const hasAlbumColumn = columns.includes("album");
           const sub = wide

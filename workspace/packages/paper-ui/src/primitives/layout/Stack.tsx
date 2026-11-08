@@ -1,5 +1,3 @@
-// Stack — 세로로 쌓는다.
-
 import { forwardRef, type ElementType } from "react";
 
 import { Box, type BoxOwnProps } from "../Box";
@@ -9,7 +7,6 @@ import type { Align, Justify } from "../../tokens";
 import { flexAlign, flexJustify, stackRoot } from "./flex.css";
 import type { PolymorphicComponent, PolymorphicProps } from "../polymorphic";
 
-// align 은 가로 정렬이고 justify 는 세로 분배다. 기본값은 root 가 갖고, prop 은 줄 때만 class 가 된다.
 type StackOwnProps = BoxOwnProps & Pick<GapProps, "gap"> & {
   align?: Exclude<Align, "baseline">;
   justify?: Justify;

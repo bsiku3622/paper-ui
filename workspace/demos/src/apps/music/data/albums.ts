@@ -1,6 +1,3 @@
-// 앨범 40장, 곡 400개. 제목은 모두 이 앱을 위해 지어낸 것입니다.
-// tracks는 " | "로 나눈 곡 제목이고, instrumental은 가사가 없는 앨범입니다.
-
 export type AlbumSpec = {
   id: string;
   title: string;

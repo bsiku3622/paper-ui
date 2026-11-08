@@ -1,6 +1,3 @@
-// The frame of the console: Mainsail's navigation on the left (eight pages, in the order the user set), a top bar with the
-// state of the print and the emergency stop, notifications, settings and power, and the settings dialog over everything.
-
 import { useEffect, type ReactNode } from "react";
 
 import { Badge, Inline, Stack, Text } from "@studio-baeks/paper-ui";
@@ -70,7 +67,6 @@ const Summary = () => {
   );
 };
 
-// With the tab-title setting on, the browser tab says how far the print is.
 const useTabTitle = () => {
   const { print } = useSim();
   const { settings } = useSettings();

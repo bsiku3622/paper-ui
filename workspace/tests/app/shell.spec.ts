@@ -6,7 +6,6 @@ import { crawlRoutes, settled } from "../support/crawl";
 import { px, roleDp } from "../support/geometry";
 import { tab } from "../support/keyboard";
 
-// The site shell: one layout route owns the chrome, the landmarks, the title, the frame and the sidebars of every page.
 const WIDTHS = [1440, 390] as const;
 const SUFFIX = " — paper-ui";
 
@@ -16,7 +15,6 @@ const docsNav = (page: Page) => page.getByRole("navigation", { name: "문서 목
 const playgroundNav = (page: Page) => page.getByRole("navigation", { name: "플레이그라운드 목차" });
 const toggle = (page: Page) => page.getByRole("button", { name: /테마로 전환/ });
 
-// The width a locator's box leaves its content: for <main>, the column the page fills.
 const contentWidth = (locator: Locator) =>
   locator.evaluate((element) => {
     const style = getComputedStyle(element);
@@ -27,7 +25,6 @@ test("every route a visitor can reach has one main and one banner, a title with 
   test.setTimeout(480_000);
   const errors = pageErrors(page);
   const routes = await crawlRoutes(page);
-  // The crawl is the site as linked: the pages of the four parts, none of them a redirect.
   expect(routes.length).toBeGreaterThan(60);
   for (const part of ["/", "/demo", "/playground", "/docs", "/playground/foundations/color", "/playground/button", "/docs/get-started/philosophy"]) expect(routes, part).toContain(part);
   const problems: string[] = [];
@@ -177,7 +174,6 @@ test("[app.shell.wide-frame] a page with a sidebar takes the screen past contain
     const column = (await main(page).boundingBox())!;
     expect(Math.round(column.x + column.width), `${route}: the column`).toBe(width - edge);
   }
-  // A doc fills the column as the Playground does: its running text and its tables reach the column's end.
   const prose = page.getByTestId("prose");
   const end = async (target: Locator) => { const box = (await target.boundingBox())!; return Math.round(box.x + box.width); };
   await page.goto("/docs/foundations/typography");
@@ -259,7 +255,6 @@ test("at 390 the header is static and the sidebars are closed disclosures above 
     const summary = list.locator("summary");
     await expect(summary).toBeVisible();
     await expect(list.getByRole("link", { name: link, exact: true })).toBeHidden();
-    // The summary names the list and the page you are on, and the list sits above the content.
     expect((await list.boundingBox())!.y + (await list.boundingBox())!.height).toBeLessThanOrEqual((await main(page).boundingBox())!.y + 1);
     await summary.click();
     await expect(list.getByRole("link", { name: link, exact: true })).toBeVisible();

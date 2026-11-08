@@ -1,10 +1,3 @@
-// WeekGrid — the term's week as a map, not a spreadsheet: a class is a block as tall as it lasts, an empty period is
-// really empty, and lunch and dinner are gaps with their names. Today's column wears an ink header; the block you are in
-// is ink. Periods run only as far as the last class of the week.
-//
-// A block is a Surface that is itself a one-track Grid whose track is as many periods tall as the class — Paper has no
-// way to span rows, so the height is the track.
-
 import { Box, Grid, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";
 
 import { SurfaceLink } from "../../../../kit";

@@ -1,7 +1,3 @@
-// 자료 검수 — what students uploaded, waiting for a manager. Each row opens onto the things a reviewer fixes (title, subject,
-// type, description), the files with a page-by-page preview, and the decision: approve, or reject with a reason that the
-// student will read. It works on the app's shared materials list, so an approval here is what the Files page shows.
-
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -31,7 +27,6 @@ const draftOf = (material: Material): Draft => ({
   primary: material.primarySyllabus,
 });
 
-// A queue is read oldest first, so nothing waits behind newer uploads; the rest are read newest first.
 const queue = (materials: readonly Material[], filter: Filter) =>
   materials
     .filter((material) => filter === "all" || material.status === filter)
@@ -50,8 +45,6 @@ const subjectsOf = (term: string, current: string) => {
 
 type Target = { material: Material; file: MaterialFile };
 
-// ── preview ──────────────────────────────────────────────────────────────────
-
 const PreviewBody = ({ file }: { file: MaterialFile }) => {
   const [page, setPage] = useState(1);
   return (
@@ -68,8 +61,6 @@ const PreviewBody = ({ file }: { file: MaterialFile }) => {
     </Stack>
   );
 };
-
-// ── one upload ───────────────────────────────────────────────────────────────
 
 type ItemProps = {
   material: Material;
@@ -179,14 +170,10 @@ const Item = ({ material, draft, open, needsReason, onToggle, onDraft, onDecide,
   );
 };
 
-// ── the panel ────────────────────────────────────────────────────────────────
-
 export const MaterialsPanel = () => {
   const { materials, setMaterials, clock } = useClasses();
   const toast = useToast();
   const [params] = useSearchParams();
-  // What the address asks for, read once: the filter, the row to open (the first in the queue if none), how far down the list
-  // has to reach for that row to be on it.
   const asked = FILTERS.find((item) => item === params.get("filter")) ?? "pending";
   const [filter, setFilter] = useState<Filter>(asked);
   const [drafts, setDrafts] = useState<Record<number, Draft>>({});
@@ -251,7 +238,6 @@ export const MaterialsPanel = () => {
             decidedAt: when,
           };
         }
-        // a subject has one primary syllabus
         return primary && item.term === material.term && item.subject === draft.subject && item.primarySyllabus ? { ...item, primarySyllabus: false } : item;
       }),
     );

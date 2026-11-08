@@ -1,5 +1,3 @@
-// A question with two answers. The original asks it with the browser's `confirm()` ("“제목”를 삭제할까요?"); here it is a dialog.
-
 import { Button } from "@studio-baeks/paper-ui";
 
 import { Dialog } from "./Dialog";

@@ -1,7 +1,3 @@
-// Content: files in and out of the browser. Paper has no file picker (its Field type="file" shows the browser's own button),
-// and a download is an anchor that nobody sees; both are made here, out of sight.
-
-// Ask for a file. Resolves with nothing when the picker is closed without one.
 export const pickFile = (accept: string): Promise<File | null> =>
   new Promise((resolve) => {
     const input = document.createElement("input");
@@ -32,8 +28,6 @@ export const saveFile = (blob: Blob, name: string) => {
 const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 export const isImageType = (type: string) => IMAGE_TYPES.includes(type);
 
-// An image as the paper keeps it: scaled down to 1200 px wide at most and written into the paper as data (a signed-in
-// account's images would be uploaded; here they stay in the document).
 export const imageData = async (file: File): Promise<string> => {
   const url = URL.createObjectURL(file);
   try {

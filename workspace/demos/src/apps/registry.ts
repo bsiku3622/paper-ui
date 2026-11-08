@@ -1,5 +1,3 @@
-// The eight demo apps. Each lives in src/apps/<id>/ and is served under /<id>/.
-
 import type { GlyphName } from "../kit";
 
 export type AppEntry = { id: string; name: string; description: string; glyph: GlyphName };

@@ -1,5 +1,3 @@
-// What the course graph's SVG needs from CSS: Paper's tokens as classes, so no node, line or lane carries a style attribute.
-
 import { style } from "@vanilla-extract/css";
 
 import { tokens } from "@studio-baeks/paper-ui/tokens";

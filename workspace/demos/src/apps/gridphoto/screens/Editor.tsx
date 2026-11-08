@@ -1,6 +1,3 @@
-// The working screen: the photo in its well, the pages under it, the panel beside it. One page of the document is open at a
-// time and the address says which, and whether it is shown as a scan, as the original, or with its corners being placed.
-
 import { useEffect, useState, type ReactNode } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 
@@ -30,7 +27,6 @@ const Layout = ({ currentId, stage, panel }: { currentId: string; stage: ReactNo
 
 const STARTING: Quad = [{ x: 0.14, y: 0.14 }, { x: 0.86, y: 0.14 }, { x: 0.86, y: 0.86 }, { x: 0.14, y: 0.86 }];
 
-// Starts from what is already on screen, so a small correction stays small. A page with nothing found starts from a frame.
 const startFrom = (page: Page): { quad: Quad; target: EditTarget; cols: number; rows: number } => {
   const fit = page.fit;
   const quad = fit && fit.origin !== "none" && fit.lines !== "ruled" ? clampQuad(fit.quad) : null;
@@ -88,7 +84,6 @@ export const Editor = ({ view }: { view: "result" | "source" | "corners" }) => {
   const { pages, doc, select } = useGridphoto();
   const page = pages.find((item) => item.id === pageId);
 
-  // The page you open is the one the document comes back to.
   useEffect(() => {
     if (page && doc.currentId !== page.id) select(page.id);
   }, [page, doc.currentId, select]);

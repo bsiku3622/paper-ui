@@ -1,5 +1,3 @@
-// The Shape tables and notes: the source numbers, the radius, the control geometry and the sizing. Only this file
-// and the Shape inspector read the Shape source.
 import { CONTROL_ICON, SHAPE_SOURCE, resolveRole } from "@paper-ui/inspect/shape";
 import { CONTROL_SIZES, tokens, type ControlSize } from "@studio-baeks/paper-ui/tokens";
 
@@ -10,7 +8,6 @@ const S = SHAPE_SOURCE;
 const SIZES = CONTROL_SIZES;
 const entries = (record: Record<string, number | string>) => Object.entries(record).map(([key, value]) => `${key}${value}`).join(" · ");
 
-// The insets are roles built on the control text line, so they are resolved from what the stylesheet emits.
 const inset = (kind: "input" | "button", size: (typeof SIZES)[number]) => String(resolveRole(tokens.shape.control.inset[kind][size]));
 
 const radiusRows = (): string[][] => [

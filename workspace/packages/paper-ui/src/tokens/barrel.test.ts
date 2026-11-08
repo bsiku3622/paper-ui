@@ -7,29 +7,20 @@ import { STRUCTURAL } from "../../../../eslint-rules/structural.js";
 import * as barrel from "./index";
 import * as vocabulary from "./vocabulary";
 
-// The barrel is what the rest of the package reads: roles, vocabulary and composition, never a source tree, a
-// VALUES tree or a helper. Every export is classified here, so a new one fails until it has a place; the
-// source modules and helpers sit behind src/tokens and are reached only through the inspector (tokens/inspect).
-
-// Composition functions: they take a name or a role and return a declaration, a class-free style fragment or a string.
 const FUNCTIONS = [
   "elevationStack", "elevationCast", "elevationStyle", "accentProfile", "controlSizes", "strokeRing", "nestedRadius", "markParts", "targetReach", "lineFrame", "lineRule", "insideLine", "typographyRule", "monoRule", "codeRule", "presetRule", "emphasisRule",
   "stateSelector", "stateAttributes", "previewSelector", "previewAttributes", "transition", "isStylesheetLoaded", "unknownSourceVariables", "overridesRule",
 ];
 
-// Names the package spells: attributes, selectors, queries, the system colours a component may ask for.
 const NAMES = [
   "THEME_ATTRIBUTE", "THEME_SWAP_ATTRIBUTE", "COLOR_MODE_QUERY", "SOURCE_VARIABLES", "STATE_ATTRIBUTE", "VALUE_ATTRIBUTE", "MARKER_ATTRIBUTE", "PREVIEW_ATTRIBUTE",
   "SELECTED_SELECTOR", "ENABLED_SELECTOR", "STATE_TINT_PROPERTY", "CONTROL_LINE_PROPERTY", "VARIANT_LINE", "SYSTEM_COLORS", "TEXT_INK", "CONTROL_ICON", "CONTROL_ANATOMY_PRESET", "MOTION_CONSUMERS",
 ];
 
-// Composition: plain objects whose leaves refer to roles. A leaf is a variable reference, a formula or style
-// function over references, or a keyword (none, underline, a system colour) with no number in it.
 const COMPOSITION = [
   "ELEVATION", "restingCast", "insetCast", "SHAPE_RECIPES", "CONTROL", "markProfile", "markForcedProfile", "outlinedControlProfile", "itemProfile", "focusRing", "stateStyle", "linkStyle", "STATE_TINT", "CONTROL_LINE", "CONTROL_LINE_ROOM", "controlLineWidth",
 ];
 
-// Value roles: the few places a number is the role itself, with the reason.
 const VALUE_ROLES: Record<string, string> = {
   "tokens.layout.breakpoint": "a media query cannot read a variable, so a breakpoint is its value, in em",
   "tokens.layout.section": "the declared fluid exception: a distance that follows the viewport height",
@@ -97,7 +88,6 @@ describe("the tokens barrel", () => {
         }
         expect(typeof value, path).toBe("string");
         const bare = strip(value as string);
-        // A reference, a function over references, or a keyword: nothing with a number and no reference.
         expect(bare.includes("var()") || !/\d|#/.test(bare), `${path} = ${value}`).toBe(true);
       }
     }
@@ -114,7 +104,6 @@ describe("the tokens barrel", () => {
 });
 
 describe("the Foundations have two orders", () => {
-  // The first order: five systems that hold a source and its roles. A file may read its own system and the names everyone shares.
   const FIRST = [
     { name: "Color", files: ["palette", "color-ladder", "colors", "color-recipes"] },
     { name: "Typography", files: ["typography", "typography-recipes"] },
@@ -122,16 +111,11 @@ describe("the Foundations have two orders", () => {
     { name: "Layout", files: ["layout"] },
     { name: "Motion", files: ["motion"] },
   ];
-  // The second order: what ties two systems or more together. It reads the first order.
   const SECOND = ["line-recipes", "control-recipes", "elevation-recipes", "motion-recipes", "state", "state-recipes"];
-  // Names, not values: reading one ties nothing to anything.
   const SHARED = ["helpers", "color-modes", "control-sizes"];
-  // The one length scale lives in Shape, and a gap picks from it as an inset does.
   const FIRST_ORDER_EDGES: Record<string, string[]> = { layout: ["shape"] };
-  // A press sinks by the offset its motion role names.
   const SECOND_ORDER_EDGES: Record<string, string[]> = { "state-recipes": ["state", "motion-recipes"] };
   const here = dirname(fileURLToPath(import.meta.url));
-  // What a file reads for its value. `import type` names a shape and ties no value to anything.
   const importsOf = (file: string) => [...readFileSync(join(here, `${file}.ts`), "utf8").matchAll(/^(?:import|export)\s(?!type\s)[^;'"]*?from\s*["']\.\/([^"']+)["']/gm)].map(([, from]) => from!);
 
   it("[foundations.orders.first] a first-order system reads no other system, but for the one edge the table names", () => {
@@ -146,13 +130,11 @@ describe("the Foundations have two orders", () => {
       importsOf(file).filter((from) => SECOND.includes(from) && !(SECOND_ORDER_EDGES[file] ?? []).includes(from)).map((from) => `${file} reads ${from}`),
     );
     expect(crossing).toEqual([]);
-    // And a first-order file reads no second-order one.
     const upward = FIRST.flatMap(({ files }) => files.flatMap((file) => importsOf(file).filter((from) => SECOND.includes(from)).map((from) => `${file} reads ${from}`)));
     expect(upward).toEqual([]);
   });
 
   it("[foundations.systems.sources] writes each system's source in the file its row names, and each tie between systems in its second-order file", () => {
-    // A Typography role names its default ink, which Color defines.
     for (const [variant, ink] of Object.entries(barrel.TEXT_INK)) expect(barrel.INK_LEVELS, variant).toContain(ink);
     for (const [file, source] of [["palette", "OKLCH_PALETTE"], ["typography", "TYPOGRAPHY_SOURCE"], ["shape", "SHAPE_SOURCE"], ["layout", "LAYOUT_SOURCE"], ["motion", "DURATION"]] as const) {
       expect(readFileSync(join(here, `${file}.ts`), "utf8"), file).toContain(`export const ${source}`);
@@ -165,17 +147,13 @@ describe("the Foundations have two orders", () => {
 
   it("[foundations.systems.differences] differs from the others only where the table says", () => {
     const text = (file: string) => readFileSync(join(here, `${file}.ts`), "utf8");
-    // Colour: the coordinates are the source, and COLOR_VALUES is what the selection table picks from them.
     expect(text("palette")).toContain("export const OKLCH_PALETTE");
     expect(text("colors")).toMatch(/export const COLOR_VALUES = mapLeaves\(COLOR_SELECTION\.light/);
-    // Motion: strings for a source, no tree of values, nothing emitted.
     expect(text("motion")).not.toMatch(/\bMOTION_VALUES\b/);
     expect(barrel.tokens.motion).toEqual({ role: barrel.MOTION });
     for (const name of ["DURATION", "EASING", "LOOP"]) expect(text("motion"), name).toMatch(new RegExp(`const ${name}\\b`));
-    // Layout: what it emits as a tree is the containers and the stacking order; the rest points at Shape.
     expect(text("layout")).toMatch(/export const LAYOUT_VALUES = \{\n  container:[^\n]*\n  elevation:/);
     expect(text("layout")).toContain("gutter: SPACE.lg");
-    // Composition: what an app stylesheet uses is public, and what belongs to an Atom or the Paint tier is not.
     for (const name of ["typographyRule", "presetRule", "transition", "stateStyle"]) expect(text("public"), name).toContain(name);
     for (const name of ["SHAPE_RECIPES", "accentProfile", "markProfile"]) expect(text("public"), name).not.toContain(name);
   });

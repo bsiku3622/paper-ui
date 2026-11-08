@@ -1,5 +1,3 @@
-// RecentDiscussPage.tsx — every thread in the wiki, the most recently answered first.
-
 import { useState } from "react";
 
 import { Stack } from "@studio-baeks/paper-ui";

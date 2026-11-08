@@ -1,5 +1,3 @@
-// 곡 정렬. 제목 · 아티스트 · 앨범은 가나다순(한글과 영문이 섞여도 자연스럽게), 시간과 재생 수는 숫자로.
-
 import { ALBUM_BY_ID, ARTIST_BY_ID, type Track } from "../data/catalog";
 import type { Sort } from "./TrackTable";
 

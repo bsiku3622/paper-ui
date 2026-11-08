@@ -1,13 +1,9 @@
-// The phone's camera roll, as the hub sees it: the latest twenty-four items with invented names and sizes. The viewer
-// itself lives elsewhere; the hub only decides what is shown outside.
-
 import { random } from "../../../kit";
 import { DAY, HOUR, MINUTE, before } from "../lib/clock";
 import type { MediaRow } from "./types";
 
 const MB = 1024 * 1024;
 
-// Shot names the way a phone writes them: 20261030_172458.jpg.
 const stamp = (at: number) => {
   const date = new Date(at + 9 * HOUR);
   const pad = (value: number, length = 2) => String(value).padStart(length, "0");
@@ -35,11 +31,9 @@ export const seedMedia = (): MediaRow[] => {
   return rows;
 };
 
-// What the phone holds in all, beyond the twenty-four shown.
 export const GALAXY = {
   photos: 1284,
   videos: 96,
-  // Shared items older than the twenty-four.
   sharedOlder: 4,
   storageUsed: 118.4,
   storageTotal: 256,

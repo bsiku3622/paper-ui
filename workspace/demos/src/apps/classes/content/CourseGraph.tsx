@@ -1,11 +1,3 @@
-// CourseGraph — the curriculum's prerequisite graph as an SVG. Paper has no part that draws a line from one box to
-// another (no graph, no connector, no canvas), so the boxes, their words and the curves between them are drawn here, with
-// Paper's colour and type tokens only. The geometry comes from lib/graph.ts; the page around it (department buttons, the
-// detail of the focused course, the legend) stays in screen files.
-//
-// One department is drawn as columns by prerequisite depth; "all" stacks every department as a lane and shows the lines
-// that cross between lanes. Pressing a course keeps it and the courses it needs or opens, and fades the rest.
-
 import { useMemo, useState } from "react";
 
 import { Box, Stack, Text } from "@studio-baeks/paper-ui";

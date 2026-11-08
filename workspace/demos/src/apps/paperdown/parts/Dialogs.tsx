@@ -1,6 +1,3 @@
-// The editor's small dialogs (App.tsx's `document-dialog`): starting a new document, a link's address, a formula's LaTeX, and
-// opening a document file (or one moved here from the old address). One window, with the words and buttons of the kind.
-
 import { useEffect, useState, type FormEvent } from "react";
 
 import { Button, Field, FormField, Inline, Stack, Text } from "@studio-baeks/paper-ui";
@@ -24,7 +21,6 @@ const TITLES: Record<DialogState["kind"], string> = {
 };
 
 export const DocumentDialog = ({ dialog, onClose, onSubmit, onSave }: { dialog: DialogState | null; onClose: () => void; onSubmit: (value: string) => void; onSave: () => void }) => {
-  // The dialog keeps what it was asked about while it fades out.
   const [shown, setShown] = useState<DialogState | null>(dialog);
   const [value, setValue] = useState("");
   useEffect(() => {

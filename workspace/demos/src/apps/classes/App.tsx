@@ -1,6 +1,3 @@
-// Class Explorer — a course explorer for a school, drawn with Paper and the kit. Routes live under /classes/…;
-// everything a user makes is kept with useStored under "classes:…".
-
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import { ClassesProvider, hasRole, path, useClasses } from "./state";
@@ -24,7 +21,6 @@ import { UploadPage } from "./pages/Upload";
 import { ZamongPage } from "./pages/Zamong";
 import { Shell } from "./Shell";
 
-// Signed-out visitors see the welcome page; an account whose school Google account is not linked yet is stopped until it is.
 const Gate = () => {
   const { session } = useClasses();
   if (!session.signedIn) return <Navigate to={path("/welcome")} replace />;
@@ -32,7 +28,6 @@ const Gate = () => {
   return <Shell />;
 };
 
-// Only an admin has the 관리 page.
 const AdminOnly = () => {
   const { session } = useClasses();
   return hasRole(session.role, "admin") ? <AdminPage /> : <Navigate to={path()} replace />;

@@ -1,6 +1,3 @@
-// ScrollButtons.tsx — the corner of the window: the table of contents, the top of the page, the bottom of the page. The pinning
-// is content/FixedCorner; what is pinned is a Surface with IconButtons.
-
 import { Box, Divider, Floating, IconButton, Stack, Surface, Text, useFloatingContext } from "@studio-baeks/paper-ui";
 
 import { Glyph } from "../../../kit";
@@ -34,7 +31,6 @@ const ContentsList = ({ toc }: { toc: readonly TocEntry[] }) => {
   );
 };
 
-// On a phone they would cover the text they are meant to help you through, so they are left out there.
 export const ScrollButtons = ({ toc }: { toc?: readonly TocEntry[] }) => (
   <Box hideBelow="md">
     <FixedCorner>

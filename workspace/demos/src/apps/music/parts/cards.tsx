@@ -1,6 +1,3 @@
-// 카드와 선반. 표지 아래에 제목 한 줄과 설명 한 줄. 카드는 면이 없이 바탕 위에 놓이고, 가리키면 조용한 색이 깔립니다.
-// 선반(Shelf)은 같은 종류를 한 줄로 늘어놓고 옆으로 넘깁니다.
-
 import type { ReactNode } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -45,7 +42,6 @@ export const ArtistCard = ({ artist, sub }: { artist: Artist; sub?: ReactNode })
   </SurfaceLink>
 );
 
-// 장르 · 방송국 같은 이름만 있는 카드: 무늬 위에 이름.
 export const TileLink = ({ to, seed, title, sub }: { to: string; seed: string; title: string; sub?: string }) => (
   <SurfaceLink to={to} padding="xs" radius="md" aria-label={title}>
     <Stack gap="sm">
@@ -55,7 +51,6 @@ export const TileLink = ({ to, seed, title, sub }: { to: string; seed: string; t
   </SurfaceLink>
 );
 
-// 카드를 한 줄로 늘어놓고 옆으로 넘기는 선반.
 export const Shelf = ({ title, description, to, children }: { title: string; description?: string; to?: string; children: ReactNode }) => (
   <Stack as="section" gap="md" aria-label={title}>
     <SectionHeader
@@ -69,7 +64,6 @@ export const Shelf = ({ title, description, to, children }: { title: string; des
   </Stack>
 );
 
-// 선반의 한 칸: 카드 폭이 줄어들지 않게 잡습니다. 카드는 링크라서 flex 안에 있어야 블록으로 놓입니다.
 export const Slot = ({ children, wide = false }: { children: ReactNode; wide?: boolean }) => (
   <Stack width={wide ? "lg" : "md"} minWidth={wide ? "lg" : "md"}>{children}</Stack>
 );

@@ -1,7 +1,3 @@
-// What the operator console keeps between visits, in one place: panels act on each other (a collection adds a revision and a
-// backup, deleting an account signs its devices out), so they read and write the same lists. Each list is kept with
-// useStored under "classes:admin:…". No password is ever kept — an account is its username, its role and its dates.
-
 import { createContext, useContext, type ReactNode } from "react";
 
 import { useStored } from "../../../../kit";
@@ -12,7 +8,6 @@ import {
 
 type Setter<T> = (next: T | ((now: T) => T)) => void;
 
-// Names someone changed in the data tables: student ID → name, and a teacher's old name → the new one.
 export type Renames = { students: Record<string, string>; teachers: Record<string, string> };
 
 type Store = {

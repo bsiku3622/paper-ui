@@ -71,7 +71,6 @@ describe("INVENTORY", () => {
     for (const name of INVENTORY.polymorphic) {
       const [head = "", member] = name.split(".");
       const Root = exported[head] as ElementType;
-      // A panel stands only while it is open, and through a portal.
       const panel = name === "Floating.Content";
       const element = member
         ? createElement(Root, panel ? { defaultOpen: true } : null, createElement((Root as unknown as Record<string, ElementType>)[member]!, panel ? { as: "section", presentation: "modal", "aria-label": "Panel" } : { as: "section", value: "item" }))

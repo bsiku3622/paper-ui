@@ -1,14 +1,3 @@
-// browser-baseline.mjs — the declared browser floor and the CSS features the package stands on.
-//
-// packages/paper-ui/package.json "browserslist" is the floor. The package's Vite build.target and cssTarget
-// derive from it (buildTargets), and every CSS feature the package uses has a row in FEATURES: a pattern
-// that finds it in the built stylesheet, the first version of each engine that supports it, and its kind.
-// A required feature must work at the floor. An enhancement may be missing there, and the floor then loses
-// motion only. Adopting a CSS feature adds its row here.
-//
-// `node scripts/browser-baseline.mjs [stylesheet]` scans dist/paper-ui.css (or the given file) and fails
-// when a required feature it uses is newer than the floor.
-
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
@@ -24,7 +13,6 @@ export const compareVersions = (a, b) => {
   return 0;
 };
 
-// "chrome >= 125" → { chrome: "125" }. Every engine needs exactly one floor query.
 export const parseFloor = (browserslist) => {
   const floor = {};
   for (const query of browserslist) {
@@ -37,7 +25,6 @@ export const parseFloor = (browserslist) => {
   return floor;
 };
 
-// esbuild target names for Vite's build.target and cssTarget, in browserslist order.
 export const buildTargets = (browserslist) =>
   Object.entries(parseFloor(browserslist)).map(([engine, version]) => `${ESBUILD_ENGINE[engine]}${version}`);
 
@@ -53,7 +40,6 @@ export const FEATURES = [
   { name: "round()", pattern: /(?<![\w-])round\(/, kind: "required", since: since("125", "125", "118", "15.4", "15.4") },
   { name: ":focus-visible", pattern: /:focus-visible\b/, kind: "required", since: since("86", "86", "85", "15.4", "15.4") },
   { name: "translate", pattern: /(?<![\w-])translate\s*:/, kind: "required", since: since("104", "104", "72", "14.1", "14.5") },
-  // The inset shorthand and its logical longhands (inset-inline-start · -end, inset-block-*).
   { name: "logical inset", pattern: /(?<![\w-])inset(?:-(?:inline|block)(?:-(?:start|end))?)?\s*:/, kind: "required", since: since("87", "87", "66", "14.1", "14.5") },
   { name: "color-scheme", pattern: /(?<![\w-])color-scheme\s*:/, kind: "required", since: since("81", "81", "96", "13", "13") },
   { name: "forced-colors", pattern: /\(\s*forced-colors\s*:/, kind: "required", since: since("89", "79", "89", "16", "16") },
@@ -62,20 +48,13 @@ export const FEATURES = [
   { name: "overflow-wrap: anywhere", pattern: /overflow-wrap\s*:\s*anywhere\b/, kind: "required", since: since("80", "80", "65", "15.4", "15.4") },
   { name: "clamp()", pattern: /(?<![\w-])clamp\(/, kind: "required", since: since("79", "79", "75", "13.1", "13.4") },
   { name: "prefers-contrast", pattern: /\(\s*prefers-contrast\s*:/, kind: "required", since: since("96", "96", "101", "14.1", "14.5") },
-  // The overflow keyword Box offers beside hidden: overflow, overflow-x and overflow-y.
   { name: "overflow: clip", pattern: /(?<![\w-])overflow(?:-[xy])?\s*:\s*clip\b/, kind: "required", since: since("90", "90", "81", "16", "16") },
-  // The named keywords of Box's width and height classes. fit-content waits longest: Firefox ships it unprefixed from 94.
   { name: "intrinsic sizing keywords", pattern: /(?<![\w-])(?:(?:min|max)-)?(?:width|height)\s*:\s*(?:fit|min|max)-content\b/, kind: "required", since: since("46", "79", "94", "11", "11") },
-  // The window's height as a face or a page frame reads it: a phone browser's bars are not in it.
   { name: "dynamic viewport units", pattern: /(?<![\w.-])\d+dvh\b/, kind: "required", since: since("108", "108", "101", "15.4", "15.4") },
-  // The state tint is a registered colour property, which is what lets a hover fade in. Without it the tint still
-  // applies and only the fade is lost, so the floor degrades by motion alone.
   { name: "@property", pattern: /@property\b/, kind: "enhancement", since: since("85", "85", "128", "16.4", "16.4") },
-  // Hover colour is gated on a pointer that can hover, so touch never takes it.
   { name: "hover media feature", pattern: /\(\s*hover\s*:/, kind: "required", since: since("41", "12", "64", "9", "9") },
 ];
 
-// Every feature the stylesheet uses, and the engines at the floor that lack it.
 export const checkStylesheet = (css, floor, features = FEATURES) => {
   const used = features
     .filter((feature) => feature.pattern.test(css))

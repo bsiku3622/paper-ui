@@ -1,4 +1,3 @@
-// The Motion tables: the durations, curves and loops as authored, and the role each component picks.
 import { DURATION, EASING, LOOP, MOTION, MOTION_CONSUMERS, MOTION_ROLES } from "@paper-ui/inspect/motion";
 import { tokens } from "@studio-baeks/paper-ui/tokens";
 
@@ -13,7 +12,6 @@ const motionSourceRows = (): string[][] => [
   ["`loop`", Object.entries(LOOP).map(([name, loop]) => `\`${name}\` ${loop.duration} ${nameOf(EASING, loop.easing)}`).join(" · ")],
 ];
 
-// The situation of each role; the places that use it come from MOTION_CONSUMERS.
 const SITUATIONS: Record<(typeof MOTION_ROLES)[number], string> = {
   press: "버튼을 누르는 순간",
   hover: "포인터가 지나갈 때 바뀌는 hover tint·테두리·글자색",
@@ -24,7 +22,6 @@ const SITUATIONS: Record<(typeof MOTION_ROLES)[number], string> = {
   theme: "테마 전환 — 모드가 바뀌는 프레임에 모든 전이가 즉시 끝남",
 };
 
-// A displacement is the length of a Layout gap or a Shape stroke; the role that holds it names it.
 const LENGTH_ROLES = { gap: tokens.layout.gap, stroke: tokens.shape.stroke };
 const lengthName = (length: string): string => {
   for (const [group, roles] of Object.entries(LENGTH_ROLES)) {
@@ -40,7 +37,6 @@ const displacement = (role: (typeof MOTION_ROLES)[number]): string => {
   return role === "press" ? `${lengthName(offset)} 만큼 아래로` : [lengthName(offset), scale === undefined ? "" : `scale ${scale}`, blur === undefined ? "" : `흐림 ${lengthName(blur)}`].filter(Boolean).join(" · ");
 };
 
-// A role no component of the package takes is the app's, through its class.
 const usedBy = (role: (typeof MOTION_ROLES)[number]): string => MOTION_CONSUMERS[role].join(" · ") || `앱 화면 — \`${role}\` class`;
 
 const motionRoleRows = (): string[][] =>

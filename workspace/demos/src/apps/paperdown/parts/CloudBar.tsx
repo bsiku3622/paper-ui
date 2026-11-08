@@ -1,7 +1,3 @@
-// What the account says when keeping a note went wrong (Account.tsx's `cloud-message`): the server could not be reached, the
-// sign-in ran out, or another device changed the note first. Nothing here can happen to the demo's local notes; the bar is
-// shown for a note opened with `?cloud=error`, `expired`, `conflict` or `offline` in the address.
-
 import { Button, IconButton, Inline, Surface, Text } from "@studio-baeks/paper-ui";
 
 import { Glyph } from "../../../kit";
@@ -11,7 +7,6 @@ export type CloudState = "error" | "expired" | "conflict" | "offline";
 export const parseCloud = (value: string | null): CloudState | null =>
   value === "error" || value === "expired" || value === "conflict" || value === "offline" ? value : null;
 
-// The line the header gives for where the note is kept, in each state.
 export const CLOUD_LABEL: Record<CloudState, string> = {
   error: "이 기기에 보관됨 · 재시도",
   expired: "이 기기에 보관됨 · 재시도",

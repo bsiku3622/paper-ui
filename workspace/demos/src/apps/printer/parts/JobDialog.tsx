@@ -1,6 +1,3 @@
-// One job of the history: how it ended, when, for how long, how much filament, and what to do with it. A job whose file is
-// still on the printer can be printed again (after a confirmation); the job itself can be deleted from the history.
-
 import { useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 

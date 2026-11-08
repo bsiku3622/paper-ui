@@ -1,8 +1,3 @@
-// What the Atoms say alike. Every Atom gives its ref and native attributes to the semantic element and its className, style
-// and data-testid to the visible box. The input family (Field, Textarea, Select) is one frame around one native control, and
-// says the same about invalid, about where its attributes go and about the ring; the selection marks (Checkbox, Radio,
-// Switch) are their own frame and say the same about invalid.
-
 import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -34,7 +29,6 @@ import { Spinner } from "./Spinner";
 import { Switch } from "./Switch";
 import { Textarea } from "./Textarea";
 
-// What ran, in order: a caller's handler writes here, and so does the focus judge an input control stands on, through this wrap.
 const ran = vi.hoisted(() => ({ log: [] as string[] }));
 vi.mock("../primitives/a11y/focus", async (importOriginal) => {
   const original = await importOriginal<typeof import("../primitives/a11y/focus")>();
@@ -70,7 +64,6 @@ const INPUTS: Control[] = [
   { name: "Select", control: (props) => <Select aria-label="control" {...props}><Select.Option value="a">A</Select.Option></Select>, frame: parent },
 ];
 
-// What a control says of itself, and what its frame says of it.
 const stateOf = (input: Pick<Control, "frame">, element: ReactElement) => {
   const view = render(element);
   const control = screen.getByLabelText("control");
@@ -87,18 +80,12 @@ const stateOf = (input: Pick<Control, "frame">, element: ReactElement) => {
 describe("the input family", () => {
   for (const input of INPUTS) {
     it(`[atoms.field.invalid] [primitives.form-field.status-link] [atoms.states.atom-table] [primitives.state.emitters] ${input.name} has one invalid contract: the field being invalid, the error status and an explicit word each reach aria-invalid and the frame`, () => {
-      // The field being invalid alone.
       expect(stateOf(input, <FormField label="L" invalid>{input.control({})}</FormField>)).toEqual({ ariaInvalid: "true", status: "error", invalid: true });
-      // An error status alone, in a field that is not invalid (the regression of a status the field overwrote).
       expect(stateOf(input, <FormField label="L" invalid={false}>{input.control({ status: "error" })}</FormField>)).toEqual({ ariaInvalid: "true", status: "error", invalid: true });
-      // Both.
       expect(stateOf(input, <FormField label="L" invalid>{input.control({ status: "error" })}</FormField>)).toEqual({ ariaInvalid: "true", status: "error", invalid: true });
-      // Neither: no aria-invalid at all.
       expect(stateOf(input, <FormField label="L">{input.control({})}</FormField>)).toEqual({ ariaInvalid: null, status: null, invalid: false });
       expect(stateOf(input, input.control({}))).toEqual({ ariaInvalid: null, status: null, invalid: false });
-      // A status that is not an error colours the frame and says nothing to assistive technology.
       expect(stateOf(input, input.control({ status: "warning" }))).toEqual({ ariaInvalid: null, status: "warning", invalid: false });
-      // An explicit word wins over the status, and the frame still draws the status.
       expect(stateOf(input, input.control({ status: "error", "aria-invalid": false }))).toEqual({ ariaInvalid: "false", status: "error", invalid: false });
     });
 
@@ -116,7 +103,6 @@ describe("the input family", () => {
       render(element);
       const control = screen.getByLabelText("control");
       const frame = screen.getByTestId("frame");
-      // A Select's ref and form attributes are its native select's, which the form reads; what is labelled is the button.
       const formControl = input.name === "Select" ? frame.querySelector("select")! : control;
       expect(ref.current).toBe(formControl);
       expect(formControl.getAttribute("name")).toBe("who");
@@ -192,10 +178,6 @@ describe("the input family's stylesheets", () => {
   });
 });
 
-// Every Atom, and where it sends what a caller gives it. `semantic` is the element the native attributes reach, and the ref unless
-// `ref` names another: a Select's ref is the native select the form reads, while its button is what is labelled and described.
-// `visible` is the box that carries className, style and data-testid. They are one element for every Atom but Field and Select, whose
-// visible box is the frame around the control.
 type Target = { name: string; element: (props: Record<string, unknown>) => ReactElement; semantic: (root: HTMLElement) => HTMLElement; ref?: (root: HTMLElement) => HTMLElement; visible: (semantic: HTMLElement) => HTMLElement };
 const same = (semantic: HTMLElement) => semantic;
 const TARGETS: Target[] = [
@@ -217,7 +199,6 @@ const TARGETS: Target[] = [
   { name: "Slider", element: (props) => <Slider aria-label="v" {...props} />, semantic: (root) => root.querySelector("input")!, visible: same },
 ];
 
-// The axes an Atom names, with each at the default the table gives: the two draw the same classes.
 const DEFAULTS: Array<[name: string, plain: ReactElement, explicit: ReactElement]> = [
   ["Button", <Button>x</Button>, <Button size="md" shape="pill" accent="primary" variant="solid">x</Button>],
   ["IconButton", <IconButton aria-label="i"><Icon><path d="M4 12h16" /></Icon></IconButton>, <IconButton aria-label="i" size="md" shape="pill" accent="primary" variant="solid"><Icon><path d="M4 12h16" /></Icon></IconButton>],
@@ -232,7 +213,6 @@ const DEFAULTS: Array<[name: string, plain: ReactElement, explicit: ReactElement
   ["Slider", <Slider aria-label="v" />, <Slider aria-label="v" size="md" />],
 ];
 
-// What each Atom stands on, as what its source names: the Primitives and hooks of the table, and where its colour comes from.
 const STANDS_ON: Record<string, readonly string[]> = {
   "button-base.tsx": ["Pressable", 'motion="press"', "useSelectable", "controlClass", "paintClass"],
   "Link.tsx": ["useFocusRing", "linkPaint"],
@@ -348,7 +328,6 @@ describe("every Atom", () => {
   });
 });
 
-// A selection mark is its own frame: what its status and the field around it say reaches the input and what the input shows.
 type Mark = { name: string; control: (props: { status?: "error"; "aria-invalid"?: boolean }) => ReactElement };
 const MARKS: Mark[] = [
   { name: "Checkbox", control: (props) => <Checkbox aria-label="control" {...props} /> },

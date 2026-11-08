@@ -1,6 +1,3 @@
-// A question with one line for an answer: the prototype asked for an image address, a video address and the name of an
-// event with the browser's window.prompt. This is the same question in Paper's modal, with the same words.
-
 import { useRef, useState, type FormEvent, type RefObject } from "react";
 
 import { Button, Field, Floating, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";

@@ -1,13 +1,3 @@
-// The state of the 수강 정정 page and everything derived from it, in one place so that the pieces of the screen only read.
-//
-// What a person decides — whose timetable, what to do with each subject, what to add, which combination to look at — is kept
-// with useStored under "classes:trade-plan" and comes back on reload. What is only a moment of the screen (the row that is
-// open, the subject pointed at, the words typed in a search) is plain state.
-//
-// A few URL words make a state reachable for a screenshot: ?demo=moves|plan|target|friend|blank seeds a plan (once; the word
-// is taken off the address afterwards, and a plan that was stored is replaced only because the word was asked for),
-// ?open=<subject> opens a row, ?add=<words> and ?who=<words> fill the two searches. Without them nothing stored is touched.
-
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -45,9 +35,7 @@ import { koreanName, sectionNumber } from "../../lib/utils";
 import { useClasses } from "../../state";
 
 export type SavedTradePlan = PlanState & {
-  // Whose timetable is being planned; null means the signed-in account's own.
   stuId: string | null;
-  // The combination picked from the list; null means none picked (the first one is shown while something is left to "자동").
   previewKey: string | null;
 };
 
@@ -57,8 +45,6 @@ export type Addable = { subject: string; sections: SectionInfo[] };
 const EMPTY_SEARCH: PlanSearchResult = { results: [], truncated: false, variables: 0 };
 const blank = (stuId: string | null): SavedTradePlan => ({ stuId, actions: {}, addSelections: [], moveTargets: {}, previewKey: null });
 const withMoves = (stuId: string, subjects: readonly string[]): SavedTradePlan => ({ ...blank(stuId), actions: Object.fromEntries(subjects.map((subject) => [subject, "move" as const])) });
-
-// ── plans for the screenshots ────────────────────────────────────────────────
 
 const demoPlan = (demo: string, index: TradeIndex, me: string, friend: string | undefined): SavedTradePlan | null => {
   const moves: SavedTradePlan = { ...blank(me), actions: { 문학: "drop", 체육4: "move" }, addSelections: [{ subject: "감염과면역", sectionId: null }] };
@@ -82,15 +68,12 @@ const demoPlan = (demo: string, index: TradeIndex, me: string, friend: string | 
   }
 };
 
-// ── the model ────────────────────────────────────────────────────────────────
-
 export const useTradeModel = () => {
   const { data, me, friends, studentName } = useClasses();
   const toast = useToast();
   const [params, setParams] = useSearchParams();
   const index = useMemo(() => buildTradeIndex(data), [data]);
 
-  // A first visit starts on the account's own timetable with a few subjects marked as moves, so there is something to see.
   const [saved, setSaved] = useStored<SavedTradePlan>("classes:trade-plan", () => withMoves(me.stuId, suggestMoves(getStudentSchedule(index, me.stuId), index.subjects)));
   const [hovered, setHovered] = useState<string | null>(null);
   const [openSubject, setOpenSubject] = useState<string | null>(() => params.get("open"));
@@ -105,14 +88,11 @@ export const useTradeModel = () => {
   const schedule = useMemo(() => getStudentSchedule(index, stuId), [index, stuId]);
   const enrolled = useMemo(() => new Set(schedule.map((section) => section.subject)), [schedule]);
 
-  // the search: every combination in which no hour is used twice
   const search = useMemo(() => (schedule.length === 0 ? EMPTY_SEARCH : findPlans({ schedule, index: index.subjects, ...state })), [schedule, index, state]);
   const auto = useMemo(() => hasAutoChoice(schedule, state), [schedule, state]);
   const chosen = useMemo(() => (saved.previewKey ? (search.results.find((plan) => plan.key === saved.previewKey) ?? null) : null), [search, saved.previewKey]);
-  // Something left to "자동" and nothing picked: the first combination is shown, so that "자동" does something to the grid.
   const preview: PlanResult | null = chosen ?? (auto ? (search.results[0] ?? null) : null);
   const planned = useMemo(() => buildPlannedSchedule(schedule, index.subjects, state, preview), [schedule, index, state, preview]);
-  // Whether the grid shows something other than the timetable the person has.
   const changed = useMemo(() => !sameSections(schedule, planned.sections), [schedule, planned]);
 
   const credits = useMemo(() => {
@@ -131,7 +111,6 @@ export const useTradeModel = () => {
     [schedule, state, dropped, enrolled],
   );
 
-  // the seats that could be swapped in the combination being looked at
   const partners = useMemo<PartnerGroup[]>(
     () =>
       preview
@@ -140,7 +119,6 @@ export const useTradeModel = () => {
     [preview, index, stuId],
   );
 
-  // subjects that fit into the hours a drop frees (not the ones already taken, the added ones kept in the list)
   const addable = useMemo<Addable[]>(() => {
     if (dropped.length === 0) return [];
     const freed = new Set<SlotKey>();
@@ -159,7 +137,6 @@ export const useTradeModel = () => {
       .sort(bySubject);
   }, [dropped, schedule, planned, state.addSelections, index, enrolled]);
 
-  // searching for a subject to add
   const addMatches = useMemo<SubjectData[]>(() => findSubjects(data.subjects.filter((subject) => !enrolled.has(subject.subject)), addQuery), [data, enrolled, addQuery]);
   const summaries = useMemo(() => {
     const map = new Map<string, { free: number; total: number }>();
@@ -173,7 +150,6 @@ export const useTradeModel = () => {
 
   const matches = useMemo<Student[]>(() => findStudents(data.students, whoQuery), [data, whoQuery]);
 
-  // why no combination exists, when it can be said: a named section stands where a subject that is kept already is
   const reasons = useMemo(() => {
     if (search.results.length > 0 || search.variables === 0) return [];
     const kept = schedule.filter((section) => (state.actions[section.subject] ?? "keep") === "keep");
@@ -195,8 +171,6 @@ export const useTradeModel = () => {
     return out;
   }, [search, schedule, state, index, enrolled]);
 
-  // ── what a person does ────────────────────────────────────────────────────
-  // Every change takes the picked combination back: it was one of the old list.
   const update = useCallback((change: (now: SavedTradePlan) => Partial<SavedTradePlan>) => setSaved((now) => ({ ...now, previewKey: null, ...change(now) })), [setSaved]);
 
   const setAction = useCallback(
@@ -212,7 +186,6 @@ export const useTradeModel = () => {
     [update],
   );
   const setMoveTarget = useCallback((subject: string, sectionId: number | null) => update((now) => ({ moveTargets: { ...now.moveTargets, [subject]: sectionId } })), [update]);
-  // A shortcut from a section in the open list: move this subject there.
   const moveTo = useCallback((subject: string, sectionId: number) => update((now) => ({ actions: { ...now.actions, [subject]: "move" }, moveTargets: { ...now.moveTargets, [subject]: sectionId } })), [update]);
   const toggleAdd = useCallback(
     (subject: string) =>
@@ -246,7 +219,6 @@ export const useTradeModel = () => {
   }, [saved, setSaved, restart, toast]);
   const toggleOpen = useCallback((subject: string) => setOpenSubject((now) => (now === subject ? null : subject)), []);
 
-  // ── seeding from the address ──────────────────────────────────────────────
   const demo = params.get("demo");
   const seeded = useRef<string | null>(null);
   useEffect(() => {
@@ -254,7 +226,7 @@ export const useTradeModel = () => {
       seeded.current = null;
       return;
     }
-    // StrictMode runs an effect twice; the word is applied once.
+    // StrictMode runs an effect twice; apply the word once.
     if (seeded.current === demo) return;
     seeded.current = demo;
     const plan = demoPlan(demo, index, me.stuId, friends[0]);

@@ -1,15 +1,3 @@
-// 학교 구글 계정 연결 — the step an account without a linked school Google account is stopped at, instead of the app. The
-// Gate in App.tsx draws this screen wherever the visitor stood, and nothing else, until it is done or they sign out.
-//
-// Google is not a way to sign in here. It confirms one thing, the student ID: the school's account address is the ID, so the
-// app asks Google only for the address, never a name or a photo. Linking turns an old account (one that signed in by ID and
-// password alone) into one that knows whose it is.
-//
-// The step is mocked. "확인하기" waits a moment, then either finds the school account (the demo account, 한지우) or fails —
-// the 시연 switch under the card picks which. A found account is shown for a few seconds and then the account is linked, as
-// the original does the moment Google answers; "계속하기" does not wait. For screenshots: ?google=checking|found|failed holds
-// the step in that state (and holds it: nothing moves on by itself).
-
 import { useEffect, useRef, useState } from "react";
 import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
 
@@ -23,11 +11,9 @@ import { Frame } from "./auth/Frame";
 
 type Phase = "idle" | "checking" | "found" | "failed";
 
-// How long Google "takes", and how long the account found stays on the screen before the link is made.
 const WAIT = 1200;
 const SHOWN = 2400;
 
-// Three things the visitor should know before they press the button.
 const PROMISES = [
   { glyph: "shield-check", text: "구글 계정은 로그인에 쓰지 않습니다. 학번을 확인하는 데에만 씁니다." },
   { glyph: "mail", text: "학교 계정의 이메일 주소만 받습니다. 이름이나 사진은 받지 않습니다." },
@@ -43,7 +29,6 @@ export const GoogleLinkPage = () => {
   const forced = params.get("google");
   const [phase, setPhase] = useState<Phase>(forced === "checking" || forced === "found" || forced === "failed" ? forced : "idle");
   const [outcome, setOutcome] = useState<"success" | "failure">(forced === "failed" ? "failure" : "success");
-  // Whether the account found is about to be linked by itself.
   const [moving, setMoving] = useState(false);
   const timer = useRef<number | undefined>(undefined);
   useEffect(() => () => window.clearTimeout(timer.current), []);

@@ -10,7 +10,6 @@ import { contrast, over } from "../support/contrast";
 import { openHarness } from "../support/harness";
 import { expectStyle, profile } from "../support/style";
 
-// The narrow layout starts at the md breakpoint; the wide one is the desktop frame.
 for (const width of [LAYOUT_SOURCE.breakpoint.md, 1440]) {
   test(`[foundations.pages.derived-rows] palette rows stay aligned at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
@@ -20,7 +19,6 @@ for (const width of [LAYOUT_SOURCE.breakpoint.md, 1440]) {
     const rows = await matrix.evaluate((el) => {
       const children = Array.from(el.children);
       const columns = getComputedStyle(el).gridTemplateColumns.split(" ").length;
-      // Each cell's vertical centre: the swatches grow with the column, so their tops move away from a label's while the centres stay.
       return Array.from({ length: children.length / columns }, (_, row) =>
         children.slice(row * columns, (row + 1) * columns).map((child) => {
           const box = child.getBoundingClientRect();
@@ -30,7 +28,6 @@ for (const width of [LAYOUT_SOURCE.breakpoint.md, 1440]) {
     expect(rows).toHaveLength(ACCENT_PALETTES.length + 2);
     for (const row of rows) {
       expect(row).toHaveLength(ACCENT_STEPS.length + 1);
-      // Labels are vertically centered in the swatch row.
       expect(Math.max(...row) - Math.min(...row)).toBeLessThan(2);
     }
   });
@@ -59,14 +56,12 @@ test("[foundations.pages.derived-rows] the accent × variant table pairs every a
   }
 });
 
-// The mode in force on the page: the project's colour scheme, since no attribute is on <html>.
 const modeOf = (page: Page) => page.evaluate(() => (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
 
 test("[foundations.color.accent-variants-readable] all 25 accent × variant Buttons read at 4.5:1 at rest and hovered, solid differs from soft, and none casts a shadow", async ({ page }) => {
   await openHarness(page, "accents");
   const mode = await modeOf(page);
   const canvas = await page.locator("body").evaluate((element) => getComputedStyle(element).backgroundColor);
-  // The documented exception: a status whose solid and wash the exception table replaces in this mode.
   const excepted = (accent: string) => {
     const tones = (STATUS_EXCEPTIONS as Record<string, Record<string, object>>)[accent]?.[mode] ?? {};
     return "solid" in tones || "wash" in tones;
@@ -81,7 +76,6 @@ test("[foundations.color.accent-variants-readable] all 25 accent × variant Butt
         return { face: style.backgroundColor, ink: style.color, tint: style.getPropertyValue("--pui-state-tint").trim(), shadow: style.boxShadow };
       });
       const rest = await paint();
-      // A transparent face stands on the canvas the Button sits on.
       const ground = /^rgba\(.*, 0\)$/.test(rest.face) ? canvas : rest.face;
       const at = `${mode} ${accent} ${variant}`;
       const check = (ratio: number, where: string) => {
@@ -90,7 +84,6 @@ test("[foundations.color.accent-variants-readable] all 25 accent × variant Butt
       };
       check(contrast(rest.ink, ground), "at rest");
       expect(rest.shadow, `${at} casts no shadow`).toBe("none");
-      // A tint hover lays a colour over the face: composited, the text still reads. A border hover leaves the face alone.
       await button.hover();
       if (VARIANT_RECIPE[variant].hover === "tint") await expect.poll(async () => (await paint()).tint, `${at} hover tint`).not.toBe(rest.tint);
       const hovered = await paint();
@@ -103,7 +96,6 @@ test("[foundations.color.accent-variants-readable] all 25 accent × variant Butt
   }
 });
 
-// A custom property as the stylesheet declares it and the browser returns it: the same tokens, spaced alike.
 const normal = (value: string) => value.trim().toLowerCase().replace(/\s+/g, " ").replace(/(?<![\d.])0\./g, ".");
 
 test("[foundations.pages.palette-chips] a chip of the Palette says its step and HEX under the pointer, and a role card names the Palette Token it selects", async ({ page, colorScheme }) => {
@@ -111,7 +103,6 @@ test("[foundations.pages.palette-chips] a chip of the Palette says its step and 
   const matrix = page.getByTestId("palette-matrix");
   await expect(matrix).toBeVisible();
   for (const step of ACCENT_STEPS) await expect(matrix.getByTitle(`Blue ${step} · ${PALETTE_TOKENS.accent.blue[step]}`, { exact: true }), step).toHaveCount(1);
-  // The steps the matrix does not show are named on the role cards of the mode in force: 0 on a light page, 875 on a dark one, and the alpha steps on both.
   const steps = [colorScheme === "dark" ? /^neutral\.875 · #/ : /^neutral\.0 · #/, /^alpha\d+\.neutral\.\d+ · #/];
   for (const token of steps) expect(await page.getByTitle(token).count(), String(token)).toBeGreaterThan(0);
 });
@@ -135,9 +126,7 @@ test("[foundations.emission.root-values] the computed variables of :root, and of
     const rows = await computed(selector, Object.keys(declared));
     return rows.filter(([name, value]) => normal(value) !== normal(declared[name]!)).map(([name, value]) => `${selector} ${name}: ${value.trim()} ≠ ${declared[name]}`);
   };
-  // :root carries the sources, the invariants and the mode in force, ground roles included.
   expect(await differing("html", { ...source, ...invariant, ...modes[mode].own, ...modes[mode].ground })).toEqual([]);
-  // A scope paints its own roles on itself and the ground roles from its children down, whatever the mode around it.
   await page.evaluate(() => {
     document.body.insertAdjacentHTML("beforeend", `<div id="scope-light" data-pui-theme="light"><div id="scope-light-child"></div></div><div id="scope-dark" data-pui-theme="dark"><div id="scope-dark-child"></div></div>`);
   });
@@ -145,6 +134,5 @@ test("[foundations.emission.root-values] the computed variables of :root, and of
     expect(await differing(`#scope-${scope}`, modes[scope].own), `${scope} scope`).toEqual([]);
     expect(await differing(`#scope-${scope}-child`, modes[scope].ground), `${scope} scope child`).toEqual([]);
   }
-  // The sources are the same in every mode, so a scope inherits them untouched.
   expect(await differing("#scope-dark", source)).toEqual([]);
 });

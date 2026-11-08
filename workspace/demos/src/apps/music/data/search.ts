@@ -1,5 +1,3 @@
-// 검색: 제목 · 아티스트 · 앨범 이름에서 찾습니다. 한글은 초성(ㅅㅂㄴ)으로도 찾아집니다.
-
 import { ALBUMS, ALBUM_BY_ID, ARTISTS, ARTIST_BY_ID, TRACKS, type Album, type Artist, type Track } from "./catalog";
 import type { Playlist } from "./collections";
 
@@ -15,7 +13,6 @@ const initialsOf = (text: string) =>
     })
     .join("");
 
-// 0은 맞지 않음, 3은 앞부분이 같음, 2는 어딘가에 들어 있음, 1은 초성으로 맞음.
 export const score = (text: string, query: string) => {
   const q = squash(query);
   if (!q) return 0;

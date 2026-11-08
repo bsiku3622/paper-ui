@@ -49,8 +49,6 @@ export default defineSpec({
       shape: pick<NonNullable<ButtonProps["shape"]>>(state, "shape"),
       disabled: flag(state, "disabled"),
     };
-    // The knob always sets the prop, so the code panel reads back what it printed. Only hairline, ghost and muted take
-    // it: on the others the printed code is a type error and nothing shows, which the control's note says.
     const selection = (flag(state, "selected") ? { selected: true } : {}) as { selected?: undefined };
     return pick(state, "as") === "a" ? <Button as="a" href="/playground/button" onClick={stay} {...common} {...selection}>{words(state, "children")}</Button> : <Button {...common} {...selection}>{words(state, "children")}</Button>;
   },

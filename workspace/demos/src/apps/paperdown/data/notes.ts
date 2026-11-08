@@ -1,6 +1,3 @@
-// The notes of the signed-in account the demo draws: invented, in plain Korean, each with a few of the things a paper
-// holds (a list, a quote, a table, a formula). Dates count back from the demos' present.
-
 import { NOW, daysAgo } from "../../../kit";
 import { markdownToHtml } from "../lib/markdown";
 import { DEFAULT_SETTINGS, type DocumentData, type Settings } from "../lib/types";

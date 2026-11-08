@@ -1,11 +1,3 @@
-// Tabs — sections of one page ("점검 결과 · 접근 · 감사 기록"), in one of two looks:
-//
-//   pill       ghost buttons, the chosen one on the selection face (the default)
-//   underline  words on one hairline, the chosen one in ink with a stroke under it
-//
-// Segmented is its own part, for a switch between views of the same thing ("목록 · 격자", "주 · 월"): Paper's SegmentControl.
-// Both are groups the arrow keys move through, and the choice follows focus.
-
 import { useId, useState, type ReactNode } from "react";
 
 import { Box, Button, Grid, Inline, SegmentControl, SelectableGroup, Stack, Text } from "@studio-baeks/paper-ui";
@@ -21,7 +13,6 @@ export type TabItem = {
   label: ReactNode;
   count?: number | string;
   glyph?: GlyphName;
-  // What the tab shows. Leave it out when the app draws the panel itself (from `value`).
   panel?: ReactNode;
   disabled?: boolean;
 };
@@ -32,7 +23,6 @@ export type TabsProps = {
   value?: string;
   defaultValue?: string;
   onChange?: (id: string) => void;
-  // Every tab takes the same share of the width.
   stretch?: boolean;
   size?: Extract<ControlSize, "sm" | "md">;
   look?: TabsLook;
@@ -80,7 +70,6 @@ export const Tabs = ({ label, items, value, defaultValue, onChange, stretch = fa
       {tab.count !== undefined ? <Text as="span" variant="label" strong={false} ink="tertiary" numeric>{tab.count}</Text> : null}
     </Button>
   ));
-  // Underline tabs have no face, so the space between them is the only thing that tells them apart.
   const gap = look === "underline" ? "xl" : "xs";
   const list = stretch
     ? <SelectableGroup as={Grid} columns={items.length} gap={gap} {...group}>{buttons}</SelectableGroup>
@@ -102,7 +91,6 @@ export const Tabs = ({ label, items, value, defaultValue, onChange, stretch = fa
 
 export type SegmentOption = { id: string; label: ReactNode; glyph?: GlyphName; count?: number | string };
 
-// A switch between views.
 export const Segmented = ({ label, options, value, defaultValue, onChange, size = "sm", stretch = false }: {
   label: string;
   options: readonly SegmentOption[];

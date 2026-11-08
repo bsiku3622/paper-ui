@@ -1,5 +1,3 @@
-// Empty — what a list, a search or a page says when there is nothing in it, and the one thing to do about it.
-
 import type { ReactNode } from "react";
 
 import { Stack, Text } from "@studio-baeks/paper-ui";

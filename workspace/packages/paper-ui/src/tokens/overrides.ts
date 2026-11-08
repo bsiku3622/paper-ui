@@ -1,8 +1,3 @@
-// overrides.ts — the typed path to overriding a source variable. An app names a source value by its path
-// in the authoring tree, `{ shape: { control: { height: { md: "40px" } } } }`, and sourceVars() answers
-// with the variable that value is emitted under. A role is never overridden: it is an alias of a source
-// variable or a formula over one, so it follows the source on its own (docs/foundations/shape.md).
-
 import { withAlpha, type PaletteToken } from "./color-ladder";
 import { COLOR_MODES, THEME_ATTRIBUTE, type ColorMode } from "./color-modes";
 import { COLOR_SELECTION, COLOR_VALUES, OPACITY_VALUES, isGroundRole } from "./colors";
@@ -15,7 +10,6 @@ import { LAYOUT_MODE_VARIABLES, SOURCE_VARIABLES } from "./variables";
 
 type DeepPartial<T> = { [K in keyof T]?: T[K] extends string ? string : DeepPartial<T[K]> };
 
-// The source trees an element can carry a different value of: the ones themeVariables() emits in every mode.
 export type SourceOverrides = DeepPartial<{
   shape: VarTree<typeof SHAPE_VALUES>;
   layout: VarTree<typeof LAYOUT_VALUES>;
@@ -43,9 +37,6 @@ export const sourceVars = (overrides: SourceOverrides): Record<Declaration, stri
   return vars;
 };
 
-// ───── A whole document ──────────────────────────────────────────────────────
-// What a Provider takes: the sources, the colour roles of each mode, the palette steps they pick from, the shadow geometry
-// of each mode and the opacity roles. Motion and a single Typography role are not here, because no variable holds them.
 type PerMode<T> = Partial<Record<ColorMode, T>>;
 
 export type PaletteOverrides = { neutral?: Partial<Record<PaletteStep, string>>; marker?: string } & Partial<Record<AccentPalette, Partial<Record<AccentStep, string>>>>;
@@ -69,7 +60,6 @@ const PALETTE_NAMES = new Set<string>([
 ]);
 const HEX = /^#[\da-f]{6}$/i;
 
-// Every string leaf, by its path. A name the stylesheet does not emit would do nothing, so it says so instead.
 const leaves = (tree: object, path: readonly string[], known: ReadonlySet<string>, kind: string, visit: (path: readonly string[], value: string) => void) => {
   for (const [key, value] of Object.entries(tree)) {
     const next = [...path, key];
@@ -83,7 +73,6 @@ const leaves = (tree: object, path: readonly string[], known: ReadonlySet<string
   }
 };
 
-// A role follows the palette step it picks, and an alpha role the neutral step it is made from, at its own strength.
 const fromPalette = (path: string, palette: PaletteOverrides): string | undefined => {
   const [head, second, third] = path.split(".") as [string, string?, string?];
   if (head === "marker") return palette.marker;
@@ -100,14 +89,11 @@ const rule = (selector: string, declarations: Record<string, string>) => {
   return body ? `${selector}{${body}}` : "";
 };
 
-// The rule a Provider writes. Outside the layers, so it wins whatever the order of the stylesheets. The sources go on the
-// root, so a Portal's content inherits them. A mode's roles go where the stylesheet declares them, own roles on the scope
-// and ground roles from its children, so a themed Surface takes them too. A role named in `color` wins over the palette.
+// Outside the layers, so it wins whatever the order of the stylesheets.
 export const overridesRule = ({ color, palette, shadow, opacity, ...source }: ThemeOverrides): string => {
   const given = Object.fromEntries(Object.entries(source).filter(([, value]) => value !== undefined)) as SourceOverrides;
   const everywhere: Record<string, string> = { ...sourceVars(given) };
   if (opacity) leaves(opacity, ["color", "opacity"], OPACITY_ROLES, "an opacity role", (path, value) => { everywhere[pathToCssVar(path)] = value; });
-  // A palette step is written as Paper writes its own, because a role made from it adds an alpha to that hex.
   if (palette) {
     leaves(palette, ["palette"], PALETTE_NAMES, "a palette step", (path, value) => {
       if (!HEX.test(value)) throw new Error(`[paper-ui] ${path.join(".")} must be a six-digit hex colour; received ${value}.`);
@@ -137,7 +123,5 @@ export const overridesRule = ({ color, palette, shadow, opacity, ...source }: Th
 const SOURCE_SYSTEM = /^--pui-(?:shape|layout|typography)-/;
 const emitted = new Set<string>([...SOURCE_VARIABLES, ...LAYOUT_MODE_VARIABLES]);
 
-// The names among these that read as a source of Shape, Layout or Typography and that the stylesheet does not emit:
-// a typo or a role, and declaring one does nothing. For the check of the plain CSS form (theme/source-check.ts).
 export const unknownSourceVariables = (names: Iterable<string>): string[] =>
   [...new Set(names)].filter((name) => SOURCE_SYSTEM.test(name) && !emitted.has(name)).sort();

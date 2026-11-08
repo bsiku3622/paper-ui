@@ -1,7 +1,3 @@
-// 학기 데이터 — the students, teachers and subjects of the term being looked at, read from the same data the rest of the app
-// uses, and the button that collects the term again from KEIS. A name can be corrected (it goes into the revision history as an
-// "edit"); a collection replaces the term whole, keeps a snapshot first, and adds a revision. Both write to the other panels.
-
 import { useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -27,8 +23,6 @@ const PAGE = 25;
 
 type RenameTarget = { kind: "student" | "teacher"; key: string; name: string };
 type SyncResult = { term: string; changed: boolean; version: number | null; synced: number; skipped: number; elapsed: string; backup: string | null; summary: ChangeSummary | null };
-
-// ── correcting a name ────────────────────────────────────────────────────────
 
 const RenameDialog = ({ target, onClose, onSave }: { target: RenameTarget; onClose: () => void; onSave: (name: string) => void }) => {
   const [value, setValue] = useState(target.name);
@@ -67,8 +61,6 @@ const RenameDialog = ({ target, onClose, onSave }: { target: RenameTarget; onClo
     </Dialog>
   );
 };
-
-// ── the panel ────────────────────────────────────────────────────────────────
 
 export const DataPanel = () => {
   const { data, term, clock } = useClasses();
@@ -127,7 +119,6 @@ export const DataPanel = () => {
     toast(`이름을 고쳤습니다 · ${label} 회차 v${version}`);
   };
 
-  // A collection of the term we are on has always moved since the last one; an older term has not; a term never collected is new.
   const collected = (picked: TermKey) => {
     const name = termLabel(picked);
     const rows = versions.filter((row) => row.term === name);
@@ -153,8 +144,6 @@ export const DataPanel = () => {
     setLastSync({ term: name, changed: true, version, synced, skipped, elapsed, backup: snapshot, summary });
     toast(`${name} 학기를 받았습니다 · 회차 v${version}`);
   };
-
-  // ── the three tables ───────────────────────────────────────────────────────
 
   const edit = (kind: "student" | "teacher", key: string, name: string) => (
     <IconButton variant="ghost" size="sm" aria-label={`${name} 이름 고치기`} onClick={() => setRenaming({ kind, key, name })}><Glyph name="pencil" /></IconButton>

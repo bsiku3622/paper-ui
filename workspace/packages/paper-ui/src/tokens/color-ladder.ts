@@ -1,6 +1,3 @@
-// Pure color-ladder operations. This module knows how to interpolate and encode colors, but it
-// does not import or own palette data. palette.ts supplies the anchors and assembles the results.
-
 type Oklch = readonly [lightness: number, chroma: number, hue: number];
 
 declare const paletteTokenBrand: unique symbol;

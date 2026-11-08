@@ -1,8 +1,3 @@
-// The term's data, made up and seeded: which subjects are offered, who teaches the sections, when and where they meet,
-// and which (invented) students sit in them. The same seed always makes the same school.
-//
-// The shape follows what the real app downloads per term: a list of subjects, each with sections, each with a roster.
-
 import { pick, random, shuffle } from "../../../kit";
 import { courseOf, DEPARTMENT_ORDER } from "./catalog";
 import { DAYS, type Day } from "./periods";
@@ -31,20 +26,15 @@ export const TERMS: readonly TermKey[] = [
   { year: 2026, semester: 1 },
 ];
 
-// ── what is offered, and who takes it ────────────────────────────────────────
-// subject, then the share of each cohort (23, 24, 25, 26) that takes it this term.
 type Row = readonly [string, number, number, number, number];
 
 const OFFERED_FALL: readonly Row[] = [
-  // 1학년 필수
   ["국어2", 0, 0, 0, 1], ["수학2", 0, 0, 0, 1], ["영어Ⅱ", 0, 0, 0, 1], ["정보과학2", 0, 0, 0, 1], ["화학및실험", 0, 0, 0, 1], ["한국사의이해", 0, 0, 0, 1], ["음악", 0, 0, 0, 1], ["체육2", 0, 0, 0, 1],
-  // 2학년
   ["미적분학1", 0, 0.1, 0.42, 0], ["미적분학2(EC)", 0, 0.12, 0.3, 0], ["선형대수(EC)", 0, 0.1, 0.26, 0], ["확률및통계", 0, 0.28, 0.1, 0], ["문학", 0, 0.05, 0.6, 0], ["세계사의이해", 0, 0.05, 0.58, 0],
   ["체육4", 0, 0, 0.9, 0], ["정보과학3", 0, 0.05, 0.46, 0], ["자료구조", 0.05, 0.1, 0.26, 0], ["일반지구과학", 0, 0.08, 0.3, 0], ["일반지구과학실험", 0, 0.08, 0.26, 0],
   ["물리학및실험2", 0, 0.05, 0.36, 0], ["일반물리학1", 0, 0.28, 0.08, 0], ["일반물리학실험1", 0, 0.26, 0.07, 0], ["일반화학1", 0, 0.26, 0.12, 0], ["일반화학실험1", 0, 0.24, 0.1, 0],
   ["일반생물학1", 0, 0.14, 0.1, 0], ["일반생물학실험", 0, 0.12, 0.08, 0], ["생활음악", 0, 0.1, 0.34, 0], ["영어Ⅲ", 0, 0.05, 0.38, 0], ["정치와경제", 0, 0.06, 0.3, 0], ["철학", 0.08, 0.1, 0.24, 0],
   ["융합특강", 0, 0.12, 0.34, 0], ["창의공학", 0, 0.05, 0.1, 0.08],
-  // 3학년과 그 위
   ["알고리즘", 0.1, 0.34, 0.06, 0], ["이산구조", 0.08, 0.3, 0.05, 0], ["고급알고리즘", 0.3, 0.1, 0, 0], ["미적분학3", 0.05, 0.3, 0.08, 0], ["기초해석학", 0.06, 0.14, 0.04, 0], ["수학특강", 0.3, 0.1, 0, 0],
   ["정보과학특강", 0.25, 0.08, 0, 0], ["물리학세미나", 0.2, 0.08, 0, 0], ["위상수학", 0.1, 0.04, 0, 0], ["중국언어와문화", 0.08, 0.2, 0.08, 0], ["일본언어와문화", 0.2, 0.12, 0.05, 0],
   ["글로벌문화와영어", 0.1, 0.26, 0.04, 0], ["소통과화법", 0.08, 0.2, 0.04, 0], ["비판적사고와토론", 0.1, 0.18, 0.05, 0], ["뉴스와미디어", 0.05, 0.16, 0.05, 0], ["생활체육2", 0.3, 0.3, 0, 0],
@@ -63,13 +53,11 @@ const OFFERED_SPRING: readonly Row[] = [
   ["디지털경제", 0.1, 0.2, 0.05, 0], ["중국언어와문화", 0.1, 0.2, 0.05, 0], ["융합특강", 0, 0.1, 0.3, 0], ["지질학", 0.05, 0.1, 0.05, 0], ["날씨와기후", 0.05, 0.1, 0.05, 0], ["기초해석학", 0.05, 0.12, 0.05, 0],
 ];
 
-// A lecture and its lab are taken together.
 const LABS: Record<string, string> = { 일반지구과학: "일반지구과학실험", 일반물리학1: "일반물리학실험1", 일반물리학2: "일반물리학실험2", 일반화학1: "일반화학실험1", 일반화학2: "일반화학실험2", 일반생물학1: "일반생물학실험" };
 
 const SIZE: Record<string, number> = { "23": 22, "24": 50, "25": 54, "26": 48 };
 const FIRST: Record<string, number> = { "23": 311, "24": 321, "25": 301, "26": 301 };
 
-// ── rooms ────────────────────────────────────────────────────────────────────
 export const CLASSROOMS = [3202, 3203, 3204, 3205, 3206, 3207, 3302, 3303, 3304, 3305, 3306, 3307, 3402, 3403, 3404, 3405, 3406, 3407].map((number) => `형${number}`);
 const ROOMS: Record<string, readonly string[]> = {
   수학: ["형3402", "형3403", "형3404", "형3405", "형3406", "형3407"],
@@ -87,7 +75,6 @@ const ROOMS: Record<string, readonly string[]> = {
 const PE_ROOMS = ["운동장", "체육관"];
 const OPEN_ROOMS = new Set(PE_ROOMS);
 
-// ── time ─────────────────────────────────────────────────────────────────────
 const SINGLE_STARTS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const DOUBLE_STARTS = [1, 2, 3, 5, 6, 7, 8];
 const LAB_STARTS = [10, 10, 5, 7, 2, 6];
@@ -102,7 +89,6 @@ const partition = (r: () => number, credits: number, lab: boolean): number[] => 
   return [1];
 };
 
-// Sections that are drawn by hand so the demo account's week reads well (a Wednesday 5–6교시 double, a room change after it).
 type Designed = { section: number; teacher?: string; blocks: readonly [Day, number, number, string][] };
 const DESIGNED: Record<string, Designed> = {
   "미적분학2(EC)": { section: 2, blocks: [["MON", 2, 1, "형3407"], ["WED", 2, 1, "형3407"], ["THU", 5, 1, "형3407"], ["FRI", 1, 1, "형3407"]] },
@@ -121,7 +107,6 @@ const ME_SUBJECTS = ["미적분학2(EC)", "선형대수(EC)", "정보과학3", "
 export const subjectBase = (subject: string) => (subject.endsWith("(EC)") ? subject.slice(0, -4) : subject);
 const courseFor = (subject: string) => courseOf(subject) ?? courseOf(subjectBase(subject));
 
-// ── the build ────────────────────────────────────────────────────────────────
 export const buildTerm = (term: TermKey): TermData => {
   const fall = term.semester === 2;
   const seed = `classes:${term.year}-${term.semester}`;
@@ -129,7 +114,6 @@ export const buildTerm = (term: TermKey): TermData => {
   const offered = fall ? OFFERED_FALL : OFFERED_SPRING;
   const taken = new Set<string>([ME.name]);
 
-  // people
   const students: Student[] = [ME];
   const cohorts: Record<string, number> = {};
   const roster: Record<string, Student[]> = {};
@@ -142,7 +126,6 @@ export const buildTerm = (term: TermKey): TermData => {
     cohorts[cohort] = roster[cohort]!.length;
   }
 
-  // who takes what
   const picks = new Map<string, string[]>();
   const rolls = random(`${seed}:picks`);
   const cohortIndex = { "23": 1, "24": 2, "25": 3, "26": 4 } as const;
@@ -167,7 +150,6 @@ export const buildTerm = (term: TermKey): TermData => {
   const demand = new Map<string, number>();
   for (const list of picks.values()) for (const name of list) demand.set(name, (demand.get(name) ?? 0) + 1);
 
-  // teachers
   const perDepartment: Record<string, number> = { 수학: 6, 정보과학: 4, 물리학: 5, 화학: 4, 생물학: 4, 지구과학: 4, 국어: 4, 사회: 3, 외국어: 5, 예체능: 3, 융합: 2 };
   const teacherNames = makeNames(`${seed}:teachers`, Object.values(perDepartment).reduce((sum, n) => sum + n, 0), taken);
   const teachers: Record<string, string[]> = {};
@@ -177,7 +159,6 @@ export const buildTerm = (term: TermKey): TermData => {
     cursor += perDepartment[department] ?? 0;
   }
 
-  // sections: place each subject's meetings so that no room and no teacher is booked twice
   const roomBusy = new Set<string>();
   const teacherBusy = new Set<string>();
   const free = (room: string, teacher: string, day: Day, start: number, length: number) => {
@@ -193,7 +174,6 @@ export const buildTerm = (term: TermKey): TermData => {
       teacherBusy.add(`${teacher}|${day}-${p}`);
     }
   };
-  // hand-made sections claim their rooms first
   if (fall) {
     for (const [subject, designed] of Object.entries(DESIGNED)) {
       const teacher = `designed:${subject}`;
@@ -261,8 +241,6 @@ export const buildTerm = (term: TermKey): TermData => {
     built.set(name, data);
   }
 
-  // enrolment: students in a fixed order (the demo account first). A student tries a few orders of what they want and keeps
-  // the one that fits the most; each subject takes the least full section that does not overlap what is already chosen.
   const order = [ME, ...students.filter((student) => student.stuId !== ME.stuId)];
   for (const student of order) {
     const designedWeek = student.stuId === ME.stuId && fall;

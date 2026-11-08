@@ -1,5 +1,3 @@
-// Snapshot of /gcodes (server.files.list): [path, modified (unix seconds), size (bytes)] for the 74 files.
-
 export const GCODE_LIST: readonly (readonly [path: string, modified: number, size: number])[] = [
   ["SPACER_PLA_34m3s.gcode",1792839464,808625],
   ["WASHER_PLA_1h48m.gcode",1792339377,4246593],

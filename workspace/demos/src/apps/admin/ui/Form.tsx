@@ -1,5 +1,3 @@
-// Form pieces the dialogs share: two columns when there is room, one when there is not; a switch with its words.
-
 import type { ReactNode } from "react";
 
 import { Grid, Inline, Switch, Text } from "@studio-baeks/paper-ui";
@@ -10,7 +8,6 @@ export const FormGrid = ({ children }: { children: ReactNode }) => (
   </Grid>
 );
 
-// A switch with its words beside it, the whole row pressable.
 export const Toggle = ({ label, description, checked, onChange, disabled }: { label: string; description?: ReactNode; checked: boolean; onChange: (checked: boolean) => void; disabled?: boolean }) => (
   <Inline as="label" justify="between" align="center" gap="lg">
     <Grid gap="xs">

@@ -1,6 +1,3 @@
-// A look inside a material: its pages, one at a time (the pictures are drawn by the kit's Art — there is no real file
-// behind them), the file's name and size, and a download that only says it is a demo. A ZIP has no preview.
-
 import { useEffect, useState } from "react";
 
 import { Badge, Button, IconButton, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";
@@ -20,7 +17,6 @@ export const MaterialPreview = ({ material, onClose }: { material: Material | nu
     setFileIndex(0);
     setPage(0);
   }, [material?.id]);
-  // the preview "arrives" a moment after you open it, as a converted file does
   const fileId = file?.id;
   useEffect(() => {
     if (fileId === undefined) return;

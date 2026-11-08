@@ -1,5 +1,3 @@
-// CategoryPage.tsx — the articles that carry one category, grouped by their first consonant the way an index is.
-
 import { Link as RouterLink, useParams } from "react-router-dom";
 
 import { Button, Grid, Inline, Link, Stack, Text } from "@studio-baeks/paper-ui";

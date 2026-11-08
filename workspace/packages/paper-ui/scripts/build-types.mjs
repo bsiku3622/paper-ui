@@ -1,11 +1,3 @@
-// build-types.mjs — one bundled declaration file per entry, at the boundary the JS bundle uses.
-//
-// tsc emits the declarations of src (tests and the token inspector excluded, tsconfig.build.json) into
-// .types; rollup-plugin-dts folds each entry (index, tokens, theme-boot) into a single file in dist; .types
-// is removed. The root entry keeps the tokens entry external and imports it as ./tokens.js, the way
-// dist/index.js reaches it. A bundled declaration that names React Aria or its type packages fails the build:
-// the public types are Paper's own, and React Aria stays behind src/internal/aria.
-
 import { execFileSync } from "node:child_process";
 import { readFileSync, rmSync } from "node:fs";
 import { createRequire } from "node:module";

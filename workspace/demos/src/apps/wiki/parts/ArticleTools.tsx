@@ -1,6 +1,3 @@
-// ArticleTools.tsx — the group of buttons at the top right of an article: star it, edit it, discuss it, read its history, and a
-// few more. The page you are on is the quiet selected button.
-
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import { Badge, Button, Inline, Text } from "@studio-baeks/paper-ui";

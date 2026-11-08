@@ -1,6 +1,3 @@
-// The store read the way the pages read it: files with their derived state, peers with the handshake they have right now,
-// a Wake-on-LAN device that is also a VPN peer answering for both. Each call works out "now" again.
-
 import { useMemo } from "react";
 
 import { readFile } from "../data/files";

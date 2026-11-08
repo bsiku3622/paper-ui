@@ -1,6 +1,3 @@
-// Small text helpers: a LaTeX-to-plain-characters converter (there is no KaTeX here) and the document statistics the
-// status bar shows, counted as the original counts them (document.ts).
-
 const GREEK: Record<string, string> = {
   alpha: "α", beta: "β", gamma: "γ", delta: "δ", epsilon: "ε", varepsilon: "ε", zeta: "ζ", eta: "η", theta: "θ", iota: "ι", kappa: "κ", lambda: "λ", mu: "μ", nu: "ν", xi: "ξ",
   pi: "π", rho: "ρ", sigma: "σ", tau: "τ", upsilon: "υ", phi: "φ", varphi: "φ", chi: "χ", psi: "ψ", omega: "ω",
@@ -13,7 +10,6 @@ const SYMBOLS: Record<string, string> = {
   hbar: "ℏ", degree: "°", circ: "°", in: "∈", cdots: "⋯", ldots: "…", dots: "…", quad: "  ", qquad: "    ", ",": " ", ";": " ", "!": "", forall: "∀", exists: "∃", cup: "∪", cap: "∩",
 };
 
-// Combining marks: \dot{x} is x with a dot over it.
 const ACCENTS: Record<string, string> = { dot: "̇", ddot: "̈", hat: "̂", bar: "̅", vec: "⃗", tilde: "̃" };
 
 const SUPER: Record<string, string> = { "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹", "+": "⁺", "-": "⁻", "=": "⁼", "(": "⁽", ")": "⁾", n: "ⁿ", i: "ⁱ" };
@@ -34,7 +30,6 @@ const script = (body: string, table: Record<string, string>, mark: string): stri
   return chars.every((c) => table[c] !== undefined) ? chars.map((c) => table[c]!).join("") : body.length === 1 ? `${mark}${body}` : `${mark}(${body})`;
 };
 
-// \frac{a}{b} becomes a/b, x^2 becomes x², \sqrt{L/g} becomes √(L/g), \alpha becomes α.
 export const tex = (src: string): string => {
   let out = "";
   let i = 0;
@@ -44,8 +39,6 @@ export const tex = (src: string): string => {
       const m = /^\\([A-Za-z]+|.)/.exec(src.slice(i));
       const name = m?.[1] ?? "";
       i += 1 + name.length;
-      // TeX drops the spaces after a command word; here they go only where a letter or a brace follows ("\Delta V" is ΔV),
-      // and stay before an operator ("\theta = 0").
       if (/^[A-Za-z]+$/.test(name)) {
         const spaces = /^ +(?=[A-Za-z0-9\\{])/.exec(src.slice(i));
         if (spaces) i += spaces[0].length;
@@ -56,7 +49,6 @@ export const tex = (src: string): string => {
         const wrap = (s: string) => (/^[\p{L}\p{N}.]+$/u.test(s) ? s : `(${s})`);
         out += `${wrap(tex(top.body))}/${wrap(tex(bottom.body))}`;
         i = bottom.end;
-        // A thin space keeps "g/L" apart from the letter that follows it.
         if (/[\p{L}\p{N}\\(]/u.test(src[i] ?? "")) out += " ";
       } else if (name === "sqrt") {
         const body = group(src, i);
@@ -96,7 +88,6 @@ export const tex = (src: string): string => {
   return out;
 };
 
-// Words, lines, characters with and without spaces, of a text whose blocks are told apart by a line break.
 export const statistics = (text: string) => {
   const chars = Array.from(text);
   return {

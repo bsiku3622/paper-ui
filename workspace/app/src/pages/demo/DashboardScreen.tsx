@@ -1,8 +1,3 @@
-// The dashboard's frame: a sidebar the height of the window, a top bar, and the page of the moment beside them. Every page of the
-// dashboard is a route inside this one, so the sidebar stands still while the page changes. What the pages share (the scope, what was
-// changed, the notice) is kept above, in Demo, so it outlives a visit to the settings. The window scrolls, and the sidebar stands
-// still beside it. The settings and the sign-in are not pages of the dashboard and have none of this around them.
-
 import { Suspense, useEffect, useRef, useState, type ComponentType, type FormEvent, type ReactNode } from "react";
 import { Link as RouterLink, Outlet, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
@@ -21,9 +16,6 @@ const SECTIONS: readonly { label?: string; items: readonly NavItemData[] }[] = [
 
 const FOOT: readonly NavItemData[] = [{ id: "settings", label: "설정", icon: GearIcon, to: "/demo/arcfield/settings" }, { id: "docs", label: "문서", icon: BookIcon, to: "/demo/arcfield/docs" }];
 
-// A page of the dashboard. The page you are on is a quiet grey pill, the face a picked choice wears, because where you are is not
-// what the screen is for: the one solid thing in the frame is the page's own main action. A page is a link, so the item is a Button
-// that is an anchor. What a page counts is soft, so it tells without shouting.
 const NavItem = ({ item, count, onNavigate }: { item: NavItemData; count?: number; onNavigate?: () => void }) => {
   const { pathname } = useLocation();
   const Glyph = item.icon;
@@ -36,7 +28,6 @@ const NavItem = ({ item, count, onNavigate }: { item: NavItemData; count?: numbe
   );
 };
 
-// What the sidebar counts: the alerts that are firing, and the findings that are critical and still open.
 const useCounts = (): Record<string, number> => {
   const { alerts, findings } = useStore();
   return {
@@ -59,7 +50,6 @@ const NavList = ({ onNavigate }: { onNavigate?: () => void }) => {
   );
 };
 
-// The workspace you are in, and the others you can go to. The mark is the one solid thing the sidebar keeps: it is the product's.
 const WORKSPACES = [{ id: "arcfield", name: "Arcfield Logistics" }, { id: "studio", name: "Studio Baeks" }] as const;
 
 const Workspace = () => {
@@ -90,8 +80,6 @@ const Workspace = () => {
   );
 };
 
-// The sidebar lies on the canvas, the height of the window, and a line at its end parts it from the page. It holds no face and casts
-// no shadow: the page's cards are the faces of the screen.
 const Sidebar = () => (
   <Surface as="aside" elevation="sticky" top="none" height="viewport" overflowY="auto" border="end" padding="md" hideBelow="md">
     <Stack justify="between" gap="lg" height="full">
@@ -104,9 +92,6 @@ const Sidebar = () => (
   </Surface>
 );
 
-// ─── The top bar ─────────────────────────────────────────────────────────────────────────────────────────────────────
-
-// A button that opens a short list and closes it on the pick: the project or the environment every page is cut to.
 const ScopeMenu = ({ label, icon, value, options, onChange }: { label: string; icon: ReactNode; value: string; options: readonly { value: string; label: string }[]; onChange: (next: string) => void }) => {
   const current = options.find((option) => option.value === value) ?? options[0];
   return (
@@ -125,7 +110,6 @@ const ScopeMenu = ({ label, icon, value, options, onChange }: { label: string; i
   );
 };
 
-// A link inside a popover that closes it as it goes.
 const MenuLink = ({ to, children }: { to: string; children: ReactNode }) => {
   const { close } = useFloatingContext();
   return <Button as={RouterLink} to={to} size="sm" variant="ghost" fullWidth justify="start" onClick={close}>{children}</Button>;
@@ -264,12 +248,10 @@ const Toolbar = ({ onMenu, onSupport }: { onMenu: () => void; onSupport: () => v
   const onSearchPage = pathname === "/demo/arcfield/search";
   const heard = params.get("q") ?? "";
 
-  // The field shows what the search page is searching for, and a click on the search page's own results changes nothing in it.
   useEffect(() => {
     if (onSearchPage) setQuery(heard);
   }, [onSearchPage, heard]);
 
-  // "/" is the way to the search, from anywhere that is not a place to type.
   useEffect(() => {
     const listen = (event: KeyboardEvent) => {
       if (event.key !== "/" || event.metaKey || event.ctrlKey || event.altKey) return;
@@ -288,11 +270,8 @@ const Toolbar = ({ onMenu, onSupport }: { onMenu: () => void; onSupport: () => v
     if (query.trim()) go(query.trim(), onSearchPage);
   };
 
-  // The scope is a way to cut what a page lists. It is drawn where a page lists things that belong to a project and an environment,
-  // and nowhere else: billing and the docs are about the whole workspace, and so is the search.
   const scoped = pathname === "/demo/arcfield" || ["/demo/arcfield/projects", "/demo/arcfield/deploy", "/demo/arcfield/monitoring", "/demo/arcfield/security"].some((base) => pathname === base || pathname.startsWith(`${base}/`));
 
-  // The toolbar is the dashboard's banner: the scope, the search and the account stand above every page of it.
   return (
     <Inline as="header" justify={scoped || !wide ? "between" : "end"} gap="sm" wrap>
       {scoped || !wide ? (
@@ -325,7 +304,6 @@ const Toolbar = ({ onMenu, onSupport }: { onMenu: () => void; onSupport: () => v
 
 const SIDEBAR_AND_COLUMN = "15.5rem minmax(0, 1fr)";
 
-// The sidebar meets the window's edge and runs its height; the page beside it keeps its own padding.
 export const DashboardScreen = () => {
   const [menu, setMenu] = useState(false);
   const [support, setSupport] = useState(false);

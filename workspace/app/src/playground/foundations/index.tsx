@@ -1,6 +1,3 @@
-// Foundations — one inspector page per system. Every page follows its system's own build order:
-// source values, the roles that select from them, then the presets or recipes built from roles.
-
 import { Navigate, useParams } from "react-router-dom";
 
 import { Stack } from "@studio-baeks/paper-ui";

@@ -1,6 +1,3 @@
-// The wall under the landing page's hero: real Paper cards, each a small piece of a product, in columns that drift against each
-// other as the page scrolls. Every control works; the wall shows the system's range at a glance, as a product would use it.
-
 import type { ReactNode } from "react";
 
 import { Badge, Button, Checkbox, Divider, Field, Inline, Paint, SegmentControl, Select, Slider, Stack, Surface, Switch, Text, reveal } from "@studio-baeks/paper-ui";
@@ -11,7 +8,6 @@ import { joinClass } from "../../joinClass";
 import { useWords } from "../../site/locale";
 import * as w from "../../site/home-wall.css";
 
-// What the cards say, in both languages. The cards are pieces of a product, so they speak like one.
 const WALL = {
   ko: {
     section: "Paper 컴포넌트로 만든 화면 조각",
@@ -95,7 +91,6 @@ const Invite = () => {
   );
 };
 
-// The week's closed issues, Monday to Sunday; today is the last bar.
 const WEEK = ["2.25rem", "3rem", "1.75rem", "3.5rem", "2.75rem", "4rem", "3.25rem"];
 const Throughput = () => {
   const t = useWords(WALL).week;
@@ -194,7 +189,6 @@ const Tasks = () => {
   );
 };
 
-// The faces a screen stands on, the three of them, from the front back.
 const Faces = () => {
   const t = useWords(WALL).faces;
   return (
@@ -242,7 +236,6 @@ const SignIn = () => {
   );
 };
 
-// The columns, left to right; the second and the fourth drift against the others.
 const COLUMNS: ReactNode[][] = [
   [<Notifications key="notifications" />, <Invite key="invite" />],
   [<Throughput key="throughput" />, <Plan key="plan" />],

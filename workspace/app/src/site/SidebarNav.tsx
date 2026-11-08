@@ -1,13 +1,3 @@
-// SidebarNav — the one sidebar of the Docs and the Playground: a list on the canvas that stays under the header with its own
-// scroll and a row for each page. The page you are on takes the quiet selected face: where you are is not what the screen is
-// about, so it does not call for the eye. Below md the list is a closed disclosure above the content.
-//
-// A list is groups → blocks → links, two levels of heading at most. A row is a small Button at the body's size, and the gaps
-// are the structure: groups xl apart, blocks md, rows xs. There are no icons: forty glyphs would be noise.
-//
-// A group folds under its heading. What is folded is remembered in this browser, per list; the group that holds the page you
-// open unfolds, so the row you are on is never hidden.
-
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 
@@ -21,7 +11,6 @@ export type SidebarLink = { label: string; to: string };
 export type SidebarBlock = { heading?: string; links: SidebarLink[] };
 export type SidebarGroup = { label?: string; blocks: SidebarBlock[] };
 
-// The route a link points at, without a closing slash, so "/docs/" and "/docs" are one page.
 const here = (pathname: string) => (pathname.length > 1 ? pathname.replace(/\/$/, "") : pathname);
 
 const Block = ({ block, current }: { block: SidebarBlock; current: string }) => (
@@ -47,7 +36,7 @@ const Group = ({ group, current, folded, onFold }: { group: SidebarGroup; curren
           <ChevronDownIcon className={s.groupChevron} />
         </Button>
       ) : null}
-      {/* The fold is on a plain element: a Stack's display would win over the hidden attribute. */}
+      {/* A plain element: a Stack's display would win over the hidden attribute. */}
       <div id={body} hidden={folded}>
         <Stack gap="md">
           {group.blocks.map((block, index) => <Block key={block.heading ?? index} block={block} current={current} />)}
@@ -57,7 +46,6 @@ const Group = ({ group, current, folded, onFold }: { group: SidebarGroup; curren
   );
 };
 
-// What is folded, kept in this browser under the list's name. Storage can be missing or refuse, and then nothing is remembered.
 const FOLDED_KEY = "paper-site:sidebar-folded";
 const readFolded = (list: string): string[] => {
   try {
@@ -71,12 +59,11 @@ const writeFolded = (list: string, folded: string[]) => {
   try {
     const all = JSON.parse(window.localStorage.getItem(FOLDED_KEY) ?? "{}") as Record<string, unknown>;
     window.localStorage.setItem(FOLDED_KEY, JSON.stringify({ ...all, [list]: folded }));
-  } catch { /* Folding still works for this visit when storage is unavailable. */ }
+  } catch { /* Storage can be unavailable; folding still works for this visit. */ }
 };
 
 const useFolded = (list: string, groups: SidebarGroup[], current: string) => {
   const [folded, setFolded] = useState<string[]>(() => readFolded(list));
-  // The group that holds the page you open unfolds.
   const opening = groups.find((group) => group.label && folded.includes(group.label) && holds(group, current))?.label;
   useEffect(() => {
     if (!opening) return;
@@ -94,16 +81,13 @@ const useFolded = (list: string, groups: SidebarGroup[], current: string) => {
   return [folded, toggle] as const;
 };
 
-// `label` names the list for assistive technology and, under md, the summary of the disclosure.
 export const SidebarNav = ({ label, groups }: { label: string; groups: SidebarGroup[] }) => {
   const current = here(useLocation().pathname);
   const wide = !useMediaQuery(s.narrow);
   const [folded, toggle] = useFolded(label, groups, current);
-  // The disclosure opens for one page: following a link closes it.
   const [openAt, setOpenAt] = useState<string>();
   const open = wide || openAt === current;
   const page = groups.flatMap((group) => group.blocks.flatMap((block) => block.links)).find((link) => link.to === current);
-  // A long list scrolls on its own, so the page you are on is brought into view when it has fallen outside.
   const nav = useRef<HTMLElement>(null);
   useEffect(() => {
     const list = nav.current;

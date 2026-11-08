@@ -1,6 +1,3 @@
-// Projects and the resources in them. A project has a page of its own; a resource opens in a dialog, where it can be restarted,
-// copied into a snapshot or deleted, and every one of those changes the same data the other pages count.
-
 import { useState, type FormEvent } from "react";
 import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 
@@ -13,8 +10,6 @@ import {
   type Column, type Deployment, type Env, type Kind, type Project, type Resource, type ResourceStatus,
 } from "./parts";
 
-// ─── One resource ────────────────────────────────────────────────────────────────────────────────────────────────────
-
 const RESTARTABLE: readonly Kind[] = ["컨테이너 서비스", "컴퓨트 인스턴스", "관리형 데이터베이스"];
 const SNAPSHOTTABLE: readonly Kind[] = ["컴퓨트 인스턴스", "관리형 데이터베이스"];
 
@@ -25,7 +20,6 @@ const ResourceBody = ({ resource, onClose }: { resource: Resource; onClose: () =
   const related = findings.filter((finding) => finding.resource === resource.id && finding.state !== "해결");
   const busy = resource.status === "시작 중" || resource.status === "생성 중";
 
-  // A status that lasts only while the work is done: it goes back to what it was once the time is up.
   const work = (status: ResourceStatus, then: ResourceStatus) => {
     setResources((list) => list.map((entry) => (entry.id === resource.id ? { ...entry, status } : entry)));
     window.setTimeout(() => setResources((list) => list.map((entry) => (entry.id === resource.id && entry.status === status ? { ...entry, status: then } : entry))), 3500);
@@ -97,8 +91,6 @@ const ResourceDialog = ({ id, onClose }: { id: string; onClose: () => void }) =>
     </Dialog>
   );
 };
-
-// ─── A new project ───────────────────────────────────────────────────────────────────────────────────────────────────
 
 const SLUG = /^[a-z][a-z0-9-]{2,31}$/;
 const REGIONS = ["서울", "도쿄", "싱가포르"] as const;
@@ -176,8 +168,6 @@ const NewProjectForm = ({ onDone }: { onDone: (id: string) => void }) => {
     </Stack>
   );
 };
-
-// ─── The list ────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 type Row = { project: Project; count: number; attention: number; cost: number; last: Deployment | undefined };
 
@@ -284,8 +274,6 @@ export const ProjectsScreen = () => {
     </Stack>
   );
 };
-
-// ─── One project ─────────────────────────────────────────────────────────────────────────────────────────────────────
 
 const ProjectSettings = ({ project }: { project: Project }) => {
   const { members, setProjects, setResources, notify, record, resources, scope, setScope } = useStore();

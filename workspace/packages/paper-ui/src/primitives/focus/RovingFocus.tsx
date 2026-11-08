@@ -10,10 +10,8 @@ import type { PolymorphicComponent, PolymorphicProps } from "../polymorphic";
 
 type Entry = { value: string; element: HTMLElement; disabled: boolean };
 const inDocumentOrder = (a: Entry, b: Entry) => a.element === b.element ? 0 : a.element.compareDocumentPosition(b.element) & 2 ? 1 : -1;
-// Every item that is still in the document, in document order; the ones a key can land on are the enabled among them.
 const connected = (entries: readonly Entry[]) => entries.filter((entry) => entry.element.isConnected).sort(inDocumentOrder);
 const enabled = (entries: readonly Entry[]) => connected(entries).filter((entry) => !entry.disabled);
-// The one item per value the registry holds, of the items in the order they arrived: the first that is on the page.
 const registered = (claims: readonly Entry[]) => {
   const held = new Set<string>();
   return claims.filter((entry) => {
@@ -26,7 +24,6 @@ const registered = (claims: readonly Entry[]) => {
 export type RovingFocusState = { currentValue: string | undefined; isDisabled: boolean };
 export type RovingFocusOwnProps = {
   orientation?: Orientation | "both";
-  /** Written to the element only when given; without it the group reads the direction it inherits. */
   dir?: "ltr" | "rtl";
   loop?: boolean;
   disabled?: boolean;
@@ -35,21 +32,17 @@ export type RovingFocusOwnProps = {
   onCurrentValueChange?: (value: string) => void;
   children?: ReactNode | ((state: RovingFocusState) => ReactNode);
 };
-// The group is one element. `as` makes that element a layout primitive, so the items are its children and no row is drawn inside it.
 export type RovingFocusProps<As extends ElementType = "div"> = PolymorphicProps<RovingFocusOwnProps, As>;
 type Context = {
   current: string | undefined;
   disabled: boolean;
-  /** Every registered item, or undefined until the first one registers. */
   entries: readonly Entry[] | undefined;
-  /** The registry is the only list of items; a second item with a value already registered is refused until the first leaves. */
   register: (entry: Entry) => () => void;
   activate: (value: string) => void;
   navigate: (event: KeyboardEvent<HTMLElement>, value: string) => void;
 };
 const RovingContext = createContext<Context | null>(null);
 
-/** The values of every item in the group, in document order, disabled ones included; undefined before any item has registered. */
 export function useRovingValues(): readonly string[] | undefined {
   const context = useContext(RovingContext);
   if (!context) throw paperError("RovingFocus values must be read inside <RovingFocus>.");
@@ -66,9 +59,7 @@ const RovingFocusRoot = forwardRef<HTMLElement, Omit<RovingFocusProps, "as" | "r
   const rootRef = useMergedRef(root, forwardedRef);
   const [entries, setEntries] = useState<readonly Entry[] | undefined>();
   const registry = useRef<readonly Entry[]>([]);
-  // Every item that asked, the refused ones too, so a refused one takes over when the one it lost to leaves.
   const claims = useRef<readonly Entry[]>([]);
-  // The order elements first arrived in: an item that registers again because its disabled changed keeps its place, and its value.
   const arrival = useRef({ next: 0, of: new WeakMap<HTMLElement, number>() });
   const reported = useRef(new Set<string>());
   const [requested, setRequested] = useControllableState<string | null | undefined>({
@@ -158,14 +149,12 @@ const RovingFocusRoot = forwardRef<HTMLElement, Omit<RovingFocusProps, "as" | "r
 
 export type RovingFocusItemOptions = { value: string; disabled?: boolean };
 export type RovingFocusItemResult<Element extends HTMLElement = HTMLElement> = {
-  /** Spread on the item. Carries its own ref, its place in the Tab order and the keys that move focus. */
   itemProps: {
     ref: RefCallback<Element>;
     tabIndex: number;
     onFocus: () => void;
     onKeyDown: (event: KeyboardEvent<HTMLElement>) => void;
   } & Record<typeof MARKER_ATTRIBUTE.rovingItem, string>;
-  /** The item that holds the group's Tab stop. */
   isCurrent: boolean;
 };
 export function useRovingFocusItem<Element extends HTMLElement = HTMLElement>({ value, disabled = false }: RovingFocusItemOptions): RovingFocusItemResult<Element> {
@@ -177,7 +166,6 @@ export function useRovingFocusItem<Element extends HTMLElement = HTMLElement>({ 
   const isDisabled = disabled || context.disabled;
   const entry = useMemo<Entry | null>(() => element && { value, element, disabled: isDisabled }, [element, value, isDisabled]);
   useLayoutEffect(() => entry ? register(entry) : undefined, [entry, register]);
-  // An item the registry refuses (a second one with the same value) is not the Tab stop, so the group keeps one.
   const isCurrent = !isDisabled && entry !== null && context.entries?.includes(entry) === true && context.current === value;
   return {
     itemProps: {
@@ -195,8 +183,6 @@ export type RovingFocusItemProps<As extends ElementType = "button"> = RovingFocu
   as?: As;
   ref?: Ref<HTMLElement>;
 } & Omit<ComponentPropsWithoutRef<As>, keyof RovingFocusItemOptions | "as" | "ref" | "tabIndex">;
-// A native button by default. Another tag is rendered as it is, without a role: a roving item that is not a button
-// takes its role from the caller. A component goes through targetProps, as every `as` does.
 const Item = forwardRef<HTMLElement, RovingFocusItemProps<ElementType>>(function RovingFocusItem({ as, value, disabled, onFocus, onKeyDown, ...props }, ref) {
   const context = useContext(RovingContext);
   const isDisabled = disabled || context?.disabled || false;

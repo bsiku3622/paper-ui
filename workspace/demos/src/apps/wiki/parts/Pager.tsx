@@ -1,6 +1,3 @@
-// Pager.tsx — “이전 1 2 3 다음” under a long list, with the page kept in the address (?page=2) so a link, a reload and a screenshot
-// land on the same page.
-
 import { useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 

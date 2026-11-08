@@ -1,5 +1,3 @@
-// Link — 딴 데로 가는 글자. 태그 하나만 그리고(라우터 Link 포함), 밑줄이 링크임을 알리며, 키보드 포커스를 스스로 판정한다.
-
 import { createRef, forwardRef, type AnchorHTMLAttributes } from "react";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, expectTypeOf, it } from "vitest";

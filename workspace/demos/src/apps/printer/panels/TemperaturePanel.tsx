@@ -1,6 +1,3 @@
-// The heaters: each one's power, its temperature now and its target (typed, or chosen from the presets), a button that cools
-// everything down, and the chart of the last minutes. The temperatures ripple around their targets on the mock's timer.
-
 import { Box, Button, Divider, Grid, IconButton, Inline, Stack, Text } from "@studio-baeks/paper-ui";
 
 import { Glyph, Menu, type MenuItem } from "../../../kit";
@@ -12,7 +9,6 @@ import { NumberField } from "../ui/Controls";
 import { Panel } from "../ui/Panel";
 import { useQueryState } from "../ui/useQueryState";
 
-// On a phone the power column goes, so the name keeps room.
 const ROW = { base: "minmax(0, 1fr) 4rem 9.5rem", sm: "minmax(0, 1fr) 3.5rem 4.5rem 9.5rem" } as const;
 
 export const TemperaturePanel = () => {

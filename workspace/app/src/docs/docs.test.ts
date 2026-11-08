@@ -31,7 +31,6 @@ import { parseDoc } from "./parse";
 const DOCS_DIR = fileURLToPath(new URL("../../../../docs", import.meta.url));
 const FILES = readdirSync(DOCS_DIR, { recursive: true, encoding: "utf-8" }).filter((path) => path.endsWith(".md")).map((path) => path.split("\\").join("/")).sort();
 const read = (file: string) => readFileSync(join(DOCS_DIR, file), "utf-8");
-// docs/en/ translates the originals at the same paths; the rest of docs/ is the originals.
 const TRANSLATED = (file: string) => file.startsWith("en/");
 const ORIGINALS = FILES.filter((file) => !TRANSLATED(file));
 const TRANSLATIONS = FILES.filter(TRANSLATED).map((file) => file.slice("en/".length));
@@ -44,7 +43,6 @@ const walk = (node: Node, visit: (node: Node) => void) => {
 const textOf = (node: Node): string => node.value ?? node.children?.map(textOf).join("") ?? "";
 const tree = (markdown: string) => unified().use(remarkParse).use(remarkGfm).parse(markdown) as unknown as Node;
 
-// The destinations of the links, as the page renders them: a `[contract:…]: #` definition is a marker, not a link.
 const linksOf = (markdown: string): string[] => {
   const urls: string[] = [];
   walk(tree(markdown), (node) => {
@@ -53,7 +51,6 @@ const linksOf = (markdown: string): string[] => {
   return urls;
 };
 
-// The heading ids rehype-slug gives the rendered body: github-slugger over each heading's text, in order.
 const headingIdsOf = (markdown: string): Set<string> => {
   const slugger = new GithubSlugger();
   const ids = new Set<string>();
@@ -87,8 +84,6 @@ describe("docs/", () => {
     expect(new Set(docs.map((doc) => doc.slug)).size).toBe(docs.length);
   });
 
-  // The English pages link among themselves: a link in a translation reaches the target's translation when it has one, and the
-  // Korean original when it has not, as the Docs page shows them.
   it.each(["originals", "translations"] as const)("links to docs and headings that exist, in the %s", async (which) => {
     const docs = await collectDocs({ dir: DOCS_DIR, groups: DOC_GROUPS });
     const english = which === "translations";
@@ -117,7 +112,6 @@ describe("docs/", () => {
         if (target.kind !== "app") continue;
         const matches = matchRoutes(routes, new URL(target.path, "http://paper.test").pathname);
         const leaf = matches?.at(-1);
-        // The catch-all sends an unknown path home, so reaching it means no route has the path.
         if (!matches || !leaf || leaf.route.path === "*") broken.push(`${doc.file}: ${url} matches no route`);
         else if (Object.keys(leaf.params).length > 0 && !resolveHandle(matches.map((match) => ({ handle: match.route.handle, params: match.params }))).title) broken.push(`${doc.file}: ${url} names nothing the route knows`);
       }
@@ -126,19 +120,14 @@ describe("docs/", () => {
   });
 });
 
-// The prose of the docs, with the generated blocks and the code fences left out: a generated table states its
-// own values, and a fence is code, not prose.
 const GENERATED = /<!-- generated:[\w.-]+ -->[\s\S]*?<!-- \/generated:[\w.-]+ -->/g;
 const FENCE = /^```[\s\S]*?^```/gm;
 const proseOf = (markdown: string) => parseDoc(markdown).body.replace(GENERATED, "").replace(FENCE, "");
-// The units and the dropped phrases are the originals' to state: a translation repeats the numbers and has its own words. Hex colours
-// are kept out of both.
 const PROSE = ORIGINALS.map((file) => [file, proseOf(read(file))] as const);
 const ALL_PROSE = FILES.map((file) => [file, proseOf(read(file))] as const);
 
 const PACKAGE_DIR = fileURLToPath(new URL("../../../packages/paper-ui/", import.meta.url));
 
-// Every number the sources state, in the units the docs write them: a length in dp or em, a duration in ms.
 const sourceNumbers = (): number[] => {
   const numbers: number[] = [];
   const visit = (value: unknown): void => {

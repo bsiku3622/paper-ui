@@ -1,6 +1,3 @@
-// The extruder: the extrusion factor, pressure advance and its smooth time, and a manual extrude or retract of a chosen length
-// at a chosen feed. Extruding is refused while a print runs or the nozzle is below the minimum temperature, as Klipper would.
-
 import { useState } from "react";
 
 import { Button, Grid, IconButton, Inline, Stack, Text } from "@studio-baeks/paper-ui";

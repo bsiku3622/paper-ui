@@ -1,5 +1,3 @@
-// users.ts — the people who write this wiki. Names are nicknames made up for the demo.
-
 import type { WikiUser } from "./types";
 
 const at = (date: string) => new Date(`${date}T10:00:00+09:00`).getTime();
@@ -25,6 +23,5 @@ export const WIKI_OPENED = at("2026-02-12");
 
 export const userByName = (name: string) => USERS.find((user) => user.name === name);
 
-// A visitor who edited without logging in.
 export const GUEST = "손님";
 export const isAnonymous = (name: string) => name === GUEST || name.startsWith("익명 ");

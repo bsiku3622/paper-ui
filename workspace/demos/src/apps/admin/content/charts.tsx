@@ -1,11 +1,3 @@
-// Paper has no chart. These are the two the hub needs: a line chart (the VPN's live traffic, a peer's day) and a column
-// chart (a file's downloads per day), drawn in SVG from Paper's tokens alone. Colours are the ink and accent tokens, applied
-// by classes (charts.css.ts); the stroke, the corner, the bar cap and the marker are measured from Paper's shape tokens (a
-// hidden probe reads them in pixels), so nothing here is a number of its own. Forms follow the dataviz rules: emphasis-width
-// lines, bars no thicker than the cap with a rounded data end, a surface ring on dots, hairline solid grid, a legend for two
-// series or more, a value on the end of a line and on the tallest bar only, a crosshair and one tooltip that read the same on
-// hover and on the keyboard. The table twin of each chart is drawn by the screen, in Paper.
-
 import { useLayoutEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type RefObject } from "react";
 
 import { Inline, mergeProps, Stack, Surface, Text, useFocusRing } from "@studio-baeks/paper-ui";
@@ -19,16 +11,11 @@ export type { Tone };
 
 export type ChartSize = keyof typeof frameHeight;
 
-// Measuring ---------------------------------------------------------------------------------------------------------
-
 type Metrics = {
   width: number;
   height: number;
-  // The label font's size, which every margin is a multiple of.
   font: number;
-  // Paper's 2px emphasis stroke: a line's width, the gap and the ring.
   stroke: number;
-  // A 4px corner; the 24px bar cap; an 8px marker; a 12px offset.
   round: number;
   cap: number;
   dot: number;
@@ -66,8 +53,6 @@ const Probe = ({ probe }: { probe: RefObject<HTMLDivElement | null> }) => (
   </div>
 );
 
-// The top of the scale: the data's maximum rounded up to 1, 2, 5 or 10 of its own size. Counts of things are whole, so
-// their top is an even number and the middle gridline lands on one too.
 const niceMax = (value: number, whole = false) => {
   if (!(value > 0)) return whole ? 2 : 1;
   const base = 10 ** Math.floor(Math.log10(value));
@@ -77,8 +62,6 @@ const niceMax = (value: number, whole = false) => {
 };
 
 const clamp = (value: number, low: number, high: number) => Math.min(high, Math.max(low, value));
-
-// What every chart shares ---------------------------------------------------------------------------------------------
 
 const Key = ({ tone }: { tone: Tone }) => (
   <span className={`${keyClass} ${keyTone[tone]}`} />
@@ -95,8 +78,6 @@ export const Legend = ({ items }: { items: readonly { id: string; name: string; 
   </Inline>
 );
 
-// The one tooltip: the value leads and the name follows, each keyed by a short stroke of its series colour. It is drawn
-// inside the SVG, beside the crosshair on the side with room.
 const Tip = ({ heading, rows, x, width, offset, top, font }: { heading: string; rows: readonly { id: string; tone: Tone; value: string; name?: string }[]; x: number; width: number; offset: number; top: number; font: number }) => {
   const beside = x < width * 0.6;
   const span = font * 18;
@@ -120,8 +101,6 @@ const Tip = ({ heading, rows, x, width, offset, top, font }: { heading: string; 
   );
 };
 
-// Line chart --------------------------------------------------------------------------------------------------------
-
 export type LineSeries = { id: string; name: string; tone: Tone; values: readonly number[] };
 
 export type LineChartProps = {
@@ -133,14 +112,12 @@ export type LineChartProps = {
   format: (value: number) => string;
   yTick?: (value: number) => string;
   size?: ChartSize;
-  // The least the top of the scale may be, so a quiet chart is not scaled up to look busy.
   floor?: number;
 };
 
 const lineLayout = (m: Metrics, series: readonly LineSeries[], count: number, floor: number) => {
   const { width, height, font } = m;
   const max = niceMax(Math.max(floor, ...series.flatMap((item) => item.values)));
-  // Names ride the line ends when there is room beside the plot; the legend carries them otherwise.
   const labelled = width >= font * 38 && series.length <= 4;
   const left = Math.ceil(font * 3.2);
   const right = labelled ? Math.ceil(font * 5.4) : Math.ceil(font * 1.4);
@@ -189,7 +166,6 @@ export const LineChart = ({ label, times, series, xTick, xTip, format, yTick = (
     const { max, labelled, left, top, plotWidth, plotHeight, x, y } = layout;
     const ticks = [0, max / 2, max];
     const xs = [...new Set([0, Math.round((count - 1) / 3), Math.round(((count - 1) * 2) / 3), count - 1])];
-    // End labels share the right margin; two that would touch are left to the legend.
     const ends = series.map((item) => y(item.values[count - 1] ?? 0));
     const touching = ends.some((a, i) => ends.some((b, j) => j > i && Math.abs(a - b) < font * 1.35));
     const dotsAt = active ?? count - 1;
@@ -270,23 +246,18 @@ export const LineChart = ({ label, times, series, xTick, xTip, format, yTick = (
   );
 };
 
-// Column chart ------------------------------------------------------------------------------------------------------
-
 export type Bar = { key: string; value: number; tick?: string; heading: string };
 
 export type BarChartProps = {
   label: string;
   bars: readonly Bar[];
   tone?: Tone;
-  // A value with its unit ("5회", "12 MB"), for the tooltip and the tallest bar.
   format: (value: number) => string;
   yTick?: (value: number) => string;
   size?: ChartSize;
-  // The values are counts: the scale goes up in whole numbers.
   whole?: boolean;
 };
 
-// A column with its top corners rounded and its foot square on the baseline.
 const column = (x: number, y: number, width: number, height: number, radius: number) => {
   const r = Math.min(radius, width / 2, height);
   return `M${x},${y + height} V${y + r} Q${x},${y} ${x + r},${y} H${x + width - r} Q${x + width},${y} ${x + width},${y + r} V${y + height} Z`;

@@ -1,5 +1,3 @@
-// Paper has no slider; this styles the native range input from Paper's tokens, as the original hub did.
-
 import { globalStyle, style } from "@vanilla-extract/css";
 
 import { stateStyle, tokens } from "@studio-baeks/paper-ui/tokens";

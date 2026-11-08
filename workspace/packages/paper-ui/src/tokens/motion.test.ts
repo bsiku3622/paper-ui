@@ -28,8 +28,6 @@ const sourceFiles = (directory: string): string[] =>
     entry.isDirectory() ? sourceFiles(join(directory, entry.name)) : [join(directory, entry.name)],
   );
 
-// The design values of Motion, written down. The tests below hold for any design; this file says which design this
-// is. A change to it is deliberate: review the diff, then `vitest -u` rewrites the file.
 describe("the golden Motion file", () => {
   it("[foundations.motion.source-table] [foundations.motion.role-table] records the sources, the roles and loops they make, and the transitions those write", async () => {
     const written = { hover: transition("hover", "color"), state: transition("state", "background", "border-color"), theme: transition("theme", "color") };
@@ -68,7 +66,6 @@ describe("Motion roles", () => {
     expect(MOTION.press.offset).toBe(tokens.shape.stroke.border);
     expect(MOTION.enter.offset).toBe(tokens.layout.gap.xs);
     expect(Number(MOTION.enter.scale)).toBeLessThan(1);
-    // A reveal rises a reading step and comes into focus from a smaller one: both are lengths, so both are Layout's.
     expect(MOTION.reveal.offset).toBe(tokens.layout.gap.lg);
     expect(MOTION.reveal.blur).toBe(tokens.layout.gap.sm);
     const withOffset = MOTION_ROLES.filter((role) => "offset" in MOTION[role]);
@@ -81,7 +78,6 @@ describe("Motion roles", () => {
       expect(Object.values(DURATION), `${role} duration`).toContain(MOTION[role].duration);
       expect(Object.values(EASING), `${role} easing`).toContain(MOTION[role].easing);
     }
-    // A reveal's siblings follow a step of the duration scale apart, and a stagger is that step taken a whole number of times.
     expect(Object.values(DURATION), "reveal step").toContain(MOTION.reveal.step);
     expect(Object.keys(REVEAL_AFTER)).toEqual(["0", "1", "2", "3", "4", "5", "6", "7"]);
     for (const [beats, delay] of Object.entries(REVEAL_AFTER)) {
@@ -109,7 +105,6 @@ describe("Motion roles", () => {
     expect(body).toContain("[REDUCED_MOTION]");
     expect(code).toContain('const REDUCED_MOTION = "(prefers-reduced-motion: reduce)"');
     expect(body.match(/!important/g)).toHaveLength(3);
-    // Every other motion class leaves reduced motion to the policy, but a loop swaps in its reduced form itself.
     expect(code.match(/REDUCED_MOTION\]: \{\s*animation: run\(MOTION_LOOPS/g)).toHaveLength(Object.keys(MOTION_LOOPS).length);
   });
 });
@@ -180,11 +175,9 @@ describe("The reveal", () => {
     expect(code).toContain('const NO_PREFERENCE = "(prefers-reduced-motion: no-preference)"');
     expect(code).toContain('const VIEW_TIMELINE = "(animation-timeline: view())"');
     const block = /export const reveal = utilities\.styleVariants\(\{[\s\S]*?\n\}\);/.exec(code)![0];
-    // Both forms sit inside the no-preference query, so reduced motion never sees them; the scroll form also waits for view timelines.
     expect(block.match(/\[NO_PREFERENCE\]/g)).toHaveLength(2);
     expect(block).toContain("[VIEW_TIMELINE]");
     expect(block).toContain('animationTimeline: "view()"');
-    // Longhands only: a shorthand would reset the delay revealAfter gives.
     expect(block).not.toMatch(/\banimation:/);
   });
 });

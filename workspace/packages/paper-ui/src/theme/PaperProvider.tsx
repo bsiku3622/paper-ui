@@ -1,12 +1,3 @@
-// PaperProvider — binds React to the document's theme store, and says which language the page speaks.
-//
-// A Provider chooses the theme (light, dark or system, which follows the OS) and, when asked, the locale and the
-// words Atoms say. It has no state of its own and no DOM wrapper: the theme goes onto <html data-pui-theme> in the
-// layout phase, and the Provider hands the store's preference and the mode <html> shows down as context.
-// Providers share one store per document, and the stylesheet comes in through "@studio-baeks/paper-ui/styles.css",
-// never through here. <html lang> and <html dir> are written only when a locale is passed; without one the locale
-// is whatever <html lang> already says. The token values it is given go into one <style> in <head>.
-
 import { useContext, useEffect, useInsertionEffect, useLayoutEffect, useMemo, useRef, useSyncExternalStore, type ReactNode } from "react";
 
 import { LocaleHost } from "../internal/aria/i18n";
@@ -21,29 +12,18 @@ import { getThemeStore } from "./store";
 
 const useIsomorphicLayoutEffect = typeof document === "undefined" ? useEffect : useLayoutEffect;
 
-// An app that leaves out styles.css sees an unstyled page with no error; say so once in development.
 let stylesheetWarned = false;
-// The plain CSS form of a source override is read once, at the first mount.
 let sourcesChecked = false;
 
-// Most of the token structure for the whole document, by its paths: the Shape, Layout and Typography sources, the colour
-// roles and the shadow geometry of each mode, the palette steps and the opacity roles. Every role built on one follows it.
-// Written once the page runs, so a server render draws the defaults first; such a page puts these in its stylesheet instead.
 export type PaperProviderProps = ThemeOverrides & {
-  // The theme before the user has chosen. A stored choice wins.
   defaultTheme?: ThemePreference;
-  // Where the choice is stored; null keeps it for this page only.
   storageKey?: string | null;
-  // The language of the page (a BCP 47 tag). Written to <html lang> and <html dir>, and read by Atoms for their words
-  // and by React Aria for direction.
   locale?: string;
-  // The words Atoms say, key by key over the catalog of the locale's language.
   messages?: Partial<PaperMessages>;
   children?: ReactNode;
 };
 
-// One <style> per Provider, kept in place when its text changes. Effects run from the inside out and each goes to the front
-// of <head>, so an inner Provider's rule comes later and wins.
+// Effects run from the inside out and each goes to the front of <head>, so an inner Provider's rule comes later and wins.
 const useOverridesRule = (rule: string) => {
   const element = useRef<HTMLStyleElement | null>(null);
   useInsertionEffect(() => {
@@ -82,13 +62,11 @@ export const PaperProvider = ({ defaultTheme = "system", storageKey = THEME_STOR
     warnUnknownSourceVariables(document);
   }, []);
 
-  // A server render has not read <html>: it answers with the default, and light for system.
   const theme = useSyncExternalStore(store.subscribe, store.getPreference, (): ThemePreference => defaultTheme);
   const resolved = useSyncExternalStore(store.subscribe, store.getMode, (): ColorMode => (defaultTheme === "system" ? "light" : defaultTheme));
 
   const control = useMemo<ThemeControl>(() => ({ theme, resolved, setTheme: store.setPreference }), [theme, resolved, store]);
 
-  // A Provider inside another keeps what it does not set.
   const outer = useContext(LocaleContext);
   const language = useDocumentLanguage();
   const given = locale ?? outer?.locale;

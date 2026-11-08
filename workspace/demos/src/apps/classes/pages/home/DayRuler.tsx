@@ -1,8 +1,3 @@
-// DayRuler — the whole school day on one line, to scale. Each period is as wide as it lasts, so lunch and dinner stay
-// holes; the periods you have a class in are filled, the ones you don't are outlined, the class you are in is ink, and a bar
-// marks where it is now. The list below the ruler answers "what is next?"; the ruler answers "what shape is today?" —
-// neither stands in for the other.
-
 import { Grid, Inline, Paint, Stack, Surface, Text } from "@studio-baeks/paper-ui";
 
 import { hhmm, type BreakTime, type PeriodTime } from "../../data/periods";
@@ -25,7 +20,6 @@ const segmentsOf = (periods: readonly PeriodTime[], breaks: readonly BreakTime[]
   return out;
 };
 
-// A segment that holds "now" is cut in two with the bar between; only the wider half carries the period's number.
 type Cell = { key: string; segment: Segment; bar: boolean; numbered: boolean };
 
 export const DayRuler = ({ periods, breaks, today, minute, active }: { periods: readonly PeriodTime[]; breaks: readonly BreakTime[]; today: readonly TodayClass[]; minute: number | null; active: readonly number[] }) => {
@@ -34,7 +28,6 @@ export const DayRuler = ({ periods, breaks, today, minute, active }: { periods: 
   const last = periods[periods.length - 1]!.end;
   const live = minute !== null && minute >= first && minute < last ? minute : null;
 
-  // Every segment is a track as many fr wide as it lasts; the bar for "now" is a track of its own between two halves.
   const tracks: string[] = [];
   const cells: Cell[] = [];
   for (const segment of segments) {

@@ -1,14 +1,5 @@
-// layers.css.ts — 패키지 CSS 가 들어가는 cascade layer 의 유일한 정의.
-//
-// 모든 패키지 규칙은 전역 layer `pui` 안의 하위 layer 에 들어간다. 선언 순서가 곧 cascade
-// 순서라 뒤의 layer 가 특정도와 무관하게 앞의 layer 를 이기고, layer 밖에 있는 앱 CSS 는
-// 로드 순서와 무관하게 패키지 전체를 이긴다. 값은 없고 이름과 wrapper 만 둔다.
-// keyframes · createVar · fallbackVar · createGlobalVar 는 직접 부른다 — @keyframes 와
-// @property 는 layer 밖(top level)에 선다.
-//
-// layered 는 함수라 vanilla-extract 가 런타임 모듈로 직렬화하지 못한다. 그래서 이 파일은 .css.ts 만
-// import 한다 — .ts · .tsx · 테스트가 import 하면 그 모듈 변환이 "Invalid exports" 로 실패한다.
-
+// layered is a function vanilla-extract cannot serialize into a runtime module, so only .css.ts files import this one;
+// a .ts, .tsx or test that imports it fails with "Invalid exports".
 import {
   globalLayer,
   globalStyle as globalRule,
@@ -47,8 +38,6 @@ interface LayeredStyles {
   globalStyle(selector: string, rule: LayeredGlobalRule): void;
 }
 
-// 규칙(배열이면 그 안의 객체 원소 하나하나)을 `{ "@layer": { [layer]: 규칙 } }` 로 감싼다.
-// 배열 안의 문자열은 합성할 class 라 그대로 둔다.
 export const layered = (name: LayerName): LayeredStyles => {
   const into = layer[name];
   const wrap = (rule: LayeredComplexRule): ComplexStyleRule =>

@@ -1,6 +1,3 @@
-// 가능한 조합 — every way to end up with no hour used twice, given what was marked: fewest changes first. A combination is
-// a face you press to see it in the grid; pressing it again lets go. The list stops at 200 and says so.
-
 import { useState } from "react";
 
 import { Badge, Button, Grid, Inline, Pressable, Stack, Surface, Text } from "@studio-baeks/paper-ui";
@@ -13,7 +10,6 @@ import type { TradeModel } from "./model";
 
 const STEP = 8;
 
-// One change, in a line: "미적분학2(EC) 2분반 → 3분반 · 월2 …", "문학 드랍", "+ 자료구조 1분반 · …".
 const Change = ({ choice }: { choice: PlanChoice }) => (
   <Inline as="span" gap="sm" align="baseline" wrap>
     {!choice.from ? <Text as="span" ink="secondary">+</Text> : null}

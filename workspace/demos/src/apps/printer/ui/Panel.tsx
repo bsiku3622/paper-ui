@@ -1,6 +1,3 @@
-// Panel — what Mainsail calls a panel: a face with a title row (a glyph, the name, actions, a chevron that folds it) and a
-// body. Folding is remembered. The face is the first face on the ground.
-
 import { useId, type ReactNode } from "react";
 
 import { Box, Divider, IconButton, Inline, Surface, Text } from "@studio-baeks/paper-ui";
@@ -14,7 +11,6 @@ export type PanelProps = {
   glyph?: GlyphName;
   actions?: ReactNode;
   children: ReactNode;
-  // Without padding in the body, for a table that runs edge to edge.
   flush?: boolean;
   collapsible?: boolean;
 };

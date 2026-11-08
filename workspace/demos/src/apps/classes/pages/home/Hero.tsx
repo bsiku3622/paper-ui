@@ -1,7 +1,3 @@
-// The hero: what this moment is. It says three things the list below cannot — how long is left, what comes next, and
-// whether the next class is in another room — and it can be stepped through the day with the arrows ("지금으로" comes back).
-// While you are looking at another class than the live one, nothing on the card wears the "now" badge.
-
 import { useMemo, useState } from "react";
 
 import { Badge, Button, IconButton, Inline, Stack, Text } from "@studio-baeks/paper-ui";
@@ -28,7 +24,6 @@ export const Hero = ({ home, view, quip, planned = false }: { home: HomeData; vi
 
   const liveIndex = currentPeriods.length ? blocks.findIndex((block) => block.periods[0] === currentPeriods[0]) : -1;
   const browsing = browseIndex === null ? null : (blocks[browseIndex] ?? null);
-  // Where the arrows start from: the live block, or just before the next one.
   const anchorIndex = liveIndex >= 0 ? liveIndex : next ? blocks.findIndex((block) => block.periods.includes(next.period)) - 1 : blocks.length - 1;
   const cursor = browseIndex ?? anchorIndex;
   const step = (delta: number) => {
@@ -52,7 +47,6 @@ export const Hero = ({ home, view, quip, planned = false }: { home: HomeData; vi
   })();
   const progress = shownStart && shownEnd ? Math.min(1, Math.max(0, (minute - shownStart.start) / (shownEnd.end - shownStart.start))) : 0;
 
-  // The big line: the class you are in, or what this moment is. 쉬는시간 is never said — the school knows that; this says what to do.
   const headline = current
     ? koreanName(current.subject)
     : !home.hasClass

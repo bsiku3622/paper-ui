@@ -31,7 +31,6 @@ afterEach(() => {
   document.documentElement.removeAttribute("dir");
 });
 
-// A control that reads its field the way a custom control does.
 function Control(props: Parameters<typeof useFormFieldControl>[0] & { label?: string }) {
   const { label = "control", ...options } = props;
   const { controlProps } = useFormFieldControl(options);
@@ -216,7 +215,6 @@ describe("roving registry and direction", () => {
     error.mockRestore();
   });
 
-  // Items that keep their identity across a render, so one leaving is not another changing its value.
   type Keyed = { key: string; value: string; disabled?: boolean };
   const Keyed = ({ items }: { items: Keyed[] }) => <RovingFocus>{items.map(({ key, ...item }) => <RovingFocus.Item key={key} {...item}>{key}</RovingFocus.Item>)}</RovingFocus>;
 
@@ -226,7 +224,6 @@ describe("roving registry and direction", () => {
     expect(error).toHaveBeenCalledTimes(1);
     expect(screen.getByText("second").tabIndex).toBe(-1);
     view.rerender(<Keyed items={[{ key: "other", value: "b" }, { key: "second", value: "a" }]} />);
-    // b comes first now, so the group's entry point is b, and the survivor is reachable by the keys.
     expect(screen.getAllByRole("button").filter((item) => item.tabIndex === 0)).toHaveLength(1);
     act(() => screen.getByText("other").focus());
     fireEvent.keyDown(screen.getByText("other"), { key: "ArrowRight" });
@@ -249,7 +246,6 @@ describe("roving registry and direction", () => {
     const error = vi.spyOn(console, "error").mockImplementation(() => {});
     const view = render(<Keyed items={[{ key: "first", value: "a" }, { key: "other", value: "b" }, { key: "second", value: "a" }]} />);
     view.rerender(<Keyed items={[{ key: "first", value: "a", disabled: true }, { key: "other", value: "b" }, { key: "second", value: "a" }]} />);
-    // The disabled first still holds the value, so the second stays refused and the stop moves on to b.
     expect(screen.getAllByRole("button").map((item) => item.tabIndex)).toEqual([-1, 0, -1]);
     view.rerender(<Keyed items={[{ key: "first", value: "a" }, { key: "other", value: "b" }, { key: "second", value: "a" }]} />);
     expect(screen.getAllByRole("button").map((item) => item.tabIndex)).toEqual([0, -1, -1]);
@@ -325,7 +321,6 @@ describe("field control", () => {
       const element = screen.getByLabelText(name) as HTMLInputElement;
       expect(element.id, name).toBe(`id-${name}`);
       expect(element.getAttribute("aria-describedby"), name).toBe(screen.getByText("Help").id);
-      // A Select says required on its button and holds it on the native select its form reads.
       const formControl = name === "Select" ? (element.parentElement!.querySelector("select") as HTMLSelectElement) : element;
       if (name === "Select") expect(element.getAttribute("aria-required"), name).toBe("true");
       expect(formControl.required, name).toBe(true);
@@ -384,7 +379,6 @@ describe("field control", () => {
     render(<Probe status="warning" aria-invalid={false} />);
     expect([seen!.isInvalid, seen!.visualStatus]).toEqual([false, "warning"]);
     cleanup();
-    // Each fills the other: an aria-invalid alone draws the error status.
     render(<Probe aria-invalid />);
     expect([seen!.isInvalid, seen!.visualStatus]).toEqual([true, "error"]);
     cleanup();
@@ -617,7 +611,6 @@ describe("a portal's direction", () => {
     return button;
   };
   const rootOf = (name: string) => screen.getByText(name).closest(`.${portalRoot}`) as HTMLElement;
-  // Whether a key moves the focus from the first item to the second, where the Portal's content reads its direction.
   const moves = (key: string) => {
     const a = screen.getByText("A");
     act(() => a.focus());

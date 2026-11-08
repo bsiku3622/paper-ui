@@ -16,7 +16,6 @@ const heights = () => sample([...DIMENSIONS, ...HEIGHT_KEYWORDS], "height takes 
 const OVERFLOWS = ["visible", "hidden", "clip", "scroll", "auto"] as const;
 const OVERFLOW_REASON = "Box's own overflow keywords, which are all it takes";
 
-// Every axis Box takes on top of a div's attributes: one added there fails typecheck here until it has a control.
 type BoxAxis = Exclude<keyof BoxProps, keyof HTMLAttributes<HTMLDivElement> | "as" | "ref" | "key">;
 
 const CONTROLS: Record<BoxAxis, Control> = {

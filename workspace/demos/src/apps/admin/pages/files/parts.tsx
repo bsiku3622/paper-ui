@@ -1,5 +1,3 @@
-// What the files screens say about a file the same way everywhere: its state, its limits, its kind.
-
 import { Badge } from "@studio-baeks/paper-ui";
 
 import type { GlyphName } from "../../../../kit";

@@ -1,21 +1,3 @@
-// check-contracts.mjs — every contract the docs state has a test, and every test that claims a contract
-// points at one the docs state.
-//
-// A contract sentence, paragraph or table in docs/**/*.md is preceded by a CommonMark link reference
-// definition on its own line, which renders as nothing:
-//
-//   [contract:<area>.<subject>.<slug>]: #
-//
-// Several markers may stand together in front of one block. The test that asserts a contract starts its
-// title with `[<id>]`; a test that asserts several lists their ids one after another (`[a] [b] title`).
-// This covers vitest describe/it/test and their .each, Playwright test and node:test. A skipped, todo, fixme or failing title
-// still has to name a defined contract, but it asserts nothing, so it does not cover one.
-//
-// `node scripts/check-contracts.mjs` reads the repository and fails on a duplicate marker, a marker without a
-// test, a test id without a marker, a malformed marker, or a marker that does not open its own block before
-// a content block (one that continues a paragraph, list item or table, or sits right above a table, renders
-// as text). It runs inside `pnpm test`.
-
 import { readdirSync, readFileSync } from "node:fs";
 import { join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -28,16 +10,11 @@ const FENCE = /^ {0,3}(`{3,}|~{3,})/;
 const HEADING = /^ {0,3}#{1,6}(?:\s|$)/;
 const BREAK = /^ {0,3}([-*_])(?:\s*\1){2,}\s*$/;
 const TABLE_ROW = /^ {0,3}\|/;
-// A call whose first argument is a string that opens with one or more bracketed tokens, or the title call after a
-// table (`it.each(table)("…")`). Group 1 is the modifier chain after the call name (`.skip`, `.describe.serial` …),
-// group 2 the bracketed tokens.
 const TITLE = /\b(?:describe|it|test)((?:\.(?:only|skip|todo|fixme|fails?|concurrent|sequential|serial|parallel|describe))*)(?:\.each\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*\))?\s*\(\s*["'`]((?:\[[^\]\n]*\]\s*)+)/g;
-// Modifiers of a test that is not run, or that is run expecting it to fail.
 const NOT_ASSERTED = /\.(?:skip|todo|fixme|fails?)\b/;
 
 const lineOf = (text, index) => text.slice(0, index).split("\n").length;
 
-// The markers of one Markdown file, with the placement errors that would make one render or float free.
 export const parseMarkers = (path, text) => {
   const lines = text.split("\n");
   const markers = [];
@@ -73,9 +50,6 @@ export const parseMarkers = (path, text) => {
   return { markers, errors };
 };
 
-// The contract ids that test titles in one file claim, each with whether its test asserts the contract (a
-// skipped, todo, fixme or failing one does not). Bracketed words that are not contract ids — say a title
-// that opens with "[data-pui-theme]" — are not claims.
 export const parseTestIds = (path, text) => {
   const ids = [];
   const errors = [];
@@ -91,7 +65,6 @@ export const parseTestIds = (path, text) => {
   return { ids, errors };
 };
 
-// docs and tests are { path, text } lists. Returns every violation; an empty list means the two map one to one.
 export const checkContracts = ({ docs, tests }) => {
   const errors = [];
   const markers = new Map();
@@ -138,11 +111,9 @@ const TEST_FILES = [
   /^scripts\/[^/]+\.test\.mjs$/,
 ];
 
-// The repository's docs and test files, with paths relative to the repository root.
 export const readRepository = (workspace = fileURLToPath(new URL("..", import.meta.url))) => {
   const root = join(workspace, "..");
   const read = (path) => ({ path: relative(root, path).split(sep).join("/"), text: readFileSync(path, "utf8") });
-  // docs/en/ translates the docs; the contracts are stated once, in the Korean originals.
   const docs = walk(join(root, "docs")).filter((path) => path.endsWith(".md")).map(read).filter(({ path }) => !path.startsWith("docs/en/"));
   const tests = walk(workspace)
     .filter((path) => TEST_FILES.some((pattern) => pattern.test(relative(workspace, path).split(sep).join("/"))))

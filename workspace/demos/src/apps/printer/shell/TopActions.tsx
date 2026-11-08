@@ -1,6 +1,3 @@
-// The top bar's right side: the emergency stop, the notifications, the settings and the power menu. None of them reaches a
-// printer. Each asks first when the user has it set to, then writes what it would have sent to the mock console.
-
 import { Badge, Button, Divider, Floating, IconButton, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";
 
 import { Glyph, Menu, useStored, useToast, relative, type MenuItem } from "../../../kit";
@@ -27,7 +24,6 @@ const POWER: Record<PowerAction, { title: string; body: string; done: string }> 
 
 const isPower = (value: string | null): value is PowerAction => value !== null && value in POWER;
 
-// What a running print cannot survive.
 const HOLD: readonly PowerAction[] = ["firmware", "klipper", "reboot", "shutdown"];
 
 export const EmergencyStop = () => {

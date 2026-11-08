@@ -1,8 +1,3 @@
-// What the demo's screens share, built the way the screens are: Paper's parts and their props, with no stylesheet.
-// It holds three things. The chrome a product repeats (tabs, the bar, tables, dialogs, charts). The state the dashboard keeps
-// while you move between its pages (the scope, the notice, what you change). And the mock data that state starts from: a
-// logistics company's cloud console, seeded, so the same page draws the same rows every time.
-
 import { Fragment, createContext, useCallback, useContext, useEffect, useId, useRef, useState, useSyncExternalStore, type Dispatch, type FormEvent, type ReactNode, type RefObject, type SetStateAction } from "react";
 import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
 
@@ -11,12 +6,8 @@ import { tokens } from "@studio-baeks/paper-ui/tokens";
 
 import { ArrowLeftIcon, ArrowRightIcon, CheckIcon, CloseIcon, InfoIcon, MoonIcon, PlusIcon, SearchIcon, SunIcon, UpDownIcon } from "../../compositions/icons";
 
-// ─── Tabs ────────────────────────────────────────────────────────────────────────────────────────────────────────────
-
 export type TabItem = { id: string; label: ReactNode; panel: ReactNode };
 
-// A tablist is a SelectableGroup of Buttons, and the group itself lays them out. `stretch` gives every tab the same share of
-// the width. A page that wants the tab in its address passes `value` and `onValueChange`; without them the tabs keep their own.
 export const Tabs = ({ label, tabs, stretch = false, value: controlled, onValueChange }: { label: string; tabs: readonly TabItem[]; stretch?: boolean; value?: string; onValueChange?: (id: string) => void }) => {
   const base = useId();
   const [own, setOwn] = useState(tabs[0]!.id);
@@ -51,9 +42,6 @@ export const Tabs = ({ label, tabs, stretch = false, value: controlled, onValueC
   );
 };
 
-// One value of the address's query, with a setter that rewrites it in place: the tab you picked, the step you are on. The setter
-// reads the address as it is when it is called, not as it was when the page last drew, so two changes in a row (a service, then a
-// range) both land.
 export const useParam = (key: string, fallback: string, allowed?: readonly string[]) => {
   const [params] = useSearchParams();
   const navigate = useNavigate();
@@ -72,18 +60,12 @@ export const useParam = (key: string, fallback: string, allowed?: readonly strin
   return [value, set] as const;
 };
 
-// A short row of choices that act like a radio group: the range of a chart, the way a list is cut. It is Paper's SegmentControl:
-// a grey track, and a white chip over the one picked.
 export const Segmented = ({ label, options, value, onChange }: { label: string; options: readonly { id: string; label: string }[]; value: string; onChange: (id: string) => void }) => (
   <SegmentControl aria-label={label} size="sm" value={value} onValueChange={onChange}>
     {options.map((option) => <SegmentControl.Item key={option.id} value={option.id}>{option.label}</SegmentControl.Item>)}
   </SegmentControl>
 );
 
-// ─── The banner of a screen ──────────────────────────────────────────────────────────────────────────────────────────
-
-// Arcfield is reached the way a product is: the settings form from the sidebar's 설정 and the account menu, the sign-in from 로그아웃.
-// No bar names the screens. The dashboard's banner is its toolbar; the two screens that stand on their own take the bar below.
 export const ThemeButton = () => {
   const { resolved, setTheme } = useTheme();
   const dark = resolved === "dark";
@@ -94,7 +76,6 @@ export const ThemeButton = () => {
   );
 };
 
-// The banner of the sign-in and the settings form: the way back, if the screen has one, and the theme.
 export const ScreenBar = ({ start }: { start?: ReactNode }) => (
   <Inline as="header" justify="between" gap="md" wrap>
     {start ?? <Box />}
@@ -102,17 +83,12 @@ export const ScreenBar = ({ start }: { start?: ReactNode }) => (
   </Inline>
 );
 
-// What makes a screen's layout primitive its one main landmark.
 export const MAIN = { as: "main", id: "main", tabIndex: -1, minWidth: 0 } as const;
-
-// ─── Time, money and words ───────────────────────────────────────────────────────────────────────────────────────────
 
 export const MINUTE = 60_000;
 export const HOUR = 3_600_000;
 export const DAY = 86_400_000;
 
-// The demo's present: 4 November 2026, 14:30 in Seoul. What happens on a screen is stamped with `clock()`, the present plus the
-// time the visit has lasted, so a thing you just did reads "방금 전" and then ages the way the seeded rows do.
 export const NOW = Date.UTC(2026, 10, 4, 5, 30);
 const OPENED = Date.now();
 export const clock = () => NOW + (Date.now() - OPENED);
@@ -142,7 +118,6 @@ export const relative = (at: number, now = clock()) => {
   return seoul(at).getUTCFullYear() === seoul(now).getUTCFullYear() ? formatDate(at) : formatMonth(at);
 };
 
-// How far a deadline is: hours up to three days, days after that, and the same the other way once it has passed.
 export const until = (at: number, now = clock()) => {
   const gap = at - now;
   const hours = Math.floor(Math.abs(gap) / HOUR);
@@ -156,8 +131,6 @@ export const formatCount = (value: number) => Math.round(value).toLocaleString("
 export const formatPercent = (value: number, digits = 1) => `${value.toFixed(digits)}%`;
 export const formatSeconds = (seconds: number) => (seconds < 60 ? `${seconds}초` : `${Math.floor(seconds / 60)}분 ${two(seconds % 60)}초`);
 export const formatMinutes = (minutes: number) => (minutes < 60 ? `${minutes}분` : `${Math.floor(minutes / 60)}시간 ${minutes % 60}분`);
-
-// ─── Seeded chance ───────────────────────────────────────────────────────────────────────────────────────────────────
 
 export const seeded = (seed: number) => {
   let state = seed >>> 0;
@@ -173,8 +146,6 @@ type Chance = () => number;
 const between = (chance: Chance, low: number, high: number) => low + Math.floor(chance() * (high - low + 1));
 const choose = <T,>(chance: Chance, list: readonly T[]): T => list[Math.floor(chance() * list.length)]!;
 const hex = (chance: Chance, length: number) => Array.from({ length }, () => "0123456789abcdef"[Math.floor(chance() * 16)]).join("");
-
-// ─── People ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 export type Role = "소유자" | "관리자" | "개발자" | "결제 담당" | "읽기 전용";
 export const ROLES: readonly Role[] = ["소유자", "관리자", "개발자", "결제 담당", "읽기 전용"];
@@ -206,8 +177,6 @@ export const PEOPLE: readonly Person[] = [
 
 export const initial = (name: string) => Array.from(name)[0] ?? "?";
 
-// ─── Projects and resources ──────────────────────────────────────────────────────────────────────────────────────────
-
 export type Env = "production" | "staging" | "dev";
 export type EnvOrNone = Env | "—";
 export const ENVS: readonly Env[] = ["production", "staging", "dev"];
@@ -234,7 +203,6 @@ export type Resource = { id: string; kind: Kind; projectId: string; env: EnvOrNo
 
 type ResourceRow = readonly [name: string, kind: Kind, projectId: string, env: EnvOrNone, spec: string, cost: number, status: ResourceStatus, age: number];
 
-// The monthly cost is what the resource adds to a full month, in won. The age is in days.
 const RESOURCE_ROWS: readonly ResourceRow[] = [
   ["tracking-api", "컨테이너 서비스", "shipment-tracking", "production", "3개 × (2 vCPU · 4 GB)", 386000, "정상", 612],
   ["tracking-api-stg", "컨테이너 서비스", "shipment-tracking", "staging", "1개 × (1 vCPU · 2 GB)", 62000, "정상", 540],
@@ -290,8 +258,6 @@ export const RESOURCES: readonly Resource[] = RESOURCE_ROWS.map(([id, kind, proj
   owner: PROJECTS.find((project) => project.id === projectId)?.owner ?? "김서연",
 }));
 
-// ─── Deployments ─────────────────────────────────────────────────────────────────────────────────────────────────────
-
 export const DEPLOY_STEPS = ["소스 가져오기", "의존성 설치", "빌드", "테스트", "이미지 올리기", "배포", "상태 확인"] as const;
 export const DEPLOY_STATUSES = ["성공", "실패", "취소됨", "진행 중"] as const;
 export type DeployStatus = (typeof DEPLOY_STATUSES)[number];
@@ -300,7 +266,6 @@ export type Trigger = "푸시" | "수동" | "롤백" | "예약";
 export type Deployment = {
   id: string; no: number; service: string; projectId: string; env: Env; version: string; commit: string; message: string; author: string;
   trigger: Trigger; status: DeployStatus; started: number;
-  // How long the run takes, in seconds, and the step and the reason it stops at when it does not succeed.
   planned: number; failedStep?: number; reason?: string;
 };
 
@@ -326,7 +291,6 @@ const MESSAGES: Record<string, readonly string[]> = {
 const GENERIC_MESSAGES = ["의존성 보안 업데이트", "로그 수준 조정", "헬스 체크 경로 정리", "빌드 캐시 설정 개선", "긴급 수정 반영", "설정 값 정리"];
 const FAILURES: readonly (readonly [step: number, reason: string])[] = [[2, "빌드 중 타입 오류가 발견되었습니다."], [3, "통합 테스트 3건이 실패했습니다."], [3, "테스트 시간 제한을 넘었습니다."], [5, "새 버전이 준비 상태가 되지 않았습니다."], [6, "상태 확인이 3번 연속 실패했습니다."]];
 
-// The services that are deployed: the containers of production and staging.
 export const SERVICES: readonly Resource[] = RESOURCES.filter((resource) => resource.kind === "컨테이너 서비스" && resource.env !== "dev" && resource.env !== "—");
 
 const makeDeployments = (): Deployment[] => {
@@ -356,27 +320,21 @@ const makeDeployments = (): Deployment[] => {
       ...(status === "취소됨" ? { failedStep: 3, reason: "사용자가 배포를 취소했습니다." } : {}),
     };
   });
-  // The newest run is still going: it ends a little after the page opens.
   const last = list[list.length - 1]!;
   list[list.length - 1] = { ...last, status: "진행 중", started: NOW - 14_000, planned: 46, failedStep: undefined, reason: undefined, trigger: "푸시" };
   return list;
 };
 export const DEPLOYMENTS: readonly Deployment[] = makeDeployments();
 
-// Where a run is, from how long it has been going: the share of its planned time, and the step that share falls in.
 export const progressOf = (deployment: Deployment, now = clock()) => {
   const elapsed = Math.max(0, now - deployment.started) / 1000;
   const share = Math.min(1, elapsed / deployment.planned);
   return { share, step: Math.min(DEPLOY_STEPS.length - 1, Math.floor(share * DEPLOY_STEPS.length)), elapsed: Math.min(deployment.planned, Math.round(elapsed)) };
 };
 
-// ─── Monitoring ──────────────────────────────────────────────────────────────────────────────────────────────────────
-
 export type ServiceHealth = "정상" | "성능 저하" | "장애";
 export type Metrics = { id: string; health: ServiceHealth; p95: number; errors: number; rps: number; cpu: number; memory: number; uptime: number };
 
-// One row per production service: the latency of the 95th percentile in ms, the share of failed requests, requests a second, and the
-// share of a processor and of memory in use. The 30 days of uptime is a percentage.
 const METRIC_ROWS: readonly (readonly [string, ServiceHealth, number, number, number, number, number, number])[] = [
   ["tracking-api", "정상", 142, 0.12, 1840, 46, 58, 99.99],
   ["tracking-worker", "정상", 380, 0.2, 420, 52, 71, 99.97],
@@ -391,8 +349,6 @@ const METRIC_ROWS: readonly (readonly [string, ServiceHealth, number, number, nu
 ];
 export const METRICS: readonly Metrics[] = METRIC_ROWS.map(([id, health, p95, errors, rps, cpu, memory, uptime]) => ({ id, health, p95, errors, rps, cpu, memory, uptime }));
 
-// The series a chart draws: `points` values around the current one, with a bend where a service is unwell. The same service and
-// range always draw the same shape.
 export const seriesOf = (service: string, measure: "rps" | "p95" | "errors", points: number) => {
   const metrics = METRICS.find((entry) => entry.id === service);
   const chance = seeded(service.length * 977 + measure.length * 131 + points);
@@ -438,8 +394,6 @@ const makeAlerts = (): Alert[] => {
 };
 export const ALERTS: readonly Alert[] = makeAlerts();
 
-// ─── Security ────────────────────────────────────────────────────────────────────────────────────────────────────────
-
 export const SEVERITIES = ["심각", "높음", "보통", "낮음"] as const;
 export type Severity = (typeof SEVERITIES)[number];
 export const FINDING_STATES = ["열림", "진행 중", "해결"] as const;
@@ -448,7 +402,6 @@ export type Finding = { id: string; title: string; severity: Severity; resource:
 
 type FindingRow = readonly [id: string, title: string, severity: Severity, resource: string, kind: string, projectId: string, env: EnvOrNone, state: FindingState, owner: string | null, dueHours: number];
 
-// The due time is hours from now, negative once it has passed. A resolved finding keeps the days it was closed ago instead.
 const FINDING_ROWS: readonly FindingRow[] = [
   ["SEC-1042", "공개 읽기가 허용된 버킷", "심각", "arcfield-shipment-exports", "스토리지 버킷", "shipment-tracking", "production", "열림", null, 36],
   ["SEC-1030", "90일 넘게 쓰지 않은 관리자 API 키", "높음", "legacy-ci", "API 키", "workspace", "—", "열림", "김서연", -72],
@@ -543,8 +496,6 @@ const makeAudit = (): AuditEvent[] => {
 };
 export const AUDIT: readonly AuditEvent[] = makeAudit();
 
-// ─── Billing ─────────────────────────────────────────────────────────────────────────────────────────────────────────
-
 export type Card = { id: string; brand: string; last4: string; holder: string; expires: string; primary: boolean };
 export type Plan = { id: string; name: string; price: number; summary: string };
 export const PLANS: readonly Plan[] = [
@@ -557,27 +508,21 @@ export const CARDS: readonly Card[] = [
   { id: "card-2", brand: "법인카드", last4: "0005", holder: "ARCFIELD LOGISTICS", expires: "03/27", primary: false },
 ];
 
-// What a full month costs: the resources added up, the network that leaves the cloud, and the plan.
 export const NETWORK_COST = 312000;
 export const monthlyOf = (resources: readonly Resource[]) => resources.reduce((sum, resource) => (resource.status === "중지됨" ? sum : sum + resource.cost), 0);
 export const planPrice = (id: string) => PLANS.find((plan) => plan.id === id)?.price ?? 0;
 export const resourceOf = (id: string) => RESOURCES.find((resource) => resource.id === id);
 
-// The month so far is the share of 30 days that has passed since the first of the month at midnight in Seoul.
 export const MONTH_START = Date.UTC(2026, 9, 31, 15);
 export const monthShare = (at = clock()) => Math.min(1, (at - MONTH_START) / (30 * DAY));
 
-// The twelve months before this one, as the share of this month's forecast each came to: the cost has grown with the company.
 const COST_SHAPE = [0.61, 0.64, 0.63, 0.69, 0.71, 0.74, 0.73, 0.78, 0.82, 0.85, 0.89, 0.92];
 export const costHistory = (forecast: number) => COST_SHAPE.map((share, index) => ({ at: Date.UTC(2025, 10 + index, 1), amount: Math.round((forecast * share) / 1000) * 1000 }));
-
-// ─── Docs ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 export const DOC_CATEGORIES = ["시작하기", "프로젝트와 자원", "배포", "모니터링", "비용과 결제", "보안과 접근", "API"] as const;
 export type DocCategory = (typeof DOC_CATEGORIES)[number];
 export type DocMeta = { slug: string; title: string; category: DocCategory; summary: string; minutes: number; updated: number; keywords: string };
 
-// The words an article answers to besides its title: what a person types when they have the problem and not yet its name.
 const KEYWORDS: Record<string, string> = {
   tour: "사이드바 개요 범위 검색 단축키",
   "first-project": "프로젝트 만들기 리전 환경 ID",
@@ -625,8 +570,6 @@ export const DOCS: readonly DocMeta[] = [
   doc("rest-start", "API", "REST API 시작하기", "키를 발급받아 첫 요청을 보내고, 응답과 오류를 읽는 방법입니다.", 8, 2),
 ];
 
-// ─── The state the dashboard keeps ───────────────────────────────────────────────────────────────────────────────────
-
 export const wait = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
 export type Scope = { project: string; env: string };
@@ -669,14 +612,11 @@ export const useStore = (): Store => {
   return store;
 };
 
-// The next version of a service: its last number up by one.
 const bump = (version: string | undefined) => {
   const match = version?.match(/^v(\d+)\.(\d+)\.(\d+)$/);
   return match ? `v${match[1]}.${match[2]}.${Number(match[3]) + 1}` : "v1.0.0";
 };
 
-// Holds what the dashboard's pages share, and runs the one clock they have: while a deployment is going, every second moves it along
-// and finishes it when its time is up.
 export const StoreProvider = ({ children }: { children: ReactNode }) => {
   const [scope, setScopeState] = useState<Scope>({ project: "all", env: "all" });
   const [notice, setNotice] = useState<NoticeData | null>(null);
@@ -770,8 +710,6 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 };
 
-// Whether the window is as wide as the dashboard's sidebar needs. Below it the sidebar leaves, and the page that has to put its
-// menu somewhere else asks.
 export const useWide = () =>
   useSyncExternalStore(
     (notify) => {
@@ -783,18 +721,14 @@ export const useWide = () =>
     () => true,
   );
 
-// ─── Page chrome ─────────────────────────────────────────────────────────────────────────────────────────────────────
-
 export type Accent = NonNullable<BadgeProps["accent"]>;
 
 export const formatWonShort = (value: number) => (value >= 100_000_000 ? `₩${(value / 100_000_000).toFixed(1)}억` : `₩${Math.round(value / 10_000).toLocaleString("ko-KR")}만`);
 
-// The head of a page: a big name, one line about it, and what belongs beside them. The name is the page's one h1.
 export const PageTitle = ({ title, description, aside, back }: { title: string; description?: ReactNode; aside?: ReactNode; back?: { to: string; label: string } }) => (
   <Stack gap="md">
     {back ? <Inline><Button as={RouterLink} to={back.to} size="sm" variant="ghost"><ArrowLeftIcon />{back.label}</Button></Inline> : null}
     <Inline align="end" justify="between" gap="md" wrap>
-      {/* The page's name is the title role, not a headline: what a dashboard page is for is the table under it. */}
       <Stack gap="xs">
         <Text as="h1" variant="title">{title}</Text>
         {description ? <Text as="p" ink="tertiary">{description}</Text> : null}
@@ -804,7 +738,6 @@ export const PageTitle = ({ title, description, aside, back }: { title: string; 
   </Stack>
 );
 
-// The first face on the canvas: a raised card with a hairline-free head. What is inside it stays flat.
 export const Panel = ({ anchor, title, description, actions, children }: { anchor?: string; title?: ReactNode; description?: ReactNode; actions?: ReactNode; children?: ReactNode }) => {
   const id = useId();
   return (
@@ -828,8 +761,6 @@ export const Panel = ({ anchor, title, description, actions, children }: { ancho
 
 export type StatItem = { label: string; value: string; note?: string; tone?: "error" | "warning" | "success" | "info" };
 
-// Numbers that matter, each on a card of its own on the canvas: what it counts, the number, and one line about it. Wide enough, they
-// stand in one row; narrower, they fall into rows of two or three.
 export const StatStrip = ({ stats }: { stats: readonly StatItem[] }) => (
   <Grid columns={{ base: 2, md: 3, xl: stats.length }} gap="md">
     {stats.map((stat) => (
@@ -848,7 +779,6 @@ export const TabCount = ({ label, count }: { label: string; count: number }) => 
   <>{label} <Text as="span" variant="label" strong={false} ink="tertiary" numeric>{count}</Text></>
 );
 
-// Two lines in a cell: the thing, and what qualifies it in a smaller, quieter hand.
 export const Two = ({ top, sub, title, mono, ink = "tertiary" }: { top: ReactNode; sub?: ReactNode; title?: boolean; mono?: boolean; ink?: "tertiary" | "secondary" | "error" | "warning" | "success" | "info" }) => (
   <Stack>
     <Text as="span" strong={title} ink={title ? "primary" : "secondary"} truncate>{top}</Text>
@@ -867,7 +797,6 @@ export const PersonCell = ({ name }: { name: string | null }) => (
   </Inline>
 );
 
-// Labels and their values in two columns: the facts of one thing.
 export const Facts = ({ items }: { items: readonly (readonly [label: string, value: ReactNode])[] }) => (
   <Grid columns="minmax(5rem, 8rem) minmax(0, 1fr)" gap="md" align="baseline">
     {items.map(([label, value]) => (
@@ -889,7 +818,6 @@ export const EmptyState = ({ title, children, action }: { title: string; childre
   </Stack>
 );
 
-// What came back from an action, in the region that was there before it did.
 export const Notice = ({ accent, title, children, onDismiss }: { accent: "error" | "success" | "info" | "warning"; title: string; children?: ReactNode; onDismiss?: () => void }) => (
   <Surface fill="sunken" radius="md" padding="md">
     <Inline align="start" justify="between" gap="sm">
@@ -905,8 +833,6 @@ export const Notice = ({ accent, title, children, onDismiss }: { accent: "error"
 export const PageSpinner = () => (
   <Inline justify="center" padding="3xl"><Spinner label="페이지를 불러오는 중" /></Inline>
 );
-
-// ─── Badges the pages repeat ─────────────────────────────────────────────────────────────────────────────────────────
 
 export const SeverityBadge = ({ level }: { level: Severity }) => {
   if (level === "심각") return <Badge accent="error" variant="soft" dot>{level}</Badge>;
@@ -935,16 +861,11 @@ export const ResourceBadge = ({ status }: { status: ResourceStatus }) => {
   return <Badge accent="primary" variant="hairline" dot>{status}</Badge>;
 };
 
-// A project's name from its id, read from the projects the dashboard holds now, so one made on a screen has its name too.
 export const useProjectName = () => {
   const { projects } = useStore();
   return (id: string) => projects.find((project) => project.id === id)?.name ?? projectName(id);
 };
 
-// ─── Charts ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-
-// A bar chart drawn from boxes: each value is a box whose height is its share of the tallest. The last bar is the present and is
-// the solid one; a `marks` entry paints a bar in error for the moment something went wrong.
 export const Bars = ({ label, values, ends, accent = "primary", marks }: { label: string; values: readonly number[]; ends: readonly [string, string]; accent?: Accent; marks?: readonly boolean[] }) => {
   const top = Math.max(...values, 1);
   return (
@@ -962,14 +883,12 @@ export const Bars = ({ label, values, ends, accent = "primary", marks }: { label
   );
 };
 
-// A track and a fill. A box with only padding is as tall as its padding, so the bar's thickness is a step of the scale.
 export const Meter = ({ value, label, accent = "primary" }: { value: number; label: string; accent?: Accent }) => (
   <Surface fill="sunken" radius="full" overflow="hidden" role="meter" aria-label={label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(value)}>
     <Paint accent={accent} variant="solid" paddingY="xs" width={`${Math.min(100, Math.max(1, value))}%`} />
   </Surface>
 );
 
-// How strong a password is, by four plain signs: its length, both cases, a digit and a symbol. It is for the person typing it.
 export const strengthOf = (value: string) => {
   const score = [value.length >= 10, /[a-z]/.test(value) && /[A-Z]/.test(value), /\d/.test(value), /[^A-Za-z0-9]/.test(value)].filter(Boolean).length;
   return { score, label: ["너무 약함", "약함", "보통", "좋음", "아주 좋음"][score] ?? "" };
@@ -986,26 +905,17 @@ export const StrengthMeter = ({ value }: { value: string }) => {
   );
 };
 
-// Past seven tenths a use turns warning, past nine tenths error: the colour says it is time to look.
 export const loadAccent = (value: number): Accent => (value >= 90 ? "error" : value >= 70 ? "warning" : "primary");
-// A budget is warned at 85% and only over it once it is spent.
 export const budgetAccent = (share: number): Accent => (share >= 100 ? "error" : share >= 85 ? "warning" : "primary");
-
-// ─── Tables ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 export type Column<T> = {
   id: string;
   header: string;
-  // The grid track this column takes; every row names the same tracks, so the columns line up without a table layout.
   track: string;
   render: (row: T) => ReactNode;
-  // Ascending order of two rows; a column that has one can be sorted.
   compare?: (a: T, b: T) => number;
-  // A column of numbers or dates starts from the largest.
   largestFirst?: boolean;
   end?: boolean;
-  // The column that is the way into a row: in a table whose rows open something, its cell is the control a keyboard reaches, and
-  // the rest of the row is the same control for a pointer.
   opens?: boolean;
 };
 export type Sort = { id: string; dir: "asc" | "desc" };
@@ -1033,7 +943,6 @@ const HeaderCell = <T,>({ column, sort, onSort }: { column: Column<T>; sort: Sor
 
 const CHECK_TRACK = "1.5rem";
 
-// A table of grid rows. The roles are the table's; the rows are Surfaces, so a row that opens something is hoverable.
 export const DataTable = <T,>({ label, columns, rows, rowKey, sort, onSort, onOpen, selection, empty }: {
   label: string; columns: readonly Column<T>[]; rows: readonly T[]; rowKey: (row: T) => string; sort: Sort; onSort: (id: string) => void;
   onOpen?: (row: T) => void; selection?: Selection<T>; empty?: ReactNode;
@@ -1086,7 +995,6 @@ export const DataTable = <T,>({ label, columns, rows, rowKey, sort, onSort, onOp
   );
 };
 
-// What a table needs between its rows and the screen: the words to look for, the filters picked, the order, the page.
 export const useTable = <T,>(rows: readonly T[], config: { columns: readonly Column<T>[]; sort: Sort; match?: (row: T, query: string) => boolean; filters?: Record<string, (row: T) => string>; size?: number }) => {
   const [query, setQueryState] = useState("");
   const [picked, setPicked] = useState<Record<string, readonly string[]>>({});
@@ -1116,21 +1024,18 @@ export const useTable = <T,>(rows: readonly T[], config: { columns: readonly Col
 };
 export type Table<T> = ReturnType<typeof useTable<T>>;
 
-// How much a table shows and in what order, in one line for the end of its bar.
 export const summarize = <T,>(table: Pick<Table<T>, "total" | "all" | "sort">, columns: readonly Column<T>[]) => {
   const column = columns.find((entry) => entry.id === table.sort.id);
   const count = table.total === table.all ? `${table.total}개` : `${table.all}개 중 ${table.total}개`;
   return column ? `${count} · ${column.header} ${table.sort.dir === "asc" ? "오름차순" : "내림차순"}` : count;
 };
 
-// The words to look for.
 export const SearchField = ({ label, value, onChange }: { label: string; value: string; onChange: (next: string) => void }) => (
   <Box width="lg" maxWidth="full">
     <Field size="sm" shape="pill" type="search" aria-label={label} placeholder={label} leading={<SearchIcon />} clearable value={value} onChange={(event) => onChange(event.target.value)} />
   </Box>
 );
 
-// A filter that opens a short list of what to keep. A chip that holds a choice says so and is filled.
 export const FilterChip = ({ label, options, selected, onChange }: { label: string; options: readonly { value: string; label: string; count?: number }[]; selected: readonly string[]; onChange: (next: string[]) => void }) => {
   const active = selected.length > 0;
   const named = selected.length === 1 ? options.find((option) => option.value === selected[0])?.label ?? selected[0] : `${selected.length}개`;
@@ -1163,7 +1068,6 @@ export const FilterChip = ({ label, options, selected, onChange }: { label: stri
   );
 };
 
-// The row above a table: the search and the filters on one side, how much is shown on the other.
 export const TableBar = ({ children, summary, onReset }: { children: ReactNode; summary?: ReactNode; onReset?: () => void }) => (
   <>
     <Inline justify="between" gap="md" wrap paddingX="xl" paddingY="lg">
@@ -1196,11 +1100,8 @@ export const Pager = ({ table }: { table: Pick<Table<unknown>, "page" | "pages" 
   );
 };
 
-// ─── Dialogs ─────────────────────────────────────────────────────────────────────────────────────────────────────────
-
 const DIALOG_WIDTHS = { sm: "xl", md: "measure.sm", lg: "measure.md" } as const;
 
-// A modal: a raised face over a scrim, named by its title. What it holds mounts when it opens, so a form inside starts empty each time.
 export const Dialog = ({ open, onOpenChange, title, description, size = "sm", initialFocusRef, children }: {
   open: boolean; onOpenChange: (open: boolean) => void; title: string; description?: ReactNode; size?: keyof typeof DIALOG_WIDTHS;
   initialFocusRef?: RefObject<HTMLElement | null>; children?: ReactNode;
@@ -1250,7 +1151,6 @@ const FormFieldTyped = ({ text, value, onChange }: { text: string; value: string
   </Stack>
 );
 
-// A question before something that cannot be taken back. A destructive one can ask for the name to be typed.
 export const ConfirmDialog = ({ open, onOpenChange, title, description, confirmLabel, tone = "primary", confirmText, onConfirm }: {
   open: boolean; onOpenChange: (open: boolean) => void; title: string; description: ReactNode; confirmLabel: string; tone?: "primary" | "error"; confirmText?: string; onConfirm: () => void;
 }) => (
@@ -1258,8 +1158,6 @@ export const ConfirmDialog = ({ open, onOpenChange, title, description, confirmL
     <ConfirmBody confirmLabel={confirmLabel} tone={tone} confirmText={confirmText} onConfirm={() => { onConfirm(); onOpenChange(false); }} />
   </Dialog>
 );
-
-// ─── What two pages both manage: the people and the keys ─────────────────────────────────────────────────────────────
 
 export const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -1302,7 +1200,6 @@ const InviteForm = ({ onDone }: { onDone: () => void }) => {
   );
 };
 
-// What a person does to the people, whichever page shows them: change a role, take someone off or an invitation back, invite.
 const useMemberActions = () => {
   const { setMembers, notify, record } = useStore();
   const [inviting, setInviting] = useState(false);
@@ -1334,7 +1231,6 @@ const MemberDialogs = ({ actions }: { actions: ReturnType<typeof useMemberAction
   );
 };
 
-// The first few people, in a list: for a page that is not about them. A role is changed in place, and the rest is a link away.
 export const MemberRows = ({ limit = 5 }: { limit?: number }) => {
   const { members, me } = useStore();
   const actions = useMemberActions();
@@ -1370,8 +1266,6 @@ export const MemberRows = ({ limit = 5 }: { limit?: number }) => {
   );
 };
 
-// The people of the workspace: who they are, what they may do, whether their sign-in has a second step. A role is changed where
-// it is shown, an invitation can be taken back, and someone who has no second step can be asked for one.
 export const MemberManager = () => {
   const { members, notify, me } = useStore();
   const actions = useMemberActions();
@@ -1423,7 +1317,6 @@ export const MemberManager = () => {
 const KEY_SCOPES = ["읽기 전용", "배포 · 읽기", "자원 관리", "관리자 전체"] as const;
 const KEY_EXPIRIES = [["30", "30일 뒤"], ["90", "90일 뒤"], ["365", "1년 뒤"], ["0", "만료 없음"]] as const;
 
-// A key is shown once, when it is made. This one is made up: its name says it is not a real one, and nothing leaves the page.
 const NewKey = ({ onDone }: { onDone: () => void }) => {
   const { keys, setKeys, notify, record, me } = useStore();
   const [name, setName] = useState("");
@@ -1487,7 +1380,6 @@ const NewKey = ({ onDone }: { onDone: () => void }) => {
   );
 };
 
-// What a person does to the keys, whichever page shows them: make one, take one back.
 const useKeyActions = () => {
   const { setKeys, notify, record } = useStore();
   const [creating, setCreating] = useState(false);
@@ -1513,8 +1405,6 @@ const KeyDialogs = ({ actions }: { actions: ReturnType<typeof useKeyActions> }) 
   );
 };
 
-// The keys that have lately been made or used, in a list: for a page that is not about them. A key that has gone unused for 90 days
-// says so.
 export const KeyRows = ({ limit = 4 }: { limit?: number }) => {
   const { keys } = useStore();
   const actions = useKeyActions();
@@ -1548,8 +1438,6 @@ export const KeyRows = ({ limit = 4 }: { limit?: number }) => {
   );
 };
 
-// The keys that let a program in: what each may do, who made it, and whether it is still used. A key not used for 90 days is
-// flagged, because that is the key worth taking back.
 export const KeyManager = () => {
   const { keys } = useStore();
   const actions = useKeyActions();
@@ -1579,7 +1467,6 @@ export const KeyManager = () => {
   );
 };
 
-// What an action reported, kept at the top of the window while it is there. Every screen that can report places it once.
 const toneIcon = (tone: NoticeTone) => (tone === "success" ? <CheckIcon ink="success" /> : tone === "error" ? <CloseIcon ink="error" /> : <InfoIcon ink="info" />);
 
 export const NoticeBar = () => {

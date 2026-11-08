@@ -1,6 +1,5 @@
 import { Button, Checkbox, Field, Radio, SegmentControl, Select, Slider, Surface, Textarea } from "@studio-baeks/paper-ui";
 
-// The controls that follow their ground, on each ground there is, and the two new Atoms in the ways they lay out.
 const Controls = ({ at }: { at: string }) => (
   <div style={{ display: "flex", flexWrap: "wrap", gap: 16, padding: 16 }}>
     <Field aria-label={`field-${at}`} data-testid={`field-${at}`} />
@@ -42,7 +41,6 @@ export const GroundCase = () => (
         <SegmentControl.Item value="x">가</SegmentControl.Item>
         <SegmentControl.Item value="y">나다라마</SegmentControl.Item>
       </SegmentControl>
-      {/* A shared-out row in a narrow column, whose chosen choice holds more than an equal part: its words and its check. */}
       <div style={{ width: "16rem" }}>
         <SegmentControl aria-label="full outline" variant="outline" shape="rounded" size="sm" defaultValue="c" fullWidth data-testid="segment-full-outline">
           <SegmentControl.Item value="a">가</SegmentControl.Item>

@@ -15,7 +15,6 @@ const value = (ref: string) => {
 };
 
 type Spec = { size: string; weight: string; leading: string; tracking: string };
-// A role or preset as the stylesheet declares it, with each var() replaced by the value it names.
 const declared = (refs: Record<string, string>) => Object.fromEntries(Object.entries(refs).map(([key, ref]) => [key, value(ref)]));
 
 describe("Typography source is data", () => {
@@ -34,7 +33,6 @@ describe("Typography source is data", () => {
     expect(Object.keys(tokens.typography).sort()).toEqual(["preset", "role"]);
     expect(tokens.typography.role).toBe(TYPOGRAPHY.role);
     expect(tokens.typography.preset).toBe(TYPOGRAPHY.preset);
-    // The variables stay: an override names them, and the roles and presets are built on them.
     expect(emitted.has("--pui-typography-palette-font-size-14")).toBe(true);
   });
 
@@ -42,11 +40,9 @@ describe("Typography source is data", () => {
     const leaves: string[] = [];
     walkValues(TYPOGRAPHY.role, [], (_path, value) => leaves.push(value));
     walkValues(TYPOGRAPHY.preset, [], (_path, value) => leaves.push(value));
-    // Five values for each role (its strong weight too), four for the button, field and textarea at every size, the field's input line, and the badge.
     const perSize = CONTROL_SIZES.length * (1 + 1 + 1);
     expect(leaves).toHaveLength(TEXT_VARIANTS.length * 5 + perSize * 4 + CONTROL_SIZES.length + 4);
     for (const leaf of leaves) expect(emitted.has(leaf.slice("var(".length, -1)), leaf).toBe(true);
-    // Every leaf is the variable of a palette value the spec names, and no value stands in for one.
     for (const leaf of leaves) expect(leaf, leaf).toMatch(/^var\(--pui-typography-palette-/);
   });
 
@@ -148,7 +144,6 @@ describe("hero is the one fluid step", () => {
     expect(value(TYPOGRAPHY.role.hero.size)).toBe(`clamp(${rem(min)}, ${vw}vw, ${rem(max)})`);
     expect(value(TYPOGRAPHY.role.hero.leading)).toBe(String(leading));
     expect(min).toBeLessThan(max);
-    // Every other role is a fixed step: only hero names the fluid one.
     for (const [variant, spec] of Object.entries(ROLE_SPEC) as [string, Spec][]) expect(spec.size === "hero" || spec.leading === "hero", variant).toBe(variant === "hero");
   });
 });
@@ -215,7 +210,6 @@ describe("monoRule and codeRule", () => {
       expect(rule.fontSize, kind).toBe(`calc(100% * ${TYPOGRAPHY.palette.codeScale[kind]})`);
       expect(rule, kind).not.toHaveProperty("letterSpacing");
       expect(rule, kind).not.toHaveProperty("lineHeight");
-      // A fragment breaks the way the text around it does, so a code cell never narrows its column.
       expect(rule, kind).not.toHaveProperty("wordBreak");
       expect(rule, kind).not.toHaveProperty("overflowWrap");
     }

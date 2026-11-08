@@ -35,7 +35,6 @@ test("[guardrails.manifest.declared-boundaries] every path the manifest declares
   assert.equal(exists(TOKEN_LAYER), true);
   for (const system of INSPECT_SYSTEMS) assert.equal(exists(`${INSPECT_DIR}/${system}.ts`), true, system);
   assert.match(read(STROKE_OWNER.file), new RegExp(`export const ${STROKE_OWNER.name}\\b`));
-  // A runtime module is a path inside src; its reason is stated.
   for (const [module, reason] of Object.entries(RUNTIME_STYLE)) {
     assert.equal(exists(`${TOKEN_LAYER.replace(/\/tokens$/, "")}/${module.replace(/\/\*\*$/, "")}`) || exists(`${TOKEN_LAYER.replace(/\/tokens$/, "")}/${module.replace(/\/\*\*$/, "")}.ts`), true, module);
     assert.ok(reason.length > 0, module);
@@ -47,13 +46,11 @@ test("[guardrails.manifest.declared-boundaries] the app's alias, the package's e
   const exportsMap = JSON.parse(read("packages/paper-ui/package.json")).exports;
   assert.deepEqual(PACKAGE_EXPORTS, Object.keys(exportsMap));
   assert.deepEqual(PACKAGE_EXPORTS, [".", "./tokens", "./theme-boot", "./styles.css"]);
-  // One alias, in Vite and in tsconfig, to src/tokens/inspect.
   const vite = read("app/vite.config.ts");
   assert.ok(vite.includes(`/^${INSPECT_ALIAS.replace(/\//g, "\\/")}(.+)$/`), "the Vite alias");
   assert.ok(vite.includes(INSPECT_DIR.replace("packages/paper-ui/", "../packages/paper-ui/") + "/"), "the Vite alias target");
   const paths = JSON.parse(read("app/tsconfig.json")).compilerOptions.paths;
   assert.deepEqual(paths, { [`${INSPECT_ALIAS}*`]: ["../packages/paper-ui/src/tokens/inspect/*.ts"] });
-  // An inspector page is named for its system.
   assert.equal(inspectSystemOf("app/src/playground/foundations/ColorPage.tsx"), "color");
   assert.equal(inspectSystemOf("app/src/playground/foundations/typography-roles.ts"), "typography");
   assert.equal(inspectSystemOf("app/src/docs/generated/layout.ts"), "layout");

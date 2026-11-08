@@ -3,7 +3,6 @@ import { Textarea, type TextareaProps } from "@studio-baeks/paper-ui";
 import { boolControl, defineSpec, enumControl, flag, pick, sample, textControl, vocab, words } from "../schema";
 import { wide } from "./examples.css";
 
-// rows is a number; the control offers its string forms and the subject reads them back.
 type RowsControl = { rows?: string };
 
 export default defineSpec({

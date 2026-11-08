@@ -1,15 +1,8 @@
-// 관리: the made-up numbers behind the operator console — accounts, devices that are signed in, data revisions, backups,
-// what Ask remembers and how the major survey stands. Nobody here is real: the usernames are invented, the addresses are
-// in the ranges reserved for documentation (RFC 5737), the backups are names and sizes with nothing behind them, and the
-// facts are original sentences about school life.
-
 import { ago, int, pick, random, shuffle } from "../../../kit";
 import { termIndex } from "../lib/index";
 import type { Role } from "../state";
 import { CLASSROOMS, termData, TERMS, termLabel, type TermKey } from "./build";
 import { ME } from "./people";
-
-// ── accounts and the devices they are signed in on ───────────────────────────
 
 export type Account = { id: number; username: string; role: Role; demoStuId: string | null; createdAt: string };
 export type DeviceKind = "web" | "mobile";
@@ -52,13 +45,8 @@ export const firstSessions = (): DeviceSession[] => [
   device(10, 14, "guest-demo", "web", "Chrome · Linux", "198.51.100.200", 60 * 3),
 ];
 
-// ── the major survey: counts only ────────────────────────────────────────────
-// Everyone with a verified student ID except the demo account, whose own answer is added live from the app's state.
-
 export const SURVEY_TRACKS = ["수학", "정보과학", "물리학", "지구과학", "화학", "생물학"] as const;
 export const SURVEY_BASE: Record<string, number> = { 수학: 21, 정보과학: 33, 물리학: 17, 지구과학: 12, 화학: 15, 생물학: 14, 미정: 13, "아직 답 안 함": 47 };
-
-// ── what Ask remembers ───────────────────────────────────────────────────────
 
 export type MemoryPost = { id: number; title: string; postedOn: string; board: string; summary: string };
 export type MemoryFact = { id: number; postId: number; statement: string; topic: string; grades: number[]; majors: string[]; validUntil: string | null; status: "active" | "hidden"; edited: boolean };
@@ -108,8 +96,6 @@ const FACT_ROWS: readonly FactRow[] = [
 export const firstFacts = (): MemoryFact[] =>
   FACT_ROWS.map(([postId, statement, topic, grades, majors, validUntil, status, edited], index) => ({ id: index + 1, postId, statement, topic, grades, majors, validUntil, status, edited }));
 
-// ── data revisions ───────────────────────────────────────────────────────────
-
 export type VersionSource = "sync" | "edit" | "seed";
 export type Move = { class: string; from: string; to: string };
 export type ChangeSummary = {
@@ -134,7 +120,6 @@ export type VersionRow = {
   summary: ChangeSummary | null;
 };
 
-// "2026-10-29T19:19:45+09:00" → "20261029-191945"
 const stampOf = (iso: string) => `${iso.slice(0, 10).replaceAll("-", "")}-${iso.slice(11, 19).replaceAll(":", "")}`;
 export const backupName = (iso: string, kind: BackupKind, term?: string, version?: number) =>
   `ksa_timetable-${stampOf(iso)}-${kind === "before-sync" ? `sync-${term}-v${version}` : kind}.db`;
@@ -148,8 +133,6 @@ export const emptySummary = (): ChangeSummary => ({
   teachersRenamed: 0,
 });
 
-// A believable difference between two revisions of a term, drawn from the term's own classes and teachers. `scale` is how
-// much changed: the first collection after a term opens moves a lot, the later ones only a little.
 export const makeSummary = (seed: string, term: TermKey, scale: number): ChangeSummary => {
   const r = random(seed);
   const data = termData(term);
@@ -232,8 +215,6 @@ export const firstVersions = (): VersionRow[] =>
     }),
   );
 
-// ── backups ──────────────────────────────────────────────────────────────────
-
 export type BackupKind = "auto" | "before-sync" | "manual";
 export type Backup = { name: string; kind: BackupKind; note: string | null; bytes: number; createdAt: string };
 
@@ -263,8 +244,6 @@ export const firstBackups = (): Backup[] =>
     const [term, version] = note && kind === "before-sync" ? note.split(" v") : [undefined, undefined];
     return { name: backupName(at, kind, term, version ? Number(version) : undefined), kind, note, bytes: Math.round(megabytes * 1024 * 1024), createdAt: at };
   });
-
-// ── a day that follows another weekday's timetable ───────────────────────────
 
 export type Override = { id: number; date: string; sourceDay: "MON" | "TUE" | "WED" | "THU" | "FRI"; title: string };
 

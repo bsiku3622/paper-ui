@@ -1,6 +1,3 @@
-// A page that is not there (Account.tsx's `notes-empty`): the address is not one of the app's, or the document cannot be opened,
-// with the reason, and the ways out.
-
 import { Link as RouterLink } from "react-router-dom";
 
 import { Button, Stack, Text } from "@studio-baeks/paper-ui";
@@ -15,7 +12,6 @@ export const NotFound = ({ kind = "missing", reason, login = false }: { kind?: "
   useTitle("문서를 열 수 없습니다 — Paperdown");
   return (
     <Stack as="main" id="main" align="center" justify="center" gap="lg" minHeight="viewport" padding="2xl">
-      {/* The original leaves more air around the title than between the rest. */}
       <Stack align="center" gap="xl">
         <Glyph name="file-text" size="subheading" ink="secondary" />
         <Serif as="h1" variant="title" strong>{kind === "missing" ? "페이지를 찾을 수 없습니다" : "문서를 열 수 없습니다"}</Serif>

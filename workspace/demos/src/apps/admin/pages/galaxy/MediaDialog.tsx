@@ -1,6 +1,3 @@
-// One shot, larger: its details and the choice of showing it outside. The picture is drawn from the file's name, as every
-// picture in this demo is; the phone's real files are not here.
-
 import { useRef } from "react";
 
 import { Button, Stack } from "@studio-baeks/paper-ui";

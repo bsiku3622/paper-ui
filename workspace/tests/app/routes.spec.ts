@@ -46,8 +46,6 @@ test("[foundations.typography.code-breaking] a table wider than the docs column 
   expect(wrapperOverflow).toBeGreaterThan(0);
 });
 
-// The routes the site declares: its pages, the docs manifest, and the Playground sidebar as it draws its links. The
-// dark project runs a smoke pass over a few of them.
 const SMOKE = ["/", "/demo", "/docs", "/docs/get-started/install", "/playground", "/playground/button", "/playground/foundations/color"];
 
 test("[app.routes.every-route] every route of the site map, the docs manifest and the Playground sidebar draws its h1 in main, reports no error and does not overflow at 390", async ({ page }, info) => {
@@ -64,7 +62,6 @@ test("[app.routes.every-route] every route of the site map, the docs manifest an
     await page.goto(route);
     await settled(page);
     expect(new URL(page.url()).pathname, `${route} is not redirected`).toBe(route);
-    // The Demo is a product of its own: its banner holds the h1, and its main the work.
     const h1 = route === "/demo" ? page.getByRole("heading", { level: 1 }) : page.getByRole("main").getByRole("heading", { level: 1 });
     await expect(h1.first(), `${route} has an h1`).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth), `${route} overflows at 390`).toBeLessThanOrEqual(0);

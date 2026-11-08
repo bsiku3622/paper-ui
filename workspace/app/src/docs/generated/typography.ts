@@ -1,4 +1,3 @@
-// The Typography tables: the Palette as authored, and the roles and presets that choose from it.
 import { CONTROL_SIZES, type ControlSize } from "@studio-baeks/paper-ui/tokens";
 import { PRESET_SPEC, ROLE_SPEC, TEXT_INK, TYPOGRAPHY_SOURCE } from "@paper-ui/inspect/typography";
 

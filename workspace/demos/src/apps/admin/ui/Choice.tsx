@@ -1,6 +1,3 @@
-// Choice — one of a few, for a filter. The kit's Segmented while there is room for the whole row; a Select on a phone, where
-// four segments do not fit and would be clipped.
-
 import { Select } from "@studio-baeks/paper-ui";
 import type { Breakpoint } from "@studio-baeks/paper-ui/tokens";
 

@@ -4,7 +4,6 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { measureSpace, useMeasuredSpace } from "./measure";
 import { stepProbe } from "./measure.css";
 
-// jsdom lays nothing out; a probe reads the width the browser would give its step.
 const laidOut = (widths: Record<string, number>) =>
   vi.spyOn(Element.prototype, "getBoundingClientRect").mockImplementation(function (this: Element) {
     const width = widths[this.className] ?? 0;

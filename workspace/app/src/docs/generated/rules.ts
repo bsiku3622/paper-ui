@@ -1,5 +1,3 @@
-// The eight rules of the manifest, as the docs state them: the list in AGENTS.md and the foundations overview,
-// and the paragraph the package README carries. The names come from RULES, so a rule renamed there is renamed here.
 import { RULES } from "../../../../eslint-rules/manifest.js";
 
 import type { GeneratedBlock } from "./markers";

@@ -1,7 +1,3 @@
-// The sign-in window (Account.tsx's `account-modal`): the name of the app, what signing in is for, a login / register switch,
-// the two fields and the button. The account is a stand-in: any user name of the right shape signs in, and the password field
-// is never read, held in state or stored.
-
 import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import { Button, Field, Floating, FormField, IconButton, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";

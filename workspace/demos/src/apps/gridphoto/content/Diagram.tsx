@@ -1,6 +1,3 @@
-// A skewed sheet turning into a straight one: the whole app, in one look. It is a drawing, not a picture of anything, so it
-// lives here rather than in <Art>; its strokes are Paper's inks.
-
 import { diagram, drawn } from "./content.css";
 
 type Point = [number, number];

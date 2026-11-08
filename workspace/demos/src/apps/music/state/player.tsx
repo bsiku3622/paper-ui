@@ -1,9 +1,3 @@
-// 재생기. 재생은 흉내입니다: 소리는 없고, 타이머가 재생 위치를 올립니다. 대기열 · 반복 · 셔플 · 볼륨이 여기에 있고,
-// 미니 플레이어와 가사 창, 재생 화면이 모두 이것을 따라갑니다.
-//
-// 재생 위치는 0.25초마다 바뀌어서 따로 context에 둡니다. 곡이나 재생 여부는 그대로인 채 위치만 바뀌므로, 위치를 읽는
-// 화면(진행 막대, 가사)만 다시 그려지고 목록의 행들은 그대로입니다.
-
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 import { random, shuffle, useStored, useToast } from "../../../kit";
@@ -34,7 +28,6 @@ export type Player = {
   volume: number;
   muted: boolean;
 
-  // 목록을 재생합니다. start는 시작할 곡의 자리이고, shuffle을 주면 셔플을 그렇게 맞춥니다.
   play: (ids: readonly string[], start?: number, options?: { shuffle?: boolean }) => void;
   playTrack: (id: string, context: readonly string[]) => void;
   toggle: () => void;
@@ -52,7 +45,6 @@ export type Player = {
   removeAt: (index: number) => void;
   move: (from: number, to: number) => void;
   clearUpNext: () => void;
-  // 라디오: 곡 목록을 셔플 없이 이어서 틉니다.
   startRadio: (name: string, ids: readonly string[]) => void;
 };
 
@@ -65,10 +57,8 @@ export const usePlayer = () => {
   return value;
 };
 
-// 재생 위치 (초). 0.25초마다 바뀝니다.
 export const usePosition = () => useContext(PositionCtx);
 
-// 지금 곡과 닮은 곡: 같은 장르의 다른 곡을 먼저, 모자라면 아무 곡이나.
 const similar = (track: Track, taken: ReadonlySet<string>, count: number) => {
   const r = random(`similar:${track.id}:${taken.size}`);
   const genre = genreOfTrack(track);
@@ -89,7 +79,6 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   const currentId = queue.ids[queue.index];
   const current = currentId ? TRACK_BY_ID.get(currentId) : undefined;
 
-  // 시계는 ref에 두고 타이머가 올립니다. 화면에는 0.25초마다 옮겨 보여 줍니다.
   const clock = useRef(resume.id === currentId ? resume.position : 0);
   const [position, setPosition] = useState(clock.current);
 
@@ -102,7 +91,6 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
       setPosition(seconds);
     };
 
-    // 대기열과 재생 여부를 한 번에 바꿉니다. 곡이 바뀌면 처음부터입니다.
     const go = (next: Queue, play: boolean) => {
       setQueue(next);
       show(0);
@@ -254,7 +242,6 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     }, show };
   }, [setQueue, setPrefs, setResume, toast, pushHistory]);
 
-  // 타이머: 재생 중이면 0.25초마다 시계를 올리고, 곡이 끝나면 다음으로 넘어갑니다.
   const finishRef = useRef(actions.finish);
   finishRef.current = actions.finish;
   useEffect(() => {
@@ -271,7 +258,6 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     return () => window.clearInterval(timer);
   }, [playing, current]);
 
-  // 이어 듣기: 재생 위치를 가끔 저장합니다.
   useEffect(() => {
     if (!current) return;
     const save = () => setResume({ id: current.id, position: Math.floor(clock.current) });

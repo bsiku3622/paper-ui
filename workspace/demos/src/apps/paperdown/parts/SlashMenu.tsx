@@ -1,7 +1,3 @@
-// The block menu that opens when a "/" is typed in the paper (App.tsx's `slash-menu`): "블록 추가" and the nine things the
-// original offers, narrowed by what is typed after the slash. Arrow keys choose, Enter takes, Escape closes. It stands at the
-// caret and never takes the focus from the paper.
-
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Box, Button, Floating, Stack, Surface, Text } from "@studio-baeks/paper-ui";
@@ -31,7 +27,6 @@ export const SlashMenu = ({ slash, onPick, onDismiss }: { slash: SlashInfo | nul
 
   useEffect(() => setActive(0), [slash?.filter]);
 
-  // The keys are taken before the paper sees them.
   useEffect(() => {
     if (!open) return;
     const key = (event: KeyboardEvent) => {

@@ -1,6 +1,3 @@
-// Content: what the toolbar and the input rules do to a paper. Every function reads the selection, rewrites the DOM of
-// the paper's blocks and puts the selection back; it returns whether anything changed.
-
 import { tex } from "../../lib/text";
 import {
   allMarked,
@@ -30,10 +27,6 @@ export type TableOp = "row-after" | "col-after" | "row-delete" | "col-delete" | 
 const WORDS = new Set(["P", "H1", "H2", "H3", "H4", "H5", "H6"]);
 const markable = (block: HTMLElement) => block.tagName !== "PRE";
 
-// ---------------------------------------------------------------------------------------------------------------
-// Marks.
-
-// Change the marks of the words a selection covers. A selection with no words in it changes nothing.
 export const changeMarks = (root: HTMLElement, change: (marks: Marks) => Marks): boolean => {
   const carets = readCarets(root);
   if (!carets || carets.collapsed) return false;
@@ -49,21 +42,14 @@ export const toggleMark = (root: HTMLElement, name: MarkName): boolean => {
   const covered = spans(root, carets).filter((span) => markable(span.block));
   const states = covered.map((span) => allMarked(parseRuns(span.block), span.from, span.to, (marks) => Boolean(marks[name])));
   if (states.every((state) => state === null)) return false;
-  // Everything marked already: take the mark off. Otherwise put it on all of it.
   const on = states.some((state) => state === false);
   for (const span of covered) renderRuns(span.block, mapRange(parseRuns(span.block), span.from, span.to, (marks) => ({ ...marks, [name]: on ? true : undefined })));
   placeSelection(carets.start, carets.end);
   return true;
 };
 
-// A link, or none (an empty address), over a selection.
 export const setLink = (root: HTMLElement, href: string): boolean => changeMarks(root, (marks) => ({ ...marks, link: href || undefined }));
 
-// ---------------------------------------------------------------------------------------------------------------
-// Blocks.
-
-// The alignment (an inline style) goes with the words when a block changes its tag. The push of a page break stays behind: the
-// pagination puts it again where it is needed.
 const carryStyle = (from: HTMLElement, to: HTMLElement) => {
   const style = from.getAttributeNode("style");
   if (!style) return;
@@ -119,7 +105,6 @@ export const setAlign = (root: HTMLElement, align: Align): boolean => {
   return changed;
 };
 
-// The top-level blocks a selection touches.
 const topsOf = (root: HTMLElement, carets: Carets): HTMLElement[] => {
   const first = topOf(root, carets.start.block);
   const last = topOf(root, carets.end.block);
@@ -181,7 +166,6 @@ export const toggleList = (root: HTMLElement, kind: ListKind): boolean => {
   const only = tops.length === 1 ? tops[0]! : null;
   if (only && isList(only)) {
     if (listKindOf(only) === kind) {
-      // The same list again: the items become paragraphs.
       const out: HTMLElement[] = [];
       for (const item of Array.from(only.children)) {
         if (!isElement(item)) continue;
@@ -206,7 +190,6 @@ export const toggleList = (root: HTMLElement, kind: ListKind): boolean => {
   }
   if (tops.length === 0 || !tops.every((top) => WORDS.has(top.tagName))) return false;
   const list = makeList(kind);
-  // The list stands where the first block is before the blocks go into it (a paragraph is moved into its item whole).
   tops[0]!.before(list);
   for (const top of tops) {
     const item = document.createElement("li");
@@ -234,15 +217,10 @@ export const toggleQuote = (root: HTMLElement): boolean => {
   const quote = document.createElement("blockquote");
   tops[0]!.before(quote);
   quote.append(...tops);
-  // The caret was in a block that has moved; it is put back.
   placeSelection(carets.start, carets.end);
   return true;
 };
 
-// ---------------------------------------------------------------------------------------------------------------
-// Things put between the paragraphs.
-
-// A paragraph for the caret to land in after a block that has nothing after it.
 const paragraphAfter = (block: HTMLElement): HTMLElement => {
   const next = block.nextElementSibling;
   if (next && next.tagName === "P") return next as HTMLElement;
@@ -254,8 +232,6 @@ const paragraphAfter = (block: HTMLElement): HTMLElement => {
 
 const isEmptyParagraph = (block: HTMLElement | null) => Boolean(block) && block!.tagName === "P" && blockLength(block!) === 0;
 
-// Put a block where the caret is: instead of an empty paragraph, or after the block the caret is in. The caret goes to the
-// paragraph that follows it.
 const putBlock = (root: HTMLElement, block: HTMLElement): HTMLElement => {
   const carets = readCarets(root);
   const top = carets ? topOf(root, carets.end.block) : null;
@@ -411,7 +387,6 @@ export const tableOp = (root: HTMLElement, op: TableOp): boolean => {
   }
 };
 
-// Toggle a task item's box.
 export const toggleTask = (item: HTMLElement) => {
   item.dataset.checked = item.dataset.checked === "true" ? "false" : "true";
 };

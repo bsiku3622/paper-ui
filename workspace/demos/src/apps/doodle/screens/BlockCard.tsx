@@ -1,7 +1,3 @@
-// A text box, a picture or a video put on the canvas: a small card with its kind in the corner ("Text", "Image", "Video"), and a
-// delete button while it is chosen. The picture is drawn from its address (Art), because nothing here calls out to the network;
-// the prototype pointed an <img> or a player at the address.
-
 import { memo } from "react";
 
 import { Control, Divider, IconButton, Inline, Link, Stack, Surface, Text, Textarea } from "@studio-baeks/paper-ui";
@@ -28,7 +24,6 @@ export const BlockCard = memo(function BlockCard({ block, selected, onChange, on
     <Surface as={Stack} role="article" aria-label={`${kind.label} 블록`} fill="raised" border elevation={selected ? undefined : "overlay"} radius="sm" overflow="hidden">
       <Inline justify="between" paddingX="md">
         <Text as="span" variant="label" strong={false} ink="tertiary">{kind.label}</Text>
-        {/* A chosen box swaps its kind's mark for a delete button of the same size, so the top line does not jump. */}
         {selected ? (
           <IconButton size="xs" variant="ghost" aria-label="블록 삭제" onClick={() => onDelete(block.id)}><Glyph name="x" /></IconButton>
         ) : (

@@ -1,7 +1,3 @@
-// Choosing a 심화필수 전공 트랙: the six tracks by division, the one chosen shown pressed, a "추천" mark on the track the
-// course history points to (never chosen for you), and under them the requirement of the chosen track. The panel keeps its
-// height so nothing below it jumps when you choose. The prompt and the settings page both use this.
-
 import { Badge, Button, Grid, Stack, Surface, Text } from "@studio-baeks/paper-ui";
 
 import { DIVISIONS, trackRule } from "../data/majors";

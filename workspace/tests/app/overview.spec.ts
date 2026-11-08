@@ -12,10 +12,6 @@ import { roleDp } from "../support/geometry";
 import { chooseOption } from "../support/select";
 import { expectStyle, profile, type Style } from "../support/style";
 
-// The Overview is the index of specimens: every kept testid is bound here to the computed value its
-// specimen has to show. Expected values come from the token references and the recipes, which a probe
-// element placed beside the specimen resolves to the same computed value the specimen's own rule yields.
-
 const role = (variant: TextVariant) => {
   const spec = tokens.typography.role[variant];
   return { fontSize: spec.size, fontWeight: spec.weight, lineHeight: spec.leading, letterSpacing: spec.tracking };
@@ -24,9 +20,7 @@ const radius = (value: string): Style => ({ borderTopLeftRadius: value, borderTo
 const height = (size: ControlSize): Style => ({ height: tokens.shape.control.height[size] });
 const px = (value: string) => `${parseFloat(value)}px`;
 
-// A field-like control stands in a wrapper: the style of an input, a select or a Select's button is the style of its parent.
 const boxStyle = async (control: Locator, expected: Style) => expectStyle(control.locator("xpath=self::*[not(self::select or self::input or @role='combobox')] | self::select/.. | self::input/.. | self::*[@role='combobox']/.."), expected);
-// Where a control's content starts from its outer edge: the padding and the room its line takes. An inset is measured from there.
 const edgeInset = (target: Locator) => target.evaluate((element) => { const s = getComputedStyle(element); return parseFloat(s.paddingLeft) + parseFloat(s.borderLeftWidth); });
 
 const open = async (page: Page) => {
@@ -36,12 +30,10 @@ const open = async (page: Page) => {
   return errors;
 };
 
-// The roles the Type scale also draws in mono, under their sans row.
 const MONO_ROWS = ["title", "body"] as const;
 
 const SECTIONS = ["Type scale", "Color", "Surface · 면", "Atoms", "정렬 · 조합", "그 밖의 Atom"];
 
-// The boards: every Atom with a size, in the Overview's order, and how many values the axis down its side has.
 const BOARDS = {
   Button: { slug: "button", rows: VARIANTS.length },
   IconButton: { slug: "icon-button", rows: VARIANTS.length },
@@ -49,16 +41,13 @@ const BOARDS = {
   Field: { slug: "field", rows: INPUT_VARIANTS.length },
   Select: { slug: "select", rows: INPUT_VARIANTS.length },
   Textarea: { slug: "textarea", rows: INPUT_VARIANTS.length },
-  // Off, on and, for a checkbox, neither.
   Checkbox: { slug: "checkbox", rows: 3 },
   Radio: { slug: "radio", rows: 2 },
   Switch: { slug: "switch", rows: 2 },
   SegmentControl: { slug: "segment-control", rows: SEGMENT_VARIANTS.length },
-  // No status, then each a choice can take.
   Slider: { slug: "slider", rows: CHOICE_STATUSES.length + 1 },
   Spinner: { slug: "spinner", rows: 1 },
 } as const;
-// The Atoms that have no size, so no board: they stand in the last section.
 const SIZELESS = ["Label", "Divider", "Link", "Marker"];
 
 const board = (page: Page, name: keyof typeof BOARDS) => page.getByTestId(`board-${BOARDS[name].slug}`);
@@ -82,7 +71,6 @@ test("[app.playground.overview-boards] gives every Atom with a size a board: its
     await expect(here.locator("[data-cell]"), name).toHaveCount(rows * CONTROL_SIZES.length);
     await expect(here.getByRole("link", { name: `${name} 쪽에서 만지기` })).toHaveAttribute("href", `/playground/${slug}`);
   }
-  // A drawing stands at the height of its size.
   for (const size of CONTROL_SIZES) {
     await expectStyle(cell(page, "Button", `rest solid ${size}`).getByRole("button"), { height: tokens.shape.control.height[size] });
     await expectStyle(cell(page, "Field", `rest hairline ${size}`).locator("input").locator("xpath=.."), { height: tokens.shape.control.height[size] });
@@ -96,7 +84,6 @@ test("[app.playground.overview-boards] draws every cell in the state its segment
   await choose(page, "Button", "hover");
   await expectStyle(solid("hover"), tint(hoverTint("solid")));
   await expectStyle(cell(page, "Button", "hover hairline md").getByRole("button"), { borderTopColor: tokens.color.border.hover });
-  // A pointer that presses is over what it presses.
   await choose(page, "Button", "눌림");
   await expectStyle(solid("active"), { transform: `translateY(${tokens.motion.role.press.offset})`, ...tint(hoverTint("solid")) });
   await choose(page, "Button", "포커스");
@@ -104,29 +91,24 @@ test("[app.playground.overview-boards] draws every cell in the state its segment
   await choose(page, "Button", "꺼짐");
   await expect(solid("disabled")).toBeDisabled();
   await expectStyle(solid("disabled"), { opacity: tokens.color.opacity.disabled });
-  // Every state at once: the same crossing, under each state's name.
   await board(page, "Button").getByRole("switch", { name: "모든 상태 펼치기" }).check();
   await expect(board(page, "Button").locator("[data-board-sheet]")).toHaveCount(5);
   await expect(board(page, "Button").locator("[data-cell]")).toHaveCount(5 * VARIANTS.length * CONTROL_SIZES.length);
   await expectStyle(solid("hover"), tint(hoverTint("solid")));
   await expectStyle(solid("rest"), tint("transparent"));
 
-  // A mark has no hover; its press is the halo outside it.
   await expect(board(page, "Checkbox").getByRole("radio", { name: "hover", exact: true })).toHaveCount(0);
   await choose(page, "Checkbox", "눌림");
   const { focus } = tokens.shape;
   await expectStyle(cell(page, "Checkbox", "active off md").getByRole("checkbox"), { outlineStyle: "solid", outlineWidth: `calc(${focus.width} + ${focus.offset})`, outlineColor: tokens.color.interaction.active });
-  // An input frame rises under hover and rings under focus.
   await choose(page, "Field", "hover");
   await expectStyle(cell(page, "Field", "hover hairline md").locator("input").locator("xpath=.."), { borderTopColor: tokens.color.border.hover });
   await choose(page, "Field", "포커스");
   await expectStyle(cell(page, "Field", "focus hairline md").locator("input").locator("xpath=.."), ring);
-  // A segment control's state is on its items: the pointer over the one not chosen, the keyboard on the chosen one.
   await choose(page, "SegmentControl", "포커스");
   const segments = cell(page, "SegmentControl", "focus track md");
   await expectStyle(segments.getByRole("radio", { name: "7일" }), ring);
   await expectStyle(segments.getByRole("radio", { name: "1일" }), { outlineStyle: "none" });
-  // A Badge and a Spinner show what they are; they have no state to choose.
   for (const name of ["Badge", "Spinner"] as const) {
     await expect(board(page, name).getByRole("radiogroup", { name: `${name} 상태` })).toHaveCount(0);
     await expect(board(page, name)).toContainText(`${name}는 표시용이라 상태가 없습니다.`);
@@ -157,7 +139,6 @@ test("[app.playground.overview-boards] keeps every drawing live: the pointer hov
   await field.fill("값");
   await expect(field).toHaveValue("값");
   await expect(board(page, "Select").getByRole("combobox", { name: "Select ghost lg", exact: true })).toBeVisible();
-  // Laid out once per state, a name says the state as well.
   await board(page, "Switch").getByRole("switch", { name: "모든 상태 펼치기" }).check();
   await expect(board(page, "Switch").getByRole("switch", { name: "Switch on xs 꺼짐", exact: true })).toBeDisabled();
 });
@@ -191,7 +172,6 @@ test("the Type scale names under each role what its specimen is drawn at: size /
     });
     await expect(page.getByTestId(`drawn-${id}`), id).toHaveText(drawn);
   }
-  // The titles step down at one weight, from the hero to the subheading.
   const weights = await Promise.all(["hero", "headline", "display", "title", "heading", "subheading"].map((variant) => page.getByTestId(`text-${variant}`).evaluate((element) => getComputedStyle(element).fontWeight)));
   expect(new Set(weights).size).toBe(1);
 });
@@ -267,7 +247,6 @@ test("the controls of the base row share one corner and each its own inset", asy
   await expectStyle(row.getByTestId("base-field"), corner);
   expect(await edgeInset(row.getByTestId("base-field"))).toBe(roleDp(tokens.shape.control.inset.input.md));
   await boxStyle(row.getByTestId("base-select"), corner);
-  // The inset belongs to the button, which fills the frame inside its line.
   const selectFrame = row.getByTestId("base-select");
   const frameLine = await selectFrame.evaluate((element) => parseFloat(getComputedStyle(element).borderLeftWidth));
   expect(await edgeInset(selectFrame.getByRole("combobox")) + frameLine).toBe(roleDp(tokens.shape.control.inset.input.md));

@@ -1,17 +1,3 @@
-// Field — 한 줄 입력. input group 이다: 래퍼가 면·테두리·포커스링·상태를 지고, 안쪽
-// input 이 값을 담으며, 양옆에 어도먼트(아이콘·$·단위)와 액션(clear·비밀번호 보기)이 앉는다.
-//   status   info · success · warning · error (테두리 색, 생략하면 중립). error 는 aria-invalid 도.
-//   shape    rounded · pill — Button·Badge 와 같은 어휘. 검색창이 이 어휘의 본진이다.
-//   numeric  포맷 축 — 숫자 글리프만 등폭(tabular-nums). 정렬은 안 건드린다. 래퍼가 달고 input 이 이어받는다.
-//   textAlign 입력값의 글자 정렬 — start · center · end. numeric 과 직교 (우측정렬 숫자열은 numeric + textAlign="end").
-//   leading  왼쪽 어도먼트 (검색 아이콘 · "$" 프리픽스 등)
-//   trailing 오른쪽 어도먼트 (단위 "kg" · 아이콘 등)
-//   clearable  값이 있으면 × 로 지우기 (controlled·uncontrolled 양쪽). 이름은 clearLabel.
-//   showPasswordToggle  type="password" 일 때 👁 보기 토글을 켠다 (clearable 과 대칭인 opt-in). 이름은 showPasswordLabel.
-//
-// ref 는 안쪽 input 을 가리킨다. className·style·data-testid 는 래퍼(보이는 필드)로.
-// 키보드 포커스는 useFocusRing 이 input 에서 판정하고, 링은 래퍼가 그린다.
-
 import {
   forwardRef,
   useRef,
@@ -35,16 +21,12 @@ import { fieldWrap, fieldInput, fieldTextAlign, fieldAdornment, fieldAction, fie
 
 export type FieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "className" | "size" | "prefix"> & InputFrameProps & Pick<ControlForm, "shape" | "gap"> & {
   numeric?: boolean;
-  // 입력값의 글자 정렬. 안쪽 요소의 세로 정렬인 Control 의 align 과 다른 축이라 이름을 나눴다.
   textAlign?: "start" | "center" | "end";
   leading?: ReactNode;
   trailing?: ReactNode;
   clearable?: boolean;
-  // 지우기 버튼의 이름. 안 주면 PaperProvider 의 locale 이 고른 문구.
   clearLabel?: string;
-  // type="password" 일 때 👁 보기 토글을 켠다 (clearable 과 대칭인 opt-in).
   showPasswordToggle?: boolean;
-  // 보기 토글의 이름 — 눌림 여부는 aria-pressed 가 알리므로 이름은 늘 같다. 안 주면 locale 문구.
   showPasswordLabel?: string;
   onClear?: () => void;
   className?: string;
@@ -110,17 +92,15 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
   const isPassword = type === "password" && !!showPasswordToggle;
   const effectiveType = isPassword ? (revealed ? "text" : "password") : type;
 
-  // clear 버튼 가시성 — controlled 면 value, 아니면 내부 추적.
   const [innerHasValue, setInnerHasValue] = useState(() => String(defaultValue ?? "").length > 0);
   const hasValue = value !== undefined ? String(value).length > 0 : innerHasValue;
 
-  // 호출자가 먼저 — 내부 추적은 호출자가 남긴 값을 읽는다.
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange?.(e);
     if (value === undefined) setInnerHasValue(e.currentTarget.value.length > 0);
   };
 
-  // native setter + input 이벤트로 controlled·uncontrolled 양쪽에서 onChange 를 발화시킨다.
+  // Writing through the native setter and dispatching input fires onChange for controlled and uncontrolled alike.
   const clear = () => {
     const el = input.current;
     if (!el) return;
@@ -143,7 +123,6 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
       style={style}
       data-testid={testid}
       {...frameProps}
-      // 래퍼 여백을 클릭해도 input 이 포커스되게 (액션 버튼은 제외)
       onMouseDown={(e) => {
         const t = e.target as HTMLElement;
         if (t !== input.current && !t.closest("button")) {

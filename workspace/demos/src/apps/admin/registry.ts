@@ -1,6 +1,3 @@
-// The services the hub manages. Adding a service is a line here and a page for it: the sidebar, the routes and the
-// home cards all come from this array, like this.
-
 import type { GlyphName } from "../../kit";
 
 export const BASE = "/admin";
@@ -12,7 +9,6 @@ export type Service = {
   label: string;
   glyph: GlyphName;
   description: string;
-  // The service's public address, shown as "공개 사이트". A reserved example domain.
   site: string | null;
 };
 

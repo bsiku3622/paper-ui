@@ -1,6 +1,3 @@
-// The hub's frame: a sidebar with the services (the original's menu, plus the activity log), a top bar for finding things
-// and the day's notices, and the page. Below md the sidebar folds into the shell's menu button.
-
 import type { ReactNode } from "react";
 
 import { Stack, useTheme } from "@studio-baeks/paper-ui";

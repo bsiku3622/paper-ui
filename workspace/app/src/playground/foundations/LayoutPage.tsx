@@ -15,7 +15,6 @@ const { section } = LAYOUT_SOURCE;
 const { tier, nudge } = LAYOUT_SOURCE.elevation;
 const tierSpan = tier.sticky.z - tier.lifted.z;
 
-// The levels that cast a given depth of shadow, in elevation order; the first one stands for the depth. Resting has none.
 const levelsOf = (depth: Depth) => ELEVATIONS.filter((level) => tier[level].depth === depth);
 
 const ELEVATION_USE: Record<Elevation, Bilingual> = {
@@ -26,8 +25,6 @@ const ELEVATION_USE: Record<Elevation, Bilingual> = {
   toast: { ko: "가장 위 알림", en: "The topmost notice" },
 };
 
-// A card on the page canvas carrying the level's elevation, in the current theme. The stage isolates it, so its z
-// stays inside the board.
 const ElevationCard = ({ level }: { level: Elevation }) => (
   <div className={s.elevationStage}>
     <div className={`${s.elevationCard} ${elevation[level]}`}><Text variant="caption" ink="secondary">{level}</Text></div>

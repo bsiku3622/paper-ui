@@ -1,6 +1,3 @@
-// 설정: 재생(자동 재생 · 크로스페이드 · 오른쪽 창), 오디오(음질 · 돌비 · 이퀄라이저), 보관함(동기화 · 저장 공간),
-// 개인정보(재생 기록). 바꾸는 즉시 저장되고, 맨 아래의 "처음 상태로"가 이 앱이 남긴 것을 모두 지웁니다.
-
 import { useState, type ReactNode } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -26,8 +23,6 @@ const EQUALIZERS: readonly { id: Equalizer; label: string }[] = [
   { id: "late", label: "늦은 밤" },
 ];
 
-// 이름과 설명이 왼쪽, 조절하는 것이 오른쪽인 한 줄. 줄 사이는 가는 선입니다. 줄 전체가 label이라서 이름을 눌러도
-// 스위치가 켜지고 꺼집니다. 단추가 든 줄(plain)은 label이 아닙니다: label은 안의 첫 단추를 대신 눌러 버립니다.
 const Row = ({ title, note, children, first = false, plain = false }: { title: string; note?: string; children: ReactNode; first?: boolean; plain?: boolean }) => (
   <Stack>
     {first ? null : <Divider aria-hidden />}
@@ -41,7 +36,6 @@ const Row = ({ title, note, children, first = false, plain = false }: { title: s
   </Stack>
 );
 
-// 선택 상자는 폭을 정해 줍니다. 안 그러면 줄의 남은 폭을 다 차지합니다.
 const Pick = ({ children }: { children: ReactNode }) => <Box width="md">{children}</Box>;
 
 const Choices = ({ name, value, options, onChange }: { name: string; value: string; options: readonly { id: string; label: string; note?: string }[]; onChange: (id: string) => void }) => (
@@ -141,7 +135,6 @@ const LibrarySettings = () => {
   const { settings, set } = useSettings();
   const library = useLibrary();
   const toast = useToast();
-  // 저장 공간 사용량은 보관함의 앨범 수에서 가늠한 가짜 숫자입니다.
   const used = library.albums.length * 71_000_000 + library.playlists.length * 3_400_000;
   const limit = settings.storageLimit === "none" ? 16 : Number(settings.storageLimit);
   return (

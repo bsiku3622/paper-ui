@@ -96,12 +96,10 @@ test("[guardrails.source-numbers.structural-only] the check follows a same-file 
   assert.equal(await flagged("import { layered } from '../tokens/layers.css';\nconst { style } = layered('components');\nexport const probe = style({ gap: '4px' });", PACKAGE_CSS), true);
   assert.equal(await flagged("import { layered } from '../tokens/layers.css';\nexport const probe = layered('components').style({ gap: '4px' });", PACKAGE_CSS), true);
   assert.equal(await flagged("export const X = ({ dense }) => <div style={{ padding: dense ? '4px' : '8px' }} />;", APP_TSX), true);
-  // One const, read by each property that reads it: the app's width does not hide its padding.
   assert.equal(await flagged("import { style } from '@vanilla-extract/css';\nconst S = '8px';\nexport const probe = style({ width: S, padding: S });", APP_CSS), true);
   assert.equal(await flagged("import { style } from '@vanilla-extract/css';\nconst S = '8px';\nexport const probe = style({ width: S, height: S });", APP_CSS), false);
   assert.equal(await flagged("export const props = { style: { marginTop: 8 } };", APP_TSX), true);
   assert.equal(await flagged("export const X = () => <Box style={{ width: 218, gridTemplateColumns: '1fr 2fr' }} />;", APP_TSX), false);
-  // Outside a style position a number is a number.
   assert.equal(await flagged("export const X = () => <Box padding='md' data-count={8}>{16}</Box>; export const n = { padding: 8 };", APP_TSX), false);
   assert.equal(await flagged("export const n = { count: 8 };", "packages/paper-ui/src/internal/probe.ts"), false);
 });
@@ -115,12 +113,10 @@ test("[guardrails.source-numbers.structural-only] a property no category names i
     assert.equal(await flagged(css(rule), PACKAGE_CSS), false, `package ${rule}`);
     assert.equal(await flagged(css(rule), APP_CSS), false, `app ${rule}`);
   }
-  // Tab stops and grid lines are the screen's dimensions: the app states them, the package does not.
   for (const rule of ["{ tabSize: 4 }", "{ gridColumn: '2 / -2' }", "{ gridColumnStart: 2 }", "{ gridRow: 3 }", "{ gridArea: '1 / 2 / 3 / 4' }"]) {
     assert.equal(await flagged(css(rule), PACKAGE_CSS), true, `package ${rule}`);
     assert.equal(await flagged(css(rule), APP_CSS), false, `app ${rule}`);
   }
-  // A selector and a condition are not values.
   for (const rule of ["{ selectors: { '&:nth-child(2)': { padding: 0 } } }", "{ selectors: Object.fromEntries(ITEMS.map((_, index) => [`&:nth-child(${index + 1})`, { padding: 0 }])) }", "{ '@supports': { '(width: 1dvh)': { padding: 0 } } }"]) {
     assert.equal(await flagged(css(rule), PACKAGE_CSS), false, rule);
   }
@@ -178,11 +174,9 @@ test("[guardrails.source-numbers.structural-only] a number passed to a function 
     ["import { f } from './helper';", "f(0)"],
     ["", "{ gap: 0 }, 'debug-2'"],
   ]) assert.equal(await flagged(before(lines, rule), PACKAGE_CSS), false, `${lines} style(${rule})`);
-  // The property it reaches decides, so the app states its own dimension through a helper and nothing else.
   assert.equal(await flagged(before("const pick = (n) => ({ width: n });", "pick(16)"), APP_CSS), false);
   assert.equal(await flagged(before("const pick = (n) => ({ padding: n });", "pick(16)"), APP_CSS), true);
   assert.equal(await flagged(before("import { f } from './helper';", "f(0.5)"), APP_CSS), true);
-  // A mapper's parameter is an entry of its table; an entry it does not read is not a value.
   const mapped = (table, mapper) => `import { styleVariants } from "@vanilla-extract/css";\nexport const probe = styleVariants(${table}, ${mapper});`;
   assert.equal(await flagged(mapped("{ sm: 8, md: 16 }", "(value) => ({ gap: value })"), PACKAGE_CSS), true);
   assert.equal(await flagged(mapped("{ sm: 8, md: 16 }", "(_, name) => ({ gridArea: name })"), PACKAGE_CSS), false);
@@ -224,10 +218,8 @@ test("[guardrails.source-numbers.structural-only] a parameter of a same-file fun
     assert.equal(await flagged(code(lines), APP_CSS), false, `app ${lines}`);
   }
   assert.equal(await flagged(code("const pad = (n) => style({ padding: n }); pad(13);"), APP_CSS), true);
-  // The property it reaches decides: the app states its own dimension through a helper.
   assert.equal(await flagged(code("const w = (n) => style({ width: n }); w(13);"), APP_CSS), false);
   assert.equal(await flagged(code("const w = (n) => style({ width: n }); w(13);"), PACKAGE_CSS), true);
-  // JSX and a DOM write are style positions the same way.
   for (const lines of [
     "const mk = (p) => <div style={{ padding: p }} />; export const a = mk(13);",
     "const Inner = ({ p }) => <div style={{ padding: p }} />; export const X = () => <Inner p={13} />;",
@@ -276,7 +268,6 @@ test("[guardrails.source-numbers.structural-only] a `.map` or `.forEach` callbac
     assert.equal(await flagged(code, PACKAGE_CSS), false, `package ${lines}`);
     assert.equal(await flagged(code, APP_CSS), false, `app ${lines}`);
   }
-  // The property it reaches decides.
   assert.equal(await flagged(css("[218].map((n) => ({ width: n }))"), APP_CSS), false);
   assert.equal(await flagged("import { style } from '@vanilla-extract/css';\n[218, 58].map((n) => style({ width: n }));", APP_CSS), false);
   assert.equal(await flagged("import { style } from '@vanilla-extract/css';\n[218, 58].map((n) => style({ width: n }));", PACKAGE_CSS), true);
@@ -333,7 +324,6 @@ test("[guardrails.source-numbers.structural-only] in the package a style-keyed o
     "export const byIndex = { 0: 'a', 1: 'b' };",
     "export const geometry = { button: sizes((size) => ({ height: height[size], paddingInline: 0 } satisfies StyleRule)) };",
   ]) for (const path of PLAIN) assert.equal(await flagged(code, path), false, `${path}: ${code}`);
-  // The token layer holds the values, a test asserts them, and the app keeps its own objects.
   assert.equal(await flagged("export const faded = { opacity: 0.5 };", "packages/paper-ui/src/tokens/probe.ts"), false);
   assert.equal(await flagged("export const faded = { opacity: 0.5 };", "packages/paper-ui/src/atoms/Probe.test.ts"), false);
   assert.equal(await flagged("export const faded = { opacity: 0.5 };", "app/src/pages/probe.ts"), false);
@@ -380,7 +370,6 @@ test("[guardrails.source-numbers.media-keys] a media or container query takes it
     assert.equal(await flagged(css(rule), PACKAGE_CSS), false, `package ${rule}`);
     assert.equal(await flagged(css(rule), APP_CSS), false, `app ${rule}`);
   }
-  // A keyframes block opens and closes at structural selectors.
   assert.equal(await flagged("import { keyframes } from '@vanilla-extract/css';\nexport const probe = keyframes({ '0%': { opacity: 0 }, '25%': { opacity: 1 }, '100%': { opacity: 0 } });", PACKAGE_CSS), true);
   assert.equal(await flagged("import { keyframes } from '@vanilla-extract/css';\nexport const probe = keyframes({ from: { opacity: 0 }, '50%': { opacity: 1 }, to: { opacity: 0 } });", PACKAGE_CSS), false);
 });
@@ -412,7 +401,6 @@ test("[guardrails.source-numbers.media-keys] a query key is followed through tab
     ["const on = true;", "{ '@media': { ...(on ? { '(max-width: 760px)': { gap: 0 } } : {}) } }"],
     ["import { block } from './queries';", "{ '@media': block }"],
     ["import { block } from './queries';", "{ '@media': { ...block } }"],
-    // Only the breakpoint role passes, and only the real one.
     ["import { tokens } from '@studio-baeks/paper-ui/tokens';", "{ '@media': { [`(max-width: ${tokens.shape.dimension.width.md})`]: { gap: 0 } } }"],
     ["const tokens = { layout: { breakpoint: { md: '760px' } } };", "{ '@media': { [`(max-width: ${tokens.layout.breakpoint.md})`]: { gap: 0 } } }"],
     ["import { tokens } from './fake';", "{ '@media': { [`(max-width: ${tokens.layout.breakpoint.md})`]: { gap: 0 } } }"],
@@ -441,12 +429,9 @@ test("[guardrails.source-numbers.media-keys] a query key is followed through tab
     assert.equal(await flagged(before(lines, rule), PACKAGE_CSS), false, `package ${lines} ${rule}`);
     assert.equal(await flagged(before(lines, rule), APP_CSS), false, `app ${lines} ${rule}`);
   }
-  // The package reads the same role through the barrel.
   assert.equal(await flagged(withTokens("{ '@media': { [`(max-width: ${tokens.layout.breakpoint.md})`]: { gap: 0 } } }", "../tokens"), PACKAGE_CSS), false);
-  // What a query holds is still read as a rule.
   assert.equal(await flagged(before("const FORCED = '(forced-colors: active)';", "{ '@media': { [FORCED]: { padding: '9px' } } }"), PACKAGE_CSS), true);
   assert.equal(await flagged(before("", "{ '@media': { ...{ '(hover: hover)': { padding: '9px' } } } }"), PACKAGE_CSS), true);
-  // A name from a module the manifest does not declare for dimensions cannot be read.
   const local = before("import { DEMO_MEDIA, maxWidth } from './layout';", "{ '@media': { [DEMO_MEDIA.rail]: { gap: 0 }, [maxWidth(900)]: { gap: 0 } } }");
   assert.equal(await flagged(local, "app/src/pages/demo.css.ts"), true);
 });
@@ -488,7 +473,6 @@ test("[guardrails.source-numbers.app-roles] the app reads no typography palette"
     "import { tokens } from '@studio-baeks/paper-ui/tokens';\nconst { typography: { palette } } = tokens;\nexport const p = palette.weight.bold;",
   ]) assert.equal(await flagged(code, APP_TSX), true, code);
   const read = "import { tokens } from '@studio-baeks/paper-ui/tokens';\nexport const p = tokens.typography.palette.fontSize;";
-  // No page is excused: the public tree has no palette, and the one that shows it reads it through the inspector alias.
   for (const path of ["app/src/playground/foundations/TypographyPage.tsx", "app/src/playground/foundations/typography-roles.ts", "app/src/playground/foundations/ShapePage.tsx"]) assert.equal(await flagged(read, path), true, path);
   assert.equal(await flagged("import { TYPOGRAPHY } from '@paper-ui/inspect/typography';\nexport const p = TYPOGRAPHY.palette.fontSize;", "app/src/playground/foundations/TypographyPage.tsx"), false);
   assert.equal(await flagged("import { tokens } from '@studio-baeks/paper-ui/tokens';\nexport const p = tokens.typography.role.body.size;", APP_TSX), false);

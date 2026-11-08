@@ -1,8 +1,3 @@
-// WireGuard: who is connected, how much they move, and the way to add or drop a device. The numbers at the top and the
-// groups below are the original's (내 기기 · 친구 · 기타 peer); the traffic chart is the original's polyline with axes,
-// a legend, a hover readout and a table behind it, and each peer now has a page of its own. Everything re-reads every ten
-// seconds, as the original did.
-
 import { useEffect, useState } from "react";
 import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
 
@@ -53,7 +48,6 @@ export const WireGuardPage = () => {
   const [config, setConfig] = useState<Pick<PeerRow, "name" | "allowedIp"> | null>(asked === "config" ? (rows[0] ?? null) : null);
   const [removing, setRemoving] = useState<PeerRow | null>(asked === "remove" ? (rows[4] ?? null) : null);
   const [pending, setPending] = useState<Pending | null>(asked === "pending" && rows[0] ? { publicKey: rows[0].publicKey, name: rows[0].name, allowedIp: rows[0].allowedIp } : null);
-  // The page re-reads every ten seconds; once a new peer is awaited, every second.
   useTick(pending ? 1000 : 10_000);
 
   const at = now();
@@ -139,7 +133,6 @@ export const WireGuardPage = () => {
     </Stack>
   );
 
-  // Who moved the most in the last day, by what they received: ranked bars on one baseline, largest first.
   const talkers = all
     .map((view) => ({ view, bytes: hourlyUsage(view.row, view.peer, at, 24).reduce((sum, hour) => sum + hour.download, 0) * 1024 * 1024 }))
     .sort((a, b) => b.bytes - a.bytes)
@@ -273,7 +266,6 @@ export const WireGuardPage = () => {
   );
 };
 
-// A copy button that says it copied.
 const IconCopy = ({ label, done, onCopy }: { label: string; done: boolean; onCopy: () => void }) => (
   <IconButton size="sm" variant="ghost" aria-label={done ? "복사됨" : label} onClick={onCopy}>
     <Glyph name={done ? "check" : "copy"} />

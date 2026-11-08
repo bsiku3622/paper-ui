@@ -1,6 +1,3 @@
-// What the top bar's search finds: every kind of thing the dashboard holds, in groups, with the words that matched marked. It looks
-// in the whole workspace whatever the bar's scope is, because a search that hides what you asked for is the wrong kind of help.
-
 import { useState, type ReactNode } from "react";
 import { Link as RouterLink, useSearchParams } from "react-router-dom";
 
@@ -14,7 +11,6 @@ type Group = { id: string; title: string; hits: Hit[] };
 const SHOWN = 5;
 const TRY = ["route-optimizer", "SEC-1042", "production", "롤백", "김서연"];
 
-// The matched words in a marker, the rest as it was.
 const Highlight = ({ text, words }: { text: string; words: string }): ReactNode => {
   const at = words ? text.toLowerCase().indexOf(words) : -1;
   if (at < 0) return text;

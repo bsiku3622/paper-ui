@@ -1,15 +1,3 @@
-// 수강 정정 — a tool for the weeks when courses can still be changed. Given one student's timetable, it finds the ways to
-// change it — move to another section, drop, add a subject — in which no hour is used twice, and shows the result in the
-// grid before anyone has to ask the school. It knows the term's sections and who sits in them, not how many seats are left,
-// so a clash of hours is the only thing it judges.
-//
-// On the left, the week (a combination previewed, or the timetable as it is). On the right, in order: what to do with each
-// subject, what to add, the combinations that work, and who could swap a seat. The plan being worked on is kept in this
-// browser and comes back on reload. The page is open only while the admin has the 정정 기간 on, for the term it is on for.
-//
-// Screenshots: ?demo=moves|plan|target|friend|blank seeds a plan, ?demo=closed|off shows how the closed page reads (the
-// stored settings are not touched), ?open=<subject>, ?add=<words>, ?who=<words> — see trade/model.ts.
-
 import { Link as RouterLink, useSearchParams } from "react-router-dom";
 
 import { Badge, Button, Grid, Stack, Text } from "@studio-baeks/paper-ui";
@@ -30,9 +18,6 @@ import { SubjectsCard } from "./trade/Subjects";
 const daysUntil = (from: string, to: string) => Math.round((new Date(`${to}T00:00:00`).getTime() - new Date(`${from}T00:00:00`).getTime()) / 86_400_000);
 const isDate = (value: string) => /^\d{4}-\d{2}-\d{2}$/.test(value);
 
-// ── while it is closed ───────────────────────────────────────────────────────
-
-// `pretend` is for a screenshot: how the page reads when the term is another one, or when the admin has it off.
 const Closed = ({ pretend }: { pretend: "term" | "off" | null }) => {
   const { term, tradeConfig, session } = useClasses();
   const until = isDate(tradeConfig.deadline) ? dateLabel(tradeConfig.deadline) : tradeConfig.deadline;
@@ -68,8 +53,6 @@ const Closed = ({ pretend }: { pretend: "term" | "off" | null }) => {
     </>
   );
 };
-
-// ── while it is open ─────────────────────────────────────────────────────────
 
 const Workspace = () => {
   const { term, tradeConfig, clock } = useClasses();

@@ -1,20 +1,3 @@
-// paper/source-isolation — only the token layer reads raw values, and every other file reaches them by a path the
-// manifest declares.
-//
-//   (a) A package file outside src/tokens imports src/tokens only through its barrel (index.ts), through a
-//       binding-free import of a stylesheet there (`import "../tokens/variables.css"`), or through the layer
-//       module (tokens/layers.css.ts), which holds names and wrappers and no value. src/tokens/inspect is never
-//       importable by package code.
-//   (b) An app or fixture file imports nothing that resolves into packages/*/src (the manifest's TOOLING is the
-//       one exception), the package only through its exports, and @paper-ui/inspect/<system> only from that
-//       system's inspector.
-//   (c) In an inspector, a value derived from what it imports from the inspect alias reaches text, and the kit's
-//       display parts, and nothing else: not `style`, not `className`, not a prop of a package component other
-//       than children, title and aria-*.
-//
-// Every file outside src/tokens also writes no `--pui-` variable name as a string; sourceVars() names them.
-// Test files are verification code and are exempt from all of it.
-
 import {
   INSPECT_ALIAS,
   INSPECT_DIR,
@@ -42,7 +25,6 @@ const isStylesheet = (target) => target.endsWith(".css");
 const intoPackageSource = (target) => /^packages\/[^/]+\/src(?:\/|$)/.test(target);
 
 const ITERATORS = new Set(["map", "flatMap", "filter", "forEach", "find", "findLast", "some", "every", "reduce", "reduceRight", "sort", "toSorted"]);
-// A method whose callback's return value is what comes out. filter, find and sort hand back the receiver's own members.
 const PRODUCERS = new Set(["map", "flatMap", "reduce", "reduceRight", "from"]);
 const ARITHMETIC = new Set(["+", "-", "*", "/", "%", "**"]);
 const TYPE_WRAPPERS = new Set(["TSAsExpression", "TSSatisfiesExpression", "TSNonNullExpression", "TSTypeAssertion", "TSInstantiationExpression", "ChainExpression"]);
@@ -80,8 +62,6 @@ export const sourceIsolationRule = {
     const owner = inspectSystemOf(file);
     const visitors = {};
 
-    // ── (a) and (b): where an import points ───────────────────────────────────
-
     const checkImport = (node, specifier, hasBindings) => {
       if (typeof specifier !== "string") return;
       if (inPackage && !inTokens) {
@@ -118,15 +98,11 @@ export const sourceIsolationRule = {
     visitors.ExportAllDeclaration = (node) => checkImport(node, node.source.value, true);
     visitors.ImportExpression = (node) => { if (node.source.type === "Literal") checkImport(node, node.source.value, true); };
 
-    // ── The variable literal ──────────────────────────────────────────────────
-
     if (!inTokens && (inPackage || inApp)) {
       const flag = (node, text) => { if (VARIABLE_LITERAL.test(text)) context.report({ node, messageId: "variable" }); };
       visitors.Literal = (node) => { if (typeof node.value === "string" && node.parent.source !== node) flag(node, node.value); };
       visitors.TemplateElement = (node) => flag(node, node.value.cooked ?? node.value.raw);
     }
-
-    // ── (c): what an inspector derives from the source ───────────────────────
 
     if (owner !== undefined && inApp) Object.assign(visitors, inspectorFlow(context, source, file));
 
@@ -134,11 +110,6 @@ export const sourceIsolationRule = {
   },
 };
 
-// The data flow of an inspector file. A value is derived when it comes from an import of the inspect alias or of
-// an inspector's own data module, through variables, member chains, calls, destructuring, and the callback
-// parameters of a method called on a derived receiver. A local component or function is read with its call-site
-// arguments. A lookup keyed by a derived value into a map that is not derived (a class map, a literal specimen
-// table) hands back the map's own entry, so it is not derived: only the key came from the source.
 function inspectorFlow(context, source, file) {
   const memo = new Map();
   const running = new Set();
@@ -149,7 +120,6 @@ function inspectorFlow(context, source, file) {
     return scope?.set.get(identifier.name);
   };
 
-  // An import from the alias, or from a sibling module that is itself an inspector's.
   const isSourceImport = (declaration) => {
     if (declaration.importKind === "type") return false;
     const specifier = declaration.source.value;
@@ -217,7 +187,6 @@ function inspectorFlow(context, source, file) {
   };
   const returnsDerived = (fn) => returns(fn).some(derived);
 
-  // The function a call or a JSX element names, when this file defines it.
   const localFunction = (callee) => {
     if (callee.type !== "Identifier") return undefined;
     const variable = variableOf(callee);
@@ -243,7 +212,6 @@ function inspectorFlow(context, source, file) {
     }) || variable.references.some((reference) => reference.writeExpr && reference.identifier !== identifier && derived(reference.writeExpr));
   };
 
-  // Which call-site argument or callback receiver reaches this parameter.
   const parameterDerived = (fn, name) => {
     const call = fn.parent;
     if (call?.type === "CallExpression" && call.arguments.includes(fn)) {
@@ -276,7 +244,6 @@ function inspectorFlow(context, source, file) {
     return false;
   };
 
-  // Does the JSX attribute feed the destructured prop `name` (or any prop, when the parameter is one identifier)?
   const propertyNamed = (param, name, attribute) => {
     if (param.type === "Identifier") return true;
     const pattern = param.type === "AssignmentPattern" ? param.left : param;
@@ -288,8 +255,6 @@ function inspectorFlow(context, source, file) {
   };
 
   const attributeDerived = (attribute) => attribute.value?.type === "JSXExpressionContainer" && derived(attribute.value.expression);
-
-  // ── The elements the page renders ────────────────────────────────────────
 
   const importOf = (name) => {
     const root = rootOf(name);

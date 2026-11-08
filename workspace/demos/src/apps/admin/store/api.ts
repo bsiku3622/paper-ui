@@ -1,6 +1,3 @@
-// What the hub asks its servers to do, answered locally: each call waits a moment, checks what the real one would check,
-// changes the store and writes the activity log. A "no" is an ApiError with a sentence the person can act on.
-
 import { useCallback } from "react";
 
 import { random } from "../../../kit";
@@ -14,8 +11,6 @@ import { KEY_PATTERN, makeId } from "../lib/fake";
 import { formatBytes, mimeOf } from "../lib/format";
 import { LATENCY, sleep } from "../lib/hooks";
 import { useAdmin } from "./store";
-
-// files ---------------------------------------------------------------------------------------------------------------
 
 export type NewFile = {
   title: string;
@@ -41,7 +36,6 @@ export type FilePatch = {
 
 const SLUG = /^[0-9A-Za-z가-힣][0-9A-Za-z가-힣_-]{1,63}$/;
 
-// A title becomes an address by keeping its Latin letters and digits; a Korean-only title gets a short random one.
 const slugFor = (title: string, taken: ReadonlySet<string>, spare: string) => {
   const ascii = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 32);
   const base = ascii.length >= 3 ? ascii : `file-${spare}`;
@@ -58,8 +52,6 @@ const checkLimits = (maxDownloads: number | null | undefined, expiresAt: number 
 export const useFilesApi = () => {
   const { files, setFiles, log } = useAdmin();
 
-  // The row a finished upload leaves behind. The time an upload takes is the caller's to show. An address made from the title
-  // is chosen against the shelf as it is when the row is added, so several files of one upload never take the same one.
   const createFile = useCallback(
     (input: NewFile): void => {
       const title = input.title.trim() || input.name;
@@ -108,7 +100,6 @@ export const useFilesApi = () => {
       if (visibility === "password" && current.visibility !== "password" && !patch.password) throw new ApiError("비밀번호 공개로 바꾸려면 비밀번호가 있어야 합니다.");
       const expiresAt = patch.expiresAt === undefined ? current.expiresAt : patch.expiresAt;
       const maxDownloads = patch.maxDownloads === undefined ? current.maxDownloads : patch.maxDownloads;
-      // A limit that was already behind us is allowed to stay as it is; only a changed one must lie ahead.
       checkLimits(maxDownloads, expiresAt === current.expiresAt ? null : expiresAt);
       const next: FileRow = { ...current, title, slug, description: (patch.description ?? current.description).trim(), visibility, expiresAt, maxDownloads, updatedAt: now() };
       setFiles((list) => list.map((file) => (file.id === id ? next : file)));
@@ -129,7 +120,6 @@ export const useFilesApi = () => {
     [files, setFiles, log],
   );
 
-  // Ends a share at once, without deleting it: the link stops working, the numbers stay.
   const stopSharing = useCallback(
     async (id: string) => {
       await sleep(LATENCY.save);
@@ -145,10 +135,7 @@ export const useFilesApi = () => {
   return { createFile, patchFile, removeFile, stopSharing };
 };
 
-// How long an upload of `size` bytes seems to take, in milliseconds: a second for nothing, a little more for a lot.
 export const uploadDuration = (size: number) => Math.min(4200, 1100 + (size / (60 * 1024 * 1024)) * 1000);
-
-// wireguard -----------------------------------------------------------------------------------------------------------
 
 export type PeerKindInput = "personal" | "friend";
 
@@ -225,8 +212,6 @@ export const useWireGuardApi = () => {
 
   return { addPeer, removePeer, setRateLimit, renamePeer };
 };
-
-// wake-on-lan ---------------------------------------------------------------------------------------------------------
 
 const MAC = /^([0-9a-f]{2}:){5}[0-9a-f]{2}$/i;
 const ADDRESS = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
@@ -311,8 +296,6 @@ export const useWolApi = () => {
 
   return { wake, addDevice, updateDevice, removeDevice };
 };
-
-// galaxy --------------------------------------------------------------------------------------------------------------
 
 export const useGalaxyApi = () => {
   const { media, setMedia, log } = useAdmin();

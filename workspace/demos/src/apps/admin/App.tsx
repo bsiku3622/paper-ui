@@ -1,6 +1,3 @@
-// 관리 콘솔: files, WireGuard, Galaxy and Wake-on-LAN behind one login, with mock data.
-// The routes are / and /s/:id under /admin, plus an activity log, a search and a page for each file, peer and machine. Nothing here talks to a server: src/apps/admin/store is the server, kept in the browser.
-
 import { Route, Routes } from "react-router-dom";
 
 import { LoginGate } from "./auth/LoginGate";

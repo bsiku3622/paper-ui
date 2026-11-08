@@ -1,8 +1,3 @@
-// The formatting toolbar, in the original's order and groups: history; paragraph kind, face and size; marks and link;
-// alignment and leading; lists and quote; image, table, formula and rule; and at the far end the page options and the zoom.
-// A control tells the editor what to do (`run`) or the page what to change (`onSettings`); what the buttons show (bold on, a
-// list, a table) is read from the selection.
-
 import { useEffect, useState, type ReactNode } from "react";
 
 import { Box, Button, Divider, Field, Floating, IconButton, Inline, Select, Stack, Surface, Text } from "@studio-baeks/paper-ui";
@@ -12,9 +7,6 @@ import type { Command, EditorState } from "../content/paper";
 import { LEADINGS, SIZES, type FontFace, type Settings } from "../lib/types";
 import { PageOptions, ZoomSelect } from "./PageOptions";
 
-// An icon button that can be switched on. The pressed look is Paper's own selected face; IconButton's type does not offer
-// `selected` (Button's does), but its body takes it, so it is passed through. The buttons keep the focus where it was: the
-// selection in the paper must stay.
 const Tool = ({ label, glyph, on, disabled, onPress }: { label: string; glyph: GlyphName; on?: boolean; disabled?: boolean; onPress: () => void }) => {
   const toggle = on === undefined ? {} : { selected: on };
   return (
@@ -26,7 +18,6 @@ const Tool = ({ label, glyph, on, disabled, onPress }: { label: string; glyph: G
 
 const Group = ({ children }: { children: ReactNode }) => <Inline gap="xs" align="center">{children}</Inline>;
 
-// The size of the letters, in points. A number is applied when the field is left or Enter is pressed.
 const SizeField = ({ value, onApply }: { value: number; onApply: (text: string) => void }) => {
   const [draft, setDraft] = useState(String(value));
   useEffect(() => setDraft(String(value)), [value]);
@@ -48,7 +39,7 @@ const SizeField = ({ value, onApply }: { value: number; onApply: (text: string) 
           if (draft !== String(value)) onApply(draft);
         }}
         onKeyDown={(event) => {
-          // The key must not go on to the paper, which the change gives the focus to.
+          // The key must not reach the paper, which the change gives the focus to.
           if (event.key === "Enter") {
             event.preventDefault();
             event.currentTarget.blur();
@@ -146,10 +137,8 @@ export const Toolbar = ({ state, settings, pages, narrow, run, onSettings, onFon
   );
 };
 
-// The table button: a table is put in; inside one, rows and columns are added and taken away.
 const TableMenu = ({ inTable, run }: { inTable: boolean; run: (command: Command) => void }) => {
   const [open, setOpen] = useState(false);
-  // The menu does not take the focus, so Escape is heard on the window (the original closes its menus the same way).
   useEffect(() => {
     if (!open) return;
     const close = (event: KeyboardEvent) => {

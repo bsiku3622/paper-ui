@@ -1,9 +1,3 @@
-// 소개 — what a visitor who is not signed in sees at /classes/welcome, and where signing out leads. The app is closed to
-// anyone without an account, so this is the only page that explains it from outside.
-//
-// Nothing real goes on this screen: it lies in front of the sign-in, so anyone can read it. The two samples in the first
-// view (the class you are in, a search) use made-up subjects, rooms and times — no student, no teacher, no real timetable.
-
 import { Link as RouterLink } from "react-router-dom";
 
 import { Badge, Box, Button, Divider, Grid, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";
@@ -13,9 +7,6 @@ import { path } from "../state";
 import { Eyebrow } from "../ui/parts";
 import { Frame } from "./auth/Frame";
 
-// ── the two samples ──────────────────────────────────────────────────────────
-
-// The home screen's first answer: the class you are in, the room, how long is left, what comes next.
 const SampleNow = () => {
   const face = useFace();
   return (
@@ -44,7 +35,6 @@ const SampleNow = () => {
   );
 };
 
-// The search box: initials and logic work in it; the answer is the subjects that are left.
 const SampleSearch = () => {
   const face = useFace();
   return (
@@ -66,8 +56,6 @@ const SampleSearch = () => {
     </Surface>
   );
 };
-
-// ── what it says ─────────────────────────────────────────────────────────────
 
 const FEATURES: readonly { glyph: GlyphName; title: string; body: string }[] = [
   { glyph: "house", title: "오늘의 시간표", body: "지금 몇 교시이고 어느 교실로 가야 하는지가 맨 위에 보입니다. 오늘의 수업과 급식은 그 아래로 이어집니다." },

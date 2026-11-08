@@ -1,6 +1,3 @@
-// The console on the dashboard: the command line, and the newest lines of the log in a box that scrolls. The page of the
-// same name (Console) shows the whole log with filters; both read the same mock log.
-
 import { useState } from "react";
 
 import { Box, Divider, IconButton } from "@studio-baeks/paper-ui";

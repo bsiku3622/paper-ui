@@ -109,7 +109,6 @@ test("[primitives.focus-scope.options] FocusScope contains focus and restores th
 test("[primitives.visually-hidden.accessible] hidden content names the button and a focusable skip link becomes visible", async ({ page }) => {
   await openPlayground(page, "visually-hidden", "VisuallyHidden");
   await expect(page.getByRole("button", { name: "새 항목 추가", exact: true })).toBeVisible();
-  // The page has a skip link of its own, outside <main>; this is the specimen's.
   const skip = page.getByRole("main").getByRole("link", { name: "본문으로 건너뛰기", exact: true });
   await skip.focus();
   await expect(skip).toBeFocused();

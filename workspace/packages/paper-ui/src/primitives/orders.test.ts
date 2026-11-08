@@ -1,7 +1,3 @@
-// The two orders of the Primitives are pinned by what the files import and what the stylesheets read.
-// The first order is the ground and leans on no second-order folder; the second order is Box plus one
-// capability, and its folders reach each other along the few edges below and no others.
-
 import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -12,18 +8,13 @@ import { PRIMITIVE_ORDERS } from "../inventory";
 const primitives = dirname(fileURLToPath(import.meta.url));
 const src = dirname(primitives);
 
-// The second-order folders, by the name of the group that holds them.
 const SECOND = PRIMITIVE_ORDERS.second.map((group) => group.toLowerCase());
 
-// select → focus: a group is one tab stop. float → paint: the scrim only. Nothing else reaches across, and
-// nothing but Atoms and callers reaches press: a part is a native button and `<Pressable as={Part}>` gives it a press.
 const EDGES: Record<string, readonly string[]> = {
   select: ["focus"],
   float: ["paint"],
 };
 
-// internal/ sits below the primitives, which makes it the way around the edges above. What second-order folders share
-// through it is general tools, named here. A capability's own state is not one: a shared module holds no context.
 const SHARED_INTERNAL = ["errors", "joinClass", "measure", "refs", "render-target", "useControllableState"];
 
 const walk = (dir: string): string[] =>
@@ -49,7 +40,6 @@ const importsOf = (path: string): Import[] => {
   return [...named, ...bare].filter(({ from }) => from.startsWith("."));
 };
 
-// The primitives folder a relative import lands in: "" for a file directly under primitives, undefined outside.
 const folderOf = (file: string, from: string): string | undefined => {
   const parts = relative(primitives, resolve(dirname(file), from)).split(sep);
   return parts[0] === ".." ? undefined : parts.length > 1 ? parts[0] : "";

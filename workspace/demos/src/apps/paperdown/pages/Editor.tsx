@@ -1,11 +1,3 @@
-// The editor (App.tsx): a header, the toolbar, the paper on the canvas with its caption above and "문서 끝" under it, and the
-// status bar at the foot. The paper is written on directly (content/paper.tsx). A signed-in account adds the rail of its notes
-// at the left. `local` is the document this browser keeps; any other id is a note of the account.
-//
-//   /paperdown/documents/local            the guest's document
-//   /paperdown/documents/<id>             a note of the signed-in account
-//   /paperdown/documents/local?legacy     the same, with the bar the old address shows
-
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
@@ -37,7 +29,6 @@ import { NotFound } from "./NotFound";
 const IMAGE_ACCEPT = "image/png,image/jpeg,image/webp,image/gif";
 const safeName = (title: string) => (title.trim() || "새로운 문서").replace(/[\\/:*?"<>|]/g, "-");
 
-// A document file's contents as a document: this app's own file, or a Paperdown file whose Markdown is read.
 const fromFile = async (file: File, current: Settings): Promise<DocumentData> => {
   const text = await file.text();
   if (file.name.endsWith(".json")) {
@@ -56,7 +47,6 @@ const Workspace = ({ id }: { id: string }) => {
   const [search] = useSearchParams();
   const first = useRef<DocumentData>(store.find(id)!);
   const [doc, setDoc] = useState<DocumentData>(first.current);
-  // The document that is on the paper, and a count that says when another one is put there.
   const [load, setLoad] = useState({ html: first.current.html, round: 0 });
   const [state, setState] = useState<EditorState>(NO_STATE);
   const [text, setText] = useState("");
@@ -75,7 +65,6 @@ const Workspace = ({ id }: { id: string }) => {
   const dirty = useRef(false);
   const account = id !== "local" && store.user !== null;
   const s = doc.settings;
-  // What the account says about keeping this note, when it is not well (shown for `?cloud=…`), and whether its bar is open.
   const [cloud, setCloud] = useState<CloudState | null>(id !== "local" ? parseCloud(search.get("cloud")) : null);
   const [barOpen, setBarOpen] = useState(true);
   const [reloading, setReloading] = useState(false);
@@ -88,7 +77,6 @@ const Workspace = ({ id }: { id: string }) => {
     };
   }, [doc.title]);
 
-  // The document is kept a moment after the last change, and when the editor is left.
   useEffect(() => {
     if (doc === first.current) return;
     dirty.current = true;
@@ -106,9 +94,6 @@ const Workspace = ({ id }: { id: string }) => {
 
   const settings = useCallback((patch: Partial<Settings>) => setDoc((now) => ({ ...now, settings: { ...now.settings, ...patch }, updatedAt: Date.now() })), []);
 
-  // ---------------------------------------------------------------------------------------------------------------
-  // Files.
-
   const download = useCallback((): boolean => {
     const now = docRef.current;
     try {
@@ -122,7 +107,6 @@ const Workspace = ({ id }: { id: string }) => {
     }
   }, [toast]);
 
-  // A dialog goes, and the focus goes back to the paper.
   const closeDialog = useCallback(() => {
     setDialog(null);
     window.setTimeout(() => paper.current?.focus(), 0);
@@ -162,8 +146,6 @@ const Workspace = ({ id }: { id: string }) => {
     }
   }, [toast]);
 
-  // The exports that make a file are not made here: a PDF or a PNG would need what the original draws them with. The button
-  // says it is working, and the toast says what the original says, with a word that this is a demo.
   const pretend = useCallback((label: string, done: string) => {
     setBusy(label);
     window.setTimeout(() => {
@@ -190,10 +172,6 @@ const Workspace = ({ id }: { id: string }) => {
     return () => window.removeEventListener("keydown", keys);
   }, [download]);
 
-  // ---------------------------------------------------------------------------------------------------------------
-  // What the toolbar and the dialogs decide.
-
-  // With nothing selected the face and the size are the paper's; with words selected they are theirs.
   const onFont = (font: FontFace) => {
     if (paper.current?.collapsed() ?? true) {
       settings({ font });
@@ -344,7 +322,6 @@ export const EditorPage = () => {
   const navigate = useNavigate();
   const narrow = useMedia("(max-width: 767px)");
   const [removing, setRemoving] = useState<DocumentData | null>(null);
-  // The id whose document has been fetched. The guest's is at hand; a note of the account takes a moment, as in the original.
   const [fetched, setFetched] = useState<string | null>(id === "local" ? id : null);
   useEffect(() => {
     if (id === "local") return setFetched(id);

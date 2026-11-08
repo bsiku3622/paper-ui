@@ -2,13 +2,10 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { pageErrors } from "../support/console";
 
-// A visitor whose browser asks for English reads the Playground in English. The Korean type specimens (the Type scale's pangram, the
-// Text page's sample) are Korean on purpose, and code is code; everything else in the main landmark holds no Hangul.
 test.use({ locale: "en-US" });
 
 const HANGUL = /[ᄀ-ᇿ㄰-㆏가-힣]/;
 
-// The words of the main landmark outside what is Korean on purpose.
 const spoken = async (main: Locator): Promise<string> =>
   main.evaluate((element) => {
     const copy = element.cloneNode(true) as HTMLElement;
@@ -50,7 +47,6 @@ test("every page of the sidebar speaks English", async ({ page }) => {
   for (const path of paths) {
     await page.goto(path);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    // The type specimens are Korean glyph samples on purpose.
     const korean = (await spoken(page.getByRole("main"))).replace(/Aa 가나다?|TRACKING · 가나다|다람쥐 헌 쳇바퀴/g, "");
     expect(korean.match(HANGUL) === null, `${path}: ${korean.match(/.{0,30}[ᄀ-ᇿ㄰-㆏가-힣].{0,30}/)?.[0]}`).toBe(true);
   }

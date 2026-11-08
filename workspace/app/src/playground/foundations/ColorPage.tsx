@@ -1,7 +1,3 @@
-// Color — the palette matrix on a raised panel, then each semantic group as rows of token and
-// value card, then the accent × variant combinations. Values are the current theme's: switching
-// the theme switches every card. Every row comes from the selection table (color-roles.ts).
-
 import { Badge, Button, Inline, Stack, Surface, Text, useResolvedTheme } from "@studio-baeks/paper-ui";
 import { ACCENTS, ACCENT_TONES, VARIANTS, type ColorMode } from "@studio-baeks/paper-ui/tokens";
 import { ACCENT_PALETTE, ACCENT_PALETTES, ACCENT_STEPS, PALETTE_TOKENS, VARIANT_RECIPE } from "@paper-ui/inspect/color";
@@ -18,7 +14,6 @@ const useThemeValues = (): { mode: ColorMode; label: string } => {
   return { mode, label: mode === "dark" ? "Dark value" : "Light value" };
 };
 
-// A role as it renders now: its chip on the page canvas, the Palette Token it selects and the HEX.
 const ColorValue = ({ path, mode, compact = false }: { path: ChipRole; mode: ColorMode; compact?: boolean }) => {
   const paletteToken = formatPalettePath(selectionAt(mode, path));
   const hex = hexAt(mode, path);
@@ -57,7 +52,6 @@ const ColorGroup = ({ title, description, branches }: (typeof GROUPS)[number]) =
   );
 };
 
-// The five accents share the same tones, so they read best side by side: one row per accent.
 const ACCENT_NOTE: Bilingual = {
   ko: "의미 이름 다섯이 같은 다섯 tone을 공유합니다. solid는 채운 면과 상태 점, wash는 solid 위 글자, ink는 지면 위 색 글자, soft는 옅은 면, subtle은 muted 글자입니다.",
   en: "The five semantic names share the same five tones. solid is a filled face and a status dot, wash is text on a solid, ink is coloured text on the ground, soft is a pale face, and subtle is muted text.",
@@ -114,7 +108,6 @@ const PaletteMatrix = () => {
   );
 };
 
-// What a variant picks from the five tones, read from the recipe that colours it.
 const RECIPE_CAPTION: Bilingual<(face: string, ink: string, hover: string) => string> = {
   ko: (face, ink, hover) => `면 ${face === "none" ? "없음" : face} · 글자 ${ink} · hover ${hover}`,
   en: (face, ink, hover) => `fill ${face === "none" ? "none" : face} · ink ${ink} · hover ${hover}`,
@@ -124,7 +117,6 @@ const recipeCaption = (variant: (typeof VARIANTS)[number], locale: SiteLocale) =
   return inLocale(RECIPE_CAPTION, locale)(face, ink, hover);
 };
 
-// Each variant combined with each accent: the real Button and Badge, so the table is the evidence.
 const VARIANT_NOTE: Bilingual = {
   ko: "Atom은 accent와 variant 두 축만 말하고, 각 조합이 어떤 tone을 쓰는지는 color profile이 정합니다. 각 칸은 실제 Button과 Badge입니다.",
   en: "An Atom speaks only of two axes, accent and variant; the color profile decides which tone each combination uses. Each cell is a real Button and Badge.",

@@ -1,7 +1,3 @@
-// 내 과목 — every subject the person takes, with what to do about it: keep, move or drop. A move can name the section it
-// should land in, or leave it to "자동" and let the combinations below search. A row opens onto every section of the subject
-// with its teacher, its hours and what stands in its way. Subjects being added sit on top, with their own section choice.
-
 import type { ReactNode } from "react";
 
 import { Badge, Box, Button, Divider, Grid, IconButton, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";
@@ -21,14 +17,10 @@ const ACTIONS: readonly SegmentOption[] = [
 
 const names = (blockers: readonly SectionInfo[]) => blockers.map((blocker) => koreanName(blocker.subject)).join(", ");
 
-// ── the sections of a subject ────────────────────────────────────────────────
-
 type FacesProps = {
   model: TradeModel;
   siblings: SectionInfo[];
-  // The section taken now; null for a subject that is being added.
   current: SectionInfo | null;
-  // The rest of the timetable, which a section must stay clear of.
   others: SectionInfo[];
   chosenId: number | null;
   pickLabel: string;
@@ -76,7 +68,6 @@ const SectionFaces = ({ model, siblings, current, others, chosenId, pickLabel, o
   </Grid>
 );
 
-// The choice of a section as a switch: "자동" first, then each section, a warning on the ones that do not fit.
 const sectionOptions = (siblings: readonly SectionInfo[], blocked: (section: SectionInfo) => boolean): SegmentOption[] => [
   { id: "auto", label: "자동" },
   ...siblings.map((section) => ({
@@ -90,10 +81,6 @@ const sectionOptions = (siblings: readonly SectionInfo[], blocked: (section: Sec
   })),
 ];
 
-// ── a row ────────────────────────────────────────────────────────────────────
-
-// The name of a subject and a line under it; it opens the sections. The texts stretch to the button so that a long line is
-// cut with an ellipsis before the chevron rather than running under it.
 const NameButton = ({ open, onToggle, lead, title, muted = false, children }: { open: boolean; onToggle: () => void; lead?: ReactNode; title: string; muted?: boolean; children: ReactNode }) => (
   <Button variant="ghost" size="lg" fontSize="body" strong={false} fullWidth justify="between" aria-expanded={open} onClick={onToggle}>
     <Stack as="span" gap="xs" align="stretch" minWidth={0}>
@@ -107,14 +94,12 @@ const NameButton = ({ open, onToggle, lead, title, muted = false, children }: { 
   </Button>
 );
 
-// A switch that may be wider than the card on a phone: it scrolls instead of running out of it.
 const Scroll = ({ children }: { children: ReactNode }) => (
   <Box maxWidth="full" overflowX="auto">
     {children}
   </Box>
 );
 
-// Pointing at a row, or tabbing into it, lights its cells in the grid.
 const pointing = (model: TradeModel, subject: string) => ({
   onMouseEnter: () => model.setHovered(subject),
   onMouseLeave: () => model.setHovered(null),
@@ -252,8 +237,6 @@ const AddedRow = ({ model, add }: { model: TradeModel; add: AddSelection }) => {
     </Stack>
   );
 };
-
-// ── the card ─────────────────────────────────────────────────────────────────
 
 export const SubjectsCard = ({ model }: { model: TradeModel }) => {
   const dropped = new Set(model.dropped);

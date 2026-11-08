@@ -1,7 +1,3 @@
-// 내 기기 추가 · 친구 기기 추가: a name and the public key the device made in its WireGuard app. A friend's address can be
-// picked by its last number; otherwise the next free one is given. A device's key is checked the way the server checks it:
-// 44 characters of base64. "데모 키 만들기" writes one that starts with DEMO, so no real key is ever needed here.
-
 import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import { Button, Field, FormField, Stack } from "@studio-baeks/paper-ui";
@@ -25,7 +21,6 @@ export const AddPeerDialog = ({ kind, onClose, onAdded }: { kind: PeerKindInput 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const first = useRef<HTMLInputElement>(null);
-  // The dialog keeps the kind it opened with while it fades out.
   const last = useRef<PeerKindInput>("personal");
   if (kind) last.current = kind;
   const shown = kind ?? last.current;

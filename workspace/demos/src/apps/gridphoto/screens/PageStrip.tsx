@@ -1,7 +1,3 @@
-// The pages of the document in a row under the photo: a small picture of each as it will come out, its number, a mark on
-// the ones that need a look, and a bar on the ones still being worked through. The one you are on is the quiet selected
-// face. Moving a page is done with the arrows in the panel.
-
 import { memo, useEffect } from "react";
 
 import { Badge, Box, Button, Inline, Spinner, Stack, Text } from "@studio-baeks/paper-ui";
@@ -15,10 +11,8 @@ import { paths } from "../paths";
 import { useCoarsePointer } from "../state/coarse";
 import { useGridphoto } from "../state/document";
 
-// Every thumbnail's tile is this shape; a page sits whole inside it.
 const TILE = 3 / 4;
 
-// What goes inside a thumbnail's tile.
 const Picture = ({ page }: { page: Page }) => {
   if (page.status === "failed") return <Glyph name="file-warning" size="subheading" ink="tertiary" />;
   const out = page.status === "ready" ? outputOf(page) : null;
@@ -64,7 +58,6 @@ export const PageStrip = ({ currentId }: { currentId: string | null }) => {
   const { pages, progress, addMock } = useGridphoto();
   const coarse = useCoarsePointer();
 
-  // A page just added or moved may be off the end of the strip: scroll the strip, not the window.
   useEffect(() => {
     const strip = document.querySelector("[data-strip]");
     const here = strip?.querySelector('[aria-current="page"]');
@@ -81,7 +74,6 @@ export const PageStrip = ({ currentId }: { currentId: string | null }) => {
         {pages.map((page, index) => {
           const here = page.id === currentId;
           return (
-            // A link is an inline box until its parent lays it out as a flex or grid item.
             <Stack as="li" key={page.id}>
               <SurfaceLink to={paths.page(page.id)} radius="md" padding="xs" selected={here} aria-current={here ? "page" : undefined} aria-label={`${index + 1}쪽${isFlagged(page) ? ", 확인 필요" : ""}`}>
                 <Box width="xs">

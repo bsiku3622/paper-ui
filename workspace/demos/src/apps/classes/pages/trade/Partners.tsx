@@ -1,7 +1,3 @@
-// 교환 상대 — for each move in the combination being looked at, the students who sit in the section you want and could take
-// yours without a clash in their own week. The other direction is already known: the combination exists. A post to ask for
-// a swap is one press away.
-
 import { Divider, Inline, Stack, Text } from "@studio-baeks/paper-ui";
 
 import { buildTradePost } from "../../lib/trade";

@@ -1,7 +1,3 @@
-// 돌담위키: a wiki in Paper: a bar across the window, the article in a white card with edit / discuss / history,
-// a right column of what readers search for and what changed, and every page a wiki has: history and diffs, threads, recent
-// changes, search, categories, special lists, user pages, a demo login. Everything a visitor writes is kept under “wiki:…”.
-
 import { useEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 
@@ -27,7 +23,6 @@ import { Bar } from "./parts/Bar";
 import { jump } from "./render/jump";
 import { WikiProvider } from "./state/store";
 
-// A new page starts at the top; a link to a heading of another article (…#s-2) scrolls there once the article is drawn.
 const ScrollToTop = () => {
   const { pathname, search, hash } = useLocation();
   useEffect(() => {

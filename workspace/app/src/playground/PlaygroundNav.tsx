@@ -1,7 +1,3 @@
-// The Playground sidebar: Overview, then Foundations → Primitives → Atoms as the site map lists them. A group is one
-// flat list; only the Primitives split, into their two orders and Utilities. An order has no heading: the gap parts it. The
-// section names (Element, Paint …) stay on the pages: over a list where most of them hold a single item, they read as more items.
-
 import { PLAYGROUND_NAV, type PlaygroundGroup, type PlaygroundSection } from "../site/site-map";
 import { useWords } from "../site/locale";
 import { SidebarNav, type SidebarBlock, type SidebarGroup } from "../site/SidebarNav";

@@ -1,6 +1,3 @@
-// Formatting for the printer console. Times are drawn in Korea Standard Time whatever the machine's zone is, so a
-// screenshot reads the same everywhere, and a setting chooses 12 or 24 hours and how a date is written.
-
 export type DateFormat = "ko" | "iso" | "dmy";
 
 export type Stamp = { hour12: boolean; dateFormat: DateFormat };
@@ -9,7 +6,6 @@ export const DEFAULT_STAMP: Stamp = { hour12: true, dateFormat: "ko" };
 
 const KST = 9 * 3_600_000;
 
-// The moment the demo starts at: the host's clock then (2026-11-04 19:07:35 KST).
 export const CAPTURED_AT = Date.parse("2026-11-04T19:07:35+09:00");
 
 type Parts = { year: number; month: number; day: number; hour: number; minute: number; second: number; weekday: number };
@@ -45,13 +41,11 @@ export const dateText = (ms: number, format: DateFormat, withYear: boolean) => {
   return withYear ? `${year}년 ${month}월 ${day}일` : `${month}월 ${day}일`;
 };
 
-// 11월 4일 오후 12:51 — the year is added when it is not the year of `now`.
 export const stampText = (ms: number, now: number, stamp: Stamp) => {
   const withYear = partsOf(ms).year !== partsOf(now).year;
   return `${dateText(ms, stamp.dateFormat, withYear)} ${clockText(ms, stamp.hour12)}`;
 };
 
-// 6:13:47 and 0:12:25: a countdown or an elapsed time on the dashboard.
 export const hms = (seconds: number) => {
   const total = Math.max(0, Math.round(seconds));
   const h = Math.floor(total / 3600);
@@ -60,7 +54,6 @@ export const hms = (seconds: number) => {
   return `${h}:${two(m)}:${two(s)}`;
 };
 
-// 6h 31m 25s: a duration in a table.
 export const longDuration = (seconds: number | null | undefined) => {
   if (seconds === null || seconds === undefined || !Number.isFinite(seconds)) return "--";
   const total = Math.max(0, Math.round(seconds));
@@ -72,7 +65,6 @@ export const longDuration = (seconds: number | null | undefined) => {
   return `${s}초`;
 };
 
-// 6h 31m — the name of a file carries it.
 export const shortDuration = (seconds: number) => {
   const total = Math.max(0, Math.round(seconds));
   const h = Math.floor(total / 3600);

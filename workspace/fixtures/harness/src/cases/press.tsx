@@ -72,8 +72,6 @@ const DivTrigger = () => {
   );
 };
 
-// The Atom over each kind of target: a plain Button, and a Button that takes the look of a Paper part. The Atom has no
-// press of its own to count, so these count their clicks.
 const AtomButton = () => {
   const { counted, onClick } = useCounts();
   return <Button data-testid="atom-button" {...counted} onClick={onClick}>Atom Button</Button>;
@@ -94,7 +92,6 @@ const AtomTrigger = () => {
   );
 };
 
-// A Pressable that writes its callbacks down, in the order they ran.
 const LoggedTarget = ({ id, ...options }: { id: string; cancelOnPointerExit?: boolean; allowTextSelection?: boolean }) => {
   const [log, setLog] = useState<string[]>([]);
   const note = (name: string) => setLog((current) => [...current, name]);
@@ -104,8 +101,6 @@ const LoggedTarget = ({ id, ...options }: { id: string; cancelOnPointerExit?: bo
   );
 };
 
-// A parent that writes down the React events that reach it, in order, on its own element: writing them there is no state
-// of React's, so the writing cannot change what a press does.
 const write = (name: string, attribute = "data-log") => (event: SyntheticEvent<HTMLElement>) => {
   const log = event.currentTarget.getAttribute(attribute);
   event.currentTarget.setAttribute(attribute, log ? `${log} ${name}` : name);
@@ -130,8 +125,6 @@ const Parent = ({ id, children }: { id: string; children: ReactNode }) => (
 );
 const declines = (event: PressEvent) => event.continuePropagation();
 
-// What each kind of target lets through to a parent: a plain button for comparison, then a Pressable and a Button as they
-// come, then a Pressable that declines the press in one callback at a time, and a Button that declines it.
 const Propagation = () => (
   <>
     <Parent id="plain"><button type="button" data-testid="from-plain">Plain</button></Parent>
@@ -145,7 +138,6 @@ const Propagation = () => (
   </>
 );
 
-// The elements a press lands on, each counting its clicks and presses in data attributes.
 export const PressCase = () => (
   <>
     <LoggedTarget id="logged" />

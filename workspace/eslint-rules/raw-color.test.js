@@ -79,7 +79,6 @@ test("[guardrails.raw-color.no-color-literals] a keyword is followed through a s
     ['const pair = { a: "navy" }; export const rule = style({ gridArea: pair.a });', "app/src/Probe.css.ts"],
     ['import { c } from "./elsewhere"; export const rule = style({ color: c });', "app/src/Probe.css.ts"],
     ['export const rule = ({ color }) => style({ color });', "app/src/Probe.css.ts"],
-    // A name run into other text is part of a longer word: a palette path, not a colour.
     ['const ramp = { info: "blue" }; export const role = { accent: `${ramp.info}.700` };', "packages/paper-ui/src/tokens/colors.ts"],
     ['const RAMP = { error: "red" }; const path = (status) => { const ramp = RAMP[status]; return `${ramp}.700`; }; export const role = { accent: path("error") };', "packages/paper-ui/src/tokens/colors.ts"],
   ]) assert.equal(await flagged(code, path), false, `${path}: ${code}`);
@@ -140,11 +139,9 @@ test("[guardrails.raw-color.no-color-literals] a keyword reaches a colour throug
     ['export const paint = (map) => { map.setProperty("color", "navy"); };', TSX],
     ['const set = (el, c) => { el.style.gridArea = c; }; set(el, "navy");', TSX],
     ['const Inner = ({ c, d }) => <div style={{ color: c }} data-d={d} />; export const X = () => <Inner c="inherit" d="navy" />;', TSX],
-    // A ramp's name as a table's key is not a colour.
     ['const NAMES = ["blue", "red"]; export const tree = { accent: Object.fromEntries(NAMES.map((name) => [name, { solid: 1 }])) };', "packages/paper-ui/src/tokens/palette.ts"],
     ['export const tree = { accent: Object.fromEntries([["blue", { solid: 1 }]]) };', "packages/paper-ui/src/tokens/palette.ts"],
   ]) assert.equal(await flagged(code, path), false, `${path}: ${code}`);
-  // The value of a pair is still read.
   assert.equal(await flagged('const NAMES = ["a"]; export const tree = { accent: Object.fromEntries(NAMES.map((name) => [name, "navy"])) };', "packages/paper-ui/src/tokens/palette.ts"), true);
 });
 
@@ -164,7 +161,6 @@ test("[guardrails.raw-color.color-owners] the package reads tokens.color in the 
   for (const path of ["primitives/paint/Surface.css.ts", "primitives/paint/recipes.css.ts", "primitives/Icon.css.ts", "styles/color.css.ts", "styles/theme.css.ts", "tokens/probe.ts"]) {
     for (const code of [read, destructured]) assert.equal(await flagged(code, `${PKG}/${path}`), false, `${path}: ${code}`);
   }
-  // Another system's role is not a colour, and the app picks its own colours.
   assert.equal(await flagged('import { tokens } from "../tokens"; export const style = { padding: tokens.shape.inset.md };', `${PKG}/atoms/Probe.css.ts`), false);
   assert.equal(await flagged(read, "app/src/pages/probe.css.ts"), false);
   assert.equal(await flagged(read, `${PKG}/atoms/Probe.test.ts`), false);

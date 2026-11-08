@@ -33,7 +33,6 @@ describe("Text", () => {
       expect(classes, ink).toContain(textRoleClass.caption);
       unmount();
     }
-    // Without an ink prop the variant's own ink is the only one in play.
     render(<Text data-testid="plain" variant="caption">Ink</Text>);
     const worn = INKS.filter((ink) => screen.getByTestId("plain").className.split(" ").includes(resolveInk(ink)));
     expect(worn).toEqual([TEXT_INK.caption]);

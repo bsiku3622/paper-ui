@@ -1,5 +1,3 @@
-// 앨범 화면: 표지와 제목, 재생 · 셔플 · 보관함에 추가, 곡 번호가 붙은 곡 목록, 발매일, 같은 아티스트의 다른 앨범.
-
 import { useNavigate, useParams } from "react-router-dom";
 
 import { Button, Inline, Stack, Text } from "@studio-baeks/paper-ui";

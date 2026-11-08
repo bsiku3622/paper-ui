@@ -7,8 +7,6 @@ import { px } from "../support/geometry";
 import { chooseProp, openHarness, openPlayground } from "../support/harness";
 import { expectStyle } from "../support/style";
 
-// CDP runs in chromium only, so this spec is not part of the cross-engine set.
-
 const z = (tier: Elevation) => String(LAYOUT_SOURCE.elevation.tier[tier].z);
 
 test("[foundations.layout.breakpoint-em] [foundations.pages.derived-rows] the Layout page reads each breakpoint in em beside its px at the default root font", async ({ page }) => {
@@ -20,14 +18,11 @@ test("[foundations.layout.breakpoint-em] [foundations.pages.derived-rows] the La
 });
 
 test("[foundations.layout.breakpoint-em] a breakpoint follows the browser's default font size, and so does the container", async ({ page }) => {
-  // The browser's default font goes from 16px to 20px, which moves an em breakpoint and a rem length by that ratio. The
-  // window stands between md at the two fonts: wider than it at first, narrower than it after.
   const FONT = 20;
   const ratio = FONT / 16;
   const { md } = LAYOUT_SOURCE.breakpoint;
   const { content } = LAYOUT_SOURCE.container;
   await page.setViewportSize({ width: Math.round((md + md * ratio) / 2), height: 900 });
-  // The principles' head sets its title and its paragraph side by side above md, and one over the other below it.
   const head = page.getByTestId("home-principles-head");
   const tracks = () => head.evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(" ").length);
   const column = page.getByTestId("home-column");
@@ -62,7 +57,6 @@ test("[foundations.override.rederives-roles] a Layout source override in a subtr
   }, vars);
   await expect(box).toHaveCSS("width", "600px");
   await expect(surface).toHaveCSS("z-index", "33");
-  // Above the region the source is what it was.
   const outside = await page.locator("body").evaluate((element, names) => names.map((name) => getComputedStyle(element).getPropertyValue(name).trim()), Object.keys(vars));
   expect(outside).toEqual([LAYOUT_VALUES.container.content, LAYOUT_VALUES.elevation.overlay.z]);
 });
@@ -87,7 +81,6 @@ test("[foundations.layout.elevation-tier-order] the computed z-index of every ti
   });
   const { nudge } = LAYOUT_SOURCE.elevation;
   tiers.slice(0, -1).forEach((value, index) => expect(value + ELEVATION_NEST_LIMIT * nudge, ELEVATIONS[index]).toBeLessThan(tiers[index + 1]!));
-  // The Floating tiers are the same steps: a popover panel stands at overlay, a modal's scrim at modal, and a toast above both.
   expect(await zIndex(page.getByTestId("popover"))).toBe(LAYOUT_SOURCE.elevation.tier.overlay.z);
   const toast = await zIndex(page.getByTestId("toast"));
   expect(toast).toBe(LAYOUT_SOURCE.elevation.tier.toast.z);
@@ -115,7 +108,7 @@ test("[foundations.layout.elevation-nesting] the Floating example's popover stan
   // React Aria stacks an anchored panel at 100000; the tier decides instead.
   await expect(popover).toHaveCSS("z-index", z("overlay"));
   await expectStyle(popover, { boxShadow: ELEVATION.shadow.overlay });
-  // The panel rises into place first: Playwright's click retries on a moving target and its scrolling chases the panel, which a real mouse does not do.
+  // Wait for the panel to rise first: Playwright's click retries on a moving target and its scrolling chases the panel.
   await expect(popover).not.toHaveAttribute("data-presence", /.*/);
   await popover.getByRole("button", { name: "확인 창 열기", exact: true }).click();
   const confirm = page.getByRole("dialog", { name: "중첩 확인", exact: true });
@@ -164,7 +157,7 @@ test("[foundations.layout.elevation-nesting] a toast paints above an open modal 
   await expect(dialog).toBeVisible();
   await expect(dialog.locator("xpath=..")).toHaveCSS("z-index", z("modal"));
   await expect(page.getByTestId("toast")).toHaveCSS("z-index", z("toast"));
-  // An open modal makes #root inert, which only takes it out of hit-testing; what is asked here is paint order.
+  // An open modal makes #root inert, which only removes it from hit-testing; this asks about paint order.
   await page.evaluate(() => document.getElementById("root")!.removeAttribute("inert"));
   const order = await dialog.evaluate((element) => {
     const { x, y, width, height } = element.getBoundingClientRect();
@@ -183,7 +176,6 @@ test("[foundations.layout.elevation-nesting] [foundations.layout.stage-isolation
   const sample = page.getByTestId("surface-example");
   await expect(sample).toHaveCSS("z-index", z("toast"));
   await expect(page.locator("[data-preview-background]")).toHaveCSS("isolation", "isolate");
-  // Scroll the sample to the top of the window, where the sticky GNB is; the GNB is what a point there hits.
   const box = (await sample.boundingBox())!;
   await page.evaluate((y) => window.scrollBy(0, y), box.y + box.height / 2 - 20);
   const hit = await sample.evaluate((element) => {
@@ -195,7 +187,6 @@ test("[foundations.layout.elevation-nesting] [foundations.layout.stage-isolation
 
 test("[foundations.layout.elevation-nesting] [foundations.layout.stage-isolation] a sticky rail that rides up under the GNB at the end of a page stays under it", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 400 });
-  // The sidebars are not here: they scroll inside themselves (tests/app/shell.spec.ts), so they never ride up.
   const rails = [{ path: "/playground/button", heading: "Button", anchor: () => page.getByText("Props", { exact: true }) }];
   for (const { path, heading, anchor } of rails) {
     await page.goto(path);

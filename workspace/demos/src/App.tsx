@@ -1,5 +1,3 @@
-// Routes: the launcher at /, and each demo app under /<id>/ with routes of its own inside. The site serves this under /demos/.
-
 import { lazy, Suspense, type ComponentType, type LazyExoticComponent } from "react";
 import { Route, Routes } from "react-router-dom";
 

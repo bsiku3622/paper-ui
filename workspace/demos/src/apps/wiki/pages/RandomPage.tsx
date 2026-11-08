@@ -1,5 +1,3 @@
-// RandomPage.tsx — sends the reader to an article picked by chance (not a redirect, not a stub-less page).
-
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 

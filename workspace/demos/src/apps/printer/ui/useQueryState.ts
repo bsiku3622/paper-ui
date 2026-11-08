@@ -1,6 +1,3 @@
-// A dialog or a view that a link can open: its state lives in the address (?file=…, ?settings=presets), so a screenshot,
-// a reload and the back button all find it where it was.
-
 import { useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 

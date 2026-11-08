@@ -1,6 +1,3 @@
-// Where a link in a doc goes. Relative paths are read from the folder of the doc that holds the link; a
-// group's README answers to the folder name, so `../foundations/README.md` is the slug `foundations`.
-
 export type DocHref =
   | { kind: "anchor"; hash: string }
   | { kind: "doc"; slug: string; hash?: string }
@@ -26,5 +23,4 @@ export const resolveDocHref = (fromFile: string, href: string): DocHref => {
   return { kind: "external", href };
 };
 
-// The route of a doc: /docs for the overview, /docs/<slug> for the rest.
 export const docPath = (slug: string, hash?: string): string => `${slug ? `/docs/${slug}` : "/docs"}${hash ? `#${hash}` : ""}`;

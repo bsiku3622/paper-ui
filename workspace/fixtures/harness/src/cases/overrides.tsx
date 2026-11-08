@@ -1,7 +1,5 @@
 import { Box, Button, Checkbox, Field, Surface, Switch } from "@studio-baeks/paper-ui";
 
-// One region a spec overrides through window.__paper.sourceVars (set in main.tsx): the variables it gets
-// back are written on #override-region, and every control inside re-derives its size from them.
 export const OverridesCase = () => (
   <div id="override-region" data-testid="override-region">
     <Button shape="rounded" data-testid="button">Button</Button>

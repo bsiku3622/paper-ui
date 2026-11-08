@@ -1,15 +1,3 @@
-// 자몽 — the school's Zamong workbook turned into an app. A course is a card with three cells (term · credits · grade); choosing
-// the term is what makes it "taken" and clearing it removes the record, so there is no checkbox, and a re-take is choosing the
-// term again. The roadmap on top is always there and counts what the cards say: credits against the graduation requirements,
-// GPA, and the 시수 the person types. Below it, one department at a time, the cards by prerequisite depth.
-//
-// Nothing here is read from the school's records after the first time: a ready-made history (밑칠) is offered once to an empty
-// 자몽, and from then on only what the person wrote is counted. A department's track is shown as the school wrote it, never
-// judged.
-//
-// Reachable states: ?dept=물리학 opens that department, ?course=미적분학1 holds a course's detail open, ?term=4 opens that term's
-// panel, ?seed=1 takes the offer of a ready-made history at once.
-
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -36,11 +24,9 @@ export const ZamongPage = () => {
   const [asking, setAsking] = useState(false);
   const board = useRef<HTMLDivElement>(null);
 
-  // The address holds what is open: the department, the course held for its detail, the term whose panel is up.
   const heldName = params.get("course");
   const held = heldName ? COURSE_BY_NAME.get(heldName) : undefined;
   const department = DEPARTMENT_ORDER.find((name) => name === params.get("dept")) ?? held?.department ?? DEPARTMENT_ORDER[0]!;
-  // A held course belongs to the sheet that is open; on another sheet it is not held.
   const pinned = held && held.department === department ? held.name : null;
   const askedTerm = params.get("term");
   const openTerm: TermKey | null = isTermKey(askedTerm) ? askedTerm : null;
@@ -57,7 +43,6 @@ export const ZamongPage = () => {
       { replace: true },
     );
 
-  // ?seed=1 takes the offer without a click, for a screenshot or a link; it is gone from the address once taken.
   const wantsSeed = params.get("seed") !== null;
   useEffect(() => {
     if (!wantsSeed) return;
@@ -78,7 +63,6 @@ export const ZamongPage = () => {
   const total = boardOf(department).courses.length;
   const hoursEmpty = summary.hoursTotal === 0;
 
-  // A course named on the roadmap opens on its department's sheet, held for its detail.
   const openCourse = (name: string) => {
     const course = COURSE_BY_NAME.get(name);
     if (!course) return;
@@ -87,7 +71,6 @@ export const ZamongPage = () => {
     board.current?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
   };
 
-  // The semester the account is in now is the school's latest term, whichever term the top bar is looking at.
   const latest = TERMS[0]!;
   const slot = termSlotOf(me.stuId, latest.year, latest.semester);
 

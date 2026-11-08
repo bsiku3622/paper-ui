@@ -1,5 +1,3 @@
-// 앨범 · 플레이리스트 · 아티스트 화면의 머리: 큰 표지 하나, 오른쪽에 제목과 설명, 그 아래에 버튼. Anchor가 이 머리를 감쌉니다.
-
 import type { ReactNode } from "react";
 
 import { Box, Button, Grid, Stack } from "@studio-baeks/paper-ui";
@@ -28,7 +26,6 @@ export const EntityHeader = ({ art, eyebrow, title, description, meta, actions }
   </Anchor>
 );
 
-// 재생 · 셔플. 목록이 비어 있으면 눌러지지 않습니다.
 export const PlayButtons = ({ ids }: { ids: readonly string[] }) => {
   const player = usePlayer();
   return (

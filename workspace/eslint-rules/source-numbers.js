@@ -1,20 +1,3 @@
-// paper/source-numbers — a number lives in a source file. In a style position (the arguments of a vanilla-extract
-// call in a .css.ts, a JSX `style` attribute, a `style:` object or a DOM style write in a .ts/.tsx) every numeric
-// literal, every number with a unit and every easing must be structural (structural.js), or come from a role. Every
-// property is read, whether or not a category names it, and so is a custom property's value under `vars`.
-//
-// Scope "package" reads every category of structural.js, and also takes an object literal keyed by style properties
-// for a style position wherever it is written: a fragment in a plain module can be spread into a stylesheet from
-// there. Scope "app" reads all but dimension, because an app owns its screen's widths, heights and tracks. Both read
-// media and container queries: a length there is interpolated from tokens.layout.breakpoint or from an
-// APP_DIMENSION_MODULES import, never written, and a key the rule cannot read is reported. Depth (zIndex, boxShadow,
-// filter) is stated only in ELEVATION_OWNERS, or as strokeRing(). The app reads no typography palette.
-//
-// The check follows what the value is made of, inside one file: template expressions, conditionals, logicals,
-// binaries, call arguments, the returns of a function, a same-file const the value names, and a parameter to what the
-// file hands it (a call's argument, a JSX prop, the entries of a `.map` or a `styleVariants`, its default). A value
-// from another module is not read: an imported const, or a number handed to an imported helper outside a style position.
-
 import { APP_DIMENSION_MODULES, ELEVATION_OWNERS, LINE_OWNERS, PACKAGE_NAME, STROKE_OWNER, TOKEN_LAYER, isInside, resolveRelative, workspacePath } from "./manifest.js";
 import { categoryOf, isKeyframeSelector, isStructural, isStyleProperty, isUnit } from "./structural.js";
 
@@ -23,28 +6,20 @@ const KEYFRAME_CALLS = new Set(["keyframes", "globalKeyframes"]);
 const QUERY_KEYS = new Set(["@media", "@container"]);
 const TYPE_WRAPPERS = new Set(["TSAsExpression", "TSSatisfiesExpression", "TSNonNullExpression", "TSTypeAssertion", "TSInstantiationExpression", "ChainExpression"]);
 const FUNCTIONS = new Set(["ArrowFunctionExpression", "FunctionExpression", "FunctionDeclaration"]);
-// A callback whose first parameter is an entry of what the call runs over.
 const ARRAY_CALLBACKS = new Set(["map", "flatMap", "forEach"]);
-// Calls that hand a function back unchanged, so the name they are assigned to calls it.
 const FUNCTION_WRAPPERS = new Set(["forwardRef", "memo", "useCallback"]);
 const DIMENSION_MODULES = APP_DIMENSION_MODULES.map((module) => module.replace(/\.tsx?$/, ""));
 
-// What a value is read as when no property names it: an argument of a function the rule cannot read, and a custom
-// property named by an expression. Neither has a category, so only the numbers that are structural anywhere pass.
 const ARGUMENT = "(argument)";
 const CUSTOM_PROPERTY = "--(computed)";
-// Keys whose value is rules under selectors or conditions: text there names what a rule applies to and is not a value.
 const RULE_BLOCKS = new Set(["selectors", "@supports", "@layer"]);
 
 const LENGTH = /(?<![\w.#$-])[+-]?(?:\d+\.?\d*|\.\d+)(?:px|r?em|r?ex|r?ch|r?lh|cap|r?ic|[sdl]?v[hwib]|[sdl]?vmin|[sdl]?vmax|cq[hwib]|cqmin|cqmax|cm|mm|q|in|pt|pc)\b/gi;
 const NUMBER = /(?<![\w.#$-])([+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?)(%|[a-zA-Z]+)?/g;
-// What a depth property may say without a source: no depth at all.
 const NO_DEPTH = /^(?:none|auto|0|inherit|initial|unset|revert)$/i;
-// A border's shorthand, width or style, on any side. Its colour and its radius are not the line's shape.
 const LINE_PROPERTY = /^border(?:Top|Right|Bottom|Left|Block|Inline|BlockStart|BlockEnd|InlineStart|InlineEnd)?(?:Width|Style)?$/;
 const EASING = /\b(?:ease(?:-in)?(?:-out)?|linear|step-start|step-end)\b|\b(?:cubic-bezier|steps|linear)\(/;
 
-// The text a number is read from: a variable's name, a quoted string and a url() are not values.
 const cleanse = (text) => text
   .replace(/var\(\s*--[\w-]+/g, "var(")
   .replace(/url\([^)]*\)/g, "url()")
@@ -55,15 +30,12 @@ const keyName = (property) => {
   return String(property.key.name ?? property.key.value);
 };
 
-// ── same-file values ─────────────────────────────────────────────────────────
-
 export const variableOf = (source, identifier) => {
   let scope = source.getScope(identifier);
   while (scope && !scope.set.has(identifier.name)) scope = scope.upper;
   return scope?.set.get(identifier.name);
 };
 
-// The name a call runs under: an imported function by its original name.
 export const calleeName = (source, call) => {
   const { callee } = call;
   if (callee.type === "MemberExpression" && !callee.computed) return callee.property.name;
@@ -73,7 +45,6 @@ export const calleeName = (source, call) => {
   return imported?.name ?? imported?.value ?? callee.name;
 };
 
-// What a same-file name can hold: its initialiser, what is assigned to it later, and the function it declares.
 export const heldBy = (source, identifier) => {
   const variable = variableOf(source, identifier);
   if (!variable) return [];
@@ -82,7 +53,6 @@ export const heldBy = (source, identifier) => {
   return [...new Set([...written, ...declared])];
 };
 
-// What a function can return: its expression body, or every `return` in its own body.
 export const returnsOf = (source, fn) => {
   if (fn.body?.type !== "BlockStatement") return fn.body ? [fn.body] : [];
   const found = [];
@@ -102,10 +72,8 @@ export const returnsOf = (source, fn) => {
   return found;
 };
 
-// The same-file function a call runs, if it can be read.
 export const calledFunction = (source, call) => (call.callee.type === "Identifier" ? heldBy(source, call.callee).find((held) => FUNCTIONS.has(held.type)) : undefined);
 
-// The object and array literals a value can be, by way of same-file names and tables.
 const tablesOf = (source, node, seen = new Set()) => {
   if (!node || seen.has(node)) return [];
   seen.add(node);
@@ -121,7 +89,6 @@ const tablesOf = (source, node, seen = new Set()) => {
   }
 };
 
-// The entry a table names, or every entry when the key is unknown or the table does not write it.
 const entriesOf = (table, key) => {
   if (table.type === "ArrayExpression") {
     const element = key === undefined ? undefined : table.elements[Number(key)];
@@ -135,10 +102,8 @@ const entriesOf = (table, key) => {
 
 const memberKey = (member) => (member.computed ? (member.property.type === "Literal" ? String(member.property.value) : undefined) : member.property.name);
 
-// What a member expression can pick out of a same-file table.
 export const picked = (source, member, seen = new Set()) => tablesOf(source, member.object, seen).flatMap((table) => entriesOf(table, memberKey(member)));
 
-// Does this expression name a style declaration: `el.style`, or a name that holds it?
 const isStyleDeclaration = (source, node) => {
   if (TYPE_WRAPPERS.has(node.type)) return isStyleDeclaration(source, node.expression);
   if (node.type === "MemberExpression") return !node.computed ? node.property.name === "style" : node.property.value === "style";
@@ -155,7 +120,6 @@ export const rootOf = (node) => {
   return current;
 };
 
-// The keys read off a member expression's root, left to right; a computed name is an unknown key.
 export const memberKeys = (node) => {
   const keys = [];
   for (let at = node; at.type === "MemberExpression" || TYPE_WRAPPERS.has(at.type); at = at.type === "MemberExpression" ? at.object : at.expression) {
@@ -164,7 +128,6 @@ export const memberKeys = (node) => {
   return keys;
 };
 
-// The keys a parameter or a destructuring pattern walks to reach a name; undefined when it does not bind it.
 export const patternPath = (pattern, name) => {
   switch (pattern?.type) {
     case "Identifier": return pattern.name === name ? [] : undefined;
@@ -186,8 +149,6 @@ export const patternPath = (pattern, name) => {
   }
 };
 
-// What a node writes to a DOM style declaration: each value, with the property it sets when the write names one.
-// The whole declaration as text is `cssText`.
 export const domStyleWrites = (source, node) => {
   if (node.type === "AssignmentExpression") {
     const { left, right } = node;
@@ -211,9 +172,6 @@ export const domStyleWrites = (source, node) => {
   }
 };
 
-// ── what a parameter is given ────────────────────────────────────────────────
-
-// The name a function goes by in its file: its own, or the const it is assigned to.
 const nameOfFunction = (source, fn) => {
   if (fn.type === "FunctionDeclaration") return fn.id ? variableOf(source, fn.id) : undefined;
   let at = fn;
@@ -222,13 +180,11 @@ const nameOfFunction = (source, fn) => {
   return declarator?.type === "VariableDeclarator" && declarator.init === at && declarator.id.type === "Identifier" ? variableOf(source, declarator.id) : undefined;
 };
 
-// What a callback over this value receives, one by one: the literal entries of a same-file table or the value itself.
 const elementsOf = (source, node) => {
   const tables = tablesOf(source, node);
   return tables.length > 0 ? tables.flatMap((table) => entriesOf(table)) : [node];
 };
 
-// The values read off a value by these keys. A parameter handed on is read from what its own callers give it.
 const readKeys = (source, value, keys, seen) => {
   if (keys.length === 0) return [value];
   const tables = tablesOf(source, value);
@@ -239,9 +195,6 @@ const readKeys = (source, value, keys, seen) => {
   return [value];
 };
 
-// What this file hands a parameter: a call's argument, a JSX prop, an entry of what a `.map`, a `.forEach` or a
-// `styleVariants` runs over. `keys` is what is read off the parameter. A function that leaves the file, a method on an
-// object and a callback passed to another function are not followed.
 export const givenTo = (source, variable, keys = [], seen = new Set()) => {
   const def = variable?.defs.find((entry) => entry.type === "Parameter");
   if (!def || seen.has(variable)) return [];
@@ -268,7 +221,6 @@ export const givenTo = (source, variable, keys = [], seen = new Set()) => {
       return value ? read(value, rest) : [];
     });
   };
-  // A function handed to a call that runs it over a table.
   const fromCallback = (call, at) => {
     if (index !== 0) return [];
     const name = calleeName(source, call);
@@ -276,7 +228,6 @@ export const givenTo = (source, variable, keys = [], seen = new Set()) => {
     if (!ARRAY_CALLBACKS.has(name) || call.arguments[0] !== at || call.callee.type !== "MemberExpression") return [];
     const over = call.callee.object;
     const ofObject = over.type === "CallExpression" && over.callee.type === "MemberExpression" && over.callee.object.name === "Object" ? over.callee.property.name : undefined;
-    // `Object.keys()` hands over names, `Object.values()` each value, `Object.entries()` each name and value.
     if (ofObject === "keys" || (ofObject === "entries" && path[0] === "0")) return [];
     if (ofObject !== "values" && ofObject !== "entries") return elementsOf(source, over).flatMap((value) => read(value));
     return elementsOf(source, over.arguments[0]).flatMap((value) => read(value, ofObject === "entries" ? path.slice(1) : path));
@@ -290,7 +241,6 @@ export const givenTo = (source, variable, keys = [], seen = new Set()) => {
       const up = at.parent;
       if (up?.type === "CallExpression") return up.callee === at ? fromCall(up) : up.arguments.includes(at) ? fromCallback(up, at) : [];
       if (up?.type === "JSXOpeningElement") return fromElement(up);
-      // An alias: `const Panel = modal ? ModalPanel : PopoverPanel`.
       return up?.type === "VariableDeclarator" && up.init === at && up.id.type === "Identifier" ? fromName(variableOf(source, up.id), visited) : [];
     });
   };
@@ -329,7 +279,6 @@ export const sourceNumbersRule = {
       context.report({ node, messageId, data: { text } });
     };
 
-    // A number in a string: what precedes it and what it is. A key with no name to read it by is not a value.
     const readNumbers = (node, text, property) => {
       if (property === undefined || RULE_BLOCKS.has(property)) return;
       const category = categoryOf(property);
@@ -338,7 +287,6 @@ export const sourceNumbersRule = {
       if ((category === "motion" || property.startsWith("--")) && EASING.test(clean)) report(node, "easing", clean.match(EASING)[0]);
       for (const match of clean.matchAll(NUMBER)) {
         const unit = match[2] ?? "";
-        // `2xl` is a scale's name, not a number with a unit.
         if (unit !== "" && !isUnit(unit)) continue;
         const before = clean.slice(0, match.index).trimEnd().at(-1);
         const operator = before === "/" || before === "*" ? before : undefined;
@@ -346,15 +294,12 @@ export const sourceNumbersRule = {
       }
     };
 
-    // A value is read once for each property that reads it: the same const can be a width and a padding.
     const firstRead = (seen, node, property) => {
       const properties = seen.get(node) ?? new Set();
       if (properties.has(property)) return false;
       seen.set(node, properties.add(property));
       return true;
     };
-
-    // ── depth ────────────────────────────────────────────────────────────────
 
     const isStrokeRing = (node) => node.type === "CallExpression" && node.callee.type === "Identifier" && node.callee.name === STROKE_OWNER.name;
     const stateless = (node, seen) => {
@@ -376,8 +321,6 @@ export const sourceNumbersRule = {
       }
     };
 
-    // ── media and container queries ──────────────────────────────────────────
-
     const isTokensImport = (def) => {
       const specifier = def.parent.source.value;
       const imported = def.node.imported?.name ?? def.node.imported?.value;
@@ -385,7 +328,6 @@ export const sourceNumbersRule = {
       return specifier === `${PACKAGE_NAME}/tokens` || isInside(resolveRelative(file, specifier) ?? "", TOKEN_LAYER);
     };
 
-    // The path under `tokens` a value reads, through same-file aliases; undefined when it reads something else.
     const tokenPath = (node, seen = new Set()) => {
       if (seen.has(node)) return undefined;
       seen.add(node);
@@ -416,8 +358,6 @@ export const sourceNumbersRule = {
       if (found) report(at, "query", found);
     };
 
-    // What a query is made of, down to its text and its names. A name that comes from tokens.layout.breakpoint or a
-    // declared dimension module says nothing more; anything else that cannot be read is reported at the key.
     const checkQuery = (node, at, seen) => {
       if (!node || seen.has(node)) return;
       seen.add(node);
@@ -448,7 +388,6 @@ export const sourceNumbersRule = {
           if (isDimensionImport(node)) return;
           const root = rootOf(node);
           const given = root.type === "Identifier" ? givenTo(source, variableOf(source, root), memberKeys(node)) : [];
-          // What the file hands a parameter, then its default.
           const values = [...given, ...(node.type === "Identifier" ? heldBy(source, node) : picked(source, node))];
           if (values.length === 0) return unread();
           return values.forEach((value) => checkQuery(value, at, seen));
@@ -494,10 +433,6 @@ export const sourceNumbersRule = {
       }
     };
 
-    // ── scanning a value ─────────────────────────────────────────────────────
-
-    // A value picked out of a same-file table: every entry is a candidate for the property that picks it. With no
-    // property the picked value is a rule of its own.
     const scanMembers = (table, property, seen) => {
       if (property === undefined) return scan(table, undefined, seen);
       if (TYPE_WRAPPERS.has(table.type)) return scanMembers(table.expression, property, seen);
@@ -507,7 +442,6 @@ export const sourceNumbersRule = {
       else if (firstRead(seen, table, property)) heldBy(source, table).forEach((held) => scanMembers(held, property, seen));
     };
 
-    // An app may keep one of its own dimensions in a variable: one that a same-file rule reads as a dimension holds one.
     const readAsDimension = (key) => {
       if (key.type !== "Identifier") return false;
       return variableOf(source, key)?.references.some((reference) => {
@@ -525,7 +459,6 @@ export const sourceNumbersRule = {
       if (scope === "app" && name === undefined && readAsDimension(entry.key)) return;
       const own = name ?? CUSTOM_PROPERTY;
       if (categoryOf(own) === "depth" && !ownsDepth && !stateless(entry.value, new Set())) return report(entry.value, "depth");
-      // Outside a stylesheet `{ border }` hands a prop along, as surfaceClass does; it says nothing of how a line is drawn.
       if (LINE_PROPERTY.test(own) && !ownsLine && !(entry.shorthand && !isStylesheet) && !stateless(entry.value, new Set())) return report(entry.value, "line");
       scan(entry.value, own, seen);
     };
@@ -572,13 +505,10 @@ export const sourceNumbersRule = {
         case "UnaryExpression": return scan(node.argument, property, seen);
         case "CallExpression": {
           if (isStrokeRing(node)) return;
-          // A same-file function's parameters read what each call hands them.
           const fn = calledFunction(source, node);
           if (fn) return returnsOf(source, fn).forEach((value) => scan(value, property, seen));
-          // A function the rule cannot read: what goes in may be what comes out.
           const value = property ?? ARGUMENT;
           node.arguments.forEach((argument) => scan(argument, value, seen));
-          // A callback's parameter reads the entries of what it runs over, where it uses them.
           const overTable = ARRAY_CALLBACKS.has(calleeName(source, node)) && FUNCTIONS.has(functionOf(node.arguments[0])?.type);
           if (!overTable) scan(node.callee.type === "MemberExpression" ? node.callee.object : node.callee, value, seen);
           return;
@@ -592,8 +522,6 @@ export const sourceNumbersRule = {
       }
     };
 
-    // ── style positions ──────────────────────────────────────────────────────
-
     const checkKeyframes = (call) => {
       const frames = call.arguments.find((argument) => argument.type === "ObjectExpression");
       for (const entry of frames?.properties ?? []) {
@@ -605,10 +533,8 @@ export const sourceNumbersRule = {
     const scanStyleCall = (call, name) => {
       if (KEYFRAME_CALLS.has(name)) checkKeyframes(call);
       const seen = new Map();
-      // A mapper's parameter reads the entries of its table where it uses them; an entry it does not read is not a value.
       const mapper = name === "styleVariants" ? functionOf(call.arguments[1]) : undefined;
       if (FUNCTIONS.has(mapper?.type)) return returnsOf(source, mapper).forEach((value) => scan(value, undefined, seen));
-      // A selector is not a value.
       (name === "globalStyle" ? call.arguments.slice(1) : call.arguments).forEach((argument) => scan(argument, undefined, seen));
     };
 
@@ -629,10 +555,8 @@ export const sourceNumbersRule = {
     visitors.AssignmentExpression = scanWrites;
 
     if (scope === "package") {
-      // A fragment: an entry keyed by a style property is a style value in any file.
       visitors.ObjectExpression = (object) => {
         for (const entry of object.properties) {
-          // A function under such a key is an option, not a value.
           if (entry.type === "Property" && isStyleProperty(keyName(entry) ?? "") && !FUNCTIONS.has(entry.value.type)) scanEntry(entry, new Map());
         }
       };
@@ -644,7 +568,6 @@ export const sourceNumbersRule = {
         const owner = node.object;
         if (owner.type === "MemberExpression" && !owner.computed && owner.property.name === "typography") report(node, "palette");
       };
-      // `const { palette } = tokens.typography` and `const { typography: { palette } } = tokens` read it too.
       const names = (pattern, key) => pattern.properties.find((entry) => entry.type === "Property" && !entry.computed && entry.key.name === key);
       visitors.VariableDeclarator = (node) => {
         if (node.id.type !== "ObjectPattern" || !node.init) return;

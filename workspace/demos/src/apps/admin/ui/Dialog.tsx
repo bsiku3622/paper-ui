@@ -1,7 +1,3 @@
-// Dialog — a modal in the original hub's frame: the head and the foot stand still and only the body scrolls. While the
-// dialog is busy (saving, uploading) nothing can close it. Focus lands on the title unless a screen names a control: the
-// first control is the close button, and a ring on it says nothing.
-
 import { useId, useRef, type ReactNode, type RefObject } from "react";
 
 import { Box, Floating, Grid, IconButton, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";
@@ -9,8 +5,6 @@ import { Box, Floating, Grid, IconButton, Inline, Stack, Surface, Text } from "@
 import { Glyph } from "../../../kit";
 import { useAtLeast } from "../content/viewport";
 
-// Floating's panel caps its own width at 100% of a grid cell that is as wide as the panel, so the cap never bites: a
-// named width is wider than a phone. Below md the dialog takes the whole width the window leaves (width="full").
 const WIDTH = { sm: "measure.xs", md: "measure.sm", lg: "measure.md" } as const;
 
 export type DialogProps = {
@@ -21,7 +15,6 @@ export type DialogProps = {
   size?: keyof typeof WIDTH;
   busy?: boolean;
   footer?: ReactNode;
-  // Where focus lands when it opens; by default the title.
   focusRef?: RefObject<HTMLElement | null>;
   children: ReactNode;
 };

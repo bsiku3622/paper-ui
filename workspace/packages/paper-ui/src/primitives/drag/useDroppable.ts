@@ -5,7 +5,6 @@ import { stateAttributes, type StateAttributes } from "../../tokens";
 import type { DroppableOptions } from "../types";
 
 export type DroppableResult = {
-  /** Spread on the drop target. Carries its own ref, `data-drop-target` while a drag is over it and `data-disabled` while disabled. */
   dropProps: HTMLAttributes<HTMLElement> & { ref: RefCallback<HTMLElement> } & StateAttributes<"dropTarget" | "disabled">;
   isDropTarget: boolean;
 };

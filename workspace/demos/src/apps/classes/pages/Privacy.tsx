@@ -1,14 +1,3 @@
-// 개인정보처리방침 — the one page of the app that opens without signing in, so it stands outside the Shell: a page on the canvas
-// with its own top bar (a way back, the app's name, a jump to the contact), a table of contents that follows the reader down
-// the page on a wide window, and numbered sections in a reading column.
-//
-// The text is written for this demo, not copied from a real service's. It keeps the order a policy has to have — what is
-// collected and why, where it came from, how long it is kept, who sees it, who it is handed to, what the browser stores,
-// the reader's rights, who to ask, how it is protected, how it is destroyed — and says plainly what is true here: there is no
-// server, the Google link is a picture of one, and Ask's conversation lives in memory until the tab is reloaded.
-//
-// ⚠ The table of browser storage (STORAGE) names the real keys the app writes. A page that adds a key adds a row.
-
 import { useEffect, useState, type ReactNode } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 
@@ -18,10 +7,7 @@ import { AppShell, Glyph, PageHeader, TopBar, useToast, type GlyphName } from ".
 import { path, useClasses } from "../state";
 
 const UPDATED = "2026년 11월 4일";
-// An address that cannot receive mail: the .example name is reserved for documentation.
 const CONTACT = "privacy@classes.example";
-
-// ── reading parts ────────────────────────────────────────────────────────────
 
 const P = ({ children }: { children: ReactNode }) => <Text variant="lead">{children}</Text>;
 const B = ({ children }: { children: ReactNode }) => <Text as="span" variant="lead" strong>{children}</Text>;
@@ -40,7 +26,6 @@ const List = ({ items }: { items: readonly ReactNode[] }) => (
 
 type Entry = { name: string; body: ReactNode; note?: ReactNode };
 
-// A name and what it says, a rule between rows. On a phone the two stack.
 const Entries = ({ label, rows, tracks = "10rem minmax(0, 1fr)" }: { label: string; rows: readonly Entry[]; tracks?: string }) => (
   <Stack as="ul" aria-label={label}>
     {rows.map((row) => (
@@ -56,8 +41,6 @@ const Entries = ({ label, rows, tracks = "10rem minmax(0, 1fr)" }: { label: stri
     ))}
   </Stack>
 );
-
-// ── what the browser keeps ───────────────────────────────────────────────────
 
 type Stored = { key: string; holds: string; keeps: string };
 const STORAGE: readonly Stored[] = [
@@ -103,8 +86,6 @@ const StorageTable = () => (
   </Stack>
 );
 
-// ── the contact ──────────────────────────────────────────────────────────────
-
 const Contact = () => {
   const toast = useToast();
   const copy = async () => {
@@ -131,8 +112,6 @@ const Contact = () => {
     </Surface>
   );
 };
-
-// ── the sections ─────────────────────────────────────────────────────────────
 
 const ITEMS: readonly Entry[] = [
   { name: "계정", body: "아이디와 권한 등급(일반·매니저·관리자). 비밀번호는 저장하지 않습니다.", note: "수집 방법 · 로그인할 때, 그리고 관리자가 계정을 만들 때" },
@@ -348,9 +327,6 @@ const GLANCE: readonly { glyph: GlyphName; text: string }[] = [
   { glyph: "message-circle", text: "Ask의 대화는 이 탭의 메모리에만 있다가 새로고침하면 사라집니다." },
 ];
 
-// ── the page ─────────────────────────────────────────────────────────────────
-
-// The list of sections, beside the text on a wide window. The one being read is marked, quietly.
 const Contents = ({ active }: { active: string }) => (
   <Surface as="nav" aria-label="목차" elevation="sticky" top="lg" overflowY="auto" hideBelow="lg">
     <Stack gap="xs">
@@ -370,14 +346,11 @@ export const PrivacyPage = () => {
   const [active, setActive] = useState(DOC[0]?.id ?? "");
   const back = session.signedIn ? path("/") : path("/welcome");
 
-  // A link into the page (…/privacy#storage) lands on its section. The browser's own jump has already missed: the text was not
-  // there yet when the page loaded. Anything after the name (& or ?) is ignored.
   useEffect(() => {
     const id = hash.slice(1).split(/[&?]/)[0];
     if (id) document.getElementById(id)?.scrollIntoView();
   }, [hash]);
 
-  // The section whose top has passed the upper part of the window is the one being read.
   useEffect(() => {
     const update = () => {
       let current = DOC[0]?.id ?? "";

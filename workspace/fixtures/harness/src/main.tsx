@@ -1,5 +1,3 @@
-// The e2e harness: one page that uses the package the way a consumer does — the stylesheet through
-// styles.css, components through the root entry — and renders the case named by ?case=.
 import "@studio-baeks/paper-ui/styles.css";
 import { sourceVars } from "@studio-baeks/paper-ui/tokens";
 
@@ -30,7 +28,6 @@ const CASES: Record<CaseName, ComponentType> = { geometry: GeometryCase, control
 
 const isCase = (name: string | null): name is CaseName => CASE_NAMES.some((known) => known === name);
 
-// What a spec calls from the page: the typed path to a source override.
 Object.assign(window, { __paper: { sourceVars } });
 
 const name = new URLSearchParams(window.location.search).get("case");

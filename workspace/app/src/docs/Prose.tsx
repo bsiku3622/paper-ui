@@ -1,7 +1,3 @@
-// A doc's Markdown as the page shows it. Links go where resolveDocHref says: a heading of the same doc, another
-// doc or an app route through the router, anything else to a new tab. Every one is the Link Atom, so prose links
-// are underlined and ringed like any other. Tables scroll inside the column.
-
 import { useMemo } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import { Link as RouterLink } from "react-router-dom";
@@ -13,7 +9,6 @@ import { Link } from "@studio-baeks/paper-ui";
 import { docPath, resolveDocHref } from "./links";
 import * as s from "./prose.css";
 
-// A generated block sits between HTML comments (generated/markers.ts); they mark the source and are not page text.
 type Node = { type: string; value?: string; children?: Node[] };
 const isComment = ({ type, value }: Node) => type === "html" && /^<!--[\s\S]*-->$/.test(value?.trim() ?? "");
 const dropComments = (node: Node): void => {
@@ -43,7 +38,6 @@ const componentsFor = (file: string): Components => ({
   table: ({ children }) => <div className={s.tableScroll} data-testid="prose-table"><table>{children}</table></div>,
 });
 
-// `lang` is the language of the text when it may differ from the page's: a Korean original shown to an English reader.
 export const Prose = ({ file, lang, children }: { file: string; lang?: string; children: string }) => {
   const components = useMemo(() => componentsFor(file), [file]);
   return (

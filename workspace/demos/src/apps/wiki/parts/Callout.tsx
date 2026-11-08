@@ -1,6 +1,3 @@
-// Callout.tsx — a short word to the reader above a page's content: you are reading an old revision, this article does not exist,
-// you are not logged in. A sunken face with a glyph, not a coloured box; only a warning takes its colour.
-
 import type { ReactNode } from "react";
 
 import { Inline, Stack, Surface } from "@studio-baeks/paper-ui";

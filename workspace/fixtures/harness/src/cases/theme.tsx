@@ -2,8 +2,6 @@ import { Floating, Icon, Pressable, Select, Surface } from "@studio-baeks/paper-
 
 import { SELECT_OPTIONS } from "./options.js";
 
-// A light Surface theme nested inside a dark one, each holding a Select, and an inverse Surface that casts a shadow
-// and holds one that casts its own. The geometry case carries the same tree.
 export const ThemeBoxes = () => (
   <>
     <Surface theme="dark">
@@ -18,7 +16,6 @@ export const ThemeBoxes = () => (
   </>
 );
 
-// Raw text, an Icon with no ink, a Pressable and a Floating panel inside an inverse Surface: each takes the Surface's ink.
 const ThemeInk = () => (
   <Surface theme="inverse" data-testid="ink-scope">
     <span data-testid="ink-raw">raw</span>

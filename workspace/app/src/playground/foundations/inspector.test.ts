@@ -19,7 +19,6 @@ import { CODE_SCALE_NOTES, PRESET_NOTES, PRESET_PATHS, SIZE_LEADING } from "./ty
 const NON_ACCENT = Object.fromEntries(Object.entries(COLOR_SELECTION.light).filter(([branch]) => branch !== "accent")) as Omit<typeof COLOR_SELECTION.light, "accent">;
 const THEMES = ["light", "dark"] as const;
 
-// What the Color page used to do: find the first Palette Token whose HEX equals the role's.
 const reverseLookup = (hex: string): string => {
   const visit = (value: unknown, path: string[]): string | undefined => {
     if (typeof value === "string") return value.toLowerCase() === hex.toLowerCase() ? path.join(".") : undefined;
@@ -115,7 +114,6 @@ describe("Motion inspector", () => {
   it("lists the properties each role drives in the package stylesheets", () => {
     const root = fileURLToPath(new URL("../../../../packages/paper-ui/src", import.meta.url));
     const driven: Record<string, string[]> = {};
-    // A property is a quoted CSS name, or the registered tint property by its constant.
     const property = /"([^"]+)"|(STATE_TINT_PROPERTY)/g;
     for (const file of readdirSync(root, { recursive: true, encoding: "utf8" }).filter((name) => name.endsWith(".css.ts"))) {
       for (const [, role = "", properties = ""] of readFileSync(`${root}/${file}`, "utf8").matchAll(/\btransition\("(\w+)"((?:,\s*(?:"[^"]+"|STATE_TINT_PROPERTY))+)\)/g)) {

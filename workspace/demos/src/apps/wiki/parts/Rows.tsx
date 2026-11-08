@@ -1,6 +1,3 @@
-// Rows.tsx — the rows lists are made of: a revision (recent changes, a user's contributions), a thread, an article. Two lines
-// each: the name and the time on the first, the second line quieter. Rows are told apart by a hairline, not by boxes.
-
 import { Fragment, type ReactNode } from "react";
 import { Link as RouterLink } from "react-router-dom";
 

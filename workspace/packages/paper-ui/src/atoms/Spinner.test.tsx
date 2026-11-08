@@ -1,5 +1,3 @@
-// Spinner — 진행 중 표시. 혼자 서면 이름 있는 progressbar, 컨트롤 안이면 장식이다.
-
 import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";

@@ -1,10 +1,7 @@
-// Snapshot of machine.update.status. Hashes, remote URLs and local paths are dropped.
-
 export type UpdateComponent = {
   name: string;
   kind: string;
   channel: string | null;
-  // false: the git checkout is not on the expected remote or branch, so Moonraker refuses to update it.
   valid: boolean;
   version: string | null;
   remote: string | null;

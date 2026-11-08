@@ -1,6 +1,3 @@
-// What a chart needs from CSS: Paper's tokens as classes, so the SVG and its frame carry no style attribute. The frame has a
-// keyboard focus ring (a style attribute cannot say what a focused chart looks like) drawn by Paper's own focus state.
-
 import { style, styleVariants } from "@vanilla-extract/css";
 
 import { stateStyle, tokens } from "@studio-baeks/paper-ui/tokens";
@@ -25,7 +22,6 @@ export const frameHeight = styleVariants({
 
 export const svgRoot = style({ display: "block", overflow: "visible" });
 
-// A hidden probe: five boxes whose widths are Paper's stroke, corner, bar cap, marker and offset, read back in pixels.
 export const probeBox = style({ position: "absolute", visibility: "hidden", pointerEvents: "none", fontSize: tokens.typography.role.label.size });
 export const probeStroke = style({ width: tokens.shape.stroke.emphasis });
 export const probeRound = style({ width: tokens.shape.inset.xs });
@@ -33,7 +29,6 @@ export const probeCap = style({ width: tokens.shape.inset.xl });
 export const probeDot = style({ width: tokens.shape.inset.sm });
 export const probePad = style({ width: tokens.shape.inset.md });
 
-// A short stroke of a series colour, in the legend and the tooltip.
 export const key = style({ display: "inline-block", flex: "none", width: tokens.shape.inset.md, height: tokens.shape.stroke.emphasis, borderRadius: tokens.shape.radius.full });
 export const keyTone = styleVariants(COLOR, (color) => ({ background: color }));
 
@@ -46,7 +41,6 @@ export const dotRing = style({ fill: tokens.color.bg.raised });
 export const fillTone = styleVariants(COLOR, (color) => ({ fill: color }));
 export const hitArea = style({ touchAction: "pan-y" });
 
-// The tooltip stands inside the SVG, in a foreignObject that lets it overflow; it takes no pointer.
 export const tipBox = style({ overflow: "visible", pointerEvents: "none" });
 export const tipStart = style({ display: "flex", justifyContent: "flex-start" });
 export const tipEnd = style({ display: "flex", justifyContent: "flex-end" });

@@ -1,5 +1,3 @@
-// Snapshot of /config (server.files.list, root=config): [path, modified (unix seconds), size (bytes), permissions].
-
 export const CONFIG_LIST: readonly (readonly [path: string, modified: number, size: number, permissions: string])[] = [
   [".moonraker.conf.bkp",1772301189,1495,"rw"],
   ["crowsnest.conf",1793377200,2889,"rw"],

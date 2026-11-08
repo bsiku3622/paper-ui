@@ -1,4 +1,3 @@
-// The font stylesheets a consumer loads, from the one constant the package exports.
 import { FONT_STYLESHEETS } from "@studio-baeks/paper-ui/tokens";
 
 import type { GeneratedBlock } from "./markers";

@@ -1,6 +1,3 @@
-// What else the printer has: the part cooling fan (M106), the beeper (an output pin) and the hotend fan, which Klipper runs by
-// itself when the nozzle is warm.
-
 import { Divider, Grid, IconButton, Inline, Stack, Switch, Text } from "@studio-baeks/paper-ui";
 
 import { Glyph } from "../../../kit";

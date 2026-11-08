@@ -1,6 +1,3 @@
-// 기기 추가 · 기기 정보: the name a machine goes by, its MAC address (what a magic packet is addressed to) and the VPN address
-// that tells whether it answered. The original had one machine fixed by the server; the hub now keeps a list.
-
 import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import { Button, Field, FormField, Stack } from "@studio-baeks/paper-ui";
@@ -26,7 +23,6 @@ export const DeviceDialog = ({ open, device, onClose, onSaved }: { open: boolean
   const first = useRef<HTMLInputElement>(null);
   const editing = device !== undefined;
 
-  // The form is filled when the dialog opens, and not again while it is being edited.
   const filled = useRef<string | null>(null);
   useEffect(() => {
     if (!open) {

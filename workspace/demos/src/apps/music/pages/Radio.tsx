@@ -1,6 +1,3 @@
-// 라디오: 지금 방송 중인 곡이 있는 라이브 방송국, 장르 방송국, 아티스트 라디오. "듣기"를 누르면 방송국에 맞추는 동안
-// 단추가 잠깐 기다렸다가 그 방송국의 곡을 이어서 틉니다.
-
 import { useEffect, useRef, useState } from "react";
 
 import { Badge, Box, Button, Grid, Inline, Stack, Text } from "@studio-baeks/paper-ui";
@@ -15,7 +12,6 @@ import { usePlayer } from "../state/player";
 const GRID = "repeat(auto-fill, minmax(14rem, 1fr))";
 const TUNE_MS = 700;
 
-// 방송국에 "맞추는" 동안 loading인 단추. 끝나면 방송을 시작합니다.
 const useTune = (name: string, tracks: () => { id: string }[]) => {
   const player = usePlayer();
   const [tuning, setTuning] = useState(false);

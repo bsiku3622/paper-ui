@@ -1,7 +1,3 @@
-// 수강 정정 — whether the course-change search is open, until when, and for which term. This is the app's shared setting, not
-// a copy: the sidebar's 수강 정정 item and the banner on the home page read the same value, so flipping the switch here changes
-// them at once. A deadline that has already passed is refused; to close now, turn the switch off.
-
 import { useState, type ReactNode } from "react";
 import { Link as RouterLink } from "react-router-dom";
 

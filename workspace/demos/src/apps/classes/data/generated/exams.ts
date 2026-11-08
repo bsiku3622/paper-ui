@@ -1,5 +1,3 @@
-// Snapshot of the public exam timetables (subject, date, minutes, rooms). No registrations, no people.
-
 export type ExamRow = { key: string; subject: string; english: string; date: string | null; start: number | null; end: number | null; ec: boolean; rooms: readonly (readonly [string, readonly string[]])[]; note: string | null };
 export type ExamPeriodRow = { key: string; kind: string; title: string; start: string; end: string; visibleFrom: string; visibleUntil: string; exams: readonly ExamRow[] };
 export const EXAM_PERIODS: readonly ExamPeriodRow[] = [

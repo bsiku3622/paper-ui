@@ -1,6 +1,3 @@
-// 플레이리스트 화면 (참고 이미지의 화면): 위쪽 도구 줄, 큰 표지와 제목과 버튼, 곡의 표.
-// 내가 만든 플레이리스트는 고칠 수 있고, 에디터 추천과 믹스는 내 것으로 복사할 수 있습니다.
-
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -43,7 +40,6 @@ export const PlaylistPage = () => {
   const editable = playlist.kind === "user" && playlist.id !== LIKED_ID;
   const ids = shown.map((track) => track.id);
 
-  // 같은 열을 누를 때마다 오름차순, 내림차순, 원래 순서.
   const onSort = (key: SortKey) =>
     setSort((now) => (now?.key !== key ? { key, dir: "asc" } : now.dir === "asc" ? { key, dir: "desc" } : undefined));
 

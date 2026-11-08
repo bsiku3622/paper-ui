@@ -8,7 +8,6 @@ import { THEME_ATTRIBUTE } from "../tokens";
 import { PaperProvider } from "./PaperProvider";
 import { useResolvedTheme, useTheme, type ThemeControl } from "./context";
 
-// Every locale the React Aria adapter was given.
 const hosted = vi.hoisted(() => ({ locales: [] as string[] }));
 vi.mock("../internal/aria/i18n", async (importOriginal) => {
   const original = await importOriginal<typeof import("../internal/aria/i18n")>();
@@ -17,7 +16,6 @@ vi.mock("../internal/aria/i18n", async (importOriginal) => {
 
 const root = document.documentElement;
 
-// A matchMedia whose answer the test sets and whose change listeners it can fire.
 const mockMedia = (matches: boolean) => {
   const listeners = new Set<() => void>();
   const query = {
@@ -29,7 +27,6 @@ const mockMedia = (matches: boolean) => {
   return { set: (next: boolean) => { query.matches = next; listeners.forEach((listener) => listener()); } };
 };
 
-// jsdom here has no localStorage of its own.
 const memoryStorage = () => {
   const data = new Map<string, string>();
   return { getItem: (key: string) => data.get(key) ?? null, setItem: (key: string, value: string) => void data.set(key, value) };
@@ -184,7 +181,6 @@ describe("useResolvedTheme", () => {
 });
 
 describe("a server render", () => {
-  // Each render gets modules of its own, so it meets a store nobody configured before.
   const fresh = async () => {
     vi.resetModules();
     const [{ PaperProvider: Provider }, { useResolvedTheme: useMode, useTheme: useControl }] = await Promise.all([import("./PaperProvider"), import("./context")]);
@@ -374,7 +370,6 @@ describe("locale", () => {
   });
 });
 
-// Last in the file: the server render configures the document's one store and nothing detaches it.
 describe("the sources a Provider is given", () => {
   it("[install.provider.source-overrides] writes the sources it is given as one rule on the root, follows a change, and takes it away", () => {
     mockMedia(false);

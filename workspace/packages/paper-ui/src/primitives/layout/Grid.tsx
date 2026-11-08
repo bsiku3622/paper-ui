@@ -7,13 +7,10 @@ import { joinClass } from "../../internal/joinClass";
 import { gridColumnSteps, gridRoot, gridRowSteps, gridAlign, gridJustify, gridJustifyItems } from "./Grid.css";
 import type { PolymorphicComponent, PolymorphicProps } from "../polymorphic";
 
-// 폭에 따라 달라지는 track — base 가 가장 좁은 창이고, 이름 붙은 단은 그 분기점부터 다음 단까지다.
 type Steps<Track> = { base?: Track } & { [Step in Breakpoint]?: Track };
 type ColumnTracks = number | CSSProperties["gridTemplateColumns"];
 type RowTracks = number | CSSProperties["gridTemplateRows"];
 
-// align 은 칸 안의 세로 정렬, justify 는 track 묶음의 가로 분배, justifyItems 는 칸 안의 가로 정렬이다.
-// 기본값은 CSS 의 normal 이 stretch 처럼 동작하므로 root 가 갖고, prop 은 줄 때만 class 가 된다.
 type GridOwnProps = BoxOwnProps & GapProps & {
   columns?: ColumnTracks | Steps<ColumnTracks>;
   rows?: RowTracks | Steps<RowTracks>;

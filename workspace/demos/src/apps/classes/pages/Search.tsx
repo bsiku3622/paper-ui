@@ -1,10 +1,3 @@
-// 검색 — one box for subjects, teachers, students and rooms. The words you type are read by the engine in lib/search
-// (initials, loose spelling, + & ! ( ), student: teacher: room:, 과목/분반); the URL keeps the query, so every chip,
-// every cell of a timetable and every link elsewhere in the app can open a search.
-//
-// A question about one person, teacher or room (or a group made with + & /) shows who it names and their week; a plain
-// word shows the subjects that match, closed, each opening onto its sections and rosters.
-
 import { useEffect, useMemo, useState } from "react";
 import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
 
@@ -20,8 +13,6 @@ import { Card, Eyebrow, Hint, Notice, searchHref, SlotGrid, type Slot } from "..
 import { SubjectRow } from "../ui/SubjectAccordion";
 
 const KIND = { student: "학생", teacher: "교사", room: "강의실" } as const;
-
-// ── the box and its help ─────────────────────────────────────────────────────
 
 const SYNTAX: [string, string][] = [
   ["미적분", "과목·교사·학생·강의실 어디서든 포함된 말을 찾습니다. 줄여 쓴 말도 찾습니다."],
@@ -52,7 +43,6 @@ const SyntaxHelp = () => (
   </Floating>
 );
 
-// The query as it was understood: the operators set apart, each word a link that searches only it.
 const QueryText = ({ query }: { query: string }) => {
   const parts = query.split(/([()&+!])/g).filter((part) => part !== "");
   return (
@@ -67,8 +57,6 @@ const QueryText = ({ query }: { query: string }) => {
     </Inline>
   );
 };
-
-// ── what a search names ──────────────────────────────────────────────────────
 
 const EntityTile = ({ entity, selected, onPick }: { entity: Entity; selected: boolean; onPick: () => void }) => (
   <Surface as={Pressable} hoverable selected={selected} radius="md" padding="md" onPress={onPick} aria-pressed={selected} aria-label={`${entity.name} ${KIND[entity.type]} 시간표 보기`}>
@@ -85,8 +73,6 @@ const EntityTile = ({ entity, selected, onPick }: { entity: Entity; selected: bo
   </Surface>
 );
 
-// The week of a person, a teacher or a room. A cell is what is there (the subject, or for a teacher the room) and opens
-// that subject in the search.
 const TimetableOf = ({ entity }: { entity: Entity }) => {
   const navigate = useNavigate();
   return (
@@ -164,8 +150,6 @@ const Consolidated = ({ entities, logical, mode }: { entities: Entity[]; logical
   );
 };
 
-// ── the page ─────────────────────────────────────────────────────────────────
-
 export const SearchPage = () => {
   const { data, me, term, clock } = useClasses();
   const toast = useToast();
@@ -190,7 +174,6 @@ export const SearchPage = () => {
   const consolidated = query.trim() !== "" && (outcome.mode !== "general" || logical);
   const cohorts = Object.keys(data.cohorts);
 
-  // a short result opens by itself
   const autoOpen = outcome.data.length <= 2 ? outcome.data.map((subject) => subject.subject) : [];
   const isOpen = (name: string) => open.includes(name) || (autoOpen.includes(name) && !open.includes(`-${name}`));
   const toggle = (name: string) => setOpen((now) => (isOpen(name) ? [...now.filter((item) => item !== name), `-${name}`] : [...now.filter((item) => item !== `-${name}`), name]));

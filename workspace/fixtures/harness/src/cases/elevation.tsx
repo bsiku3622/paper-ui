@@ -1,7 +1,6 @@
 import { Floating, Surface, elevation } from "@studio-baeks/paper-ui";
 import { ELEVATIONS } from "@studio-baeks/paper-ui/tokens";
 
-// A popover at the start of a Trigger in the middle of the page, under the direction ?placed= names.
 const Placed = ({ dir }: { dir: "ltr" | "rtl" }) => (
   <div dir={dir} style={{ display: "flex", justifyContent: "center", paddingBlockStart: "40vh" }}>
     <Floating defaultOpen>
@@ -11,7 +10,6 @@ const Placed = ({ dir }: { dir: "ltr" | "rtl" }) => (
   </div>
 );
 
-// A popover asked to stand above a Trigger at the very top of the page, where ?flipped=off holds it there and otherwise it flips.
 const Flipped = ({ flip }: { flip: boolean }) => (
   <Floating defaultOpen>
     <Floating.Trigger>Anchor</Floating.Trigger>
@@ -19,8 +17,6 @@ const Flipped = ({ flip }: { flip: boolean }) => (
   </Floating>
 );
 
-// Every tier on a Surface in plain block flow, then a popover that is open from the start (a modal with ?modal)
-// with a toast, a bare element carrying the toast's class, fixed over the whole viewport.
 export const ElevationCase = () => {
   const params = new URLSearchParams(window.location.search);
   const placed = params.get("placed");

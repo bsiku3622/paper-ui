@@ -1,5 +1,3 @@
-// A term's data turned inside out: for every student, teacher and room, where and when they are. Built once per term.
-
 import type { SubjectData, TermData } from "../data/build";
 import type { Day } from "../data/periods";
 

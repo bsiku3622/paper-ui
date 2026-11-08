@@ -1,5 +1,3 @@
-// DiffPage.tsx — what changed between two revisions: who made each, the summaries, and the lines that differ.
-
 import { useState } from "react";
 import { Link as RouterLink, useParams, useSearchParams } from "react-router-dom";
 

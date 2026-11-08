@@ -1,8 +1,3 @@
-// The canvas. Paper has nothing that pans, zooms, holds things at world positions or draws freehand, so this file is the
-// stage: a viewport with a camera, a world that moves under it, items placed at world coordinates, a layer of pen strokes,
-// and slots for the chrome (tool rail, hint, menu, zoom, right panel) that Paper draws on top. Everything inside an item is
-// Paper; only where it stands and how it moves is here. Colours and lengths are Paper's tokens.
-
 import {
   createContext, forwardRef, memo, useContext, useEffect, useImperativeHandle, useRef, useState,
   type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode,
@@ -14,16 +9,13 @@ import { tokens } from "@studio-baeks/paper-ui/tokens";
 import type { Camera, Point, Stroke, Tool } from "../data/types";
 import * as css from "./stage.css";
 
-// The prototype's limits: a little under half size to a little over one and a half.
 const ZOOM = { min: 0.45, max: 1.65 } as const;
-// A document's paper on the canvas, in canvas units, and the step of the row they stand in.
 export const SHEET = { width: 610, height: 740, step: 720 } as const;
 const PEN_WIDTH = 2.2;
 
 const clamp = (zoom: number) => Math.min(ZOOM.max, Math.max(ZOOM.min, zoom));
 const INTERACTIVE = "button, input, textarea, select, a, iframe, label, [role='button'], [role='menuitem'], [data-stage-nodrag]";
 
-// Ramer–Douglas–Peucker: fewer points for the same line, so a drawing stays light in storage.
 const thin = (points: Point[], epsilon: number): Point[] => {
   if (points.length < 3) return points;
   const first = points[0]!;
@@ -50,7 +42,6 @@ const StageContext = createContext<StageContextValue>({ tool: "select", zoom: 1 
 
 export type StageHandle = {
   size: () => { width: number; height: number };
-  // Zoom to a level around a point of the window (the middle of the stage when none is given).
   zoomTo: (zoom: number, around?: Point) => void;
 };
 
@@ -61,9 +52,7 @@ export type StageProps = {
   tool: Tool;
   strokes: readonly Stroke[];
   onStroke: (points: Point[]) => void;
-  // The text, image or video tool was pressed on the canvas at this place.
   onPlace: (x: number, y: number) => void;
-  // The empty canvas was pressed: the selection lets go.
   onBackground: () => void;
   rail?: ReactNode;
   hint?: ReactNode;
@@ -118,8 +107,8 @@ export const Stage = forwardRef<StageHandle, StageProps>(function Stage(props, r
     zoomTo: (level, around) => { const r = box(); zoomAround(level, around?.x ?? r.width / 2, around?.y ?? r.height / 2); },
   }), []);
 
-  // A wheel that zooms or pans must be able to cancel the page's own scroll and zoom, so it is not a React listener.
   useEffect(() => {
+    // A native listener, not React's: a wheel that zooms or pans has to cancel the page's own scroll and zoom.
     const el = node.current;
     if (!el) return;
     const onWheel = (event: WheelEvent) => {
@@ -135,7 +124,6 @@ export const Stage = forwardRef<StageHandle, StageProps>(function Stage(props, r
     };
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
-    // zoomAround only reads the latest props, so the first render's copy is as good as any.
   }, []);
 
   const beginPinch = () => {
@@ -150,10 +138,9 @@ export const Stage = forwardRef<StageHandle, StageProps>(function Stage(props, r
 
   const onPointerDown = (event: ReactPointerEvent<HTMLElement>) => {
     const target = event.target as HTMLElement;
-    // A popover opened from the chrome lives elsewhere in the page but bubbles here through React; it is not the canvas.
+    // A popover opened from the chrome bubbles here through React although it lives elsewhere in the page.
     if (!event.currentTarget.contains(target) || target.closest("[data-stage-chrome]")) return;
     if (event.pointerType === "mouse" && event.button !== 0) return;
-    // Buttons and fields take the press, and so does a box lying on the canvas, whatever the tool (the box has its own).
     if (target.closest(INTERACTIVE) || target.closest("[data-stage-item='block']")) return;
     pointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
     if (pointers.current.size === 2) { beginPinch(); return; }
@@ -222,7 +209,6 @@ export const Stage = forwardRef<StageHandle, StageProps>(function Stage(props, r
     if (node.current?.hasPointerCapture(event.pointerId)) node.current.releasePointerCapture(event.pointerId);
   };
 
-  // With the canvas' focus stop (a hidden button) focused, the arrow keys move the view (Shift for a longer step).
   const onKeyDown = (event: ReactKeyboardEvent<HTMLElement>) => {
     if (event.target !== event.currentTarget || event.metaKey || event.ctrlKey || event.altKey) return;
     const cam = latest.current.camera;
@@ -234,7 +220,6 @@ export const Stage = forwardRef<StageHandle, StageProps>(function Stage(props, r
     latest.current.onCamera({ ...cam, x: cam.x + move[0], y: cam.y + move[1] });
   };
 
-  // The camera, for the dot grid and the world (stage.css.ts reads these).
   const view = { "--stage-x": `${camera.x}px`, "--stage-y": `${camera.y}px`, "--stage-zoom": camera.zoom } as CSSProperties;
 
   const slot = (className: string, content: ReactNode) =>
@@ -283,7 +268,6 @@ export type PlacedProps = {
   minHeight?: number;
   kind: "sheet" | "block" | "tool";
   selected?: boolean;
-  // A block can be dragged with the select tool; it tells where it was let go.
   movable?: boolean;
   onSelect?: () => void;
   onMoved?: (x: number, y: number) => void;

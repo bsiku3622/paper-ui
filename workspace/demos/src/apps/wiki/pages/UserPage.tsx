@@ -1,6 +1,3 @@
-// UserPage.tsx — one editor: who they are, what they have done (everything is counted from the revisions and threads, nothing is
-// stored on the user), and the three lists of it.
-
 import { useState } from "react";
 import { Link as RouterLink, useParams } from "react-router-dom";
 

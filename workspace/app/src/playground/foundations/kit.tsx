@@ -1,8 +1,3 @@
-// Foundations kit — Typography, Shape, Layout and Motion are drawn with this board, in the order the
-// system is built: its source values, the roles that select from them, then the presets or recipes
-// that combine roles into components. Color keeps its own form (AGENTS.md). The display parts at the
-// end — Swatch, Chip, StepGrid, FontSample, Meter, Travel and Curve — are how every page paints a value read from a source.
-
 import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 
 import { Stack, Surface, Text } from "@studio-baeks/paper-ui";
@@ -10,7 +5,6 @@ import { Stack, Surface, Text } from "@studio-baeks/paper-ui";
 import { pick as inLocale, useSiteLocale, useWords, type Bilingual } from "../../site/locale";
 import { SectionHeading } from "../../site/SectionHeading";
 
-// The visitor's half of words written in both languages, for a page that builds many of them inline.
 export const useT = () => {
   const { locale } = useSiteLocale();
   return <T,>(words: Bilingual<T>): T => inLocale(words, locale);
@@ -18,8 +12,6 @@ export const useT = () => {
 import * as s from "./kit.css";
 
 type Align = keyof typeof s.align;
-// A column of a board: its heading, how its cells line up, and its track. A board's tracks are its columns', so it cannot name more
-// columns than it has tracks.
 export type Column = { label: string; align?: Align; track: string };
 
 export const FoundationSection = ({ title, description, children }: { title: string; description: string; children: ReactNode }) => (
@@ -29,7 +21,6 @@ export const FoundationSection = ({ title, description, children }: { title: str
   </Stack>
 );
 
-// Header, groups and rows inherit the board's tracks.
 export const Board = ({ columns, minWidth, children }: { columns: Column[]; minWidth?: string; children: ReactNode }) => (
   <Surface className={s.board} fill="raised" border radius="lg" padding="md">
     <div className={s.grid} style={{ gridTemplateColumns: `0 ${columns.map((column) => column.track).join(" ")} 0`, minWidth }}>
@@ -59,7 +50,6 @@ export const TokenCell = ({ name, note }: { name: string; note?: ReactNode }) =>
   </Stack>
 );
 
-// Without `align` a cell fills its track; with it, the cell sits at that edge of the track.
 export const Cell = ({ align, children }: { align?: Align; children: ReactNode }) => (
   <div className={align ? `${s.cell} ${s.align[align]}` : s.cell}>{children}</div>
 );
@@ -75,32 +65,24 @@ export const MatrixCell = ({ caption, children }: { caption?: ReactNode; childre
   </Stack>
 );
 
-// ── Reading resolved values ─────────────────────────────────────────────────
-
 const remToPx = (value: string) => {
   const match = /^(-?[\d.]+)rem$/.exec(value);
   return match ? `${value} · ${Math.round(Number(match[1]) * 16 * 100) / 100}px` : value;
 };
 
-// A media query reads em of the browser's default font size, so its px is the one at the default 16: "48em · 768px".
-// (An em elsewhere, such as a tracking, is a ratio of its own element's font and has no px of its own.)
 export const mediaValue = (value: string): string => {
   const match = /^(-?[\d.]+)em$/.exec(value);
   return match ? `${value} · ${Math.round(Number(match[1]) * 16 * 100) / 100}px` : value;
 };
 
-// What the browser resolved for a token reference, in the current theme.
 export const resolved = (ref: string): string => {
   if (!ref.startsWith("var(")) return remToPx(ref);
   const name = (ref.slice(4, -1).split(",")[0] ?? "").trim();
   return remToPx(getComputedStyle(document.documentElement).getPropertyValue(name).trim() || ref);
 };
 
-// Just the px part of a resolved length ("0.75rem · 12px" → "12px").
 export const px = (ref: string): string => resolved(ref).match(/(-?[\d.]+px)$/)?.[1] ?? resolved(ref);
 
-// Formula roles are calc()/round() expressions; a hidden probe lets the browser evaluate them. A margin
-// carries the value, since a width cannot be negative and an inset can.
 export const Computed = ({ value, unit = true }: { value: string; unit?: boolean }) => {
   const probe = useRef<HTMLSpanElement>(null);
   const [length, setLength] = useState("");
@@ -112,36 +94,28 @@ export const Computed = ({ value, unit = true }: { value: string; unit?: boolean
   return <>{length}<span ref={probe} aria-hidden className={s.lengthProbe} style={{ marginLeft: value }} /></>;
 };
 
-// Several sizes of one role, joined the way the docs write them: "7 · 8 · 10".
 export const Ladder = ({ values }: { values: string[] }) => (
   <>{values.map((value, index) => <span key={value + index}>{index > 0 ? " · " : ""}<Computed value={value} unit={false} /></span>)}</>
 );
 
-// ── Display parts ───────────────────────────────────────────────────────────
-
-// One palette step, painted with its generated colour.
 export const Swatch = ({ color, label }: { color: string; label: string }) => (
   <Surface className={s.swatch} border radius="sm" title={`${label} · ${color}`} aria-label={`${label} ${color}`} style={{ background: color }} />
 );
 
-// A semantic role as it renders now, painted through its token.
 export const Chip = ({ path }: { path: s.ChipRole }) => <Surface className={`${s.chipBox} ${s.chip[path]}`} border radius="sm" />;
 
 export const StepGrid = ({ steps, children, ...rest }: { steps: number; children: ReactNode; "data-testid"?: string }) => (
   <div className={s.stepGrid} style={{ [s.stepsProperty]: steps } as CSSProperties} {...rest}>{children}</div>
 );
 
-// A line set in one Palette value, named by the declarations that give it.
 export const FontSample = ({ font, className, children }: { font: Pick<CSSProperties, "fontFamily" | "fontSize" | "fontWeight" | "lineHeight" | "letterSpacing" | "textDecoration" | "textUnderlineOffset">; className?: string; children: ReactNode }) => (
   <Text className={className} variant="body" ink="primary" style={font}>{children}</Text>
 );
 
-// A bar as long as `value` is of `max`.
 export const Meter = ({ value, max }: { value: number; max: number }) => (
   <div className={s.bar} style={{ width: `${Math.round((value / max) * 1000) / 10}%` }} />
 );
 
-// A dot that crosses its track while the pointer is over it, with the given timing.
 const TRAVEL_TITLE: Bilingual = { ko: "포인터를 올리면 움직입니다", en: "Moves when the pointer is over it" };
 export const Travel = ({ duration, easing }: { duration: string; easing: string }) => (
   <div className={s.travelTrack} title={useWords(TRAVEL_TITLE)}>
@@ -149,7 +123,6 @@ export const Travel = ({ duration, easing }: { duration: string; easing: string 
   </div>
 );
 
-// The easing drawn as its curve on a 64 × 32 plot.
 export const Curve = ({ easing }: { easing: string }) => {
   const points = /cubic-bezier\(([^)]+)\)/.exec(easing)?.[1]?.split(",").map(Number) ?? [0, 0, 1, 1];
   const [x1 = 0, y1 = 0, x2 = 1, y2 = 1] = points;

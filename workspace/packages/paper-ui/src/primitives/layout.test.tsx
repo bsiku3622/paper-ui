@@ -82,7 +82,6 @@ describe("primitive composition", () => {
   });
 });
 
-// Never rendered: each line only has to compile.
 const compiles = (...elements: ReactElement[]) => elements.length;
 
 describe("Box layout props", () => {
@@ -102,7 +101,6 @@ describe("Box layout props", () => {
     expect(box.classList.contains(boxSize.maxWidth.container.content)).toBe(true);
     expect(box.classList.contains(boxSize.width.keyword["max-content"])).toBe(true);
     expect(box.classList.contains(boxSize.minWidth.measure.xs)).toBe(true);
-    // md is a dimension on its own and a measure only through its family.
     expect(boxSize.width.dimension.md).not.toBe(boxSize.width.measure.md);
     expect(box.getAttribute("style")).toBeNull();
   });
@@ -113,7 +111,6 @@ describe("Box layout props", () => {
     expect(box.style.maxWidth).toBe("42ch");
     expect(box.style.width).toBe("240px");
     expect(box.style.height).toBe("calc(100% - 2rem)");
-    // `constructor` is no name of any family, so it is a plain string and not a lookup on the map's prototype.
     expect(box.getAttribute("class") ?? "").toBe("");
   });
 
@@ -225,7 +222,6 @@ describe("the vocabulary of the axes", () => {
   it("[primitives.layout.axis-classes] gives every value of align and justify a class of its own on Stack, Inline and Grid", () => {
     for (const [name, root, align, justify] of [["Stack", stackRoot, flexAlign, flexJustify], ["Inline", inlineRoot, flexAlign, flexJustify], ["Grid", gridRoot, gridAlign, gridJustify]] as const) {
       const Container = { Stack, Inline, Grid }[name] as unknown as (props: Record<string, unknown>) => ReactElement;
-      // Stack lays out a column, where there is no baseline to align to.
       const aligns = name === "Stack" ? ALIGNS.filter((value) => value !== "baseline") : ALIGNS;
       for (const value of aligns) {
         const { unmount } = render(<Container data-testid="box" align={value} />);
@@ -279,7 +275,6 @@ describe("the vocabulary of the axes", () => {
 
 describe("polymorphic props", () => {
   it("[primitives.polymorphic.own-props-win] keeps a native prop of the named element out of the primitive's own", () => {
-    // td's native align takes left | center | right; Inline's own align takes the Align names.
     compiles(<Inline as="td" align="start" />, <Stack as="ul" align="end" justify="between" />, <Grid as="section" justify="center" justifyItems="end" />);
     const ref = createRef<HTMLTableCellElement>();
     render(<table><tbody><tr><Inline as="td" align="end" ref={ref} /></tr></tbody></table>);

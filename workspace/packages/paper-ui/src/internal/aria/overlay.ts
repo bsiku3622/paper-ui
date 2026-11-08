@@ -15,7 +15,6 @@ const physical = (placement: Placement, direction: Direction): AriaPlacement => 
   return placement.replace(/\bstart\b/, start).replace(/\bend\b/, end) as AriaPlacement;
 };
 
-// React Aria's axis also has `center`, which no Placement asks for.
 const logical = (side: "top" | "bottom" | "left" | "right" | "center", direction: Direction): PlacementSide | null => {
   if (side === "center") return null;
   if (side === "left") return direction === "rtl" ? "end" : "start";
@@ -30,14 +29,9 @@ type Dismissal = {
   closeOnInteractOutside: (element: Element) => boolean;
 };
 
-// The state a modal overlay reads: whether it is open and how to close it.
 type OpenState = { isOpen: boolean; setOpen: (open: boolean) => void; open: () => void; close: () => void; toggle: () => void };
 
-// Where the panel stands against its anchor, as the style to put on it. Placement is logical: start and end are
-// turned into left and right by the direction the anchor reads, and the side React Aria settles on is turned back.
-// The panel's z belongs to its elevation, so the z that React Aria computes is dropped. Distances arrive as pixels,
-// measured by the caller from the role that names them. A panel that fits its anchor is at least as wide as the anchor is
-// now, as far as the window's gutters allow: the width is read while the panel is open, and again whenever the anchor changes size.
+// The panel's z belongs to its elevation, so the z that React Aria computes is dropped.
 export function useAnchoredPosition({ anchor, overlay, open, placement, offsetPx, crossOffsetPx, flip, containerPaddingPx, fitAnchor = false }: {
   anchor: RefObject<Element | null>;
   overlay: RefObject<Element | null>;
@@ -75,12 +69,10 @@ export function useAnchoredPosition({ anchor, overlay, open, placement, offsetPx
   });
   const style: CSSProperties = { ...overlayProps.style };
   delete style.zIndex;
-  // Never wider than the window leaves between its gutters: a list under a control that spans the page stays on the page.
   if (fitAnchor && anchorWidth !== null && typeof document !== "undefined") style.minWidth = Math.max(0, Math.min(anchorWidth, document.documentElement.clientWidth - containerPaddingPx - containerPaddingPx));
   return { style, placement: resolved && logical(resolved, direction) };
 }
 
-// A popover's dismissal: Escape, a press outside, and optionally focus leaving.
 export function useAriaDismiss({ isOpen, onClose, closeOnBlur, dismissable, keyboardDismissDisabled, closeOnInteractOutside }: Dismissal & {
   isOpen: boolean;
   onClose: () => void;
@@ -96,12 +88,10 @@ export function useAriaDismiss({ isOpen, onClose, closeOnBlur, dismissable, keyb
   return { panelProps: overlayProps };
 }
 
-// A modal's dismissal, and what keeps the page behind it still: inert background, locked scroll.
 export function useAriaModal({ dismissable, keyboardDismissDisabled, closeOnBlur, closeOnInteractOutside }: Dismissal, state: OpenState, ref: RefObject<HTMLElement | null>): {
   panelProps: HTMLAttributes<HTMLElement>;
   backdropProps: HTMLAttributes<HTMLElement>;
 } {
-  // useModalOverlay hands these on to useOverlay whole; its own type just leaves shouldCloseOnBlur out.
   const options: AriaOverlayProps = {
     isDismissable: dismissable,
     isKeyboardDismissDisabled: keyboardDismissDisabled,
@@ -112,14 +102,10 @@ export function useAriaModal({ dismissable, keyboardDismissDisabled, closeOnBlur
   return { panelProps: modalProps, backdropProps: underlayProps };
 }
 
-// Whether the panel is still playing its enter animation. `ready` holds the start until the panel can be seen where it
-// will stand (a popover, until it has been placed).
 export function useAriaEnter(ref: RefObject<HTMLElement | null>, ready: boolean): boolean {
   return useEnterAnimation(ref, ready);
 }
 
-// Whether the panel is playing its exit animation. It stays mounted for as long as this is true, and the animation's
-// end is what turns it off.
 export function useAriaExit(ref: RefObject<HTMLElement | null>, open: boolean): boolean {
   return useExitAnimation(ref, open);
 }

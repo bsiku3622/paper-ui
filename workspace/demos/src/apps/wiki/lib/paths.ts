@@ -1,5 +1,3 @@
-// paths.ts — where every page of the wiki lives.
-
 import { cleanTitle } from "./markup";
 
 export const BASE = "/wiki";
@@ -31,7 +29,6 @@ export const randomPath = () => `${BASE}/random`;
 export const loginPath = (next?: string) => `${BASE}/login${query({ next })}`;
 export const starredPath = () => `${BASE}/starred`;
 
-// A route's wildcard back into a title.
 export const titleOf = (raw: string | undefined) => {
   const text = raw ?? "";
   try {

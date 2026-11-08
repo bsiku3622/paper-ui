@@ -1,6 +1,3 @@
-// The console page: a command line with history and completion, and the whole log with the user's filters, a search and a
-// choice of what kind of line to show. The newest line is on top unless the settings say otherwise.
-
 import { useState } from "react";
 
 import { Box, Divider, Field, IconButton, Inline, Stack, Switch, Text } from "@studio-baeks/paper-ui";

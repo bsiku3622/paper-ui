@@ -1,5 +1,3 @@
-// 공유 링크: the address a file is shared at, who can open it and for how long, and the way to stop sharing it.
-
 import { useRef, useState } from "react";
 
 import { Button, Grid, Stack, Surface, Text } from "@studio-baeks/paper-ui";

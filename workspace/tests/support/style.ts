@@ -5,8 +5,6 @@ import type { Accent, Variant } from "../../packages/paper-ui/src/tokens";
 
 export type Style = Record<string, string>;
 
-// A specimen's computed style against what its tokens resolve to: a probe element placed beside the
-// specimen takes the expected references as inline style, and the browser resolves both the same way.
 export const expectStyle = async (target: Locator, expected: Style) => {
   const keys = Object.keys(expected);
   // Controls transition between states, so a value read right after a click can still be on its way.
@@ -28,7 +26,6 @@ export const expectStyle = async (target: Locator, expected: Style) => {
     .toEqual([]);
 };
 
-// What an accent × variant control paints, as computed style.
 export const profile = (accent: Accent, variant: Variant): Style => {
   const spec = accentProfile(accent, variant);
   return { backgroundColor: spec.face, color: spec.ink, borderTopColor: spec.border };

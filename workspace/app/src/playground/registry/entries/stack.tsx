@@ -21,7 +21,6 @@ export default defineSpec({
   subject: (state, _harness, locale) => {
     const w = inLocale(WORDS, locale);
     const justify = pick<NonNullable<StackProps["justify"]>>(state, "justify");
-    // A distribution needs room to show.
     return (
       <Stack gap={pick<NonNullable<StackProps["gap"]>>(state, "gap")} align={pick<NonNullable<StackProps["align"]>>(state, "align")} justify={justify} width="12rem" height={justify ? "12rem" : undefined}>
         {sunkenBoxes(w.boxes)}

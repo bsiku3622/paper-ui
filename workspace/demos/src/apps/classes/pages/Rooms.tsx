@@ -1,6 +1,3 @@
-// 빈 강의실 — pick the periods you want (or tap a room) and the floor map shows which classrooms are free then; tap a
-// room to see its own week. Hyungseol Hall, four floors; only the rooms that are classrooms can be picked.
-
 import { useMemo, useState } from "react";
 import { Link as RouterLink, useSearchParams } from "react-router-dom";
 
@@ -14,7 +11,6 @@ import { path, useClasses } from "../state";
 import { Card, Eyebrow, Hint, SlotGrid, type Slot } from "../ui/parts";
 import { termLabel } from "../data/build";
 
-// Four floors of Hyungseol Hall, seven rooms each, drawn from the right to the left as the building is.
 const FLOORS: Record<number, string[]> = {
   34: ["형3401", "형3402", "형3403", "형3404", "형3405", "형3406", "형3407"],
   33: ["형3301", "형3302", "형3303", "형3304", "형3305", "형3306", "형3307"],
@@ -30,7 +26,6 @@ const FLOOR_ORDER = [34, 33, 32, 31];
 
 export const RoomsPage = () => {
   const { data, term } = useClasses();
-  // ?times=MON-2,MON-3 and ?room=형3407 arrive with a choice already made, to look at it
   const [params] = useSearchParams();
   const [times, setTimes] = useState<string[]>(() => (params.get("times") ?? "").split(",").filter(Boolean));
   const [room, setRoom] = useState<string | null>(params.get("room"));

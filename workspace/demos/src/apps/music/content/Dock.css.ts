@@ -1,6 +1,3 @@
-// What the floating player needs that Paper cannot say: a face fixed to the bottom of the window, centred on the page
-// between the sidebar and the lyrics pane. Every length is a token; the columns' widths come from frame.ts.
-
 import { style } from "@vanilla-extract/css";
 
 import { tokens } from "@studio-baeks/paper-ui/tokens";
@@ -10,7 +7,6 @@ import { ASIDE_WIDTH, SIDEBAR_WIDTH } from "./frame";
 const md = `screen and (min-width: ${tokens.layout.breakpoint.md})`;
 const lg = `screen and (min-width: ${tokens.layout.breakpoint.lg})`;
 
-// The window's padding, a column and the gap after it: what AppShell puts before the page, and after it.
 const beforePage = `calc(${tokens.layout.gap.lg} + ${SIDEBAR_WIDTH} + ${tokens.layout.gap.xl})`;
 const afterPage = `calc(${tokens.layout.gap.lg} + ${ASIDE_WIDTH} + ${tokens.layout.gap.xl})`;
 

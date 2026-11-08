@@ -1,9 +1,3 @@
-// Playground overview — the index of specimens. First the tokens, each section a handful of live specimens next to the facts they
-// show; then a board for every Atom with a size (Boards.tsx): every value of its main axis against every size, in the state and the
-// props its controls choose; then the specimens that only mean something side by side, and the Atoms with no size. Every list comes
-// from the vocabulary or the registry; a number in a caption is read from the tokens the specimen is built on, or the caption names
-// the role instead.
-
 import { Fragment, useLayoutEffect, useState, type ReactNode } from "react";
 
 import {
@@ -37,8 +31,6 @@ import { SectionHeading } from "../site/SectionHeading";
 import { Boards } from "./Boards";
 import { Computed, px } from "./foundations/kit";
 
-// ── 배치 헬퍼 (paper 프리미티브로만 조립) ──────────────────────────────────
-
 const Section = ({ id, title, children }: { id: string; title: string; children: ReactNode }) => (
   <Stack as="section" gap="lg" id={id}>
     <SectionHeading title={title} />
@@ -46,10 +38,8 @@ const Section = ({ id, title, children }: { id: string; title: string; children:
   </Stack>
 );
 
-// 캡션과 표본이 서는 두 칸. 모든 절이 같은 칸을 써서 표본이 세로 한 줄에서 시작한다.
 const ROW = { base: "minmax(0, 1fr)", lg: "12rem minmax(0, 1fr)" };
 
-// 한 표본 = 캡션 + 내용. testid 로 테스트가 집어낸다.
 const Spec = ({ label, testid, children }: { label: ReactNode; testid?: string; children: ReactNode }) => (
   <Grid columns={ROW} gap="md" align="center" data-testid={testid}>
     <Text variant="caption">{label}</Text>
@@ -59,8 +49,6 @@ const Spec = ({ label, testid, children }: { label: ReactNode; testid?: string; 
   </Grid>
 );
 
-// What a specimen is drawn at, read off the drawing: size / line · weight, in px. The hero grows with the window, so it is read
-// again when the window changes. The numbers are the computed style, so they cannot drift from the role.
 const useDrawn = () => {
   const [node, setNode] = useState<HTMLElement | null>(null);
   const [drawn, setDrawn] = useState("");
@@ -77,8 +65,6 @@ const useDrawn = () => {
   return [setNode, drawn] as const;
 };
 
-// One row of the scale: the role's name with what it is drawn at under it, beside the specimen. The name sits on the specimen's
-// baseline, so the eye reads across.
 const TypeRow = ({ variant, family, name, testid, children }: { variant: (typeof TEXT_VARIANTS)[number]; family?: "mono"; name: string; testid: string; children: ReactNode }) => {
   const [ref, drawn] = useDrawn();
   return (
@@ -94,13 +80,11 @@ const TypeRow = ({ variant, family, name, testid, children }: { variant: (typeof
   );
 };
 
-// family=mono 표본 — 해당 variant 행 바로 밑에 같은 크기 mono 로 깔아 sans 와 비교시킨다.
 const MONO_DEMO: Partial<Record<(typeof TEXT_VARIANTS)[number], string>> = {
   title: "paper-ui",
   body: 'const paper = "ui"; // 0123',
 };
 
-// What each rung of the control ladder is called beside its measured height.
 const SIZE_NAMES: Record<ControlSize, string> = { xs: "tool", sm: "compact", md: "default", lg: "roomy", xl: "spacious" };
 
 type OverviewWords = {
@@ -254,7 +238,6 @@ export const Overview = () => {
       description={w.description}
     />
 
-    {/* ── Tokens ─────────────────────────────────────────── */}
     <Section id="sec-type" title="Type scale">
       <Text variant="caption" ink="secondary">{w.typeNote}</Text>
       <Stack gap="md">
@@ -287,7 +270,6 @@ export const Overview = () => {
       </Spec>
     </Section>
 
-    {/* ── Primitives · Surface ───────────────────────────── */}
     <Section id="sec-surface" title={w.surfaceTitle}>
       <Spec label={w.surfaceLabel}>
         <Surface fill="raised" padding="md" radius="md">
@@ -310,7 +292,6 @@ export const Overview = () => {
       </Spec>
     </Section>
 
-    {/* ── Atoms ─────────────────────────────────────────── */}
     <Stack as="section" gap="lg" id="sec-atoms">
       <SectionHeading
         title="Atoms"
@@ -319,16 +300,13 @@ export const Overview = () => {
       <Boards />
     </Stack>
 
-    {/* ── 나란히 서야 보이는 것 ─────────────────────────── */}
     <Section id="sec-together" title={w.togetherTitle}>
-      {/* 정렬 표본 — Field 와 Button 이 같은 높이/기준선에 앉는가 */}
       <Spec label={w.alignLabel} testid="spec-align">
         <Box width="16rem">
           <Field placeholder={w.searchPlaceholder} aria-label={w.search} data-testid="align-field" />
         </Box>
         <Button data-testid="align-button">{w.run}</Button>
       </Spec>
-      {/* size 정렬 — Field·Select·Button 이 같은 사다리라 나란히 두면 높이가 맞는다 */}
       {CONTROL_SIZES.map((size) => (
         <Spec key={size} label={`size ${size} — ${SIZE_NAMES[size]} ${px(tokens.shape.control.height[size])} · radius ${px(tokens.shape.radius.control[size])}`} testid={`spec-size-${size}`}>
           <Box width="10rem">
@@ -340,9 +318,6 @@ export const Overview = () => {
           <Button size={size}>Button</Button>
         </Spec>
       ))}
-      {/* 공통 base — 넷이 같은 컨트롤 여백을 쓰는가. 높이가 아니라 *글자 시작점* 을 본다:
-          Textarea 는 줄 수만큼 자라 높이로는 줄을 못 세우고, Select 는 화살표 때문에
-          오른쪽만 넓다. 왼쪽 여백 하나가 넷을 한 세로선에 세운다. */}
       <Spec
         label={<>base — radius {px(tokens.shape.radius.control.md)} · {w.baseLabel} <Computed value={tokens.shape.control.inset.button.md} /> · {w.valueLabel} <Computed value={tokens.shape.control.inset.input.md} /></>}
         testid="spec-control-base"
@@ -352,10 +327,6 @@ export const Overview = () => {
         <Box width="9rem"><Select size="md" data-testid="base-select"><Select.Option value="a">Select</Select.Option></Select></Box>
         <Box width="12rem"><Textarea size="md" placeholder="Textarea" aria-label="textarea base" data-testid="base-textarea" /></Box>
       </Spec>
-      {/* 알약은 컨트롤 어휘 하나다 — Button·Field·Select 가 같은 곡선을 든다. 검색
-          한 줄에 셋이 나란히 서는 게 이 어휘가 있는 이유고, 여백은 안 움직인다
-          (shape 은 실루엣 축이지 밀도 축이 아니다).
-          Textarea 에는 없다 — 알약은 "높이의 절반" 이라 한 줄짜리에서만 성립한다. */}
       <Spec label={w.pillLabel} testid="spec-pill-row">
         <Box width="12rem">
           <Field shape="pill" placeholder={w.search} aria-label={w.search} data-testid="field-pill"
@@ -366,13 +337,9 @@ export const Overview = () => {
         </Box>
         <Button shape="pill" data-testid="button-pill-row">{w.search}</Button>
       </Spec>
-      {/* 작은 표식들이 한 줄에 섰을 때 서로 같은 무게로 읽히는지 — 숫자가 같은 것과
-          같아 보이는 것은 다르다. 아이콘은 24 아트보드 안에서 여백을 갖고, 스위치는
-          폭이 넓어 같은 높이여도 더 크게 읽힌다. */}
       <Spec label={w.marksLabel} testid="spec-marks">
         <Inline gap="lg" align="center">
           <Checkbox defaultChecked data-testid="mark-checkbox" />
-          {/* 꺼진 상태 — 경계가 유일한 단서인 자리라 비텍스트 대비 계약(3:1, color.md)이 여기 걸린다. tokens/color.test.ts 가 값을, overview.spec 이 이 표식들을 지킨다. */}
           <Checkbox data-testid="mark-checkbox-off" aria-label={w.checkboxOff} />
           <Radio name="mark" defaultChecked data-testid="mark-radio" />
           <Radio name="mark-off" data-testid="mark-radio-off" aria-label={w.radioOff} />
@@ -433,8 +400,6 @@ export const Overview = () => {
     </Section>
 
     <Section id="sec-other" title={w.otherTitle}>
-      {/* Divider 는 세로로 세워 표본으로 보인다. 가로 한 줄을 그으면 섹션을 가르는
-          선처럼 읽혀, 예제 화면이 줄무늬가 된다 — orientation 과 level 은 상세 페이지에서 전환한다. */}
       <Spec label={w.linkLabel}>
         <Link href="#/" data-testid="link">{w.link}</Link>
         <Divider orientation="vertical" />

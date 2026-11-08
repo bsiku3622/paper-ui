@@ -1,10 +1,3 @@
-// A settings page: the same md controls, many of them, in rows. It is where radius and height meet density.
-//
-// One centered column of raised cards under the bar, as it has always been. The first three cards (the profile, the notifications, the
-// scope) are one form with one save at the end; each card after them is about one thing and has its own buttons. It checks its fields
-// when you leave them and again when you save, and answers a save with a line beside the button. Nothing is stored: a password typed
-// here is held in its field and is gone with the form.
-
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 
@@ -13,9 +6,6 @@ import { Badge, Box, Button, Checkbox, Divider, Field, Floating, FormField, Grid
 import { ArrowLeftIcon, CheckIcon } from "../../compositions/icons";
 import { ConfirmDialog, DAY, Dialog, DialogFooter, EMAIL, HOUR, KeyRows, MAIN, MemberRows, Notice, NoticeBar, ScreenBar, StrengthMeter, clock, formatWon, relative, useStore, wait } from "./parts";
 
-// ─── What every form does the same ──────────────────────────────────────────────────────────────────────────────────
-
-// A form's two states: what was saved, and what is on the screen. The difference is what the save button is for.
 const useDraft = <T extends object>(initial: T) => {
   const [saved, setSaved] = useState(initial);
   const [draft, setDraft] = useState(initial);
@@ -28,7 +18,6 @@ const useDraft = <T extends object>(initial: T) => {
   };
 };
 
-// A line that says "saved" for a few seconds.
 const useFlash = () => {
   const [stamp, setStamp] = useState<number | null>(null);
   useEffect(() => {
@@ -40,8 +29,6 @@ const useFlash = () => {
 };
 
 const TWO_COLUMNS = "repeat(auto-fit, minmax(min(100%, 16rem), 1fr))";
-
-// ─── 프로필, 알림, 공개 범위 ───────────────────────────────────────────────────────────────────────────────────────────
 
 const NOTIFICATIONS = [
   { id: "deploy", title: "배포가 끝나면 알리기", detail: "성공과 실패를 모두 메일로 받습니다.", on: true },
@@ -89,7 +76,6 @@ const ProfileForm = () => {
   const shown = (key: FieldKey) => (touched[key] ? errors[key] : undefined);
   const touch = (key: FieldKey) => setTouched((previous) => ({ ...previous, [key]: true }));
 
-  // Which of the three cards the unsaved changes are in, so the save row can say.
   const groups: [string, boolean][] = [
     ["프로필", (["name", "email", "language", "website", "bio"] as const).some((key) => draft[key] !== saved[key])],
     ["알림", JSON.stringify(draft.alerts) !== JSON.stringify(saved.alerts)],
@@ -194,8 +180,6 @@ const ProfileForm = () => {
     </Stack>
   );
 };
-
-// ─── 보안 ────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 const PasswordForm = () => {
   const { record } = useStore();
@@ -361,8 +345,6 @@ const SecurityCard = () => {
   );
 };
 
-// ─── 결제 ────────────────────────────────────────────────────────────────────────────────────────────────────────────
-
 type BillingKey = "email" | "company" | "regNo" | "taxEmail";
 
 const BillingCard = () => {
@@ -436,8 +418,6 @@ const BillingCard = () => {
   );
 };
 
-// ─── 위험 구역 ───────────────────────────────────────────────────────────────────────────────────────────────────────
-
 const WORKSPACE = "arcfield-logistics";
 
 const DangerCard = () => {
@@ -477,10 +457,7 @@ const DangerCard = () => {
   );
 };
 
-// ─── The page ────────────────────────────────────────────────────────────────────────────────────────────────────────
-
-// A link into a card (billing's "설정으로 가기" lands on #billing) has to wait for the page, which loads when it is asked for: the
-// browser looks for the card before it exists, so the page scrolls to it once it is there.
+// The page loads when asked for, so #hash names a card that does not exist yet when the browser looks; scroll once it does.
 const useHashScroll = () => {
   const { hash } = useLocation();
   useEffect(() => {
@@ -492,7 +469,6 @@ export const SettingsScreen = () => {
   useHashScroll();
   return (
   <Stack gap="lg" padding="lg">
-    {/* The settings are opened from the dashboard (the sidebar's 설정, the account menu), so the way back leads there. */}
     <ScreenBar start={<Button as={RouterLink} to="/demo/arcfield" size="sm" variant="ghost"><ArrowLeftIcon />대시보드</Button>} />
     <Grid {...MAIN} justifyItems="center">
       <Stack gap="xl" width="full" maxWidth="measure.xl" paddingY="lg">

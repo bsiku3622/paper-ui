@@ -1,5 +1,3 @@
-// The camera only makes sense where there is one in hand, and dragging a file only with a mouse.
-
 import { useEffect, useState } from "react";
 
 const QUERY = "(pointer: coarse)";

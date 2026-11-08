@@ -1,8 +1,3 @@
-// 자료 올리기 — share a file for a subject of the term, then follow what happens to it. Everything you upload waits for a
-// manager ("검수 대기"); you can fix its title, kind and note while it waits or after it is approved (an approved one is
-// reviewed again), and withdraw it unless it is already approved. Only the file's name, type and size are kept — this demo
-// never reads or stores what is inside.
-
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -33,7 +28,6 @@ export const UploadPage = () => {
   const { materials, setMaterials, data, term, me, session, clock } = useClasses();
   const toast = useToast();
   const subjects = useMemo(() => data.subjects.map((subject) => subject.subject), [data]);
-  // ?demo=1 arrives with a half-filled form that has been tried, to look at the messages
   const demo = useSearchParams()[0].get("demo") === "1";
   const [draft, setDraft] = useState<Draft>({ subject: "", category: "lecture_note", title: demo ? "그래프 탐색 정리" : "", description: "" });
   const [files, setFiles] = useState<MaterialFile[]>([]);

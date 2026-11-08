@@ -1,5 +1,3 @@
-// The school calendar and the dates around it. Every sum is here; the pages only draw.
-
 import type { Accent } from "@studio-baeks/paper-ui/tokens";
 
 import { CALENDAR_ROWS } from "../data/generated/calendar";
@@ -42,7 +40,6 @@ export type EventRequest = {
 };
 
 export const CATEGORY_LABEL: Record<EventCategory, string> = { holiday: "공휴일", dorm: "귀가·생활관", exam: "시험", term: "학기", academic: "학사", event: "행사" };
-// What each kind of day means, as an accent. Neutral kinds have no accent.
 export const CATEGORY_ACCENT: Record<EventCategory, Accent> = { holiday: "error", exam: "warning", term: "info", dorm: "success", academic: "primary", event: "primary" };
 export const CATEGORY_ORDER: Record<EventCategory, number> = { holiday: 0, exam: 1, term: 2, dorm: 3, academic: 4, event: 5 };
 export const MONTH_LABEL = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
@@ -59,7 +56,6 @@ export const addDays = (date: Date, days: number) => {
   return next;
 };
 
-// The grid always shows six weeks so that its height does not jump from month to month.
 export const monthGrid = (year: number, month: number) => {
   const first = new Date(year, month - 1, 1);
   const start = addDays(first, -first.getDay());
@@ -85,7 +81,6 @@ export const BASE_EVENTS: readonly CalendarEvent[] = CALENDAR_ROWS.map(([title, 
   note: null,
 }));
 
-// Events are spread over the days they cover; a day lists what decides its character first, a personal event last.
 export const groupByDate = (events: readonly CalendarEvent[]) => {
   const map: Record<string, CalendarEvent[]> = {};
   for (const event of events) {
@@ -105,7 +100,6 @@ export const groupByDate = (events: readonly CalendarEvent[]) => {
   return map;
 };
 
-// 학사 주차: "N주차 종료" marks the end of week N, so a week starts six days before.
 export type WeekMarker = { week: number; end: string };
 export const weekMarkers = (events: readonly CalendarEvent[]): WeekMarker[] =>
   events
@@ -137,7 +131,6 @@ export const timeLabel = (event: Pick<CalendarEvent, "mode" | "startMinute" | "e
 export const gradeLabel = (grades: readonly number[]) => (grades.length === 0 ? "" : `${grades.join("·")}학년`);
 export const majorLabel = (majors: readonly string[]) => (majors.length === 0 ? "" : majors.join("·"));
 
-// 학번 → the grade on a day. The school year turns over in March: in February 2027 a 25학번 is still a 2학년.
 export const gradeOf = (stuId: string | null, on: Date) => {
   const admitted = Number(stuId?.slice(0, 2));
   if (!stuId || !Number.isFinite(admitted)) return null;
@@ -145,13 +138,11 @@ export const gradeOf = (stuId: string | null, on: Date) => {
   return Math.max(1, Math.min(3, schoolYear - (2000 + admitted) + 1));
 };
 
-// "내 학년·전공 것만": events with no target stay; a person who has no major yet is not filtered by one.
 export const isForMe = (event: Pick<CalendarEvent, "personal" | "grades" | "majors">, grade: number | null, major: string | null) => {
   if (event.personal) return true;
   return (grade === null || event.grades.length === 0 || event.grades.includes(grade)) && (major === null || event.majors.length === 0 || event.majors.includes(major));
 };
 
-// The weeks of the school year, for what the home page says about vacations.
 export type Stretch = { label: string; start: string; end: string; vacation: boolean };
 export const STRETCHES: readonly Stretch[] = [
   { label: "2026-1학기", start: "2026-02-23", end: "2026-06-19", vacation: false },

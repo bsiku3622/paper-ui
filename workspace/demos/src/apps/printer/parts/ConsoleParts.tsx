@@ -1,6 +1,3 @@
-// The console's pieces, shared by the dashboard's console panel and the console page: the command line (history on the arrow
-// keys, completion on Tab), the log with its filters, and the list of commands the printer knows.
-
 import { useMemo, useState } from "react";
 
 import { Box, Button, Divider, Field, Grid, IconButton, Inline, Stack, Text } from "@studio-baeks/paper-ui";
@@ -16,7 +13,6 @@ import { Dialog } from "../ui/Dialog";
 
 const TEMPERATURE = /^(?:ok\s+)?(?:B|C|T\d*):/;
 
-// What the console shows: the log with the filters the user set applied, a search and a kind chosen on the page, and the order.
 export const visibleEntries = (log: readonly LogEntry[], setting: Settings["console"], query = "", kinds: readonly LogKind[] | null = null): LogEntry[] => {
   const custom = setting.filters.filter((filter) => filter.enabled).flatMap((filter) => {
     try {
@@ -27,7 +23,6 @@ export const visibleEntries = (log: readonly LogEntry[], setting: Settings["cons
   });
   const needle = query.trim().toLowerCase();
   const list = log.filter((entry) => {
-    // Temperature reports the printer made on its own are hidden; the answer to an M105 typed here stays.
     if (setting.hideTemperature && entry.auto && TEMPERATURE.test(entry.text)) return false;
     if (setting.hideOk && /^ok$/i.test(entry.text.trim())) return false;
     if (custom.some((pattern) => pattern.test(entry.text))) return false;

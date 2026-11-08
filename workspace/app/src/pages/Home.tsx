@@ -1,8 +1,3 @@
-// Paper UI landing page — one scroll in five scenes. The hero comes in line by line and opens a slot for a live switch; a wall of
-// real components drifts by; a statement lights up line by line as it is read; under a spotlight the Arcfield demo itself rises
-// into view; then the principles and the way in. The motion is the reveal role and view timelines, and where less motion is
-// asked or a browser has no view timelines, every scene stands in its place from the start. Product compositions stay local.
-
 import { Fragment, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -17,7 +12,6 @@ import * as s from "../site/home.css";
 import { frame } from "../site/shell.css";
 import { Wall } from "./home/Wall";
 
-// What the page says, in both languages. Each visitor reads their own (site/locale.tsx).
 const HOME = {
   ko: {
     darkTheme: "다크 테마",
@@ -95,8 +89,6 @@ const HOME = {
   },
 } as const;
 
-// A sheet of paper in the second line of the headline, with a live switch on it: the page's theme. It opens last, after the
-// lines are in, and its words part to let it in.
 const ThemeSlot = () => {
   const { resolved, setTheme } = useTheme();
   return (
@@ -116,7 +108,6 @@ const Hero = () => {
         <Text variant="caption" ink="secondary">{`Design System · v${__PAPER_UI_VERSION__}`}</Text>
       </Inline>
 
-      {/* The heading is named by its words alone; the switch in its second line is a control of its own. */}
       <Text variant="hero" aria-label={t.heroLabel}>
         <span className={joinClass(s.heroLine, reveal.load, revealAfter[1])}>{t.heroFirst}</span>
         <span className={joinClass(s.heroLine, s.heroQuiet, reveal.load, revealAfter[2])}>{t.heroBefore}<ThemeSlot />{t.heroAfter}</span>
@@ -126,7 +117,6 @@ const Hero = () => {
         {t.sub}
       </Text>
 
-      {/* Both actions navigate, so Button renders the router link directly. */}
       <Inline gap="sm" justify="center" className={joinClass(s.heroActions, reveal.load, revealAfter[4])}>
         <Button as={RouterLink} to="/docs" size="lg" shape="pill">
           {t.docs}
@@ -140,7 +130,6 @@ const Hero = () => {
   );
 };
 
-// Read line by line: each word lights up from the quiet ink as it comes up the screen to its middle.
 const Statement = () => (
   <Box className={joinClass(frame, s.statement)}>
     <Text variant="headline" as="p" strong className={s.statementText} data-testid="home-statement">
@@ -154,7 +143,6 @@ const Statement = () => (
   </Box>
 );
 
-// Two lines of a scene's title, the second a step back.
 const TwoTone = ({ first, second }: { first: string; second: string }) => (
   <>
     <span className={s.heroLine}>{first}</span>
@@ -162,9 +150,7 @@ const TwoTone = ({ first, second }: { first: string; second: string }) => (
   </>
 );
 
-// The Arcfield demo itself, in a window: the real screen, its sidebar and all, built of nothing but Paper. Here it is a picture
-// (inert), so the page's scroll never catches in it and its keys stay its own; the link under it opens it to use. It comes up in the
-// page's theme, and opens again when the theme changes, because a frame reads the theme when it loads.
+// A frame reads the theme when it loads, so it is opened again when the theme changes.
 const DEMO = `${import.meta.env.BASE_URL}demo/arcfield`;
 const DemoWindow = () => {
   const { resolved } = useTheme();
@@ -175,7 +161,6 @@ const DemoWindow = () => {
   );
 };
 
-// The real screen under a spotlight, in the page's own theme: it rises into view as the other scenes do.
 const Stage = () => {
   const t = useWords(HOME);
   return (
@@ -207,7 +192,6 @@ const Stage = () => {
   );
 };
 
-// The principles' marks, in the order HOME lists them.
 const PRINCIPLE_ICONS = [<LayersIcon key="layers" />, <GridIcon key="grid" />, <StarIcon key="star" />, <ShieldIcon key="shield" />];
 
 const Principles = () => {
@@ -265,7 +249,6 @@ const Closing = () => {
   );
 };
 
-// Who made it and where to find them. The name is written the way each language writes it.
 const AUTHOR = {
   name: { ko: "백재원 (Jaewon Baek)", en: "Jaewon Baek (백재원)" },
   links: [

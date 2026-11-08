@@ -1,6 +1,3 @@
-// The school day: eleven periods and the named stretches between them (meals, self study). Minutes from midnight.
-// 9교시 ends at 18:30 and 10교시 begins at 19:30; 저녁 and 자습 overlap the periods rather than replacing them.
-
 export const DAYS = ["MON", "TUE", "WED", "THU", "FRI"] as const;
 export type Day = (typeof DAYS)[number];
 export const DAY_LABEL: Record<Day, string> = { MON: "월", TUE: "화", WED: "수", THU: "목", FRI: "금" };

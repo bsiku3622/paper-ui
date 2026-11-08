@@ -1,7 +1,3 @@
-// One peer's page: whether it is connected and how much it moves (a day of usage, with its table), its speed limit, the
-// details of its connection (key, address, endpoint) and the sessions it has had. The original packed the key and the
-// limit into a row's disclosure; here they have room.
-
 import { useState } from "react";
 import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 

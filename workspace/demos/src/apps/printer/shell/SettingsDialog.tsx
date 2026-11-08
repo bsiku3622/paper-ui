@@ -1,7 +1,3 @@
-// The settings dialog: Mainsail's tabs (general, UI, webcams, macros, presets, control, console, dashboard, G-code viewer,
-// editor, navigation) in a list on the left and the chosen tab on the right. Which tab is open is in the address
-// (?settings=presets), so any panel's gear opens its own tab and a screenshot can show each.
-
 import { type ReactNode } from "react";
 
 import { Box, Button, Grid, SelectableGroup } from "@studio-baeks/paper-ui";

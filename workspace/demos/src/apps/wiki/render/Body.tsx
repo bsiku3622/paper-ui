@@ -1,7 +1,3 @@
-// Body.tsx — an article laid out the way a wiki lays it out: the category line, notes, the lead beside the infobox, the table of
-// contents, then numbered sections that fold, then the footnotes. One component draws an article, an old revision and the
-// editor's preview.
-
 import { useState, type ReactNode } from "react";
 
 import { Divider, Grid, Stack } from "@studio-baeks/paper-ui";
@@ -39,8 +35,6 @@ const BlockView = ({ block, ctx }: { block: Plain; ctx: InlineCtx }) => {
   }
 };
 
-// Roughly how tall a block stands in the lead column (px), to decide how many sections can sit beside a tall infobox instead of
-// leaving a hole under the table of contents. It only has to be about right.
 const textLines = (nodes: readonly Inline[], perLine: number) => Math.max(1, Math.ceil(inlineText(nodes).length / perLine));
 const heightOf = (block: Block): number => {
   switch (block.t) {
@@ -78,7 +72,6 @@ export const Body = ({ parsed, title, ctx, editable = false, compact = false }: 
   const lead = (first < 0 ? parsed.blocks : parsed.blocks.slice(0, first)).filter(isPlain);
   const rest = first < 0 ? [] : parsed.blocks.slice(first);
 
-  // Notes that open the article stand above everything; the infobox goes beside the lead.
   let lifted = 0;
   while (lead[lifted]?.t === "note") lifted++;
   const notes = lead.slice(0, lifted);
@@ -87,7 +80,6 @@ export const Body = ({ parsed, title, ctx, editable = false, compact = false }: 
   const toc = parsed.toc.length >= 2 ? <Toc entries={parsed.toc} /> : null;
   const beside = !compact && infobox !== undefined;
 
-  // How many of the first sections fit in the lead column before the infobox ends.
   const sectionsBeside = (() => {
     if (!beside || !infobox) return 0;
     const target = heightOf(infobox);

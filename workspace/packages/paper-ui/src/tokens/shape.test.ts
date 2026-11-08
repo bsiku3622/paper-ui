@@ -18,41 +18,29 @@ import { SHAPE_RECIPES, markParts, targetReach } from "./shape-recipes";
 import { PRESET_SPEC, TYPOGRAPHY_SOURCE } from "./typography";
 import { themeVariables } from "./variables";
 
-// Everything the stylesheet emits as a source variable: the same in every mode.
 const { source, invariant, modes } = themeVariables();
 const declarations = new Map(Object.entries(source));
 
-// Roles read colours and shadow geometry as well; the light mode stands for the names every mode has.
 const resolvable = emittedDeclarations();
 
-// Resolves a role or recipe to dp at the default 16px root, the way the browser would.
 const dp = (expression: string) => resolveDp(expression, resolvable);
 const bySize = (role: Record<string, string>) => CONTROL_SIZES.map((size) => dp(role[size]!));
 
-// What each role has to come to, worked out from the authored numbers alone: the source and the leading of the control
-// text. The same formulas the docs state; the golden file then records the numbers they give.
 const source_ = SHAPE_SOURCE;
 const lineOf = (leading: keyof typeof TYPOGRAPHY_SOURCE.leading) => TYPOGRAPHY_SOURCE.leading[leading];
 const expected = {
   height: (size: ControlSize) => source_.control.height[size],
-  // A typed value gets the same room on every side of its glyph line.
   inputInset: (size: ControlSize) => (source_.control.height[size] - lineOf(PRESET_SPEC.field[size].leading)) / 2,
-  // A button's label defines its box: its inset is set by hand for each size, and the role is that source.
   buttonInset: (size: ControlSize) => source_.control.buttonInset[size],
   icon: (size: ControlSize) => source_.icon[CONTROL_ICON[size]],
   selection: (size: ControlSize) => source_.selection.size[size],
   thumb: (size: ControlSize) => expected.selection(size) - source_.stroke.emphasis,
   trackHeight: (size: ControlSize) => expected.selection(size) + source_.stroke.emphasis,
-  // One row of a textarea is a control tall: the padding is what the control height leaves around its line, at rest with no room
-  // for a border. A frame that keeps room for one gives it up from here.
   textareaPadding: (size: ControlSize) => (source_.control.height[size] - lineOf(PRESET_SPEC.textarea[size].leading)) / 2,
-  // Half the shortfall of a mark under the minimum target, never positive.
   reach: (visual: number) => (Math.min(visual, source_.target.min) - source_.target.min) / 2,
 };
 const each = (read: (size: ControlSize) => number) => CONTROL_SIZES.map(read);
 
-// Every role and recipe in dp at the default root: what the golden file holds. A value that is not a length (a ratio, an
-// em) is kept as the stylesheet declares it.
 const resolveLeaf = (expression: string): number | string => {
   try {
     return dp(expression);
@@ -77,7 +65,6 @@ describe("Shape is source → role → recipe", () => {
     walkValues(tokens.typography, [], (_path, value) => resolve(value));
     walkValues(tokens.layout, [], (_path, value) => resolve(value));
     walkValues(SHAPE_RECIPES, [], (_path, value) => resolve(value));
-    // Roles have no variables of their own.
     expect([...declarations.keys()].some((name) => /^--pui-shape-inset-/.test(name))).toBe(false);
   });
 
@@ -101,7 +88,6 @@ describe("Shape is source → role → recipe", () => {
       }
     });
     expect(found).toEqual([]);
-    // The check can see a number: a ratio written into a recipe is not structural.
     expect(isStructural({ value: 4, unit: "", operator: "/" })).toBe(false);
     expect(isStructural({ value: -45, unit: "deg" })).toBe(true);
     expect(STRUCTURAL.calcFactors.divisor).toEqual([2]);
@@ -115,13 +101,11 @@ describe("Shape is source → role → recipe", () => {
     expect(bySize(tokens.shape.control.height)).toEqual(each(expected.height));
     expect(bySize(tokens.shape.control.inset.input)).toEqual(each(expected.inputInset));
     expect(bySize(tokens.shape.control.inset.button)).toEqual(each(expected.buttonInset));
-    // Set by hand, the button inset still has to sit wider than a typed value at every size, in whole pixels.
     for (const size of CONTROL_SIZES) {
       expect(expected.buttonInset(size), size).toBeGreaterThan(expected.inputInset(size));
       expect(Number.isInteger(expected.buttonInset(size)), size).toBe(true);
     }
     expect(dp(tokens.shape.control.gap)).toBe(source_.space.sm);
-    // The input inset subtracts the field's glyph line, not the taller line box the value sits in.
     for (const size of CONTROL_SIZES) expect(lineOf(PRESET_SPEC.field[size].inputLeading)).toBeGreaterThan(lineOf(PRESET_SPEC.field[size].leading));
   });
 
@@ -159,7 +143,6 @@ describe("Shape is source → role → recipe", () => {
     expect(SHAPE_RECIPES.checkbox.markTransform).toBe(
       `rotate(-45deg) translate(calc(${emphasis} * var(--pui-shape-anatomy-checkbox-mark-shift-x)), calc(${emphasis} * var(--pui-shape-anatomy-checkbox-mark-shift-y)))`,
     );
-    // In pixels the shift is a quarter and minus a half of the check's stroke.
     expect([x, y].map((ratio) => ratio * SHAPE_SOURCE.stroke.emphasis)).toEqual([SHAPE_SOURCE.stroke.emphasis / 4, SHAPE_SOURCE.stroke.emphasis / -2]);
   });
 
@@ -170,7 +153,6 @@ describe("Shape is source → role → recipe", () => {
     expect(bySize(SHAPE_RECIPES.target.selection)).toEqual(each((size) => expected.reach(expected.selection(size))));
     expect(bySize(SHAPE_RECIPES.target.switchBlock)).toEqual(each((size) => expected.reach(expected.trackHeight(size))));
     expect(CONTROL_SIZES.map((size) => dp(targetReach(tokens.shape.control.icon[size])))).toEqual(each((size) => expected.reach(expected.icon(size))));
-    // A mark that already is a minimum target, or larger, reaches nowhere.
     expect(dp(targetReach("30px"))).toBe(0);
     expect(dp(targetReach(tokens.shape.target.min))).toBe(0);
     expect(dp(targetReach("100px"))).toBe(0);
@@ -179,7 +161,6 @@ describe("Shape is source → role → recipe", () => {
 });
 
 describe("what the Shape page says", () => {
-  // A table of docs/foundations/shape.md, by the first cell of its row, as numbers. The docs write a negative with its own minus.
   const shapeDoc = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "../../../../../docs/foundations/shape.md"), "utf8");
   const cells = (row: string) => row.split("|").slice(2, -1).map((cell) => Number(cell.trim().replace("−", "-")));
   const docRow = (first: string) => {
@@ -269,11 +250,9 @@ describe("a selection box derives its parts by one set of formulas", () => {
     const width = (size: ControlSize) => expected.trackHeight(size) * SHAPE_SOURCE.anatomy.switch.length;
     expect(bySize(SHAPE_RECIPES.switch.width)).toEqual(each(width));
     expect(bySize(SHAPE_RECIPES.switch.height)).toEqual(each(expected.trackHeight));
-    // The thumb is round: as wide as it is tall, a rim inside the track on every side.
     expect(bySize(SHAPE_RECIPES.switch.thumb)).toEqual(each(expected.thumb));
     expect(bySize(SHAPE_RECIPES.switch.thumbWidth)).toEqual(each(expected.thumb));
     expect(dp(SHAPE_RECIPES.switch.inset)).toBe(rim);
-    // Checked, the thumb sits at the far rim: the track less the thumb and a rim on each side.
     expect(bySize(SHAPE_RECIPES.switch.travel)).toEqual(each((size) => width(size) - expected.thumb(size) - rim - rim));
   });
 
@@ -281,7 +260,6 @@ describe("a selection box derives its parts by one set of formulas", () => {
     expect(bySize(SHAPE_RECIPES.badge.height)).toEqual(each((size) => SHAPE_SOURCE.anatomy.badge.height[size]));
     expect(bySize(SHAPE_RECIPES.badge.inset)).toEqual(each((size) => SHAPE_SOURCE.anatomy.badge.inset[size]));
     expect(bySize(SHAPE_RECIPES.spinner.size)).toEqual(each(expected.icon));
-    // Inside a line of text the ring is as tall as the text.
     expect(SHAPE_RECIPES.spinner.inline).toBe("var(--pui-shape-anatomy-inline-spinner)");
     expect(resolvable.get("--pui-shape-anatomy-inline-spinner")).toBe("1em");
   });
@@ -328,7 +306,6 @@ describe("Layout shadow is geometry per mode, assembled where it is cast", () =>
       expect(new Set(counts).size, depth).toBe(1);
       expect(counts[0], depth).toBe(LAYOUT_SOURCE.shadow.light[depth].length);
     }
-    // Each layer is written as CSS from the source's numbers; layout-resolved.json records the strings.
     for (const mode of COLOR_MODES) {
       for (const depth of DEPTHS) {
         expect(Object.values(LAYOUT_MODE_VALUES[mode].shadow[depth]), `${mode} ${depth}`).toEqual(LAYOUT_SOURCE.shadow[mode][depth].map((layer) => layer.map((value) => `${value}px`).join(" ")));
@@ -338,7 +315,6 @@ describe("Layout shadow is geometry per mode, assembled where it is cast", () =>
 
   it("[foundations.layout.shadow-geometry] has four depths, draws dark no wider than light layer by layer, and spreads dark's floating depth inward", () => {
     expect([...DEPTHS].sort()).toEqual(["floating", "inset", "lifted", "resting"]);
-    // How far a layer reaches past the box: its blur and its spread together.
     const reach = (layer: readonly number[]) => layer[2]! + layer[3]!;
     for (const depth of DEPTHS) {
       LAYOUT_SOURCE.shadow.dark[depth].forEach((layer, index) => expect(reach(layer), `${depth} ${index}`).toBeLessThanOrEqual(reach(LAYOUT_SOURCE.shadow.light[depth][index]!)));

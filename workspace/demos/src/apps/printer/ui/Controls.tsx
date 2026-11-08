@@ -1,5 +1,3 @@
-// The small controls the panels repeat: a number you type and confirm, a setting row, a key and its value.
-
 import { Children, useState, type ReactNode } from "react";
 
 import { Box, Divider, Field, Grid, Inline, Stack, Text } from "@studio-baeks/paper-ui";
@@ -23,7 +21,6 @@ type NumberFieldProps = {
   leading?: ReactNode;
 };
 
-// A number is typed, and applied when the field is left or Enter is pressed. The arrow keys step it. Escape lets go.
 export const NumberField = ({ value, onCommit, label, unit, step = 1, min, max, digits = 0, disabled, size = "sm", width, placeholder, leading }: NumberFieldProps) => {
   const [draft, setDraft] = useState<string | null>(null);
   const text = value.toFixed(digits);
@@ -63,7 +60,6 @@ export const NumberField = ({ value, onCommit, label, unit, step = 1, min, max, 
   return width ? <Box width={width} maxWidth="full">{field}</Box> : field;
 };
 
-// A line of a settings page: what it is on the left (with a note under it), the control on the right.
 export const SettingRow = ({ title, description, children }: { title: ReactNode; description?: ReactNode; children?: ReactNode }) => (
   <Grid columns={{ base: "minmax(0, 1fr)", sm: "minmax(0, 1fr) auto" }} gap="md" align="center">
     <Stack gap="xs" minWidth={0}>
@@ -85,7 +81,6 @@ export const SettingList = ({ children }: { children: ReactNode }) => (
   </Stack>
 );
 
-// A key on the left and its value on the right, rows divided by a hairline.
 export const KeyValue = ({ rows }: { rows: readonly (readonly [string, ReactNode])[] }) => (
   <Stack>
     {rows.map(([key, value], index) => (
@@ -100,7 +95,6 @@ export const KeyValue = ({ rows }: { rows: readonly (readonly [string, ReactNode
   </Stack>
 );
 
-// A small label over a value: a fact about a file or a job.
 export const Fact = ({ label, children }: { label: string; children: ReactNode }) => (
   <Stack gap="xs" minWidth={0}>
     <Text as="span" variant="label" strong={false} ink="tertiary" truncate>{label}</Text>

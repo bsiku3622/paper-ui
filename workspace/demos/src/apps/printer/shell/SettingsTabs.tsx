@@ -1,7 +1,3 @@
-// The tabs of the settings dialog. Each reproduces what the same tab of Mainsail sets, and what it sets is read by the rest of
-// the console: the time format by every time on every page, the control steps by the jog grid, the console filters by the log,
-// the dashboard layout by the dashboard, the navigation by the sidebar, and so on. Nothing leaves the browser.
-
 import { useState, type ReactNode } from "react";
 
 import { Badge, Box, Button, Field, FormField, Grid, IconButton, Inline, Select, Stack, Switch, Text, useTheme } from "@studio-baeks/paper-ui";
@@ -31,7 +27,6 @@ const Pick = <T extends string>({ title, description, value, options, onChange }
   </SettingRow>
 );
 
-// A list of numbers typed as "1, 10, 100": applied when the field is left or Enter is pressed.
 const NumberList = ({ label, value, max, onCommit }: { label: string; value: readonly number[]; max: number; onCommit: (value: number[]) => void }) => {
   const [draft, setDraft] = useState<string | null>(null);
   const commit = () => {
@@ -48,8 +43,6 @@ const NumberList = ({ label, value, max, onCommit }: { label: string; value: rea
 };
 
 const Heading = ({ children }: { children: ReactNode }) => <Text as="h3" variant="subheading">{children}</Text>;
-
-// ---- general
 
 const DATES: readonly Option<DateFormat>[] = [
   { value: "ko", label: "11월 4일" },
@@ -113,8 +106,6 @@ export const GeneralTab = () => {
   );
 };
 
-// ---- UI
-
 export const UiTab = () => {
   const { settings, patch } = useSettings();
   const { theme, setTheme } = useTheme();
@@ -127,8 +118,6 @@ export const UiTab = () => {
     </SettingList>
   );
 };
-
-// ---- webcams
 
 const SERVICES: readonly Option<Webcam["service"]>[] = [
   { value: "mjpeg", label: "MJPEG 스트림" },
@@ -203,8 +192,6 @@ export const WebcamsTab = () => {
   );
 };
 
-// ---- macros
-
 export const MacrosTab = () => {
   const { settings, patch } = useSettings();
   const m = settings.macros;
@@ -266,8 +253,6 @@ export const MacrosTab = () => {
   );
 };
 
-// ---- presets
-
 export const PresetsTab = () => {
   const { presets, setPresets } = useSettings();
   const change = (id: string, values: Partial<Preset>) => setPresets(presets.map((preset) => (preset.id === id ? { ...preset, ...values } : preset)));
@@ -293,8 +278,6 @@ export const PresetsTab = () => {
   );
 };
 
-// ---- control
-
 export const ControlTab = () => {
   const { settings, patch } = useSettings();
   const c = settings.control;
@@ -314,8 +297,6 @@ export const ControlTab = () => {
     </SettingList>
   );
 };
-
-// ---- console
 
 const valid = (pattern: string) => {
   try {
@@ -361,8 +342,6 @@ export const ConsoleTab = () => {
   );
 };
 
-// ---- dashboard
-
 const SIDES: readonly Option<Side>[] = [
   { value: "left", label: "왼쪽 칸" },
   { value: "right", label: "오른쪽 칸" },
@@ -396,8 +375,6 @@ export const DashboardTab = () => {
   );
 };
 
-// ---- viewer
-
 export const ViewerTab = () => {
   const { settings, patch } = useSettings();
   const v = settings.viewer;
@@ -416,8 +393,6 @@ export const ViewerTab = () => {
   );
 };
 
-// ---- editor
-
 export const EditorTab = () => {
   const { settings, patch } = useSettings();
   const e = settings.editor;
@@ -433,8 +408,6 @@ export const EditorTab = () => {
     </SettingList>
   );
 };
-
-// ---- navigation
 
 export const NavTab = () => {
   const { settings, patch } = useSettings();

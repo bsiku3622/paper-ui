@@ -1,5 +1,3 @@
-// LoginPage.tsx — a demo login: any name gets in. The password box is only for show; nothing reads it and nothing stores it.
-
 import { useState, type FormEvent } from "react";
 import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
 

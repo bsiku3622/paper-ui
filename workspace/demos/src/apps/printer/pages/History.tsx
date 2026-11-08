@@ -1,7 +1,3 @@
-// The history: statistics over every job the printer has run (totals, how jobs ended, filament and time per day, as charts or
-// as a table) and the list of jobs with a search, a sort, pages, multi-select and a dialog per job. The job that is printing
-// is the first row; when it ends the row and the statistics change with it.
-
 import { useMemo, useState } from "react";
 
 import { Badge, Box, Button, Divider, Field, Grid, IconButton, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";
@@ -41,7 +37,6 @@ const amount = (millimetres: number) => (millimetres < 1000 ? `${millimetres.toF
 
 const sum = (jobs: readonly HistoryJob[], value: (job: HistoryJob) => number) => jobs.reduce((total, job) => total + value(job), 0);
 
-// The whole history's totals as Moonraker gave them, moved by what has happened here since: jobs that ended, jobs that began.
 const totalsOf = (history: readonly HistoryJob[]) => {
   const first = new Map(HISTORY.map((job) => [job.id, job]));
   let jobs: number = HISTORY_TOTALS.jobs;

@@ -1,14 +1,3 @@
-// Tokens — 모든 시각 값의 유일한 정의 위치.
-//
-// `tokens` 객체는 *값이 아니라 var() 참조* 를 든다. 컴포넌트는 이 객체로만 색과
-// 크기에 닿는다 — raw hex 도, "var(--pui-...)" 문자열도 직접 쓰지 않는다.
-//
-//   tokens.color.ink.primary → "var(--pui-color-ink-primary)"
-//   tokens.shape.control.height.md → "var(--pui-shape-control-height-md)"
-//
-// 실제 값은 tokens/variables.css.ts 가 :root 와 테마 스코프에 emit 한다. 두 자리 모두 아래 VALUES
-// 트리를 같은 helper 로 걷기 때문에 이름이 어긋날 수 없다.
-
 import { buildVarTree, pathToCssVar } from "./helpers";
 import { COLOR, OPACITY_VALUES } from "./colors";
 import { CONTROL } from "./control-recipes";
@@ -18,21 +7,12 @@ import { MOTION } from "./motion-recipes";
 import { LAYOUT } from "./layout";
 
 export const tokens = {
-  // opacity 는 역할 옆에 둔다 — palette token 이 아니고 어떤 모드도 바꾸지 않는다.
   color: { ...COLOR, opacity: buildVarTree(OPACITY_VALUES, ["color", "opacity"]) },
-  // Typography 는 역할과 preset 만 노출한다 — Palette 는 토큰 층 안에 둔다 (typography.ts · inspect/typography.ts).
   typography: { role: TYPOGRAPHY.role, preset: TYPOGRAPHY.preset },
-  // Shape은 요소 하나의 형태, Layout은 요소 사이의 관계. 둘 다 역할만 노출한다 (shape.ts · layout.ts).
-  // 컨트롤 여백은 Typography 를 읽어 2차 Control 에서 오지만, 찾는 자리는 다른 컨트롤 역할과 같다.
   shape: { ...SHAPE, control: { height: SHAPE.control.height, inset: CONTROL.inset, gap: SHAPE.control.gap, icon: SHAPE.control.icon } },
   layout: LAYOUT,
-  // motion 은 var 로 굽지 않는다 — 역할이 시간과 곡선을 값으로 들고 변위만 Shape·Layout var 를 가리킨다 (motion-recipes.ts 참고).
   motion: { role: MOTION },
 } as const;
-
-// ───── 값 트리 · 타입 재수출 ────────────────────────────────────────────────
-// 의미 VALUES는 여기와 variables.ts만 조립한다. palette.ts가 OKLCH source를 보유하고
-// color-ladder.ts의 순수 생성 함수가 coordinates/HEX를 완성한다. 소비처는 이 barrel만 사용한다.
 
 export * from "./vocabulary";
 
@@ -67,6 +47,5 @@ export { focusRing, stateStyle, linkStyle, STATE_TINT, STATE_TINT_PROPERTY } fro
 export { MOTION_CONSUMERS, MOTION_LOOPS, MOTION_REDUCED, transition } from "./motion";
 export { MOTION, REVEAL_AFTER } from "./motion-recipes";
 
-// styles.css 가 깔렸는가 — Shape 원본 변수는 테마와 무관하게 :root 에 늘 굽힌다(tokens/variables.css.ts).
 export const isStylesheetLoaded = (root: Element): boolean =>
   getComputedStyle(root).getPropertyValue(pathToCssVar(["shape", "stroke", "border"])).trim() !== "";

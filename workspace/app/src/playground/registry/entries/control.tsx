@@ -40,7 +40,6 @@ export default defineSpec({
       justify: pick<NonNullable<ControlProps["justify"]>>(state, "justify"),
       iconSize: pick<NonNullable<ControlProps["iconSize"]>>(state, "iconSize"),
     };
-    // What each anatomy holds, so the sample reads as what it draws: a square holds an icon, and a mark, a track and a ring hold nothing.
     switch (form.anatomy) {
       case "icon":
         return <Control {...form}>{glyph.plus}</Control>;

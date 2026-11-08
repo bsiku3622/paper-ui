@@ -1,5 +1,3 @@
-// ctx.ts — what a line of an article needs to know about the rest of the wiki: which titles are articles, where a heading is.
-
 import type { WikiIndex } from "../data";
 import type { Parsed } from "../lib/markup";
 import type { InlineCtx } from "./Inlines";

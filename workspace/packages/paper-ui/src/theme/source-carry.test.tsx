@@ -7,7 +7,6 @@ import { portalRoot } from "../primitives/a11y/Portal.css";
 import { Floating } from "../primitives/float/Floating";
 import { sourceCarry } from "./source-carry";
 
-// jsdom does not cascade a custom property into a child, so the opener names its own overrides and the container names none.
 const withStyle = (declarations: Record<string, string>) => {
   const element = document.createElement("div");
   for (const [name, value] of Object.entries(declarations)) element.style.setProperty(name, value);

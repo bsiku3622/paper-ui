@@ -7,9 +7,6 @@ import { MOTION } from "../../packages/paper-ui/src/tokens/motion-recipes";
 import { px, roleDp } from "../support/geometry";
 import { chooseProp, openHarness, openPlayground } from "../support/harness";
 
-// The chromium project runs the role timings and the presence recipe as authored; chromium-reduced-motion runs the
-// same page with prefers-reduced-motion and checks what the policy does to them.
-
 type Fixtures = { contextOptions: { reducedMotion?: string | null } };
 const isReduced = ({ contextOptions }: Fixtures) => contextOptions.reducedMotion === "reduce";
 
@@ -19,7 +16,6 @@ const reduced = parseFloat(DURATION.reduced);
 const period = (loop: keyof typeof LOOP) => parseFloat(LOOP[loop].duration);
 const rise = roleDp(MOTION.enter.offset);
 
-// Each transitioned property of an element with its duration in ms and its easing, as the browser computes them.
 const transitionsOf = (target: Locator, pseudo?: "::after") =>
   target.evaluate((element, pseudo) => {
     const style = getComputedStyle(element, pseudo);
@@ -30,8 +26,6 @@ const transitionsOf = (target: Locator, pseudo?: "::after") =>
     ) as Record<string, Timing>;
   }, pseudo);
 
-// What an element looks like at the first frame of its presence animation, or after it has run out. The animation
-// is started again first, so it is still there to read however late the test gets to it.
 const frameOf = (target: Locator, at: "start" | "end") =>
   target.evaluate((element, at) => {
     const state = element.getAttribute("data-presence")!;
@@ -55,7 +49,6 @@ const animationOf = (target: Locator) =>
     return { name: style.animationName, duration: parseFloat(style.animationDuration) * 1000, easing: style.animationTimingFunction, fill: style.animationFillMode, iterations: style.animationIterationCount };
   });
 
-// The Floating example of the Playground, opened from its trigger. A panel on the page is the node with its presentation.
 const openFloating = async (page: Page, presentation?: "modal") => {
   await page.goto("/playground/floating");
   if (presentation) await chooseProp(page, "presentation", presentation);
@@ -63,7 +56,6 @@ const openFloating = async (page: Page, presentation?: "modal") => {
   return page.locator("[data-presentation]");
 };
 
-// Chromium plays every animation of the page at a fraction of its speed, so a state that lasts 100ms can be looked at.
 const playbackRate = async (page: Page, rate: number) => {
   const cdp = await page.context().newCDPSession(page);
   await cdp.send("Animation.enable");
@@ -74,7 +66,6 @@ type Row = { atom: string; target: (page: Page) => Locator; pseudo?: "::after"; 
 
 const BUTTON = { [STATE_TINT_PROPERTY]: "hover", "border-color": "hover", "background-color": "state", color: "state", transform: "press" } as const;
 
-// What each Atom in MOTION_CONSUMERS transitions, and with which role.
 const ATOM_TRANSITIONS: Row[] = [
   { atom: "Button", target: (page) => page.getByRole("button", { name: "Button", exact: true }), properties: BUTTON },
   { atom: "IconButton", target: (page) => page.getByRole("button", { name: "Icon button" }), properties: BUTTON },
@@ -127,7 +118,6 @@ test.describe("with motion", () => {
     expect(exiting.duration).toBeCloseTo(timing("exit").duration, 3);
     expect(entering.name).not.toBe(exiting.name);
 
-    // The surface rises from the enter offset and scale, and sinks back to them; a scrim only fades.
     const { scale } = MOTION.enter;
     const hidden = { opacity: "0", transform: `matrix(${scale}, 0, 0, ${scale}, 0, ${rise})` };
     expect(await frameOf(page.getByTestId("surface-entering"), "start")).toEqual(hidden);
@@ -227,7 +217,6 @@ test.describe("with motion", () => {
       expect(animation.fill, `tile ${index}`).toBe("both");
       expect(await tile.evaluate((element) => parseFloat(getComputedStyle(element).animationDelay) * 1000), `tile ${index}`).toBeCloseTo(step * index, 3);
     }
-    // Played again, the tiles mount anew and stand in place once they are in.
     await page.getByRole("button", { name: "다시 재생", exact: true }).click();
     await expect(tiles.last()).toHaveCSS("opacity", "1");
   });
@@ -253,11 +242,9 @@ test.describe("with motion", () => {
 
   test("[foundations.motion.compositions] shows the enter specimen rising by its role's displacement and the exit specimen playing its enter on load, then leaving and staying hidden", async ({ page }) => {
     await openPlayground(page, "foundations/motion", "Motion");
-    // A presence specimen is a button and the surface it opens and closes, in the row's specimen cell.
     const specimen = (role: MotionRole) => page.getByText(`motion.role.${role}`, { exact: true }).locator("xpath=../following-sibling::div[1]");
     const surface = (role: MotionRole) => specimen(role).locator("xpath=./div/*[2]");
 
-    // The exit specimen starts open and has played its enter already.
     await expect(surface("exit")).toHaveAttribute("data-presence", "entering");
     expect((await animationOf(surface("exit"))).name).not.toBe("none");
     await specimen("exit").getByRole("button", { name: "닫기", exact: true }).click();
@@ -305,8 +292,6 @@ test.describe("with reduced motion", () => {
       }
       return count;
     });
-    // The exit animation is cut to one instant, which the browser ends on its next animation frames: two or three, by where the
-    // press falls in the frame and when the browser starts the animation. The exit role's own time would be six or more.
     expect(frames).toBeLessThanOrEqual(3);
     await expect(page.getByRole("button", { name: "설정 열기", exact: true })).toBeFocused();
   });

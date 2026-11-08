@@ -14,7 +14,6 @@ import { spaceClass } from "../styles/space.css";
 import { ACCENTS, ELEVATIONS, FILLABLE_VARIANTS, SURFACE_FILLS, SURFACE_RADII, VARIANTS } from "../tokens";
 import { stackRoot } from "./layout/flex.css";
 
-// Never rendered: each line only has to compile.
 const compiles = (...elements: ReactElement[]) => elements.length;
 
 describe("Surface", () => {
@@ -22,7 +21,6 @@ describe("Surface", () => {
     expect(surfaceClass({ fill: "raised", shadow: true }).split(" ")).toContain(restingShadow);
     expect(surfaceClass({ shadow: true }).split(" ")).not.toContain(restingShadow);
     expect(surfaceClass({ fill: "raised", shadow: true, elevation: "overlay" }).split(" ")).not.toContain(restingShadow);
-    // The sticky tier has no shadow of its own.
     expect(surfaceClass({ fill: "raised", shadow: true, elevation: "sticky" }).split(" ")).toContain(restingShadow);
     render(<Surface data-testid="themed" theme="dark" />);
     expect(screen.getByTestId("themed").classList.contains(restingShadow)).toBe(false);

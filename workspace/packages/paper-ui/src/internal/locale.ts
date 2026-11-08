@@ -1,6 +1,3 @@
-// The locale and the messages a subtree reads. PaperProvider sets them; without a Provider the locale is the
-// document's own language, and English where it has none. Paper reads <html lang> and never the browser's language.
-
 import { createContext, useContext, useMemo, useSyncExternalStore } from "react";
 
 import { resolveMessages, type PaperMessages } from "./messages";
@@ -21,10 +18,8 @@ const subscribeToLanguage = (notify: () => void): (() => void) => {
 const documentLanguage = (): string => document.documentElement.lang;
 const serverLanguage = (): string => "";
 
-/** The language <html lang> names, or an empty string; a server render has not read it. */
 export const useDocumentLanguage = (): string => useSyncExternalStore(subscribeToLanguage, documentLanguage, serverLanguage);
 
-/** A tag as Intl and React Aria take it: ko_KR reads as ko-KR, and a tag Intl rejects reads as English. */
 export const normalizeLocale = (tag: string): string => {
   try {
     return Intl.getCanonicalLocales(tag.replace(/_/g, "-"))[0] ?? FALLBACK;
@@ -33,7 +28,6 @@ export const normalizeLocale = (tag: string): string => {
   }
 };
 
-/** The locale in force: the one given, else the document's language, else English. */
 export const resolveLocale = (given: string | undefined, language: string): string => normalizeLocale(given || language || FALLBACK);
 
 export function useLocale(): string {

@@ -1,6 +1,3 @@
-// The editor's header (App.tsx's `app-header`): the name of the app, the name of the document and where it is kept, and on the
-// right the account, a new document, opening one, copying the paper as an image, and the export menu.
-
 import type { ReactNode } from "react";
 
 import { Badge, Box, Button, Divider, Field, Grid, IconButton, Inline, Surface, Text } from "@studio-baeks/paper-ui";
@@ -13,7 +10,6 @@ import { Brand } from "./Shell";
 export type HeaderProps = {
   title: string;
   onTitle: (title: string) => void;
-  // What is said about where the document is kept ("이 기기에 저장됨", or "저장 중" while a change is waiting).
   saveLabel: string;
   busy: boolean;
   exportMenu: ReactNode;
@@ -27,7 +23,6 @@ export const Header = ({ title, onTitle, saveLabel, busy, exportMenu, onNew, onO
   const phone = useMedia("(max-width: 767px)");
   return (
     <Surface as="header" fill="raised" border="bottom" paddingX={phone ? "md" : "xl"} paddingY="lg">
-      {/* The name of the document takes what is left; on a phone it is what gives way. */}
       <Grid columns={phone ? "auto minmax(0, 1fr) auto" : "auto auto minmax(0, 1fr) auto"} gap={phone ? "sm" : "lg"} align="stretch">
         <Inline align="center">
           <Brand />

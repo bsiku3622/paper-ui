@@ -1,6 +1,3 @@
-// 미니 플레이어: 페이지 아래에 떠 있는 알약. 셔플 · 이전 · 재생 · 다음 · 반복, 지금 곡과 진행 막대, 가사 · 다음 곡 · 볼륨.
-// 표지와 제목을 누르면 재생 화면이 열립니다. 좁은 화면에서는 재생과 다음만 남습니다.
-
 import { Link as RouterLink } from "react-router-dom";
 
 import { Box, Divider, Floating, Grid, IconButton, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";

@@ -1,5 +1,3 @@
-// 다음 곡: 이미 들은 곡, 지금 곡, 다음 곡. 셔플 · 반복 · 자동 재생과 "플레이리스트로 저장"이 있습니다.
-
 import { Button, Inline, Stack, Switch, Text } from "@studio-baeks/paper-ui";
 
 import { Glyph, PageHeader } from "../../../kit";

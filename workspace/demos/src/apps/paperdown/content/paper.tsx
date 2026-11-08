@@ -1,11 +1,3 @@
-// Content: the paper, and the surface you write on. Paper has no page and no rich-text surface; the original writes directly on
-// the sheet (Tiptap), and this does the same over `contenteditable`, with the toolbar's commands, Markdown shortcuts, the slash
-// trigger, history and the page breaks in ./editor. What stands around the paper (the caption above it, the "문서 끝" under it,
-// every control) is drawn by the screen with Paper and handed in.
-//
-// The editor reports what the screen needs (the state of the selection for the toolbar, the text for the status bar, the
-// caret's place for the slash menu) and is told what to do through a handle.
-
 import {
   forwardRef,
   useCallback,
@@ -76,14 +68,12 @@ export type EditorState = {
   highlight: boolean;
   code: boolean;
   link: string | null;
-  // The alignment the block was given; a block that was never aligned has none.
   align: Align | null;
   bullet: boolean;
   ordered: boolean;
   task: boolean;
   quote: boolean;
   table: boolean;
-  // A face and a size set on the words around the caret, when they have one.
   font: FontFace | null;
   size: number | null;
   collapsed: boolean;
@@ -119,16 +109,13 @@ export type Command =
 export type PaperHandle = {
   run: (command: Command) => void;
   focus: () => void;
-  // Whether no words are selected (the caret alone), asked at the moment: the state the toolbar holds may be a keystroke old.
   collapsed: () => boolean;
   html: () => string;
   text: () => string;
-  // The "/word" the caret stands after is taken out, before the block it asked for is made.
   deleteSlash: () => void;
 };
 
 type Props = {
-  // Which document is on the paper. A new key loads `html`.
   docKey: string;
   html: string;
   settings: Settings;
@@ -145,7 +132,6 @@ type Props = {
 const HEADING_HINT = "제목";
 const PARAGRAPH_HINT = "글을 쓰거나 / 로 블록을 추가하세요";
 
-// The gap between two pages of a paper cut into pages, and the width a paper may take before the screen has been measured.
 const PAGE_GAP = 24;
 const AVAILABLE = 1100;
 
@@ -157,8 +143,6 @@ const faceOf = (stack: string | undefined): FontFace | null => {
   return /batang|noto serif|myungjo|serif/i.test(stack) ? "myeongjo" : null;
 };
 
-// The text of the paper the way the original counts it (Tiptap's getText with a line break between blocks): a block of any
-// kind (a list, an item, a cell) starts a line, except the first one of the paper.
 export const plainText = (root: HTMLElement): string => {
   let out = "";
   let first = true;
@@ -185,7 +169,6 @@ export const plainText = (root: HTMLElement): string => {
       const block = /^(P|H[1-6]|UL|OL|LI|BLOCKQUOTE|PRE|TABLE|TR|TD|TH|HR)$/.test(tag) || (tag === "IMG" && parent === root);
       if (block) {
         enter();
-        // A list item or a cell that holds its words directly has a paragraph of its own in the original's model.
         if (isTextblock(child) && !/^(P|H[1-6]|PRE)$/.test(tag)) enter();
       }
       if (tag !== "HR" && tag !== "IMG") walk(child);
@@ -195,7 +178,6 @@ export const plainText = (root: HTMLElement): string => {
   return out;
 };
 
-// Blocks that may stand alone at the top of the paper; anything else that Chrome leaves there is wrapped.
 const INLINE_TAGS = new Set(["SPAN", "STRONG", "EM", "B", "I", "U", "DEL", "S", "STRIKE", "MARK", "CODE", "A", "BR", "FONT"]);
 
 const normalizeRoot = (root: HTMLElement) => {
@@ -233,7 +215,6 @@ export const Paper = forwardRef<PaperHandle, Props>(function Paper(props, ref) {
   const lane = useRef<HTMLDivElement>(null);
   const history = useRef<History | null>(null);
   const saved = useRef<Range | null>(null);
-  // Marks switched on or off at a caret, to go on the next words typed there.
   const stored = useRef<{ patch: Partial<Record<MarkName, boolean>>; block: HTMLElement; offset: number } | null>(null);
   const composing = useRef(false);
   const slash = useRef<SlashInfo | null>(null);
@@ -251,9 +232,6 @@ export const Paper = forwardRef<PaperHandle, Props>(function Paper(props, ref) {
   const marginPx = settings.margin * PX_PER_MM;
   const zoom = settings.zoom === "fit" ? clamp((available - 48) / widthPx, 0.25, 1.5) : settings.zoom / 100;
   const continuous = settings.mode === "continuous";
-
-  // ---------------------------------------------------------------------------------------------------------------
-  // What the screen is told.
 
   const stateNow = useCallback((): EditorState => {
     const element = root.current;
@@ -293,7 +271,6 @@ export const Paper = forwardRef<PaperHandle, Props>(function Paper(props, ref) {
       font: faceOf(marks.font),
       size: marks.size ? parseFloat(marks.size) || null : null,
       collapsed: carets ? carets.collapsed : true,
-      // A triple click selects up to the start of the next block; the line break after the last word is not counted.
       selection: carets && !carets.collapsed && selection ? selection.toString().replace(/\n+$/, "") : "",
     };
   }, []);
@@ -358,7 +335,6 @@ export const Paper = forwardRef<PaperHandle, Props>(function Paper(props, ref) {
     callbacks.current.onContent(cleanHtml(element), plainText(element), user);
   }, []);
 
-  // A change the user made: the history, the screen, the page breaks.
   const changed = useCallback((kind: "type" | "edit") => {
     const element = root.current;
     if (!element) return;
@@ -371,9 +347,6 @@ export const Paper = forwardRef<PaperHandle, Props>(function Paper(props, ref) {
     slashNow();
   }, [content, layout, placeholders, report, slashNow]);
 
-  // ---------------------------------------------------------------------------------------------------------------
-  // Loading, and the things the paper watches.
-
   useLayoutEffect(() => {
     const element = root.current;
     if (!element) return;
@@ -385,7 +358,6 @@ export const Paper = forwardRef<PaperHandle, Props>(function Paper(props, ref) {
     content(false);
     report();
     layout();
-    // A document is loaded when its key changes; a later change of `html` is the editor's own, not a new document.
   }, [docKey, content, layout, placeholders, report]);
 
   useEffect(() => {
@@ -409,7 +381,6 @@ export const Paper = forwardRef<PaperHandle, Props>(function Paper(props, ref) {
     };
   }, [layout]);
 
-  // The selection of the paper, kept for the toolbar's controls that take the focus (they move the selection out of the paper).
   const keep = useCallback((): boolean => {
     const element = root.current;
     const selection = window.getSelection();
@@ -418,14 +389,11 @@ export const Paper = forwardRef<PaperHandle, Props>(function Paper(props, ref) {
     return true;
   }, []);
 
-  // And reported. The browser's `selectionchange` is not trusted to come for every change (a click and a key in a row can
-  // pass without one), so the paper's own mouse and key events ask for the same.
   const sync = useCallback(() => {
     const element = root.current;
     if (!element || !keep()) return;
     const carets = readCarets(element);
     const pending = stored.current;
-    // Marks switched on at the caret stay while words are being composed (the caret moves with them), and go when it goes elsewhere.
     if (pending && !composing.current && (!carets || !carets.collapsed || carets.start.block !== pending.block || carets.start.offset !== pending.offset)) stored.current = null;
     placeholders();
     report();
@@ -437,11 +405,6 @@ export const Paper = forwardRef<PaperHandle, Props>(function Paper(props, ref) {
     return () => document.removeEventListener("selectionchange", sync);
   }, [sync]);
 
-  // ---------------------------------------------------------------------------------------------------------------
-  // Commands.
-
-  // Back into the paper with the selection it had: a control that took the focus (a select, the size field) has moved the
-  // selection out of it, and focusing the paper would put the caret at its start.
   const settle = useCallback(() => {
     const element = root.current;
     if (!element) return;
@@ -449,7 +412,6 @@ export const Paper = forwardRef<PaperHandle, Props>(function Paper(props, ref) {
     const inside = Boolean(selection && selection.rangeCount > 0 && element.contains(selection.anchorNode));
     element.focus({ preventScroll: true });
     if (!inside && saved.current && selection) {
-      // A copy: the selection follows the range it is given, and the kept one must stay as it was.
       selection.removeAllRanges();
       selection.addRange(saved.current.cloneRange());
     }
@@ -478,7 +440,7 @@ export const Paper = forwardRef<PaperHandle, Props>(function Paper(props, ref) {
     const element = root.current;
     if (!element) return;
     settle();
-    // A button that was pressed takes the focus back after its click; the next key must still go to the paper.
+    // A pressed button takes the focus back after its click, so refocus the paper for the next key.
     window.setTimeout(() => element.focus({ preventScroll: true }), 0);
     if (command.type === "undo") return undo();
     if (command.type === "redo") return redo();
@@ -496,7 +458,6 @@ export const Paper = forwardRef<PaperHandle, Props>(function Paper(props, ref) {
         break;
       case "mark": {
         if (carets && carets.collapsed) {
-          // No words are selected: the mark goes on the words typed next.
           const now = stateNow();
           const key = command.mark;
           const patch = { ...(stored.current?.block === carets.start.block ? stored.current.patch : {}), [key]: !now[key] };
@@ -509,7 +470,6 @@ export const Paper = forwardRef<PaperHandle, Props>(function Paper(props, ref) {
       }
       case "link": {
         if (carets && carets.collapsed) {
-          // The whole link the caret is in.
           const anchor = (window.getSelection()?.anchorNode?.parentElement ?? null)?.closest("a");
           if (anchor && element.contains(anchor)) {
             if (command.href) anchor.setAttribute("href", command.href);
@@ -576,10 +536,6 @@ export const Paper = forwardRef<PaperHandle, Props>(function Paper(props, ref) {
     },
   }), [run, settle]);
 
-  // ---------------------------------------------------------------------------------------------------------------
-  // Typing.
-
-  // Marks switched on at the caret before typing go on what has been typed since.
   const applyStored = useCallback(() => {
     const element = root.current;
     const pending = stored.current;
@@ -614,7 +570,6 @@ export const Paper = forwardRef<PaperHandle, Props>(function Paper(props, ref) {
     const onInput = (event: Event) => {
       const input = event as InputEvent;
       if (input.isComposing || composing.current) {
-        // The words are not settled while an input method is composing them.
         placeholders();
         content(true);
         report();
@@ -625,7 +580,6 @@ export const Paper = forwardRef<PaperHandle, Props>(function Paper(props, ref) {
           stored.current = pending;
         });
       } else if (input.inputType === "insertParagraph") {
-        // A new item of a checklist starts unchecked.
         const item = readCarets(element)?.start.block.closest<HTMLElement>("li[data-type='taskItem']");
         if (item && item.dataset.checked === "true" && item.textContent === "") item.dataset.checked = "false";
       }
@@ -645,7 +599,6 @@ export const Paper = forwardRef<PaperHandle, Props>(function Paper(props, ref) {
     const onKeyDown = (event: KeyboardEvent) => {
       const mod = event.metaKey || event.ctrlKey;
       if (event.key === "Enter" && !event.shiftKey && !mod && !event.isComposing) {
-        // Enter on an empty last paragraph of a quote leaves the quote, as the original does.
         const carets = readCarets(element);
         const block = carets?.collapsed ? carets.start.block : null;
         const quote = block?.parentElement;
@@ -695,7 +648,6 @@ export const Paper = forwardRef<PaperHandle, Props>(function Paper(props, ref) {
         callbacks.current.onImage(file);
         return;
       }
-      // What is pasted comes in as plain words, one paragraph for each line.
       const text = event.clipboardData?.getData("text/plain");
       if (text === undefined) return;
       event.preventDefault();
@@ -711,7 +663,6 @@ export const Paper = forwardRef<PaperHandle, Props>(function Paper(props, ref) {
         callbacks.current.onImage(file);
       }
     };
-    // Leaving the paper: its selection is still in it for this one moment, and is kept.
     const onBlur = () => {
       keep();
       window.setTimeout(slashNow, 0);
@@ -743,11 +694,6 @@ export const Paper = forwardRef<PaperHandle, Props>(function Paper(props, ref) {
     };
   }, [applyStored, changed, content, keep, placeholders, redo, report, slashNow, sync, undo]);
 
-  // ---------------------------------------------------------------------------------------------------------------
-  // The sheet.
-
-  // What the stylesheet reads of this paper. The numbers come from the document's settings and the width the screen leaves, so
-  // they are the moment's; they are kept in state, not worked out in the style.
   const [sheet, setSheet] = useState<CSSProperties>({});
   useLayoutEffect(() => {
     setSheet({
@@ -802,14 +748,11 @@ export const Paper = forwardRef<PaperHandle, Props>(function Paper(props, ref) {
   );
 });
 
-// ---------------------------------------------------------------------------------------------------------------
-
 const textblocks0 = (root: HTMLElement): HTMLElement | undefined => {
   const first = root.querySelector<HTMLElement>("p,h1,h2,h3,pre,li");
   return first ?? undefined;
 };
 
-// Whether every character of a stretch of one textblock has a mark.
 const covered = (runs: ReturnType<typeof parseRuns>, from: number, to: number, name: MarkName): boolean => {
   let at = 0;
   let seen = false;

@@ -8,7 +8,6 @@ import { chooseProp, openHarness, openPlayground } from "../support/harness";
 import { tab } from "../support/keyboard";
 import { expectStyle } from "../support/style";
 
-// The tint a hoverable Paint lays over its face, as the computed background image.
 const tint = (color: string) => ({ backgroundImage: `linear-gradient(${color}, ${color})` });
 const solid = accentProfile("primary", "solid");
 
@@ -66,7 +65,6 @@ test("[primitives.selectable.input-paths] selection survives press releases and 
 test("[primitives.paint.hover] [atoms.states.value-attributes] a hoverable Paint takes its tint under a pointer that can hover, and a blocked one does not", async ({ page }) => {
   await openPlayground(page, "paint", "Paint");
   const element = page.getByTestId("paint-example");
-  // Without hoverable there is no tint layer to take, whatever the pointer does.
   await expect(element).toHaveCSS("background-image", "none");
   await element.hover();
   await expect(element).toHaveCSS("background-image", "none");
@@ -78,7 +76,6 @@ test("[primitives.paint.hover] [atoms.states.value-attributes] a hoverable Paint
   await expectStyle(element, tint(solid.hover.tint));
   await page.mouse.move(0, 0);
   await expectStyle(element, tint("transparent"));
-  // A target that is blocked does not take it either.
   await page.getByRole("switch", { name: "aria-disabled", exact: true }).check();
   await element.hover();
   await expectStyle(element, tint("transparent"));
@@ -106,7 +103,6 @@ test("[primitives.draggable.input-paths] [primitives.draggable.handle] handle mo
   await expect(page.getByRole("button", { name: "내부 버튼: 1" })).toBeVisible();
   await dragBy(page, page.getByText("이동할 박스", { exact: true }), 25, 15);
   await expect(page.getByTestId("position")).toHaveText("x: 0, y: 0");
-  // Start on the SVG inside the handle, not only on the button's empty space.
   await dragBy(page, page.getByRole("button", { name: "패널 이동", exact: true }).locator("svg"), 35, 20);
   await expect(page.getByTestId("position")).toHaveText("x: 35, y: 20");
   const after = (await panel.boundingBox())!;
@@ -191,7 +187,7 @@ test("[primitives.draggable.transfer] the item tells its drag starting, moving a
   const item = page.getByTestId("item");
   await page.getByTestId("send").dragTo(page.getByTestId("takes"));
   const events = async () => runs(((await item.getAttribute("data-events")) ?? "").split(" ").filter(Boolean));
-  // Playwright drives a drag differently by engine: only Chromium both sends the moves and leaves a dropEffect on the dragend, so the other two are held to the order.
+  // Playwright drives a drag differently by engine: only Chromium sends the moves and leaves a dropEffect on dragend.
   if (browserName === "chromium") await expect.poll(events).toEqual(["dragstart", "dragmove", "dragend:copy"]);
   else await expect.poll(async () => (await events()).filter((event) => event !== "dragmove")).toEqual(["dragstart", expect.stringMatching(/^dragend/)]);
 });
@@ -204,14 +200,12 @@ test("[primitives.droppable.input-paths] [primitives.droppable.options] a target
   await expect.poll(() => drops("takes")).toBe("1");
   await send.dragTo(page.getByTestId("refuses"));
   await send.dragTo(page.getByTestId("off"));
-  // The refused and the disabled drops would have landed by now; the accepting target still counts the one.
   await send.dragTo(page.getByTestId("takes"));
   await expect.poll(() => drops("takes")).toBe("2");
   expect(await drops("refuses")).toBe("0");
   expect(await drops("off")).toBe("0");
 });
 
-// A drag held at a point of the page: the buttons stay down until the test lets them go.
 const dragFrom = async (page: Page, source: Locator) => {
   await source.scrollIntoViewIfNeeded();
   const box = (await source.boundingBox())!;
@@ -219,7 +213,6 @@ const dragFrom = async (page: Page, source: Locator) => {
   await page.mouse.down();
 };
 
-// A list of events with a run of the same event read as one, since a drag reports its moves at the rate of the engine.
 const runs = (events: string[]) => events.filter((event, index) => event !== events[index - 1]);
 
 test("[primitives.droppable.options] [primitives.state.emitters] [primitives.draggable.transfer] a target tells a drag entering, moving, hovering and leaving, in that order, and the point it is at decides its operation", async ({ page }) => {
@@ -235,20 +228,16 @@ test("[primitives.droppable.options] [primitives.state.emitters] [primitives.dra
   await page.mouse.move(left.x + 2, left.y, { steps: 2 });
   await expect.poll(events).toEqual(["dropenter", "dropmove"]);
   await expect(target).toHaveAttribute("data-drop-target", "true");
-  // The point is relative to the target, and what the drag allows reaches the target's question.
   const [x, y] = (await target.getAttribute("data-point"))!.split(",").map(Number) as [number, number];
   expect(x).toBeCloseTo(to.width / 4 + 2, 0);
   expect(y).toBeCloseTo(to.height / 2, 0);
   await expect(target).toHaveAttribute("data-allowed", "copy link");
-  // Held still over the target, the drag activates it.
   await expect.poll(events).toEqual(["dropenter", "dropmove", "dropactivate"]);
-  // The right half cancels, so the same element stops being a target: the drag has left it.
   await page.mouse.move(right.x, right.y, { steps: 2 });
   await expect.poll(events).toEqual(["dropenter", "dropmove", "dropactivate", "dropexit"]);
   await expect(target).not.toHaveAttribute("data-drop-target", /.*/);
   await page.mouse.move(left.x, left.y, { steps: 2 });
   await page.mouse.up();
-  // Coming back over the left half enters again, and the drop ends the drag over the target.
   await expect.poll(events).toEqual(["dropenter", "dropmove", "dropactivate", "dropexit", "dropenter", "dropmove", "drop", "dropexit"]);
 });
 
@@ -292,7 +281,6 @@ test("[primitives.floating.portal] popover portals, anchors, dismisses and resto
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole("heading", { name: "설정", exact: true })).toBeFocused();
   expect(await dialog.evaluate((element) => !document.querySelector("#root")?.contains(element))).toBe(true);
-  // The panel sits in the portal root, which takes no box of its own.
   await expect(dialog.locator("xpath=..")).toHaveCSS("display", "contents");
   expect(await dialog.getAttribute("data-placement")).toMatch(/top|bottom/);
   const triggerBox = (await trigger.boundingBox())!;
@@ -311,7 +299,6 @@ test("[primitives.floating.portal] [primitives.portal.root] [primitives.floating
   await page.getByTestId("ink-trigger").click();
   const panel = page.getByRole("dialog", { name: "Ink panel" });
   await expect(panel).toHaveCSS("z-index", String(LAYOUT_SOURCE.elevation.tier.overlay.z));
-  // The Surface around the Trigger is the inverse of a light page, so the portal root re-establishes dark for what it carries.
   const root = panel.locator(`xpath=ancestor::*[@${THEME_ATTRIBUTE}][1]`);
   await expect(root).toHaveAttribute(THEME_ATTRIBUTE, "dark");
   await expect(root).toHaveCSS("display", "contents");
@@ -359,7 +346,6 @@ test("[primitives.floating.dismiss] outside dismissal can be disabled while Esca
   await expect(dialog).toHaveCount(0);
 });
 
-// The distance from the trigger to the panel across the side the panel settled on, once it has stopped rising into place.
 const gapOf = async (trigger: Locator, panel: Locator) => {
   await expect(panel).not.toHaveAttribute("data-presence", /.*/);
   const [from, to] = [(await trigger.boundingBox())!, (await panel.boundingBox())!];
@@ -370,7 +356,6 @@ test("[primitives.floating.geometry] a popover keeps the sm gap from its trigger
   await page.goto("/playground/floating");
   const trigger = page.getByRole("button", { name: "설정 열기", exact: true });
   const panel = page.getByRole("dialog", { name: "설정", exact: true });
-  // A closed panel is hidden from the role query as soon as it starts leaving; it is gone when it is out of the page.
   const gone = page.locator("[data-presentation]");
   await trigger.click();
   await expect(panel).toBeVisible();

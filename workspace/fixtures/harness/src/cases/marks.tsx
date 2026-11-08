@@ -2,12 +2,9 @@ import { Badge, Button, Checkbox, Divider, Label, Marker, Radio, Spinner, Switch
 import type { CSSProperties, ReactNode } from "react";
 import { CONTROL_SIZES } from "@studio-baeks/paper-ui/tokens";
 
-// Every mark stands in a room of its own, so the hit area of one never reaches into the next.
 const ROOM: CSSProperties = { display: "flex", alignItems: "center", padding: 32 };
 const Room = ({ children }: { children: ReactNode }) => <div style={ROOM}>{children}</div>;
 
-// The selection marks in every size and every state, one to a room, and the display Atoms that draw themselves with a border or a ring
-// (Divider, Spinner, Badge), and a Label. The states, forced-colors and shape specs read their computed style and hit-test them.
 export const MarksCase = () => (
   <>
     <Room><button type="button" data-testid="before">Before</button></Room>

@@ -11,7 +11,6 @@ import { tab } from "../support/keyboard";
 import { chooseOption, optionValues } from "../support/select";
 import { expectStyle } from "../support/style";
 
-// What a hoverable control lays over its own face: the computed gradient of the tint property.
 const tint = (color: string) => ({ backgroundImage: `linear-gradient(${color}, ${color})` });
 const hoverTint = (accent: Accent, variant: Variant) => {
   const { hover } = accentProfile(accent, variant);
@@ -105,22 +104,17 @@ test("[atoms.button.disabled] [atoms.states.atom-table] [atoms.states.priority] 
 
 test("[atoms.states.preview] a preview draws the hover, the press and the keyboard ring a pointer or a key would, keeps the order of states, and leaves a disabled target alone", async ({ page }) => {
   await page.mouse.move(0, 0);
-  // Hover: the tint over a solid face, the risen border of a hairline and of an input frame.
   await expectStyle(page.getByTestId("preview-hover"), { backgroundColor: accentProfile("primary", "solid").face, ...tint(hoverTint("primary", "solid")) });
   await expectStyle(page.getByTestId("preview-hover-hairline"), { borderTopColor: tokens.color.border.hover });
   await expectStyle(page.getByTestId("preview-hover-field"), { borderTopColor: tokens.color.border.hover });
-  // The order holds: a selected Button keeps its selected face and takes the tint over it, and a disabled one takes nothing.
   const selected = accentProfile("primary", "ghost").selected!;
   await expectStyle(page.getByTestId("preview-hover-selected"), { backgroundColor: selected.face, color: selected.ink, borderTopColor: selected.border, ...tint(itemProfile.hoverTint) });
   await expectStyle(page.getByTestId("preview-hover-disabled"), { opacity: tokens.color.opacity.disabled, ...tint("transparent") });
-  // Press: the one-stroke sink a pointer gives.
   await expectStyle(page.getByTestId("preview-active"), { transform: `translateY(${tokens.motion.role.press.offset})` });
-  // Focus: the keyboard ring, on a Button and on an input's frame, with nothing focused.
   await expect(page.locator(":focus")).toHaveCount(0);
   for (const id of ["preview-focus", "preview-focus-field"]) {
     await expectStyle(page.getByTestId(id), { outlineStyle: "solid", outlineColor: tokens.color.interaction.focus, outlineWidth: tokens.shape.focus.width, outlineOffset: tokens.shape.focus.offset });
   }
-  // Out of a preview, the same controls rest.
   await expectStyle(page.getByTestId("solid"), tint("transparent"));
   await expectStyle(page.getByTestId("field"), { borderTopColor: tokens.color.border.base, outlineStyle: "none" });
 });
@@ -211,8 +205,8 @@ test("[atoms.field.frame] [atoms.states.hover-table] [atoms.states.atom-table] a
     await page.mouse.move(0, 0);
     await expectStyle(frame, { borderTopColor: "transparent" });
     await frame.hover();
-    // What a hover would start is a transition from the resting value, so this waits it out before reading.
     await page.evaluate(() => new Promise(requestAnimationFrame));
+    // A hover starts a transition from the resting value, so wait it out before reading.
     await frame.evaluate((element) => Promise.all(element.getAnimations().map((animation) => animation.finished)));
     await expectStyle(frame, { borderTopColor: "transparent" });
   }
@@ -261,7 +255,6 @@ test("[atoms.field.frame] a Field action rests tertiary and answers a pointer wi
   await expectStyle(locked, { color: tokens.color.ink.tertiary });
   await locked.click({ force: true });
   await expect(page.getByLabel("Locked", { exact: true })).toHaveAttribute("type", "password");
-  // Tab passes over it: the disabled Field has nothing to stop at.
   await page.getByTestId("field-warning").locator("input").focus();
   for (let i = 0; i < 6; i++) {
     await tab(page);
@@ -304,7 +297,6 @@ test.describe("on a pointer that cannot hover", () => {
   });
 
   test("[atoms.field.frame] a tap raises no input border and leaves a Field action its resting ink", async ({ page }) => {
-    // What a hover would start is a transition from the resting value, so these wait it out before reading.
     const settled = (target: Locator) => target.evaluate((element) => Promise.all(element.getAnimations().map((animation) => animation.finished)));
     const toggle = page.getByTestId("secret").getByRole("button", { name: "Show password" });
     await toggle.tap();
@@ -319,7 +311,6 @@ test.describe("on a pointer that cannot hover", () => {
   });
 });
 
-// The selection marks, one to a room so a hit area never reaches into a neighbour's.
 test("[atoms.button.badge] a badge hangs over the button's corner without changing its size, on the far side in RTL, and a press on it is the button's", async ({ page }) => {
   const plain = (await page.getByTestId("icon-button").boundingBox())!;
   const button = page.getByTestId("counted");
@@ -352,9 +343,7 @@ test("[atoms.select.natural-width] a Select with no width of its own is as wide 
     const widest = Math.max(...[...button.parentElement!.querySelector("select")!.options].map((option) => canvas.measureText(option.text).width));
     return { widest, inner: button.clientWidth - parseFloat(style.paddingInlineStart) - parseFloat(style.paddingInlineEnd) };
   });
-  // A canvas measures without the preset's tracking and hinting, so it runs a little over what the engine laid out.
   expect(room.inner).toBeGreaterThan(room.widest - 3);
-  // Every option's words stand in the value's one cell, so whichever is chosen the frame keeps its width.
   const width = (await auto.boundingBox())!.width;
   const values = await optionValues(trigger);
   for (const value of [values.at(-1)!, values[0]!]) {
@@ -364,7 +353,6 @@ test("[atoms.select.natural-width] a Select with no width of its own is as wide 
 
   const frame = (await page.getByTestId("select-fills").boundingBox())!;
   expect(frame.width).toBe(320);
-  // The button fills the frame inside its border, so the frame opens it anywhere.
   const button = (await page.getByTestId("select-fills").getByRole("combobox").boundingBox())!;
   expect(button.width).toBe(frame.width - 2 * SHAPE_SOURCE.stroke.border);
   expect(button.height).toBe(frame.height - 2 * SHAPE_SOURCE.stroke.border);
@@ -385,7 +373,6 @@ test("[atoms.button.justify] justify moves a wide button's content along it, ove
   expect(start.start).toBeLessThan(center.start);
   expect(end.end).toBeLessThan(center.end);
   expect(center.start).toBeCloseTo(center.end, 0);
-  // Between puts each child at its own edge, at the button's inset.
   expect(between.start).toBeCloseTo(start.start, 0);
   expect(between.end).toBeCloseTo(end.end, 0);
 });
@@ -451,12 +438,10 @@ test.describe("the selection marks", () => {
       await page.mouse.up();
       await expectStyle(mark, { outlineStyle: "none" });
     }
-    // A disabled mark is not pressed.
     const disabled = page.getByTestId("checkbox-disabled");
     await pressOn(disabled);
     await expectStyle(disabled, { outlineStyle: "none" });
     await page.mouse.up();
-    // The keyboard's press keeps the ring: Space on a mark the keyboard reached shows the focus ring, never the halo.
     const keyed = page.getByTestId("checkbox-md");
     await keyed.evaluate((element) => {
       const tabbable = [...document.querySelectorAll<HTMLElement>("button, a[href], input, [tabindex]")].filter((candidate) => !candidate.hasAttribute("disabled") && candidate.tabIndex >= 0);
@@ -478,8 +463,6 @@ test.describe("the selection marks", () => {
     for (const id of ["checkbox-md", "radio-md", "switch-md"]) await expectStyle(page.getByTestId(id), { opacity: "1", cursor: "pointer" });
   });
 
-  // The hit area is a square of the minimum target around the mark, so half a pixel short of half its side is inside it for every mark and every size;
-  // the browser places the edge within a pixel, so two pixels past it is outside.
   const halfTarget = SHAPE_SOURCE.target.min / 2;
   const inside = halfTarget - 0.5;
   const outside = halfTarget + 2;
@@ -504,7 +487,6 @@ test.describe("the selection marks", () => {
   }
 
   test("[atoms.mark.target] [atoms.states.atom-table] a press in the hit area outside the visible box toggles the mark", async ({ page }) => {
-    // A reach is written as a negative inset; half a pixel short of it is still inside.
     const box = (await page.getByTestId("checkbox-sm").boundingBox())!;
     await page.mouse.click(box.x + roleDp(SHAPE_RECIPES.target.selection.sm) + 0.5, box.y + box.height / 2);
     await expect(page.getByTestId("checkbox-sm")).toBeChecked();

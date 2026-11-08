@@ -1,7 +1,3 @@
-// Content: the original's two serif faces. Paper's family axis has sans and mono and no serif; Paperdown sets its sheet and its
-// name in Myeongjo. KoPub Batang is the original's face for the paper (Google Fonts, SIL OFL 1.1, the licence next to the files)
-// and Noto Serif KR 600 (Latin letters only) is its wordmark's.
-
 import { globalFontFace } from "@vanilla-extract/css";
 
 import kopubRegular from "./fonts/kopub-batang/KoPubBatang-Regular.ttf";

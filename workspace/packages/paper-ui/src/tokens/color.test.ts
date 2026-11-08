@@ -20,7 +20,6 @@ const leaves = (value: unknown): string[] =>
     ? [value]
     : Object.values(value as Record<string, unknown>).flatMap(leaves);
 
-// The leaves of a tree as dotted paths, in source order.
 const pathsOf = (tree: unknown, prefix = ""): string[] =>
   typeof tree === "string" ? [prefix.slice(0, -1)] : Object.entries(tree as object).flatMap(([key, value]) => pathsOf(value, `${prefix}${key}.`));
 const valueAt = (tree: unknown, path: readonly string[]) => path.reduce<unknown>((node, key) => (node as Record<string, unknown> | undefined)?.[key], tree);
@@ -90,7 +89,6 @@ describe("color systems", () => {
       expect(hex, name).toMatch(/^#[\da-f]{6}$/);
       const [encodedLightness, encodedChroma, encodedHue] = toOklch(hex);
       expect(Math.abs(encodedLightness - lightness), `${name} lightness`).toBeLessThan(0.012);
-      // Gamut mapping only ever lowers chroma, and 8-bit rounding does the rest.
       expect(encodedChroma, `${name} chroma`).toBeLessThanOrEqual(chroma + 0.012);
       if (Math.min(chroma, encodedChroma) > 0.04) expect(Math.abs(((encodedHue - hue + 540) % 360) - 180), `${name} hue`).toBeLessThan(4);
     }
@@ -158,11 +156,9 @@ describe("color systems", () => {
     }
   });
 
-  // One readability rule for both themes: small text on every surface, the accent inks on them, and the wash on the solid it sits on.
   const readability = (values: typeof COLOR_VALUES, mode: ColorMode) => {
     for (const [surfaceName, surface] of Object.entries(values.bg)) {
       for (const [level, ink] of Object.entries(values.ink)) {
-        // The light tertiary ink falls back on purpose, the one documented exception (QUIET_INK below).
         if (mode === "light" && level === "tertiary") continue;
         expect(contrast(ink, surface), `${mode} ink.${level} on ${surfaceName}`).toBeGreaterThanOrEqual(4.5);
       }
@@ -173,7 +169,6 @@ describe("color systems", () => {
     }
     for (const [name, accent] of Object.entries(values.accent)) {
       expect(contrast(accent.ink, accent.soft), `${mode} ${name}.ink on its soft face`).toBeGreaterThanOrEqual(4.5);
-      // A status the exception table lists (the white-on-amber light solid) is the one documented place the wash falls short.
       const tones = (STATUS_EXCEPTIONS as Record<string, Record<string, object>>)[name]?.[mode] ?? {};
       const exception = "solid" in tones || "wash" in tones;
       if (exception) expect(contrast(accent.wash, accent.solid), `${mode} ${name} wash on solid, the documented exception`).toBeLessThan(4.5);
@@ -186,7 +181,6 @@ describe("color systems", () => {
     for (const mode of COLOR_MODES) readability(COLOR_VALUES_BY_MODE[mode], mode);
   });
 
-  // The light tertiary ink on each light surface, at the ratios docs/foundations/color.md gives.
   const QUIET_INK = { raised: 3.1, canvas: 2.9, sunken: 2.6 } as const satisfies Record<(typeof SURFACE_FILLS)[number], number>;
   it("[foundations.color.contrast-contract] lets the light tertiary ink alone fall under 4.5:1, at the ratios the page gives, and lifts it to 4.5:1 where more contrast is asked", () => {
     for (const surface of SURFACE_FILLS) {
@@ -225,14 +219,11 @@ describe("color systems", () => {
     }
   });
 
-  // Why Link's underline defaults to "always": the ink alone does not set a link apart from the sentence around it.
   it("[atoms.link.underline] keeps the link ink below 3:1 against body ink in both themes", () => {
     for (const values of [COLOR_VALUES, COLOR_VALUES_DARK]) expect(contrast(values.interaction.link, values.ink.primary)).toBeLessThan(3);
   });
 });
 
-// What a control or a mark must show against the surface behind it so that it is found (WCAG 1.4.11): 3:1.
-// Three things are documented exceptions and sit in docs/foundations/color.md: the outlined control's boundary (border.base), the quiet selected faces and an off Switch's knob.
 const NON_TEXT = 3;
 const EXCEPTIONS = ["border.base as the outlined-control boundary", "accent soft and interaction.selected as quiet selected faces", "bg.raised as the knob on an off Switch's control.track"] as const;
 
@@ -417,7 +408,6 @@ describe("roles beyond the selection table", () => {
   it("[foundations.color.opacity] takes opacity from the alpha scale, outside COLOR_VALUES", () => {
     expect(Object.keys(OPACITY_VALUES)).toEqual(Object.keys(OPACITY_ROLES));
     for (const [role, step] of Object.entries(OPACITY_ROLES)) expect(OPACITY_VALUES[role as keyof typeof OPACITY_VALUES], role).toBe(String(ALPHA_OPACITY[step]));
-    // One value in every mode: the stylesheet declares it once, apart from the modes.
     const { invariant, modes } = themeVariables();
     const opacity = Object.keys(invariant).filter((name) => name.startsWith("--pui-color-opacity-"));
     expect(opacity).toHaveLength(Object.keys(OPACITY_ROLES).length);

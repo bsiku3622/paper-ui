@@ -1,6 +1,3 @@
-// What the whole app shares: the term being looked at, the clock, who is signed in, their friends, their major, the
-// calendar they added to. Everything a user makes is kept with useStored under "classes:…".
-
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { NOW, useStored } from "../../kit";
@@ -17,12 +14,10 @@ export const ROLE_RANK: Record<Role, number> = { user: 0, manager: 1, admin: 2 }
 export const hasRole = (role: Role, minimum: Role) => ROLE_RANK[role] >= ROLE_RANK[minimum];
 
 export type Session = { signedIn: boolean; username: string; role: Role; linked: boolean };
-// 수강 정정 탐색: whether it is open, until when, and for which term. Admin decides.
 export type TradeConfig = { enabled: boolean; deadline: string; term: string };
 export type MajorState = { major: string | null; answered: boolean };
 export type Clock = { key: string; minute: number };
 
-// The clock runs from the demos' present (2026-11-04 14:30 KST), one second a second.
 export const clockAt = (ms: number): Clock => {
   const kst = new Date(ms + 9 * 3_600_000);
   const key = `${kst.getUTCFullYear()}-${String(kst.getUTCMonth() + 1).padStart(2, "0")}-${String(kst.getUTCDate()).padStart(2, "0")}`;
@@ -48,12 +43,10 @@ type Value = {
   events: CalendarEvent[];
   personal: CalendarEvent[];
   setPersonal: (next: CalendarEvent[] | ((now: CalendarEvent[]) => CalendarEvent[])) => void;
-  // 학사일정 a manager added by hand.
   shared: CalendarEvent[];
   setShared: (next: CalendarEvent[] | ((now: CalendarEvent[]) => CalendarEvent[])) => void;
   requests: EventRequest[];
   setRequests: (next: EventRequest[] | ((now: EventRequest[]) => EventRequest[])) => void;
-  // 자료실: every material, approved or not. Pages filter by status.
   materials: Material[];
   setMaterials: (next: Material[] | ((now: Material[]) => Material[])) => void;
   tradeOpen: boolean;
@@ -91,14 +84,12 @@ export const ClassesProvider = ({ children }: { children: ReactNode }) => {
   const [tradeConfig, setTradeConfig] = useStored<TradeConfig>("classes:trade-config", { enabled: true, deadline: "2026-11-13", term: "2026-2" });
   const data = useMemo(() => termData(term), [term]);
   const [friends, setFriends] = useStored<string[]>("classes:friends", () => {
-    // classmates who share the most classes with the demo account
     const mine = new Set(data.subjects.flatMap((subject) => subject.sections.filter((section) => section.students.some((student) => student.stuId === ME.stuId)).map((section) => section.id)));
     const shared = new Map<string, number>();
     for (const subject of data.subjects) for (const section of subject.sections) if (mine.has(section.id)) for (const student of section.students) if (student.stuId !== ME.stuId) shared.set(student.stuId, (shared.get(student.stuId) ?? 0) + 1);
     return [...shared.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 5).map(([stuId]) => stuId);
   });
 
-  // ?term=2026-1 shows that term whatever was chosen before (a link, a screenshot)
   useEffect(() => {
     const asked = new URLSearchParams(window.location.search).get("term");
     const found = TERMS.find((item) => termLabel(item) === asked);
@@ -115,7 +106,6 @@ export const ClassesProvider = ({ children }: { children: ReactNode }) => {
   const names = useMemo(() => new Map(data.students.map((student) => [student.stuId, student.name])), [data]);
   const [shared, setShared] = useStored<CalendarEvent[]>("classes:shared-events", []);
   const [materials, setMaterials] = useStored<Material[]>("classes:materials", firstMaterials);
-  // An approved proposal becomes an event for everyone.
   const events = useMemo(() => {
     const approved = requests
       .filter((item) => item.status === "approved")

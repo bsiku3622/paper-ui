@@ -15,8 +15,6 @@ type HookName = Primitive["hooks"][number];
 
 const BOX_ICON = <path d="M4 4h16v16H4z" />;
 
-// One of each component with the props it needs and no more. A name missing here fails the harness's typecheck, and
-// the spec holds the page to every name INVENTORY lists.
 const COMPONENTS: Record<ComponentName, ReactNode> = {
   Box: <Box padding="sm">Box</Box>,
   Text: <Text>Text</Text>,
@@ -77,7 +75,6 @@ const COMPONENTS: Record<ComponentName, ReactNode> = {
 
 const Probe = ({ name, children }: { name: string; children?: ReactNode }) => <div data-export={name}>{children}</div>;
 
-// A hook is rendered by calling it, inside whatever it needs around it, so it throws here as it would in an app.
 const HOOKS: Record<HookName, () => unknown> = {
   useFocusRing: () => useFocusRing(),
   useFocusWithin: () => useFocusWithin(),
@@ -98,7 +95,6 @@ const HookProbe = ({ name }: { name: HookName }) => {
   return <Probe name={name}>{typeof result}</Probe>;
 };
 
-// Hooks that read a context are called under the component that provides it.
 const HookProbes = () => (
   <>
     {(Object.keys(HOOKS) as HookName[])
@@ -127,7 +123,6 @@ const ThemeProbes = () => {
   );
 };
 
-// announce speaks into the page's live region; the others return values the page can show.
 const FunctionProbes = () => {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -146,7 +141,6 @@ const FunctionProbes = () => {
   );
 };
 
-// The class helpers and maps: each names a class an element can wear.
 const ClassProbes = () => (
   <>
     <Probe name="surfaceClass"><span className={surfaceClass({ fill: "raised", border: true })}>surfaceClass</span></Probe>
@@ -160,13 +154,9 @@ const ClassProbes = () => (
   </>
 );
 
-// The boot entry beside the root: importing it puts its declaration file in the consumer's type-check, and the page
-// shows that its values load.
 const BOOT_OPTIONS: ThemeBootOptions = { storageKey: THEME_STORAGE_KEY, defaultTheme: "system" };
 const BootProbe = () => <div data-boot-attribute={THEME_ATTRIBUTE}>{typeof themeBootScript(BOOT_OPTIONS)}</div>;
 
-// Every value of the root entry, rendered once under PaperProvider: ?case=exports. The spec holds the names on the
-// page to INVENTORY, so a name added to the entry is not left out of the smoke.
 export const ExportsCase = () => (
   <PaperProvider>
     {(Object.keys(COMPONENTS) as ComponentName[]).map((name) => (

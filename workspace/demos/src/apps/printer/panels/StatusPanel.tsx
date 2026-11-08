@@ -1,7 +1,3 @@
-// The print's status: how far it is, the file, the numbers that matter (speed, flow, filament, layer; the time left by three
-// counts and the hour it will end), and the panel's four tabs. It is the screen's one Anchor; the
-// card draws its own face only when no Anchor has.
-
 import { useState, type ReactNode } from "react";
 import { Link as RouterLink } from "react-router-dom";
 

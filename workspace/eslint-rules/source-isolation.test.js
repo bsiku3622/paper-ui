@@ -9,7 +9,6 @@ const flagged = async (code, filePath) => (await reports(code, filePath)).length
 
 const PKG = "packages/paper-ui/src";
 const MODULES = ["palette", "color-ladder", "colors", "color-modes", "color-recipes", "typography", "typography-recipes", "shape", "shape-recipes", "layout", "motion", "state", "state-recipes", "elevation-recipes", "helpers", "variables", "overrides", "vocabulary", "public"];
-// Where a consumer stands, and how it spells the way to src/tokens from there.
 const CONSUMERS = [
   ["atoms/Probe.tsx", "../tokens"],
   ["primitives/Probe.tsx", "../tokens"],
@@ -50,7 +49,6 @@ test("[guardrails.source-isolation.package-barrel-only] the barrel, a binding-fr
     'import { layered } from "../tokens/layers.css.ts"; export const { style } = layered("components");',
     'import { useState } from "react"; export { useState };',
   ]) assert.deepEqual(await reports(code, `${PKG}/atoms/Probe.css.ts`), [], code);
-  // The token layer reads itself, and a test is verification code.
   assert.deepEqual(await reports('import { SHAPE_SOURCE } from "./shape"; export { SHAPE_SOURCE };', `${PKG}/tokens/shape-recipes.ts`), []);
   assert.deepEqual(await reports('import { SHAPE_SOURCE } from "../tokens/shape"; export { SHAPE_SOURCE };', `${PKG}/styles/probe.test.ts`), []);
   assert.deepEqual(await reports('import { SHAPE_SOURCE } from "./tokens/public"; export { SHAPE_SOURCE };', `${PKG}/probe.test.ts`), []);
@@ -147,7 +145,6 @@ test("[guardrails.source-isolation.inspector-flow] text, the kit's parts, title 
 test("[guardrails.source-isolation.inspector-flow] the flow is read in an inspector's files only", async () => {
   const code = 'import { Box } from "@studio-baeks/paper-ui";\nimport { COLOR_VALUES } from "@paper-ui/inspect/color";\nexport const X = () => <Box style={{ background: COLOR_VALUES.bg.canvas }} />;';
   assert.equal(await flagged(code, PAGE), true);
-  // Elsewhere the import itself is what the rule reports; the flow is not read.
   const elsewhere = await reports(code, "app/src/pages/Home.tsx");
   assert.equal(elsewhere.length, 1);
   assert.match(elsewhere[0].message, /inspector에서만/);

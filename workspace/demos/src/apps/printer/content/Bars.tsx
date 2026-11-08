@@ -1,7 +1,3 @@
-// The history's charts. Paper has none: a column chart (one series, columns no wider than 24px with a rounded top, a hairline
-// grid, a readout on each column) and a thin segmented bar for how one whole splits (jobs by how they ended). Colours are
-// Paper tokens; the numbers are also in the page's table view, so a chart is never the only way to read them.
-
 import { useState, type CSSProperties } from "react";
 
 import { Box, elevation } from "@studio-baeks/paper-ui";
@@ -25,7 +21,6 @@ const niceTop = (value: number) => {
 
 export const ColumnChart = ({ data, tone = "info", unit, height = 188, label }: ColumnsProps) => {
   const [ref, size] = useSize<HTMLDivElement>();
-  // The column the pointer or the focus is on, and where its readout stands in the chart.
   const [at, setAt] = useState<{ index: number; left: number; top: number; flip: boolean } | null>(null);
   const width = Math.max(size.width, 240);
   const plotW = width - MARGIN.left - MARGIN.right;
@@ -97,7 +92,6 @@ export const ColumnChart = ({ data, tone = "info", unit, height = 188, label }: 
 
 export type Part = { id: string; label: string; value: number; tone: Tone };
 
-// One whole in parts: widths in proportion, a 2px gap of the surface between them, no text. A part at zero draws nothing.
 export const SegmentedBar = ({ parts, label }: { parts: readonly Part[]; label: string }) => {
   const shown = parts.filter((part) => part.value > 0);
   return (

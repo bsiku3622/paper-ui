@@ -1,11 +1,3 @@
-// Content: how the editor reads and rewrites the words of a paper. Paper has no rich-text surface, and the original's is
-// Tiptap (ProseMirror), which is not a dependency of this host; this is a small stand-in over `contenteditable`.
-//
-// A paper is HTML of the original's shape (see lib/markdown.ts). Its words live in "textblocks" (a paragraph, a heading, a
-// code block, a list item that holds words itself). Inside a textblock the marks are read into runs, changed as data, and
-// written back: that keeps the markup clean (one <strong> around a bold stretch, never <b> and <font> and nested spans).
-// A position is a textblock and a number of UTF-16 units into it; a formula or a line break counts as one.
-
 export type MarkName = "bold" | "italic" | "strike" | "highlight" | "code";
 
 export type Marks = {
@@ -15,7 +7,6 @@ export type Marks = {
   highlight?: true;
   code?: true;
   link?: string;
-  // A font size in points ("12pt") and a font stack, set on a stretch of words.
   size?: string;
   font?: string;
 };
@@ -25,12 +16,10 @@ export type Run = { kind: "text"; text: string; marks: Marks } | { kind: "atom";
 export type Caret = { block: HTMLElement; offset: number };
 
 const TEXTBLOCKS = new Set(["P", "H1", "H2", "H3", "H4", "H5", "H6", "PRE"]);
-// These hold words directly only when they hold no block of their own.
 const WORD_HOLDERS = new Set(["LI", "TD", "TH", "BLOCKQUOTE"]);
 const BLOCKS = new Set(["P", "H1", "H2", "H3", "H4", "H5", "H6", "UL", "OL", "LI", "BLOCKQUOTE", "PRE", "TABLE", "TBODY", "THEAD", "TR", "TD", "TH", "HR", "DIV"]);
 
 export const isElement = (node: unknown): node is HTMLElement => node instanceof HTMLElement;
-// (Plain booleans, not type guards: a guard on a value that is an element already would narrow its other branch to nothing.)
 export const isInlineMath = (node: Node | null | undefined): boolean => isElement(node) && node.dataset.type === "inline-math";
 export const isBlockMath = (node: Node | null | undefined): boolean => isElement(node) && node.dataset.type === "block-math";
 const isBlock = (node: Node): boolean => isElement(node) && BLOCKS.has(node.tagName) && !isInlineMath(node);
@@ -51,18 +40,13 @@ export const closestTextblock = (root: HTMLElement, node: Node | null): HTMLElem
   return null;
 };
 
-// The child of the root a node stands in.
 export const topOf = (root: HTMLElement, node: Node | null): HTMLElement | null => {
   for (let at: Node | null = node; at && at.parentNode; at = at.parentNode) if (at.parentNode === root) return isElement(at) ? at : null;
   return null;
 };
 
-// ---------------------------------------------------------------------------------------------------------------
-// Leaves: the pieces of a textblock a position is counted over.
-
 type Leaf = { node: Text | HTMLElement; length: number };
 
-// Whether nothing of the textblock's words follows a node (a block of its own, a nested list, is not words).
 const endsBlock = (node: Node, block: HTMLElement): boolean => {
   for (let at: Node | null = node; at && at !== block; at = at.parentNode) {
     let next = at.nextSibling;
@@ -81,7 +65,6 @@ const leaves = (block: HTMLElement): Leaf[] => {
         if (length > 0) out.push({ node: child as Text, length });
       } else if (isElement(child)) {
         if (isInlineMath(child)) out.push({ node: child, length: 1 });
-        // The last <br> of a textblock only holds an empty line open; it is not a character.
         else if (child.tagName === "BR") {
           if (!endsBlock(child, block)) out.push({ node: child, length: 1 });
         } else if (child.tagName === "IMG") out.push({ node: child, length: 1 });
@@ -97,7 +80,6 @@ export const blockLength = (block: HTMLElement) => leaves(block).reduce((sum, le
 
 const indexOf = (node: Node) => (node.parentNode ? Array.prototype.indexOf.call(node.parentNode.childNodes, node) : 0);
 
-// How far into a textblock a DOM position is.
 export const offsetIn = (block: HTMLElement, node: Node, offset: number): number => {
   const probe = document.createRange();
   probe.setStart(node, offset);
@@ -106,8 +88,6 @@ export const offsetIn = (block: HTMLElement, node: Node, offset: number): number
   for (const leaf of leaves(block)) {
     if (leaf.node.nodeType === Node.TEXT_NODE) {
       if (leaf.node === node) return total + offset;
-      // A leaf that ends at or before the position is counted whole; one that ends after it (and is not the position's own
-      // text) starts after it.
       if (probe.comparePoint(leaf.node, leaf.length) <= 0) total += leaf.length;
       else return total;
     } else {
@@ -120,8 +100,6 @@ export const offsetIn = (block: HTMLElement, node: Node, offset: number): number
   return total;
 };
 
-// The DOM position of a number of units into a textblock. At the edge between two stretches it is the end of the first,
-// so that a caret keeps the marks of the word it follows.
 export const positionAt = (block: HTMLElement, offset: number): { node: Node; offset: number } => {
   let remaining = Math.max(0, offset);
   for (const leaf of leaves(block)) {
@@ -154,7 +132,6 @@ export const placeSelection = (start: Caret, end: Caret = start) => {
 const caretAt = (root: HTMLElement, node: Node, offset: number, edge: "start" | "end"): Caret | null => {
   const block = closestTextblock(root, node);
   if (block) return { block, offset: offsetIn(block, node, offset) };
-  // The position stands between blocks (in the root, a list or a table): the nearest textblock takes it.
   const all = textblocks(root);
   if (all.length === 0) return null;
   const probe = document.createRange();
@@ -184,7 +161,6 @@ export const readCarets = (root: HTMLElement): Carets | null => {
   return { start, end, collapsed: range.collapsed };
 };
 
-// The textblocks a selection touches, first to last, with the stretch of each that it covers.
 export type Span = { block: HTMLElement; from: number; to: number };
 
 export const spans = (root: HTMLElement, carets: Carets): Span[] => {
@@ -198,9 +174,6 @@ export const spans = (root: HTMLElement, carets: Carets): Span[] => {
     to: index === list.length - 1 ? carets.end.offset : blockLength(block),
   }));
 };
-
-// ---------------------------------------------------------------------------------------------------------------
-// Runs: the marks of a textblock as data.
 
 const sameMarks = (a: Marks, b: Marks) =>
   a.bold === b.bold && a.italic === b.italic && a.strike === b.strike && a.highlight === b.highlight && a.code === b.code && a.link === b.link && a.size === b.size && a.font === b.font;
@@ -301,7 +274,6 @@ const wrap = (text: string, marks: Marks): Node => {
 
 const MERGEABLE = new Set(["A", "SPAN", "STRONG", "EM", "DEL", "MARK", "CODE"]);
 
-// Neighbouring elements of the same kind become one, so that a stretch made of several runs is one <strong>.
 const mergeNeighbours = (parent: Node) => {
   let child = parent.firstChild;
   while (child) {
@@ -317,7 +289,6 @@ const mergeNeighbours = (parent: Node) => {
 };
 
 export const renderRuns = (block: HTMLElement, runs: Run[]) => {
-  // Anything the textblock holds that is not words (a nested list in an item) stays where it is, after the words.
   const keep = Array.from(block.children).filter(isBlock);
   block.replaceChildren();
   for (const run of runs) {
@@ -332,7 +303,6 @@ export const renderRuns = (block: HTMLElement, runs: Run[]) => {
 
 export const runsLength = (runs: Run[]) => runs.reduce((sum, run) => sum + (run.kind === "text" ? run.text.length : 1), 0);
 
-// Change the marks of the text between two positions of a list of runs.
 export const mapRange = (runs: Run[], from: number, to: number, change: (marks: Marks) => Marks): Run[] => {
   const out: Run[] = [];
   let at = 0;
@@ -390,7 +360,6 @@ export const textOf = (runs: Run[], from = 0, to = Infinity): string => {
   return out;
 };
 
-// The marks of the words around a position: those of the character before it, or after it at the start of a textblock.
 export const marksAt = (runs: Run[], offset: number): Marks => {
   let at = 0;
   let first: Marks | undefined;
@@ -405,7 +374,6 @@ export const marksAt = (runs: Run[], offset: number): Marks => {
   return offset === 0 ? (first ?? {}) : {};
 };
 
-// Whether every character in a stretch has a mark.
 export const allMarked = (runs: Run[], from: number, to: number, has: (marks: Marks) => boolean): boolean | null => {
   let at = 0;
   let seen = false;

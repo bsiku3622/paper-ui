@@ -1,5 +1,3 @@
-// 없는 앨범 · 플레이리스트 · 아티스트로 들어왔을 때.
-
 import { Link as RouterLink } from "react-router-dom";
 
 import { Button } from "@studio-baeks/paper-ui";

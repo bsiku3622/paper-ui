@@ -1,12 +1,3 @@
-// ButtonBase — Button 과 IconButton 의 몸 하나. 안 드러나는 내부 모듈이다.
-//
-// 요소는 늘 Pressable 하나다. `as` 가 행동 부품(Floating.Trigger · Selectable · SelectableGroup.Item …)이든
-// 태그든 라우터 Link 든 그냥 대상이고, 눌림 장치는 그 위에 한 벌만 얹힌다. Atom 의 모양을 행동에 입히는 길은
-// <Button as={부품}> 이고, 반대(<부품 as={Button}>)는 개발 오류다(internal/render-target).
-//
-// 눌림의 모습(변위 · 커서 · 비활성)은 Pressable 의 motion="press", 크기와 글자는 controlClass, 색은 paintClass, 선택은
-// useSelectable 이 정하고 이 모듈은 로딩만 더한다.
-
 import { forwardRef, useEffect, useRef, type ElementType, type HTMLAttributes, type ReactNode } from "react";
 
 import { paperError } from "../internal/errors";
@@ -46,10 +37,8 @@ export type ButtonBaseProps = Omit<ControlForm, "anatomy"> & {
 // Draggable.Handle takes a click for a cancel of its keyboard drag, so a Button over it would cancel the drag it started.
 let toldHandle = false;
 
-// These targets hold the selection themselves and announce it, so a Button over one gives it the prop and says nothing of its own.
 const holdsSelection = (as: ElementType | undefined) => as === Selectable || as === SelectableGroup.Item;
 
-// What the target takes beyond these (a router link's `to`) goes through to it untouched, so the Atoms type it by `as`.
 export const ButtonBase = forwardRef<HTMLElement, ButtonBaseProps>(function ButtonBase(
   {
     anatomy, as, accent = "primary", variant = "solid", fill, shadow, size, fontSize, strong, gap, align, justify, shape = "pill", loading, loadingLabel, fullWidth,
@@ -60,11 +49,8 @@ export const ButtonBase = forwardRef<HTMLElement, ButtonBaseProps>(function Butt
   const messages = useMessages();
   const element = useRef<HTMLElement>(null);
   const ref = useMergedRef(forwardedRef, element);
-  // A selection is announced only by a Button that was given one: aria-pressed is a promise that it can be switched.
   const { selectProps } = useSelectable({ selected, disabled, role: rest.role });
 
-  // Busy is a state of a Button that can be focused: it keeps its place in the Tab order, ignores presses and
-  // submits, and tells the reader once when it starts while it holds focus.
   const busy = Boolean(loading);
   const wasBusy = useRef(busy);
   useEffect(() => {
@@ -79,7 +65,6 @@ export const ButtonBase = forwardRef<HTMLElement, ButtonBaseProps>(function Butt
 
   return (
     <Pressable
-      // `as={Pressable}` is the one Pressable, not a second one inside it.
       as={as === Pressable ? undefined : as}
       ref={ref}
       motion="press"

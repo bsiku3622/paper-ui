@@ -1,7 +1,3 @@
-// The height map: the bed mesh as a heat map with its legend, the numbers of the current mesh, the saved profiles, and the
-// measurements as a table. Calibrating is disabled while a print runs, as on the real printer; clearing, loading, saving,
-// renaming and deleting a profile send the BED_MESH_* commands to the mock.
-
 import { useRef, useState } from "react";
 
 import { Box, Button, Divider, Field, FormField, Grid, IconButton, Inline, Stack, Switch, Text } from "@studio-baeks/paper-ui";
@@ -85,7 +81,6 @@ export const Heightmap = () => {
   const [removing, setRemoving] = useState<string | null>(null);
   const [probing, setProbing] = useState(false);
   const busy = printing(sim.print.state);
-  // The probe takes a moment to touch the bed at each point; the mesh arrives when it is done.
   const calibrate = () => {
     setProbing(true);
     window.setTimeout(() => {

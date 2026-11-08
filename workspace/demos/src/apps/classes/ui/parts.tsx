@@ -1,6 +1,3 @@
-// Parts every page of Class Explorer shares, drawn from Paper and the kit alone: the first face, a titled block, a dialog,
-// highlighted words, the chips that jump into a search, and the grid of days and periods.
-
 import { Fragment, useEffect, useRef, type ReactNode, type RefObject } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -14,9 +11,6 @@ import { path } from "../state";
 
 export const searchHref = (query: string) => path(`/search?q=${encodeURIComponent(query)}`);
 
-// ── faces ────────────────────────────────────────────────────────────────────
-
-// The first face on the ground, with an optional title row. Anything inside it stays flat.
 export const Card = ({ title, description, actions, padding = "xl", gap = "lg", label, children }: { title?: ReactNode; description?: ReactNode; actions?: ReactNode; padding?: Space; gap?: Space; label?: string; children: ReactNode }) => {
   const face = useFace();
   return (
@@ -29,7 +23,6 @@ export const Card = ({ title, description, actions, padding = "xl", gap = "lg", 
   );
 };
 
-// A heading inside a card: a title, what it is for, what you can do about it.
 export const Heading = ({ title, description, actions }: { title?: ReactNode; description?: ReactNode; actions?: ReactNode }) => (
   <Inline justify="between" align="center" gap="md" wrap>
     <Stack gap="xs" minWidth={0}>
@@ -40,8 +33,6 @@ export const Heading = ({ title, description, actions }: { title?: ReactNode; de
   </Inline>
 );
 
-// A row of Tabs that may be wider than the window. Tabs neither wrap nor scroll, so on a phone a long row pushes the whole page
-// sideways; here it scrolls inside its own box, and the selected tab is brought into view (a link to a later tab opens on it).
 export const ScrollTabs = ({ selected, children }: { selected: string; children: ReactNode }) => {
   const row = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -50,21 +41,16 @@ export const ScrollTabs = ({ selected, children }: { selected: string; children:
   return <Box ref={row} overflowX="auto" paddingY="xs">{children}</Box>;
 };
 
-// On everything that shows the course-change plan in place of the timetable: a plan is not the registered timetable, and
-// walking to its room would be a mistake. Amber because it asks for care, not because it is bad.
 export const PlanMark = () => <Badge variant="soft" accent="warning" size="sm">계획</Badge>;
 
-// A quiet line of small caps-less text above something: "NEXT", "교시", a kind.
 export const Eyebrow = ({ children }: { children: ReactNode }) => (
   <Text as="span" variant="label" strong={false} ink="tertiary">{children}</Text>
 );
 
-// A thin line of text: a hint under a control or a figure.
 export const Hint = ({ children }: { children: ReactNode }) => (
   <Text as="p" variant="caption" ink="tertiary">{children}</Text>
 );
 
-// A soft band in an accent's colour: a status, never decoration.
 export const Tint = ({ accent, radius = "md", padding = "md", children }: { accent: Accent; radius?: "sm" | "md" | "lg" | "full"; padding?: Space; children: ReactNode }) => (
   <Surface radius={radius} overflow="hidden">
     <Paint accent={accent} variant="soft" padding={padding}>{children}</Paint>
@@ -83,7 +69,6 @@ export const Notice = ({ tone = "info", glyph = "info", children, action }: { to
   </Tint>
 );
 
-// Rows with a rule between them.
 export const Rows = ({ children }: { children: ReactNode[] }) => (
   <Stack gap="md">
     {children.map((child, index) => (
@@ -95,7 +80,6 @@ export const Rows = ({ children }: { children: ReactNode[] }) => (
   </Stack>
 );
 
-// A label with its value on the line: 학점 · 3.
 export const Pair = ({ label, children }: { label: ReactNode; children: ReactNode }) => (
   <Inline justify="between" gap="md" align="baseline">
     <Text as="span" ink="tertiary">{label}</Text>
@@ -103,9 +87,6 @@ export const Pair = ({ label, children }: { label: ReactNode; children: ReactNod
   </Inline>
 );
 
-// ── dialogs ──────────────────────────────────────────────────────────────────
-
-// The panel takes the width of what is inside it, so the width is said on the inside: a panel's own max-width loses to Floating's.
 export const Dialog = ({ open, onOpenChange, title, description, children, footer, size = "measure.sm", focusRef }: { open: boolean; onOpenChange: (open: boolean) => void; title: string; description?: ReactNode; children: ReactNode; footer?: ReactNode; size?: "measure.xs" | "measure.sm" | "measure.md" | "measure.lg" | "measure.xl"; focusRef?: RefObject<HTMLElement | null> }) => (
   <Floating open={open} onOpenChange={onOpenChange}>
     <Floating.Content as={Surface} fill="raised" radius="lg" padding="xl" presentation="modal" aria-label={title} maxHeight="90dvh" overflowY="auto" initialFocusRef={focusRef}>
@@ -124,11 +105,8 @@ export const Dialog = ({ open, onOpenChange, title, description, children, foote
   </Floating>
 );
 
-// ── words ────────────────────────────────────────────────────────────────────
-
 const escape = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-// The words of a search, marked in a longer text.
 export const Highlight = ({ text, terms }: { text: string; terms: readonly string[] }) => {
   const words = terms.map((term) => term.trim()).filter(Boolean);
   if (words.length === 0) return <>{text}</>;
@@ -140,11 +118,8 @@ export const Highlight = ({ text, terms }: { text: string; terms: readonly strin
   );
 };
 
-// ── chips that open a search ─────────────────────────────────────────────────
-
 export type Pick = "student" | "teacher" | "room" | "subject";
 
-// Names are people, rooms or subjects; a click asks the search page about them. `selected` says "this is what you searched".
 export const QueryChip = ({ kind, value, label, terms = [], selected = false, hint }: { kind: Pick; value: string; label?: ReactNode; terms?: readonly string[]; selected?: boolean; hint?: string }) => {
   const query = kind === "teacher" ? teacherQuery(value) : kind === "room" ? `room:${value}` : kind === "student" ? `student:${value}` : subjectQuery(value);
   const text = typeof label === "string" ? label : value;
@@ -156,7 +131,6 @@ export const QueryChip = ({ kind, value, label, terms = [], selected = false, hi
   );
 };
 
-// 25 한지우 — the cohort quiet, the name in ink.
 export const StudentChip = ({ stuId, name, terms = [], selected = false }: { stuId: string; name: string; terms?: readonly string[]; selected?: boolean }) => (
   <QueryChip
     kind="student"
@@ -172,12 +146,9 @@ export const StudentChip = ({ stuId, name, terms = [], selected = false }: { stu
   />
 );
 
-// ── the grid of days and periods ─────────────────────────────────────────────
-
 export type Slot = {
   text?: ReactNode;
   sub?: ReactNode;
-  // How the cell is drawn: plain sunken, strong (ink), or an accent that means something.
   tone?: "plain" | "strong" | Accent;
   selected?: boolean;
   onPress?: () => void;
@@ -186,8 +157,6 @@ export type Slot = {
 
 const SlotFace = ({ slot }: { slot: Slot }) => {
   const inner = (
-    // Each line is a row of its own: a centred column keeps every child at its full width, so a long name would spill out
-    // on both sides instead of ending in an ellipsis.
     <Stack justify="center" gap="xs" height="full" minWidth={0}>
       {slot.text ? <Inline justify="center"><Text as="span" variant="label" strong={slot.tone === "strong"} ink="inherit" truncate>{slot.text}</Text></Inline> : null}
       {slot.sub ? <Inline justify="center"><Text as="span" variant="label" strong={false} ink="inherit" truncate>{slot.sub}</Text></Inline> : null}
@@ -218,7 +187,6 @@ const SlotFace = ({ slot }: { slot: Slot }) => {
   );
 };
 
-// Five days across, the periods down. `cell` says what is in each (day, period); nothing means an empty cell.
 export const SlotGrid = ({ cell, periods = PERIOD_NUMBERS, rowHeight = "2.5rem", days = DAYS, label }: { cell: (day: Day, period: number) => Slot | undefined; periods?: readonly number[]; rowHeight?: string; days?: readonly Day[]; label: string }) => (
   <Grid columns={`1.5rem repeat(${days.length}, minmax(0, 1fr))`} rows={`1.5rem repeat(${periods.length}, ${rowHeight})`} gap="xs" role="group" aria-label={label}>
     <Box />
@@ -241,7 +209,6 @@ export const SlotGrid = ({ cell, periods = PERIOD_NUMBERS, rowHeight = "2.5rem",
   </Grid>
 );
 
-// A small figure with a label: 학점 · 24.
 export const Figure = ({ label, value, unit }: { label: string; value: ReactNode; unit?: string }) => (
   <Stack gap="xs" minWidth={0}>
     <Text as="span" variant="label" strong={false} ink="tertiary" truncate>{label}</Text>

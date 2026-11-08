@@ -1,7 +1,3 @@
-// The vocabulary — every axis the package names, as one constant and one type. Each pair is defined
-// in the file of its system (derived from the tree that authors it, or bound to it with `satisfies`),
-// and this file lists them all: the barrel and the `/tokens` entry both re-export it.
-
 export { STATUSES, CHOICE_STATUSES, ACCENTS, ACCENT_TONES, SURFACE_FILLS, INK_LEVELS, INKS, BORDER_LEVELS, DIVIDER_LEVELS, DEPTHS } from "./colors";
 export type { Status, ChoiceStatus, Accent, AccentTone, SurfaceFill, InkLevel, Ink, BorderLevel, DividerLevel, Depth } from "./colors";
 

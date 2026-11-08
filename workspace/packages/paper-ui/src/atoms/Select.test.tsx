@@ -16,7 +16,6 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-// The button that stands for the select, the native select the form reads, and the list while it is open.
 const button = (name: string) => screen.getByRole("combobox", { name });
 const nativeOf = (name: string) => button(name).parentElement!.querySelector("select")!;
 const list = () => screen.getByRole("listbox");
@@ -161,7 +160,6 @@ describe("Select", () => {
     expect(list().getAttribute("aria-label")).toBe("combo");
     expect(within(list()).getByRole("option", { name: "B" }).getAttribute("aria-selected")).toBe("true");
     expect(within(list()).getByRole("option", { name: "A" }).getAttribute("aria-selected")).toBe("false");
-    // The chosen option carries its check; pointing is a state of its own.
     expect(within(list()).getByRole("option", { name: "B" }).querySelector("svg")).not.toBeNull();
     expect(within(list()).getByRole("option", { name: "A" }).querySelector("svg")).toBeNull();
     expect(within(list()).getByRole("option", { name: "B" }).hasAttribute("data-focused")).toBe(true);
@@ -220,7 +218,6 @@ describe("Select", () => {
       key("keys", chooser, init);
       expect(isOpen("keys"), chooser).toBe(false);
       expect(button("keys").textContent, chooser).not.toBe("A");
-      // Back to A for the next key.
       fireEvent.click(button("keys"));
       fireEvent.click(within(list()).getByRole("option", { name: "A" }));
     }
@@ -233,7 +230,6 @@ describe("Select", () => {
     expect(outer).not.toHaveBeenCalled();
     key("keys", "ArrowDown");
     key("keys", "ArrowDown");
-    // Tab closes and leaves the default alone, so the focus moves on.
     expect(key("keys", "Tab")).toBe(true);
     expect(isOpen("keys")).toBe(false);
     expect(button("keys").textContent).toBe("A");
@@ -290,7 +286,6 @@ describe("Select", () => {
     expect(isOpen("press")).toBe(false);
     fireEvent.click(button("press"));
     const option = within(list()).getByRole("option", { name: "B" });
-    // Pressing the list does not take the focus from the button.
     expect(fireEvent.mouseDown(option)).toBe(false);
     fireEvent.click(option);
     expect(isOpen("press")).toBe(false);

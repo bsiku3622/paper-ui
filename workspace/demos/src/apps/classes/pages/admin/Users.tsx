@@ -1,7 +1,3 @@
-// 계정 — who can sign in, what each may do, and who is signed in now. Creating an account takes a username, a password and a
-// role; a "Demo" account is for someone with no school Google account and borrows the creator's student ID, so it shows the
-// creator's timetable and nobody else's. The password is read once, checked, and thrown away — nothing here stores one.
-
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -35,8 +31,6 @@ const passwordIssue = (password: string) => {
   return null;
 };
 
-// ── creating one ─────────────────────────────────────────────────────────────
-
 const CreateDialog = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   const { me, clock } = useClasses();
   const { accounts, setAccounts } = useAdmin();
@@ -53,7 +47,6 @@ const CreateDialog = ({ open, onClose }: { open: boolean; onClose: () => void })
   const who = `${me.stuId} ${me.name}`;
 
   const close = () => {
-    // The password is gone as soon as the dialog is.
     setUsername("");
     setPassword("");
     setRole("user");
@@ -115,8 +108,6 @@ const CreateDialog = ({ open, onClose }: { open: boolean; onClose: () => void })
     </Dialog>
   );
 };
-
-// ── the panel ────────────────────────────────────────────────────────────────
 
 export const UsersPanel = () => {
   const { session, me } = useClasses();

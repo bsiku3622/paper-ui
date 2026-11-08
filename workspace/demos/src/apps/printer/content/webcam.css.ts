@@ -1,6 +1,3 @@
-// The webcam scene: a bed in perspective, a part, a gantry. Every colour reads a Paper token; the lengths of the drawing are in
-// the SVG's own units and are written on the shapes.
-
 import { style, styleVariants } from "@vanilla-extract/css";
 
 import { tokens } from "@studio-baeks/paper-ui/tokens";
@@ -13,7 +10,6 @@ export const feed = style({
   lineHeight: 0,
 });
 
-// The camera may be mirrored (the outer box) and turned (the picture inside it), in that order.
 export const mirror = styleVariants({
   none: {},
   x: { transform: "rotateY(180deg)" },

@@ -1,5 +1,3 @@
-// The index of the demos: every app, one card each.
-
 import { Grid, Inline, Stack, Text } from "@studio-baeks/paper-ui";
 
 import { APPS } from "../apps/registry";

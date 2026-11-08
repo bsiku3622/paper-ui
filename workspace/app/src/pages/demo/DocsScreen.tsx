@@ -1,7 +1,3 @@
-// The product's own documentation, inside the console: a list that can be searched and cut by topic, and an article page with its
-// outline, its related articles and a way to say whether it helped. The articles are written for this console, so what they name is
-// what the other pages show.
-
 import { useState } from "react";
 import { Link as RouterLink, useParams } from "react-router-dom";
 
@@ -9,8 +5,6 @@ import { Badge, Box, Button, Divider, Field, FormField, Grid, Inline, Link, Stac
 
 import { ArrowLeftIcon, ArrowRightIcon, SearchIcon } from "../../compositions/icons";
 import { DOCS, DOC_CATEGORIES, EmptyState, Notice, PageTitle, Panel, Segmented, relative, useParam, useStore, wait, type DocCategory, type DocMeta } from "./parts";
-
-// ─── The articles ────────────────────────────────────────────────────────────────────────────────────────────────────
 
 type Section = { heading: string; text?: readonly string[]; steps?: readonly string[]; code?: string; note?: string };
 
@@ -102,9 +96,6 @@ const BODIES: Record<string, readonly Section[]> = {
   ],
 };
 
-// ─── The list ────────────────────────────────────────────────────────────────────────────────────────────────────────
-
-// All the words of an article, so a search finds what is said inside it and not only what it is called.
 const TEXT: Record<string, string> = Object.fromEntries(
   Object.entries(BODIES).map(([slug, sections]) => [slug, sections.map((section) => [section.heading, ...(section.text ?? []), ...(section.steps ?? []), section.note ?? ""].join(" ")).join(" ")]),
 );
@@ -157,8 +148,6 @@ export const DocsScreen = () => {
   );
 };
 
-// ─── One article ─────────────────────────────────────────────────────────────────────────────────────────────────────
-
 const Part = ({ section, index }: { section: Section; index: number }) => (
   <Stack as="section" id={`s${index + 1}`} gap="md">
     <Text as="h2" variant="heading">{section.heading}</Text>
@@ -182,7 +171,6 @@ const Part = ({ section, index }: { section: Section; index: number }) => (
   </Stack>
 );
 
-// Whether the article helped. A no asks what was missing, and either answer is thanked.
 const Helpful = () => {
   const { notify } = useStore();
   const [answer, setAnswer] = useState<"yes" | "no" | null>(null);

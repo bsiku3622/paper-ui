@@ -1,6 +1,3 @@
-// EditPage.tsx — the markup as text, with the rendered article beside it as you type, a diff against the saved text, and the
-// edit summary that goes into the history. Saving makes a new revision. “[편집]” beside a heading opens just that section.
-
 import { useDeferredValue, useMemo, useRef, useState } from "react";
 import { Link as RouterLink, useNavigate, useParams, useSearchParams } from "react-router-dom";
 

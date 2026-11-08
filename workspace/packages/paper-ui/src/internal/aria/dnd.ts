@@ -4,9 +4,7 @@ import type { HTMLAttributes, RefObject } from "react";
 
 import type { DragItem, DropOperation, DroppableOptions, TransferDragEvent } from "../../primitives/types";
 
-// Native drag and drop, with the keyboard path React Aria builds for it. The keyboard path starts from a button the
-// caller renders, and buttonProps carries its press and its description. The press is React Aria's own, with no
-// click after it: the drag that press starts takes a click on the dragged element for a cancel.
+// The press is React Aria's own, with no click after it: the drag that press starts takes a click on the dragged element for a cancel.
 export function useAriaDrag({ disabled, ...options }: {
   disabled: boolean;
   handle: boolean;

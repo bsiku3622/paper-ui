@@ -1,7 +1,3 @@
-// Dialog — Floating's modal with a title row and a close button. It is in content/ only for its size: Paper's modal has no way
-// to be a given width and still fit a phone, or to keep one height while its content changes (see dialog.css.ts). Everything
-// inside a dialog is a screen's own.
-
 import type { ReactNode, RefObject } from "react";
 
 import { Floating, IconButton, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";
@@ -15,9 +11,7 @@ export type DialogProps = {
   title: string;
   description?: ReactNode;
   size?: keyof typeof dialogWidth;
-  // Keep one height whatever is inside, for a dialog whose content is swapped in place (the settings tabs).
   steady?: boolean;
-  // What takes the focus when it opens, if not the first thing in it.
   initialFocusRef?: RefObject<HTMLElement | null>;
   children?: ReactNode;
   footer?: ReactNode;

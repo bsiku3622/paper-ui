@@ -1,6 +1,3 @@
-// The course catalogue: what a course is (credits, department, tier, prerequisites), apart from who teaches it this term.
-// Rows come from the snapshot in ./generated; the descriptions are written for this demo.
-
 import { COURSE_ROWS, DEPARTMENT_ROWS, PREREQUISITE_ROWS } from "./generated/curriculum";
 
 export type Category = "natural" | "humanities" | "convergence";
@@ -14,11 +11,9 @@ export type Course = {
   credits: number;
   apCredits: number;
   pf: boolean;
-  // "1".."8", "summer" or empty.
   recommended: string;
   tier: Tier;
   requiredAdvanced: boolean;
-  // Offered in English (EC) as well as in Korean.
   ec: boolean;
   description: string;
 };
@@ -119,7 +114,6 @@ export const PREREQUISITES: readonly Prereq[] = PREREQUISITE_ROWS.map(([before, 
 export const COURSE_BY_NAME = new Map(COURSES.map((course) => [course.name, course]));
 export const courseOf = (name: string) => COURSE_BY_NAME.get(name);
 
-// 졸업 요건 (credits): the numbers the school asks for in each strand, and the English-class requirement.
 export const REQUIREMENTS: Record<string, number> = { natural: 67, humanities: 52, convergence: 8, ec: 10 };
 export const GRADE_POINTS: Record<string, number> = { "A+": 4.3, A0: 4.0, "A-": 3.7, "B+": 3.3, B0: 3.0, "B-": 2.7, "C+": 2.3, C0: 2.0, "C-": 1.7, "D+": 1.3, D0: 1.0, "D-": 0.7, F: 0 };
 export const GRADE_OPTIONS = Object.keys(GRADE_POINTS);

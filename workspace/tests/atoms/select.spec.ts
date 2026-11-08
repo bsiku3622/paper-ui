@@ -10,7 +10,6 @@ test.beforeEach(async ({ page }) => {
   await openHarness(page, "states");
 });
 
-// Put the focus on what comes before the target in the Tab order, then press Tab, so the focus the target holds is the keyboard's.
 const reachByKeyboard = async (page: Page, target: Locator) => {
   await target.evaluate((element) => {
     const tabbable = [...document.querySelectorAll<HTMLElement>("button, a[href], input, textarea, select, [tabindex]")].filter((candidate) => !candidate.hasAttribute("disabled") && candidate.tabIndex >= 0);
@@ -21,7 +20,6 @@ const reachByKeyboard = async (page: Page, target: Locator) => {
 };
 
 test("[atoms.select.listbox] [primitives.floating.content-options] opens its list under the frame (over it without room) from its start edge, never narrower than the frame, with rows of the Select's own height", async ({ page }) => {
-  // A Select away from the window's edges: the one at the end of an auto track.
   const frame = page.getByTestId("select-auto");
   await frame.evaluate((element) => element.scrollIntoView({ block: "center" }));
   const trigger = frame.getByRole("combobox");
@@ -30,11 +28,9 @@ test("[atoms.select.listbox] [primitives.floating.content-options] opens its lis
   await expect(list).toBeVisible();
   await expect(trigger).toHaveAttribute("aria-controls", (await list.getAttribute("id"))!);
   await expect(trigger).toBeFocused();
-  // The list rises in as it opens; it is measured where it settles.
   await expect(list).not.toHaveAttribute("data-presence", /.*/);
   const box = (await frame.boundingBox())!;
   const panel = (await list.boundingBox())!;
-  // Under the frame, or over it when the window has no room below; either way a step of the gap scale from it.
   const gap = roleDp(tokens.layout.gap.xs);
   const below = panel.y - (box.y + box.height);
   const above = box.y - (panel.y + panel.height);

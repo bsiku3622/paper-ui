@@ -1,6 +1,3 @@
-// The menu button at the canvas's bottom left, and what it opens: the workspace's name, a word on the account (the prototype
-// has no login), and "화면 중심으로", which puts the camera back where the canvas first opened.
-
 import { useState } from "react";
 
 import { Button, Floating, IconButton, Stack, Surface, Text } from "@studio-baeks/paper-ui";

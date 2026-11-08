@@ -1,6 +1,3 @@
-// What the Wake-on-LAN screens say about a device the same way everywhere: whether it answers, how a signal ended, and the
-// button that sends one (with the pause between two signals counted down).
-
 import { useState, type ReactNode } from "react";
 
 import { Badge, Button, Inline, Spinner, Stack, Text } from "@studio-baeks/paper-ui";
@@ -26,7 +23,6 @@ export const ResultBadge = ({ result }: { result: WakeResult }) => {
   return <Badge>{result}</Badge>;
 };
 
-// The signal button, the notice under it while the device wakes, and what went wrong if the signal could not be sent.
 export const WakeControl = ({ device, size = "md", extra }: { device: WolDevice; size?: "sm" | "md"; extra?: ReactNode }) => {
   const { wake } = useWolApi();
   const [busy, setBusy] = useState(false);

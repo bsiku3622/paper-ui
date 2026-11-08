@@ -1,6 +1,3 @@
-// seeds.ts — the articles this wiki starts with, read from articles/*.wiki. A file holds one or more articles, each opened by a
-// line “@@ 제목”. The text is the latest revision; history.ts invents the ones before it.
-
 import { cleanTitle } from "../lib/markup";
 import { hash } from "../lib/text";
 import { buildHistory, normalize } from "./history";
@@ -8,7 +5,6 @@ import type { Rev, Seed } from "./types";
 
 const files = import.meta.glob("../articles/*.wiki", { query: "?raw", import: "default", eager: true }) as unknown as Record<string, string>;
 
-// A title that sends the reader to another article.
 const REDIRECTS: readonly (readonly [string, string])[] = [
   ["돌담", "돌담시"],
   ["Doldam", "돌담시"],

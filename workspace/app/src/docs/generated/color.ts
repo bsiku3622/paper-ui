@@ -1,4 +1,3 @@
-// The Color tables: each role's Palette step in light and dark, and the tone steps of the accent.
 import { ACCENT_TONE_STEPS, COLOR_SELECTION, PRIMARY_TONE_STEPS } from "@paper-ui/inspect/color";
 import { ACCENT_TONES } from "@studio-baeks/paper-ui/tokens";
 
@@ -13,7 +12,6 @@ const leaves = (tree: Tree, prefix = ""): [string, string][] =>
 const light = leaves(COLOR_SELECTION.light);
 const dark = new Map(leaves(COLOR_SELECTION.dark));
 
-// Sibling roles that share a row of the table, in the order the row names them.
 const ROLE_ROWS: readonly (readonly string[])[] = [
   ["ink.primary", "ink.secondary", "ink.tertiary"],
   ["border.base", "border.strong", "border.hover"],
@@ -21,7 +19,6 @@ const ROLE_ROWS: readonly (readonly string[])[] = [
   ["shadow.floating", "shadow.lifted", "shadow.resting"],
 ];
 
-// Steps of one ramp share its name: `neutral.900 · 700 · 650`. Steps of different ramps are written out.
 const stepsOf = (steps: string[]): string => {
   const parts = steps.map((step) => /^([a-z]+)\.(\d+)$/.exec(step));
   const [first] = parts;

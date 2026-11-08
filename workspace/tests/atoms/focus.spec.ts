@@ -5,7 +5,6 @@ import { openHarness } from "../support/harness";
 import { tab } from "../support/keyboard";
 import { expectStyle } from "../support/style";
 
-// Each ring owner of the Button family, with the corner its ring follows.
 const OWNERS = [
   ["solid", tokens.shape.radius.pill],
   ["hairline", tokens.shape.radius.pill],
@@ -23,7 +22,7 @@ const ringOf = {
   outlineColor: tokens.color.interaction.focus,
 };
 
-// Put focus on the element before the target in the Tab order, then press Tab, so the focus the target holds is the keyboard's.
+// Focus the element before the target, then press Tab, so the focus the target gets is the keyboard's.
 const reachByKeyboard = async (page: Page, target: Locator) => {
   await target.evaluate((element) => {
     const tabbable = [...document.querySelectorAll<HTMLElement>("button, a[href], input, [tabindex]")].filter((candidate) => !candidate.hasAttribute("disabled") && candidate.tabIndex >= 0);
@@ -67,14 +66,12 @@ test("[atoms.states.ring-channel] the ring stands outside the state chain: a sel
   await expectStyle(selected, ringOf);
 });
 
-// The input family: Field and Select draw the ring on their wrapper, Textarea on itself; the control the keyboard lands on is the native one.
 const INPUTS = [
   ["Field", "field", tokens.shape.radius.control.md],
   ["Textarea", "textarea", tokens.shape.radius.control.md],
   ["Select", "select", tokens.shape.radius.control.md],
 ] as const;
 
-// A Select's control is its button. While its list is open the list bears the same name, so the button is found by its role.
 const controlOf = (page: Page, label: string) => (label === "Select" ? page.getByRole("combobox", { name: label, exact: true }) : page.getByLabel(label, { exact: true }));
 
 for (const [label, id, corner] of INPUTS) {
@@ -86,7 +83,6 @@ for (const [label, id, corner] of INPUTS) {
     await expect(frame).not.toHaveAttribute("data-focus-visible", /.*/);
     await expectStyle(frame, { outlineStyle: "none" });
     await expectStyle(control, { outlineStyle: "none" });
-    // A key pressed on a Select is the keyboard's, and closes the list it opened.
     if (label === "Select") await page.keyboard.press("Escape");
 
     await tab(page);
@@ -95,7 +91,6 @@ for (const [label, id, corner] of INPUTS) {
     await expect(control).toBeFocused();
     await expect(frame).toHaveAttribute("data-focus-visible", "true");
     await expectStyle(frame, { ...ringOf, borderTopLeftRadius: corner });
-    // The ring belongs to the frame; the native control inside a wrapper draws none of its own.
     if (label !== "Textarea") await expectStyle(control, { outlineStyle: "none" });
   });
 }
@@ -109,7 +104,6 @@ test("[atoms.focus.ring] [atoms.states.pointer-focus] typing in a Field or a Tex
     await expectStyle(page.getByTestId(id), { outlineStyle: "none" });
   }
   const field = page.getByTestId("field");
-  // The left padding at mid height: a point nearer the corner may fall outside the wrapper's curve.
   const { height } = (await field.boundingBox())!;
   await field.click({ position: { x: 2, y: height / 2 } });
   await expect(page.getByLabel("Field", { exact: true })).toBeFocused();
@@ -197,7 +191,6 @@ test("[atoms.field.actions] [atoms.contract.axes] the browser's cancel button an
   const { root } = await cdp.send("DOM.getDocument", { depth: -1, pierce: true });
   type Node = { nodeId: number; nodeName: string; attributes?: string[]; children?: Node[]; shadowRoots?: Node[] };
   const attribute = (node: Node, name: string) => node.attributes?.[(node.attributes?.indexOf(name) ?? -1) + 1];
-  // The native search controls of the input that matches, found by walking its user-agent shadow tree.
   const nativeOf = (isOwner: (input: Node) => boolean) => {
     const found: Array<{ pseudo: string; nodeId: number }> = [];
     const walk = (node: Node, inside: boolean) => {
@@ -219,7 +212,6 @@ test("[atoms.field.actions] [atoms.contract.axes] the browser's cancel button an
   for (const { pseudo, nodeId } of ours) expect(await displayOf(nodeId), pseudo).toBe("none");
 });
 
-// The selection marks are their own ring owners: the input draws the ring on its own corner.
 test.describe("the selection marks", () => {
   test.beforeEach(async ({ page }) => {
     await openHarness(page, "marks");

@@ -1,5 +1,3 @@
-// IconButton — 정사각 anatomy 와 부딪히는 축은 열지 않고, 안의 Icon 은 컨트롤 높이를 따른다.
-
 import { createRef, forwardRef, type AnchorHTMLAttributes } from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";

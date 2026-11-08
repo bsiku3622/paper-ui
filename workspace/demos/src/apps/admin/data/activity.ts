@@ -1,6 +1,3 @@
-// The hub's activity log: a month of invented events across the five services, written from the other seeds so a name in
-// the log is a name somewhere in the hub. Newer events are added by what the demo's user does.
-
 import { random } from "../../../kit";
 import { DAY, before } from "../lib/clock";
 import { visitorAddress } from "../lib/fake";

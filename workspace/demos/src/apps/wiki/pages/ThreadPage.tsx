@@ -1,6 +1,3 @@
-// ThreadPage.tsx — one discussion: the comments in order, and a box to answer. A closed thread can be read but not answered
-// until someone reopens it.
-
 import { useRef, useState } from "react";
 import { Link as RouterLink, useParams } from "react-router-dom";
 

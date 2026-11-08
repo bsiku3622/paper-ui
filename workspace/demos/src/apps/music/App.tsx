@@ -1,6 +1,3 @@
-// 음악: 데스크톱 음악 앱. 사이드바(보관함과 플레이리스트), 가운데 페이지, 오른쪽의 가사 창,
-// 아래에 떠 있는 미니 플레이어. 카탈로그는 지어낸 것이고, 재생은 타이머로 흉내 냅니다.
-
 import { useEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 
@@ -33,7 +30,6 @@ const Frame = () => {
   const { pathname } = useLocation();
   const { settings } = useSettings();
   const { toggle } = usePlayer();
-  // 재생 화면은 가사와 대기열을 스스로 갖고 있어서 오른쪽 창과 미니 플레이어를 비웁니다.
   const immersive = pathname.startsWith("/music/now-playing");
   const aside = !immersive && settings.pane !== "none";
 
@@ -41,7 +37,6 @@ const Frame = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  // 스페이스바로 재생과 일시정지. 단추나 입력칸에 초점이 있을 때는 그 요소가 스페이스를 씁니다.
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.code !== "Space" || event.repeat || event.metaKey || event.ctrlKey || event.altKey) return;
@@ -54,8 +49,6 @@ const Frame = () => {
     return () => window.removeEventListener("keydown", onKey);
   }, [toggle]);
 
-  // key: 좁은 화면에서 메뉴의 링크를 누르면 kit의 메뉴 시트가 닫혀야 하는데, Paper의 눌림이 click을 시트까지 올려 보내지
-  // 않아서 열린 채 남습니다. 페이지가 바뀔 때 셸을 새로 세워서 닫습니다(검색어처럼 주소의 ?뒤가 바뀔 때는 그대로입니다).
   return (
     <AppShell
       key={pathname}

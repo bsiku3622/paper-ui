@@ -1,7 +1,3 @@
-// history.ts — gives every article a believable past. Only the latest text is written by hand; the earlier revisions are the
-// same text with its parts added in a different order, some sentences shorter, and now and then a test edit that was reverted.
-// Everything is drawn from a seed per title, so the past is the same on every load.
-
 import { chance, int, NOW, pick, random } from "../../../kit";
 import { hash, sizeOf } from "../lib/text";
 import type { Rev } from "./types";
@@ -10,7 +6,6 @@ import { USERS, WIKI_OPENED } from "./users";
 const DAY = 86_400_000;
 const MINUTE = 60_000;
 
-// Blocks of the text as the authors wrote them: split at blank lines, except inside a code fence or a multi-line macro.
 export const splitUnits = (text: string): string[] => {
   const units: string[] = [];
   let current: string[] = [];
@@ -42,7 +37,6 @@ export const normalize = (text: string) => splitUnits(text).join("\n\n");
 
 const balanced = (text: string) => text.split("[").length === text.split("]").length && text.split("[[").length === text.split("]]").length;
 
-// How a block read before someone wrote the last bit of it; null when it has no shorter form.
 const shorten = (unit: string): string | null => {
   const lines = unit.split("\n");
   const first = lines[0] ?? "";
@@ -96,7 +90,6 @@ export const buildHistory = (title: string, source: string): Rev[] => {
     return pickUser.joined <= at ? pickUser.name : USERS[0]!.name;
   };
 
-  // Which blocks start in a shorter form, and the order they are added in.
   const before = units.map((unit) => shorten(unit));
   const initial = rich ? Math.max(1, Math.min(n, 1 + int(r, 0, 2))) : Math.max(1, Math.ceil(n / 2));
   const events: Ev[] = [];
@@ -128,7 +121,6 @@ export const buildHistory = (title: string, source: string): Rev[] => {
   }
   events.sort((a, b) => a.key - b.key);
 
-  // When: one in five articles was touched within the day; the rest at some point in the last weeks. Edits crowd toward the end.
   const lastAge = h % 5 === 0 ? (0.08 + (h % 7) * 0.1) * DAY : (0.6 + r() * 38) * DAY;
   const updated = NOW.getTime() - lastAge;
   const span = rich ? int(r, 100, 230) : int(r, 25, 150);

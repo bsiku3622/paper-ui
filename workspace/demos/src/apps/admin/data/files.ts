@@ -1,12 +1,9 @@
-// The files service's shelf: thirty-two shared files with invented names, sizes and counts, and the visits behind them.
-
 import { random } from "../../../kit";
 import { DAY, HOUR, MINUTE, before, now } from "../lib/clock";
 import { visitorAddress } from "../lib/fake";
 import { mimeOf } from "../lib/format";
 import type { AdminFile, DownloadEvent, DownloadResult, FileRow, FileState } from "./types";
 
-// Where the share links point. A reserved example domain: nothing here is a real address.
 export const PUBLIC_BASE = "https://files.example.com";
 export const publicUrl = (slug: string) => `${PUBLIC_BASE}/f/${encodeURIComponent(slug)}`;
 
@@ -20,9 +17,7 @@ type Seed = {
   name: string;
   size: number;
   description: string;
-  // Days since it was uploaded.
   age: number;
-  // Days from now until it expires; negative once it has.
   expires: number | null;
   max?: number;
   downloads: number;
@@ -91,7 +86,6 @@ export const fileState = (row: FileRow, at = now()): FileState => {
   return "live";
 };
 
-// What GET /api/admin/files answers: the row and what is worked out from it.
 export const readFile = (row: FileRow, at = now()): AdminFile => ({
   ...row,
   locked: row.visibility === "password",
@@ -99,7 +93,6 @@ export const readFile = (row: FileRow, at = now()): AdminFile => ({
   state: fileState(row, at),
 });
 
-// File kinds, for the filter.
 export type FileKind = "all" | "document" | "archive" | "image" | "other";
 export const fileKind = (name: string): Exclude<FileKind, "all"> => {
   const extension = name.split(".").pop()?.toLowerCase() ?? "";
@@ -128,7 +121,6 @@ export const visibleFiles = (files: AdminFile[], query: string, kind: string, so
     .sort((a, b) => (sort === "name" ? a.title.localeCompare(b.title, "ko") : sort === "size" ? b.size - a.size : b.createdAt - a.createdAt));
 };
 
-// Who came to a file, made up from its count: the same file always has the same visits.
 const CLIENTS = ["Chrome · Windows", "Safari · iPhone", "Chrome · Android", "Edge · Windows", "Safari · macOS", "Firefox · Linux", "Chrome · macOS", "curl"] as const;
 const PLACES = ["서울", "서울", "서울", "부산", "대전", "인천", "광주", "수원", "해외"] as const;
 
@@ -148,7 +140,6 @@ export const downloadsOf = (file: AdminFile, limit = 40): DownloadEvent[] => {
   });
   const count = Math.min(file.downloadCount, limit);
   for (let index = 0; index < count; index++) {
-    // The first days are busier than the last.
     const at = file.createdAt + Math.pow(next(), 1.7) * span;
     events.push(entry(index, "완료", Math.round(at)));
   }
@@ -160,7 +151,6 @@ export const downloadsOf = (file: AdminFile, limit = 40): DownloadEvent[] => {
   return events.sort((a, b) => b.at - a.at).filter((event) => event.at <= now());
 };
 
-// Every file's visits in one list, newest first, for the log across the shelf.
 export type Visit = DownloadEvent & { title: string; slug: string };
 export const recentVisits = (files: readonly AdminFile[], limit = 80): Visit[] =>
   files
@@ -168,7 +158,6 @@ export const recentVisits = (files: readonly AdminFile[], limit = 80): Visit[] =
     .sort((a, b) => b.at - a.at)
     .slice(0, limit);
 
-// Visits per day over the last two weeks, for the chart on a file's page.
 export const dailyDownloads = (file: AdminFile, days = 14): { day: number; count: number }[] => {
   const start = now() - (days - 1) * DAY;
   const buckets = Array.from({ length: days }, (_, index) => ({ day: start + index * DAY, count: 0 }));

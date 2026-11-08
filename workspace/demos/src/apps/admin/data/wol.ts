@@ -1,6 +1,3 @@
-// Wake-on-LAN: three invented machines behind the VPN. The desktop is asleep when the hub opens so a wake can be watched;
-// the other two are already on. A woken machine answers after a few seconds and goes back to sleep after five minutes.
-
 import { DAY, HOUR, MINUTE, SECOND, before, now } from "../lib/clock";
 import { makeId } from "../lib/fake";
 import type { WakeRecord, WakeResult, WolDevice } from "./types";
@@ -64,14 +61,12 @@ export const isReachable = (device: WolDevice, at = now()) =>
 
 export const cooldownLeft = (device: WolDevice, at = now()) => Math.max(0, Math.ceil(((device.cooldownUntil ?? 0) - at) / 1000));
 
-// A record as it reads now: a signal still on its way is waiting, then it answered.
 export const describeRecord = (entry: WakeRecord, at = now()): { result: WakeResult; seconds: number | null } => {
   if (entry.bootsAt === null) return { result: entry.result, seconds: entry.seconds };
   if (at < entry.bootsAt) return { result: "대기 중", seconds: null };
   return { result: "응답 확인", seconds: Math.round((entry.bootsAt - entry.at) / 1000) };
 };
 
-// Sending the signal: the device that is asleep will answer in 7 to 12 seconds, the one that is on shrugs.
 export const wake = (device: WolDevice, at = now()): WolDevice => {
   const already = isReachable(device, at);
   const delay = 7 + (device.history.length % 6);

@@ -1,7 +1,3 @@
-// A subject as a row that opens: its name, how many sections and students, who teaches; opened, what the course is and
-// every section with its teacher, room, times and roster. One list of these is one card — a line between them, no card in a card.
-// The home page uses the same part for "the subjects I take", with only my sections in it.
-
 import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -38,7 +34,6 @@ export const SectionCard = ({ section, terms, years, focus }: { section: Section
   );
 };
 
-// What the course is: its place in the curriculum and what it needs, and its syllabus when the school has shared one.
 const CourseInfo = ({ subject }: { subject: SubjectData }) => {
   const { materials, term } = useClasses();
   const [open, setOpen] = useState<Material | null>(null);

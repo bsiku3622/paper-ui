@@ -1,7 +1,3 @@
-// sections.ts — a document cut at its headings, so “[편집]” beside a heading can edit that section alone.
-// Section 0 is the lead (everything before the first heading); section n is the n-th heading with what is under it, up to the
-// next heading of the same or a higher level. The file has no imports so a script can load it on its own.
-
 export type SectionInfo = { n: number; level: number; title: string; start: number; end: number };
 
 const HEADING = /^(={2,4}) (.+?) \1\s*$/;

@@ -7,7 +7,6 @@ import { getThemeStore } from "./store";
 const root = document.documentElement;
 const store = getThemeStore();
 
-// A matchMedia whose answer the test sets and whose change listeners it can fire.
 const mockMedia = (matches: boolean) => {
   const listeners = new Set<() => void>();
   const query = {
@@ -19,7 +18,6 @@ const mockMedia = (matches: boolean) => {
   return { listeners, set: (next: boolean) => { query.matches = next; listeners.forEach((listener) => listener()); } };
 };
 
-// jsdom here has no localStorage of its own; a test gets a fresh one that records its calls.
 const memoryStorage = () => {
   const data = new Map<string, string>();
   return {
@@ -29,7 +27,6 @@ const memoryStorage = () => {
 };
 let storage = memoryStorage();
 
-// Every attach of a test is released after it, so the next test starts from a store nobody holds.
 let detaches: (() => void)[] = [];
 const attach = () => {
   const detach = store.attach();

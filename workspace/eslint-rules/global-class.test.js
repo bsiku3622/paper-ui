@@ -46,7 +46,6 @@ test("[guardrails.global-class.scoped-selectors] an element or :root selector is
   assert.equal(await flagged(`${head}globalKeyframes("spin", { to: { opacity: 1 } });`, SHEET), true);
   assert.equal(await flagged(`${head}createGlobalVar("shell-nav-height");`, SHEET), true);
   assert.equal(await flagged(`${head}globalKeyframes("spin", { to: { opacity: 1 } });`, shell), false);
-  // The rule reads app stylesheets; the package's own are layered-styles' business.
   assert.equal(await flagged(`${head}globalStyle(".md", { margin: 0 });`, "packages/paper-ui/src/atoms/Probe.css.ts"), false);
 });
 

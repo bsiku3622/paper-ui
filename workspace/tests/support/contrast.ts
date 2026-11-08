@@ -1,8 +1,5 @@
 import type { Locator } from "@playwright/test";
 
-// WCAG contrast between colours, and one colour laid over another. Colours are the forms the tokens and the browser
-// give: #rrggbb, #rrggbbaa, and the rgb() / rgba() a computed style returns. The unit tests of Color read the same file.
-
 export type Rgba = readonly [red: number, green: number, blue: number, alpha: number];
 
 export const parseColor = (color: string): Rgba => {
@@ -21,13 +18,11 @@ export const luminance = (color: string) => {
   return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
 };
 
-// The contrast ratio of two opaque colours.
 export const contrast = (a: string, b: string) => {
   const [light, dark] = [luminance(a), luminance(b)].sort((x, y) => y - x);
   return (light! + 0.05) / (dark! + 0.05);
 };
 
-// An overlay laid over an opaque surface, as the eye sees it: #rrggbb.
 export const over = (overlay: string, surface: string): string => {
   const [r, g, b, alpha] = parseColor(overlay);
   const below = parseColor(surface);
@@ -35,5 +30,4 @@ export const over = (overlay: string, surface: string): string => {
   return `#${mixed.map((channel) => channel.toString(16).padStart(2, "0")).join("")}`;
 };
 
-// The computed background and text colour of an element.
 export const colors = (target: Locator) => target.evaluate((element) => ({ background: getComputedStyle(element).backgroundColor, color: getComputedStyle(element).color }));

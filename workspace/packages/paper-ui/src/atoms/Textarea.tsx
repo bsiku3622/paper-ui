@@ -1,15 +1,3 @@
-// Textarea — 여러 줄 입력. Field 의 status 축을 그대로 쓴다(테두리로 상태 표시).
-//
-// size 는 Button·Field·Select 와 같은 컨트롤 사다리다. 높이만 예외 — 줄 수(rows)가
-// 정하므로 size 가 움직이는 건 여백과 글자뿐이다. 대신 첫 줄이 같은 size 의 Field 와
-// 같은 자리에서 시작하고, 한 줄(rows=1)은 그 Field 와 같은 높이다. rows 의 기본은 4 다.
-// textarea 가 틀(inputFrame) 자신이라 키보드 포커스 링도 자기가 그린다.
-//
-// ⚠ **shape="pill" 은 여기 없다.** 알약은 "높이의 절반" 이라는 규칙이라 한 줄짜리
-// 컨트롤에서만 알약이 된다. 여러 줄짜리 Textarea 에 걸면 반경이 높이의 절반이 되어 경기장 모양이
-// 나오고, 첫 줄·마지막 줄이 곡선 아래로 밀려 왼쪽 정렬이 무너진다(네이티브 resize
-// 손잡이도 모양 밖으로 나간다). 어휘가 여기서 멈추는 건 빠뜨린 게 아니라 경계다.
-
 import { forwardRef, type TextareaHTMLAttributes } from "react";
 
 import { joinClass } from "../internal/joinClass";
@@ -17,6 +5,8 @@ import { fieldPlaceholderPaint } from "../primitives/paint/recipes.css";
 import { inputFrameClass, useInputControl, type InputFrameProps } from "./input-control";
 import { textareaRoot } from "./Textarea.css";
 
+// There is no shape="pill": it is half the height, which on a multi-line box gives a stadium
+// and pushes the first and last lines under the curve.
 export type TextareaProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "className"> & InputFrameProps & {
   className?: string;
 };

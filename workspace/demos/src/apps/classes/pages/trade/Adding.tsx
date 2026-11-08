@@ -1,6 +1,3 @@
-// 과목 추가 — find a subject to take on top of the ones already taken. Dropping something frees hours, and the subjects that
-// fit into them are listed first; a search finds any other. What is picked goes to the top of 내 과목, where its section is chosen.
-
 import type { ReactNode } from "react";
 
 import { Button, Field, Inline, Stack, Text } from "@studio-baeks/paper-ui";

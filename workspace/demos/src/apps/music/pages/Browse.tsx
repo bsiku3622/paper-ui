@@ -1,5 +1,3 @@
-// 둘러보기: 신곡(이번 주 신보와 최근 발매), 차트(곡과 앨범의 순위), 장르.
-
 import { useState } from "react";
 import { Link as RouterLink, useSearchParams } from "react-router-dom";
 
@@ -16,7 +14,6 @@ import { usePlayer } from "../state/player";
 
 const GRID = "repeat(auto-fill, minmax(10rem, 1fr))";
 
-// 이번 주의 앨범: 가장 새로 나온 앨범 하나를 크게.
 const Featured = () => {
   const player = usePlayer();
   const album = NEW_ALBUMS[0]!;
@@ -53,7 +50,6 @@ const News = () => (
   </>
 );
 
-// 어제보다 오른 순위는 성공, 내린 순위는 오류의 잉크로 — 오르내림이 곧 뜻이라서 색을 씁니다.
 const Move = ({ id }: { id: string }) => {
   const move = rankMove(id);
   if (move === NEW_ENTRY) return <Text as="span" variant="label" ink="info">NEW</Text>;
@@ -109,7 +105,6 @@ const Genres = () => (
 );
 
 export const BrowsePage = () => {
-  // 탭은 주소의 ?tab=에 있어서 차트나 장르를 바로 가리킬 수 있습니다.
   const [params, setParams] = useSearchParams();
   const tab = params.get("tab") ?? "new";
   return (

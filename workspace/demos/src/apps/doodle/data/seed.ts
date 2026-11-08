@@ -1,6 +1,3 @@
-// The workspace as it first opens: "자유로운 생각들", three Markdown documents in a row, two notes, a picture, a few pen
-// strokes, and a day of to-dos and routines. Always the same (the strokes' wobble comes from a seeded generator).
-
 import { random } from "../../../kit";
 import { TODAY, dateKey } from "../lib/dates";
 import type { Data, Point, Stroke } from "./types";
@@ -8,7 +5,6 @@ import type { Data, Point, Stroke } from "./types";
 export const CANVAS_NAME = "자유로운 생각들";
 export const WORKSPACE_NAME = "나의 작업 공간";
 
-// A run of pen from one point to another, bowed by `bend` and shaken a little the way a hand shakes.
 const run = (id: string, from: Point, to: Point, bend = 0, shake = 0.7): Stroke => {
   const r = random(id);
   const steps = Math.max(8, Math.round(Math.hypot(to.x - from.x, to.y - from.y) / 9));
@@ -27,7 +23,6 @@ const run = (id: string, from: Point, to: Point, bend = 0, shake = 0.7): Stroke 
   return { id, points };
 };
 
-// A ring around something, drawn as one stroke that overshoots where it began.
 const ring = (id: string, center: Point, rx: number, ry: number, turn = 1.1, start = -2.3): Stroke => {
   const r = random(id);
   const steps = 36;
@@ -43,7 +38,6 @@ const ring = (id: string, center: Point, rx: number, ry: number, turn = 1.1, sta
   return { id, points };
 };
 
-// An arrow: a run of pen and, at its end, the two short strokes of a head as one polyline along the run's last direction.
 const arrow = (id: string, from: Point, to: Point, bend: number, size = 11): Stroke[] => {
   const body = run(`${id}-line`, from, to, bend);
   const tip = body.points[body.points.length - 1]!;

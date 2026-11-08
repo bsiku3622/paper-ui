@@ -4,13 +4,10 @@ import { layered } from "../../tokens/layers.css";
 const { style, styleVariants, globalStyle } = layered("components");
 const reset = layered("reset");
 
-// Stack and Inline are one flex container turned two ways. Their roots come first, so the alignment a
-// prop picks is the later rule.
 export const stackRoot = style({ display: "flex", flexDirection: "column" });
 export const inlineRoot = style({ display: "flex", flexDirection: "row", alignItems: "center" });
 globalStyle(`:where(.${stackRoot}, .${inlineRoot})`, { minWidth: 0 });
-// A list a layout primitive arranges answers to gap alone, so the browser's indent and marker go. It sits in the reset layer,
-// where a padding prop still wins. The empty marker rather than none: Safari stops announcing a list whose marker is none.
+// The empty marker rather than none: Safari stops announcing a list whose marker is none.
 reset.globalStyle(`:where(ul.${stackRoot}, ol.${stackRoot}, ul.${inlineRoot}, ol.${inlineRoot})`, { marginBlock: 0, paddingInlineStart: 0, listStyleType: '""' });
 export const inlineWrap = style({ flexWrap: "wrap" });
 

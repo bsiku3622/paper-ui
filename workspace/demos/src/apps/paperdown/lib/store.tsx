@@ -1,10 +1,3 @@
-// What the app remembers: the one document this browser keeps (the guest's), a mocked account with its notes, and the
-// small states the pages share (the sign-in window, the notes rail). Everything is in localStorage through the kit's
-// useStored, under keys of this version, so a browser that held an earlier build of this demo is not read as this one.
-//
-// The account is a stand-in. Signing in takes a user name and nothing else: no password is asked for in the code, held in
-// state or stored anywhere.
-
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
 
 import { useStored } from "../../../kit";

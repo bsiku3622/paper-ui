@@ -1,17 +1,11 @@
-// The webcam. The real feed is a picture of the printer; the mock has no camera, and Paper's <Art> has no scene of a print
-// bed, so this draws one: the bed in perspective, the part rising as the print goes on, the gantry at the nozzle's height
-// and the carriage where the toolhead is. Every colour is a Paper token.
-
 import { loop } from "@studio-baeks/paper-ui";
 
 import { bedLine, bedPlate, carriage as carriageClass, feed, fill, gantry as gantryClass, hotTip, live as liveClass, liveDot, mirror, partFront, partSide, partTop, picture, post, rate, turn } from "./webcam.css";
 
 type Props = {
-  // Where the toolhead is, in the printer's own millimetres.
   x: number;
   y: number;
   z: number;
-  // The part's height so far, 0 to 1.
   progress: number;
   hot: boolean;
   fps: number;

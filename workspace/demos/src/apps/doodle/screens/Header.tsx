@@ -1,6 +1,3 @@
-// The top bar: the "d" mark and the name, where you are (나의 작업 공간 / <canvas>), the theme switch and the sync light. On a
-// phone the breadcrumb goes and a calendar button comes, which opens and closes 오늘의 흐름.
-
 import { Badge, IconButton, Inline, Surface, Text, useTheme } from "@studio-baeks/paper-ui";
 
 import { Glyph } from "../../../kit";

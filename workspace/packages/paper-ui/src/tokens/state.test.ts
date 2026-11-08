@@ -52,7 +52,6 @@ describe("state vocabulary", () => {
     expect(Object.values(STATE_ATTRIBUTE)).not.toContain(PREVIEW_ATTRIBUTE);
     expect(previewAttributes("hover")).toEqual({ "data-pui-preview": "hover" });
     expect(previewAttributes("active", "focus")).toEqual({ "data-pui-preview": "active focus" });
-    // No state, no attribute: a cell at rest carries nothing.
     expect(previewAttributes()).toEqual({ "data-pui-preview": undefined });
   });
 
@@ -87,8 +86,6 @@ describe("state vocabulary", () => {
 });
 
 describe("attribute spelling", () => {
-  // Only tokens/state.ts spells these attributes; the primitives take them from it. Stylesheets outside the
-  // primitives and the app are not scanned here.
   const primitives = join(dirname(dirname(fileURLToPath(import.meta.url))), "primitives");
   const walk = (dir: string): string[] =>
     readdirSync(dir, { withFileTypes: true }).flatMap((entry) => (entry.isDirectory() ? walk(join(dir, entry.name)) : [join(dir, entry.name)]));
@@ -116,13 +113,11 @@ describe("state recipes", () => {
   const at = (fragment: unknown, ...path: string[]): Fragment => path.reduce((node, key) => (node as Fragment)[key], fragment) as Fragment;
   const { color, shape, motion } = tokens;
   const ENABLED = ENABLED_SELECTOR;
-  // The preview of each state, spelled out here so the attribute it reads is pinned (tokens/state.ts).
   const previewOf = (state: string) => `:is([data-pui-preview~="${state}"], [data-pui-preview~="${state}"] *)`;
   const PREVIEW = { hover: previewOf("hover"), active: previewOf("active"), focus: previewOf("focus") } as const;
   const HOVERED = `&:is(:hover, ${PREVIEW.hover})${ENABLED}`;
   const forced = (fragment: unknown) => (fragment as Fragment)["@media"] as Fragment;
 
-  // Every value under a key, anywhere below a fragment.
   const valuesOf = (node: unknown, key: string): unknown[] =>
     node && typeof node === "object" ? Object.entries(node).flatMap(([name, value]) => (name === key ? [value] : valuesOf(value, key))) : [];
 
@@ -163,7 +158,6 @@ describe("state recipes", () => {
     expect(Object.keys(selectors)).toEqual([selected, pressing]);
     expect(at(selectors, selected)).toEqual({ vars: { [STATE_TINT_PROPERTY]: itemProfile.selectedTint }, color: itemProfile.selectedInk });
     expect(at(selectors, pressing)).toEqual({ vars: { [STATE_TINT_PROPERTY]: itemProfile.activeTint }, color: itemProfile.selectedInk });
-    // Hover adds no specificity, so the two above outrank it; it is also the only one that waits for a pointer that can hover.
     const hover = at(item, "@media", "(hover: hover)", "selectors");
     const hovering = `&:where(:hover${ENABLED}, ${PREVIEW.hover}${ENABLED})`;
     expect(Object.keys(hover)).toEqual([hovering]);
@@ -186,7 +180,6 @@ describe("state recipes", () => {
     expect(Object.keys(at(field, "selectors"))).toEqual(STATUSES.map((status) => `&[data-status="${status}"]`));
     for (const status of STATUSES) expect(at(field, "selectors")[`&[data-status="${status}"]`]).toEqual({ borderColor: outlinedControlProfile.status[status] });
     expect(at(field, "@media", "(hover: hover)", "selectors")[`${HOVERED}:not([data-status])`]).toEqual({ borderColor: outlinedControlProfile.hoverBorder });
-    // A forced palette reverts the rule above, so the Highlight rule has to match its specificity too.
     const forcedHover = at(field, "@media", "(hover: hover) and (forced-colors: active)", "selectors");
     for (const selector of [HOVERED, `${HOVERED}:not([data-status])`]) expect(forcedHover[selector]).toEqual({ borderColor: SYSTEM_COLORS.highlight });
   });

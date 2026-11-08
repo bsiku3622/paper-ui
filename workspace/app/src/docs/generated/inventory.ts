@@ -1,4 +1,3 @@
-// The inventory tables: the names of the package, in the two orders, read from INVENTORY and PRIMITIVE_ORDERS.
 import { INVENTORY, PRIMITIVE_ORDERS, type PrimitiveGroup } from "@studio-baeks/paper-ui";
 
 import { FOUNDATIONS } from "../../site/site-core";
@@ -10,18 +9,15 @@ const components = (group: PrimitiveGroup) => INVENTORY.primitives[group].compon
 const hooks = (group: PrimitiveGroup) => INVENTORY.primitives[group].hooks;
 const second = PRIMITIVE_ORDERS.second;
 const functionsOf = (group: PrimitiveGroup): readonly string[] => (INVENTORY.primitives[group] as { functions?: readonly string[] }).functions ?? [];
-// controlClass is Control's; every other function that builds a class stands in the Paint row.
 const isControlClass = (name: string) => name === "controlClass";
 const controlClasses = INVENTORY.classes.filter(isControlClass);
 const paintClasses = INVENTORY.classes.filter((name) => name.endsWith("Class") && !isControlClass(name));
-// presence and loop are Motion's maps, written up in its own section; any other map stands in the Paint row.
 const MOTION_MAPS = new Set(["presence", "loop"]);
 const classMaps = INVENTORY.classes.filter((name) => !name.endsWith("Class") && !MOTION_MAPS.has(name));
 const primitiveCount = (Object.keys(INVENTORY.primitives) as PrimitiveGroup[]).reduce((sum, group) => sum + components(group).length, 0);
 
 type Format = (names: readonly string[]) => string;
 
-// The Paint and Control rows name their class helpers too: the functions that build a class and the map the stylesheet keeps.
 const extrasOf = (group: PrimitiveGroup, format: Format): string => {
   if (group === "A11y") return `함수 ${format(functionsOf(group))}`;
   if (group === "Paint") return `class 함수 ${format(paintClasses)}, class 지도 ${format(classMaps)}`;
@@ -42,7 +38,6 @@ const agentsRows = (): string[][] => {
   ];
 };
 
-// The primitive table of docs/primitives/README.md: where each group lives, its order, its names and its doc.
 const hooksOf = (group: PrimitiveGroup): string => {
   const hookNames = hooks(group).length > 0 ? plain(hooks(group)) : "—";
   const extra = extrasOf(group, plain);
@@ -54,7 +49,6 @@ const primitiveRows = (): string[][] => [
   ...second.map((group) => [group, "2차", plain(components(group as PrimitiveGroup)), hooksOf(group as PrimitiveGroup), docLink(group)]),
 ];
 
-// "열한": the number of groups, as the docs write a count before a noun.
 const KOREAN_COUNT = ["", "한", "두", "세", "네", "다섯", "여섯", "일곱", "여덟", "아홉", "열", "열한", "열두"];
 const countSentence = () => {
   const groups = Object.keys(INVENTORY.primitives).length;

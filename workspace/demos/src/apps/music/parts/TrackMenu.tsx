@@ -1,5 +1,3 @@
-// TrackMenu — 곡 하나의 "더 보기". 재생 · 다음에 재생 · 좋아요 · 플레이리스트에 추가 · 앨범과 아티스트로 이동.
-
 import { useNavigate } from "react-router-dom";
 
 import { Menu, useToast, type MenuItem } from "../../../kit";
@@ -12,9 +10,7 @@ import { usePlayer } from "../state/player";
 
 type Props = {
   track: Track;
-  // 이 곡을 재생할 때 대기열이 될 목록.
   context: readonly string[];
-  // 이 곡이 들어 있는 내 플레이리스트: 있으면 "빼기"가 생깁니다.
   playlist?: Playlist;
   size?: "xs" | "sm";
 };

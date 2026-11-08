@@ -1,6 +1,3 @@
-// The form for an event: your own (only you see it), a school event a manager adds, or a proposal a student sends to the managers.
-// A school event is always all-day; your own can be at a time or in periods, and can repeat weekly.
-
 import { useEffect, useState } from "react";
 
 import { Button, Checkbox, Field, FormField, Grid, Inline, Select, Stack, Text, Textarea } from "@studio-baeks/paper-ui";

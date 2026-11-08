@@ -4,7 +4,6 @@ import { THEME_PREFERENCES } from "@studio-baeks/paper-ui/tokens";
 import { named } from "../jsx";
 import { defineSpec, enumControl, pick, vocab } from "../schema";
 
-// Reads the theme the nearest Surface theme resolved.
 const ScopeReadout = () => {
   const resolved = useResolvedTheme();
   return <Text variant="caption">useResolvedTheme(): {resolved}</Text>;

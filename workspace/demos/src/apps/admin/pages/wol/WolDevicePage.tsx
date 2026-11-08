@@ -1,6 +1,3 @@
-// One machine's page: whether it answers, the button, every signal that was sent to it and how each ended, and its details.
-// Where the machine is also a VPN peer the page says so and links to it.
-
 import { useState } from "react";
 import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 

@@ -1,6 +1,3 @@
-// ChartCard — a chart on a card with its table twin one switch away, so every number the chart draws can be read without
-// the chart. The switch is the kit's Segmented; the table is the screen's own.
-
 import { useState, type ReactNode } from "react";
 
 import { Inline, Stack, Text } from "@studio-baeks/paper-ui";

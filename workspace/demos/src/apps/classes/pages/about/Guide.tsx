@@ -1,6 +1,3 @@
-// 사용 안내: how each part of the app is used, one section open at a time. The examples use this demo's own people and
-// rooms, not the school's.
-
 import { useState, type ReactNode } from "react";
 
 import { Grid, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";

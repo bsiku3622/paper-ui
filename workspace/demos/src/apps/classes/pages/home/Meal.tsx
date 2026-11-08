@@ -1,6 +1,3 @@
-// The cafeteria: one meal at a time (the one that is served now is the one that is open), the date can be moved a month
-// either way, and the menu "arrives" a moment after you ask for it, as it does from the school.
-
 import { useEffect, useState } from "react";
 
 import { IconButton, Inline, Spinner, Stack, Text } from "@studio-baeks/paper-ui";
@@ -26,7 +23,6 @@ export const MealPanel = ({ today, minute }: { today: string; minute: number }) 
     return () => window.clearTimeout(timer);
   }, [key]);
 
-  // The school posts about two weeks ahead.
   const posted = offset <= 14;
   const dishes = posted ? mealFor(key)[slot] : [];
 

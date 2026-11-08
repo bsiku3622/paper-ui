@@ -12,7 +12,6 @@ import { THEME } from "./theme";
 
 const router = createBrowserRouter(routes, { basename: import.meta.env.BASE_URL });
 
-// Paper takes the site's language: it writes <html lang> and says its own words in it.
 const Paper = ({ children }: { children: ReactNode }) => {
   const { locale } = useSiteLocale();
   return <PaperProvider {...THEME} locale={locale}>{children}</PaperProvider>;

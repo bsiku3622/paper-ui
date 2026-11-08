@@ -12,13 +12,8 @@ import { metrics, px, roleDp } from "../support/geometry";
 import { openHarness } from "../support/harness";
 import { expectStyle } from "../support/style";
 
-// The version the chrome shows is the one the package's manifest says.
 const { version } = JSON.parse(readFileSync(new URL("../../packages/paper-ui/package.json", import.meta.url), "utf8")) as { version: string };
 const VERSION = `v${version}`;
-
-// Typography is chromium-only: the CDP and font parts need it, and the other engines run the shape,
-// primitive and atom specs. The harness (?case=typography) mounts the package the way a consumer does;
-// the app supplies the docs, the shell and the Playground.
 
 const role = (variant: TextVariant) => {
   const spec = tokens.typography.role[variant];
@@ -33,7 +28,6 @@ const fixture = (page: Page, testid: string) => page.getByTestId(testid);
 const css = <K extends keyof CSSStyleDeclaration>(target: Locator, property: K) =>
   target.evaluate((element, property) => getComputedStyle(element)[property] as string, property);
 
-// The lines a text breaks into, read from the rendered boxes: each character is grouped by the row it sits on.
 const lines = (target: Locator) =>
   target.evaluate((element) => {
     const node = element.firstChild as Text;
@@ -71,7 +65,6 @@ test.describe("the body role", () => {
 
   test("[foundations.typography.body-role] a link outside any role renders like a Text body", async ({ page }) => {
     await page.goto("/docs/primitives/content");
-    // The skip link has no role of its own; the header's links are set a step up on purpose.
     const link = page.getByRole("link", { name: "본문으로 건너뛰기" });
     await expectType(link, resolved(ROLE_SPEC.body), "link");
     expect(await css(page.locator("body"), "overflowWrap")).toBe(TYPOGRAPHY_SOURCE.breaking.sans.overflowWrap);
@@ -118,8 +111,6 @@ test.describe("line breaking", () => {
   });
 });
 
-// What a role or preset has to compute to, from the authored numbers: size and line in px, weight, and tracking in em of
-// the element's own size. Hero's fluid size follows the viewport, so the page is measured at a width it is given.
 const VIEWPORT = 1280;
 type Step = { size: string; weight: string; leading: string; tracking: string };
 const fluidSize = ({ min, vw, max }: { min: number; vw: number; max: number }, viewport: number) => Math.min(Math.max(min, (vw / 100) * viewport), max);
@@ -127,7 +118,6 @@ const resolved = (step: Step, mono = false, viewport = VIEWPORT) => {
   const fluid = step.size in TYPOGRAPHY_SOURCE.fluid ? TYPOGRAPHY_SOURCE.fluid[step.size as keyof typeof TYPOGRAPHY_SOURCE.fluid] : undefined;
   const base = fluid ? fluidSize(fluid, viewport) : TYPOGRAPHY_SOURCE.fontSize[step.size as keyof typeof TYPOGRAPHY_SOURCE.fontSize];
   const fontSize = mono ? base * TYPOGRAPHY_SOURCE.monoSizeScale : base;
-  // A unitless leading is a factor of the element's own size, so mono's smaller letters get a proportionally smaller line.
   const leading = step.leading in TYPOGRAPHY_SOURCE.fluid ? TYPOGRAPHY_SOURCE.fluid[step.leading as keyof typeof TYPOGRAPHY_SOURCE.fluid].leading * fontSize : TYPOGRAPHY_SOURCE.leading[step.leading as keyof typeof TYPOGRAPHY_SOURCE.leading];
   const tracking = (mono ? TYPOGRAPHY_SOURCE.tracking.mono : TYPOGRAPHY_SOURCE.tracking[step.tracking as keyof typeof TYPOGRAPHY_SOURCE.tracking]) * fontSize;
   return { fontSize, fontWeight: TYPOGRAPHY_SOURCE.weight[step.weight as keyof typeof TYPOGRAPHY_SOURCE.weight], lineHeight: leading, letterSpacing: tracking };
@@ -147,13 +137,11 @@ test("[foundations.typography.role-computed] every Text variant, sans and mono, 
   await mount(page);
   for (const variant of TEXT_VARIANTS) {
     await expectType(page.getByTestId(`role-${variant}`), resolved(ROLE_SPEC[variant]), variant);
-    // Mono scales the size by monoSizeScale and swaps in its own tracking; weight and a fixed line stay the role's.
     await expectType(page.getByTestId(`role-mono-${variant}`), resolved(ROLE_SPEC[variant], true), `mono ${variant}`);
   }
   for (const size of CONTROL_SIZES) {
     await expectType(page.getByTestId(`preset-button-${size}`), resolved(PRESET_SPEC.button[size]), `button ${size}`);
     await expectType(page.getByTestId(`preset-button-soft-${size}`), resolved(PRESET_SPEC.button[size]), `soft button ${size}`);
-    // A field's wrapper holds the glyph line, and the value sits in the taller line box its input draws.
     await expectType(page.getByTestId(`preset-field-${size}`), resolved(PRESET_SPEC.field[size]), `field ${size}`);
     await expectType(page.getByLabel(`preset ${size} field`, { exact: true }), { ...resolved(PRESET_SPEC.field[size]), lineHeight: TYPOGRAPHY_SOURCE.leading[PRESET_SPEC.field[size].inputLeading] }, `field input ${size}`);
     await expectType(page.getByTestId(`preset-textarea-${size}`), resolved(PRESET_SPEC.textarea[size]), `textarea ${size}`);
@@ -238,7 +226,6 @@ test.describe("Text", () => {
     expect(await hero.evaluate((element) => element.tagName)).toBe("H1");
     await expectStyle(hero, role("hero"));
     const { min, vw, max, leading } = TYPOGRAPHY_SOURCE.fluid.hero;
-    // The widths where the viewport term meets each bound: past the upper one the size stays at max, under the lower one at min, and between them it follows.
     const widthAt = (size: number) => (size / vw) * 100;
     await page.setViewportSize({ width: Math.round(widthAt(max)) + 100, height: 900 });
     expect(parseFloat(await css(hero, "fontSize"))).toBeCloseTo(max, 2);
@@ -248,7 +235,6 @@ test.describe("Text", () => {
     const between = Math.round(widthAt((min + max) / 2));
     await page.setViewportSize({ width: between, height: 900 });
     expect(parseFloat(await css(hero, "fontSize"))).toBeCloseTo((vw / 100) * between, 2);
-    // A fixed role does not follow the viewport.
     await expectType(fixture(page, "text-display"), resolved(ROLE_SPEC.display), "display");
   });
 
@@ -348,7 +334,6 @@ test.describe("the docs, the Playground and the landing page take their type fro
     const headline = page.getByRole("heading", { level: 1 });
     await expectStyle(headline, { ...role("hero"), color: tokens.color.ink.primary });
     await expectType(headline, resolved(ROLE_SPEC.hero, false, WIDTH), "headline");
-    // Two lines, the second a step back in the secondary ink, and the heading is named by its words alone.
     const lines = headline.locator(":scope > span");
     await expect(lines).toHaveCount(2);
     await expectStyle(lines.nth(0), { color: tokens.color.ink.primary });

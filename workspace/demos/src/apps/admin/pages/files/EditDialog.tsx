@@ -1,6 +1,3 @@
-// 설정 고치기: a file's title, address, who can open it and its limits. The file itself is not changed — that is a new upload.
-// A password typed here is only checked for being there; it is not kept anywhere.
-
 import { useEffect, useRef, useState } from "react";
 
 import { Button, Field, FormField, Select, Stack } from "@studio-baeks/paper-ui";
@@ -34,7 +31,6 @@ export const EditDialog = ({ id, onClose }: { id: string | null; onClose: () => 
   const [error, setError] = useState<string | null>(null);
   const first = useRef<HTMLInputElement>(null);
 
-  // The form is filled when the dialog opens, and not again while it is being edited.
   const filled = useRef<string | null>(null);
   useEffect(() => {
     if (id === null) {

@@ -1,14 +1,7 @@
-// A doc's Markdown as the page shows it, scoped to the one class Prose puts on its root. Headings take their Text
-// roles, code takes the code rules, and what is left is Shape, Layout and Color roles. Inline emphasis (strong, th)
-// is the emphasis rule, so the palette stays closed.
-
 import { globalStyle, style } from "@vanilla-extract/css";
 
 import { codeRule, emphasisRule, lineRule, tokens, typographyRule } from "@studio-baeks/paper-ui/tokens";
 
-// Docs are read, not worked in, so their running text is the lead role, a step up from the app's body. Like the Playground they
-// take the whole column: the running text, a table and a code block fill it, and a table wider than the column scrolls inside
-// its wrapper instead of being cut.
 export const prose = style({ color: tokens.color.ink.primary, ...typographyRule("lead") });
 globalStyle(`${prose} > *:first-child`, { marginTop: 0 });
 
@@ -36,7 +29,6 @@ globalStyle(`${prose} pre`, {
   overflow: "auto",
   margin: `0 0 ${tokens.layout.gap.lg}`,
 });
-// A block is lighter than the paragraph around it, so code is not read as a bold line.
 globalStyle(`${prose} pre code`, { ...codeRule("block"), ...emphasisRule("regular"), background: "none", padding: 0 });
 
 globalStyle(`${prose} blockquote`, {
@@ -46,7 +38,6 @@ globalStyle(`${prose} blockquote`, {
   color: tokens.color.ink.secondary,
 });
 
-// A table scrolls inside this wrapper, which carries the table's bottom margin.
 export const tableScroll = style({ overflowX: "auto", margin: `0 0 ${tokens.layout.gap.lg}` });
 globalStyle(`${prose} table`, { width: "100%", borderCollapse: "collapse" });
 globalStyle(`${prose} th`, {

@@ -1,6 +1,3 @@
-// 속도 제한: a slider and a number for one peer, as in the original. 0 blocks it, up to 300 Mbps limits it, one step past that
-// (or an empty number) means no limit. Nothing is saved until 저장.
-
 import { useEffect, useState } from "react";
 
 import { Box, Button, Field, Grid, Inline, Stack, Text } from "@studio-baeks/paper-ui";

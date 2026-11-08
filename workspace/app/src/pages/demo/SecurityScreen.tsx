@@ -1,7 +1,3 @@
-// Security and access: the findings a scan turned up (each with a status and someone to fix it), the people and keys that can get in,
-// and the audit log of what they did. A row's title is strong and every other word in the table is the body's own, so a row reads
-// from one place. Changes made here are written to the audit log, and the log is the third tab.
-
 import { useState } from "react";
 
 import { Badge, Box, Button, Floating, Inline, Select, Stack, Surface, Text, useFloatingContext } from "@studio-baeks/paper-ui";
@@ -12,8 +8,6 @@ import {
   clock, formatDate, formatStamp, formatTime, relative, summarize, until, useParam, useProjectName, useStore, useTable, wait,
   type AuditEvent, type Column, type Finding, type FindingState,
 } from "./parts";
-
-// ─── Findings ────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 const StateTag = ({ state }: { state: FindingState }) =>
   state === "진행 중" ? <Badge accent="info" variant="soft" dot>{state}</Badge> : state === "해결" ? <Badge accent="success" variant="ghost" dot>해결됨</Badge> : <Badge accent="primary" variant="hairline" dot>{state}</Badge>;
@@ -75,8 +69,6 @@ const FindingBody = ({ id }: { id: string }) => {
 
 const RANK = Object.fromEntries(SEVERITIES.map((level, index) => [level, index]));
 
-// ─── Audit ───────────────────────────────────────────────────────────────────────────────────────────────────────────
-
 const ResultTag = ({ result }: { result: AuditEvent["result"] }) =>
   result === "성공" ? <Badge accent="success" variant="ghost" dot>{result}</Badge> : result === "실패" ? <Badge accent="warning" variant="soft" dot>{result}</Badge> : <Badge accent="error" variant="soft" dot>{result}</Badge>;
 
@@ -113,8 +105,6 @@ const ROLE_NOTES: readonly (readonly [string, string])[] = [
   ["결제 담당", "비용과 청구서, 결제 수단을 다룹니다. 자원은 읽기만 합니다."],
   ["읽기 전용", "모든 화면을 볼 수 있지만 아무것도 바꿀 수 없습니다."],
 ];
-
-// ─── The page ────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 export const SecurityScreen = () => {
   const { findings, members, keys, audit, resources, inScope, notify, record } = useStore();

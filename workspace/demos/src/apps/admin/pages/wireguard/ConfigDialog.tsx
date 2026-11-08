@@ -1,6 +1,3 @@
-// 연결 설정: what the device needs in its WireGuard app. Shown right after a peer is added, and from the peer's page. The
-// server's key and address are made up; the line for the device's own private key is left for the person to fill.
-
 import { useRef } from "react";
 
 import { Button, Stack, Surface, Text } from "@studio-baeks/paper-ui";

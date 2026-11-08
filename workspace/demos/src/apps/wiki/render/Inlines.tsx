@@ -1,6 +1,3 @@
-// Inlines.tsx — the inside of a line: bold and italic, code, links (blue when the article exists, red when it does not),
-// footnote marks. Every piece is a Paper part: Text for the type, Link for links, Marker for the highlighter.
-
 import { Link as RouterLink } from "react-router-dom";
 
 import { Box, Link, Marker, Surface, Text } from "@studio-baeks/paper-ui";
@@ -11,11 +8,8 @@ import { articlePath, categoryPath, editPath } from "../lib/paths";
 import { jumpOnClick } from "./jump";
 
 export type InlineCtx = {
-  // The type size the line is set in; bold, code and the like take the same.
   variant: TextVariant;
-  // Links between words are underlined; a list of links (a table of contents, a navigation box) shows it on hover.
   underline?: LinkUnderline;
-  // Whether a title is an article, and where a heading of an article is.
   exists: (title: string) => boolean;
   anchorOf: (title: string, text: string) => string;
 };

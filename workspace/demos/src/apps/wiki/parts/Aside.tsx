@@ -1,6 +1,3 @@
-// Aside.tsx — the right column: what readers are searching for right now, and what was edited last. The ranking is simulated:
-// every few seconds the scores drift a little and the order follows.
-
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link as RouterLink } from "react-router-dom";
 

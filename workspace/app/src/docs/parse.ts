@@ -1,6 +1,3 @@
-// A doc is Markdown whose first line is `# Title`. This is the one place that reads that rule: the
-// title for the sidebar and the page, and the body without that line.
-
 export type ParsedDoc = { title: string; body: string };
 
 const TITLE_LINE = /^#[ \t]+(\S.*?)[ \t]*$/;

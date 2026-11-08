@@ -1,7 +1,3 @@
-// 활동 기록: everything that happened in the hub, newest first, grouped by day. The original had no log; with five services
-// behind one login it is where "who changed that, and when" is answered. What the demo's user does shows up here at once.
-// The strip at the top counts a month, the chart is a bar a day, and the filters above the list scope the list.
-
 import { Fragment, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -63,7 +59,6 @@ export const ActivityPage = () => {
   );
   const visible = filtered.slice(0, limit);
 
-  // The month in numbers.
   const month = all.filter((event) => event.at > at - 30 * DAY);
   const warnings = month.filter((event) => event.level !== "info");
   const busiest = SERVICES.map((id) => ({ id, count: month.filter((event) => event.service === id).length })).sort((a, b) => b.count - a.count)[0];
@@ -73,7 +68,6 @@ export const ActivityPage = () => {
     return { day: start, count: all.filter((event) => dayKey(event.at) === dayKey(start)).length };
   });
 
-  // Rows grouped by day, in order.
   const groups: { key: number; at: number; rows: ActivityEvent[] }[] = [];
   for (const event of visible) {
     const key = dayKey(event.at);

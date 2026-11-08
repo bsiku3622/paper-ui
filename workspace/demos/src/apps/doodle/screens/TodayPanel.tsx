@@ -1,6 +1,3 @@
-// 오늘의 흐름 — the right panel: today's date, To-Do and Routine with a "+" each, and a month of Calendar under them. It can be
-// closed (the X) and opened again ("일정 열기", or the calendar button on a phone).
-
 import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import { Badge, Box, Button, Checkbox, Divider, Field, Grid, IconButton, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";

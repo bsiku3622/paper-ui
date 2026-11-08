@@ -1,8 +1,3 @@
-// What Ask "knows": a handful of kinds of question, each answered from the term's data, the calendar and the exam
-// timetable — the same places the real service's tools search. A question is read for words (a room, a subject, "공강",
-// "시험", "마감"), the matching tool runs (its name becomes a step the screen shows), and a plain answer comes back.
-// Nothing here calls a model: it is a stand-in, written to look the way a tool-using answer looks.
-
 import type { TermData } from "../../data/build";
 import { EXAM_PERIODS } from "../../data/generated/exams";
 import { DAY_FULL, DAY_LABEL, PERIODS, hhmm, type Day } from "../../data/periods";
@@ -22,7 +17,6 @@ const dayOf = (key: string): Day | null => {
   return code === "SAT" || code === "SUN" ? null : code;
 };
 
-// "2026-12-07" → "12월 7일"
 const md = (key: string) => `${Number(key.slice(5, 7))}월 ${Number(key.slice(8, 10))}일`;
 
 const eventLine = (event: CalendarEvent) => {
@@ -39,7 +33,6 @@ export const answer = (question: string, ctx: Context): Answer => {
   const steps: Step[] = [];
   const note = (id: string, label: string) => steps.push({ id, label });
 
-  // a room and its free periods
   const room = ROOM.exec(q)?.[0];
   if (room && /빈|공강|비어|비는|사용|쓰/.test(q)) {
     note("rooms", `${room}의 시간표 찾기`);
@@ -57,7 +50,6 @@ export const answer = (question: string, ctx: Context): Answer => {
     };
   }
 
-  // my free periods
   if (/공강|비는 시간|빈 시간|비어/.test(q) && /내|나의|제|시간표/.test(q) || /공강이 언제/.test(q)) {
     note("timetable", "내 시간표 읽기");
     const days: Day[] = ["MON", "TUE", "WED", "THU", "FRI"];
@@ -69,7 +61,6 @@ export const answer = (question: string, ctx: Context): Answer => {
     return { steps, text: `1~9교시 중 수업이 없는 교시입니다.\n${lines.join("\n")}` };
   }
 
-  // exams
   if (/시험|기말|중간/.test(q)) {
     note("exams", "내 시험 시간표 찾기");
     const period = EXAM_PERIODS.find((item) => (/중간/.test(q) ? item.kind === "midterm" : item.kind === "final")) ?? EXAM_PERIODS[EXAM_PERIODS.length - 1]!;
@@ -83,7 +74,6 @@ export const answer = (question: string, ctx: Context): Answer => {
     };
   }
 
-  // the calendar: deadlines, events, a named day
   if (/마감|일정|행사|언제|개학|종업|방학|귀가|귀교|휴업/.test(q) && !/수업/.test(q)) {
     note("calendar", "학사일정 검색");
     const wantsMine = /내 일정|내 학년|내 전공|나한테/.test(q);
@@ -99,7 +89,6 @@ export const answer = (question: string, ctx: Context): Answer => {
     return { steps, text: `${wantsMine ? "이번 주 내 학년·전공에 해당하는 일정입니다." : "다가오는 일정입니다."}\n${found.map((event) => `${eventLine(event)} · ${CATEGORY_LABEL[event.category]}`).join("\n")}` };
   }
 
-  // where is the next class
   if (/다음 수업|지금 수업|어디서|어디야|몇 교시/.test(q)) {
     note("timetable", "내 시간표 읽기");
     if (!today) return { steps, text: "오늘은 주말이라 수업이 없습니다." };
@@ -110,7 +99,6 @@ export const answer = (question: string, ctx: Context): Answer => {
     return { steps, text: `${ctx.minute >= start ? "지금은" : "다음 수업은"} ${next.period}교시 ${koreanName(next.subject)}(${hhmm(start)})이고, ${next.room}에서 합니다. 담당은 ${next.teacher} 선생님입니다.` };
   }
 
-  // who teaches a subject
   const subject = ctx.data.subjects.find((item) => q.replace(/\s/g, "").includes(koreanName(item.subject).replace(/\s/g, "")));
   if (subject) {
     note("search", `${koreanName(subject.subject)} 분반 찾기`);

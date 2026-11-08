@@ -1,5 +1,3 @@
-// The bar an old address shows above the toolbar: the app has a new name and a new address, and the document can go along. The demo shows it on `/paperdown/documents/local?legacy`.
-
 import { Button, Inline, Surface, Text } from "@studio-baeks/paper-ui";
 
 import { Glyph } from "../../../kit";

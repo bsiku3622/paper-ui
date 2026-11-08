@@ -1,6 +1,3 @@
-// What the pages of the app share: the name of the app as a link home, the column the home's content stands in, and the home's
-// frame (a header, the page, a footer).
-
 import type { ReactNode } from "react";
 
 import { Box, Grid, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";
@@ -9,7 +6,6 @@ import { Glyph, SurfaceLink } from "../../../kit";
 import { Wordmark } from "../content/Serif";
 import { useMedia } from "../lib/hooks";
 
-// The mark and the name, one link to the home. On a phone the original drops the mark and sets the name a size smaller.
 export const Brand = () => {
   const phone = useMedia("(max-width: 767px)");
   return (
@@ -22,7 +18,6 @@ export const Brand = () => {
   );
 };
 
-// The home's column: as wide as the page may be, with a gutter on a narrow window.
 export const Column = ({ children }: { children: ReactNode }) => (
   <Stack align="center" paddingX="lg">
     <Box width="container.content" maxWidth="full">
@@ -31,8 +26,6 @@ export const Column = ({ children }: { children: ReactNode }) => (
   </Stack>
 );
 
-// The home: a white header with the name and the account on it, the page on the canvas, and a footer that always stands at
-// the foot of the window.
 export const HomeFrame = ({ end, children }: { end: ReactNode; children: ReactNode }) => (
   <Grid rows="auto minmax(0, 1fr) auto" minHeight="viewport">
     <Surface as="header" fill="raised" border="bottom">

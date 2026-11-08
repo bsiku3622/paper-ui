@@ -8,7 +8,6 @@ import { Pressable } from "../primitives/press/Pressable";
 import { Selectable } from "../primitives/select/Selectable";
 import { registerAtom, registerPart, targetProps } from "./render-target";
 
-// A Paper part, a pressable Atom and a foreign component, as targets.
 const Part = registerPart(() => null);
 const AtomTarget = registerAtom(() => null);
 const Foreign = () => null;
@@ -69,12 +68,10 @@ describe("targetProps", () => {
     expect(targetProps(Part, { kind: "control", disabled: true, focusable: true })).not.toHaveProperty("disabled");
     expect(targetProps(Part, { kind: "control", disabled: true, focusable: true })).not.toHaveProperty("focusable");
     expect(targetProps(Foreign, { kind: "control", disabled: true, focusable: true })).toMatchObject({ tabIndex: 0, "aria-disabled": true });
-    // A native input has no Tab stop to keep apart from its disabled state.
     for (const tag of ["input", "select"] as const) expect(targetProps(tag, { kind: "control", disabled: true, focusable: true }), tag).toEqual({ disabled: true, "data-disabled": "true" });
   });
 
   it("[primitives.target.projection] [primitives.target.table] projects a pressable Atom like a Paper part", () => {
-    // Asking for an Atom's projection is the mistake the next describe pins, so the message is not wanted here.
     const error = vi.spyOn(console, "error").mockImplementation(() => {});
     expect(targetProps(AtomTarget, { kind: "control", disabled: true })).toEqual({ disabled: true, "data-disabled": "true" });
     expect(targetProps(AtomTarget, { kind: "control", disabled: true, focusable: true })).toMatchObject({ "aria-disabled": true, "data-disabled": "true" });

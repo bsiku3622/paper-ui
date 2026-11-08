@@ -1,7 +1,3 @@
-// Dialog and ConfirmDialog. The dialog is Floating's modal with a title row and a close button (content/Dialog.tsx, which only
-// sets the width); a dialog that asks a question has a quiet way out and one main action, and one that would hurt says so with
-// the error accent.
-
 import type { ReactNode } from "react";
 
 import { Button } from "@studio-baeks/paper-ui";

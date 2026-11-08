@@ -1,7 +1,3 @@
-// The G-code the mock printer understands. A button on the dashboard does not move anything; it sends the lines the real
-// console would send, and this reads them against the mock state: it logs each line as a command, changes the state a
-// real printer would change, and answers the way Klipper does ("ok T:209.8 /210.0 B:60.0 /60.0", "!! Unknown command").
-
 import { COMMANDS } from "../catalog";
 import { MESH_PROBED } from "../data/mesh";
 import { printing, type Axes, type HeaterId, type Mesh, type SimState } from "../model";
@@ -39,8 +35,6 @@ const heaterId = (name: string | undefined): HeaterId | null => {
 
 const busy = (s: SimState, what: string) => fail(s, `출력 중에는 ${what}을(를) 할 수 없습니다 (모의 콘솔이 막았습니다)`);
 
-// ---- movement
-
 const move = (s: SimState, a: Args): SimState => {
   const w = a.words;
   const relative = !s.absolute;
@@ -73,8 +67,6 @@ const home = (s: SimState, a: Args): SimState => {
   const homed = { x: s.homed.x || flags.x, y: s.homed.y || flags.y, z: s.homed.z || flags.z };
   return { ...s, homed, gcode: at, live: at };
 };
-
-// ---- the print
 
 const pause = (s: SimState): SimState => {
   if (s.print.state !== "printing") return note(s, "Print is not active");
@@ -114,8 +106,6 @@ const restart = (s: SimState, firmware: boolean): SimState => {
   };
   return note(next, "Klipper state: Ready");
 };
-
-// ---- the bed mesh
 
 const upsample = (points: readonly (readonly number[])[], size: number): number[][] => {
   const rows = points.length;
@@ -175,8 +165,6 @@ const meshProfile = (s: SimState, a: Args): SimState => {
   }
   return fail(s, "Invalid syntax: BED_MESH_PROFILE needs SAVE=, LOAD= or REMOVE=");
 };
-
-// ---- the handlers
 
 type Handler = (s: SimState, a: Args) => SimState;
 
@@ -319,7 +307,6 @@ const run = (s: SimState, line: string): SimState => {
   return handler(s, parse(line.slice(head.length)));
 };
 
-// The lines are logged as commands in the order they were sent, each followed by what it answered.
 export const execute = (state: SimState, text: string): SimState => {
   let s = state;
   for (const raw of text.split("\n")) {

@@ -1,7 +1,3 @@
-// A G-code file in detail: its picture (an <Art> seeded by the file, since the mock has no slicer thumbnail), what the slicer
-// wrote into it, how often it was printed, and what can be done: start it (after a confirmation), queue it, look at it in the
-// viewer, download it, rename it, move it, delete it. While a print runs it cannot be started, only queued.
-
 import { useEffect, useRef, useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
@@ -29,7 +25,6 @@ export const FileDialog = ({ path, onClose }: { path: string | null; onClose: ()
   const [renaming, setRenaming] = useState<string | null>(null);
   const renameField = useRef<HTMLInputElement>(null);
   const renameOpen = renaming !== null;
-  // The field for the new name takes the focus when it appears.
   useEffect(() => {
     if (renameOpen) renameField.current?.focus();
   }, [renameOpen]);

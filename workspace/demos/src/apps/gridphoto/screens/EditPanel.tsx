@@ -1,6 +1,3 @@
-// The panel while corners are being placed by hand: what to fit (the sheet or its grid), how many cells there are to count if
-// it is the grid, and the two ways out.
-
 import { Link as RouterLink } from "react-router-dom";
 
 import { Button, Field, FormField, Grid, Stack, Surface, Text } from "@studio-baeks/paper-ui";

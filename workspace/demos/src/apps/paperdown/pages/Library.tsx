@@ -1,6 +1,3 @@
-// The home of someone who is signed in (Home.tsx with a user): "내 문서" as small pages in a grid, a search box and an order, a
-// button for a new document, and a way back to the one document this browser keeps.
-
 import { useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 

@@ -1,6 +1,3 @@
-// The frame of Class Explorer: the sidebar with the app's pages, a top bar with the term, a quick search and the account,
-// and the page itself. A board — cards on a backdrop — because the pages are dashboards, lists and tools.
-
 import { useState } from "react";
 import { Link as RouterLink, Outlet, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
@@ -38,10 +35,8 @@ const QuickSearch = () => {
   );
 };
 
-// Ask in a small window, from any page; on the Ask page itself the button just stays put.
 const AskWindow = () => {
   const here = useLocation().pathname;
-  // ?ask=1 arrives with the window open, to look at it
   const open = useSearchParams()[0].get("ask") === "1";
   if (here.startsWith(path("/ask"))) return <IconButton variant="muted" shape="pill" aria-label="Ask — 지금 이 화면입니다" disabled><Glyph name="sparkles" /></IconButton>;
   return (

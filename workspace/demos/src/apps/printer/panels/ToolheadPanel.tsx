@@ -1,7 +1,3 @@
-// The toolhead: where it is, homing, a jog grid per axis, the Z offset and the speed factor. Every button sends the G-code
-// Mainsail would send; the mock reads it and moves its own state (and shows the lines in the console). While a print runs the
-// jog and the homing are disabled, as on the real printer; the Z offset and the speed factor stay live.
-
 import { Link as RouterLink } from "react-router-dom";
 
 import { Badge, Button, Divider, Grid, IconButton, Inline, Stack, Text } from "@studio-baeks/paper-ui";

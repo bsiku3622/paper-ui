@@ -1,8 +1,3 @@
-// The board Typography, Shape, Layout and Motion are drawn with: a raised table whose header, groups
-// and rows share the board's column tracks through subgrid. The board adds an empty zero-width track
-// at each edge, so the column gap insets the content and rules still run edge to edge — padding
-// on a subgrid row would instead shrink its first and last columns. Color keeps its own form
-// (AGENTS.md); the display parts at the end of the file are shared by every page.
 import { createVar, globalStyle, style, styleVariants } from "@vanilla-extract/css";
 
 import { SYSTEM_COLORS, lineRule, tokens } from "@studio-baeks/paper-ui/tokens";
@@ -26,13 +21,11 @@ export const groupLabel = style({ gridColumn: "2 / -2", paddingBlock: tokens.sha
 
 const bordered = { ...lineRule({ side: "bottom" }), selectors: { "&:last-child": { borderBottom: 0, paddingBottom: tokens.shape.inset.sm } } };
 export const row = styleVariants({
-  // Rows inside a group: the group draws the rule.
   sm: { ...spanAll, paddingBlock: tokens.shape.inset.sm },
   md: { ...spanAll, paddingBlock: tokens.shape.inset.md, ...bordered },
   lg: { ...spanAll, paddingBlock: tokens.shape.inset.lg, ...bordered },
 });
 
-// Cells start after the empty edge track; the rest auto-place, leaving the far edge track empty.
 globalStyle([header, ...Object.values(row)].map((name) => `${name} > :first-child`).join(", "), { gridColumnStart: 2 });
 
 export const align = styleVariants({
@@ -45,14 +38,8 @@ export const cell = style({ minWidth: 0 });
 export const value = style({ minWidth: 0, textAlign: "end", justifySelf: "end" });
 export const matrixCell = style({ minWidth: 0, padding: tokens.shape.inset.sm, borderRadius: tokens.shape.radius.surface.sm, background: tokens.color.bg.canvas });
 
-// ── Display parts ───────────────────────────────────────────────────────────
-// A value read from a source reaches the screen only through these: the inspector never paints
-// with it directly.
-
 export const swatch = style({ width: "100%", aspectRatio: "1" });
 
-// A role's colour, painted through the public token — one class per role path. Opacity is a strength,
-// not a colour, so it has no chip.
 type ColorRoles = Omit<typeof tokens.color, "opacity">;
 const roles = Object.fromEntries(Object.entries(tokens.color).filter(([branch]) => branch !== "opacity")) as ColorRoles;
 export type ChipRole = LeafPaths<ColorRoles>;
@@ -62,7 +49,6 @@ export const chip = styleVariants(
   (background) => ({ background }),
 ) as Record<ChipRole, string>;
 
-// A label column and as many equal step columns as the ramp has.
 const steps = createVar();
 export const stepsProperty = steps.slice(4, -1);
 export const stepGrid = style({
@@ -75,7 +61,6 @@ export const stepGrid = style({
 
 export const bar = style({ height: tokens.shape.inset.sm, maxWidth: "100%", borderRadius: tokens.shape.radius.full, background: tokens.color.accent.primary.solid });
 
-// A dot crossing its track while the pointer is over it. The timing is set by the part that draws it.
 const dot = tokens.shape.inset.md;
 export const travelTrack = style({ position: "relative", width: "100%", height: dot, borderRadius: tokens.shape.radius.full, background: tokens.color.control.track });
 export const travelDot = style({
@@ -93,8 +78,6 @@ export const travelDot = style({
   },
 });
 
-// Measures a length by wearing it, out of the way of the page.
 export const lengthProbe = style({ position: "absolute", visibility: "hidden" });
 
-// An easing as its curve on a 64 × 32 plot.
 export const curve = style({ width: tokens.shape.dimension.width.xs, fill: "none", stroke: tokens.color.ink.primary, strokeWidth: tokens.shape.stroke.emphasis, overflow: "visible" });

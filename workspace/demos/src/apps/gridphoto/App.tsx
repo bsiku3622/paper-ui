@@ -1,14 +1,3 @@
-// GridPhoto: photograph sheets of paper, and get a scanned PDF. It finds each sheet's four corners, pulls
-// it into an exact rectangle, evens out shadows and light; a sheet with a grid or lines of its own is pulled along them.
-// Pages can be added, reordered and removed, and each keeps its own filter, shape and rotation.
-//
-// Here the engine is a stand-in: a photo is a name, the steps are timers, and a save is a bar that fills (see model/mock.ts).
-//
-//   /gridphoto                         the document's current page, or the first screen when there is nothing in it
-//   /gridphoto/page/:id                a page as a scan
-//   /gridphoto/page/:id/original       the photo it came from, with what was found traced over it
-//   /gridphoto/page/:id/corners        placing the four corners by hand
-
 import { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
@@ -28,7 +17,6 @@ const Home = () => {
 const Frame = () => {
   const { addFiles } = useGridphoto();
 
-  // A picture pasted anywhere in the window is a photo to add.
   useEffect(() => {
     const paste = (event: ClipboardEvent) => {
       const files = [...(event.clipboardData?.files ?? [])].filter((file) => file.type.startsWith("image/"));

@@ -1,6 +1,3 @@
-// The machine's limits (SET_VELOCITY_LIMIT): velocity, square corner velocity, acceleration and the minimum cruise ratio.
-// A limit that differs from printer.cfg has a button beside it that puts the configured value back.
-
 import { Grid, IconButton, Inline, Stack, Text } from "@studio-baeks/paper-ui";
 
 import { Glyph } from "../../../kit";

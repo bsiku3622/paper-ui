@@ -1,9 +1,3 @@
-// OKLCH palette source
-//
-// Palette identity and color anchors live here. Semantic roles, CSS names, and component
-// vocabulary do not. This file assembles the completed palette by calling pure color-ladder
-// operations, then exports both its OKLCH coordinates and generated HEX tokens.
-
 import { completeOklchRamp, interpolateOklch, toPaletteToken, withAlpha } from "./color-ladder";
 import type { PaletteToken } from "./color-ladder";
 export type { PaletteToken } from "./color-ladder";
@@ -24,11 +18,6 @@ export type Oklch = readonly [lightness: number, chroma: number, hue: number];
 export const NEUTRAL_BASE_STEPS = ["0", "50", "100", "200", "300", "400", "500", "600", "700", "800", "900", "950"] as const;
 export type NeutralBaseStep = (typeof NEUTRAL_BASE_STEPS)[number];
 
-// Neutral step numbers always run from light to dark: 0 is white and 950 is near-black.
-// The ramp is a zinc (2026-11-06, read from HeroUI v3's default theme): the ground is 0.9702 with no chroma, the grey face 0.94
-// and the line 0.91, and the middle steps, where the quiet inks are, carry zinc's chroma so they read crisp, not muddy. A grey
-// that is the same chroma all the way down (0.003 before) reads dull. 650 stays a step darker than HeroUI's muted ink, so a
-// placeholder still holds 4.5:1 on the sunken face, which HeroUI's does not.
 export const NEUTRAL_ANCHORS: Partial<Record<NeutralBaseStep, Oklch>> = {
   "0": [1, 0, 286],
   "100": [0.9702, 0, 286],
@@ -42,8 +31,6 @@ export const NEUTRAL_ANCHORS: Partial<Record<NeutralBaseStep, Oklch>> = {
 
 export const ACCENT_PALETTES = ["blue", "green", "amber", "red"] as const;
 export type AccentPalette = (typeof ACCENT_PALETTES)[number];
-// All accent families share perceptual lightness and a base chroma envelope.
-// Hue-specific chroma ceilings preserve pigment identity within the sRGB gamut.
 const ACCENT_CURVE: Record<AccentStep, readonly [lightness: number, chromaRatio: number]> = {
   "50": [0.985, 0.04], "100": [0.955, 0.16], "150": [0.930, 0.26],
   "200": [0.900, 0.38], "300": [0.800, 0.65], "400": [0.670, 0.80],
@@ -52,9 +39,6 @@ const ACCENT_CURVE: Record<AccentStep, readonly [lightness: number, chromaRatio:
   "800": [0.400, 0.75], "900": [0.330, 0.55], "925": [0.295, 0.475],
   "950": [0.260, 0.40],
 };
-// Each pigment is a hue and a chroma ceiling. Two refinements are data too: a pale end that starts at
-// another hue and eases into the pigment's own between two steps, and steps whose chroma ratio
-// replaces the shared curve's.
 type AccentIdentity = {
   hue: number;
   chroma: number;
@@ -64,13 +48,10 @@ type AccentIdentity = {
 export const ACCENT_IDENTITIES: Record<AccentPalette, AccentIdentity> = {
   blue: { hue: 263, chroma: 0.215 },
   green: { hue: 153, chroma: 0.155 },
-  // Pale amber starts yellow, then transitions into its orange pigment by 400. Its chroma eases into
-  // the vivid middle range instead of jumping from pale 200 to 300.
   amber: { hue: 65, chroma: 0.24, paleHue: { hue: 90, from: "200", to: "400" }, chromaRatio: { "200": 0.44, "300": 0.55 } },
   red: { hue: 25, chroma: 0.215 },
 };
 
-// The neutral steps that sit between two authored anchors: [from, to, how far toward `to`].
 export const NEUTRAL_BETWEEN = {
   "150": ["100", "200", 0.5],
   "650": ["600", "700", 0.5],
@@ -99,9 +80,6 @@ const accent = Object.fromEntries(ACCENT_PALETTES.map((name) => [
   })) as Record<AccentStep, Oklch>,
 ])) as Record<AccentPalette, Record<AccentStep, Oklch>>;
 
-// Complete theme-independent OKLCH palette. Semantic systems select from these coordinates' HEX
-// companions; changing the active theme never changes this source ramp.
-// The highlighter: one pigment and no ramp, because it is laid behind text and never becomes a surface or a state.
 const MARKER: Oklch = [0.962, 0.187, 113];
 
 export const OKLCH_PALETTE = { neutral, accent, marker: MARKER };

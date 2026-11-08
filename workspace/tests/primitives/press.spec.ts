@@ -156,7 +156,6 @@ test.describe("the callbacks of one press", () => {
       await page.mouse.move(x, y);
       await page.mouse.down();
       await page.mouse.move(x + box.width * 2, y + box.height * 4, { steps: 3 });
-      // Leaving ends the press either way.
       await expect.poll(() => log(target)).toBe("start change:true end change:false");
       await page.mouse.move(x, y, { steps: 3 });
       await page.mouse.up();
@@ -166,7 +165,6 @@ test.describe("the callbacks of one press", () => {
     await expect.poll(async () => (await log(logged))!.split(" ").at(-1)).toBe("press");
     const exits = page.getByTestId("exits");
     await leaveAndReturn(exits);
-    // The release is told, and no press comes of it.
     await expect.poll(async () => (await log(exits))!.split(" ").at(-1)).toBe("up");
     expect((await log(exits))!.split(" ")).not.toContain("press");
   });
@@ -294,7 +292,6 @@ test.describe("the keyboard ring", () => {
     await expect(target).toHaveAttribute("data-focus-visible", "true");
     await expectStyle(target, ring);
 
-    // With the judgement gone the ring goes, though the browser's heuristic still matches: the baseline no longer draws here.
     const heuristic = await target.evaluate((element) => {
       element.removeAttribute("data-focus-visible");
       return element.matches(":focus-visible");
@@ -322,7 +319,6 @@ test.describe("the keyboard ring", () => {
 test.describe("what a press lets through to a parent", () => {
   const TARGETS = ["pressable", "button"];
 
-  // Listeners on document, as an outside-click handler has them: one set in the bubble phase, one in capture.
   const listen = (page: Page) =>
     page.evaluate(() => {
       const heard = { bubble: [] as string[], capture: [] as string[] };
@@ -334,7 +330,6 @@ test.describe("what a press lets through to a parent", () => {
     });
   const onDocument = (page: Page) => page.evaluate(() => (window as unknown as { heard: { bubble: string[]; capture: string[] } }).heard);
   const clear = (page: Page) => page.evaluate(() => { const { heard } = window as unknown as { heard: { bubble: string[]; capture: string[] } }; heard.bubble.length = 0; heard.capture.length = 0; });
-  // Sorted where the order is the engine's and not the contract.
   const set = (names: string[] | string | null) => (typeof names === "string" ? names.split(" ") : names ?? []).filter(Boolean).sort();
   const parent = (page: Page, id: string) => page.getByTestId(`parent-${id}`);
   const heardBy = async (page: Page, id: string) => ({ react: set(await parent(page, id).getAttribute("data-log")), captured: set(await parent(page, id).getAttribute("data-captured")) });

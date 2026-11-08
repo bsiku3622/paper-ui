@@ -1,7 +1,3 @@
-// The rail of a signed-in account's notes (Account.tsx's `notes-sidebar`), opened from the header's "내 노트": the name of the app,
-// who is signed in, a button for a new note, a search, the notes, and a line about where they are kept. On a wide window it
-// stands beside the editor; on a phone it lies over it.
-
 import { useState } from "react";
 
 import { Box, Button, Divider, Field, Grid, IconButton, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";

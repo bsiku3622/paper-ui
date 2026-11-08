@@ -1,7 +1,3 @@
-// 데스크탑 WOL: the machines that can be woken from here. The original had one desktop and one button; the card for each
-// machine keeps its words — whether it answers, its VPN address, its MAC, the last signal, the signal button with the
-// pause counted down — and the hub now keeps a list, with a page for each machine's history.
-
 import { useEffect, useRef, useState } from "react";
 import { Link as RouterLink, useSearchParams } from "react-router-dom";
 
@@ -40,7 +36,6 @@ export const WolPage = () => {
   const average = answers.length ? Math.round(answers.reduce((sum, record) => sum + (record.seconds ?? 0), 0) / answers.length) : null;
   const latest = devices.filter((device) => device.lastSentAt !== null).sort((a, b) => (b.lastSentAt ?? 0) - (a.lastSentAt ?? 0))[0];
 
-  // The moment a machine that was waking starts answering, say so even when nobody is looking at its card.
   const before = useRef<Record<string, boolean>>({});
   useEffect(() => {
     for (const device of stored) {

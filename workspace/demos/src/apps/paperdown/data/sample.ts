@@ -1,5 +1,3 @@
-// The sample document the original opens with (document.ts SAMPLE): what a browser that has never been used here keeps.
-
 import { NOW } from "../../../kit";
 import { markdownToHtml } from "../lib/markdown";
 import { DEFAULT_SETTINGS, type DocumentData } from "../lib/types";
@@ -27,7 +25,6 @@ export const SAMPLE_MARKDOWN = `# 생각을 담는 한 장
 첫 문장부터, 마지막 한 장까지.
 `;
 
-// The one document this browser keeps ("이 기기의 문서"). Its title is the original's default for a document with no name.
 export const sampleDocument = (): DocumentData => ({
   id: "local",
   title: "새로운 문서",
@@ -36,8 +33,6 @@ export const sampleDocument = (): DocumentData => ({
   updatedAt: NOW.getTime(),
 });
 
-// What a new document starts as: nothing but a paragraph waiting for words.
 export const emptyDocument = (id: string, title = "새로운 문서", settings = DEFAULT_SETTINGS): DocumentData => ({ id, title, html: "<p></p>", settings, updatedAt: Date.now() });
 
-// A new note of the account starts as the original's does: an empty heading, then a paragraph.
 export const emptyNote = (id: string): DocumentData => ({ ...emptyDocument(id, "새로운 노트"), html: "<h1></h1><p></p>" });

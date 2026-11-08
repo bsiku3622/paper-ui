@@ -1,7 +1,3 @@
-// A list of bars: one Meter a row, its name above and its number at the end. A row with a link opens a search for what it
-// names; a long list shows its first rows and opens the rest with "더 보기". The bars are neutral ink and thin — a bar's
-// length is the only thing it says, and fifteen of them should not read as a barcode.
-
 import { useState } from "react";
 
 import { Box, Button, Inline, Stack, Text } from "@studio-baeks/paper-ui";
@@ -11,13 +7,10 @@ import { Glyph, Meter, SurfaceLink } from "../../../../kit";
 export type Bar = {
   key: string;
   label: string;
-  // 0 to 1: how long the bar is.
   value: number;
   valueText: string;
-  // Where the row leads. Without it the row is only read.
   href?: string;
   hint?: string;
-  // A small quiet line under the bar.
   note?: string;
 };
 

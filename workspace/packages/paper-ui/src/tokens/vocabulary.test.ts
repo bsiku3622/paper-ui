@@ -107,7 +107,6 @@ describe("vocabulary", () => {
   it("[foundations.vocabulary.one-pair-per-axis] derives the State axis from the tree that authors it", () => {
     expect(vocabulary.STATE_NAMES).toEqual(keysOf(STATE_ATTRIBUTE));
     expectTypeOf<vocabulary.StateName>().toEqualTypeOf<(typeof vocabulary.STATE_NAMES)[number]>();
-    // The states a gallery can show without a pointer or a keyboard: the three that have no attribute of their own to write.
     expect([...vocabulary.PREVIEW_STATES]).toEqual(["hover", "active", "focus"]);
     expectTypeOf<vocabulary.PreviewState>().toEqualTypeOf<(typeof vocabulary.PREVIEW_STATES)[number]>();
   });

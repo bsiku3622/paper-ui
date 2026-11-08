@@ -1,5 +1,3 @@
-// The webcam on the dashboard: the first camera that is turned on in the settings, edge to edge in its panel.
-
 import { Link as RouterLink } from "react-router-dom";
 
 import { IconButton } from "@studio-baeks/paper-ui";

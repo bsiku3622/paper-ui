@@ -1,7 +1,3 @@
-// A Markdown document drawn on its paper. Paper has no rich text: a document's headings, lists, quotes and tables are real
-// elements here, and the sizes, weights and colours they take are Paper's roles (markdown.css.ts). Words that are Paper
-// atoms stay atoms — a link is Paper's Link, a task's box is Paper's Checkbox, a picture is the kit's Art.
-
 import { Fragment, memo, useMemo, type ReactNode } from "react";
 
 import { Checkbox, Link } from "@studio-baeks/paper-ui";

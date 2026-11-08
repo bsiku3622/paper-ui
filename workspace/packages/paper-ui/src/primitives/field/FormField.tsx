@@ -17,18 +17,15 @@ type FormFieldControlProps = {
   "aria-describedby"?: string;
 };
 
-// What a FormField tells the one control inside it.
 type FormFieldContextValue = {
   controlProps: FormFieldControlProps;
   invalid: boolean;
-  /** A control announces itself; the field reports when a second one does. The returned function takes it back. */
   claim: () => () => void;
   portalDepth: number;
 };
 const FormFieldContext = createContext<FormFieldContextValue | null>(null);
 
-// The field around a control. A portal between them cuts it: a control in a panel opened from a field is not that
-// field's, though React context crosses the portal.
+// A portal between them cuts it: a control in a panel opened from a field is not that field's, though React context crosses the portal.
 const useFieldAround = (): FormFieldContextValue | null => {
   const field = useContext(FormFieldContext);
   const portalDepth = usePortalDepth();
@@ -48,7 +45,6 @@ const part = (name: "label" | "description" | "error") => ({ [VALUE_ATTRIBUTE.pa
 const hasContent = (value: ReactNode) => value !== undefined && value !== null && value !== false;
 const joinIds = (...lists: Array<string | undefined>) => [...new Set(lists.filter(Boolean).flatMap((list) => list!.split(/\s+/)))].join(" ") || undefined;
 
-// The relationships of one control with its label, description and error, without rendering anything.
 export function useFormField({ id, disabled = false, required = false, invalid = false, description, error, "aria-describedby": describedBy }: FormFieldOptions = {}) {
   const generatedId = useId();
   const controlId = id ?? `pui-field-${generatedId}`;
@@ -77,11 +73,9 @@ export type FormFieldControlOptions = {
   required?: boolean;
   "aria-invalid"?: AriaAttributes["aria-invalid"];
   "aria-describedby"?: string;
-  /** An error status makes the control invalid, as the field being invalid does. */
   status?: Status;
 };
 export type FormFieldControlResult = {
-  /** Spread on the control after its own props. Only the keys that have a value are in it. */
   controlProps: {
     id?: string;
     disabled?: true;
@@ -90,14 +84,10 @@ export type FormFieldControlResult = {
     "aria-describedby"?: string;
   };
   isInvalid: boolean;
-  /** The status the control should draw: error while it is invalid, else the status it was given. */
   visualStatus: Status | undefined;
   isInField: boolean;
 };
 
-// The one control of a FormField, or any control outside one. Inside a field the field's id, relationships and state
-// reach the control: disabled and required add up, describedby is the control's own ids and then the field's, and
-// aria-invalid is the control's own word if it gave one, else error status or the field being invalid.
 export function useFormFieldControl({ id, disabled, required, "aria-invalid": explicit, "aria-describedby": describedBy, status }: FormFieldControlOptions = {}): FormFieldControlResult {
   const field = useFieldAround();
   const claim = field?.claim;

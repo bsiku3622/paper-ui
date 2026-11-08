@@ -1,6 +1,3 @@
-// A file's own page: how it is shared, how often it has been taken (a chart of two weeks, with its table), who took it
-// last, and the details of the file itself. The original had no such page; the shelf's rows link here.
-
 import { useState } from "react";
 import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 

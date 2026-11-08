@@ -1,7 +1,3 @@
-// Invented identifiers. A key made here is shaped like a WireGuard key (43 base64 characters and "=") but starts with
-// "DEMO", so nobody mistakes it for a real one. Addresses come from the private 10.x ranges or from the ranges that
-// RFC 5737 and RFC 3849 set aside for documentation.
-
 import { random } from "../../../kit";
 
 const BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -16,7 +12,6 @@ export const fakeKey = (seed: string) => {
 
 export const KEY_PATTERN = /^[A-Za-z0-9+/]{43}=$/;
 
-// A short id for rows the user makes: f_k3x9q2.
 let counter = 0;
 export const makeId = (prefix: string, seed = "") => {
   counter += 1;
@@ -26,7 +21,6 @@ export const makeId = (prefix: string, seed = "") => {
   return `${prefix}_${tail}`;
 };
 
-// The documentation address blocks a visitor may come from.
 export const visitorAddress = (next: () => number) => {
   const roll = next();
   const host = 1 + Math.floor(next() * 253);

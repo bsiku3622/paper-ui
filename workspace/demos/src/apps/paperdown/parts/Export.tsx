@@ -1,7 +1,3 @@
-// The export menu (App.tsx's `export-menu`): "완성한 문서를 남기는 방법", four ways to keep the document: a PDF, a PNG, the
-// Paperdown file with everything in it, and the Markdown. The trigger is the header's one solid button; while an export is
-// working it says what it is doing.
-
 import type { ReactNode } from "react";
 
 import { Box, Button, Divider, Floating, Inline, Spinner, Stack, Surface, Text } from "@studio-baeks/paper-ui";
@@ -28,7 +24,6 @@ export const ExportMenu = ({ mode, pages, busy, onExport }: { mode: PageMode; pa
   <Floating>
     <Button as={Floating.Trigger} size="sm" disabled={busy !== ""} aria-label={busy || "내보내기"}>
       {busy ? <Spinner size="inline" ink="inherit" decorative /> : <Glyph name="download" />}
-      {/* On a phone the label gives way: the header has no room for it. */}
       <Box as="span" hideBelow="md">{busy || "내보내기"}</Box>
       <Glyph name="chevron-down" />
     </Button>

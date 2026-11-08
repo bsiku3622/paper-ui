@@ -15,8 +15,6 @@ const Panel = ({ id, children }: { id: string; children: ReactNode }) => {
 
 const SIZE = { display: "block", width: 40, height: 40 };
 
-// Panels that move by their handle, showing where they are and how many drags began: one live handle, then a handle
-// switched off by itself, as the native button and as a tag that cannot be disabled natively.
 export const DragCase = () => (
   <>
     <TransferCase />
@@ -28,8 +26,6 @@ export const DragCase = () => (
 
 const TARGET = { display: "block", width: 80, height: 40, margin: 8 };
 
-// One text item to drop on three targets: one that copies it, one whose getDropOperation cancels it, and one that is
-// switched off. Each counts the drops it took, in data-drops.
 const Target = ({ id, operation, disabled }: { id: string; operation: "copy" | "cancel"; disabled?: boolean }) => {
   const [drops, setDrops] = useState(0);
   return (
@@ -41,8 +37,6 @@ const Target = ({ id, operation, disabled }: { id: string; operation: "copy" | "
 
 const LIFECYCLE = { display: "block", width: 160, height: 40, margin: 8 };
 
-// A target that writes its lifecycle down in data-events, keeps the last point it was told in data-point and what the drag
-// allows in data-allowed, and lets the point decide: the left half copies, the right half cancels.
 const LifecycleTarget = () => {
   const [events, setEvents] = useState<string[]>([]);
   const [point, setPoint] = useState("");
@@ -63,7 +57,6 @@ const LifecycleTarget = () => {
   );
 };
 
-// The item writes its own drag down in data-events, and says what a drop may do with it.
 export const TransferCase = () => {
   const [events, setEvents] = useState<string[]>([]);
   const note = ({ type, dropOperation }: { type: string; dropOperation?: string }) => setEvents((current) => [...current, dropOperation ? `${type}:${dropOperation}` : type]);

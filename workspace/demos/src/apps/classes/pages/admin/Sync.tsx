@@ -1,7 +1,3 @@
-// KEIS에서 다시 받기 — pick the term, read what will happen ("통째로 교체", with a snapshot kept first), then watch the steps
-// go by. The run is a timer: nothing is fetched. A term the school has no record of (a year outside 2023–2027) fails after
-// two steps, so the error state can be seen too. While it runs the dialog does not close.
-
 import { useEffect, useRef, useState } from "react";
 
 import { Button, Field, FormField, Inline, Spinner, Stack, Text } from "@studio-baeks/paper-ui";
@@ -43,7 +39,6 @@ export const SyncDialog = ({ open, onClose, onFinish, start }: { open: boolean; 
   const label = target ? termLabel(target) : "";
   const known = target ? knownTerm(target) : false;
 
-  // The timer reads the latest of these without being restarted by them.
   const latest = useRef({ target, onFinish });
   useEffect(() => {
     latest.current = { target, onFinish };

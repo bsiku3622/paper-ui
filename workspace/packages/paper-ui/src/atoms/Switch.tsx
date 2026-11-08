@@ -1,6 +1,3 @@
-// Switch — 켬/끔 토글. Checkbox 와 형제지만 즉시 적용되는 설정 자리에 쓴다.
-//   status  error — 꺼진 트랙에 오류 잉크의 테가 생긴다.
-
 import { forwardRef } from "react";
 
 import { joinClass } from "../internal/joinClass";

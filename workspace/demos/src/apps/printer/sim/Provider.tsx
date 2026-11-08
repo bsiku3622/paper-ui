@@ -1,6 +1,3 @@
-// The mock printer as React sees it: the state moves on a one-second timer, and a button asks for what it wants through
-// send (G-code, read by gcode.ts) or update (a plain change to the mock, such as deleting a file). Nothing leaves the page.
-
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, type ReactNode } from "react";
 
 import { useStored } from "../../../kit";
@@ -14,10 +11,8 @@ type Updater = (state: SimState) => SimState;
 const reduce = (state: SimState, change: Updater) => change(state);
 
 type Actions = {
-  // Runs the lines against the mock and logs them as the console would.
   send: (gcode: string | readonly string[]) => void;
   update: (change: Updater) => void;
-  // The commands typed into the console, newest last; kept in the browser.
   commands: readonly string[];
   remember: (command: string, limit: number) => void;
   forget: () => void;
@@ -31,7 +26,6 @@ export const PrinterProvider = ({ children }: { children: ReactNode }) => {
   const [commands, setCommands] = useStored<string[]>("printer:commands", []);
   const { settings } = useSettings();
   const speed = settings.general.simSpeed;
-  // One tick is a second of the mock's life; at 10x or 60x a second of the page lives that many, so a print can be watched to its end.
   useEffect(() => {
     const timer = window.setInterval(
       () =>

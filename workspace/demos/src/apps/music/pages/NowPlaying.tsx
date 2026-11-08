@@ -1,6 +1,3 @@
-// 재생 화면: 큰 표지와 제목, 진행 막대, 셔플 · 이전 · 재생 · 다음 · 반복, 볼륨과 좋아요. 오른쪽(좁은 화면에서는 아래)에
-// 탭으로 가사 · 다음 곡 · 곡 정보가 있습니다. 이 화면에서는 오른쪽 창과 미니 플레이어를 비웁니다.
-
 import { useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 

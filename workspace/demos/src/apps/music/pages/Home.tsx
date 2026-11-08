@@ -1,5 +1,3 @@
-// 지금 듣기: 이어서 듣기, 다시 듣기, 나를 위한 믹스, 새 앨범, 내 플레이리스트, 에디터 추천, 자주 듣는 아티스트.
-
 import { useMemo } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -13,7 +11,6 @@ import { AlbumArt } from "../parts/pictures";
 import { useLibrary } from "../state/library";
 import { usePlayer } from "../state/player";
 
-// 이어서 듣기: 지금 곡을 이어서 틀거나, 가사를 봅니다.
 const Resume = () => {
   const player = usePlayer();
   const track = player.current;
@@ -43,7 +40,6 @@ const Resume = () => {
 export const HomePage = () => {
   const library = useLibrary();
 
-  // 최근에 들은 곡의 앨범: 같은 앨범은 한 번만.
   const heard = useMemo(() => {
     const seen = new Set<string>();
     const albums: Album[] = [];

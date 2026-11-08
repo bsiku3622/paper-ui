@@ -1,6 +1,3 @@
-// DiffView.tsx — two texts set against each other, line by line and then word by word: two columns (before | after) or one.
-// Removed and added lines take the soft error and success faces; unchanged stretches fold into “… 12줄 변경 없음 …”.
-
 import { useMemo, type ReactNode } from "react";
 
 import { Box, Grid, Paint, Surface, Text } from "@studio-baeks/paper-ui";

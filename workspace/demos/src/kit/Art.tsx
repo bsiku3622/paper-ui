@@ -1,25 +1,14 @@
-// Art — pictures without pictures: album covers, photos, scanned pages, patterns, drawn from a seed in Paper's palette
-// steps. The same seed always draws the same picture. Paper has no media part, so this is the kit's one SVG.
-//
-//   <Art seed="플레이리스트 7" kind="cover" />            square cover
-//   <Art seed="IMG_2041" kind="photo" ratio="4 / 3" />     a landscape
-//   <Art seed="p3" kind="document" ratio="3 / 4" />        a page of a scan
-//   <Art seed="x" kind="pattern" radius="none" />          stripes, dots or waves
-
 import { useId } from "react";
 
 import { Surface } from "@studio-baeks/paper-ui";
 import { tokens, type SurfaceRadius } from "@studio-baeks/paper-ui/tokens";
 
-// Paper's accent tones, the only colours here: the four accents and the neutral one, each at its soft, solid and deep tone.
-// A picture in dark mode is drawn in the dark tones, as every other part of the page is.
 const RAMPS = ["info", "success", "warning", "error", "primary"] as const;
 type Ramp = (typeof RAMPS)[number];
 type Tone = "soft" | "solid" | "subtle";
 const color = (ramp: Ramp, tone: Tone) => tokens.color.accent[ramp][tone];
 const WHITE = tokens.color.bg.raised;
 const MARKER = tokens.color.marker.fill;
-// Cover and pattern pick among the four coloured ramps.
 const COLORED = 4;
 
 const hash = (text: string) => {
@@ -27,7 +16,6 @@ const hash = (text: string) => {
   for (let i = 0; i < text.length; i++) h = Math.imul(h ^ text.charCodeAt(i), 16777619);
   return h >>> 0;
 };
-// mulberry32: small, fast, the same numbers for the same seed.
 export const random = (seed: string | number) => {
   let a = typeof seed === "number" ? seed >>> 0 : hash(seed);
   return () => {
@@ -44,12 +32,9 @@ export type ArtKind = "cover" | "photo" | "document" | "pattern";
 export type ArtProps = {
   seed: string;
   kind?: ArtKind;
-  // A CSS aspect ratio: "1 / 1", "4 / 3", "3 / 4", "16 / 9".
   ratio?: string;
   radius?: SurfaceRadius | "none";
-  // A picture read aloud; without one it is decoration.
   label?: string;
-  // Lines on a document: a grid (graph paper) or rules.
   grid?: boolean;
 };
 
@@ -115,7 +100,6 @@ const Photo = ({ seed, id }: { seed: string; id: string }) => {
 const Document = ({ seed, grid }: { seed: string; grid: boolean }) => {
   const r = random(seed);
   const tilt = (r() - 0.5) * 6;
-  // The sheet runs from x 14 to 86 and the text starts at 22, so a line is at most 58 long and stops short of the edge.
   const lines = Array.from({ length: 9 }, (_, index) => ({ y: 30 + index * 7, width: 36 + r() * 22 }));
   return (
     <>

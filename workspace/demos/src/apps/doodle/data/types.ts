@@ -1,6 +1,3 @@
-// What the workspace holds. The shapes are the prototype's own (src/App.tsx): documents laid in a row, boxes put anywhere,
-// pen strokes, to-dos and routines for the day, and dated events for the calendar.
-
 export type Tool = "select" | "hand" | "text" | "image" | "video" | "pen";
 
 export type Point = { x: number; y: number };

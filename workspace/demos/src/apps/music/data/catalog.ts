@@ -1,5 +1,3 @@
-// 카탈로그: 아티스트 · 앨범 · 곡. 데이터는 시드로 만들어서 어느 화면에서나 같습니다.
-
 import { daysAgo, int, random } from "../../../kit";
 import { ALBUM_SPECS } from "./albums";
 import { ARTIST_SPECS, GENRE_SPECS, type ArtistKind } from "./artists";
@@ -55,9 +53,7 @@ const isKorean = (text: string) => /[가-힣]/.test(text);
 const albums: Album[] = [];
 const tracks: Track[] = [];
 
-// 보관함에 아직 없는 앨범. 나머지는 보관함에 있고, 추가한 날은 아래에서 정합니다.
 const OUTSIDE = new Set(["al08", "al13", "al20", "al25", "al27", "al31", "al34", "al36", "al38"]);
-// 최근에 낸 앨범은 며칠 전에 보관함에 넣었습니다.
 const ADDED_RECENTLY: Record<string, number> = { al14: 2, al24: 5, al06: 11, al10: 38, al32: 52, al22: 90, al12: 120, al18: 150 };
 
 let serial = 1;
@@ -141,7 +137,6 @@ export const totalDuration = (list: readonly Track[]) => list.reduce((sum, track
 
 export const formatTrackCount = (count: number) => `${count}곡`;
 
-// "3시간 12분", "41분"
 export const spoken = (seconds: number) => {
   const minutes = Math.max(1, Math.round(seconds / 60));
   const hours = Math.floor(minutes / 60);

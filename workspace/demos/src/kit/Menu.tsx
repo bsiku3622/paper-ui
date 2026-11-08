@@ -1,6 +1,3 @@
-// Menu — a button that opens a short list of actions beside it ("더 보기", "정렬", an account). Floating's popover with
-// ghost buttons in it. Paper has no Menu yet; this is the stand-in.
-
 import { useState, type ReactNode } from "react";
 
 import { Button, Divider, Floating, IconButton, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";
@@ -16,7 +13,6 @@ export type MenuItem =
 export type MenuProps = {
   label: string;
   items: readonly MenuItem[];
-  // The button: a glyph alone (an IconButton named by `label`) or a labelled button.
   glyph?: GlyphName;
   iconOnly?: boolean;
   buttonLabel?: ReactNode;

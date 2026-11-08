@@ -1,12 +1,8 @@
-// 시간표 비교 — the rules behind the grid: who is taken for a match of a typed name, and what each period of the week is
-// for the students chosen (everybody free, the same class, busy with different classes, or only some of them busy).
-
 import type { TermData } from "../../data/build";
 import { DAYS, PERIOD_NUMBERS, slotKey } from "../../data/periods";
 import { termIndex, type Placed, type StudentEntry } from "../../lib/index";
 import { initials } from "../../lib/search";
 
-// A student with their week as a map from "WED-3" to what they have then.
 export type Person = { stuId: string; name: string; at: Map<string, Placed> };
 
 export const personOf = (entry: StudentEntry): Person => ({
@@ -18,8 +14,6 @@ export const personOf = (entry: StudentEntry): Person => ({
 export type Kind = "free" | "common" | "conflict" | "mixed";
 export type Busy = { person: Person; placed: Placed };
 
-// free: nobody has a class. common: everybody has the same subject. conflict: everybody is busy, with different subjects.
-// mixed: some are busy and some are free.
 export const classify = (people: readonly Person[], key: string): { kind: Kind; busy: Busy[] } => {
   const busy: Busy[] = [];
   for (const person of people) {
@@ -31,7 +25,6 @@ export const classify = (people: readonly Person[], key: string): { kind: Kind; 
   return { kind: new Set(busy.map((item) => item.placed.subject)).size === 1 ? "common" : "conflict", busy };
 };
 
-// How many periods of the week are of each kind. Nothing to compare with fewer than two people.
 export const summarize = (people: readonly Person[]) => {
   const total = { free: 0, common: 0, conflict: 0 };
   if (people.length < 2) return total;
@@ -46,8 +39,6 @@ export const summarize = (people: readonly Person[]) => {
   return total;
 };
 
-// Up to `limit` students for two or more typed letters: a name or an ID that contains them, or the initials of a name
-// (ㅎㅈㅇ). Those that start with the letters come first. Students already chosen are left out.
 export const suggest = (data: TermData, query: string, taken: readonly string[], limit = 5): { list: StudentEntry[]; total: number } => {
   const text = query.trim();
   if ([...text].length < 2) return { list: [], total: 0 };

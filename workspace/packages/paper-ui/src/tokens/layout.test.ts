@@ -6,8 +6,6 @@ import { castShadow } from "./elevation-recipes";
 import { BREAKPOINTS, ELEVATIONS, LAYOUT_MODE_VALUES, LAYOUT_SOURCE } from "./layout";
 import { themeVariables } from "./variables";
 
-// The design values of Layout, written down. The tests below hold for any design; this file says which design this
-// is. A change to it is deliberate: review the diff, then `vitest -u` rewrites the file.
 describe("the golden Layout file", () => {
   it("[foundations.layout.role-table] [foundations.layout.elevation-table] records the source, the breakpoints and sections it resolves to, the shadow strings of each mode, and the nesting limit", async () => {
     const { breakpoint, section } = tokens.layout;

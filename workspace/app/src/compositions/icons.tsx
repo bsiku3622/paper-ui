@@ -1,7 +1,3 @@
-// The app's glyph set — the one place a path is drawn. The package ships no icons (Icon takes the path of a 24
-// artboard), so the app names the ones it uses; a page imports `SearchIcon`, never a copy of its path. Each is
-// the Icon element itself, so a size or ink prop and the size a control gives its icon work the same way.
-
 import type { ReactNode } from "react";
 
 import { Icon, type IconProps } from "@studio-baeks/paper-ui";

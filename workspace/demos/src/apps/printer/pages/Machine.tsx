@@ -1,6 +1,3 @@
-// The machine: the printer's config files (and an editor for them), the loads of its MCU and host, the update manager, the
-// endstops and the log files. Mainsail's "Machine" page.
-
 import { Grid, Stack } from "@studio-baeks/paper-ui";
 
 import { PageHeader } from "../../../kit";

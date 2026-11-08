@@ -8,7 +8,6 @@ import { SHAPE_VALUES } from "./shape";
 import { TYPOGRAPHY_VALUES } from "./typography";
 import { themeVariables } from "./variables";
 
-// The leaves of a tree as paths, found here with a walk of its own so that the emitter is held to the trees, not to itself.
 const walk = (tree: object, path: string[] = []): { path: string[]; value: unknown }[] =>
   Object.entries(tree).flatMap(([key, value]) =>
     value !== null && typeof value === "object" && !Array.isArray(value) ? walk(value, [...path, key]) : [{ path: [...path, key], value }],
@@ -37,7 +36,6 @@ describe("the stylesheet emits sources and nothing else", () => {
     expect(names(invariant).length).toBeGreaterThan(0);
     for (const mode of COLOR_MODES) {
       expect(prefixes(modes[mode].own), mode).toEqual(["color"]);
-      // A ground role: the shadow colour and the focus ring, and the shadow geometry that goes with them.
       expect(prefixes(modes[mode].ground), mode).toEqual(["color", "layout"]);
       expect(Object.keys(modes[mode].ground).filter((name) => name.startsWith("--pui-layout-")).every((name) => name.startsWith("--pui-layout-shadow-")), mode).toBe(true);
     }
@@ -50,7 +48,6 @@ describe("the stylesheet emits sources and nothing else", () => {
     expect(names(dark!.own)).toEqual(names(light!.own));
     expect(names(dark!.ground)).toEqual(names(light!.ground));
     expect(names(contrastMore.dark)).toEqual(names(contrastMore.light));
-    // What a mode lifts under prefers-contrast: more is something that mode already declares.
     for (const mode of COLOR_MODES) for (const name of Object.keys(contrastMore[mode])) expect(modes[mode].own, name).toHaveProperty([name]);
   });
 
@@ -71,8 +68,6 @@ describe("the stylesheet emits sources and nothing else", () => {
   });
 
   it("[foundations.emission.source-only] gives a role no variable of its own: only a token that is its own variable is emitted", () => {
-    // tokens.shape.control.height.md is the variable --pui-shape-control-height-md, a source; tokens.shape.inset.xs is an
-    // alias of another variable and tokens.shape.control.inset.input a formula, so neither is a name the stylesheet emits.
     const own = roles.filter(({ path, value }) => value === `var(${pathToCssVar(path)})`);
     const roleNames = roles.filter(({ path, value }) => value !== `var(${pathToCssVar(path)})`).map(({ path }) => pathToCssVar(path));
     expect(own.length).toBeGreaterThan(0);

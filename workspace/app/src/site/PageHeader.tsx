@@ -1,6 +1,3 @@
-// The head of a page: where it sits (group / name), its title and what it is for. Every Docs and Playground
-// page opens with this one part.
-
 import { Inline, Stack, Text } from "@studio-baeks/paper-ui";
 
 export const PageHeader = ({ group, name, description }: { group: string; name: string; description?: string }) => (

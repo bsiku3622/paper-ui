@@ -1,7 +1,3 @@
-// G-code files: /gcodes as a table of its folders and files with the columns Mainsail offers (the user chooses which), a
-// search, a sort on any column, folders, pages, multi-select with delete and queue, an upload, and a dialog for a file that
-// opens from the address (?file=…) so it can be linked and reloaded.
-
 import { useMemo, useRef, useState, type ReactNode } from "react";
 
 import { Badge, Box, Button, Checkbox, Divider, Field, Floating, IconButton, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";
@@ -52,7 +48,6 @@ const DEFAULT_VIEW: View = { sort: { id: "modified", desc: true }, pageSize: 10,
 
 const parentOf = (path: string) => (path.includes("/") ? path.slice(0, path.lastIndexOf("/")) : "");
 
-// What a column sorts by; text sorts as text and numbers as numbers.
 const keyOf = (row: Row, id: string): number | string => {
   if (id === "name") return row.kind === "folder" ? row.name : row.file.name;
   if (row.kind === "folder") return id === "modified" ? row.modified : 0;

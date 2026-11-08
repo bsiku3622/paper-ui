@@ -1,6 +1,3 @@
-// The Docs sidebar: the groups of DOC_GROUPS in order, one link per doc, in the visitor's language — a doc's English title is the
-// title of its translation, and a doc without one keeps its Korean title.
-
 import { DOCS } from "virtual:paper-docs";
 
 import { useSiteLocale, type SiteLocale } from "../site/locale";

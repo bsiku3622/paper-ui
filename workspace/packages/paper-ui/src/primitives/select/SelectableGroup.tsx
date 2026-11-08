@@ -16,7 +16,6 @@ export type SelectableGroupOptions = {
   onSelectedValuesChange?: (values: string[]) => void;
   selectionRequired?: boolean;
   disabled?: boolean;
-  /** Available keys, when items can be removed. */
   values?: readonly string[];
 };
 export type SelectableGroupResult = {
@@ -66,10 +65,8 @@ export type SelectableGroupOwnProps = Omit<RovingFocusOwnProps, "children"> & Om
   onChange?: never;
   children?: ReactNode | ((state: SelectableGroupState) => ReactNode);
 };
-// The group is one element: `as={Inline}` lays the items out with no row of its own inside it.
 export type SelectableGroupProps<As extends ElementType = "div"> = PolymorphicProps<SelectableGroupOwnProps, As>;
 const Roving = RovingFocus as ElementType;
-// The group's selection is read against the items the RovingFocus registry holds, so it has no list of its own.
 function GroupState({ children, ...options }: Omit<SelectableGroupOptions, "values"> & { disabled: boolean; children: SelectableGroupOwnProps["children"] }) {
   const state = useSelectableGroup({ ...options, values: useRovingValues() });
   return <Context.Provider value={{ ...state, disabled: options.disabled }}>

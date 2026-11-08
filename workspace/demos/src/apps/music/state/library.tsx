@@ -1,5 +1,3 @@
-// 보관함: 좋아요, 내 플레이리스트, 보관함에 넣은 앨범, 팔로우, 들은 기록, 최근 검색. 모두 localStorage에 남습니다.
-
 import { createContext, useCallback, useContext, useMemo, type ReactNode } from "react";
 
 import { NOW, useStored } from "../../../kit";
@@ -17,9 +15,7 @@ type Library = {
   isLiked: (id: string) => boolean;
   toggleLike: (id: string) => void;
 
-  // 내가 만든 플레이리스트 (최근에 바꾼 순)
   playlists: readonly Playlist[];
-  // 내 것, 에디터 추천, 믹스, 즐겨찾는 노래까지 아이디로 찾습니다.
   playlistById: (id: string) => Playlist | undefined;
   createPlaylist: (input: NewPlaylist) => string;
   updatePlaylist: (id: string, patch: PlaylistPatch) => void;
@@ -48,7 +44,6 @@ type Library = {
 
 const Ctx = createContext<Library | null>(null);
 
-// 데모의 "지금"(NOW)에서 이어서 흐르는 시각. 실제 시계를 쓰면 가짜 시간(2026년 11월 4일)보다 앞서 버립니다.
 const BOOT = Date.now();
 const stamp = () => NOW.getTime() + (Date.now() - BOOT);
 
@@ -103,7 +98,6 @@ export const LibraryProvider = ({ children }: { children: ReactNode }) => {
 
   const restorePlaylist = useCallback((playlist: Playlist) => setStored((now) => (now.some((item) => item.id === playlist.id) ? now : [playlist, ...now])), [setStored]);
 
-  // 이미 들어 있는 곡은 건너뛰고, 새로 들어간 곡의 수를 돌려줍니다.
   const addToPlaylist = useCallback((id: string, trackIds: readonly string[]) => {
     const target = stored.find((item) => item.id === id);
     if (!target) return 0;
@@ -116,7 +110,6 @@ export const LibraryProvider = ({ children }: { children: ReactNode }) => {
     setStored((now) => now.map((item) => (item.id === id ? { ...item, trackIds: item.trackIds.filter((value) => value !== trackId), updatedAt: stamp() } : item)));
   }, [setStored]);
 
-  // 설정에서 재생 기록을 끄면 남기지 않습니다.
   const pushHistory = useCallback((id: string) => {
     if (keepHistory) setHistory((now) => [id, ...now.filter((item) => item !== id)].slice(0, 60));
   }, [setHistory, keepHistory]);

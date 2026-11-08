@@ -1,6 +1,3 @@
-// The bar across the top: the name, how many pages there are, and "새 문서". Deleting a whole document takes a second press,
-// and the first one wears off; there is no dialog.
-
 import { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 

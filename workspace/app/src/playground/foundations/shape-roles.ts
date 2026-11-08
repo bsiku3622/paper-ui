@@ -1,6 +1,3 @@
-// The Shape inspector's notes: what the page says about values it cannot derive a reason for. Each map is
-// keyed by its source, so a value added there fails typecheck until it has a note.
-
 import { CONTROL_ICON, SHAPE, SHAPE_SOURCE } from "@paper-ui/inspect/shape";
 import type { Bilingual } from "../../site/locale";
 import { CONTROL_SIZES, SPACES, type ControlSize } from "@studio-baeks/paper-ui/tokens";
@@ -12,8 +9,6 @@ export const TARGET_NOTES: Record<keyof typeof SHAPE_SOURCE.target, Bilingual> =
 const ICONS = CONTROL_SIZES.map((size: ControlSize) => CONTROL_ICON[size]).join(" · ");
 const controlGapStep = SPACES.find((step) => SHAPE.inset[step] === SHAPE.control.gap);
 
-// The role board, one row per role in tokens.shape that isn't already a source row. The inspector test walks
-// tokens.shape against these keys, so a role added there fails until it has a row or a place on the source board.
 export const ROLE_ALIASES = {
   inset: { name: "shape.inset.xs ~ 3xl", rule: { ko: "= shape.space 같은 단계", en: "= the same step of shape.space" } },
   radius: { name: "shape.radius.*", rule: { ko: "= shape.radius 원본", en: "= the shape.radius source" } },
@@ -28,5 +23,4 @@ export const ROLE_FORMULAS = {
   "control.inset.input": { rule: { ko: "(control.height − 컨트롤 글자 줄) / 2", en: "(control.height − the control's text line) / 2" }, note: { ko: "입력값 글자 줄 사방에 같은 여백", en: "The same space on every side of the input's text line" } },
 } as const;
 
-// Roles the source board already lists under their own names.
 export const ROLES_ON_SOURCE_BOARD = ["stroke", "focus", "selection", "icon", "dimension", "measure"] as const;

@@ -1,7 +1,3 @@
-// What the home page knows about today: built once from the term's data, the calendar and the clock, then read by every
-// piece of the page. Everything that moves (which period it is, how long is left, what is next) is derived from one
-// minute-of-day so the hero, the ruler, the list and the grid can never disagree.
-
 import { BREAKS, DAYS, PERIODS, type BreakTime, type Day, type PeriodTime } from "../data/periods";
 import type { TermData } from "../data/build";
 import { dayCode, groupByDate, stretchOn, toKey, type CalendarEvent } from "./calendar";
@@ -27,7 +23,6 @@ export type HomeData = {
   breakName: string | null;
 };
 
-// The week of a student: for each day the classes they sit in, one entry per period.
 export const weekOf = (data: TermData, stuId: string): Record<Day, TodayClass[]> => {
   const week: Record<Day, TodayClass[]> = { MON: [], TUE: [], WED: [], THU: [], FRI: [] };
   for (const subject of data.subjects) {
@@ -42,13 +37,10 @@ export const weekOf = (data: TermData, stuId: string): Record<Day, TodayClass[]>
   return week;
 };
 
-// The home page with a plan in place of the timetable. Only the timetable is swapped: the meals, the calendar, the bells and
-// whether today is a day off are nothing to do with a plan, so looking at one does not make today a different day.
 export const planHome = (home: HomeData, sections: readonly SectionInfo[], departments: ReadonlyMap<string, string | null>): HomeData => {
   const week: Record<Day, TodayClass[]> = { MON: [], TUE: [], WED: [], THU: [], FRI: [] };
   for (const section of sections) {
     for (const time of section.times) {
-      // a section's room is for the hours without a room of their own (a lab hour has one)
       week[time.day].push({ period: time.period, subject: section.subject, section: section.section, teacher: section.teacher, room: time.room || section.room, department: departments.get(section.subject) ?? null });
     }
   }
@@ -98,12 +90,9 @@ export const buildHome = (data: TermData, stuId: string, key: string, minute: nu
   };
 };
 
-// ── what the hero says ───────────────────────────────────────────────────────
-
 export type HomeView = {
   livePeriod: number | null;
   inBreak: boolean;
-  // 이동 when the next period has a class to walk to, 공강 otherwise.
   breakKind: "이동" | "공강";
   current: TodayClass | null;
   currentPeriods: number[];
@@ -122,7 +111,6 @@ export const deriveHomeView = (home: HomeData): HomeView => {
   let anchor = livePeriod;
   let inBreak = false;
 
-  // The ten minutes between two periods of one class are not a break from it.
   if (home.hasClass && livePeriod === null) {
     const before = [...periods].reverse().find((item) => item.end <= minute);
     const after = periods.find((item) => item.start > minute);
@@ -177,11 +165,8 @@ export const deriveHomeView = (home: HomeData): HomeView => {
   return { livePeriod, inBreak, breakKind, current, currentPeriods, next, periodLabel, freeMinutes };
 };
 
-// ── the day as blocks ────────────────────────────────────────────────────────
-
 export type DayBlock = { klass: TodayClass; periods: number[]; start: PeriodTime; end: PeriodTime };
 
-// A day's classes, a double period being one block. The same rule draws the hero, the ruler, the list and the week grid.
 export const blocksOf = (classes: readonly TodayClass[], periods: readonly PeriodTime[]): DayBlock[] => {
   const byPeriod = new Map(periods.map((item) => [item.period, item]));
   const blocks: DayBlock[] = [];
@@ -200,7 +185,6 @@ export const blocksOf = (classes: readonly TodayClass[], periods: readonly Perio
 };
 export const dayBlocks = (home: HomeData) => blocksOf(home.today, home.periods);
 
-// One subject on one line, for the list under the grid.
 export type SubjectSummary = { subject: string; section: string; teacher: string; rooms: string[]; department: string | null; times: { day: Day; periods: number[] }[]; periodCount: number };
 export const collectSubjects = (week: Record<Day, TodayClass[]>): SubjectSummary[] => {
   const map = new Map<string, SubjectSummary>();

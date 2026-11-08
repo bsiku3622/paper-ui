@@ -1,7 +1,3 @@
-// 파일 관리: the shelf of shared files and, beside it, who has come for them. The shelf keeps the original's controls — search,
-// kind, sort, state filter, upload, edit, delete — and adds selection for deleting several at once. The table is the
-// original's six columns; on a phone each row becomes a short block.
-
 import { useState } from "react";
 import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
 
@@ -49,7 +45,6 @@ export const FilesPage = () => {
   const all = useFileList();
   const files = demo === "empty" ? [] : all;
   const { ready, reload } = useDelay(LATENCY.list);
-  // The numbers wait for the list, and stay blank when the list could not be read.
   const ok = ready && demo !== "error";
   const waiting = demo === "error" ? "확인하지 못했습니다" : "불러오는 중…";
   const { copied, copy } = useCopy();

@@ -2,8 +2,6 @@ import { Button, Checkbox, Field, Icon, IconButton, Radio, SegmentControl, Selec
 
 import { SELECT_OPTIONS } from "./options.js";
 
-// Every Atom that transitions, once, then a loading Button and a Spinner, the two loop classes, and the presence classes
-// in each state they key on (no data-presence, entering, exiting).
 export const MotionCase = () => (
   <>
     <Button>Button</Button>

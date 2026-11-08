@@ -1,6 +1,3 @@
-// What the period is and how far it is: its title and dates, how many exams are mine, how many of my subjects have one, and the
-// days to the next — counted from the app's clock, so a period that is over says so and one ahead counts down.
-
 import { Stack, Text } from "@studio-baeks/paper-ui";
 
 import { Anchor, Stat, StatRow } from "../../../../kit";

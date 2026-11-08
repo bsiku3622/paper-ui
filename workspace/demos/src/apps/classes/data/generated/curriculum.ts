@@ -1,7 +1,3 @@
-// Snapshot of the public course catalogue (names, credits, tiers, prerequisites). No descriptions, no people.
-// Generated once from the original project's curriculum seed; edit freely.
-
-// [name, english, department, category, credits, apCredits, pf, recommendedSemester, tier, requiredAdvanced, ec]
 export type CourseRow = readonly [string, string, string, string, number, number, number, string, string, number, number];
 export const COURSE_ROWS: readonly CourseRow[] = [
   ["국어1","Korean1","국어","humanities",2,0,1,"1","core",0,0],
@@ -151,7 +147,6 @@ export const COURSE_ROWS: readonly CourseRow[] = [
   ["화학특강","Special Topics in Chemistry","화학","natural",3,0,0,"","special",0,0],
 ];
 
-// [department, track sentence, notes]
 export const DEPARTMENT_ROWS: readonly (readonly [string, string, readonly string[]])[] = [
   ["수학","선형대수, 확률및통계, 미적분학3을 수강해야 함",[]],
   ["정보과학","자료구조, 정보과학3, 알고리즘을 수강해야 함",[]],
@@ -166,7 +161,6 @@ export const DEPARTMENT_ROWS: readonly (readonly [string, string, readonly strin
   ["융합","",[]],
 ];
 
-// [before, after, alternative]
 export const PREREQUISITE_ROWS: readonly (readonly [string, string, number])[] = [
   ["국어2","논리와글쓰기",0],
   ["국어2","문학",0],

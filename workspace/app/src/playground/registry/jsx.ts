@@ -1,7 +1,3 @@
-// One JSX grammar for the registry: printJsx writes an element tree as code, parseOpeningTag reads
-// that code back. Both stop at the same forms — a quoted string, {true}/{false}, a bare name,
-// {number}, {<Element />} and a named expression — so what is printed can always be parsed.
-
 import { Fragment, isValidElement, type ElementType, type ReactElement, type ReactNode } from "react";
 
 import * as paperUi from "@studio-baeks/paper-ui";
@@ -11,7 +7,6 @@ import type { Bilingual } from "../../site/locale";
 const CODES = new WeakMap<object, string>();
 const SPREADS = new WeakMap<object, { code: string; keys: readonly string[] }[]>();
 
-// A function or object the page passes to the subject, with the expression the code panel shows for it.
 export const named = <T extends object>(code: string, value: T): T => {
   CODES.set(value, code);
   return value;
@@ -19,14 +14,11 @@ export const named = <T extends object>(code: string, value: T): T => {
 
 const CLASS_CODES = new Map<string, string>();
 
-// A class string the page builds with a function, with the call the code panel shows for it.
 export const classNamed = (code: string, value: string): string => {
   CLASS_CODES.set(value, code);
   return value;
 };
 
-// Props that reach the element through `{...expression}`: the printer writes the expression instead
-// of the keys it produced.
 export const spreadOf = <E extends ReactElement>(element: E, code: string, keys: readonly string[]): E => {
   SPREADS.set(element, [...(SPREADS.get(element) ?? []), { code, keys }]);
   return element;
@@ -40,7 +32,6 @@ export const sourceOf = codeOf;
 const isComponent = (value: unknown): boolean =>
   typeof value === "function" || (typeof value === "object" && value !== null && "$$typeof" in value);
 
-// Every component the package exports, and its compound statics (Floating.Content, Select.Option).
 export const componentNames = (parts: Readonly<Record<string, ElementType>> = {}): Map<unknown, string> => {
   const names = new Map<unknown, string>();
   for (const [key, value] of Object.entries(paperUi)) {
@@ -54,15 +45,10 @@ export const componentNames = (parts: Readonly<Record<string, ElementType>> = {}
   return names;
 };
 
-// ── printing ─────────────────────────────────────────────────────────────────
-
 export type PrintOptions = {
-  // The component's own defaults: a prop equal to one is left out.
   defaults?: Readonly<Record<string, unknown>>;
-  // The element names those defaults belong to. Others print every prop they carry.
   scope?: readonly string[];
   names: ReadonlyMap<unknown, string>;
-  // Class names that are demo chrome and not part of what a reader would write.
   ignoreClasses?: ReadonlySet<string>;
 };
 
@@ -99,7 +85,6 @@ const pieces = (children: ReactNode, options: PrintOptions): Piece[] => {
   return out;
 };
 
-// A prop whose false is not the same as leaving it out: strong={false} is the regular weight, and no strong is the role's own.
 const SAID_WHEN_FALSE = new Set(["strong"]);
 
 const attributes = (element: ReactElement, name: string, options: PrintOptions): string[] => {
@@ -156,12 +141,9 @@ function elementLines(element: ReactElement, options: PrintOptions): string[] {
 
 export const printJsx = (element: ReactElement, options: PrintOptions): string => elementLines(element, options).join("\n");
 
-// ── parsing ──────────────────────────────────────────────────────────────────
-
 export type AttrValue = boolean | number | string | { element: string } | { expression: string };
 export type OpeningTag = { attrs: Record<string, AttrValue>; end: number; selfClosing: boolean };
 
-// A reading that failed, said in both languages. `message` is the Korean, the language the sources are written in.
 export class ParseError extends Error {
   readonly words: Bilingual<string>;
   constructor(words: Bilingual<string>) {
@@ -170,7 +152,6 @@ export class ParseError extends Error {
   }
 }
 
-// The index of the brace that closes the one at `open`, skipping strings.
 const closing = (code: string, open: number): number => {
   let depth = 0;
   for (let i = open; i < code.length; i++) {
@@ -193,8 +174,6 @@ const interpret = (raw: string): AttrValue => {
   return { expression: raw };
 };
 
-// The first `<name …>` in the code. A name is followed by whitespace, `>` or `/`, so Floating does
-// not match Floating.Content.
 export const parseOpeningTag = (code: string, name: string): OpeningTag | undefined => {
   let start = code.indexOf(`<${name}`);
   while (start >= 0 && !/[\s>/]/.test(code[start + name.length + 1] ?? "")) start = code.indexOf(`<${name}`, start + 1);
@@ -228,7 +207,6 @@ export const parseOpeningTag = (code: string, name: string): OpeningTag | undefi
   }
 };
 
-// The text between `<name …>` and `</name>`. Anything but plain text (elements, expressions) is undefined.
 export const parseChildrenText = (code: string, name: string): string | undefined => {
   const tag = parseOpeningTag(code, name);
   if (!tag) return undefined;

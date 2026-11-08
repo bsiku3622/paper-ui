@@ -1,12 +1,8 @@
-// The code panel and its editor: the code is printed from the rendered subject, and an edit is read
-// back through the same grammar (jsx.ts), so every control survives a round trip.
-
 import { ParseError, componentNames, parseChildrenText, parseOpeningTag, printJsx, sourceOf } from "./jsx";
 import { pick as inLocale, type SiteLocale } from "../../site/locale";
 import { normalized, type Control, type Spec, type State } from "./schema";
 import * as demoStyles from "./entries/examples.css";
 
-// The examples stylesheet styles the demo, not the component: its classes are left out of the code.
 const DEMO_CLASSES: ReadonlySet<string> = new Set(
   Object.values(demoStyles).flatMap((value) => (typeof value === "string" ? value.split(" ") : [])),
 );
@@ -18,7 +14,6 @@ export const codeOf = (spec: Spec, state: State, harness: unknown, locale: SiteL
     names: componentNames(spec.parts),
     ignoreClasses: DEMO_CLASSES,
   });
-  // A part with a named source is written above the tree, so the code shows what the part does.
   const declarations = Object.values(spec.parts ?? {}).flatMap((part) => sourceOf(part) ?? []);
   return [...declarations, tree].join("\n\n");
 };
@@ -30,7 +25,6 @@ const read = (spec: Spec, control: Control, code: string): string | boolean | un
   const value = tag.attrs[control.prop];
   if (control.kind === "bool") {
     if (value === undefined) return spec.defaults[control.prop] === true;
-    // A prop that takes an element or an expression is on when it is there.
     return typeof value === "boolean" ? value : true;
   } else if (control.kind === "enum") {
     if (value === undefined) {

@@ -1,7 +1,3 @@
-// 서비스 관리: the hub's first page. A card for each service with a status line, and the latest activity.
-// Each status asks for itself and fills in when it answers. The home has no strip of numbers: what each service is doing is said on
-// its own card, and the numbers that belong to a service stay on that service's page.
-
 import type { ReactNode } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -38,7 +34,6 @@ export const HomePage = () => {
   const peers = usePeerViews();
   const toast = useToast();
   const demo = useDemoState();
-  // Four pretend requests, each answering in its own time.
   const filesAsked = useDelay(LATENCY.quick);
   const networkAsked = useDelay(LATENCY.list + 60);
   const wolAsked = useDelay(LATENCY.quick + 120);

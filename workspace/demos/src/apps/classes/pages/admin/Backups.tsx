@@ -1,7 +1,3 @@
-// 백업 — snapshots of the database: one every night, one before each collection from KEIS, and the ones taken by hand. A
-// restore replaces the term data whole, so it asks first and keeps the state it replaced as a new snapshot. The files are
-// only names and sizes; "받기" says so in a toast instead of downloading anything.
-
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -62,7 +58,6 @@ export const BackupsPanel = () => {
         <Stack as="ul" aria-label="백업 목록">
           {rows.map((item) => (
             <Surface as="li" key={item.name} border="top" paddingY="md">
-              {/* the name takes what the buttons leave, so a long name or note wraps instead of pushing them off the card */}
               <Grid columns="minmax(0, 1fr) auto" gap="md" align="center">
                 <Stack gap="xs" minWidth={0}>
                   <Mono strong>{item.name}</Mono>

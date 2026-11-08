@@ -1,30 +1,14 @@
-// The search engine: it runs entirely in the browser over the term's data.
-//
-//   미적분             a word — a subject, a teacher, a room, a student, a time ("화2"); what you type loosely still finds it
-//   ㅈㅂㄱㅎ3          initials only
-//   student:25-307     only students (s: st:)      teacher:윤다인 (t: te:)      room:형3407 (r: ro:)
-//   정보과학3/2,3      sections 2 and 3 of a subject
-//   a + b   a & b   !a   ( … )    or / and / not / groups
-//
-// Names with brackets would be read as groups, so a link that opens a search builds its query with subjectQuery().
-
 import type { Section, SubjectData, TermData } from "../data/build";
 import { termIndex, type Placed } from "./index";
 import { cohortOf, formatTimes, koreanName, sectionNumber } from "./utils";
 
 export type Mode = "general" | "student" | "teacher" | "room";
 
-// ── queries that open a search ───────────────────────────────────────────────
-
-// "미적분학2(EC)" → "미적분학2 EC": the brackets go, the letters stay, so it still finds only that subject.
 export const subjectQuery = (subject: string) => koreanName(subject).replace(/[()]/g, " ").replace(/\s+/g, " ").trim();
 export const sectionQuery = (subject: string, section: string) => `${subjectQuery(subject)}/${sectionNumber(section)}`;
 export const teacherQuery = (name: string) => `teacher:${name}`;
 
-// ── loose matching ───────────────────────────────────────────────────────────
-
 const ROMAN: [string, string][] = [["Ⅻ", "12"], ["Ⅺ", "11"], ["Ⅹ", "10"], ["Ⅸ", "9"], ["Ⅷ", "8"], ["Ⅶ", "7"], ["Ⅵ", "6"], ["Ⅴ", "5"], ["Ⅳ", "4"], ["Ⅲ", "3"], ["Ⅱ", "2"], ["Ⅰ", "1"]];
-// Roman numerals first (lower-casing would break them), then lower case, then no spaces or marks.
 export const normalize = (text: string) => {
   let out = text;
   for (const [roman, arabic] of ROMAN) out = out.replaceAll(roman, arabic);
@@ -38,7 +22,6 @@ export const initials = (text: string) =>
     return code >= 0 && code <= 11171 ? INITIALS[Math.floor(code / 588)]! : char;
   }).join("");
 
-// The letters of `term` appear in order in `target`, close enough together to mean it ("정3" → 정보과학3).
 const inOrder = (target: string, term: string) => {
   let best = Infinity;
   for (let start = target.indexOf(term[0]!); start !== -1; start = target.indexOf(term[0]!, start + 1)) {
@@ -74,8 +57,6 @@ const matchesItem = (item: string, term: string, strictId: boolean) => {
   if (/^[ㄱ-ㅎ]+$/.test(word)) return initials(item).includes(word);
   return fuzzy(item, word);
 };
-
-// ── the expression ───────────────────────────────────────────────────────────
 
 type Token = { kind: "term"; text: string } | { kind: "op"; text: "+" | "&" | "!" | "(" | ")" };
 
@@ -147,8 +128,6 @@ const evaluate = (expression: string, match: (term: string) => boolean): boolean
   return or();
 };
 
-// ── parsing a query ──────────────────────────────────────────────────────────
-
 const PREFIX = /^(student|st|s|teacher|te|t|room|ro|r):\s*(.*)$/i;
 const DIVIDER = /^(.+?)\s*\/\s*(\d+(?:\s*,\s*\d+)*)$/;
 
@@ -161,17 +140,13 @@ export const parseQuery = (query: string): { mode: Mode; expression: string } =>
   return { mode, expression: prefixed[2]!.trim() };
 };
 
-// The words to mark in what is shown: the terms of the expression, a divider term by its subject.
 export const searchTerms = (query: string) =>
   tokenize(parseQuery(query).expression)
     .filter((token): token is { kind: "term"; text: string } => token.kind === "term")
     .map((token) => DIVIDER.exec(token.text)?.[1]?.trim() ?? token.text)
     .map((text) => text.toLowerCase());
 
-// A logical search (several terms, a section divider) is read as one question about a group, so it shows the people it names.
 export const isLogical = (query: string) => /[+&/(]/.test(query);
-
-// ── what a search finds ──────────────────────────────────────────────────────
 
 export type Entity = { type: "student" | "teacher" | "room"; id: string; name: string; subjects: string[]; times: Placed[] };
 export type Outcome = {
@@ -219,7 +194,6 @@ export const search = (data: TermData, query: string, years: readonly string[]):
     out.push({ ...subject, sections, studentCount: new Set(sections.flatMap((section) => section.students.map((student) => student.stuId))).size });
   }
 
-  // the people, teachers and rooms the words name
   const entities: Entity[] = [];
   const seen = new Set<string>();
   const add = (entity: Entity) => {
@@ -270,7 +244,6 @@ export const search = (data: TermData, query: string, years: readonly string[]):
   };
 };
 
-// Students compared: the periods where all of them have a class but not the same one, and the ones where none does.
 export const compare = (entities: readonly Entity[]) => {
   const people = entities.filter((entity) => entity.type === "student");
   if (people.length < 2) return null;

@@ -1,9 +1,3 @@
-// What a person has written in 자몽 and what can be done to it. Everything is kept with useStored (this browser only):
-//   classes:zamong        a record per course name — { term, grade, ec }; no term, no record
-//   classes:zamong-hours  the 시수 typed by the person
-//   classes:zamong-seeded whether the offer of a ready-made history (밑칠) has been answered, so it is not made twice
-// Every change that throws something away says so in a toast with a way back.
-
 import { useCallback, useMemo } from "react";
 
 import { useStored, useToast } from "../../../../kit";
@@ -38,8 +32,6 @@ export const useZamong = () => {
     [setEntries, setHours, setSeeded],
   );
 
-  // Choosing the term is "took it"; clearing it removes the record (grade and EC with it). `announce` is for a change that moves
-  // the card out of sight, as the term panel does.
   const choose = useCallback(
     (course: string, value: string, announce = false) => {
       const before = entries[course];
@@ -62,7 +54,6 @@ export const useZamong = () => {
     [entries, setEntries, toast],
   );
 
-  // A grade or EC belongs to a record, and a record exists only once the term is chosen.
   const change = useCallback(
     (course: string, patch: (entry: ZamongEntry) => Partial<ZamongEntry>) =>
       setEntries((now) => {
@@ -79,7 +70,6 @@ export const useZamong = () => {
     [setHours],
   );
 
-  // 밑칠: the account's invented history, with this term's timetable in its own semester. Only the person's own values remain after.
   const applySeed = useCallback(
     (silent = false) => {
       const term = TERMS[0]!;

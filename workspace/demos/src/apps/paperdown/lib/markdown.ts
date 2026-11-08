@@ -1,15 +1,5 @@
-// Markdown <-> the HTML the editor holds. The first reads a Markdown file that is opened (and the sample, which is
-// written in Markdown); the second is the "Markdown 원본" export, which drops what Markdown cannot say (alignment, sizes).
-//
-// The HTML is the original's shape of document: a list item holds a paragraph, a task list says so in `data-type`, math is
-// an element that carries its LaTeX in `data-latex`. This file has no imports so that it can be read on its own.
-
 const escapeHtml = (text: string) => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-// ---------------------------------------------------------------------------------------------------------------
-// Markdown to HTML.
-
-// Words inside a line: code and math are set aside first so that their characters are not read as marks.
 const inline = (source: string): string => {
   const kept: string[] = [];
   const keep = (html: string) => `\u0000${kept.push(html) - 1}\u0000`;
@@ -50,7 +40,6 @@ const list = (lines: string[], start: number): { html: string; next: number } =>
     const match = ITEM.exec(lines[i]!);
     if (!match || match[1]!.length < base || (match[1]!.length === base && /\d/.test(match[2]!) !== ordered)) break;
     if (match[1]!.length > base) {
-      // A deeper line belongs to the item above it.
       const nested = list(lines, i);
       items[items.length - 1] = (items[items.length - 1] ?? "").replace(/<\/li>$/, `${nested.html}</li>`);
       i = nested.next;
@@ -149,9 +138,6 @@ export const markdownToHtml = (source: string): string => {
   }
   return out.join("");
 };
-
-// ---------------------------------------------------------------------------------------------------------------
-// HTML to Markdown.
 
 const pad = (text: string, prefix: string) => text.split("\n").map((line) => (line === "" ? prefix.trimEnd() : prefix + line)).join("\n");
 

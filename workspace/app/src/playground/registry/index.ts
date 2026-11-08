@@ -1,7 +1,3 @@
-// The registry: one Spec per Playground entry, in the site map's order. The entries are the files
-// of ./entries (one per PLAYGROUND_NAV item, named by its slug); the slug and the group come from the
-// site map, so a name and a place are written once.
-
 import { PLAYGROUND_NAV } from "../../site/site-map";
 import type { Spec } from "./schema";
 
@@ -9,9 +5,7 @@ const FILES = import.meta.glob<{ default: Spec }>("./entries/*.tsx", { eager: tr
 
 export type Entry = Spec & {
   slug: string;
-  // The sidebar section the entry sits in (a primitive group, or Utilities), or Atoms.
   group: string;
-  // Which part of the system it documents: the id of the site map group (Primitives or Atoms).
   part: "primitives" | "atoms";
 };
 

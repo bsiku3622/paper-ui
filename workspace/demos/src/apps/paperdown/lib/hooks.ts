@@ -1,5 +1,3 @@
-// Small hooks: a media query, as a boolean, and the title of the tab.
-
 import { useEffect, useState } from "react";
 
 export const useMedia = (query: string) => {
@@ -14,7 +12,6 @@ export const useMedia = (query: string) => {
   return matches;
 };
 
-// The page's own title, put back as it was when the page goes.
 export const useTitle = (title: string) => {
   useEffect(() => {
     const before = document.title;

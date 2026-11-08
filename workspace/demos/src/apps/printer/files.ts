@@ -1,7 +1,3 @@
-// The G-code files: a list of /gcodes (74 files, name, date and size) with the metadata Moonraker reads out of
-// each file. Only the jobs in the history carry real metadata; for the other files it is worked out from the name (which the
-// slicer fills with material and print time) and drawn from a seeded random, so it is the same on every load.
-
 import { random } from "../../kit";
 import { GCODE_LIST } from "./data/gcodes";
 import { HISTORY, type HistoryJob } from "./data/history";
@@ -24,7 +20,6 @@ export const secondsInName = (name: string) => {
 
 export const materialInName = (name: string) => /_(PLA|TPU|PETG|ABS)_/.exec(name)?.[1] ?? "PLA";
 
-// Slicer builds the printer has used, by the date of the file.
 const slicerOf = (modified: number) => (modified < 1_779_000_000 ? "2.3.1" : modified < 1_789_000_000 ? "2.3.2" : "2.4.2");
 
 const jobMeta = new Map<string, HistoryJob["meta"]>();
@@ -74,7 +69,6 @@ const metaOf = (name: string, modified: number): FileMeta => {
   };
 };
 
-// A file that is new to the printer (an upload): its metadata is worked out the same way.
 export const makeFile = (name: string, size: number, modified: number, folder: string): FileEntry => ({
   path: folder ? `${folder}/${name}` : name,
   name,
@@ -92,7 +86,6 @@ export const buildFiles = (): FileEntry[] =>
 
 export const FOLDER_NAMES: readonly string[] = FOLDERS.map((folder) => folder.name);
 
-// How the file fared the last time it was printed, from the job history (newest first).
 export type FileHistory = { count: number; completed: number; last: HistoryJob | null; lastDone: HistoryJob | null };
 
 export const historyOf = (history: readonly HistoryJob[], name: string): FileHistory => {

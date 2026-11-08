@@ -1,6 +1,3 @@
-// What the user sets in the settings dialog (Mainsail keeps it in Moonraker's database; here it is kept in the browser
-// under printer:settings, printer:presets and printer:webcams), and the hook the pages read it with.
-
 import { createContext, useCallback, useContext, useMemo, type ReactNode } from "react";
 
 import { useStored } from "../../kit";

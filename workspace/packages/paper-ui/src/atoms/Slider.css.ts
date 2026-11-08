@@ -16,9 +16,6 @@ const thumb = {
   ...elevationCast("lifted"),
 } as const;
 
-// The native range with its own look taken off. The groove and its fill are one background (sliderPaint) and the thumb is the native
-// one, so dragging, the keys and the form all stay the browser's. A bar under the minimum target reaches it with room above and below,
-// which the background does not paint into.
 export const sliderRoot = style([stateStyle.focusVisible, stateStyle.disabled, {
   vars: { [sliderVars.thumb]: sliderThumb },
   appearance: "none",

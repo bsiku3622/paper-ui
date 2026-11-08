@@ -1,8 +1,3 @@
-// The conversation, kept in memory only — as the privacy page promises, a reload clears it. It lives outside React so the
-// small window in the top bar and the Ask page read the same one, and so an answer that is still arriving keeps arriving
-// when you move to another page. An answer is a short timeline: the model wakes (only the first time, when it is the
-// desktop one), it thinks, each tool it uses appears as a step, then the text arrives in pieces.
-
 import { useSyncExternalStore } from "react";
 
 import { answer, type Context, type Step } from "./engine";
@@ -80,7 +75,6 @@ export const send = (question: string, context: Context, model: Model) => {
   });
 };
 
-// A conversation that is already finished, for a screenshot (?demo=done) or a first look: no timers, no waiting.
 export const seed = (questions: readonly string[], context: Context) => {
   if (messages.length > 0) return;
   for (const question of questions) {

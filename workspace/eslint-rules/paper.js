@@ -4,24 +4,17 @@ import { COLOR_OWNERS, GLOBAL_SELECTOR_FILES, RUNTIME_STYLE, TOKEN_LAYER, isInsi
 import { sourceIsolationRule } from "./source-isolation.js";
 import { STYLE_CALLS, calledFunction, calleeName, domStyleWrites, givenTo, heldBy, memberKeys, patternPath, picked, returnsOf, rootOf, sourceNumbersRule, variableOf } from "./source-numbers.js";
 
-// A colour written by hand: a HEX (also url-encoded) or a colour function. Any string, template or key.
 const rawColor = /(?:#|%23)(?:[\da-f]{8}|[\da-f]{6}|[\da-f]{4}|[\da-f]{3})\b|\b(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color|color-mix)\s*\(/i;
-// The properties whose value may be a colour, so a keyword in them is read as one.
 const colorProperty = /color|background|border|outline|shadow|fill|stroke|caret|accent|decoration|columnRule|filter|mask|^--/i;
 const namedColors = new Set(("aliceblue antiquewhite aqua aquamarine azure beige bisque black blanchedalmond blue blueviolet brown burlywood cadetblue chartreuse chocolate coral cornflowerblue cornsilk crimson cyan darkblue darkcyan darkgoldenrod darkgray darkgreen darkgrey darkkhaki darkmagenta darkolivegreen darkorange darkorchid darkred darksalmon darkseagreen darkslateblue darkslategray darkslategrey darkturquoise darkviolet deeppink deepskyblue dimgray dimgrey dodgerblue firebrick floralwhite forestgreen fuchsia gainsboro ghostwhite gold goldenrod gray green greenyellow grey honeydew hotpink indianred indigo ivory khaki lavender lavenderblush lawngreen lemonchiffon lightblue lightcoral lightcyan lightgoldenrodyellow lightgray lightgreen lightgrey lightpink lightsalmon lightseagreen lightskyblue lightslategray lightslategrey lightsteelblue lightyellow lime limegreen linen magenta maroon mediumaquamarine mediumblue mediumorchid mediumpurple mediumseagreen mediumslateblue mediumspringgreen mediumturquoise mediumvioletred midnightblue mintcream mistyrose moccasin navajowhite navy oldlace olive olivedrab orange orangered orchid palegoldenrod palegreen paleturquoise palevioletred papayawhip peachpuff peru pink plum powderblue purple rebeccapurple red rosybrown royalblue saddlebrown salmon sandybrown seagreen seashell sienna silver skyblue slateblue slategray slategrey snow springgreen steelblue tan teal thistle tomato turquoise violet wheat white whitesmoke yellow yellowgreen").split(" "));
-// The CSS system colours, spelled as the specification spells them. A component asks for one by name through
-// SYSTEM_COLORS, never by its keyword. The spelling is read as written, so `canvas` the Surface fill stays a word.
 const systemColors = new Set("Canvas CanvasText LinkText VisitedText ActiveText ButtonFace ButtonText ButtonBorder Field FieldText Highlight HighlightText SelectedItem SelectedItemText Mark MarkText GrayText AccentColor AccentColorText".split(" "));
 
 const QUOTED_WRAPPERS = new Set(["TSAsExpression", "TSSatisfiesExpression", "TSNonNullExpression", "TSTypeAssertion", "ChainExpression"]);
-// What ends a word in a value, on either side of a template's placeholder.
 const WORD_END = /(?:^|[\s,()/])$/;
 const WORD_START = /^(?:$|[\s,()/])/;
 
 const textOf = (node) => (node.type === "TemplateLiteral" ? node.quasis.map((part) => part.value.cooked ?? part.value.raw).join(" ") : node.value);
 
-// The package reads `tokens.color` in the Paint primitives and nowhere else: a part that needs a colour takes the class
-// from there. A read is `tokens.color…` or `const { color } = tokens`.
 const PACKAGE_SRC = TOKEN_LAYER.replace(/\/tokens$/, "");
 const readsColorRoles = {
   MemberExpression(node) {
@@ -52,9 +45,6 @@ const rawColorRule = {
       else if (list?.type === "ArrayExpression") list.elements.forEach(readPair);
       else read(list);
     };
-    // The string pieces a value is made of, through wrappers, conditionals, logicals, templates, concatenations,
-    // arrays, the arguments of a call, and the same-file name, table or function it reads, down to what the file hands
-    // a parameter. A piece is a string literal or a template's text.
     const pieces = (node, found = [], seen = new Set()) => {
       if (!node || seen.has(node)) return found;
       seen.add(node);
@@ -64,7 +54,6 @@ const rawColorRule = {
         case "Literal": if (typeof node.value === "string") found.push(node); break;
         case "TemplateLiteral":
           found.push(node);
-          // A name run into the text around it is part of a longer word: `${ramp}.700` is a path, not a colour.
           node.expressions.forEach((expression, index) => {
             if (WORD_END.test(node.quasis[index].value.cooked ?? "") && WORD_START.test(node.quasis[index + 1].value.cooked ?? "")) read(expression);
           });
@@ -75,9 +64,7 @@ const rawColorRule = {
         case "ArrayExpression": node.elements.forEach(read); break;
         case "ObjectExpression": node.properties.forEach((entry) => read(entry.type === "SpreadElement" ? entry.argument : entry.value)); break;
         case "CallExpression":
-          // The first of each pair is a key: `Object.fromEntries(RAMPS.map((name) => [name, …]))`.
           if (calleeName(source, node) === "fromEntries") { readPairs(node.arguments[0], read); break; }
-          // A same-file function's parameters read what each call hands them, where the function uses them.
           if (calledFunction(source, node)) read(calledFunction(source, node));
           else node.arguments.forEach(read);
           break;
@@ -95,7 +82,6 @@ const rawColorRule = {
       }
       return found;
     };
-    // A keyword in the value of a colour-capable key.
     const checkKeyword = (value) => {
       for (const piece of pieces(value)) {
         const word = textOf(piece).split(/[\s,()/]+/).find((candidate) => namedColors.has(candidate.toLowerCase()) || systemColors.has(candidate));
@@ -103,7 +89,6 @@ const rawColorRule = {
       }
     };
     const isBlock = (node) => (QUOTED_WRAPPERS.has(node.type) ? isBlock(node.expression) : node.type === "ObjectExpression");
-    // A key takes a colour by its name. A key read from the file is that text; one that cannot be read is a custom property.
     const takesColor = (property) => {
       const under = property.parent.parent;
       if (under?.type === "Property" && (under.key.name ?? under.key.value) === "vars") return true;
@@ -111,12 +96,9 @@ const rawColorRule = {
       const names = pieces(property.key);
       return names.length > 0 ? names.some((name) => colorProperty.test(textOf(name))) : !isBlock(property.value);
     };
-    // A DOM style write, by the property it sets; a write that names none may set a colour.
     const checkWrite = ({ property, value }) => {
       if (value && !isBlock(value) && (property === undefined || property === "cssText" || colorProperty.test(property))) checkKeyword(value);
     };
-    // What goes into a function the rule cannot read, in a style call, may be what comes out. A same-file function says
-    // what it does with its parameters.
     const checkHanded = (node) => {
       if (QUOTED_WRAPPERS.has(node?.type)) return checkHanded(node.expression);
       if (node?.type === "CallExpression") { if (!calledFunction(source, node)) checkKeyword(node); }
@@ -146,19 +128,6 @@ const rawColorRule = {
   },
 };
 
-// A .ts/.tsx file never hands a token to `style`: a token is applied by a `.css.ts` className. The rule reports a
-// JSX `style` attribute, an object property keyed `style`, or a write to a DOM style declaration (`el.style.width =`,
-// `el.style.setProperty()`, `Object.assign(el.style, …)`, `el.setAttribute("style", …)`) whose value reaches a binding
-// imported from the package itself or from any relative module: what a sibling helper returns is not read, so it is
-// taken to hold a token. "Reaches" follows what the value is made of: a declarator's initialiser and destructuring,
-// a variable's later assignments, member chains, a call's callee and arguments, the bodies of the functions it holds,
-// a parameter to what the file hands it (a call's argument, a JSX prop, an entry of a `.map` or a `.forEach`), and
-// conditional, logical, binary, template, spread and TypeScript-wrapper nodes. No call is opaque and no name is
-// listed; a `throw` is not followed, since what a function throws is never the value it returns. Two kinds of module
-// are untracked. A stylesheet exports the class and variable names it generates, unless it sits in the directories
-// that hold token values and their maps (src/tokens, src/styles, src/internal). The declared runtime modules
-// (RUNTIME_STYLE in the manifest, each with its reason) compute a value of the moment: an anchored position, an Aria
-// press style, a carried source variable.
 const TRACKED_DIRECTORIES = ["tokens", "styles", "internal"];
 const PACKAGE_IMPORT = /^@studio-baeks\/paper-ui/;
 const SOURCE_ROOT = /^(.*[\\/]packages[\\/]paper-ui[\\/]src)[\\/]/;
@@ -188,7 +157,6 @@ const inlineTokenRule = {
       return !stylesheet || TRACKED_DIRECTORIES.includes(inside.split("/")[0]);
     };
 
-    // `keys` is what is read off the value: `props.width`, or `const { width } = props`.
     const reaches = (node, seen = new Set(), keys = []) => {
       if (!node || seen.has(node)) return false;
       seen.add(node);
@@ -196,7 +164,6 @@ const inlineTokenRule = {
       if (TYPE_WRAPPERS.has(node.type)) return reaches(node.expression, seen, keys);
       if (node.type.startsWith("TS") || node.type === "ThrowStatement") return false;
       if (node.type === "MemberExpression") {
-        // A chain off a name reads that name by its keys, and whatever a computed key is made of.
         const computed = [];
         let root = node;
         while (root.type === "MemberExpression" || TYPE_WRAPPERS.has(root.type)) {
@@ -224,9 +191,7 @@ const inlineTokenRule = {
         return false;
       });
       if (defined) return true;
-      // What the file hands a parameter.
       if (givenTo(source, variable, keys).some((given) => reaches(given, seen))) return true;
-      // Later assignments: `value = tokens.x` and `value.color = tokens.x`.
       return variable.references.some((reference) => {
         if (reference.writeExpr) return reaches(reference.writeExpr, seen);
         const member = reference.identifier.parent;
@@ -250,9 +215,6 @@ const inlineTokenRule = {
   },
 };
 
-// Package stylesheets reach vanilla-extract's rule APIs only through layered() from tokens/layers.css.ts, so
-// every rule lands in a pui.* cascade layer. keyframes, createVar, fallbackVar and createGlobalVar stay direct
-// imports: @keyframes and @property sit outside layers by design. Type-only imports emit nothing.
 const RULE_APIS = {
   "@vanilla-extract/css": new Set(["style", "styleVariants", "globalStyle", "createTheme", "createGlobalTheme", "layer", "globalLayer"]),
   "@vanilla-extract/recipes": new Set(["recipe"]),
@@ -289,16 +251,6 @@ const layeredStylesRule = {
   },
 };
 
-// Nobody writes the name of a package class. Shared axes reach their class through the package's typed maps, so a
-// `pui-` string is a name the package does not promise. `--pui-*` variables and `data-pui-*` attributes pass: the
-// character before the prefix is `-` there. A template literal counts each placeholder as a letter, so
-// `pui-${name}-dot` is read as a class name too, a `+` whose left side ends in `pui-` likewise, and a regular expression
-// is read by its pattern.
-//
-// Inside the package a `pui-` name can be something other than a class, and where it sits says so: an element's id
-// (`id:`, `id=`, `htmlFor=`, or a binding named …Id), a stored key (a binding named …KEY or …Key, or the first argument
-// of a storage call), or the absence a negative assertion states. A selector (`.pui-x`) and a binding that a class
-// position reads are still classes. An app, a fixture or a spec has no such names of its own.
 const internalClass = /(^|[^-\w])pui-[a-z]/;
 const SELECTOR_NAME = /\.pui-[a-z]/;
 const CLASS_KEYS = new Set(["className", "class"]);
@@ -306,7 +258,6 @@ const ID_KEYS = new Set(["id", "htmlFor"]);
 const ID_OR_KEY_BINDING = /(?:^id|Id|_ID|^key|Key|_KEY)$/;
 const STORAGE_OBJECTS = new Set(["localStorage", "sessionStorage"]);
 const SEE_THROUGH = new Set(["LogicalExpression", "ConditionalExpression", "BinaryExpression", "JSXExpressionContainer", ...QUOTED_WRAPPERS]);
-// The text a concatenation's left side ends in.
 const trailingText = (node) => {
   if (node.type === "Literal") return typeof node.value === "string" ? node.value : "";
   if (node.type === "TemplateLiteral") return node.quasis.at(-1).value.cooked ?? "";
@@ -320,7 +271,6 @@ const internalClassRule = {
     const ownNames = isInside(file, PACKAGE_SRC);
 
     const propertyName = (member) => (member?.type === "MemberExpression" && !member.computed ? member.property.name : undefined);
-    // Does a binding reach where a class goes: a className, a class list, or another name that does?
     const readsAsClass = (declarator, seen = new Set()) => {
       if (seen.has(declarator)) return false;
       seen.add(declarator);
@@ -410,11 +360,6 @@ const noRuleDisableRule = {
   },
 };
 
-// An app stylesheet makes no global name of its own. A globalStyle selector starts from a scoped class (an
-// interpolated `${scoped}`), so the rule reaches only what a component names; an element or :root selector
-// lives in the manifest's GLOBAL_SELECTOR_FILES. A global keyframes or a global variable is a name made up by
-// hand, and has no place at all. Where a selector is built by a call, the rule cannot see its start and passes.
-// Does a selector list, written as a template, have a selector that begins with literal text?
 const templateStartsWithText = (quasis) => {
   let depth = 0;
   let atStart = true;
@@ -428,7 +373,6 @@ const templateStartsWithText = (quasis) => {
       else if (char === ")") depth = Math.max(0, depth - 1);
       else if (char === "," && depth === 0) atStart = true;
     }
-    // An interpolation that opens a selector is the scoped class itself.
     if (index < quasis.length - 1) atStart = false;
   }
   return false;

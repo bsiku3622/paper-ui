@@ -1,7 +1,3 @@
-// A slider. Paper has no range input; this is the browser's own, coloured by Paper's tokens (charts.css.ts). `onChange`
-// follows the thumb; `onCommit` fires once when the thumb is let go (or a key is released), which is when a printer
-// setting should be sent.
-
 import { useState } from "react";
 
 import { range } from "./charts.css";

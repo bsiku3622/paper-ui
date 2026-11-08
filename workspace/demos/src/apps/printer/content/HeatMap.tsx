@@ -1,8 +1,3 @@
-// The bed mesh as a heat map. Mainsail draws it as a 3D surface; Paper has nothing that draws a grid of values, so this is a
-// plain top view of the bed (front at the bottom): one cell per measurement, or the interpolated mesh, on a diverging scale
-// (amber where the bed is high, blue where it is low, the neutral face where it is level). The colours are Paper tokens laid over
-// the well by how far a value is from level. The legend names the scale; the extremes are labelled; every cell answers on hover.
-
 import { useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 
 import { Box, elevation } from "@studio-baeks/paper-ui";
@@ -16,7 +11,6 @@ type Props = {
   points: Matrix;
   mesh: Matrix;
   bounds: { minX: number; maxX: number; minY: number; maxY: number };
-  // The colour scale runs from -limit to +limit millimetres.
   limit: number;
   smooth: boolean;
   probed: boolean;
@@ -26,8 +20,6 @@ type Props = {
 
 const MARGIN = { left: 44, right: 8, top: 8, bottom: 26 };
 
-// The edges of n cells over the probed index range [-0.5, probes - 0.5]: a sample sits where its measurement was, and its
-// cell runs half way to each neighbour.
 const edges = (n: number, probes: number) => {
   const at = (k: number) => (k * (probes - 1)) / Math.max(1, n - 1);
   return Array.from({ length: n + 1 }, (_, k) => (k === 0 ? -0.5 : k === n ? probes - 0.5 : (at(k - 1) + at(k)) / 2));
@@ -42,7 +34,6 @@ const signed = (value: number) => `${value >= 0 ? "+" : "−"}${Math.abs(value).
 
 export const HeatMap = ({ points, mesh, bounds, limit, smooth, probed, values, grid }: Props) => {
   const [ref, size] = useSize<HTMLDivElement>();
-  // The cell under the pointer, and where its readout stands in the plot.
   const [hover, setHover] = useState<{ row: number; col: number; left: number; top: number } | null>(null);
   const field = smooth ? mesh : points;
   const rows = field.length;
@@ -58,7 +49,6 @@ export const HeatMap = ({ points, mesh, bounds, limit, smooth, probed, values, g
   const height = plotH + MARGIN.top + MARGIN.bottom;
   const xEdges = edges(cols, probeCols);
   const yEdges = edges(rows, probeRows);
-  // A position in probed-index units to pixels: the front row (index 0) is drawn at the bottom.
   const px = (index: number) => MARGIN.left + (index + 0.5) * cell;
   const py = (index: number) => MARGIN.top + plotH - (index + 0.5) * cell;
 

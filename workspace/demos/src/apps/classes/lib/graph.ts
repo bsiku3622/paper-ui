@@ -1,7 +1,3 @@
-// The layout of the curriculum as a graph: courses are boxes, a prerequisite is a line, and the horizontal position is how
-// deep the course sits in its prerequisite chain (the left column needs nothing; further right, the more is stacked under it).
-// Pure geometry — drawing it is the job of content/CourseGraph (an SVG) or of any page that wants columns of cards.
-
 import type { Course, Prereq } from "../data/catalog";
 
 export const NODE_WIDTH = 150;
@@ -20,7 +16,6 @@ export type FullGraph = Graph & { lanes: GraphLane[] };
 export type LayoutSize = { width: number; height: number; columnGap: number; rowGap: number; align: "top" | "center" };
 export const DEFAULT_SIZE: LayoutSize = { width: NODE_WIDTH, height: NODE_HEIGHT, columnGap: COLUMN_GAP, rowGap: ROW_GAP, align: "top" };
 
-// depth = the longest chain of prerequisites inside `names` that ends at the course
 const levelsOf = (names: ReadonlySet<string>, edges: readonly Prereq[]) => {
   const before = new Map<string, string[]>();
   for (const edge of edges) if (names.has(edge.before) && names.has(edge.after)) before.set(edge.after, [...(before.get(edge.after) ?? []), edge.before]);
@@ -44,7 +39,6 @@ const curve = (fromX: number, fromY: number, toX: number, toY: number) => {
   return `M${fromX},${fromY} C${mid},${fromY} ${mid},${toY} ${toX},${toY}`;
 };
 
-// One department (or any set of courses) as columns. `edges` outside the set are ignored.
 export const layoutGraph = (courses: readonly Course[], prerequisites: readonly Prereq[], size: LayoutSize = DEFAULT_SIZE, offsetY = 0): Graph => {
   const names = new Set(courses.map((course) => course.name));
   const byName = new Map(courses.map((course) => [course.name, course]));
@@ -60,7 +54,6 @@ export const layoutGraph = (courses: readonly Course[], prerequisites: readonly 
   const span = tallest * size.height + (tallest - 1) * size.rowGap;
   columns.forEach((column, depth) => {
     if (!column) return;
-    // order by where the prerequisites sit, so lines cross less
     const score = (name: string) => {
       const ys = inside.filter((edge) => edge.after === name).map((edge) => placed.get(edge.before)?.y).filter((y): y is number => y !== undefined);
       return ys.length ? ys.reduce((sum, y) => sum + y, 0) / ys.length : Number.MAX_SAFE_INTEGER;
@@ -80,7 +73,6 @@ export const layoutGraph = (courses: readonly Course[], prerequisites: readonly 
   return { nodes: [...placed.values()], edges, width: columns.length * (size.width + size.columnGap) - size.columnGap, height: span };
 };
 
-// Every department as a lane of its own, with the lines that cross between lanes.
 export const layoutFullGraph = (courses: readonly Course[], prerequisites: readonly Prereq[], departments: readonly string[]): FullGraph => {
   const lanes: GraphLane[] = [];
   const nodes: GraphNode[] = [];
@@ -104,7 +96,6 @@ export const layoutFullGraph = (courses: readonly Course[], prerequisites: reado
   return { nodes, edges, lanes, width, height: Math.max(0, y - LANE_GAP - LANE_HEAD) };
 };
 
-// The prerequisites a course has in other departments, for the card to say in words ("선수 미적분학1").
 export const outsidePrereqs = (scoped: readonly Course[], prerequisites: readonly Prereq[]) => {
   const names = new Set(scoped.map((course) => course.name));
   const out = new Map<string, Prereq[]>();

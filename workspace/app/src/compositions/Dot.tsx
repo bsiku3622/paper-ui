@@ -1,6 +1,3 @@
-// Dot — a small filled mark: a status point or a navigation marker. The package has no dot, so this is
-// the app's composition of Surface; the colour is a status (its solid) or an ink level (the mark takes its ink).
-
 import type { HTMLAttributes } from "react";
 
 import { Surface } from "@studio-baeks/paper-ui";

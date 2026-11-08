@@ -1,6 +1,3 @@
-// Small parts the admin console's panels share: a table drawn with a Grid, a pager, a confirm dialog, a search box, and the
-// two helpers that stand in for the server (a short wait, and the time a new row is stamped with).
-
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 
 import { Badge, Box, Button, Field, Grid, IconButton, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";
@@ -10,12 +7,8 @@ import { formatDate, formatTime, Glyph } from "../../../../kit";
 import type { Clock } from "../../state";
 import { Dialog } from "../../ui/parts";
 
-// ── time ─────────────────────────────────────────────────────────────────────
-
-// The app's clock as the +09:00 text the stored rows use.
 export const stamp = (clock: Clock) => `${clock.key}T${String(Math.floor(clock.minute / 60)).padStart(2, "0")}:${String(clock.minute % 60).padStart(2, "0")}:00+09:00`;
 
-// "10월 12일 14:22"
 export const whenLabel = (iso: string) => {
   const date = new Date(iso);
   return `${formatDate(date)} ${formatTime(date)}`;
@@ -24,7 +17,6 @@ export const dayLabel = (iso: string) => formatDate(new Date(iso));
 
 export const nextId = (rows: readonly { id: number }[]) => Math.max(0, ...rows.map((row) => row.id)) + 1;
 
-// A wait that stands in for the server: `run(done)` is busy for a moment, then calls `done`. Cleared when the page goes.
 export const useBriefly = (milliseconds = 700) => {
   const [busy, setBusy] = useState(false);
   const timer = useRef<number | undefined>(undefined);
@@ -43,9 +35,6 @@ export const useBriefly = (milliseconds = 700) => {
   return [busy, run] as const;
 };
 
-// ── words ────────────────────────────────────────────────────────────────────
-
-// An identifier: a username, an address, a file name.
 export const Mono = ({ children, strong = false, ink }: { children: ReactNode; strong?: boolean; ink?: "primary" | "secondary" | "tertiary" }) => (
   <Text as="span" family="mono" strong={strong} ink={ink}>{children}</Text>
 );
@@ -63,7 +52,6 @@ export const SearchField = ({ value, onChange, placeholder, label }: { value: st
   </Box>
 );
 
-// A dot and a word: someone online, a switch that is on. Green only for the one that is on.
 export const StatusDot = ({ on, onLabel, offLabel }: { on: boolean; onLabel: string; offLabel: string }) => (
   <Inline as="span" gap="xs" align="center">
     <Badge dot size="xs" variant="soft" accent={on ? "success" : "primary"} aria-label="" />
@@ -71,14 +59,10 @@ export const StatusDot = ({ on, onLabel, offLabel }: { on: boolean; onLabel: str
   </Inline>
 );
 
-// ── a table without a <table> ────────────────────────────────────────────────
-
 export type Tracks = string | { base?: string; sm?: string; md?: string; lg?: string; xl?: string };
 export type Column = { head: ReactNode; hideBelow?: Breakpoint; end?: boolean };
 export type TableRow = { id: string | number; cells: ReactNode[] };
 
-// Every row is a Grid with the same tracks, so the columns line up. A column marked `hideBelow` goes from the header and the
-// rows together, and the tracks for the narrow screen are the ones that are left.
 export const Table = ({ label, columns, tracks, rows }: { label: string; columns: readonly Column[]; tracks: Tracks; rows: readonly TableRow[] }) => (
   <Stack>
     <Grid columns={tracks} gap="md" align="center" paddingX="md" paddingY="sm" hideBelow="md" aria-hidden>
@@ -108,8 +92,6 @@ export const Table = ({ label, columns, tracks, rows }: { label: string; columns
   </Stack>
 );
 
-// ── a page of a long list ────────────────────────────────────────────────────
-
 export const Pager = ({ page, pages, onPage, note }: { page: number; pages: number; onPage: (page: number) => void; note?: ReactNode }) => (
   <Inline gap="sm" align="center" wrap>
     {note ? <Text as="span" variant="caption" ink="tertiary">{note}</Text> : null}
@@ -118,8 +100,6 @@ export const Pager = ({ page, pages, onPage, note }: { page: number; pages: numb
     <IconButton variant="hairline" size="sm" aria-label="다음 쪽" disabled={page >= pages} onClick={() => onPage(page + 1)}><Glyph name="chevron-right" /></IconButton>
   </Inline>
 );
-
-// ── a question before something that cannot be taken back ────────────────────
 
 export const ConfirmDialog = ({ open, onClose, title, description, confirmLabel, tone, onConfirm, children }: { open: boolean; onClose: () => void; title: string; description?: ReactNode; confirmLabel: string; tone?: Accent; onConfirm: () => void; children?: ReactNode }) => (
   <Dialog

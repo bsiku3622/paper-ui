@@ -1,7 +1,5 @@
 import { expect, test } from "@playwright/test";
 
-// The site speaks the visitor's language: the browser's until the visitor picks one, and the pick is kept.
-
 test.describe("a browser that asks for English", () => {
   test.use({ locale: "en-US" });
 

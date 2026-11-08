@@ -1,6 +1,3 @@
-// The VPN: thirteen invented peers on the demo's subnets, and what the mock server works out when they are read — a
-// handshake that keeps coming for the ones that are online, counters that grow, a rate that moves every ten seconds.
-
 import { NOW, random } from "../../../kit";
 import { DAY, HOUR, MINUTE, before, now } from "../lib/clock";
 import { fakeKey } from "../lib/fake";
@@ -23,7 +20,6 @@ type Seed = {
   ip: string;
   endpoint: string | null;
   online: boolean;
-  // Hours since the last handshake when it is not online.
   away?: number;
   recv: number;
   sent: number;
@@ -72,7 +68,6 @@ const hash = (text: string) => {
   return value >>> 0;
 };
 
-// A peer that is also a Wake-on-LAN device is online exactly when the device answers.
 export type Reach = (allowedIp: string, at: number) => { online: boolean; wentAway?: number } | null;
 export const reachFromDevices = (devices: readonly WolDevice[], reachable: (device: WolDevice, at: number) => boolean): Reach => (allowedIp, at) => {
   const device = devices.find((item) => item.address === allowedIp);
@@ -89,7 +84,6 @@ export const readPeer = (row: PeerRow, at = now(), reach?: Reach): WireGuardPeer
   const elapsed = Math.max(0, (at - Math.max(NOW.getTime(), row.connectsAt ?? 0)) / 1000);
   const perSecond = online ? (row.kbps * 1000) / 8 : 0;
   const address = hash(row.publicKey);
-  // A handshake comes every couple of minutes; a peer that has just connected has one from that moment, not from before it.
   const latest = seconds - 1 - (hash(`${row.publicKey}:${Math.floor(seconds / 10)}`) % 70);
   return {
     name: row.name,
@@ -105,19 +99,15 @@ export const readPeer = (row: PeerRow, at = now(), reach?: Reach): WireGuardPeer
 
 export const isOnline = (peer: WireGuardPeer, at = now()) => peer.handshake > 0 && at / 1000 - peer.handshake < 180;
 
-// The next free last number in a subnet, the way the server hands them out.
 export const nextHost = (rows: readonly PeerRow[], prefix: string, first: number): number | null => {
   const used = rows.filter((row) => row.allowedIp.startsWith(prefix)).map((row) => Number(row.allowedIp.slice(prefix.length)));
   const next = Math.max(first - 1, ...used) + 1;
   return next <= 254 ? next : null;
 };
 
-// Traffic ------------------------------------------------------------------------------------------------------------
-
 export const SLOT = 10_000;
 export type Rate = { upload: number; download: number };
 
-// One peer's rate in a ten-second slot, in Mbps: upload is peer to server, download is server to peer.
 export const rateOf = (row: PeerRow, slot: number, online: boolean): Rate => {
   if (!online) return { upload: 0, download: 0 };
   const next = random(`${row.publicKey}:${slot}`);
@@ -140,7 +130,6 @@ export const totalRate = (rows: readonly PeerRow[], slot: number, at: number, re
   return total;
 };
 
-// The last `count` ten-second samples of the whole VPN, oldest first, ending at `at`.
 export const trafficHistory = (rows: readonly PeerRow[], at: number, count = 18, reach?: Reach): { at: number; upload: number; download: number }[] => {
   const last = Math.floor(at / SLOT);
   return Array.from({ length: count }, (_, index) => {
@@ -149,7 +138,6 @@ export const trafficHistory = (rows: readonly PeerRow[], at: number, count = 18,
   });
 };
 
-// A day of one peer, hour by hour, in megabytes. It is quiet at night, busier in the evening, and stops where its last handshake was.
 export const hourlyUsage = (row: PeerRow, peer: WireGuardPeer, at = now(), hours = 24): { at: number; upload: number; download: number }[] => {
   const lastHour = Math.floor(at / HOUR);
   return Array.from({ length: hours }, (_, index) => {
@@ -165,7 +153,6 @@ export const hourlyUsage = (row: PeerRow, peer: WireGuardPeer, at = now(), hours
   });
 };
 
-// The connections behind a peer: when each began and ended, newest first. The first is still open for an online peer.
 export type Session = { id: string; start: number; end: number | null; upload: number; download: number };
 export const sessionsOf = (row: PeerRow, peer: WireGuardPeer, at = now()): Session[] => {
   if (peer.handshake === 0) return [];
@@ -187,6 +174,5 @@ export const sessionsOf = (row: PeerRow, peer: WireGuardPeer, at = now()): Sessi
   return sessions.filter((session) => session.start > row.addedAt);
 };
 
-// The handshakes of the last quarter hour for an online peer, a couple of minutes apart.
 export const recentHandshakes = (peer: WireGuardPeer, at = now(), count = 6) =>
   Array.from({ length: count }, (_, index) => peer.handshake * 1000 - index * 2 * MINUTE).filter((moment) => moment > 0 && moment <= at);

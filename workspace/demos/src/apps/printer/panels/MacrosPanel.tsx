@@ -1,6 +1,3 @@
-// The macros Klipper reports, as buttons: grouped as the user grouped them, the hidden ones left out. A macro that takes
-// parameters has a chevron beside it that opens its fields; the button itself runs it with its defaults.
-
 import { useState } from "react";
 
 import { Button, Field, Floating, FormField, IconButton, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";

@@ -1,6 +1,3 @@
-// PlaylistDialog — 플레이리스트를 만들고 고치는 대화상자. 이름과 설명, 담은 곡의 순서 바꾸기와 빼기, 곡 더하기.
-// 저장을 눌러야 바뀝니다. 지울 때는 되돌리기를 줍니다.
-
 import { useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -15,9 +12,7 @@ import { MiniTrack } from "./MiniTrack";
 import { Reorder } from "./Reorder";
 
 type Props = {
-  // 고칠 플레이리스트. 없으면 새로 만듭니다.
   id?: string;
-  // 새로 만들 때 처음부터 담아 둘 곡.
   seed?: readonly string[];
   onClose: () => void;
 };

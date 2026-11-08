@@ -1,19 +1,13 @@
-// What the screens say about a page, worked out from its data: which fit is in use, what the heading is, how big the output
-// is. The wording of the headings and the size line is the app's own.
-
 import { formatNumber } from "../../../kit";
 import { quadPixels } from "./geometry";
 import type { Fit, Page, Quad, RatioChoice } from "./types";
 
-/** Under this the result stands, with a request to check it. */
 const UNSURE_BELOW = 0.65;
 
-/** The fit that is actually in use for a page. */
 export const activeFit = (page: Page): Fit | null => (page.settings.align && page.aligned ? page.aligned : page.fit);
 
 export const isReady = (page: Page) => page.status === "ready" && page.fit !== null;
 
-/** Pages the strip marks: one that would not open, and one where nothing was found. */
 export const isFlagged = (page: Page) => page.status === "failed" || page.fit?.origin === "none";
 
 export const isUnsure = (page: Page) => {
@@ -21,7 +15,6 @@ export const isUnsure = (page: Page) => {
   return fit !== null && fit.origin === "auto" && fit.lines !== "ruled" && fit.confidence < UNSURE_BELOW;
 };
 
-/** A sheet outline is on the page, so its printed lines can be used or left alone. */
 export const hasSheet = (page: Page) => page.fit?.kind === "sheet" && page.fit.origin !== "none";
 
 export const headingOf = (page: Page): string => {
@@ -35,8 +28,6 @@ export const headingOf = (page: Page): string => {
   return fit.lines === "ruled" ? "줄에 맞춰 폈습니다" : "격자를 찾았습니다";
 };
 
-// ── Paper shapes ──
-
 type PaperRatio = { ratio: number; label: string };
 
 const STANDARD = [
@@ -44,7 +35,6 @@ const STANDARD = [
   { long: 11 / 8.5, tolerance: 0.02, label: "Letter" },
 ];
 
-/** A measured 1.39 on a sheet of A4 is measurement error, not a new paper size. */
 const snapRatio = (ratio: number): PaperRatio => {
   const portrait = ratio < 1;
   const long = portrait ? 1 / ratio : ratio;
@@ -60,34 +50,25 @@ const CHOICES: Record<Exclude<RatioChoice, "auto">, PaperRatio> = {
   square: { ratio: 1, label: "정사각형" },
 };
 
-/** Width over height to use. Fixed sizes keep the sheet's orientation as photographed. */
 export const resolveRatio = (measured: number, choice: RatioChoice): PaperRatio => {
   if (choice === "auto") return snapRatio(measured);
   const { ratio, label } = CHOICES[choice];
   return { ratio: measured < 1 ? 1 / ratio : ratio, label };
 };
 
-// ── What comes out ──
-
-/** Empty corners the photo did not reach, trimmed when "빈 모서리 잘라내기" is on: this share of the lattice from each side. */
 export const TRIM = 0.03;
 
-/** The corners are trimmed on a grid page that is not an exact rectangle. */
 export const isTrimmed = (page: Page) => {
   const fit = activeFit(page);
   return fit !== null && fit.kind === "grid" && !fit.rect && page.settings.crop;
 };
 
 export type Output = {
-  // Pixels of the file that would be saved, after rotation.
   width: number;
   height: number;
-  // Shape of the page before it is turned.
   pageRatio: number;
-  // Shape of the page as it is shown, after it is turned.
   shownRatio: number;
   label: string;
-  // The corners to pull straight.
   quad: Quad;
 };
 
@@ -107,7 +88,6 @@ export const outputOf = (page: Page): Output | null => {
   let label = "";
   if (fit.kind === "sheet") {
     const { ratio, label: name } = resolveRatio(fit.ratio ?? 1, page.settings.ratio);
-    // Keeps about as many pixels as the sheet has in the photo, whatever shape it ends up.
     const area = quadPixels(fit.quad, page.photo.width, page.photo.height);
     height = Math.sqrt(area / ratio);
     width = height * ratio;
@@ -140,7 +120,6 @@ export const sizeLine = (page: Page): string => {
   return `${size} · ${cells}${fit.origin === "auto" && fit.residual !== undefined ? ` · 오차 ${fit.residual.toFixed(1)} px` : ""}`;
 };
 
-/** Roughly what the page weighs in a PDF: a JPEG at quality 88. */
 export const pdfBytes = (pages: readonly Page[]) =>
   pages.reduce((sum, page) => {
     const out = outputOf(page);

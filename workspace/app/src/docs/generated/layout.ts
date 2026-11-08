@@ -1,4 +1,3 @@
-// The Layout tables and the elevation one-liner of AGENTS: the frame, the gaps and the tiers, read from the Layout source.
 import { LAYOUT_SOURCE, resolveRole } from "@paper-ui/inspect/layout";
 import { ELEVATIONS, tokens } from "@studio-baeks/paper-ui/tokens";
 

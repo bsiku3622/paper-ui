@@ -1,8 +1,3 @@
-// One department's sheet of the workbook: its courses as cards, in columns by prerequisite depth — the left column needs nothing
-// from this department, each column after it builds on the one before. No lines join the cards; each card says in words what
-// it needs, other departments' courses included. A department where no course needs another (융합) is a plain grid, because a
-// ladder of one column would only be a long list.
-
 import { Box, Grid, Stack, Text } from "@studio-baeks/paper-ui";
 
 import { Empty } from "../../../../kit";
@@ -17,7 +12,6 @@ const depthLabel = (depth: number) => (depth === 0 ? "선수 없음" : `선수 $
 export type BoardProps = CardActions & {
   department: string;
   entries: ZamongMap;
-  // The names on record, and the courses they imply
   taken: ReadonlySet<string>;
   inferred: ReadonlySet<string>;
   pinned: string | null;
@@ -53,7 +47,6 @@ export const Board = ({ department, entries, taken, inferred, pinned, onHover, o
     );
   }
 
-  // Wider than the window, the sheet scrolls sideways; narrower than md, the columns fold into one list, in reading order.
   return (
     <Box overflowX="auto">
       <Grid columns={{ base: 1, md: `repeat(${board.columns.length}, 15rem)` }} gap="md" align="start">

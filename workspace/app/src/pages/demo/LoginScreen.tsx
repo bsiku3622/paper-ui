@@ -1,8 +1,3 @@
-// A sign-in screen laid out as a product: the pitch on the canvas and the form on a raised face. The server is not there: everything
-// answers after a short delay and accepts what it is given, and a few addresses stand for the cases that go wrong or go another way
-// (listed on the left). A step is a place in the flow and lives in the address (?step=), so each can be opened and shared by itself.
-// A password is held in its field while the form is on the screen and is gone with it: nothing here is stored.
-
 import { useEffect, useRef, useState, type ClipboardEvent, type FormEvent, type KeyboardEvent, type RefObject } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -31,7 +26,6 @@ const emailError = (value: string) => {
   return EMAIL.test(value.trim()) ? undefined : "이메일 형식을 확인해주세요. 예: name@paper.ui";
 };
 
-// Seconds left until a moment that starts when it is made and can be started over.
 const useCountdown = (seconds: number) => {
   const [deadline, setDeadline] = useState(() => Date.now() + seconds * 1000);
   const [now, setNow] = useState(() => Date.now());
@@ -43,8 +37,6 @@ const useCountdown = (seconds: number) => {
 };
 
 const minutesAndSeconds = (seconds: number) => `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
-
-// ─── Sign in ─────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 type Phase = "idle" | "loading" | "failed" | "throttled" | "locked" | "offline" | "sso";
 
@@ -64,7 +56,6 @@ const SignIn = ({ email, onEmail, onForgot, onVerify, onSso, onDone }: { email: 
   const errors = { email: emailError(email), password: password ? undefined : "비밀번호를 입력해주세요." };
   const waiting = paused && cooldown > 0;
 
-  // Once the pause is over the failures are forgotten and the form is as it was.
   useEffect(() => {
     if (paused && cooldown === 0) {
       setPaused(false);
@@ -172,8 +163,6 @@ const SignIn = ({ email, onEmail, onForgot, onVerify, onSso, onDone }: { email: 
   );
 };
 
-// ─── Sign up ─────────────────────────────────────────────────────────────────────────────────────────────────────────
-
 const SignUp = ({ email, onEmail, onSignIn, onDone }: { email: string; onEmail: (value: string) => void; onSignIn: () => void; onDone: () => void }) => {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -228,9 +217,6 @@ const SignUp = ({ email, onEmail, onSignIn, onDone }: { email: string; onEmail: 
   );
 };
 
-// ─── The code ────────────────────────────────────────────────────────────────────────────────────────────────────────
-
-// Six boxes for six digits: typing moves on, backspace moves back, and a pasted code fills them all.
 const CodeInput = ({ value, onChange, invalid, disabled }: { value: string; onChange: (next: string) => void; invalid?: boolean; disabled?: boolean }) => {
   const boxes = useRef<(HTMLInputElement | null)[]>([]);
   const digits = Array.from({ length: 6 }, (_, index) => value[index] ?? "");
@@ -330,8 +316,6 @@ const Verify = ({ email, purpose, onDone }: { email: string; purpose: "signin" |
   );
 };
 
-// ─── Company sign-in ─────────────────────────────────────────────────────────────────────────────────────────────────
-
 const IDPS = [
   { id: "google", name: "Google Workspace", detail: "회사의 Google 계정으로 로그인합니다." },
   { id: "microsoft", name: "Microsoft Entra ID", detail: "회사의 Microsoft 계정으로 로그인합니다." },
@@ -399,8 +383,6 @@ const Sso = ({ initialDomain, onDone }: { initialDomain: string; onDone: (outcom
   );
 };
 
-// ─── A new password ──────────────────────────────────────────────────────────────────────────────────────────────────
-
 const Reset = ({ onDone }: { onDone: (outcome: Outcome) => void }) => {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -433,8 +415,6 @@ const Reset = ({ onDone }: { onDone: (outcome: Outcome) => void }) => {
   );
 };
 
-// ─── Where it ends ───────────────────────────────────────────────────────────────────────────────────────────────────
-
 const Done = ({ outcome, email, onRestart }: { outcome: Outcome; email: string; onRestart: () => void }) => {
   const copy = {
     signin: { title: "로그인했습니다", text: `${outcome.who}님, 다시 만나서 반갑습니다.` },
@@ -442,7 +422,6 @@ const Done = ({ outcome, email, onRestart }: { outcome: Outcome; email: string; 
     sso: { title: "회사 계정으로 로그인했습니다", text: `${outcome.provider ?? "SSO"}로 인증했습니다. ${outcome.who}님, 반갑습니다.` },
     reset: { title: "비밀번호를 바꿨습니다", text: "새 비밀번호로 로그인할 수 있습니다." },
   }[outcome.how];
-  // The end of a flow is said once, aloud, as it arrives.
   useEffect(() => {
     announce(copy.title);
   }, [copy.title]);
@@ -460,8 +439,6 @@ const Done = ({ outcome, email, onRestart }: { outcome: Outcome; email: string; 
     </Stack>
   );
 };
-
-// ─── Passwords forgotten ─────────────────────────────────────────────────────────────────────────────────────────────
 
 const ForgotPassword = ({ open, onOpenChange, initialEmail, onLink }: { open: boolean; onOpenChange: (open: boolean) => void; initialEmail: string; onLink: () => void }) => {
   const input = useRef<HTMLInputElement>(null);
@@ -515,9 +492,6 @@ const ForgotBody = ({ input, initialEmail, onLink }: { input: RefObject<HTMLInpu
   );
 };
 
-// ─── The screen ──────────────────────────────────────────────────────────────────────────────────────────────────────
-
-// The addresses that stand for the cases, as a quiet list: on the pitch where there is room, under the form where there is not.
 const DemoAccounts = () => (
   <Stack as="section" aria-label="데모 계정" gap="sm">
     <Text as="span" variant="label" strong={false} ink="tertiary">데모 계정 · 입력한 비밀번호는 저장되지 않습니다</Text>
@@ -560,7 +534,6 @@ export const LoginScreen = () => {
           <Stack gap="xl" width="full" maxWidth="xl">
             {here === "signin" || here === "signup" ? (
               <>
-                {/* No tabs over the form: signing in is what the screen is for, and the way to the other form is a line under it. */}
                 {here === "signin" ? (
                   <SignIn email={email} onEmail={setEmail} onForgot={() => setForgot(true)} onVerify={() => { setPurpose("signin"); setStep("verify"); }} onSso={(next) => { setDomain(next ?? ""); setStep("sso"); }} onDone={finish} />
                 ) : (

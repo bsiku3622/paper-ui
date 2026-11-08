@@ -1,10 +1,3 @@
-// 시험 — the exams of the subjects I take, by day. The school posts one timetable for the whole school; this picks out the
-// subjects of this account (matched by name, with the room of the account's section) and lays the exam week out as its days,
-// the empty ones too. Switching between the midterm and the final loads for a moment, as a real fetch would. A term the school
-// has posted no timetable for says so.
-//
-// Reachable states: ?period=midterm | final (the latest, final, is the default).
-
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -27,8 +20,6 @@ export const ExamsPage = () => {
   const asked = params.get("period");
   const kind = periods.find((period) => period.kind === asked)?.kind ?? periods[periods.length - 1]?.kind ?? "";
 
-  // The period on screen trails the one asked for by a moment: a Spinner stands in the gap, and asking for the one that is
-  // already shown (or going back before the moment is up) costs nothing.
   const [shown, setShown] = useState(kind);
   useEffect(() => {
     if (shown === kind) return;
@@ -58,7 +49,6 @@ export const ExamsPage = () => {
     />
   );
 
-  // The school has posted nothing for this term; offer the term it has.
   if (!mine) {
     const posted = TERMS.find((item) => periodsOf(item).length > 0);
     return (

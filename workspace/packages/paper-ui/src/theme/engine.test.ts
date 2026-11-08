@@ -7,7 +7,6 @@ import { THEME_STORAGE_KEY, holdTransitions, invertMode, readRootMode, resolveSu
 
 const root = document.documentElement;
 
-// A matchMedia whose answer the test sets and whose change listeners it can fire.
 const mockMedia = (matches: boolean) => {
   const listeners = new Set<() => void>();
   const query = {
@@ -122,7 +121,6 @@ describe("subscribeRootMode", () => {
 });
 
 describe("holdTransitions", () => {
-  // The next animation frame, run by hand.
   let frames: FrameRequestCallback[];
   const nextFrame = () => frames.splice(0).forEach((frame) => frame(0));
 
@@ -181,7 +179,6 @@ describe("holdTransitions", () => {
 });
 
 describe("themeBootScript", () => {
-  // jsdom here has no localStorage of its own; a test gives it one that holds what the test stored.
   const store = (stored: Record<string, string>) => {
     const getItem = vi.fn((key: string) => stored[key] ?? null);
     vi.stubGlobal("localStorage", { getItem });
@@ -242,7 +239,6 @@ describe("themeBootScript", () => {
 });
 
 describe("the boot entry", () => {
-  // Every module boot.ts reaches through relative imports, and the packages those modules import.
   const reach = (file: string, modules = new Set<string>(), packages = new Set<string>()) => {
     modules.add(file);
     for (const [, specifier = ""] of readFileSync(file, "utf8").matchAll(/(?:from|import)\s*["']([^"']+)["']/g)) {

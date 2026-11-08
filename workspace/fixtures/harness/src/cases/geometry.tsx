@@ -6,7 +6,6 @@ import { SELECT_OPTIONS } from "./options.js";
 import { ThemeBoxes } from "./theme.js";
 
 
-// A popover and a dialog, each holding a Button and a Field, that open from where the Trigger stands.
 const Panels = ({ id }: { id: string }) => (
   <>
     {(["popover", "modal"] as const).map((presentation) => (
@@ -22,9 +21,6 @@ const Panels = ({ id }: { id: string }) => (
   </>
 );
 
-// Every control at every size, a Surface corner and the nested theme scopes, in one form: the shape spec
-// measures them, overrides source variables on #shape-fixture and reads the form's data. A popover and a dialog open from
-// inside the form and from outside it.
 export const GeometryCase = () => (
   <>
     <div id="shape-fixture">
@@ -63,10 +59,6 @@ export const GeometryCase = () => (
 const REGION = sourceVars({ shape: { control: { height: { md: "40px" } }, space: { lg: "24px", sm: "12px" } } });
 const OTHER_REGION = sourceVars({ shape: { control: { height: { md: "48px" } }, space: { lg: "32px", sm: "20px" } } });
 
-// One panel already open when it mounts, so its Trigger's ref does not exist yet while it first renders. ?where= stands it
-// in an overriding region or out of it, ?presentation= picks the panel, ?trigger=below writes the Trigger under its Content,
-// and ?mount=press holds it back for a press that leaves the focus in a second overriding region. The press row has a whole-pixel
-// height: WebKit's native button is fractional, and a panel placed on whole pixels would read off a Trigger below it by that fraction.
 export const CarryCase = () => {
   const params = new URLSearchParams(window.location.search);
   const [mounted, setMounted] = useState(params.get("mount") !== "press");
@@ -86,6 +78,7 @@ export const CarryCase = () => {
   return (
     <>
       <div style={REGION}>{inside && panel}</div>
+      {/* WebKit's native button height is fractional, so this row is a whole number of pixels. */}
       <div style={{ ...OTHER_REGION, height: 32 }}><button type="button" data-testid="mount" onClick={() => setMounted(true)}>Mount</button></div>
       {!inside && panel}
     </>

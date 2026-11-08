@@ -1,10 +1,3 @@
-// SiteLayout — the layout route every page sits in. It owns what a page must not remember: the skip link, the
-// header, the sidebar and the one <main id="main">, the loading state under the chrome, the scroll on navigation
-// and the title of the tab. What a page needs from it is said by the route's SiteHandle.
-//
-// A page with chrome 'none' (the Demo) is a product of its own: the shell keeps the skip link, the loading state and
-// the title, and the page draws its own banner and its own <main id="main" tabIndex={-1}>.
-
 import { Suspense } from "react";
 import { Outlet, ScrollRestoration } from "react-router-dom";
 
@@ -21,7 +14,6 @@ import * as s from "./shell.css";
 const SKIP = { ko: "본문으로 건너뛰기", en: "Skip to content" } as const;
 const LOADING = { ko: "불러오는 중…", en: "Loading…" } as const;
 
-// Hidden until its link has focus, then a raised plate at the top left, at the toast tier so nothing covers it.
 const SkipLink = () => (
   <VisuallyHidden focusable className={`${surfaceClass({ fill: "raised", border: true, elevation: "toast" })} ${s.skipLink}`}>
     <Link href="#main" underline="hover" className={s.navLink.plain}>{useWords(SKIP)}</Link>

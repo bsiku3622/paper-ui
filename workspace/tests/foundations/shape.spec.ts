@@ -12,7 +12,6 @@ import { openHarness, openPlayground } from "../support/harness";
 import { tab } from "../support/keyboard";
 import { chooseOption } from "../support/select";
 
-// The real package, mounted by the harness through its exports (?case=geometry).
 const mount = async (page: Page) => {
   await openHarness(page, "geometry");
   await expect(page.getByLabel("select-md", { exact: true })).toBeVisible();
@@ -20,8 +19,6 @@ const mount = async (page: Page) => {
 
 const metrics = (page: Page, selector: string, pseudo?: string) => measure(page.locator("#shape-fixture").locator(selector), pseudo);
 
-// How far a Switch's thumb stands from each physical end of its track. The thumb is a pseudo-element, which has no bounding box of its own,
-// so its edges are the offsets the browser resolved for it.
 const thumbEdges = (track: Locator) => track.evaluate((element) => {
   const thumb = getComputedStyle(element, "::after");
   return { left: parseFloat(thumb.left), right: parseFloat(thumb.right) };
@@ -39,18 +36,14 @@ test("[foundations.shape.control-geometry] [foundations.shape.recipe-geometry] a
     expect(button.padding).toBe(roleDp(control.inset.button[size]));
     const iconButton = await metrics(page, `[data-testid=icon-${size}]`);
     expect(iconButton.width).toBe(iconButton.height);
-    // An Icon with no size of its own follows the control it sits in.
     expect((await metrics(page, `[data-testid=icon-${size}] svg`)).width).toBe(icon);
     const field = await metrics(page, `[data-testid=field-${size}]`);
     expect(field.height).toBe(height);
     expect(field.padding).toBe(inputInset);
-    // The actions of a Field follow the control's icon, not the text beside it.
     for (const svg of [0, 1]) expect((await metrics(page, `[data-testid=actions-${size}] button >> nth=${svg} >> svg`)).width, `${size} action ${svg}`).toBe(icon);
     expect((await metrics(page, `[data-testid=select-${size}]`)).height).toBe(height);
-    // The inset belongs to the button, which fills the frame inside its line, so it is read from the frame's edge.
     const selectLine = await page.locator(`#shape-fixture [data-testid=select-${size}]`).evaluate((element) => parseFloat(getComputedStyle(element).borderInlineStartWidth));
     expect((await metrics(page, `[data-testid=select-${size}] [role=combobox]`)).padding + selectLine).toBe(inputInset);
-    // One textarea row is exactly one control tall, and the rows decide the height: four by default.
     const textareaPadding = roleDp(CONTROL.area.paddingBlock[size]);
     expect((await metrics(page, `textarea[aria-label=textarea-${size}]`)).blockPadding).toBe(textareaPadding);
     expect((await metrics(page, `textarea[aria-label=textarea-row-${size}]`)).height).toBe(height);
@@ -67,7 +60,6 @@ test("[foundations.shape.control-geometry] [foundations.shape.recipe-geometry] a
     expect(track.width).toBe(roleDp(SHAPE_RECIPES.switch.width[size]));
     expect(track.height).toBe(roleDp(SHAPE_RECIPES.switch.height[size]));
     expect(thumb.width).toBe(roleDp(SHAPE_RECIPES.switch.thumbWidth[size]));
-    // A checked thumb has travelled what the track leaves it, past the rim.
     expect(thumb.inset).toBe(roleDp(SHAPE_RECIPES.switch.inset) + roleDp(SHAPE_RECIPES.switch.travel[size]));
     expect((await metrics(page, `[data-testid=badge-${size}]`)).height).toBe(SHAPE_SOURCE.anatomy.badge.height[size]);
   }
@@ -78,7 +70,6 @@ test("[foundations.override.rederives-roles] [foundations.shape.radius-separate]
   type Paper = { __paper: { sourceVars: (overrides: SourceOverrides) => Record<string, string> } };
   const overrides: SourceOverrides = {
     shape: { control: { height: { md: "40px" } }, selection: { size: { md: "20px" } }, radius: { control: { md: "9px" }, surface: { sm: "3px" } }, focus: { width: "5px" }, space: { md: "20px" } },
-    // The field's glyph line is what the input inset subtracts from the control height.
     typography: { palette: { leading: { "16": "20px" } } },
   };
   const vars = await page.evaluate((overrides) => (window as unknown as Paper).__paper.sourceVars(overrides), overrides);
@@ -88,8 +79,6 @@ test("[foundations.override.rederives-roles] [foundations.shape.radius-separate]
   const { control, selection } = tokens.shape;
   const dp = (role: string) => roleDp(role, vars);
   const rim = SHAPE_SOURCE.stroke.emphasis;
-  // control height 40 and a 20 glyph line → input inset (40 − 20) / 2 = 10. The button inset is its own hand-set source and
-  // stays where it is. The marks follow their own source, 20 here.
   expect(dp(control.height.md)).toBe(40);
   expect((await metrics(page, "[data-testid=button-md]")).height).toBe(40);
   expect((await metrics(page, "[data-testid=button-md]")).padding).toBe(dp(control.inset.button.md));
@@ -105,18 +94,14 @@ test("[foundations.override.rederives-roles] [foundations.shape.radius-separate]
   expect((await metrics(page, "textarea[aria-label=textarea-md]")).blockPadding).toBe(dp(CONTROL.area.paddingBlock.md));
   expect((await metrics(page, "[data-testid=button-md]")).radius).toBe(9);
   expect((await metrics(page, "[data-testid=surface-corner]")).radius).toBe(3);
-  // A gap role follows the space source it aliases.
   const gap = await page.getByTestId("gap-md").evaluate((element) => ({ column: getComputedStyle(element).columnGap, row: getComputedStyle(element).rowGap }));
   expect(gap).toEqual({ column: `${dp(tokens.layout.gap.md)}px`, row: `${dp(tokens.layout.gap.md)}px` });
   expect(dp(tokens.layout.gap.md)).toBe(20);
-  // The thumb transitions to its new place when the roles under it move, so the offset is read once it has settled.
   await expect.poll(async () => (await metrics(page, "[aria-label=switch-md]", "::after")).inset).toBe(rim + dp(SHAPE_RECIPES.switch.travel.md));
   await page.locator("#shape-fixture").evaluate((element: HTMLElement) => { element.dir = "rtl"; });
-  // Right to left, the checked thumb is at the track's left end: the rim from the left edge.
   const thumb = dp(SHAPE_RECIPES.switch.thumbWidth.md);
   await expect.poll(() => thumbEdges(page.locator("#shape-fixture [aria-label=switch-md]"))).toEqual({ left: rim, right: dp(SHAPE_RECIPES.switch.width.md) - rim - thumb });
   await page.locator("#shape-fixture").evaluate((element: HTMLElement) => { element.dir = "ltr"; });
-  // A 5px focus width draws a 5px ring, while the check's stroke and the switch's rim are emphasis strokes and stay as they were.
   const checkbox = page.locator("#shape-fixture [aria-label=checkbox-md]");
   await checkbox.focus();
   await expect(checkbox).toHaveCSS("outline-width", "5px");
@@ -134,7 +119,6 @@ test("[foundations.override.source-paths-only] window.__paper.sourceVars names t
   await page.getByTestId("override-region").evaluate((element, declarations) => {
     for (const [name, value] of Object.entries(declarations)) element.style.setProperty(name, value);
   }, vars);
-  // control height 40 → the button is 40 tall, its inset stays its own source, and the control radius follows.
   const button = await measure(page.getByTestId("button"));
   expect(button.height).toBe(40);
   expect(button.padding).toBe(roleDp(tokens.shape.control.inset.button.md, vars));
@@ -152,7 +136,6 @@ test("[foundations.override.source-paths-only] window.__paper.sourceVars names t
 });
 
 test.describe("the plain CSS form of an override", () => {
-  // Everything the page warns about while it mounts a Provider with these params.
   const warningsOf = async (page: Page, params: Record<string, string> = {}) => {
     const warnings: string[] = [];
     page.on("console", (message) => {
@@ -160,7 +143,6 @@ test.describe("the plain CSS form of an override", () => {
     });
     await openHarness(page, "provider", params);
     await expect(page.getByTestId("mounted")).toBeVisible();
-    // The Provider's effects have run by the next task.
     await page.evaluate(() => new Promise((resolve) => setTimeout(resolve, 0)));
     return warnings;
   };
@@ -218,7 +200,6 @@ test("[foundations.override.portal-carry] a Floating opened inside an overriding
       await expect(page.getByTestId(id)).toBeVisible();
       expect((await measure(page.getByTestId(`${id}-button`))).height, `${id} button`).toBe(height);
       expect((await measure(page.getByTestId(`${id}-field`))).height, `${id} field`).toBe(height);
-      // The dialog's scrim keeps the page gutter from the dialog.
       if (presentation === "modal") expect((await measure(page.getByTestId(id).locator("xpath=.."))).padding, `${id} scrim`).toBe(gutter);
       await page.getByTestId(id).getByRole("button", { name: "Close" }).click();
       await expect(page.locator("[data-presentation]")).toHaveCount(0);
@@ -226,7 +207,6 @@ test("[foundations.override.portal-carry] a Floating opened inside an overriding
   }
 });
 
-// Inside is the override the harness writes on the region; outside is what the source says.
 for (const [where, height, gutter, gap] of [["inside", 40, 24, 12], ["outside", roleDp(tokens.shape.control.height.md), roleDp(tokens.layout.gutter), roleDp(tokens.layout.gap.sm)]] as const) {
   for (const presentation of ["popover", "modal"] as const) {
     for (const trigger of ["above", "below"] as const) {
@@ -257,11 +237,9 @@ for (const [where, height, gutter, gap] of [["inside", 40, 24, 12], ["outside", 
 test("[foundations.shape.target-reach] [foundations.shape.hit-area] a pointer inside the minimum target around a Field action's centre hits that action, and the two neighbours never share a point", async ({ page }) => {
   await mount(page);
   const named = (x: number, y: number) => page.evaluate(([px, py]) => document.elementFromPoint(px!, py!)?.closest("button")?.getAttribute("aria-label") ?? null, [x, y]);
-  // The reach is a square of the minimum target around each icon, and the browser places its edge within a pixel, so a pixel short of half its side is inside it.
   const inside = SHAPE_SOURCE.target.min / 2 - 1;
   for (const size of CONTROL_SIZES) {
     const actions = page.locator(`#shape-fixture [data-testid=actions-${size}] button`);
-    // The whole frame in the middle of the window, so every point the reach covers is on screen.
     await page.locator(`#shape-fixture [data-testid=actions-${size}]`).evaluate((element) => element.scrollIntoView({ block: "center" }));
     const [clear, reveal] = [(await actions.nth(0).boundingBox())!, (await actions.nth(1).boundingBox())!];
     expect(await actions.nth(0).getAttribute("aria-label")).toBe("Clear");
@@ -270,7 +248,6 @@ test("[foundations.shape.target-reach] [foundations.shape.hit-area] a pointer in
       const [x, y] = [box.x + box.width / 2, box.y + box.height / 2];
       for (const [dx, dy] of [[0, 0], [-inside, 0], [inside, 0], [0, -inside], [0, inside]] as const) expect(await named(x + dx, y + dy), `${size} ${name} at ${dx},${dy}`).toBe(name);
     }
-    // Between the two, a point just outside either icon still belongs to that icon, and none belongs to both.
     const gap = reveal.x - (clear.x + clear.width);
     expect(gap).toBeGreaterThan(0);
     const y = clear.y + clear.height / 2;
@@ -281,7 +258,6 @@ test("[foundations.shape.target-reach] [foundations.shape.hit-area] a pointer in
 
 test("[foundations.shape.stroke-px] rem geometry scales together while edge strokes stay in CSS pixels", async ({ page }) => {
   await mount(page);
-  // The root font goes from 16px to 20px: what the source writes in rem grows by that ratio, and what it writes in px does not.
   const ROOT = 20;
   const ratio = ROOT / 16;
   await page.evaluate((root) => { document.documentElement.style.fontSize = `${root}px`; }, ROOT);
@@ -290,24 +266,19 @@ test("[foundations.shape.stroke-px] rem geometry scales together while edge stro
   const { emphasis: rim, border } = SHAPE_SOURCE.stroke;
   const mark = SHAPE_SOURCE.selection.size.md * ratio;
   const track = (mark + rim) * SHAPE_SOURCE.anatomy.switch.length;
-  // The thumb is round and keeps a rim inside the track on every side; it travels what the track has left.
   const thumb = mark - rim;
   const travel = track - thumb - rim - rim;
   expect((await metrics(page, "[data-testid=button-md]")).height).toBeCloseTo(height, 2);
   expect((await metrics(page, "[aria-label=switch-md]")).width).toBeCloseTo(track, 2);
-  // The switch rim is an emphasis stroke, so it stays as it is while the track grows.
   expect((await metrics(page, "[aria-label=switch-md]")).height).toBeCloseTo(mark + rim, 2);
   expect((await metrics(page, "[aria-label=switch-md]", "::after")).width).toBeCloseTo(thumb, 2);
-  // The thumb transitions to its new place when the roles under it move, so the offset is read once it has settled.
   await expect.poll(async () => (await metrics(page, "[aria-label=switch-md]", "::after")).inset).toBeCloseTo(rim + travel, 2);
-  // The textarea line still sits where a Field's would.
   expect((await metrics(page, "textarea[aria-label=textarea-md]")).blockPadding).toBeCloseTo((height - line) / 2, 2);
   await expect(page.locator("#shape-fixture [data-testid=field-md]")).toHaveCSS("border-top-width", px(border));
 });
 
 test("[atoms.select.native-form] Select keeps its form in a native select and the keyboard on its button, while its arrow follows scoped ink", async ({ page }) => {
   await mount(page);
-  // The button, found by its role: an open list bears the Select's name too.
   const select = page.getByRole("combobox", { name: "select-md", exact: true });
   const arrow = select.locator("+ svg");
   await page.locator("#shape-fixture").evaluate((element) => {
@@ -320,7 +291,6 @@ test("[atoms.select.native-form] Select keeps its form in a native select and th
   expect(await page.locator("#shape-form").evaluate((form) => new FormData(form as HTMLFormElement).get("select-md"))).toBe("a");
   await select.click();
   await expect(page.getByRole("listbox")).toBeVisible();
-  // A click draws no ring: the wrapper owns it, and the button inside draws none.
   await expect(select).toHaveCSS("outline-style", "none");
   await expect(select.locator("..")).toHaveCSS("outline-style", "none");
   await page.keyboard.press("Escape");
@@ -333,9 +303,7 @@ test("[atoms.select.native-form] Select keeps its form in a native select and th
   expect((await select.locator("..").boundingBox())!.width).toBe(240);
   const selectBox = (await select.locator("..").boundingBox())!;
   const arrowBox = (await arrow.boundingBox())!;
-  // The arrow is a trailing icon at the input inset from the frame's edge: the line takes its room out of that inset.
   expect(selectBox.x + selectBox.width - arrowBox.x - arrowBox.width).toBe(roleDp(tokens.shape.control.inset.input.md));
-  // A nested light scope must win over the outer dark scope in both text and arrow.
   const dark = page.getByLabel("dark-select", { exact: true });
   const nested = page.getByLabel("nested-light-select", { exact: true });
   const ink = async (selector: typeof dark, role: string) => selector.evaluate((element, role) => {
@@ -367,11 +335,9 @@ test("[foundations.shape.focus-ring] the baseline draws the ring on an element w
   await expect(probe).toHaveCSS("outline-offset", px(SHAPE_SOURCE.focus.offset));
   await expect(probe).toHaveCSS("border-top-left-radius", "0px");
 
-  // A link in prose is the Link Atom, whose stylesheet declares the corner its ring follows.
   await page.goto("/docs/foundations/shape");
   const corner = px(roleDp(tokens.shape.radius.text));
   await expect(page.getByTestId("prose").locator("a").first()).toHaveCSS("border-top-left-radius", corner);
-  // So is the one on the Link page.
   await openPlayground(page, "link", "Link");
   await expect(page.getByRole("link", { name: "링크", exact: true })).toHaveCSS("border-top-left-radius", corner);
 });
@@ -389,7 +355,6 @@ test("[foundations.shape.radius-table] each control takes the corner its row nam
   await corner("[data-testid=surface-corner]", radius.surface.sm);
 });
 
-// Wears source overrides on the fixture, named by sourceVars as an app's would be.
 const wear = async (page: Page, overrides: SourceOverrides) => {
   type Paper = { __paper: { sourceVars: (overrides: SourceOverrides) => Record<string, string> } };
   const vars = await page.evaluate((given) => (window as unknown as Paper).__paper.sourceVars(given), overrides);
@@ -423,7 +388,6 @@ test("[foundations.shape.pill-inset] a pill Field or Select holds its value, its
   const { control } = tokens.shape;
   for (const size of CONTROL_SIZES) {
     const inset = roleDp(control.inset.button[size]);
-    // Read from the frame's outer edge, as the rounded frames are: the line takes its room out of the inset.
     expect((await metrics(page, `[data-testid=field-pill-${size}]`)).padding, `field ${size}`).toBe(inset);
     const frame = page.locator(`#shape-fixture [data-testid=select-pill-${size}]`);
     const trigger = frame.getByRole("combobox");
@@ -431,11 +395,9 @@ test("[foundations.shape.pill-inset] a pill Field or Select holds its value, its
     expect(box.x + box.width - arrow.x - arrow.width, `arrow ${size}`).toBeCloseTo(inset, 1);
     const [line, room] = [await measure(frame), await measure(trigger)];
     expect(line.padding + room.padding, `value ${size}`).toBeCloseTo(inset, 1);
-    // The value stops a control gap before the arrow.
     const end = await trigger.evaluate((element) => parseFloat(getComputedStyle(element).paddingInlineEnd));
     expect(end + line.padding, `value end ${size}`).toBeCloseTo(inset + roleDp(control.icon[size]) + roleDp(control.gap), 1);
   }
-  // A rounded frame keeps the input inset.
   expect((await metrics(page, "[data-testid=field-md]")).padding).toBe(roleDp(control.inset.input.md));
 });
 
@@ -443,7 +405,6 @@ test("[foundations.shape.switch-thumb] a Switch's thumb sits the rim from its en
   await openHarness(page, "marks");
   const edges = (id: string) => thumbEdges(page.getByTestId(id));
   const rim = roleDp(SHAPE_RECIPES.switch.inset);
-  // How far a thumb stands from the end it does not sit at.
   const far = (size: ControlSize) => roleDp(SHAPE_RECIPES.switch.width[size]) - rim - roleDp(SHAPE_RECIPES.switch.thumbWidth[size]);
   for (const size of CONTROL_SIZES) {
     const off = await edges(`switch-${size}`);
@@ -451,7 +412,6 @@ test("[foundations.shape.switch-thumb] a Switch's thumb sits the rim from its en
     await page.getByTestId(`switch-${size}`).evaluate((element: HTMLInputElement) => { element.checked = true; });
     await expect.poll(() => edges(`switch-${size}`), `${size} checked, left to right`).toEqual({ left: far(size), right: rim });
   }
-  // Right to left, with no rule of its own: the same logical offsets read from the other end.
   const [off, on] = [await edges("switch-rtl-off"), await edges("switch-rtl-on")];
   expect(off).toEqual({ left: far("md"), right: rim });
   expect(on).toEqual({ left: rim, right: far("md") });

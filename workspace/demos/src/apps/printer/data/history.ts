@@ -1,5 +1,3 @@
-// Snapshot of the printer's job history (Moonraker server.history.list, 60 jobs). User ids and uuids are dropped.
-
 export type JobStatus = "completed" | "cancelled" | "in_progress" | "klippy_shutdown";
 
 export type JobMeta = {
@@ -8,16 +6,13 @@ export type JobMeta = {
   slicerVersion: string;
   layerCount: number;
   objectHeight: number;
-  // seconds
   estimatedTime: number;
   nozzle: number;
   layerHeight: number;
   extruderTemp: number;
   bedTemp: number;
   filamentType: string;
-  // mm
   filamentTotal: number;
-  // g
   filamentWeight: number;
 };
 
@@ -25,12 +20,10 @@ export type HistoryJob = {
   id: string;
   filename: string;
   status: JobStatus;
-  // unix seconds
   start: number;
   end: number | null;
   printDuration: number;
   totalDuration: number;
-  // mm
   filament: number;
   exists: boolean;
   meta: JobMeta | null;
@@ -99,5 +92,4 @@ export const HISTORY: readonly HistoryJob[] = [
   {"id":"000045","filename":"상자1_PLA_19m25s.gcode","status":"completed","start":1779519894.2,"end":1779521191,"printDuration":1140.7,"totalDuration":1296.7,"filament":1755,"exists":true,"meta":{"size":941877,"slicer":"OrcaSlicer","slicerVersion":"2.3.2","layerCount":50,"objectHeight":10,"estimatedTime":1165,"nozzle":0.4,"layerHeight":0.2,"extruderTemp":200,"bedTemp":60,"filamentType":"PLA","filamentTotal":1776.8,"filamentWeight":5.34}}
 ];
 
-// server.history.get_totals — the whole history, not only the 60 jobs above.
 export const HISTORY_TOTALS = { jobs: 127, totalTime: 249709.7, printTime: 228298.6, filament: 371263.8, longestJob: 23381.1, longestPrint: 23191.8 } as const;

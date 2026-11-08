@@ -1,8 +1,3 @@
-// 친구 — add people and see who is free right now. Adding is one-way: nobody has to accept, because the app already
-// holds the whole term. One search box does both jobs: it narrows the friends you have, and when the person is not among
-// them it offers the school to pick from (from two letters, eight at most). What shows is only when someone has a class —
-// never which class.
-
 import { useMemo, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -34,7 +29,6 @@ export const Friends = () => {
       .slice(0, LOOKUP_LIMIT);
   }, [index, q, me.stuId, friends]);
 
-  // Is a friend free in the period it is now? Not asked outside school hours.
   const today = dayCode(new Date(`${clock.key}T00:00:00`));
   const day = today === "SAT" || today === "SUN" ? null : (today as Day);
   const livePeriod = day ? (PERIODS.find((period) => clock.minute >= period.start && clock.minute < period.end)?.period ?? null) : null;
@@ -46,7 +40,6 @@ export const Friends = () => {
   const cell = (d: Day, p: number): Slot | undefined => {
     if (friends.length === 0) return undefined;
     const free = everyone.filter((stuId) => !busyAt(stuId, d, p)).length;
-    // only the periods that nearly everyone shares are worth a mark; the rest of the grid stays quiet
     if (free < everyone.length - 1) return undefined;
     return { text: free === everyone.length ? "모두" : `${free}명`, tone: free === everyone.length ? "success" : "plain", hint: `${d} ${p}교시, ${everyone.length}명 중 ${free}명 공강` };
   };

@@ -1,7 +1,3 @@
-// The login gate: nothing behind it is drawn until it lets you through. The original asks for the admin password after
-// the VPN; this one is a demo, so it lets anything in — except the word "wrong", which is there to show the failed state.
-// The password is held in the field and dropped at once; nothing is stored or sent.
-
 import { useRef, useState, type FormEvent, type ReactNode } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
@@ -28,7 +24,6 @@ const LoginScreen = ({ onEnter }: { onEnter: () => void }) => {
     setBusy(true);
     setError(null);
     const attempt = password;
-    // The value is gone from the page the moment it is read.
     setPassword("");
     await sleep(LATENCY.save);
     if (attempt.trim().toLowerCase() === "wrong") {
@@ -75,13 +70,11 @@ const LoginScreen = ({ onEnter }: { onEnter: () => void }) => {
   );
 };
 
-// /admin/login always shows the gate, so it can be looked at without signing out first.
 export const LoginGate = ({ children }: { children: ReactNode }) => {
   const { signedIn, setSignedIn } = useAdmin();
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  // The question "am I signed in?" takes a moment to answer, as it did in the original.
   const { ready } = useDelay(LATENCY.quick);
   const forced = pathname === `${BASE}/login`;
 
@@ -93,7 +86,6 @@ export const LoginGate = ({ children }: { children: ReactNode }) => {
     );
   }
   if (signedIn && !forced) return <>{children}</>;
-  // The Galaxy viewer borrows this login: someone sent here from it goes back to it.
   const enter = () => {
     setSignedIn(true);
     navigate(params.get("next") === "galaxy" ? serviceTo("galaxy") : forced ? BASE : pathname, { replace: true });

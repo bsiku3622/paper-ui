@@ -1,11 +1,7 @@
-// Mock data helpers. Every app draws from a fixed "now" and seeded numbers, so a screen looks the same on every load and
-// in every screenshot.
-
 import { random } from "./Art";
 
 export { random };
 
-// The demos' present moment.
 export const NOW = new Date("2026-11-04T14:30:00+09:00");
 
 export const pick = <T,>(r: () => number, list: readonly T[]): T => list[Math.floor(r() * list.length)]!;
@@ -30,7 +26,6 @@ const MINUTE = 60_000;
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
 
-// minutes before NOW, as a Date.
 export const ago = (minutes: number) => new Date(NOW.getTime() - minutes * MINUTE);
 export const daysAgo = (days: number) => new Date(NOW.getTime() - days * DAY);
 
@@ -66,7 +61,6 @@ export const formatBytes = (bytes: number) => {
   return `${value >= 100 || unit === 0 ? Math.round(value) : value.toFixed(1)} ${units[unit]}`;
 };
 
-// 3:07, 1:02:45
 export const formatDuration = (seconds: number) => {
   const s = Math.max(0, Math.round(seconds));
   const h = Math.floor(s / 3600);

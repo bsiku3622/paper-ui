@@ -1,6 +1,3 @@
-// RecentPage.tsx — the newest edits across the whole wiki, grouped by day, with filters: how far back, new articles or reverts,
-// minor edits, one editor.
-
 import { Fragment, useMemo, useState } from "react";
 
 import { Box, Checkbox, Divider, Inline, Select, Stack, Text } from "@studio-baeks/paper-ui";

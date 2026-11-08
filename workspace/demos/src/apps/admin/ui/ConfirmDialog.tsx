@@ -1,6 +1,3 @@
-// ConfirmDialog — "are you sure", with the one thing that will happen. It asks the caller to do it, shows what went wrong if
-// it could not, and cannot be closed while it works.
-
 import { useRef, useState, type ReactNode } from "react";
 
 import { Button, Stack } from "@studio-baeks/paper-ui";
@@ -22,7 +19,6 @@ export const ConfirmDialog = ({ open, onClose, title, children, confirmLabel, bu
 }) => {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // What the dialog said stays while it fades out.
   const body = useRef<ReactNode>(children);
   if (open) body.current = children;
 

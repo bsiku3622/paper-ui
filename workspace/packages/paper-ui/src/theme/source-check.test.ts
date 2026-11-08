@@ -2,7 +2,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { warnUnknownSourceVariables } from "./source-check";
 
-// A document with these stylesheets. jsdom reads custom properties unevenly, so a rule is spelled as the CSSOM gives it.
 const documentWith = (styleSheets: unknown[], adoptedStyleSheets?: unknown[]) => ({ styleSheets, adoptedStyleSheets }) as unknown as Document;
 const style = (...names: string[]) => ({ style: names });
 const sheet = (...cssRules: unknown[]) => ({ cssRules });

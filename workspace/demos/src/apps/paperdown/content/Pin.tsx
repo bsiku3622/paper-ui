@@ -1,6 +1,3 @@
-// Content: a face fixed to the window. "bottom" is a bar across the foot of the window (the editor's status bar) that leaves
-// as much room under the page as it takes, so the page can scroll past it; "start" is a sheet over the left of the page.
-
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 
 import { elevation } from "@studio-baeks/paper-ui";

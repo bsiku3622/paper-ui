@@ -1,6 +1,3 @@
-// SpecialPages.tsx — lists the wiki works out about itself: all articles, ones nothing links to, links that lead nowhere, articles
-// with no category, the longest and shortest, the least recently edited, the categories.
-
 import { useState } from "react";
 import { Link as RouterLink, Navigate, useParams } from "react-router-dom";
 
@@ -30,7 +27,6 @@ const KINDS: Record<Kind, { title: string; description: string; glyph: GlyphName
 
 const isKind = (value: string | undefined): value is Kind => value !== undefined && value in KINDS;
 
-// What the visitor has written lives only in this browser; this is the way back to the wiki as it was.
 const ResetDemo = () => {
   const toast = useToast();
   const { stored, reset } = useWiki();

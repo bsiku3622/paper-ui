@@ -1,5 +1,3 @@
-// Slider — a seek bar and a volume: Paper's Slider with the arguments the player passes (a value in, a number out).
-
 import { Slider as PaperSlider } from "@studio-baeks/paper-ui";
 
 export type SliderProps = {
@@ -9,7 +7,6 @@ export type SliderProps = {
   max: number;
   step?: number | "any";
   onChange: (value: number) => void;
-  // A slimmer bar, for the floating player.
   bare?: boolean;
   valueText?: string;
   disabled?: boolean;

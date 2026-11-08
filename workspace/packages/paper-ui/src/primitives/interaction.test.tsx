@@ -29,14 +29,12 @@ import { cast as floatingCast } from "./float/Floating.css";
 import { surfaceRadius } from "./paint/Surface.css";
 import { ELEVATION_NEST_LIMIT, THEME_ATTRIBUTE } from "../tokens";
 
-// Never rendered: each line only has to compile.
 const compiles = (...elements: ReactElement[]) => elements.length;
 import * as floatingStyles from "./float/Floating.css";
 import { pressMotion } from "./press/press.css";
 import { scrimPaint } from "./paint/recipes.css";
 import { nestElevation, type FloatingElevation, type FloatingPresentation } from "./float/nestElevation";
 
-// The adapter that places a popover is wrapped, so a test reads the distances it was given.
 vi.mock("../internal/aria/overlay", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../internal/aria/overlay")>();
   return { ...actual, useAnchoredPosition: vi.fn(actual.useAnchoredPosition) };
@@ -376,7 +374,6 @@ describe("interaction primitives", () => {
   });
 });
 
-// How each primitive that takes `as` shows it is disabled, over each kind of target (SI Target rule).
 describe("disabled targets", () => {
   type Row = [name: string, element: (disabled: boolean) => ReactElement, how: "native" | "aria"];
   const rows: Row[] = [
@@ -407,7 +404,6 @@ describe("disabled targets", () => {
     ["Droppable as button", (disabled) => <Droppable as="button" disabled={disabled}>x</Droppable>, "native"],
     ["Droppable as Pressable", (disabled) => <Droppable as={Pressable} disabled={disabled}>x</Droppable>, "native"],
   ];
-  // The element that carries the state: the last one of the tree that says what it is.
   const target = (view: { container: HTMLElement }) => [...view.container.querySelectorAll<HTMLElement>("button, div, section")].reverse().find((element) => element.textContent === "x")!;
 
   it("[primitives.target.projection] [primitives.polymorphic.default-tags] marks every disabled target with data-disabled and disables it the way its element allows", () => {
@@ -1067,7 +1063,6 @@ describe("floating options", () => {
     const inner = screen.getByRole("dialog", { name: "Inner" });
     expect(inner.getAttribute("aria-modal")).toBe("true");
     expect(outer.getAttribute("aria-modal")).toBeNull();
-    // The modal stands on its own, higher tier, over the popover's panel.
     expect(tiers).toEqual({ outer: "overlay 0", inner: "modal 0" });
     fireEvent.keyDown(inner, { key: "Escape" });
     expect(changes).toEqual([false]);
@@ -1115,11 +1110,9 @@ describe("floating elevation", () => {
     const { stack, cast, rankProperty } = floatingStyles;
     expect(popover.classList.contains(stack.overlay)).toBe(true);
     expect(popover.classList.contains(cast.overlay)).toBe(true);
-    // A modal's panel casts its shadow; its backdrop, which carries the stack, is the panel's parent.
     expect(dialog.classList.contains(cast.modal)).toBe(true);
     expect(dialog.classList.contains(stack.modal)).toBe(false);
     expect(dialog.parentElement!.classList.contains(stack.modal)).toBe(true);
-    // React Aria's own z never reaches the panel, and the rank is written as the custom property the stack reads.
     expect(popover.style.zIndex).toBe("");
     expect(popover.style.getPropertyValue(rankProperty)).toBe("0");
     expect(dialog.parentElement!.style.getPropertyValue(rankProperty)).toBe("0");
@@ -1144,7 +1137,6 @@ describe("floating elevation", () => {
   });
 });
 
-// jsdom lays nothing out, so a measuring probe reads the width the step it stands for would have in a browser.
 const WIDTHS: Record<string, number> = { [stepProbe.xs]: 4, [stepProbe.sm]: 8, [stepProbe.md]: 12, [stepProbe.lg]: 16, [stepProbe.gutter]: 16 };
 function layOutProbes() {
   const rect = (width: number) => ({ x: 0, y: 0, top: 0, left: 0, right: width, bottom: 0, width, height: 0, toJSON: () => ({}) }) as DOMRect;
@@ -1287,7 +1279,6 @@ describe("floating geometry", () => {
 });
 
 describe("floating presence", () => {
-  // jsdom has no animations. Where a test needs one, an element reports an animation that runs until the test lets it finish.
   const getAnimations = vi.fn((): unknown[] => []);
   const hold = () => {
     let finish!: () => void;
@@ -1382,7 +1373,6 @@ describe("floating presence", () => {
 });
 
 describe("what each part draws", () => {
-  // Each part alone and with `as`, its default tag, and how many elements it takes in all: its parent's and its own, with no wrapper.
   const rows: Array<[name: string, plain: ReactElement, other: ReactElement, tag: string, elements: number]> = [
     ["Pressable", <Pressable>x</Pressable>, <Pressable as="section">x</Pressable>, "BUTTON", 1],
     ["Selectable", <Selectable>x</Selectable>, <Selectable as="section">x</Selectable>, "BUTTON", 1],
@@ -1709,7 +1699,6 @@ describe("what the root of a Floating takes", () => {
     const panel = screen.getByRole("dialog", { name: "Panel" });
     expect(ref.current).toBe(panel);
     for (const className of [fillClass.raised, surfaceRadius.lg, spaceClass.padding.xl, floatingCast[presentation === "modal" ? "modal" : "overlay"]]) expect(panel.classList.contains(className), className).toBe(true);
-    // No face of its own inside it.
     expect(panel.firstElementChild).toBeNull();
     expect(panel.textContent).toBe("Body");
     compiles(
@@ -1808,7 +1797,6 @@ describe("what the root of a Floating takes", () => {
       const anchor = screen.getByText("Anchor");
       fireEvent.click(anchor);
       fireEvent.click(screen.getByText("Close"));
-      // React Aria gives the focus back on the frame after the panel has gone.
       await act(async () => { await new Promise((resolve) => requestAnimationFrame(resolve)); });
       await act(async () => { await new Promise((resolve) => requestAnimationFrame(resolve)); });
       const restored = document.activeElement === anchor;

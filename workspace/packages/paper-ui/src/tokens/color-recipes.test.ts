@@ -183,8 +183,6 @@ describe("the accent × variant class map", () => {
   });
 });
 
-// The text of an accent × variant, and what it stands on: its own face, or each surface of the mode when the face is
-// transparent. A hovering variant also gets its tint laid over that ground. Each row is a contrast ratio with its place.
 const readable = (accent: (typeof ACCENTS)[number], variant: Variant, mode: ColorMode) => {
   const values = new Map<string, string>();
   walkValues(COLOR_VALUES_BY_MODE[mode], ["color"], (path, value) => values.set(pathToCssVar(path), value));
@@ -198,16 +196,12 @@ const readable = (accent: (typeof ACCENTS)[number], variant: Variant, mode: Colo
   ]);
 };
 
-// The documented exception: a status whose solid or wash the exception table replaces in a mode.
 const excepted = (accent: (typeof ACCENTS)[number], mode: ColorMode) => {
   const tones = (STATUS_EXCEPTIONS as Record<string, Record<string, object>>)[accent]?.[mode] ?? {};
   return "solid" in tones || "wash" in tones;
 };
 
-// The one pair measured just under 4.5:1 that the documentation names: the dark error muted text with the hover tint
-// over the raised surface. The tint is already the faintest step, and lifting the ink would change a Color role.
 const NEAR_MISS = "dark error muted on raised, hovered";
-// The other: the light success ghost with the hover tint over the sunken surface, the darkest face it can stand on.
 const SUNKEN_MISS = "light success ghost on sunken, hovered";
 
 const holds = (variant: Variant) => {
@@ -240,7 +234,6 @@ describe("the variants read in both themes, at rest and hovered", () => {
     expect(hovered!.ratio).toBeGreaterThan(rest!.ratio);
     expect(hovered!.ratio).toBeLessThan(4.5);
     expect(COLOR_VALUES_BY_MODE.light.accent.warning.wash).toBe(COLOR_VALUES_BY_MODE.light.bg.raised);
-    // Everything else, the dark warning solid included, reads.
     const below = COLOR_MODES.flatMap((mode) => ACCENTS.flatMap((accent) => VARIANTS.flatMap((variant) => readable(accent, variant, mode).filter(({ ratio }) => ratio < 4.5).map(({ at }) => at))));
     expect(below).toEqual([SUNKEN_MISS, "light warning solid on its face", "light warning solid on its face, hovered", NEAR_MISS]);
   });
@@ -258,10 +251,8 @@ describe("the variants read in both themes, at rest and hovered", () => {
     const raised = rows.filter(({ at }) => at.includes("on raised"));
     expect(raised.map(({ at }) => at)).toEqual(["dark error muted on raised", NEAR_MISS]);
     expect(raised[0]!.ratio).toBeGreaterThanOrEqual(4.5);
-    // Close enough to say so, and no further: the list of exceptions stays honest.
     expect(raised[1]!.ratio).toBeLessThan(4.5);
     expect(raised[1]!.ratio).toBeGreaterThan(4.4);
-    // The other surfaces, hovered, read.
     for (const { at, ratio } of rows.filter(({ at }) => !at.includes("on raised"))) expect(ratio, at).toBeGreaterThanOrEqual(4.5);
   });
 });

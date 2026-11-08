@@ -1,4 +1,3 @@
-// Docs that state a fact the repository also writes down must agree with it.
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
@@ -7,7 +6,6 @@ const read = (path) => readFileSync(new URL(path, import.meta.url), "utf8");
 const stylesheets = (html) =>
   [...html.matchAll(/<link\b[^>]*\brel="stylesheet"[^>]*>/g)].map(([tag]) => tag.match(/\bhref="([^"]+)"/)?.[1]);
 
-// The load URLs live in one place, the FONT_STYLESHEETS constant of the Typography source.
 const fontStylesheets = () => {
   const body = read("../packages/paper-ui/src/tokens/typography.ts").match(/export const FONT_STYLESHEETS = \{([\s\S]*?)\}/)?.[1];
   assert.ok(body, "typography.ts declares FONT_STYLESHEETS");

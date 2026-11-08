@@ -1,5 +1,3 @@
-// How a job's end is drawn: a glyph in the ink that says what happened, and the words for it.
-
 import { Glyph } from "../../../kit";
 import type { JobStatus } from "../data/history";
 

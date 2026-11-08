@@ -6,7 +6,6 @@ import { SELECT_OPTIONS } from "./options.js";
 
 const glyph = <Icon><path d="M4 12h16" /></Icon>;
 
-// A form that counts its submits, around a Button that is loading and one that is not.
 const Submits = () => {
   const [submits, setSubmits] = useState(0);
   return (
@@ -17,8 +16,6 @@ const Submits = () => {
   );
 };
 
-// The Button family and the input family in the states a pointer, a key and an attribute put them in; the states and focus specs
-// read their computed style. Each input is followed by a button, so the Tab order has a place to go and to come back from.
 export const StatesCase = () => (
   <>
     <button type="button" data-testid="before">Before</button>
@@ -74,7 +71,6 @@ export const StatesCase = () => (
     <Select aria-label="Select disabled" disabled data-testid="select-disabled">{SELECT_OPTIONS}</Select>
     <Grid columns="minmax(0, 1fr) auto" width="40rem"><Box /><Select aria-label="Select in an auto track" data-testid="select-auto">{SELECT_OPTIONS}</Select></Grid>
     <Box width="20rem"><Select aria-label="Select in a set width" data-testid="select-fills">{SELECT_OPTIONS}</Select></Box>
-    {/* The same controls under a preview, in a state no pointer or key holds; the states spec reads them against the real states above. */}
     <div {...previewAttributes("hover")}>
       <Button data-testid="preview-hover">Solid</Button>
       <Button variant="hairline" data-testid="preview-hover-hairline">Hairline</Button>

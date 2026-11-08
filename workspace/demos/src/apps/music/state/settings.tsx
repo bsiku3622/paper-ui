@@ -1,5 +1,3 @@
-// 설정. 음질 · 크로스페이드 같은 것들과, 오른쪽 창이 가사인지 다음 곡인지. 바꾸면 localStorage에 남습니다.
-
 import { createContext, useCallback, useContext, useMemo, type ReactNode } from "react";
 
 import { useStored } from "../../../kit";

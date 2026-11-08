@@ -1,6 +1,3 @@
-// ArticlePage.tsx — an article as a reader sees it: the title, the toolbar, then the body. Also an old revision (?rev=), the raw
-// markup (?raw=1), a redirect, and the page for a title that has no article yet.
-
 import { useMemo } from "react";
 import { Link as RouterLink, Navigate, useParams, useSearchParams } from "react-router-dom";
 

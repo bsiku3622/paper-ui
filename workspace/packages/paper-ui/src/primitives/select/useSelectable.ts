@@ -1,7 +1,6 @@
 import { useControllableState } from "../../internal/useControllableState";
 import { stateAttributes, type StateAttributes } from "../../tokens";
 
-// State and aria only: the caller connects `toggle` to a click or a press (Selectable does, on click).
 export type SelectableCurrent = "page" | "step" | "location" | "date" | "time" | true;
 export type SelectableOptions = {
   selected?: boolean;
@@ -15,7 +14,6 @@ export type SelectableResult = {
   isSelected: boolean;
   setSelected: (selected: boolean) => void;
   toggle: () => void;
-  /** Spread on the selectable element: one aria attribute chosen by the role, and `data-selected` while selected. */
   selectProps: {
     "aria-pressed"?: boolean;
     "aria-checked"?: boolean;
@@ -24,7 +22,6 @@ export type SelectableResult = {
   } & StateAttributes<"selected">;
 };
 
-// The one aria attribute that announces selection depends on the role the element plays.
 const CHECKED_ROLES: readonly string[] = ["radio", "checkbox", "switch", "menuitemradio", "menuitemcheckbox"];
 const SELECTED_ROLES: readonly string[] = ["tab", "option", "gridcell", "row", "treeitem"];
 

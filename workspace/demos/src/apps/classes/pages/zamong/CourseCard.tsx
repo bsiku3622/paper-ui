@@ -1,11 +1,3 @@
-// One course of the workbook as a card: its name and credits, what kind of course it is and what it needs (in words), and the
-// cells a person fills — the term, the grade and, for a course that also runs in English, EC. Choosing the term is "took it";
-// there is no checkbox, and the grade and EC wait for a term because they belong to the record the term makes.
-//
-// The name is the button that holds the card's detail open under the board. Hovering the card, or moving into it with the
-// keyboard, shows the detail for as long as it lasts; pressing the name keeps it. In a row of cards the cells sit at the foot of
-// each, so they line up whatever the lines above them.
-
 import { Box, Button, Grid, Inline, Marker, Pressable, Select, Stack, Surface, Text } from "@studio-baeks/paper-ui";
 
 import { Glyph } from "../../../../kit";
@@ -22,10 +14,7 @@ export type CourseCardProps = CardActions & {
   course: Course;
   entry: ZamongEntry | undefined;
   state: CourseState;
-  // The detail is held open for this card.
   pinned?: boolean;
-  // Called with the card's name when the pointer or focus comes in, and with null when it leaves. A card without it (in the term
-  // panel) is only the cells.
   onHover?: (name: string | null) => void;
   onPin?: (name: string) => void;
 };

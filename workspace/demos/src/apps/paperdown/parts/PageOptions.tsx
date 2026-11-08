@@ -1,6 +1,3 @@
-// The page options (App.tsx's `page-options`): one window for the paper's size, side and margin, and whether it is one long
-// sheet or cut into pages; and the zoom beside it. Both sit at the right end of the toolbar.
-
 import { useEffect, useState, type ReactNode } from "react";
 
 import { Box, Button, Divider, Field, Floating, IconButton, Inline, Select, Stack, Surface, Text } from "@studio-baeks/paper-ui";
@@ -8,7 +5,6 @@ import { Box, Button, Divider, Field, Floating, IconButton, Inline, Select, Stac
 import { Glyph, Segmented } from "../../../kit";
 import { PAPERS, ZOOMS, clamp, dimensions, type Paper, type Settings } from "../lib/types";
 
-// A number of millimetres, applied when the field is left or Enter is pressed (the original does the same on blur).
 const Millimetres = ({ label, value, min, max, disabled, onCommit }: { label: string; value: number; min: number; max: number; disabled?: boolean; onCommit: (value: number) => void }) => {
   const [draft, setDraft] = useState(String(value));
   useEffect(() => setDraft(String(value)), [value]);

@@ -1,5 +1,3 @@
-// What the console knows about the printer: the shapes of the mock state that the simulation moves and the pages read.
-
 import type { HistoryJob } from "./data/history";
 
 export type Axes = readonly [x: number, y: number, z: number, e: number];
@@ -12,7 +10,6 @@ export type PrintState = "standby" | "printing" | "paused" | "complete" | "cance
 
 export type LogKind = "command" | "response" | "info" | "error";
 
-// `auto` marks a line the printer said on its own (a temperature report), as opposed to an answer to a command.
 export type LogEntry = { id: number; time: number; kind: LogKind; text: string; auto?: boolean };
 
 export type FileMeta = {
@@ -20,7 +17,6 @@ export type FileMeta = {
   slicerVersion: string;
   layerCount: number;
   objectHeight: number;
-  // seconds
   estimatedTime: number;
   nozzle: number;
   layerHeight: number;
@@ -28,18 +24,14 @@ export type FileMeta = {
   bedTemp: number;
   chamberTemp: number;
   filamentType: string;
-  // mm
   filamentTotal: number;
-  // g
   filamentWeight: number;
 };
 
 export type FileEntry = {
-  // Relative to /gcodes, folder included: "Latch/CAP, LATCH MINI_PLA_47m25s.gcode".
   path: string;
   name: string;
   folder: string;
-  // unix seconds
   modified: number;
   size: number;
   meta: FileMeta;
@@ -49,22 +41,15 @@ export type PrintInfo = {
   state: PrintState;
   file: string | null;
   jobId: string | null;
-  // by file position, 0 to 1
   progress: number;
-  // seconds
   printDuration: number;
   totalDuration: number;
-  // mm
   filamentUsed: number;
   startedAt: number | null;
-  // seconds left by file position
   remaining: number;
-  // How much of the file one second of print covers.
   rate: number;
-  // The height the nozzle was at when the print was at this progress, for the layers in between.
   anchor: { progress: number; z: number };
   message: string;
-  // How many seconds of print pass in a second of the clock.
   timeScale: number;
   pauseAtLayer: number | null;
   pauseNextLayer: boolean;
@@ -77,7 +62,6 @@ export type EndstopState = "open" | "TRIGGERED";
 export type Series = { temp: readonly number[]; power: readonly number[]; target: readonly number[] };
 
 export type SimState = {
-  // The mock clock, ms.
   clock: number;
   tick: number;
   klippy: "ready" | "restarting";
@@ -85,13 +69,11 @@ export type SimState = {
   extruder: Heater;
   bed: Heater;
   series: Record<HeaterId, Series>;
-  // Where the toolhead was told to go, and where it is.
   gcode: Axes;
   live: Axes;
   homed: { x: boolean; y: boolean; z: boolean };
   absolute: boolean;
   absoluteExtrude: boolean;
-  // mm/s at this moment, and the volumetric flow in mm3/s.
   velocity: number;
   flow: number;
   speedFactor: number;
@@ -112,7 +94,6 @@ export type SimState = {
   files: readonly FileEntry[];
   folders: readonly string[];
   queue: readonly string[];
-  // The power devices and services the top bar's menu lists, and when each was last restarted (clock, ms).
   restarted: Record<string, number>;
 };
 

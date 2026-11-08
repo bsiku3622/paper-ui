@@ -1,7 +1,3 @@
-// What the Machine page says about the printer's computer and its software: the loads of the MCU and the host, the update
-// manager, the endstops and the log files. The numbers are sample ones moving a little with the mock's clock; an update
-// is refused while a print runs (as on the real printer) and otherwise "installs" on a timer; the logs are small mock files.
-
 import { useEffect, useState } from "react";
 
 import { Badge, Button, Divider, Floating, Grid, IconButton, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";

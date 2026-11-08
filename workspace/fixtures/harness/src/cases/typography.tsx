@@ -3,8 +3,6 @@ import { CONTROL_SIZES, TEXT_VARIANTS } from "@studio-baeks/paper-ui/tokens";
 
 import { SELECT_OPTIONS } from "./options.js";
 
-// The Typography surfaces the typography spec reads: controls at their preset and with the fontSize
-// escape, the roles and families of Text, and a form field's parts.
 export const TypographyCase = () => (
   <div id="typography-fixture">
     <Button data-testid="button-md">Button</Button>

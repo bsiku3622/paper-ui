@@ -1,9 +1,3 @@
-// /demo — the demo apps, one at a time, in a frame as wide as the window. Nothing here edits what it shows: pick an app and use it,
-// or open it in a tab of its own. The app picked is in the address (?app=), so a link reaches it.
-//
-// The frame opens the app in the theme the site is in: the site and the apps share an origin and the stored theme, and the frame
-// opens afresh when the theme turns. The apps are Korean products; the page around them speaks the visitor's language.
-
 import { Link as RouterLink, useSearchParams } from "react-router-dom";
 
 import { Box, Button, Inline, Link, Select, Surface, Text, useResolvedTheme } from "@studio-baeks/paper-ui";
@@ -80,7 +74,6 @@ export const Showcase = () => {
   );
 };
 
-// Picking from the list goes where the tab would.
 const useNavigateTo = () => {
   const [, setParams] = useSearchParams();
   return (app: ReturnType<typeof appOf>) => setParams(app.id === SHOWCASE_APPS[0]!.id ? {} : { app: app.id });

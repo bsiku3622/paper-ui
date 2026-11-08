@@ -7,8 +7,6 @@ import { LAYOUT_MODE_VALUES } from "../../packages/paper-ui/src/tokens/layout";
 import { openHarness } from "../support/harness";
 import { expectStyle } from "../support/style";
 
-// The real package without a Provider (?case=theme): the stylesheet alone decides the mode, from the
-// attribute on <html> or, with none, from the OS.
 const mount = async (page: Page, colorScheme: "light" | "dark") => {
   await page.emulateMedia({ colorScheme });
   await openHarness(page, "theme");
@@ -17,7 +15,6 @@ const mount = async (page: Page, colorScheme: "light" | "dark") => {
 
 const rgb = (hex: string) => `rgb(${[1, 3, 5].map((at) => parseInt(hex.slice(at, at + 2), 16)).join(", ")})`;
 
-// A scope with a raw span, a child and a grandchild — each element's computed variables, by name.
 const FIXTURE = `<div id="scope" ${THEME_ATTRIBUTE}="dark"><span id="raw">raw</span><div id="child"><div id="grandchild"></div></div><div id="nested" ${THEME_ATTRIBUTE}="light"><div id="nested-child"></div></div></div>`;
 const variable = (page: Page, selector: string, name: string) =>
   page.locator(selector).evaluate((element, name) => getComputedStyle(element).getPropertyValue(name).trim().toLowerCase(), name);
@@ -48,22 +45,17 @@ test("[foundations.theme.system-fallback] an attribute on <html> beats the OS", 
 test("[foundations.theme.scope-roles] [foundations.theme.ground-roles] a scope re-declares ink, takes its own roles itself and draws ground roles from its children down", async ({ page }) => {
   await mount(page, "light");
   await page.evaluate((html) => document.body.insertAdjacentHTML("beforeend", html), FIXTURE);
-  // Ink is inherited, so a raw span inside the dark scope reads the dark ink.
   await expect(page.locator("#raw")).toHaveCSS("color", rgb(dark.ink.primary));
   await expect(page.locator("#scope")).toHaveCSS("color", rgb(dark.ink.primary));
-  // The scope's own roles are its mode's.
   expect(await variable(page, "#scope", "--pui-color-bg-canvas")).toBe(dark.bg.canvas);
-  // Ground roles — the focus ring, the shadow colour and the shadow geometry — belong to the ground the scope stands on.
   expect(await variable(page, "#scope", "--pui-color-interaction-focus")).toBe(light.interaction.focus);
   expect(await variable(page, "#scope", "--pui-color-shadow-floating")).toBe(light.shadow.floating);
   expect(await variable(page, "#scope", "--pui-layout-shadow-floating-0")).toBe(LAYOUT_MODE_VALUES.light.shadow.floating["0"]);
-  // …and its children draw them in the scope's mode, which their own children inherit.
   for (const selector of ["#child", "#grandchild"]) {
     expect(await variable(page, selector, "--pui-color-interaction-focus"), selector).toBe(dark.interaction.focus);
     expect(await variable(page, selector, "--pui-color-shadow-floating"), selector).toBe(dark.shadow.floating);
     expect(await variable(page, selector, "--pui-layout-shadow-floating-0"), selector).toBe(LAYOUT_MODE_VALUES.dark.shadow.floating["0"]);
   }
-  // A light scope inside the dark one: light roles of its own, drawn on a dark ground.
   await expect(page.locator("#nested")).toHaveCSS("color", rgb(light.ink.primary));
   expect(await variable(page, "#nested", "--pui-color-bg-canvas")).toBe(light.bg.canvas);
   expect(await variable(page, "#nested", "--pui-color-interaction-focus")).toBe(dark.interaction.focus);
@@ -75,13 +67,11 @@ test("[foundations.theme.scope-roles] [foundations.layout.shadow-geometry] [foun
   const card = page.getByTestId("inverse-card");
   const inside = page.getByTestId("inverse-card-child");
   await expect(card).toHaveAttribute(THEME_ATTRIBUTE, "dark");
-  // Beside the card, an element on the same ground casts the same shadow: the page's, light.
   await expectStyle(card, { boxShadow: ELEVATION.shadow.overlay });
   const shadow = (locator: typeof card) => locator.evaluate((element) => getComputedStyle(element).boxShadow);
   expect(await shadow(card)).toContain(LAYOUT_MODE_VALUES.light.shadow.floating["0"]);
   expect(await shadow(inside)).toContain(LAYOUT_MODE_VALUES.dark.shadow.floating["0"]);
   expect(await shadow(inside)).not.toBe(await shadow(card));
-  // The shadow colour is the ground's: a child of <body> reads light, a child of the card reads dark.
   const tint = (parent: typeof card) => parent.evaluate((element) => {
     const probe = document.createElement("span");
     probe.style.color = "var(--pui-color-shadow-floating)";
@@ -95,7 +85,6 @@ test("[foundations.theme.scope-roles] [foundations.layout.shadow-geometry] [foun
   expect(lightTint).not.toBe(darkTint);
   expect(await shadow(card)).toContain(lightTint);
   expect(await shadow(inside)).toContain(darkTint);
-  // The ring is the ground's as well: the card's own outline reads the light focus colour.
   await card.focus();
   await expect(card).toBeFocused();
   await expect(card).toHaveCSS("outline-color", rgb(light.interaction.focus));
@@ -110,9 +99,7 @@ test("[primitives.surface.theme] [primitives.portal.root] raw text, an Icon, a P
   await expect(page.getByTestId("ink-raw")).toHaveCSS("color", ink);
   await expect(page.getByTestId("ink-icon")).toHaveCSS("color", ink);
   await expect(page.getByTestId("ink-pressable")).toHaveCSS("color", ink);
-  // The page around it keeps its own ink.
   await expect(page.locator("body")).toHaveCSS("color", rgb(light.ink.primary));
-  // The portal root re-establishes the opener's mode, so content outside the Surface reads it too.
   await page.getByTestId("ink-trigger").click();
   const panel = page.getByRole("dialog", { name: "Ink panel" });
   await expect(panel.locator(`xpath=ancestor-or-self::*[@${THEME_ATTRIBUTE}][1]`)).toHaveAttribute(THEME_ATTRIBUTE, "dark");
@@ -131,7 +118,6 @@ test("[primitives.surface.theme] inverse Surfaces nest: each sets its own color-
   await expect(nested).toHaveCSS("color-scheme", "light");
   await expect(page.getByTestId("ink-raw")).toHaveCSS("color", rgb(dark.ink.primary));
   await expect(page.getByTestId("ink-nested-raw")).toHaveCSS("color", rgb(light.ink.primary));
-  // The nest follows the OS too: under a dark OS the outer inverse is light and the inner one is dark again.
   await page.emulateMedia({ colorScheme: "dark" });
   await expect(scope).toHaveAttribute(THEME_ATTRIBUTE, "light");
   await expect(nested).toHaveAttribute(THEME_ATTRIBUTE, "dark");
@@ -171,9 +157,7 @@ test("[foundations.color.contrast-more] [foundations.color.contrast-more-roles] 
   expect(await variable(page, "html", "--pui-color-ink-tertiary")).toBe(COLOR_CONTRAST_MORE.light.ink.tertiary);
   expect(await variable(page, "#scope", "--pui-color-border-strong")).toBe(COLOR_CONTRAST_MORE.dark.border.strong);
   expect(await variable(page, "#nested", "--pui-color-border-hover")).toBe(COLOR_CONTRAST_MORE.light.border.hover);
-  // Only the quiet roles move.
   expect(await variable(page, "html", "--pui-color-ink-primary")).toBe(light.ink.primary);
-  // With no attribute, the OS mode picks the lift as well.
   await page.emulateMedia({ colorScheme: "dark", contrast: "more" });
   expect(await variable(page, "html", "--pui-color-border-base")).toBe(COLOR_CONTRAST_MORE.dark.border.base);
   expect(await variable(page, "html", "--pui-color-ink-tertiary")).toBe(COLOR_CONTRAST_MORE.dark.ink.tertiary);
@@ -181,7 +165,6 @@ test("[foundations.color.contrast-more] [foundations.color.contrast-more-roles] 
   expect(await variable(page, "html", "--pui-color-border-base")).toBe(dark.border.base);
 });
 
-// The site: the Provider writes the attribute from the stored choice, and the GNB toggle flips it.
 const openSite = async (page: Page, stored: "light" | "dark", colorScheme: "light" | "dark", path = "/") => {
   await page.emulateMedia({ colorScheme });
   await page.addInitScript(([key, value]) => window.localStorage.setItem(key!, value!), [THEME_STORAGE_KEY, stored]);
@@ -216,7 +199,6 @@ test("[foundations.theme.swap-instant] a toggle leaves no CSS transition running
   const toggle = page.getByRole("button", { name: "다크 테마로 전환" });
   const control = page.getByRole("switch").first();
   await expect(control).toBeVisible();
-  // The controls do transition when nothing holds them, or the check below would pass for nothing.
   expect(await control.evaluate((element) => getComputedStyle(element).transitionDuration)).not.toBe("0s");
   const running = await toggle.evaluate(async (button) => {
     (button as HTMLButtonElement).click();
@@ -229,13 +211,12 @@ test("[foundations.theme.swap-instant] a toggle leaves no CSS transition running
   expect(await page.evaluate(() => document.getAnimations().filter((animation) => animation instanceof CSSTransition).length)).toBe(0);
 });
 
-// Counts every transition the page starts from here on, so one that starts and ends between two looks is still seen.
 const watchTransitions = (page: Page) =>
   page.evaluate(() => {
     Object.assign(window, { transitionsStarted: 0 });
     document.addEventListener("transitionrun", () => Object.assign(window, { transitionsStarted: (window as unknown as { transitionsStarted: number }).transitionsStarted + 1 }), true);
   });
-// The count once the frames that follow a write have passed. Nothing here reads a style first, or the read would start them.
+// Nothing here reads a style first, or the read would start the transitions.
 const transitionsStarted = (page: Page) =>
   page.evaluate(async () => {
     for (let frame = 0; frame < 4; frame += 1) await new Promise((resolve) => requestAnimationFrame(resolve));
@@ -295,7 +276,6 @@ test("[foundations.theme.swap-limit] with nothing on the page reading the theme,
   await expect(page.locator("html")).not.toHaveAttribute(THEME_SWAP_ATTRIBUTE);
 });
 
-// Without the app's JavaScript: only the boot script in <head> has run.
 const bootOnly = async (page: Page, colorScheme: "light" | "dark", stored?: string) => {
   await page.emulateMedia({ colorScheme });
   await page.route("**/src/main.tsx", (route) => route.abort());
@@ -338,11 +318,10 @@ test("[foundations.theme.storage] a choice made with the GNB toggle survives a r
   await expect(html).toHaveCSS("color-scheme", "dark");
 });
 
-// Every value <html> held, with when it was set, and the first paint with when it happened: one init script records both.
 const recordPaint = (page: Page) =>
   page.addInitScript((attribute) => {
     const log: { theme: string | null; at: number }[] = [];
-    // The script runs before the document has an <html>: watch for it, so no value it takes goes unseen.
+    // The script runs before the document has an <html>, so watch for it or the first value goes unseen.
     const watch = () => {
       const root = document.documentElement;
       log.push({ theme: root.getAttribute(attribute), at: performance.now() });
@@ -377,7 +356,6 @@ for (const { name, os, stored, mode } of [
     const { log, paints } = await page.evaluate(() => (window as unknown as { __theme: { log: { theme: string | null; at: number }[]; paints: { name: string; at: number }[] } }).__theme);
     const first = Math.min(...paints.map(({ at }) => at));
     expect(Number.isFinite(first), "the page painted").toBe(true);
-    // From the first moment a script could look, to the first paint, <html> never held anything but the right mode.
     const before = log.filter(({ at }) => at <= first);
     expect(before.map(({ theme }) => theme)).toContain(mode);
     expect(before.filter(({ theme }) => theme !== null && theme !== mode)).toEqual([]);

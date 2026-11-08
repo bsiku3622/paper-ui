@@ -1,9 +1,3 @@
-// Content: the page breaks of a paper that is cut into pages. The original puts a spacer between two blocks where the next
-// page begins (Tiptap decorations). A `contenteditable` cannot hold spacers that are not
-// its words, so here the block that would cross the end of a page gets a top margin that pushes it onto the next one. A
-// heading goes with what follows it; a list and a quote are cut between their items. A paragraph longer than a page is
-// not cut (the original cuts it between lines): it runs on past the page's end.
-
 export type Layout = { enabled: boolean; height: number; margin: number; gap: number };
 
 const LISTS = new Set(["UL", "OL", "BLOCKQUOTE", "LI"]);
@@ -31,7 +25,6 @@ export const paginate = (root: HTMLElement, layout: Layout): number => {
   }
   if (!layout.enabled) return 1;
   const rect = root.getBoundingClientRect();
-  // The paper may be shown zoomed: lengths on the screen are the paper's lengths times this, when it can be told.
   const natural = parseFloat(getComputedStyle(root).width);
   const scale = natural > 0 && rect.width > 0 ? rect.width / natural : undefined;
   const unscale = (value: number) => (scale ? value / scale : value);
@@ -51,7 +44,6 @@ export const paginate = (root: HTMLElement, layout: Layout): number => {
     const limit = page * stride + layout.height - layout.margin;
     let keepTo = unit.bottom;
     if (/^H[1-6]$/.test(unit.element.tagName)) {
-      // A heading keeps company with the first two lines of what follows it.
       const next = measured[index + 1];
       if (next) {
         const line = px(getComputedStyle(next.element).lineHeight) || 24;
@@ -68,7 +60,6 @@ export const paginate = (root: HTMLElement, layout: Layout): number => {
   });
 
   for (const { element, gap } of breaks) {
-    // Margins of neighbouring blocks collapse into the larger one, so the push is the gap plus what is already between them.
     const before = element.previousElementSibling;
     const already = before instanceof HTMLElement ? px(getComputedStyle(before).marginBottom) : 0;
     element.style.marginTop = `${gap + already}px`;

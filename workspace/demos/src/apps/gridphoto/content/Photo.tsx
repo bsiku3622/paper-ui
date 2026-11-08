@@ -1,7 +1,3 @@
-// The pictures of a page: what Paper has no part for. A photo is a window onto the kit's <Art> drawing; a flattened page is
-// the same drawing pulled by a perspective transform (the browser does the warp, as the engine does it on pixels), with the
-// filter, the quarter turns and the comparison lines laid over it. Colours and lengths are Paper's tokens.
-
 import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 
 import { Box } from "@studio-baeks/paper-ui";
@@ -14,14 +10,10 @@ import { capped as cappedClass, dim as dimClass, flat, frame, grey, lift, lines,
 
 const drawing = (photo: Photo) => <Art seed={photo.seed} kind={photo.art} grid={photo.grid} ratio="1 / 1" radius="none" />;
 
-// The frame of a picture: its aspect is the only number it carries. Anything shown large is as wide as it can be and no taller
-// than the well allows.
 const frameProps = (aspect: number, stale?: boolean, large?: boolean) => ({
   className: [frame, large ? cappedClass : "", stale ? staleClass : ""].filter(Boolean).join(" "),
   style: { "--gp-aspect": aspect } as CSSProperties,
 });
-
-// ── The photo as it was taken ──
 
 export const SourcePhoto = ({ photo, win = photo.win, aspect = photo.ratio, label, dim, stale, large, children }: { photo: Photo; win?: Win; aspect?: number; label?: string; dim?: boolean; stale?: boolean; large?: boolean; children?: ReactNode }) => {
   const [x0, y0, x1] = win;
@@ -33,16 +25,11 @@ export const SourcePhoto = ({ photo, win = photo.win, aspect = photo.ratio, labe
   );
 };
 
-// ── The page pulled straight ──
-
-// Drawn this many times larger than it is shown, so the warp has pixels to take from.
 const OVERSAMPLE = 2;
-// The kit's page has rounded corners with the desk showing in them; sample a hair inside.
 const INSET = 0.006;
 
 const centre = (quad: Quad) => ({ x: quad.reduce((sum, p) => sum + p.x, 0) / 4, y: quad.reduce((sum, p) => sum + p.y, 0) / 4 });
 
-// `aspect` is the shape of the frame as it is shown, after the quarter turns.
 export const FlatPage = ({ photo, quad, aspect, rotation, filter, stale, large, label, children }: { photo: Photo; quad: Quad; aspect: number; rotation: number; filter: Filter; stale?: boolean; large?: boolean; label?: string; children?: ReactNode }) => {
   const frameRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
@@ -57,7 +44,6 @@ export const FlatPage = ({ photo, quad, aspect, rotation, filter, stale, large, 
   }, []);
 
   const side = width * OVERSAMPLE;
-  // The warp is worked out from the measured frame, so it is a moment's value: it is kept in state, not read through the style.
   useLayoutEffect(() => {
     if (width <= 0 || !quadIsValid(quad)) {
       setTransform(undefined);
@@ -84,8 +70,6 @@ export const FlatPage = ({ photo, quad, aspect, rotation, filter, stale, large, 
   );
 };
 
-// ── Lines laid over a picture, in fractions of its frame ──
-
 export const Lines = ({ paths }: { paths: readonly { d: string; strong?: boolean }[] }) => (
   <svg viewBox="0 0 1 1" preserveAspectRatio="none" aria-hidden="true" className={lines}>
     {paths.map((path, index) => (
@@ -102,7 +86,6 @@ export const Lines = ({ paths }: { paths: readonly { d: string; strong?: boolean
   </svg>
 );
 
-// A page's fraction (s across, t down) to its place in the frame once it is turned by quarter turns.
 const turned = (s: number, t: number, rotation: number): [number, number] => {
   const r = ((rotation % 4) + 4) % 4;
   if (r === 1) return [1 - t, s];
@@ -111,8 +94,6 @@ const turned = (s: number, t: number, rotation: number): [number, number] => {
   return [s, t];
 };
 
-// The perfect grid that a flattened page is compared against. `trim` is the share of the lattice cut from each side when the
-// empty corners are trimmed, so the lines still fall on the cells that are left.
 export const comparisonPath = (cols: number, rows: number, rotation: number, linesOnly: "rows" | "both" = "both", trim = 0): string => {
   const parts: string[] = [];
   const at = (s: number, t: number) => {

@@ -18,7 +18,6 @@ export type DraggableOwnProps = DraggableOptions & {
   children?: ReactNode | ((state: DraggableState) => ReactNode);
 };
 export type DraggableProps<As extends ElementType = "div"> = PolymorphicProps<DraggableOwnProps, As>;
-// Every option either mode takes, as one optional shape: the props are split into the options and the native attributes.
 type OptionBag = Partial<Omit<MoveDragOptions, "mode" | "onDragStart" | "onDragMove" | "onDragEnd"> & Omit<TransferDragOptions, "mode" | "onDragStart" | "onDragMove" | "onDragEnd">> & {
   mode?: DraggableOptions["mode"];
   onDragStart?: (event: never) => void;
@@ -36,10 +35,6 @@ const DraggableImpl = forwardRef<HTMLElement, Omit<DraggableProps, "as" | "ref">
   const drag = useDraggable({ mode, activation, disabled, axis, keyboardStep, position, defaultPosition, onPositionChange, onDragStart, onDragMove, onDragEnd, onDragCancel, getItems, getAllowedDropOperations } as DraggableOptions);
   const ref = useMergedRef(forwardedRef, drag.dragProps.ref);
   const target = targetProps(Tag, { disabled, type: dom.type as string | undefined, href: dom.href, kind: "control" });
-  // The surface is a group, or the one control of a transfer, and takes the Tab stop only when it starts the drag:
-  // the element's role and place in the Tab order are the Draggable's. A disabled one stops the drag and nothing
-  // else: its content stays live. It says so the way targetProps tells it to; the aria-disabled in dragProps is for
-  // a hook's own element.
   delete target.onClickCapture;
   delete target.onAuxClickCapture;
   const surface = { ...target, role: mode === "transfer" && activation === "surface" ? "button" : "group", tabIndex: activation === "surface" && !disabled ? 0 : undefined };
@@ -63,8 +58,8 @@ const HandleImpl = forwardRef<HTMLElement, Omit<DraggableHandleProps, "as" | "re
   const target = targetProps(Tag, { disabled: disabled || drag.handleProps.disabled, type, href, kind: "control" });
   const handle = { ...drag.handleProps };
   delete handle.disabled;
-  // A handle switched off by itself takes no input, though the Draggable around it is live: a browser still sends
-  // pointer events to a disabled button, and other tags cannot be disabled natively at all.
+  // A browser still sends pointer events to a disabled button, and other tags cannot be disabled natively, so a handle switched off
+  // by itself takes no input though the Draggable around it is live.
   const input = disabled ? stateAttributes({ dragging: drag.isDragging }) : handle;
   return <Tag {...mergeProps(target, props, input)} ref={ref} className={joinClass(Tag === "button" && bareButton, dragSurface, className)} />;
 });

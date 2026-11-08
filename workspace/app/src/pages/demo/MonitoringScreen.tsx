@@ -1,6 +1,3 @@
-// Monitoring: how the services are doing now, the alerts that say when they are not, and the incidents that came of them. An alert
-// can be taken, resolved or handed to someone, and the counts in the sidebar and the overview follow.
-
 import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -19,8 +16,6 @@ const RANGES = [
   { id: "7d", label: "7일", points: 28, from: "7일 전" },
   { id: "30d", label: "30일", points: 30, from: "30일 전" },
 ] as const;
-
-// ─── Incidents ───────────────────────────────────────────────────────────────────────────────────────────────────────
 
 type IncidentStatus = "조사 중" | "완화됨" | "종료";
 type Incident = { id: string; title: string; status: IncidentStatus; impact: string; service: string; started: number; minutes: number | null; lead: string; summary: string; cause: string };
@@ -83,8 +78,6 @@ const IncidentBody = ({ incident }: { incident: Incident }) => {
     </Stack>
   );
 };
-
-// ─── Alerts ──────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 const RANK: Record<AlertSeverity, number> = { 긴급: 0, 경고: 1, 정보: 2 };
 const STATE_RANK: Record<AlertState, number> = { "발생 중": 0, 확인함: 1, 해결됨: 2 };
@@ -150,8 +143,6 @@ const AlertBody = ({ id }: { id: string }) => {
   );
 };
 
-// ─── Charts ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-
 const Chart = ({ title, value, note, values, range, accent, mark }: { title: string; value: string; note: string; values: number[]; range: (typeof RANGES)[number]; accent?: "primary" | "info"; mark?: (value: number) => boolean }) => (
   <Stack gap="md">
     <Stack gap="xs">
@@ -191,8 +182,6 @@ const Charts = ({ service, range }: { service: string; range: (typeof RANGES)[nu
     </Grid>
   );
 };
-
-// ─── The page ────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 const OPEN: readonly AlertState[] = ["발생 중", "확인함"];
 

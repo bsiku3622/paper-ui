@@ -1,5 +1,3 @@
-// 사이드바: 검색 · 지금 듣기 · 둘러보기 · 라디오, 보관함, 고정 항목, 플레이리스트. 작은 표지가 붙은 줄은 kit의 NavItem `art`입니다.
-
 import { IconButton } from "@studio-baeks/paper-ui";
 
 import { Glyph, Person, Sidebar, SidebarCard, type NavItem, type NavSection } from "../../../kit";
@@ -11,7 +9,6 @@ export const Side = () => {
   const library = useLibrary();
   const dialogs = useDialogs();
 
-  // 고정한 것을 먼저, 그다음 최근에 바꾼 것. 목록이 길어지면 사이드바가 스크롤되므로 몇 개만 보입니다.
   const shown = [...library.playlists.filter((playlist) => playlist.pinned), ...library.playlists.filter((playlist) => !playlist.pinned)].slice(0, 5);
   const listed: NavItem[] = shown.map((playlist) => ({ id: playlist.id, label: playlist.name, to: `/music/playlist/${playlist.id}`, art: <SmallArt seed={playlist.seed} name={playlist.name} /> }));
 

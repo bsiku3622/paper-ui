@@ -1,6 +1,3 @@
-// What the charts share: axis text, hairline grid, the floating readout, legends and the range slider. Paper has no chart
-// parts and no slider, so these are drawn here; every colour and length reads a Paper token.
-
 import { style, styleVariants } from "@vanilla-extract/css";
 
 import { focusRing, lineRule, tokens } from "@studio-baeks/paper-ui/tokens";
@@ -25,7 +22,6 @@ export const gridLine = style({ stroke: tokens.color.border.base, strokeWidth: t
 
 export const guide = style({ stroke: tokens.color.border.strong, strokeWidth: tokens.shape.stroke.border });
 
-// The readout that follows the pointer over a chart: values lead, names follow.
 export const tooltip = style({
   position: "absolute",
   top: 0,
@@ -74,7 +70,6 @@ export const lineKey = style({ display: "inline-block", width: tokens.shape.inse
 
 export const dotKey = style({ display: "inline-block", width: tokens.shape.inset.md, height: tokens.shape.inset.md, borderRadius: tokens.shape.radius.full });
 
-// A native range input in Paper's colours: the thumb and the filled part take the primary accent.
 export const range = style({
   width: "100%",
   margin: 0,
@@ -95,8 +90,6 @@ export const cell = style({
   },
 });
 
-// ── What a chart draws in a tone ──
-
 export type Tone = "primary" | "info" | "success" | "warning" | "error" | "neutral";
 
 const SOLID: Record<Tone, string> = {
@@ -116,11 +109,8 @@ const SOFT: Record<Tone, string> = {
   neutral: tokens.color.bg.sunken,
 };
 
-// A column or a part of a bar.
 export const barOf = styleVariants(SOLID, (color) => ({ fill: color, backgroundColor: color }));
-// A column the pointer is not on, while another is.
 export const dim = style({ opacity: tokens.color.opacity.disabled });
-// A line's colour, its swatch in a legend, and the dot on it that a readout stands on.
 export const lineOf = styleVariants(SOLID, (color) => ({ fill: "none", stroke: color, strokeWidth: tokens.shape.stroke.emphasis, strokeLinejoin: "round", strokeLinecap: "round" }));
 export const targetOf = styleVariants(SOLID, (color) => ({ fill: "none", stroke: color, strokeWidth: tokens.shape.stroke.border, opacity: tokens.color.opacity.disabled }));
 export const areaOf = styleVariants(SOFT, (color) => ({ fill: color }));
@@ -131,23 +121,19 @@ export const keyBeside = style({ marginRight: tokens.layout.gap.sm, verticalAlig
 export const relative = style({ position: "relative" });
 export const plot = style({ display: "block", overflow: "visible" });
 
-// The readout stands at --tip-x and --tip-y inside its chart, on one side of that point or the other.
 export const tipAt = style({ left: "var(--tip-x)", top: "var(--tip-y)" });
 export const tipAfter = style({ transform: `translateX(${tokens.layout.gap.md})` });
 export const tipBefore = style({ transform: `translateX(calc((100% + ${tokens.layout.gap.md}) * -1))` });
 
-// A row of parts in proportion, with a gap of the surface between them. Each part's share is its flex-grow.
 export const bar = style({ display: "flex", gap: tokens.shape.stroke.emphasis, height: tokens.shape.inset.sm, width: "100%" });
 export const part = style({ flexBasis: 0, minWidth: tokens.shape.inset.xs, borderRadius: tokens.shape.radius.full });
 
-// Drawn marks on a plot.
 export const ink = style({ fill: tokens.color.ink.primary });
 export const inkRing = style({ fill: "none", stroke: tokens.color.ink.primary, strokeWidth: tokens.shape.stroke.emphasis });
 export const probe = style({ fill: tokens.color.ink.primary, stroke: tokens.color.bg.raised, strokeWidth: tokens.shape.stroke.emphasis });
 export const edge = style({ stroke: tokens.color.border.strong, strokeWidth: tokens.shape.stroke.border });
 export const calloutText = style({ fontWeight: tokens.typography.role.label.weight });
 
-// The ring of a round gauge.
 export const ringRoot = style({ position: "relative", display: "inline-flex", alignItems: "center", justifyContent: "center", flex: "none" });
 export const ringSize = styleVariants({
   sm: { width: tokens.shape.control.height.xs, height: tokens.shape.control.height.xs },
@@ -159,7 +145,6 @@ export const ringTrack = style({ fill: "none", stroke: tokens.color.control.trac
 export const ringArc = styleVariants(SOLID, (color) => ({ fill: "none", stroke: color, strokeLinecap: "round" }));
 export const ringLabel = style({ position: "relative", fontSize: tokens.typography.role.label.size, fontWeight: tokens.typography.role.label.weight, fontVariantNumeric: "tabular-nums", color: tokens.color.ink.secondary });
 
-// The bed map: the plot and the scale beside it.
 export const heatRow = style({ display: "flex", gap: tokens.layout.gap.md, alignItems: "flex-start" });
 export const heatPlot = style({ position: "relative", flex: "none" });
 export const heatTip = style({ transform: `translate(${tokens.layout.gap.md}, -50%)` });
@@ -171,15 +156,12 @@ export const scaleBar = style({
 });
 export const scaleLabels = style({ display: "flex", flexDirection: "column", justifyContent: "space-between", fontSize: tokens.typography.role.label.size, color: tokens.color.ink.tertiary, fontVariantNumeric: "tabular-nums" });
 
-// A cell of the bed map: amber where the bed is high, blue where it is low, as strong as it is far from level. The cell is the colour
-// laid over the sunken well at --heat (how far from level, as a share of the scale).
 export const well = style({ fill: tokens.color.bg.sunken });
 export const heat = styleVariants({
   high: { fill: tokens.color.accent.warning.solid, opacity: "min(var(--heat), 1)" },
   low: { fill: tokens.color.accent.info.solid, opacity: "min(var(--heat), 1)" },
 });
 
-// The layer viewer. Its strokes are widths in millimetres of the bed (set on the paths), so only their colour is here.
 export const strokeOf = styleVariants(SOLID, (color) => ({ stroke: color }));
 export const clip = style({ overflow: "hidden" });
 export const bed = style({ fill: tokens.color.bg.raised, stroke: tokens.color.border.strong, strokeWidth: tokens.shape.stroke.border, vectorEffect: "non-scaling-stroke" });

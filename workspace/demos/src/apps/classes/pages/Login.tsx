@@ -1,13 +1,3 @@
-// 로그인 — an ID and a password, nothing else. Accounts are made by the administrator; the school's Google account is not
-// a way to sign in but a step after it (the next screen), so there is no "구글로 로그인" here.
-//
-// The sign-in is mocked: any ID and password go in after a short wait, and the password is kept nowhere. Two IDs are
-// special so every state can be seen — `legacy` is an old account with no school Google account linked yet (the Gate then
-// stops it at 학교 계정 연결), `wrong` is refused.
-//
-// For screenshots: ?as=jiwoo fills the ID, ?as=jiwoo&go=1 signs in on arrival, ?state=loading|failed|invalid holds the form
-// in that state.
-
 import { useCallback, useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
 
@@ -24,7 +14,7 @@ type Phase = "idle" | "loading" | "failed";
 const DEMO_IDS = ["jiwoo", "legacy", "wrong"] as const;
 const WAIT = 800;
 
-// Safari ends a Korean syllable with an Enter that still counts as a keypress: it must not submit the form.
+// Safari ends a Korean syllable with an Enter that still counts as a keypress, and it must not submit the form.
 const holdWhileComposing = (event: KeyboardEvent<HTMLInputElement>) => {
   if (event.key === "Enter" && (event.nativeEvent.isComposing || event.keyCode === 229)) event.preventDefault();
 };
@@ -50,7 +40,6 @@ export const LoginPage = () => {
     navigate(path() + carried(params), { replace: true });
   }, [signIn, navigate, params]);
 
-  // ?as=…&go=1 signs in as soon as the screen opens.
   const auto = params.get("go") === "1" && preset !== "";
   const arrived = useRef(false);
   useEffect(() => {
@@ -59,7 +48,6 @@ export const LoginPage = () => {
     enter(preset);
   }, [auto, preset, enter]);
 
-  // Without a preset or a forced state the cursor starts in the first field.
   const startHere = !forced && !preset;
   useEffect(() => {
     if (startHere) usernameRef.current?.focus();

@@ -1,5 +1,3 @@
-// search.ts — finds articles by title, category and text, best first, with the sentence a word was found in.
-
 import type { WikiIndex } from "./index";
 
 export type Hit = { title: string; score: number; snippet: string | null; inTitle: boolean };
@@ -13,7 +11,6 @@ const snippetAt = (plain: string, at: number, length: number) => {
   return `${from > 0 ? "… " : ""}${text}${at + length + 100 < plain.length ? " …" : ""}`;
 };
 
-// A few words around the first place a word is found in a plain text; null when it is not there.
 export const snippetOf = (plain: string, needle: string) => {
   const at = plain.toLowerCase().indexOf(needle.toLowerCase());
   return at < 0 ? null : snippetAt(plain, at, needle.length);
@@ -32,7 +29,6 @@ export const search = (index: WikiIndex, query: string): Hit[] => {
     else if (title.startsWith(q)) score += 600;
     else if (title.includes(q)) score += 400;
     else if (words.length > 1 && words.every((word) => title.includes(word))) score += 250;
-    // Of two titles that contain the words, the shorter one is the closer.
     if (score >= 250 && title !== q) score += Math.max(0, 60 - (title.length - q.length) * 6);
     if (article.categories.some((name) => name.toLowerCase().includes(q))) score += 80;
 
@@ -52,7 +48,6 @@ export const search = (index: WikiIndex, query: string): Hit[] => {
   return hits.sort((a, b) => b.score - a.score || a.title.localeCompare(b.title, "ko"));
 };
 
-// Titles that start with or contain what was typed: for the “바로가기” and for suggestions.
 export const suggest = (index: WikiIndex, query: string, limit = 8) => {
   const q = squash(query).toLowerCase();
   if (!q) return [];

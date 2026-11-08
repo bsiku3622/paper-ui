@@ -1,6 +1,3 @@
-// A titled block that opens and closes: a ghost button as wide as the block, the chevron at its end; what is inside is
-// drawn only while it is open. Used for the guide book (one open at a time is the page's choice, not this part's).
-
 import type { ReactNode } from "react";
 
 import { Button, Inline, Stack, Text } from "@studio-baeks/paper-ui";

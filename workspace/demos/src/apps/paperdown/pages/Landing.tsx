@@ -1,6 +1,3 @@
-// The home of someone who is not signed in (Home.tsx, as a guest): what the app is for, a button that opens the editor, "이 기기의
-// 문서" with the one document this browser keeps, and the way to sign in beside it.
-
 import { Link as RouterLink } from "react-router-dom";
 
 import { Box, Button, Grid, Stack, Surface, Text, Inline } from "@studio-baeks/paper-ui";

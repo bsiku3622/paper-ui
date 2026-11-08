@@ -1,5 +1,3 @@
-// 묶음: 내 플레이리스트의 처음 모습, 에디터 추천, 믹스, 라디오 방송국, 차트. 모두 시드로 골라서 늘 같습니다.
-
 import { NOW, daysAgo, random, shuffle } from "../../../kit";
 import {
   ALBUMS, ARTISTS, DEFAULT_LIBRARY, TRACKS, tracksOfAlbum, tracksOfArtist, tracksOfGenre, type Album, type Artist, type Track,
@@ -14,7 +12,6 @@ export type Playlist = {
   kind: PlaylistKind;
   trackIds: string[];
   seed: string;
-  // 마지막으로 바꾼 때 (ms)
   updatedAt: number;
   pinned?: boolean;
   curator?: string;
@@ -27,7 +24,6 @@ const newest: Track[] = [...ALBUMS].filter((album) => album.year === 2026).flatM
 const from = (seed: string, pool: readonly Track[], count: number) => shuffle(random(seed), pool).slice(0, count).map((track) => track.id);
 const ofGenres = (genres: readonly string[]) => genres.flatMap(tracksOfGenre);
 
-// 월별 플레이리스트: 그 달에 듣던 곡을 모은 것. 새 앨범이 나온 달에는 그 앨범의 곡이 섞입니다.
 const MONTHS: readonly { name: string; count: number; pinned?: true; days: number }[] = [
   { name: "2026.11", count: 24, days: 0 },
   { name: "2026.10", count: 28, days: 6 },
@@ -128,7 +124,6 @@ export const STATIONS: readonly Station[] = [
   { id: "st10", name: "발라드 우체국", tagline: "편지처럼 천천히 도착하는 노래", kind: "genre", genres: ["ballad"], seed: "라디오 발라드" },
 ];
 
-// 방송국이 틀 곡들. 방송국마다 늘 같은 순서입니다.
 const stationTracks = (station: Station): Track[] => shuffle(random(`station:${station.id}`), ofGenres(station.genres));
 
 export const artistStationTracks = (artist: Artist): Track[] => {
@@ -137,25 +132,21 @@ export const artistStationTracks = (artist: Artist): Track[] => {
   return shuffle(random(`artist-radio:${artist.id}`), [...own, ...like]);
 };
 
-// 지금 방송 중인 곡: 방송국이 가진 곡들을 시각에 따라 돌립니다.
 export const onAir = (station: Station): Track => {
   const list = stationTracks(station);
   const slot = Math.floor(NOW.getTime() / (4 * 60_000));
   return list[slot % list.length]!;
 };
 
-// "듣기"를 눌렀을 때 틀 곡들: 지금 방송 중인 곡부터 이어집니다.
 export const radioQueue = (station: Station): Track[] => {
   const now = onAir(station);
   return [now, ...stationTracks(station).filter((track) => track.id !== now.id)];
 };
 
-// 차트
 export const TOP_TRACKS: readonly Track[] = [...TRACKS].sort((a, b) => b.plays - a.plays).slice(0, 25);
 export const TOP_ALBUMS: readonly Album[] = [...ALBUMS].sort((a, b) => b.plays - a.plays).slice(0, 12);
 export const NEW_ALBUMS: readonly Album[] = [...ALBUMS].sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 12);
 
-// 순위가 어제와 얼마나 달라졌는지 (-3 ~ +3, 0은 그대로, NEW는 새로 진입).
 export const NEW_ENTRY = 99;
 export const rankMove = (id: string) => {
   const r = random(`move:${id}`);
@@ -163,7 +154,6 @@ export const rankMove = (id: string) => {
   return value === 4 ? NEW_ENTRY : Math.max(-3, value);
 };
 
-// 처음에 내가 들은 기록과 좋아요, 팔로우.
 export const SEED_HISTORY: readonly string[] = from("history", libraryTracks, 18);
 export const SEED_LIKES: readonly string[] = from("likes", libraryTracks, 26);
 export const SEED_FOLLOWING: readonly string[] = ["ar01", "ar03", "ar14", "ar06"];

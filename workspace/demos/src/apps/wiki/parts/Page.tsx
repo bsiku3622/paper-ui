@@ -1,6 +1,3 @@
-// Page.tsx — the white card every page of the wiki stands in: a title, what you can do with it, then the page. It is the first
-// face on the ground, so it takes the shadow (or, on a white page, the line) from the kit.
-
 import { useEffect, type ReactNode } from "react";
 
 import { Stack, Surface } from "@studio-baeks/paper-ui";
@@ -16,9 +13,7 @@ export const Card = ({ children, label }: { children: ReactNode; label?: string 
 );
 
 type PageProps = PageHeaderProps & {
-  // The browser tab's title when the heading is more than text.
   docTitle?: string;
-  // Headings of the article, for the contents button beside the scroll buttons.
   toc?: readonly TocEntry[];
   children: ReactNode;
 };

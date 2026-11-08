@@ -1,7 +1,3 @@
-// markup.ts — the wiki's markup, read into a tree. Nothing here draws; render/ turns the tree into Paper parts.
-// The grammar is the one authors read in the 도움말/문법 article; keep the two in step. The file has no imports so a
-// script can load it on its own.
-
 export type ArtKind = "photo" | "cover" | "document" | "pattern";
 export type Align = "start" | "center" | "end";
 export type Format = "b" | "i" | "s" | "mark" | "sup" | "sub";
@@ -38,11 +34,9 @@ export type Parsed = {
   blocks: Block[];
   footnotes: Inline[][];
   toc: TocEntry[];
-  // Titles this text links to (no anchors, no categories).
   links: string[];
   categories: string[];
   redirect: string | null;
-  // The text without markup, for search and snippets.
   plain: string;
 };
 
@@ -59,7 +53,6 @@ const PAIRS = [
   [",,", "sub"],
 ] as const;
 
-// The `]` that closes a bracket opened just before `from`, counting the brackets inside (links in a footnote).
 const closeBracket = (src: string, from: number) => {
   let depth = 1;
   for (let k = from; k < src.length; k++) {
@@ -79,7 +72,6 @@ const closeBracket = (src: string, from: number) => {
 
 const parseLink = (inner: string, ctx: Ctx): Inline | null => {
   const raw = inner.trim();
-  // [[:분류:이름]] is a link to a category page; [[분류:이름]] puts the article into the category.
   const toCategory = /^:\s*분류\s*:\s*([^|]+?)\s*(?:\|(.*))?$/.exec(raw);
   if (toCategory) {
     const name = cleanTitle(toCategory[1]!);
@@ -191,7 +183,6 @@ const parseInline = (src: string, ctx: Ctx, allowNote = true): Inline[] => {
   return out;
 };
 
-// A line typed into a discussion: the same inline markup as an article, without footnotes.
 export const parseComment = (source: string): Inline[] => parseInline(source, { footnotes: [], links: new Set(), categories: new Set() }, false);
 
 export const inlineText = (nodes: readonly Inline[]): string =>
@@ -206,7 +197,6 @@ export const inlineText = (nodes: readonly Inline[]): string =>
 
 const hasContent = (nodes: readonly Inline[]) => nodes.some((node) => node.t !== "text" || node.v.trim() !== "");
 
-// A cell split at the `|` that are not inside a [[link|label]].
 const splitCells = (line: string) => {
   let s = line.trim();
   if (s.startsWith("|")) s = s.slice(1);

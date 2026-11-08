@@ -8,13 +8,9 @@ import { openHarness } from "../support/harness";
 import { tab } from "../support/keyboard";
 import { expectStyle } from "../support/style";
 
-// The forced-colours blocks run in the chromium-forced-colors project, where the OS owns the palette, so every expected colour is a
-// CSS system colour resolved by the browser the way the page's own rules resolve it. The increased-contrast block runs once, in chromium.
-
 type Fixtures = { contextOptions: { forcedColors?: string | null } };
 const isForced = ({ contextOptions }: Fixtures) => contextOptions.forcedColors === "active";
 
-// The colour a system colour is, as the page computes it.
 const system = (page: Page, name: string) =>
   page.evaluate((name) => {
     const probe = document.createElement("span");
@@ -29,7 +25,6 @@ const systems = async <Name extends string>(page: Page, ...names: Name[]) =>
   Object.fromEntries(await Promise.all(names.map(async (name) => [name, await system(page, name)]))) as Record<Name, string>;
 
 type Painted = { backgroundColor: string; borderTopColor: string; borderBottomColor: string; borderRightColor: string; boxShadow: string; color: string };
-// The computed colours of an element, or of one of its pseudo-elements.
 const painted = (target: Locator, pseudo?: "::after"): Promise<Painted> =>
   target.evaluate((element, pseudo) => {
     const style = getComputedStyle(element, pseudo);
@@ -81,7 +76,6 @@ test.describe("the selection marks", () => {
     expect((await painted(page.getByTestId("checkbox-on"), "::after")).borderBottomColor).toBe(highlightText);
     const mixed = await painted(page.getByTestId("checkbox-mixed"));
     expect([mixed.backgroundColor, mixed.borderTopColor]).toEqual([highlight, highlight]);
-    // The dash is drawn on the Highlight face, so it must not be the face's own colour.
     const dash = await painted(page.getByTestId("checkbox-mixed"), "::after");
     expect(dash.backgroundColor).toBe(highlightText);
     expect(dash.backgroundColor).not.toBe(mixed.backgroundColor);
@@ -243,7 +237,6 @@ test.describe("the display Atoms", () => {
   });
 });
 
-// A face is all these two have, and a forced palette paints a face away. The app's compositions keep theirs in system colours.
 test.describe("the app's compositions", () => {
   test.skip(({ contextOptions }) => !isForced({ contextOptions }), "forced colours are emulated only by chromium-forced-colors");
 
@@ -268,7 +261,6 @@ test.describe("the app's compositions", () => {
 
 });
 
-// Increased contrast is a different media query from forced colours: the page here is not under forced colours, only asking for more contrast.
 test.describe("under increased contrast", () => {
   test.skip(({ browserName, contextOptions }) => browserName !== "chromium" || isForced({ contextOptions }), "chromium emulates the preference, and the forced-colours project has no use for it");
 

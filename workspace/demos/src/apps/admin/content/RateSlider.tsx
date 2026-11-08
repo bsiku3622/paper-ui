@@ -1,6 +1,3 @@
-// Paper has no slider. A native range input with the original hub's scale: 0 blocks the peer, 1 to 300 is a limit in
-// Mbps, and one step past 300 means no limit.
-
 import { useFocusRing } from "@studio-baeks/paper-ui";
 
 import { rateSlider } from "./rate-slider.css";
@@ -8,7 +5,6 @@ import { rateSlider } from "./rate-slider.css";
 export type RateValue = number | "unlimited";
 
 export const RateSlider = ({ label, value, onChange, disabled }: { label: string; value: RateValue; onChange: (next: RateValue) => void; disabled?: boolean }) => {
-  // Paper draws its ring from an attribute that useFocusRing sets for keyboard focus.
   const { focusProps } = useFocusRing();
   return (
     <input

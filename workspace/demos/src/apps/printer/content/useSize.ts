@@ -1,5 +1,3 @@
-// Content that draws itself at the pixel size of its place (a chart, a map) needs to know that size. Paper has no measuring part.
-
 import { useEffect, useRef, useState } from "react";
 
 export const useSize = <T extends HTMLElement>() => {

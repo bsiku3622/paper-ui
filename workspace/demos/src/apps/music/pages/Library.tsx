@@ -1,5 +1,3 @@
-// 보관함: 최근 추가, 아티스트, 앨범, 노래. 보관함에 넣은 앨범과 좋아요한 곡이 모입니다.
-
 import { useMemo, useState } from "react";
 
 import { Box, Button, Field, Grid, Inline, Select, Stack, Text } from "@studio-baeks/paper-ui";
@@ -17,7 +15,6 @@ import { useLibrary } from "../state/library";
 const GRID = "repeat(auto-fill, minmax(10rem, 1fr))";
 const DAY = 86_400_000;
 
-// 보관함에 넣은 앨범들.
 const useLibraryAlbums = (): Album[] => {
   const library = useLibrary();
   return useMemo(() => library.albums.map((id) => ALBUM_BY_ID.get(id)).filter((album): album is Album => album !== undefined), [library.albums]);
@@ -38,7 +35,6 @@ export const RecentPage = () => {
         .slice(0, 36),
     [albums, library.playlists],
   );
-  // 이번 주, 이번 달, 그 전으로 나눕니다. 기준은 데모의 지금(NOW)이 아니라 가장 최근 항목입니다.
   const latest = items[0]?.at ?? 0;
   const groups = [
     { title: "이번 주", list: items.filter((item) => latest - item.at < 7 * DAY) },
@@ -190,7 +186,6 @@ export const LibrarySongsPage = () => {
   const [sort, setSort] = useState<Sort | undefined>(undefined);
   const [limit, setLimit] = useState(PAGE);
 
-  // 보관함의 앨범에 든 곡과 좋아요한 곡. 기본 순서는 최근에 추가한 앨범부터입니다.
   const all = useMemo(() => {
     const seen = new Set<string>();
     const out: Track[] = [];

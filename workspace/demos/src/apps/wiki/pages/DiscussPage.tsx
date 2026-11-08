@@ -1,5 +1,3 @@
-// DiscussPage.tsx — the threads about one article, open ones first, and a form to start a new one.
-
 import { useState } from "react";
 import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 

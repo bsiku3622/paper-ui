@@ -1,5 +1,3 @@
-// The map in docs/README.md: each group under its DOC_GROUPS heading, every doc under its title, and the
-// first Playground item of each part of the site.
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -11,10 +9,8 @@ import { PRIMITIVE_ORDERS } from "@studio-baeks/paper-ui";
 import type { GeneratedBlock } from "./markers";
 import { DOCS_DIR } from "./paths";
 
-// The map's own labels for the two docs whose titles are longer than the map wants (today's map text).
 const MAP_LABEL: Record<string, string> = { "get-started/philosophy": "원칙", "get-started/install": "설치" };
 
-// A label for a doc that left DOC_GROUPS would be ignored in silence, so it stops the build instead.
 const DOC_PATHS = new Set(DOC_GROUPS.flatMap((group) => group.docs.map((doc) => docFile(group.id, doc).replace(/\.md$/, ""))));
 for (const path of Object.keys(MAP_LABEL)) {
   if (!DOC_PATHS.has(path)) throw new Error(`MAP_LABEL names ${path}, which is not a doc in DOC_GROUPS`);

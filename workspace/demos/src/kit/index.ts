@@ -1,6 +1,3 @@
-// The kit: what every demo app shares. Screens import from here and from Paper, and from nothing else outside
-// their own folder.
-
 export { Glyph, type GlyphName, type GlyphProps } from "./Glyph";
 export { AppShell, TopBar, useFace, useShell, type AppShellProps, type ShellKind } from "./AppShell";
 export { Sidebar, SidebarBrand, SidebarCard, type NavItem, type NavSection, type SidebarProps } from "./Sidebar";

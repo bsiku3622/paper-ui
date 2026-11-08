@@ -1,7 +1,3 @@
-// Content: the rules that turn what is typed into structure, as the original's Tiptap has them: "# " makes a heading,
-// "- " a list, "> " a quote, "[ ] " a checklist, "---" a rule; `**a**` makes bold, `==a==` a highlight; "->" becomes an
-// arrow, "--" a dash (typography.ts).
-
 import { insertInlineMath, insertRule, setBlock, toggleList, toggleQuote, type BlockKind } from "./commands";
 import { cutRange, isElement, mapRange, marksAt, parseRuns, placeSelection, positionAt, readCarets, renderRuns, textOf, type MarkName, type Marks, type Run } from "./dom";
 
@@ -30,7 +26,6 @@ const TYPOGRAPHY: { test: RegExp; text: string }[] = [
   { test: /--$/, text: "—" },
 ];
 
-// A mark between two markers: the inner text must not start or end with a space, nor hold the marker itself.
 const inner = (marker: string) => `([^\\s${marker}](?:[^\\n${marker}]*?[^\\s${marker}])?)`;
 const MARKS: { test: RegExp; open: number; mark: keyof Marks }[] = [
   { test: new RegExp(`(?:^|[^*])\\*\\*${inner("*")}\\*\\*$`), open: 2, mark: "bold" },
@@ -60,7 +55,6 @@ const insertAt = (runs: Run[], at: number, text: string, marks: Marks): Run[] =>
   return out;
 };
 
-// Put the caret after a marked stretch, outside the element that marks it, so that what is typed next is plain.
 const placeOutside = (block: HTMLElement, offset: number) => {
   const at = positionAt(block, offset);
   let node: Node = at.node;
@@ -77,10 +71,8 @@ const placeOutside = (block: HTMLElement, offset: number) => {
   selection?.addRange(range);
 };
 
-// What is typed after a mark rule has made its stretch is plain again: the caller is handed the mark to switch off at the caret.
 export type PlainAfter = (pending: { patch: Partial<Record<MarkName, boolean>>; block: HTMLElement; offset: number }) => void;
 
-// Run the rules for what has just been typed at the caret. Returns whether one of them changed the paper.
 export const applyRules = (root: HTMLElement, plainAfter?: PlainAfter): boolean => {
   const carets = readCarets(root);
   if (!carets || !carets.collapsed) return false;
@@ -90,7 +82,6 @@ export const applyRules = (root: HTMLElement, plainAfter?: PlainAfter): boolean 
   const runs = parseRuns(block);
   const before = textOf(runs, 0, offset);
 
-  // A block rule starts a paragraph of the page itself, not one inside a list or a quote.
   if (block.tagName === "P" && block.parentElement === root) {
     for (const rule of BLOCK_RULES) {
       const match = rule.test.exec(before);

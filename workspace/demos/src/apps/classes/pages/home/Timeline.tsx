@@ -1,6 +1,3 @@
-// Today as a list: one line per class (a double period is one line), one line per free period. The line you are in is
-// selected; the lines behind you go quiet. A class line opens that section in the search.
-
 import { Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";
 
 import { SurfaceLink } from "../../../../kit";

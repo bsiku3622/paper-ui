@@ -1,10 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
 
-// The dist specs: they run against what a consumer installs, never against the workspace. scripts/smoke-dist.mjs packs the
-// package, builds a React 19 and a React 18 consumer from the tarball and runs this config, handing each consumer's
-// folder and port in the environment. Each build is served by `vite preview` on a strict port, and the stylesheet spec
-// reads the tarball's dist/paper-ui.css. The main config (playwright.config.ts) ignores tests/dist.
-
 const need = (name: string) => {
   const value = process.env[name];
   if (!value) throw new Error(`${name} is not set: the dist specs run only through \`pnpm smoke:dist\`.`);

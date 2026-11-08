@@ -1,7 +1,5 @@
 import { Box, Field, FormField, Grid, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";
 
-// The layout roots against Box's named sizes: each container bare, then with a named minWidth, so the spec
-// reads which min-width wins when both sit in one layer.
 export const LayoutCase = () => (
   <>
     <Stack data-testid="stack-bare" />

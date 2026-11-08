@@ -1,15 +1,3 @@
-// paperDocs — the repo's docs/**/*.md as the virtual module `virtual:paper-docs`, straight from the files:
-//
-//   import { DOCS } from "virtual:paper-docs";   // {slug, group, title, file}[] in DOC_GROUPS order
-//
-// DOC_GROUPS (src/site/site-core.ts) is the only list of which docs exist and in which order. A doc that
-// is not listed, a listed doc without a file, a group without docs and a doc without a `# Title` first line
-// all throw — as the dev overlay while serving and as a failed `vite build`. A change under docs/ reloads
-// the page, so the sidebar and the text follow edits without a restart.
-//
-// docs/en/ holds English translations at the same paths: a doc may have one, and a translation without its Korean original throws
-// as an unlisted doc does.
-
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { normalizePath, type Plugin } from "vite";

@@ -1,7 +1,3 @@
-// 데이터 회차 — when a term's data changed and by how much. Every collection from KEIS and every corrected name adds a
-// revision; opening one shows what moved against the one before it, so no backup file has to be opened to find out. The term
-// is chosen here on its own, apart from the term the app is showing.
-
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -16,7 +12,6 @@ import { useAdmin } from "./store";
 
 const SOURCE_LABEL: Record<VersionSource, string> = { sync: "수집", edit: "수정", seed: "기준점" };
 
-// The one line that stays visible on a closed row, so the size of a revision shows without opening it.
 const headline = (row: VersionRow) => {
   const summary = row.summary;
   if (!summary) return row.source === "seed" ? "비교할 앞 회차가 없습니다" : "";

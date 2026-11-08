@@ -12,7 +12,6 @@ import { chooseOption, nativeSelect, optionValues } from "../support/select";
 
 const kebab = (name: string) => name.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
 
-// The names the sidebar lists, in order: the Foundations, the primitive categories, Utilities, the Atoms.
 const EXPECTED = [
   ...FOUNDATIONS.map(({ label }) => label),
   ...PRIMITIVE_GROUPS.flatMap((group) => INVENTORY.primitives[group].components),
@@ -23,10 +22,8 @@ const EXPECTED = [
 
 const sidebar = (page: Page) => page.getByRole("navigation", { name: "플레이그라운드" });
 
-// What a Props Select offers and holds, read from the native select its form would send.
 const optionsOf = optionValues;
 const control = (page: Page, name: string) => page.getByRole("combobox", { name, exact: true });
-// A short choice whose resting value is one of its items is a segment instead of a select: a radio group named by the prop.
 const segment = (page: Page, name: string) => page.getByRole("radiogroup", { name, exact: true });
 const item = (page: Page, name: string, option: string) => segment(page, name).getByRole("radio", { name: option, exact: true });
 
@@ -35,9 +32,7 @@ test("the sidebar lists the Playground in the inventory's order, with Utilities 
   const nav = sidebar(page);
   await expect(nav.getByRole("link")).toHaveText(["Overview", ...EXPECTED]);
   const text = (await nav.innerText()).split("\n");
-  // The headings are the three groups and Utilities: the section names stay on the pages, and the two orders have none.
   expect(text.filter((line) => !["Overview", ...EXPECTED].includes(line) && line !== "").sort()).toEqual(["Atoms", "Foundations", "Primitives", "Utilities"]);
-  // What parts the orders is a wider gap than the one between two rows of an order.
   const row = async (name: string) => (await nav.getByRole("link", { name, exact: true }).boundingBox())!;
   const [liveRegion, surface, paint] = [await row("LiveRegion"), await row("Surface"), await row("Paint")];
   expect(surface.y - (liveRegion.y + liveRegion.height)).toBeGreaterThan(paint.y - (surface.y + surface.height));
@@ -126,7 +121,6 @@ test("the layout primitives offer one alignment vocabulary, and Grid tells its t
   await openPlayground(page, "stack", "Stack");
   expect(await optionsOf(control(page, "justify"))).toEqual(["__pui_default__", ...JUSTIFIES]);
   await openPlayground(page, "inline", "Inline");
-  // Inline's root already aligns to the centre, so the default is one of the choices and there is no extra item for it.
   expect(await optionsOf(control(page, "align"))).toEqual([...ALIGNS]);
   expect(await optionsOf(control(page, "rowGap"))).toEqual(["__pui_default__", ...SPACES]);
   expect(await optionsOf(control(page, "columnGap"))).toEqual(["__pui_default__", ...SPACES]);
@@ -255,28 +249,23 @@ test("[atoms.segment.radiogroup] keeps its chip over the chosen item when its va
 test("[app.playground.reference] an Atom page sets out its props with their types and defaults, and every crossing of its axes as a picture on the preview's ground", async ({ page }) => {
   await openPlayground(page, "button", "Button");
   await expect(page.getByRole("heading", { level: 2, name: "Props 표", exact: true })).toBeVisible();
-  // A row of the table: the prop, its values and its default.
   const row = (prop: string) => page.getByRole("main").locator("code").filter({ hasText: new RegExp(`^${prop}$`) }).locator("xpath=../..");
   await expect(row("variant")).toContainText(VARIANTS.join(" · "));
   await expect(row("variant")).toContainText("solid");
   await expect(row("loading")).toContainText("boolean");
   await expect(row("badge")).toContainText("ReactNode");
-  // The crossing is accent by variant, and the strips move size, shape and fill one at a time.
   await expect(page.getByRole("heading", { level: 2, name: "모든 조합", exact: true })).toBeVisible();
   const sheet = page.getByTestId("variant-sheet");
   await expect(sheet.locator("[data-sheet=matrix] button")).toHaveCount(ACCENTS.length * VARIANTS.length);
   await expect(sheet.locator("[data-sheet=strip]")).toHaveCount(3);
   await expect(sheet.locator("[data-sheet=strip]").first().locator("button")).toHaveCount(CONTROL_SIZES.length);
   await expect(sheet).toContainText("solid (default)");
-  // A picture: nothing in it takes focus or a press, and assistive technology reads the preview's button only.
   await expect(sheet).toHaveAttribute("inert", "");
   await expect(sheet).toHaveAttribute("aria-hidden", "true");
   await expect(page.getByRole("button", { name: "버튼", exact: true })).toHaveCount(1);
-  // It stands on the ground the preview stands on.
   await page.getByRole("group", { name: "미리보기 배경" }).getByRole("button", { name: "sunken background" }).click();
   const [r, g, b] = [1, 3, 5].map((at) => parseInt(COLOR_VALUES_BY_MODE.light.bg.sunken.slice(at, at + 2), 16));
   await expect(sheet).toHaveCSS("background-color", `rgb(${r}, ${g}, ${b})`);
-  // A Primitive page has neither.
   await openPlayground(page, "box", "Box");
   await expect(page.getByRole("heading", { level: 2, name: "Props 표", exact: true })).toHaveCount(0);
   await expect(page.getByTestId("variant-sheet")).toHaveCount(0);
@@ -287,19 +276,15 @@ test("[app.playground.code-panel] the code panel copies what it prints, applies 
   await openPlayground(page, "checkbox", "Checkbox");
   const printed = page.getByTestId("code-block").locator("pre");
   const initial = await printed.innerText();
-  // Copy: the button says it has, and the clipboard holds the printed code.
   await page.getByRole("button", { name: "복사", exact: true }).click();
   await expect(page.getByRole("button", { name: "복사됨", exact: true })).toBeVisible();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(initial);
-  // Edit and apply: code that can be read moves the controls and the preview with it.
   await page.getByRole("button", { name: "코드 편집" }).click();
   await page.getByRole("textbox", { name: "컴포넌트 코드 편집" }).fill('<Inline as="label" gap="sm" align="center">\n  <Checkbox size="lg" />\n  <Text variant="body" as="span">저장</Text>\n</Inline>');
   await expect(nativeSelect(control(page, "size"))).toHaveValue("lg");
-  // Reset: the controls are the defaults again, and so is the printed code.
   await page.getByRole("button", { name: "초기화", exact: true }).click();
   await expect(control(page, "size")).toHaveText(/ \(default\)$/);
   await page.getByRole("button", { name: "코드 편집 닫기" }).click();
   await expect(printed).toHaveText(initial);
-  // The default is marked on the option that is what the component does without a prop.
   expect((await nativeSelect(control(page, "size")).locator("option").allTextContents()).filter((label) => label.endsWith(" (default)"))).toHaveLength(1);
 });

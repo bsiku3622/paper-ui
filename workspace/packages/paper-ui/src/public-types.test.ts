@@ -1,7 +1,3 @@
-// Compile-time guards on the types the Interaction and A11y primitives publish (tsc checks them; an unused
-// expect-error directive is a type that accepts what it must reject), and the runtime guard that React Aria stays
-// behind src/internal/aria.
-
 import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -18,7 +14,6 @@ import {
   type SelectableGroupResult, type SelectableGroupState, type SelectableProps, type SelectableResult, type SelectableState,
 } from "./index";
 
-// The hooks are called only to be type-checked, never run.
 const typeOnly = (check: () => void): void => void check;
 
 describe("public types", () => {
@@ -101,7 +96,6 @@ describe("public types", () => {
 
   it("[primitives.hooks.naming] publishes XOptions and XResult for every hook of a primitive, and the event types under Paper's names", () => {
     const { types } = (JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), "../api/surface.json"), "utf8")) as { entries: Record<string, { types: string[] }> }).entries["."]!;
-    // useFloatingContext reads the Floating it stands in, so it takes no options and answers with useFloating's result.
     const hooks = Object.values(INVENTORY.primitives).flatMap(({ hooks }) => [...hooks]).filter((hook) => hook !== "useFloatingContext");
     expect(hooks.length).toBeGreaterThan(5);
     for (const hook of hooks) {

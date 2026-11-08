@@ -1,7 +1,3 @@
-// 문서 — /docs/* 마크다운 사이트. 활성 문서의 본문은 번들에서 불러와 Prose 로 렌더한다. 문서는 레포의
-// docs/ 에서 곧바로 오고, 목차와 본문 칸은 사이트 셸이 그린다. 영어로 보는 방문자에게는 docs/en/ 의 번역을 보여 주고,
-// 번역이 없는 문서는 한국어 원문을 보여 준다. 어느 쪽인지는 본문 위의 한 줄이 말한다.
-
 import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { DOCS } from "virtual:paper-docs";
@@ -30,7 +26,6 @@ export const Docs = () => {
   const words = useWords(WORDS);
   const [loaded, setLoaded] = useState<{ key: string; text: string; translated: boolean } | null>(null);
 
-  // /docs 또는 /docs/<slug>
   const slug = pathname.replace(/^\/docs\/?/, "").replace(/\/$/, "");
   const activeDoc = DOCS.find((doc) => doc.slug === slug);
   const activeFile = activeDoc?.file;
@@ -46,7 +41,7 @@ export const Docs = () => {
     return () => { cancelled = true; };
   }, [activeFile, locale]);
 
-  // 본문은 늦게 그려지므로, 앵커로 들어오면 본문이 그려진 뒤 그 제목까지 내려간다.
+  // The body renders late, so an anchor scrolls only after the body is there.
   useEffect(() => {
     if (current && hash) document.getElementById(decodeURIComponent(hash.slice(1)))?.scrollIntoView();
   }, [current, hash]);

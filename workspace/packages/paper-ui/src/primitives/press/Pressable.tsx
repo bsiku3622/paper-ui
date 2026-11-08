@@ -12,12 +12,9 @@ import { usePressable } from "./usePressable";
 
 export type PressableState = { isActive: boolean; isFocused: boolean; isFocusVisible: boolean; isDisabled: boolean };
 type PressableOwnProps = PressableOptions & {
-  /** A disabled target stays in the Tab order and says so with aria-disabled, as a Button that is loading does. */
   focusable?: boolean;
   children?: ReactNode | ((state: PressableState) => ReactNode);
 };
-// `as` names a part (<Pressable as={Selectable}>) to give it the press machinery, or another tag. Only a button
-// gets the bare reset; what disabled means for the target comes from targetProps.
 export type PressableProps<As extends ElementType = "button"> = PolymorphicProps<PressableOwnProps, As>;
 
 const PressableImpl = forwardRef<HTMLElement, Omit<PressableProps, "as" | "ref"> & { as?: ElementType }>(function Pressable({

@@ -1,6 +1,3 @@
-// peer 연결을 해제할까요? The server drops the peer from its config and from the live tunnel; to connect again the device's
-// key has to be registered anew. The words are the original's.
-
 import { useRef, useState } from "react";
 
 import { Button, Stack, Text } from "@studio-baeks/paper-ui";

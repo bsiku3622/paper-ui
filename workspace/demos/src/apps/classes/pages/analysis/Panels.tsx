@@ -1,6 +1,3 @@
-// What the 통계 tabs hold apart from the timetable comparison: enrollment by subject, the three distributions, and the
-// teachers' and rooms' weeks. Each is one card; inside it the bars lie on the card with nothing around them.
-
 import { useMemo, type ReactNode } from "react";
 
 import { Button, Grid, Inline, Stack, Switch, Text } from "@studio-baeks/paper-ui";
@@ -11,13 +8,10 @@ import { Card, searchHref } from "../../ui/parts";
 import { BarList, type Bar } from "./Bars";
 import { breakdown, WEEK_SLOTS, type Bucket, type RoomUse, type SubjectCount, type TeacherLoad } from "./stats";
 
-// ── pieces ───────────────────────────────────────────────────────────────────
-
 const NoCohort = ({ onAll }: { onAll: () => void }) => (
   <Empty glyph="filter" title="고른 학번이 없습니다" description="학번을 하나 이상 골라야 숫자가 나옵니다." action={<Button size="sm" variant="hairline" onClick={onAll}>모두 고르기</Button>} />
 );
 
-// Under each bar, how many people of each cohort make it up. Off, the bars are only their length.
 const BreakdownSwitch = ({ checked, onChange }: { checked: boolean; onChange: (next: boolean) => void }) => (
   <Inline as="label" gap="sm">
     <Switch size="sm" checked={checked} onChange={(event) => onChange(event.target.checked)} />
@@ -25,7 +19,6 @@ const BreakdownSwitch = ({ checked, onChange }: { checked: boolean; onChange: (n
   </Inline>
 );
 
-// A titled part of a card: what is counted, and the bars.
 const Block = ({ title, caption, children }: { title: string; caption: string; children: ReactNode }) => (
   <Stack gap="md" minWidth={0}>
     <Stack gap="xs">
@@ -48,8 +41,6 @@ const bucketRows = (buckets: readonly Bucket[], unit: string, who: string, perCo
 };
 
 type Cohorts = { noCohort: boolean; onAll: () => void; perCohort: boolean; onPerCohort: (next: boolean) => void };
-
-// ── 과목별 수강 인원 ──────────────────────────────────────────────────────────
 
 export const SubjectsPanel = ({ counts, noCohort, onAll, perCohort, onPerCohort }: Cohorts & { counts: readonly SubjectCount[] }) => {
   const rows = useMemo<Bar[]>(() => {
@@ -74,8 +65,6 @@ export const SubjectsPanel = ({ counts, noCohort, onAll, perCohort, onPerCohort 
     </Card>
   );
 };
-
-// ── 분포 ─────────────────────────────────────────────────────────────────────
 
 export const DistributionPanel = ({ periods, subjects, teachers, noCohort, perCohort, onPerCohort }: Omit<Cohorts, "onAll"> & { periods: readonly Bucket[]; subjects: readonly Bucket[]; teachers: readonly Bucket[] }) => {
   const periodRows = useMemo(() => bucketRows(periods, "교시", "명", perCohort), [periods, perCohort]);
@@ -102,8 +91,6 @@ export const DistributionPanel = ({ periods, subjects, teachers, noCohort, perCo
     </Card>
   );
 };
-
-// ── 교사와 강의실 ─────────────────────────────────────────────────────────────
 
 export const StaffPanel = ({ teachers, rooms }: { teachers: readonly TeacherLoad[]; rooms: readonly RoomUse[] }) => {
   const teacherRows = useMemo<Bar[]>(() => {

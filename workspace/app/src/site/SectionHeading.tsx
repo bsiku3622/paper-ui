@@ -1,6 +1,3 @@
-// The head of a section of a page: its title, and a line on what it shows. `heading` is the section titles of the
-// Foundations pages, `label` the quiet titles of the Overview. The tag is the page's outline, so it is chosen by the page.
-
 import { Stack, Text } from "@studio-baeks/paper-ui";
 
 export const SectionHeading = ({

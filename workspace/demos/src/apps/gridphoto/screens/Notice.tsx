@@ -1,6 +1,3 @@
-// A sentence about a page or a save that someone should read before going on. Paper has no alert: a soft Paint carries the
-// meaning, and a Surface around it gives the corners (Paint has no radius).
-
 import type { ReactNode } from "react";
 
 import { Paint, Surface, Text } from "@studio-baeks/paper-ui";

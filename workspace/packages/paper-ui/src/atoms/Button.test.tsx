@@ -1,8 +1,3 @@
-// Button — 태그가 갈리면 속성도 갈린다, 대상이 무엇이든 눌림 장치는 한 벌이다, 선택과 로딩은 속성으로 말한다.
-//
-// <button> 만 갖는 속성(type·disabled)을 <a> 에 얹으면 무효 속성이 될 뿐 링크는 그대로
-// 눌린다. 조용히 새는 계약이라 여기서 못 박는다.
-
 import { forwardRef, useState, type AnchorHTMLAttributes } from "react";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, expectTypeOf, it, vi } from "vitest";
@@ -38,7 +33,6 @@ describe("Button · as", () => {
     const el = screen.getByRole("link", { name: "문서 읽기" });
     expect(el.tagName).toBe("A");
     expect(el.querySelector("button")).toBeNull();
-    // <button> 전용 속성은 안 새어 나간다.
     expect(el.hasAttribute("type")).toBe(false);
   });
 
@@ -54,7 +48,6 @@ describe("Button · as", () => {
     expect(el.getAttribute("tabindex")).toBe("-1");
     expect(el.getAttribute("data-disabled")).toBe("true");
     expect(el.hasAttribute("disabled")).toBe(false);
-    // fireEvent 는 preventDefault 가 불리면 false 를 돌려준다 — 브라우저의 이동을 막는 것이 그것이다.
     expect(fireEvent.click(el)).toBe(false);
     expect(click).not.toHaveBeenCalled();
   });

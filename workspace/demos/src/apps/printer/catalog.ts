@@ -1,6 +1,3 @@
-// What the printer offers: the macros Klipper reports (printer.objects.list: gcode_macro …), the commands the console
-// completes, the services and devices the power menu lists, and the notices the bell shows.
-
 import type { CommandDef, MacroDef } from "./model";
 
 export const MACROS: readonly MacroDef[] = [
@@ -20,7 +17,6 @@ export const MACROS: readonly MacroDef[] = [
   { name: "SET_PRINT_STATS_INFO", description: "슬라이서가 층 수를 알려 줄 때 쓰는 내부 매크로입니다.", params: [] },
 ];
 
-// What the dashboard hides until the user turns them on in the settings.
 export const HIDDEN_MACROS: readonly string[] = ["PAUSE", "RESUME", "CANCEL_PRINT", "SET_PRINT_STATS_INFO"];
 
 const COMMAND_LIST: CommandDef[] = [
@@ -82,7 +78,6 @@ const COMMAND_LIST: CommandDef[] = [
 
 export const COMMANDS: readonly CommandDef[] = COMMAND_LIST.sort((a, b) => a.name.localeCompare(b.name));
 
-// The services and the host the top bar's power menu can restart.
 export const SERVICES = [
   { id: "klipper", label: "Klipper" },
   { id: "moonraker", label: "Moonraker" },

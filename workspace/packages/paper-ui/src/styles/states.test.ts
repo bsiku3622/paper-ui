@@ -34,13 +34,10 @@ describe("states.css", () => {
   });
 });
 
-// The whole package source, tests aside: where a state is spelled is where it can drift.
 describe("the package source", () => {
   const sources = walk(src).filter((file) => /\.(ts|tsx)$/.test(file) && !/\.test\.(ts|tsx)$/.test(file));
   const inside = (file: string, ...homes: string[]) => homes.some((home) => relative(src, file) === home || relative(src, file).startsWith(`${home}${sep}`));
 
-  // The state recipes, the ring baseline and the Paint primitives (the accent × variant map and what the paint tier lends) are where a pointer,
-  // a press and the keyboard are selected. Everything else asks for a recipe.
   const STATE_SELECTOR_HOMES = [join("styles", "states.css.ts"), join("tokens", "state-recipes.ts"), join("styles", "color.css.ts"), join("primitives", "paint")];
 
   it("[foundations.state.source-scan] selects :hover, :active and :focus-visible only in the state recipes, the ring baseline and the paint tier", () => {

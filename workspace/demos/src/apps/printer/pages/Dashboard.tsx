@@ -1,7 +1,3 @@
-// Mainsail's dashboard: panels in two columns (one on a phone). Which panel stands in which column, and which are hidden, is
-// the user's setting; the defaults are the usual layout, the print and the machine on the left, temperatures and console
-// on the right. Every panel reads the same mock printer.
-
 import type { ReactNode } from "react";
 
 import { Grid, Stack } from "@studio-baeks/paper-ui";

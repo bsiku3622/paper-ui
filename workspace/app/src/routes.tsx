@@ -1,6 +1,3 @@
-// The route table. One layout route, SiteLayout, holds every page; each route's `handle` (SiteHandle) says what
-// the shell does around it. Pages load lazily, under the shell's chrome.
-
 import { lazy } from "react";
 import { Navigate, type RouteObject } from "react-router-dom";
 import { DOCS } from "virtual:paper-docs";
@@ -10,7 +7,6 @@ import type { SiteLocale } from "./site/locale";
 import { DOC_GROUPS, FOUNDATIONS, PLAYGROUND_NAV } from "./site/site-map";
 import { SiteLayout } from "./site/SiteLayout";
 
-// Every group's overview is a README headed Overview; in a tab or in history, its group tells them apart.
 const docTitle = (path: string, locale: SiteLocale) => {
   const doc = DOCS.find(({ slug }) => slug === path);
   const group = DOC_GROUPS.find(({ id }) => id !== "" && id === path);
@@ -42,8 +38,6 @@ const Docs = lazy(() => import("./pages/Docs").then((m) => ({ default: m.Docs })
 
 const NAMES = new Map(PLAYGROUND_NAV.flatMap((group) => group.sections.flatMap((section) => section.items)).map(({ slug, name }) => [slug, name]));
 
-// Former routes: the palette is now the Color source, tokens the Foundations pages, and a slug is the component name in kebab case;
-// a renamed or removed primitive's old slug lands on the page that took it over.
 const REDIRECTS: Record<string, string> = {
   foundations: "foundations/color",
   palette: "foundations/color",
@@ -66,14 +60,11 @@ export const routes: RouteObject[] = [
         path: "demo",
         handle: handle({ title: { ko: "데모", en: "Demo" }, chrome: "none" }),
         children: [
-          // The showcase: the demo apps, one at a time, in a frame.
           { index: true, element: <Showcase />, handle: handle({ title: { ko: "데모", en: "Demo" } }) },
-          // Arcfield: the demo's own screens, which the showcase shows.
           {
             path: "arcfield",
             element: <Demo />,
             children: [
-              // The dashboard is one frame (the sidebar, the bar, what its pages share) and each page is a route inside it.
               {
                 element: <DashboardScreen />,
                 children: [
@@ -90,7 +81,6 @@ export const routes: RouteObject[] = [
                   { path: "search", element: <SearchScreen />, handle: handle({ title: "검색 데모" }) },
                 ],
               },
-              // The sign-in and the settings form are screens of their own: the dashboard's sidebar and bar are not around them.
               { path: "login", element: <LoginScreen />, handle: handle({ title: "로그인 데모" }) },
               { path: "settings", element: <SettingsScreen />, handle: handle({ title: "설정 폼 데모" }) },
             ],

@@ -1,6 +1,3 @@
-// Text of the config files. The sample data lists only names, sizes and dates, so these are written for the mock:
-// an Ender-3 V3 SE with a BLTouch. No addresses, keys or serials.
-
 const PRINTER_CFG = `# Ender-3 V3 SE: Klipper 설정 (모의 데이터)
 # 값을 바꾼 뒤에는 Klipper를 다시 시작해야 적용됩니다.
 
@@ -351,7 +348,6 @@ gcode:
 variable_enable: False
 `;
 
-// A backup written by SAVE_CONFIG is the printer.cfg of that day.
 const backup = (name: string) => `# ${name}: SAVE_CONFIG가 남긴 백업입니다 (모의 데이터)\n${PRINTER_CFG.replace(/^# Ender-3 V3 SE: Klipper 설정 \(모의 데이터\)\n/, "")}`;
 
 export const configText = (path: string): string => {

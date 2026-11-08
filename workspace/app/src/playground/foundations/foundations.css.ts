@@ -1,5 +1,3 @@
-// Specimens drawn inside the Foundations boards. Geometry comes from Shape and Layout roles;
-// each specimen only arranges the token it shows.
 import { globalStyle, style, styleVariants, type ComplexStyleRule } from "@vanilla-extract/css";
 
 import { SYSTEM_COLORS, CONTROL_SIZES, ELEVATIONS, SPACES, codeRule, focusRing, lineRule, monoRule, presetRule, tokens, type ControlSize } from "@studio-baeks/paper-ui/tokens";
@@ -9,27 +7,22 @@ import type { PresetPath } from "./typography-roles";
 
 const { shape, layout, color } = tokens;
 
-// One class per key of a vocabulary or a specimen map.
 const variantsOf = <K extends string>(keys: readonly K[], rule: (key: K) => ComplexStyleRule): Record<K, string> =>
   styleVariants(Object.fromEntries(keys.map((key) => [key, rule(key)])) as Record<K, ComplexStyleRule>) as Record<K, string>;
 
-// Typography
 export const specimen = style({ margin: 0, minWidth: 0 });
 export const presetSample = style({ display: "block" });
-// A control preset as a sample is the preset's own declaration, one class per size.
 const PRESET_RULES: Record<PresetPath, (size: ControlSize) => ComplexStyleRule> = {
   button: (size) => presetRule("button", size),
   field: (size) => presetRule("field", size),
   textarea: (size) => presetRule("textarea", size),
   badge: () => presetRule("badge"),
 };
-// Code pieces at the two scales Palette gives them, sitting in a sentence, and the block that has its own size and line.
 export const codeSample = { inline: style(codeRule("inline")), compact: style(codeRule("compact")), block: style(codeRule("block")) };
 export const presetFont = Object.fromEntries(
   Object.entries(PRESET_RULES).map(([path, rule]) => [path, variantsOf(CONTROL_SIZES, rule)]),
 ) as Record<PresetPath, Record<ControlSize, string>>;
 
-// Shape
 export const spaceBar = variantsOf(SPACES, (step) => [bar, { width: shape.inset[step] }]);
 const radiusBase = style({ width: shape.dimension.width.xs, height: shape.control.height.lg, ...lineRule(), background: color.bg.sunken });
 export const radiusSample = styleVariants(
@@ -58,7 +51,6 @@ export const controlBox = variantsOf(CONTROL_SIZES, (size) => [controlBase, { he
 export const rule = style({ fontFamily: monoRule().fontFamily, fontSize: tokens.typography.role.caption.size, color: color.ink.secondary });
 export const recipeSample = style({ display: "flex", alignItems: "center", minHeight: shape.control.height.lg, minWidth: 0 });
 
-// Layout
 export const zStack = style({ position: "relative", height: shape.control.height.sm, width: shape.dimension.width.sm });
 export const zLayer = style({
   position: "absolute",
@@ -72,7 +64,6 @@ export const zLayer = style({
 });
 export const elevationStage = style({ display: "flex", justifyContent: "center", padding: shape.inset.md, borderRadius: shape.radius.surface.sm, background: color.bg.canvas, isolation: "isolate" });
 export const elevationCard = style({ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: shape.control.height.lg, borderRadius: shape.radius.surface.md, ...lineRule(), background: color.bg.raised });
-// Two blocks a gap apart; a frame whose content sits a gutter in.
 export const gapSample = style({ display: "flex" });
 export const gapOf = variantsOf(SPACES, (step) => ({ gap: layout.gap[step] }));
 export const gutterFrame = style({ display: "flex", width: shape.dimension.width.sm, padding: layout.gutter, borderRadius: shape.radius.surface.sm, ...lineRule(), background: color.bg.sunken });
@@ -80,7 +71,6 @@ globalStyle(`${gapSample} > span, ${gutterFrame} > span`, { display: "block", he
 globalStyle(`${gapSample} > span`, { width: shape.control.height.md });
 globalStyle(`${gutterFrame} > span`, { flex: 1 });
 
-// Motion
 const dot = shape.inset.md;
 export const easingSpecimen = style({ display: "grid", gridTemplateColumns: `${shape.dimension.width.xs} 1fr`, alignItems: "center", gap: layout.gap.md });
 export const pulseDot = style({ display: "inline-block", width: dot, height: dot, borderRadius: shape.radius.full, background: color.accent.info.solid, "@media": { "(forced-colors: active)": { forcedColorAdjust: "none", background: SYSTEM_COLORS.canvasText } } });

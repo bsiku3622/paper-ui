@@ -1,8 +1,3 @@
-// Table — rows made of a Grid, as Paper's own dashboard demo makes them, so the columns line up without a table layout.
-// Under a breakpoint the same rows become a plain list of whatever `card` draws for each, because a phone has no room
-// for six columns. Both live inside the one face the caller gives them. `dense` is for a table inside a padded card
-// (a chart's twin): no side padding of its own.
-
 import type { ReactNode } from "react";
 
 import { Box, Divider, Grid, Stack, Surface, Text } from "@studio-baeks/paper-ui";
@@ -13,7 +8,6 @@ import { useAtLeast } from "../content/viewport";
 export type Column<T> = {
   id: string;
   header: ReactNode;
-  // A Grid track: "minmax(14rem, 1fr)", "5rem".
   track: string;
   render: (row: T) => ReactNode;
 };
@@ -23,7 +17,6 @@ export type TableProps<T> = {
   rows: readonly T[];
   rowKey: (row: T) => string;
   columns: readonly Column<T>[];
-  // How one row reads when the table gives way to a list.
   card: (row: T) => ReactNode;
   stackBelow?: Breakpoint;
   isSelected?: (row: T) => boolean;
@@ -76,7 +69,6 @@ export const Table = <T,>({ label, rows, rowKey, columns, card, stackBelow = "xl
   );
 };
 
-// Two lines in one cell: the word that names the row, and a quiet line under it.
 export const Two = ({ top, sub, strong, subMono }: { top: ReactNode; sub?: ReactNode; strong?: boolean; subMono?: boolean }) => (
   <Stack minWidth={0}>
     <Text as="span" strong={strong} truncate>{top}</Text>

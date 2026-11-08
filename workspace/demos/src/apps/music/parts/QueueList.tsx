@@ -1,6 +1,3 @@
-// QueueList — 지금 곡과 다음 곡들. 오른쪽 창, 대기열 화면, 재생 화면의 탭이 같은 목록을 씁니다.
-// 줄마다 곡으로 건너뛰기, 위아래로 옮기기, 빼기가 있고 "다음 곡 비우기"로 한꺼번에 비울 수 있습니다.
-
 import { Link as RouterLink } from "react-router-dom";
 
 import { Box, Button, Divider, Inline, Pressable, Stack, Surface, Text } from "@studio-baeks/paper-ui";
@@ -52,7 +49,6 @@ const Row = ({ track, at, current = false, compact }: RowProps) => {
     </Inline>
   );
 
-  // 다음 곡만 끌어서 옮길 수 있습니다. 지금 곡과 이미 들은 곡은 제자리입니다.
   if (current || at < player.index) {
     return <Surface hoverable selected={current} radius="md" paddingX="sm" paddingY="xs">{body}</Surface>;
   }
@@ -64,15 +60,12 @@ const Row = ({ track, at, current = false, compact }: RowProps) => {
 };
 
 type Props = {
-  // 오른쪽 창처럼 좁은 자리.
   compact?: boolean;
-  // 이미 들은 곡도 보여 줍니다.
   history?: boolean;
 };
 
 export const QueueList = ({ compact = false, history = false }: Props) => {
   const player = usePlayer();
-  // 목록에 없는 곡 아이디(예전에 저장된 대기열)는 건너뜁니다. 자리(at)는 대기열 안의 자리 그대로입니다.
   const entries = player.queue.flatMap((id, at) => {
     const track = TRACK_BY_ID.get(id);
     return track ? [{ track, at }] : [];

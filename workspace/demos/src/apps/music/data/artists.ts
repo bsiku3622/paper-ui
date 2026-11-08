@@ -1,5 +1,3 @@
-// 아티스트 25팀. 모두 이 앱을 위해 지어낸 이름이고, 소개글도 새로 쓴 것입니다.
-
 export type ArtistKind = "솔로" | "그룹" | "듀오";
 
 export type ArtistSpec = {
@@ -10,7 +8,6 @@ export type ArtistSpec = {
   origin: string;
   since: number;
   bio: string;
-  // 비슷한 아티스트 (id)
   alike: readonly string[];
 };
 

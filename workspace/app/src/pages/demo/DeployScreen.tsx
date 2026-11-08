@@ -1,6 +1,3 @@
-// Deployments: the list of what was put on a service and when, a form that starts one, and a page for each run with its steps and
-// its log. A run that is going moves on its own (the store's clock), so the page can be watched until it ends.
-
 import { useState, type FormEvent } from "react";
 import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 
@@ -15,10 +12,7 @@ import {
 
 const TRIGGERS: readonly Trigger[] = ["푸시", "수동", "롤백", "예약"];
 
-// What a run has taken so far, or took in all.
 const spent = (run: Deployment, now: number) => (run.status === "진행 중" ? progressOf(run, now).elapsed : run.planned);
-
-// ─── Starting one ────────────────────────────────────────────────────────────────────────────────────────────────────
 
 const NewDeployForm = ({ onDone }: { onDone: (id: string) => void }) => {
   const { deploy, notify, record, scope } = useStore();
@@ -68,8 +62,6 @@ const NewDeployForm = ({ onDone }: { onDone: (id: string) => void }) => {
     </Stack>
   );
 };
-
-// ─── The list ────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 export const DeployScreen = () => {
   const { deployments, inScope, now } = useStore();
@@ -138,11 +130,8 @@ export const DeployScreen = () => {
   );
 };
 
-// ─── One run ─────────────────────────────────────────────────────────────────────────────────────────────────────────
-
 type StepState = "done" | "running" | "failed" | "waiting" | "skipped";
 
-// Where each step of a run stands: the ones before the step it stopped at are done, the one it stopped at failed, the rest skipped.
 const stepsOf = (run: Deployment, now: number): { name: string; state: StepState; seconds: number }[] => {
   const weights = [0.04, 0.16, 0.24, 0.26, 0.1, 0.12, 0.08];
   const current = run.status === "진행 중" ? progressOf(run, now).step : -1;

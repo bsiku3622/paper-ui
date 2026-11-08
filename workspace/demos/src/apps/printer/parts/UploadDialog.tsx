@@ -1,7 +1,3 @@
-// Uploading G-code. A file is dropped on the dialog or chosen with the button; the mock reads only its name and size, "sends"
-// it on a timer with a progress bar, and adds it to the list. A file that is not G-code is refused with a reason. A sample file
-// lets the flow be tried without one.
-
 import { useEffect, useRef, useState } from "react";
 
 import { Button, Droppable, Inline, Stack, Text } from "@studio-baeks/paper-ui";

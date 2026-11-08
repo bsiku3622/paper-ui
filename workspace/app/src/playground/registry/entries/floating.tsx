@@ -11,7 +11,6 @@ const WORDS = {
   en: { open: "Open settings", settings: "Settings", nameLabel: "Display name", nameHint: "The name shown on screen.", openConfirm: "Open confirmation", nested: "Nested confirmation", inner: "The inner window closes first.", closeConfirm: "Close confirmation", close: "Close settings" },
 };
 
-// The panel's face comes from the caller, as the Floating doc says: the panel is a Surface.
 const panel = { as: Surface, fill: "raised", border: true, radius: "md", padding: "lg", width: "md", maxWidth: "full" } as const;
 
 export default defineSpec({
@@ -26,7 +25,6 @@ export default defineSpec({
   useHarness: () => ({ title: useRef<HTMLHeadingElement>(null) }),
   subject: (state, { title }, locale) => {
     const w = inLocale(WORDS, locale);
-    // Only a popover has an anchor to keep a distance from.
     const standing = pick<FloatingPresentation>(state, "presentation") === "modal" ? { presentation: "modal" as const } : { offset: pick<NonNullable<FloatingPopoverProps["offset"]>>(state, "offset") };
     return (
       <Floating>

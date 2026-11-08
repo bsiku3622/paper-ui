@@ -1,6 +1,3 @@
-// 계획 대상 — whose timetable is being planned (the account's own at first; any student can be looked up, to help a friend),
-// how many subjects they take, and the credits before and after the plan.
-
 import { Badge, Button, Field, Grid, Inline, Stack, Text } from "@studio-baeks/paper-ui";
 
 import { Glyph, Person, Stat, StatRow } from "../../../../kit";

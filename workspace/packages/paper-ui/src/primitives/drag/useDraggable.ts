@@ -9,13 +9,10 @@ import { mergeProps } from "../composition";
 import type { DraggableOptions, DragPosition, MoveDragOptions } from "../types";
 
 export type DraggableResult = {
-  /** Spread on the element that moves, or that is dragged. Carries its own ref, `data-dragging` and `data-disabled`. */
   dragProps: HTMLAttributes<HTMLElement> & { ref: RefCallback<HTMLElement> } & StateAttributes<"dragging" | "disabled">;
-  /** Spread on the handle, when `activation` is "handle". Carries `data-dragging` and `data-disabled`. */
   handleProps: ButtonHTMLAttributes<HTMLButtonElement> & StateAttributes<"dragging" | "disabled">;
   position: DragPosition;
   isDragging: boolean;
-  /** Ends a move in progress and returns to where it began. */
   cancel: () => void;
 };
 

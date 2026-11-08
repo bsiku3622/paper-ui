@@ -3,9 +3,6 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { THEME_ATTRIBUTE } from "../../packages/paper-ui/src/tokens";
 import { openHarness } from "../support/harness";
 
-// How an override of the ground roles has to be written. The package re-declares them on the children of every theme scope,
-// so a rule must reach those children; being outside the layers, it then wins whatever its specificity.
-
 const FOCUS = "rgb(1, 2, 3)";
 const SHADOW = "rgb(4, 5, 6)";
 const declarations = `--pui-color-interaction-focus: ${FOCUS}; --pui-color-shadow-floating: ${SHADOW};`;
@@ -13,7 +10,6 @@ const WRITTEN_AS_DOCUMENTED = `:root, [data-pui-theme] > * { ${declarations} }`;
 
 type Case = { rule: string; page: boolean; scoped: boolean; panel: boolean };
 
-// The three places a ground role is read, with the rule applied: an element on the page, the child of a theme Surface, a Floating panel.
 const mount = async (page: Page, attribute: "light" | null, rule: string) => {
   await page.emulateMedia({ colorScheme: "light" });
   await openHarness(page, "theme");
@@ -22,7 +18,6 @@ const mount = async (page: Page, attribute: "light" | null, rule: string) => {
   await page.getByTestId("ink-trigger").click();
   await expect(page.getByTestId("ink-floating-raw")).toBeVisible();
 };
-// The ring an element shows once the keyboard has the focus.
 const ringOf = async (target: Locator) => {
   await target.page().keyboard.press("Tab");
   await target.focus();
@@ -65,7 +60,6 @@ test("[install.overrides.ground-roles] the shadow's geometry is overridden the s
   await mount(page, "light", ":root, [data-pui-theme] > * { --pui-layout-shadow-floating-0: 0px 9px 9px 0px; }");
   expect(await page.locator("[role=dialog]").evaluate((element) => getComputedStyle(element).boxShadow)).toContain("0px 9px 9px 0px");
 
-  // The panel stands in the dark scope it was opened from; the page is light.
   await mount(page, "light", `[data-pui-theme="dark"] > * { ${declarations} }`);
   expect(await reached(page)).toEqual({ page: false, scoped: true, panel: true });
 });

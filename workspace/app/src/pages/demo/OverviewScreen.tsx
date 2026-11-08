@@ -1,6 +1,3 @@
-// The dashboard's first page: what is worth a look today, drawn from the pages behind it. Every number here is counted from the same
-// data those pages list, so a number here and the rows it points to agree.
-
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import { Badge, Box, Divider, Grid, Inline, Link, Stack, Text } from "@studio-baeks/paper-ui";
@@ -15,7 +12,6 @@ import {
 const STILL: Sort = { id: "", dir: "asc" };
 const noop = () => undefined;
 
-// A thing that wants someone: what it is, how serious, when, and where to go.
 type Wants = { id: string; title: string; text: string; at: number; to: string; badge: "긴급" | "경고" | "기한" | "배포" | "심각" };
 
 export const OverviewScreen = () => {

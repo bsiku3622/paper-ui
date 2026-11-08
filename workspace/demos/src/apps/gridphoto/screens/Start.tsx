@@ -1,6 +1,3 @@
-// The first screen, and the one after "새 문서": nothing in the document yet, so the well says what the app does and how to
-// put photos in it.
-
 import { Button, Marker, Stack, Text, Inline } from "@studio-baeks/paper-ui";
 
 import { Glyph } from "../../../kit";
@@ -20,7 +17,6 @@ export const Start = () => {
           <Text as="h2" variant="title">
             종이를 찍으면 <Marker>스캔본</Marker>이 됩니다
           </Text>
-          {/* Text has no alignment, so a centred paragraph is one line to a Text. */}
           <Stack align="center">
             <Text variant="lead" ink="secondary">네 모서리를 찾아 직사각형에 딱 맞추고</Text>
             <Text variant="lead" ink="secondary">그림자를 지웁니다.</Text>

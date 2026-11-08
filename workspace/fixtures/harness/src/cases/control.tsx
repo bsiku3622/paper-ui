@@ -5,7 +5,6 @@ import { SELECT_OPTIONS } from "./options.js";
 
 const glyph = <path d="M4 12h16" />;
 
-// Every size of every anatomy, the three places an Icon takes its size from, and a Select to read the value's inset on.
 export const ControlCase = () => (
   <>
     {CONTROL_SIZES.flatMap((size) => CONTROL_ANATOMIES.map((anatomy) => (

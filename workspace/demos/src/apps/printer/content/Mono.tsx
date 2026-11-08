@@ -1,5 +1,3 @@
-// Paper's Field and Textarea in the mono face (see mono.css.ts): the console's command line and the config editor.
-
 import { forwardRef } from "react";
 
 import { Field, Textarea, type FieldProps, type TextareaProps } from "@studio-baeks/paper-ui";

@@ -1,5 +1,3 @@
-// 장르 화면: 그 장르의 인기 곡, 앨범, 아티스트.
-
 import { useParams } from "react-router-dom";
 
 import { Stack } from "@studio-baeks/paper-ui";

@@ -1,10 +1,3 @@
-// store.ts — the document's one theme store. PaperProvider binds React to it; nothing else writes the root.
-//
-// The store keeps the user's preference (light · dark · system) and writes the mode it resolves to onto
-// <html>. <html>'s attribute stays the truth: the store reads the mode back from it, so a write by the boot
-// script or by another theme manager is seen at once and is never reverted. Every write the store makes
-// holds transitions, and so does the subscription for a write it did not make, so the mode changes in one frame.
-
 import { THEME_ATTRIBUTE, type ColorMode, type ThemePreference } from "../tokens";
 import { THEME_STORAGE_KEY, holdTransitions, isThemePreference, osModeQuery, readRootMode, resolvePreference, subscribeRootMode } from "./engine";
 
@@ -14,9 +7,7 @@ export type ThemeStoreOptions = {
 };
 
 export type ThemeStore = {
-  // The first configuration wins; a different one later is reported in development.
   configure: (options: ThemeStoreOptions) => void;
-  // Applies the preference to <html>; ref-counted. The returned function detaches, and the last one restores <html>.
   attach: () => () => void;
   getPreference: () => ThemePreference;
   setPreference: (preference: ThemePreference) => void;
@@ -32,7 +23,6 @@ const createThemeStore = (doc: Document | undefined): ThemeStore => {
   let reported = false;
   let preference: ThemePreference | null = null;
   let attached = 0;
-  // Set when the last attach is released, so the next configuration replaces the old one.
   let released = false;
   let before: string | null = null;
   let stopRoot: (() => void) | null = null;
@@ -61,7 +51,6 @@ const createThemeStore = (doc: Document | undefined): ThemeStore => {
 
   const notify = (): void => [...listeners].forEach((listener) => listener());
 
-  // Sets or removes the root attribute, holding transitions for the change.
   const writeRoot = (value: string | null): void => {
     if (!doc) return;
     const root = doc.documentElement;
@@ -147,7 +136,6 @@ const createThemeStore = (doc: Document | undefined): ThemeStore => {
 
 const stores = new WeakMap<Document, ThemeStore>();
 
-// The store of a document. Without one (a server render) a store is made per call and kept nowhere.
 export const getThemeStore = (doc: Document | undefined = typeof document === "undefined" ? undefined : document): ThemeStore => {
   if (!doc) return createThemeStore(undefined);
   let store = stores.get(doc);

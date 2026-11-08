@@ -45,18 +45,15 @@ export function useFloating({ open, defaultOpen = false, onOpenChange }: Floatin
 }
 type FloatingContext = { state: FloatingResult; triggerRef: RefObject<HTMLButtonElement | null>; contentId: string };
 const Context = createContext<FloatingContext | null>(null);
-// The panel a Floating inside it stands on: where that one's elevation starts.
 const ElevationContext = createContext<FloatingElevation | undefined>(undefined);
 function useContextValue() {
   const context = useContext(Context);
   if (!context) throw paperError("Floating parts must be used inside <Floating>.");
   return context;
 }
-/** The state of the Floating a part stands in: for a custom button that opens or closes it. */
 export function useFloatingContext(): FloatingResult {
   return useContextValue().state;
 }
-/** The id the panel of the Floating a part stands in takes: for an opener of its own that says what it controls (`aria-controls`). */
 export function useFloatingContentId(): string {
   return useContextValue().contentId;
 }
@@ -67,11 +64,9 @@ function Root({ children, ...options }: FloatingProps) {
   const contentId = useId();
   return <Context.Provider value={{ state, triggerRef, contentId }}>{children}</Context.Provider>;
 }
-// What a Floating part may read of the panel it stands in. `elevation` is where it stands in the stack.
 export type FloatingContentState = {
   isOpen: boolean;
   presentation: FloatingPresentation;
-  /** The side of the anchor the panel settled on, start and end by the anchor's direction; undefined for a modal. */
   placement: PlacementSide | undefined;
   elevation: FloatingElevation;
 };
@@ -97,7 +92,6 @@ const Trigger = registerPart(TriggerImpl) as PolymorphicComponent<FloatingButton
 
 type FloatingCommonProps = {
   children: ReactNode | ((state: FloatingContentState) => ReactNode);
-  // A listbox is a list a control of its own opens and points into (a Select): it takes no focus and its opener says what it controls.
   role?: "dialog" | "alertdialog" | "listbox";
   id?: never;
   dismissable?: boolean;
@@ -109,20 +103,16 @@ type FloatingCommonProps = {
   closeOnInteractOutside?: (element: Element) => boolean;
   portalContainer?: Element;
 };
-/** A panel beside its anchor: the `anchorRef`, or the Floating.Trigger when it is not given. */
 type FloatingPopoverOwnProps = FloatingCommonProps & {
   presentation?: "popover";
   anchorRef?: RefObject<Element | null>;
   placement?: Placement;
-  /** The gap between the anchor and the panel, as a step of the gap scale. */
   offset?: Space | "none";
   crossOffset?: Space | "none";
   flip?: boolean;
-  /** At least as wide as the anchor: a list that opens under the control it belongs to. */
   fitAnchor?: boolean;
   underlayClassName?: never;
 };
-/** A dialog over a scrim: centred, with the page behind it inert and its scroll locked. */
 type FloatingModalOwnProps = FloatingCommonProps & {
   presentation: "modal";
   underlayClassName?: string;
@@ -134,7 +124,6 @@ type FloatingModalOwnProps = FloatingCommonProps & {
   fitAnchor?: never;
 };
 type FloatingContentOwnProps = FloatingPopoverOwnProps | FloatingModalOwnProps;
-// The panel is one element. Floating draws its elevation and nothing else, so `as={Surface}` is how the panel gets a face.
 export type FloatingPopoverProps<As extends ElementType = "div"> = PolymorphicProps<FloatingPopoverOwnProps, As>;
 export type FloatingModalProps<As extends ElementType = "div"> = PolymorphicProps<FloatingModalOwnProps, As>;
 export type FloatingContentProps<As extends ElementType = "div"> = PolymorphicProps<FloatingContentOwnProps, As>;
@@ -195,13 +184,11 @@ function PopoverPanel({ as: Tag, state, rootRef, panelRef: ref, forwardedRef, be
 }
 
 type ShownProps = ContentImplProps & { rootRef: RefObject<HTMLDivElement | null>; isExiting: boolean; forwardedRef: Ref<HTMLDivElement> };
-// A Content while it is on the page: opening and closing animate through it, and it is gone when the exit has played.
 function Shown({ rootRef, isExiting, forwardedRef, ...props }: ShownProps) {
   const { state, triggerRef, contentId } = useContextValue();
   const { as = "div", presentation = "popover", role = "dialog", dismissable = true, keyboardDismissDisabled = false, closeOnBlur = false, autoFocus: autoFocusProp, restoreFocus: restoreFocusProp,
     initialFocusRef, closeOnInteractOutside, portalContainer, anchorRef, placement = "bottom start", offset = "sm", crossOffset = "none", flip = true,
     fitAnchor = false, underlayClassName, className, style, children, ...attributes } = props;
-  // A dialog takes the focus and gives it back. A listbox leaves it on the control that opened it, which points into the list.
   const takesFocus = role !== "listbox";
   const autoFocus = autoFocusProp ?? takesFocus;
   const restoreFocus = restoreFocusProp ?? takesFocus;
@@ -220,11 +207,10 @@ function Shown({ rootRef, isExiting, forwardedRef, ...props }: ShownProps) {
   const crossOffsetPx = useMeasuredSpace(crossOffset, element, placed);
   const containerPaddingPx = useMeasuredSpace("gutter", element, placed);
   const position = useAnchoredPosition({ anchor, overlay: panelRef, open: placed, placement, offsetPx, crossOffsetPx, flip, containerPaddingPx, fitAnchor });
-  // A popover starts entering once it has been placed.
   const isEntering = useAriaEnter(rootRef, modal || position.placement !== null);
 
-  // A popover stands beside something. The anchor is a ref filled once the page is committed, so what is missing is found then.
-  // An anchor mounted with the opening and written below the panel arrives after this panel's own layout, so the panel is placed again for it.
+  // The anchor is a ref filled once the page is committed. One mounted with the opening and written below the panel
+  // arrives after the panel's own layout, so the panel is placed again for it.
   const anchoredAtLayout = useRef(false);
   useIsomorphicLayoutEffect(() => {
     anchoredAtLayout.current = anchor.current !== null;
@@ -260,7 +246,6 @@ function Shown({ rootRef, isExiting, forwardedRef, ...props }: ShownProps) {
     children: typeof children === "function" ? children(snapshot) : children,
   };
   const Panel = modal ? ModalPanel : PopoverPanel;
-  // The opener is where the portal's source overrides come from: the Trigger if it is on the page, else the anchor, else what was pressed.
   const opener = () => (triggerRef.current?.isConnected ? triggerRef.current : anchorRef?.current ?? document.activeElement);
   return <ElevationContext.Provider value={elevation}>
     <Portal container={portalContainer} opener={opener}>
@@ -276,11 +261,8 @@ const ContentImpl = forwardRef<HTMLDivElement, ContentImplProps>(function Floati
   const { state } = useContextValue();
   const rootRef = useRef<HTMLDivElement>(null);
   const isExiting = useAriaExit(rootRef, state.isOpen);
-  // Refs are filled when the page commits, so a panel open from the first render stands one commit later, before the
-  // browser paints: its Trigger and anchor are there to read by then, wherever they are written.
   const [awaitingCommit, setAwaitingCommit] = useState(state.isOpen);
   useIsomorphicLayoutEffect(() => setAwaitingCommit(false), []);
-  // Each opening is a new panel: one reopened while the last is still leaving is placed, focused and carried afresh.
   const [opening, setOpening] = useState({ count: 0, open: state.isOpen });
   if (opening.open !== state.isOpen) setOpening({ count: opening.count + (state.isOpen ? 1 : 0), open: state.isOpen });
   if (awaitingCommit || (!state.isOpen && !isExiting)) return null;

@@ -1,6 +1,3 @@
-// What the well shows for a page: the page pulled straight, the photo it came from with what was found traced over it, the
-// steps it is going through, or the reason it could not be opened. (The corner editor has its own screen.)
-
 import type { ReactNode } from "react";
 
 import { Box, Inline, Spinner, Stack, Surface, Text } from "@studio-baeks/paper-ui";
@@ -16,7 +13,6 @@ import { useGridphoto } from "../state/document";
 
 export type StageView = "result" | "source";
 
-// The picture is as wide as its shape allows without pushing the strip below the fold.
 export const widthFor = (aspect: number): "measure.xs" | "measure.md" => (aspect > 1.05 ? "measure.md" : "measure.xs");
 
 const Steps = ({ page, value }: { page: Page; value: number }) => {

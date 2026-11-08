@@ -1,5 +1,3 @@
-// 모든 플레이리스트: 내가 만든 것, 에디터 추천, 믹스를 한곳에. 새 플레이리스트는 여기와 사이드바에서 만듭니다.
-
 import { useState } from "react";
 
 import { Button, Grid } from "@studio-baeks/paper-ui";

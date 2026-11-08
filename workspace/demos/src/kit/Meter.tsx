@@ -1,18 +1,11 @@
-// Meter — how full something is: a quota, a download, a print's progress, a volume. A groove on the sunken face with a
-// solid bar in it. Paper has no progress part; the groove is a Surface and the bar a Paint, and only the bar's length is
-// the app's own number.
-
 import { Box, Inline, Paint, Stack, Surface, Text } from "@studio-baeks/paper-ui";
 import type { Accent } from "@studio-baeks/paper-ui/tokens";
 
 export type MeterProps = {
-  // 0 to 1.
   value: number;
   label?: string;
-  // Words at the end of the label row ("42.1 / 100 GB").
   valueText?: string;
   tone?: Accent;
-  // thin: 4px, the default 6px, thick 10px.
   weight?: "thin" | "base" | "thick";
 };
 

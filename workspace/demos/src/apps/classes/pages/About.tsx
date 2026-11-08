@@ -1,7 +1,3 @@
-// 설정 — the guide book, your major, the devices you are signed in on, and what the app is. Under them a demo-only block:
-// the role this account plays (so the pages that differ for a student, a manager and an admin can be seen) and a way back
-// to the first state. The page is for doing things, so the guide is first and the facts about the app are last.
-
 import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 

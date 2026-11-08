@@ -1,6 +1,3 @@
-// One term's panel, opened from the roadmap: the cards of what the term holds, to set the grade and EC or move a course to another
-// term. The cells are the board's own, so what is written here changes the roadmap and the board at once.
-
 import { useEffect, useState } from "react";
 
 import { Box, Grid, Text } from "@studio-baeks/paper-ui";
@@ -13,7 +10,6 @@ import { CourseCard, type CardActions } from "./CourseCard";
 const NONE: ReadonlySet<string> = new Set();
 
 export type TermPanelProps = CardActions & {
-  // The term that is open, or null when the panel is closed.
   term: TermKey | null;
   terms: readonly TermSummary[];
   entries: ZamongMap;
@@ -23,7 +19,6 @@ export type TermPanelProps = CardActions & {
 };
 
 export const TermPanel = ({ term, terms, entries, taken, inferred, onClose, onChoose, onGrade, onEc }: TermPanelProps) => {
-  // A panel that is closing still shows the term it had, until it is gone.
   const [last, setLast] = useState<TermKey>("1");
   useEffect(() => {
     if (term) setLast(term);

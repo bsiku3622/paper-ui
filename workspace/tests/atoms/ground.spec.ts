@@ -45,7 +45,6 @@ test.describe("the face of a frame and of an off mark", () => {
   });
 });
 
-// How wide a control's line is, and where what it holds starts, from its outer edge.
 const room = (target: Locator) => target.evaluate((frame) => {
   const value = frame.matches("input, select, textarea, button") ? frame : (frame.querySelector("input, select, textarea") ?? frame);
   const own = getComputedStyle(value);
@@ -59,9 +58,7 @@ const room = (target: Locator) => target.evaluate((frame) => {
 
 test.describe("the room a control keeps for its line", () => {
   test("[foundations.shape.control-line-room] keeps none for a line it does not draw, and gives the room it takes back out of the inset", async ({ page }) => {
-    // A frame and a button that draw no line keep no room for one, so their face reaches the edge.
     for (const id of ["field-ghost", "button-solid"]) expect((await room(page.getByTestId(id))).line, id).toBe(0);
-    // A line takes a pixel, the default frame's, an error's, an off mark's, and what the control holds stays where it stood.
     const ghost = await room(page.getByTestId("field-ghost"));
     for (const id of ["field-page", "field-hairline", "field-error"]) {
       const lined = await room(page.getByTestId(id));
@@ -88,7 +85,6 @@ test.describe("SegmentControl", () => {
     const long = root.getByRole("radio", { name: "훨씬 긴 이름의 칸" });
     const short = root.getByRole("radio", { name: "하나" });
     await thumbOver(root, long);
-    // A choice not chosen rests in the secondary ink; the chosen one is primary.
     await page.mouse.move(0, 0);
     await expectStyle(short, { color: tokens.color.ink.secondary });
     await expectStyle(long, { color: tokens.color.ink.primary });
@@ -104,7 +100,6 @@ test.describe("SegmentControl", () => {
   test("[atoms.segment.outline] stands in an input's frame, splits it with the same line, and gives the chosen one a face and a check", async ({ page }) => {
     const root = page.getByTestId("segment-outline");
     const field = page.getByTestId("field-beside");
-    // The frame is the input's: its face, its one line and its corner, at the height of a Field of the same size. No chip slides.
     await expectStyle(root, { backgroundColor: tokens.color.control.field, borderTopColor: tokens.color.border.base });
     expect(await root.evaluate((element) => getComputedStyle(element).borderTopWidth)).toBe("1px");
     await expect(root.locator(":scope > span[aria-hidden=true]")).toHaveCount(0);
@@ -113,21 +108,17 @@ test.describe("SegmentControl", () => {
     expect(await root.evaluate((element) => getComputedStyle(element).borderTopLeftRadius)).toBe(await field.evaluate((element) => getComputedStyle(element).borderTopLeftRadius));
     const choice = (name: string) => root.getByRole("radio", { name, exact: true });
     const [one, two, three] = [choice("가"), choice("나다라마"), choice("바")];
-    // The choices after the first draw the line on their start side; the first leans on the frame's.
     expect(await one.evaluate((element) => getComputedStyle(element).borderInlineStartWidth)).toBe("0px");
     await expectStyle(two, { borderLeftColor: tokens.color.border.base });
     expect(await two.evaluate((element) => getComputedStyle(element).borderLeftWidth)).toBe("1px");
-    // The chosen one has the chosen face and the check before its words, which leaves its name alone; the others have neither.
     const check = (item: Locator) => item.locator("svg");
     await expectStyle(two, { backgroundColor: tokens.color.control.chosen, color: tokens.color.ink.primary });
     await expect(check(two)).toBeVisible();
     await expect(check(two)).toHaveAttribute("aria-hidden", "true");
     await expect(check(one)).toBeHidden();
     expect(await one.evaluate((element) => getComputedStyle(element).backgroundColor)).toBe("rgba(0, 0, 0, 0)");
-    // The face fills the frame inside its line, so the chosen face reaches it.
     const [inner, face] = [await root.evaluate((element) => element.clientHeight), await two.boundingBox()];
     expect(Math.abs(face!.height - inner)).toBeLessThan(0.5);
-    // Choosing moves the face and the check.
     await three.click();
     await expect(three).toHaveAttribute("aria-checked", "true");
     await expect(check(three)).toBeVisible();
@@ -137,14 +128,11 @@ test.describe("SegmentControl", () => {
   test("[atoms.segment.radiogroup] gives no choice of a shared-out row less than its words and its check, and shares what is left equally", async ({ page }) => {
     const root = page.getByTestId("segment-full-outline");
     const items = root.getByRole("radio");
-    // Nothing spills over its neighbour: every choice holds what it shows.
     expect(await items.evaluateAll((elements) => elements.filter((element) => element.scrollWidth > element.clientWidth).length)).toBe(0);
     const widths = await items.evaluateAll((elements) => elements.map((element) => element.getBoundingClientRect().width));
     expect(widths[2]).toBeGreaterThan(widths[1]! + 1);
-    // The second and the fourth both stand behind a dividing line; the first has none, so it is one line narrower.
     expect(Math.abs(widths[3]! - widths[1]!)).toBeLessThan(0.5);
     expect(Math.abs(widths[1]! - widths[0]! - roleDp(tokens.shape.stroke.border))).toBeLessThan(0.5);
-    // The row still takes all it is given and no more.
     const [inner, row] = await root.evaluate((element) => [element.clientWidth, element.scrollWidth]);
     expect(row).toBeLessThanOrEqual(inner! + 0.5);
   });

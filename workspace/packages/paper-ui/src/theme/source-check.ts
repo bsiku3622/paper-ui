@@ -1,10 +1,3 @@
-// source-check.ts — a development check of the plain CSS form of a source override.
-//
-// `.dense { --pui-shape-control-height-md: 40px }` passes through neither the types nor sourceVars(), and a name the
-// stylesheet does not emit does nothing, silently. So the declarations of the document's stylesheets are read once and
-// the names that mean nothing are told. A sheet the browser will not let a script read (another origin) is skipped;
-// an inline style is not a stylesheet, and a sheet that arrives later is not there yet (docs/foundations/shape.md).
-
 import { paperError } from "../internal/errors";
 import { unknownSourceVariables } from "../tokens";
 

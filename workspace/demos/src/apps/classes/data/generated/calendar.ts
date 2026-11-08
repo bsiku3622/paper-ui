@@ -1,6 +1,3 @@
-// A school year's calendar as the demo shows it (titles, dates, categories): the public events only.
-
-// [title, startDate, endDate, category, targetGrades, targetMajors]
 export type CalendarRow = readonly [string, string, string, string, readonly number[], readonly string[]];
 export const CALENDAR_ROWS: readonly CalendarRow[] = [
   ["추가 수강신청(~2.6)","2026-02-05","2026-02-06","academic",[],[]],

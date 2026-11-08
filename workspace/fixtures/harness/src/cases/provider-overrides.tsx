@@ -1,6 +1,5 @@
 import { Button, PaperProvider, Surface } from "@studio-baeks/paper-ui";
 
-// A Provider given a value of each kind. The values are ones no default holds, so a spec can tell them apart from Paper's.
 export const ProviderOverridesCase = () => (
   <PaperProvider
     storageKey={null}

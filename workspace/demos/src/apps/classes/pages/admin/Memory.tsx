@@ -1,8 +1,3 @@
-// Ask 기억 — short facts the analyser pulled out of school notices. Ask picks the ones that fit a question and cites the
-// notice they came from. The list is the notices (a page is a few notices), each with its facts; a fact can be edited or
-// hidden, and both survive the notice being analysed again. There is no way to add a fact by hand: one with no notice
-// behind it could not be cited.
-
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -24,7 +19,6 @@ const STATEMENT_MIN = 5;
 const STATEMENT_MAX = 300;
 const TOPIC_MAX = 60;
 
-// "~11/29까지 유효", or "11/29 기한 지남" once the day has passed. Nothing for a fact with no end.
 const validity = (until: string | null, today: string) => {
   if (!until) return null;
   const [year, month, day] = until.split("-");
@@ -42,8 +36,6 @@ const sameList = <T,>(a: readonly T[], b: readonly T[]) => a.length === b.length
 const changedFrom = (fact: MemoryFact, draft: Draft) =>
   draft.statement.trim() !== fact.statement || draft.topic.trim() !== fact.topic || !sameList(draft.grades, fact.grades) || !sameList(draft.majors, fact.majors) || draft.validUntil !== (fact.validUntil ?? "");
 const toggled = <T,>(list: readonly T[], value: T) => (list.includes(value) ? list.filter((item) => item !== value) : [...list, value]);
-
-// ── editing one fact ─────────────────────────────────────────────────────────
 
 const FactEditor = ({ fact, onCancel, onSave }: { fact: MemoryFact; onCancel: () => void; onSave: (draft: Draft) => void }) => {
   const [draft, setDraft] = useState<Draft>(() => draftOf(fact));
@@ -92,12 +84,9 @@ const FactEditor = ({ fact, onCancel, onSave }: { fact: MemoryFact; onCancel: ()
   );
 };
 
-// ── one fact ─────────────────────────────────────────────────────────────────
-
 const FactLine = ({ fact, today, onEdit, onToggle }: { fact: MemoryFact; today: string; onEdit: () => void; onToggle: () => void }) => {
   const hidden = fact.status === "hidden";
   const until = validity(fact.validUntil, today);
-  // Ask leaves out what is hidden and what has run out, so both are drawn quieter.
   const inUse = !hidden && !until?.expired;
   const detail = [gradesLabel(fact.grades), majorsLabel(fact.majors), until?.label ?? ""].filter(Boolean).join(" · ");
   return (
@@ -119,8 +108,6 @@ const FactLine = ({ fact, today, onEdit, onToggle }: { fact: MemoryFact; today: 
   );
 };
 
-// ── the panel ────────────────────────────────────────────────────────────────
-
 export const MemoryPanel = () => {
   const { clock } = useClasses();
   const { facts, setFacts } = useAdmin();
@@ -137,7 +124,6 @@ export const MemoryPanel = () => {
     [facts],
   );
 
-  // notices newest first, each with the facts that pass the filter and the search
   const groups = useMemo(() => {
     const words = query.trim().toLowerCase();
     const posts = new Map<number, MemoryPost>(MEMORY_POSTS.map((post) => [post.id, post]));
@@ -154,7 +140,6 @@ export const MemoryPanel = () => {
       .filter((group) => group.facts.length > 0);
   }, [facts, filter, query]);
 
-  // hiding a fact while "활성" is chosen can empty the last page; step back rather than show an empty one
   const pages = Math.max(1, Math.ceil(groups.length / POSTS_PER_PAGE));
   const current = Math.min(page, pages);
   const visible = groups.slice((current - 1) * POSTS_PER_PAGE, current * POSTS_PER_PAGE);

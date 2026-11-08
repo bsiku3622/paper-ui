@@ -1,13 +1,3 @@
-// The API surface of the package, recorded in api/surface.json. The test computes the surface from the source (the
-// TypeScript checker for the names each entry exports, the runtime for the values, the token tree, the emitted
-// variables and the layer module) and compares it with the record, so a name that appears, goes or changes
-// side shows up in review as a diff of that file.
-//
-// pnpm api:update           rewrites api/surface.json. If the version has been released (api/released/<version>.json),
-//                           the surface of a release never changes, and a new version needs the bump its changes
-//                           call for and a `## <version>` heading in CHANGELOG.md.
-// PAPER_API_RECORD=1        writes api/released/<version>.json, which prepublishOnly does at publish time.
-
 import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, dirname, join } from "node:path";
@@ -42,9 +32,6 @@ type Surface = {
 
 const sorted = (names: Iterable<string>) => [...new Set(names)].sort();
 
-// The names an entry file exports, by the kind the checker resolves each one to: an interface or a type alias is a
-// type, a const, function or class a value, and a name that is both (a class, or a const beside a type of the
-// same name) is listed in both.
 const exportsOf = (entries: Record<string, string>) => {
   const config = ts.parseJsonConfigFileContent(ts.readConfigFile(join(packageDir, "tsconfig.json"), ts.sys.readFile).config, ts.sys, packageDir);
   const program = ts.createProgram(Object.values(entries), { ...config.options, noEmit: true });
@@ -63,14 +50,12 @@ const exportsOf = (entries: Record<string, string>) => {
   ) as Record<string, Entry>;
 };
 
-// Every leaf of a tree, as the dotted path to it.
 const leafPaths = (value: unknown, path: string[] = []): string[] =>
   value !== null && typeof value === "object" && !Array.isArray(value)
     ? Object.entries(value).flatMap(([key, child]) => leafPaths(child, [...path, key]))
     : [path.join(".")];
 
-// The layer module is a .css.ts that cannot be imported outside the build, so its names are read from its text, in
-// declaration order: the order is the cascade.
+// The layer module is a .css.ts that cannot be imported outside the build, so its names are read from its text.
 const layerNames = (): string[] => {
   const code = readFileSync(join(here, "tokens/layers.css.ts"), "utf8");
   const parent = /globalLayer\("([^"]+)"\)/.exec(code)?.[1];
@@ -111,9 +96,6 @@ const computeSurface = (): Surface => {
 const serialize = (surface: Surface) => `${JSON.stringify(surface, null, 2)}\n`;
 const readSurface = (path: string): Surface => JSON.parse(readFileSync(path, "utf8"));
 
-// ───── The gate ─────────────────────────────────────────────────────────────────────────────────────────────
-
-// x.y.z, then the rank of its label and the rc's number: alpha < beta < rc.n < the release itself.
 type Version = [number, number, number, number, number];
 const LABELS = ["alpha", "beta", "rc"];
 const RELEASE_RANK = LABELS.length;
@@ -129,11 +111,9 @@ const isPrerelease = (version: Version) => version[3] < RELEASE_RANK;
 const LEVELS = ["patch", "minor", "major"] as const;
 type Level = (typeof LEVELS)[number];
 
-// The highest part that grew from one version to a later one.
 const bumpOf = (from: Version, to: Version): Level | null =>
   to[0] > from[0] ? "major" : to[1] > from[1] ? "minor" : to[2] > from[2] ? "patch" : null;
 
-// Every name of a surface as one flat key, so a diff is a set difference.
 const keysOf = (surface: Surface): Set<string> => {
   const keys = new Set<string>();
   for (const [entry, record] of Object.entries(surface.entries)) {
@@ -146,8 +126,6 @@ const keysOf = (surface: Surface): Set<string> => {
 
 const difference = (a: Set<string>, b: Set<string>) => [...a].filter((key) => !b.has(key)).sort();
 
-// What changing a release's surface to another costs: a removed or renamed name needs a minor bump while 0.x and a
-// major at 1.0 and later, an added name alone a patch bump while 0.x and a minor later, and nothing else a bump.
 const requiredBump = (released: Version, removed: number, added: number): Level | null =>
   removed > 0 ? (released[0] === 0 ? "minor" : "major") : added > 0 ? (released[0] === 0 ? "patch" : "minor") : null;
 
@@ -163,8 +141,6 @@ const releasedVersions = (dir: string): string[] =>
     .map((file) => basename(file, ".json"))
     .sort((a, b) => compare(parse(a), parse(b)));
 
-// The reasons api:update refuses to rewrite the record of `version`, or [] when it may. `released` holds the
-// surfaces published so far, one api/released/<version>.json each.
 const refusals = ({ released, changelog, surface }: { released: string; changelog: string; surface: Surface }): string[] => {
   const versions = releasedVersions(released);
   if (versions.length === 0) return [];
@@ -180,7 +156,6 @@ const refusals = ({ released, changelog, surface }: { released: string; changelo
   const below = versions.filter((candidate) => compare(parse(candidate), version) < 0);
   if (below.length === 0) return [`${surface.version} is below every released version (${versions.join(", ")})`];
   const reasons: string[] = [];
-  // A pre-release promises no names to the next version, so the bump is measured from the last full release.
   const latest = below.filter((candidate) => !isPrerelease(parse(candidate))).at(-1);
   if (latest) {
     const record = readSurface(join(released, `${latest}.json`));
@@ -196,8 +171,6 @@ const refusals = ({ released, changelog, surface }: { released: string; changelo
   return reasons;
 };
 
-// ───── The record ───────────────────────────────────────────────────────────────────────────────────────────
-
 const surface = computeSurface();
 
 describe("the API surface", () => {
@@ -211,7 +184,6 @@ describe("the API surface", () => {
     }
     const recorded = readSurface(SURFACE);
     expect(recorded.version).toBe(pkg.version);
-    // A readable diff first: the names that came or went, then the whole record.
     expect({ removed: difference(keysOf(recorded), keysOf(surface)), added: difference(keysOf(surface), keysOf(recorded)) }, "run `pnpm api:update` after an intended API change").toEqual({ removed: [], added: [] });
     expect(surface, "run `pnpm api:update` after an intended API change").toEqual(recorded);
   });
@@ -258,12 +230,10 @@ describe("the API surface", () => {
   }
 });
 
-// The gate runs against a temporary directory of released surfaces, so the real record is never touched.
 describe("the version gate", () => {
   const scratch = mkdtempSync(join(tmpdir(), "paper-api-"));
   afterAll(() => rmSync(scratch, { recursive: true, force: true }));
 
-  // A surface with the given value names in '.', released as `version`.
   const surfaceWith = (version: string, values: string[]): Surface => ({
     version,
     entries: { ...surface.entries, ".": { values, types: [] } },
@@ -321,14 +291,11 @@ describe("the version gate", () => {
 
   it("[install.api.bump-required] measures a pre-release's bump from the last full release, and holds a released pre-release to its record", () => {
     const released = releasedAt("prerelease", surfaceWith("0.1.0", ["A", "B"]), surfaceWith("0.2.0-alpha", ["A"]));
-    // The record of a pre-release is as fixed as a release's.
     expect(refusals({ released, changelog: notes("0.2.0-alpha"), surface: surfaceWith("0.2.0-alpha", ["C"]) })).toEqual([
       "0.2.0-alpha is released and its surface differs (1 removed, 1 added): bump the version in package.json",
     ]);
-    // Between pre-releases of one version names may move; each stands against 0.1.0, which a minor bump covers.
     expect(refusals({ released, changelog: notes("0.2.0-beta"), surface: surfaceWith("0.2.0-beta", ["C"]) })).toEqual([]);
     expect(refusals({ released, changelog: notes("0.2.0"), surface: surfaceWith("0.2.0", ["C"]) })).toEqual([]);
-    // A pre-release that removes a name still needs the bump its removal calls for.
     expect(refusals({ released, changelog: notes("0.1.1-rc.1"), surface: surfaceWith("0.1.1-rc.1", ["A"]) })).toEqual(["1 removed and 0 added names since 0.1.0 need a minor bump or more, and 0.1.1-rc.1 is a patch bump"]);
   });
 

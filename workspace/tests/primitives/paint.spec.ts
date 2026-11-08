@@ -8,7 +8,6 @@ import { chooseProp, openHarness, openPlayground } from "../support/harness";
 import { chooseOption } from "../support/select";
 import { expectStyle } from "../support/style";
 
-// The tint an item lays over its face, as the computed background image.
 const tint = (color: string) => ({ backgroundImage: `linear-gradient(${color}, ${color})` });
 
 test("[primitives.surface.prop-table] each prop of a Surface comes from the role the table names: fill from bg, border from the border role and stroke, radius from the surface family and the pill", async ({ page }) => {
@@ -31,7 +30,6 @@ test("[primitives.surface.sticky-top] [primitives.surface.shadow] a sticky Surfa
   const none = page.getByTestId("sticky-none");
   await expect(none).toHaveCSS("top", "0px");
   await expect(none).toHaveCSS("max-height", "640px");
-  // A sticky face with no shadow asked for has none: the tier casts nothing.
   await expect(none).toHaveCSS("box-shadow", "none");
   await expect(page.getByTestId("top-unread")).toHaveCSS("max-height", "none");
 });
@@ -47,7 +45,6 @@ test("[primitives.surface.item] a hoverable Surface fades its tint over the hove
 test("[primitives.surface.item] [atoms.states.hover-table] a hoverable Surface tints under the pointer and when pressed, and a selected one keeps its own tint under hover", async ({ page }) => {
   await openPlayground(page, "surface", "Surface");
   const surface = page.getByTestId("surface-example");
-  // Without hoverable the Surface is not an item: it has no tint to take.
   await surface.hover();
   await expect(surface).toHaveCSS("background-image", "none");
   await page.getByRole("switch", { name: "hoverable", exact: true }).check();
@@ -58,7 +55,6 @@ test("[primitives.surface.item] [atoms.states.hover-table] a hoverable Surface t
   await page.mouse.down();
   await expectStyle(surface, tint(itemProfile.activeTint));
   await page.mouse.up();
-  // Selecting sets the attribute only; the tint that answers it is the item's.
   await page.getByRole("switch", { name: "selected", exact: true }).check();
   await expect(surface).toHaveAttribute("data-selected", "true");
   await expectStyle(surface, tint(itemProfile.selectedTint));
@@ -99,7 +95,6 @@ test("[primitives.paint.selected] a selected ghost or hairline Paint wears its a
   await expectStyle(paint, { backgroundColor: selected.face, color: selected.ink, borderTopColor: selected.border, ...tint(itemProfile.hoverTint) });
   await page.mouse.move(0, 0);
   await expectStyle(paint, { backgroundColor: selected.face, color: selected.ink, borderTopColor: selected.border, ...tint("transparent") });
-  // A variant with a face of its own has no selected look.
   await chooseProp(page, "variant", "solid");
   const solid = accentProfile("info", "solid");
   await expectStyle(paint, { backgroundColor: solid.face, color: solid.ink });
@@ -120,7 +115,6 @@ test("[foundations.state.recipes] the example control of the Playground answers 
   await page.getByRole("switch", { name: "disabled", exact: true }).check();
   await expect(control).toHaveAttribute("data-disabled", "true");
   await expectStyle(control, { opacity: tokens.color.opacity.disabled, cursor: "not-allowed" });
-  // A disabled item answers to the pointer no more: the tint stays what its selection gave it.
   await control.hover({ force: true });
   await expectStyle(control, tint(itemProfile.selectedTint));
 });

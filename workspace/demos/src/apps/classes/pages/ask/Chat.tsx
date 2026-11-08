@@ -1,7 +1,3 @@
-// The conversation itself, drawn once and used twice: on the Ask page and in the small window opened from the top bar.
-// An empty conversation greets you with questions to start from; an answer arrives as steps (what was looked up) and then
-// text; when it is done the steps fold into one line ("작업 2단계 · 3초") that opens again.
-
 import { useEffect, useRef, useState } from "react";
 
 import { Box, Button, IconButton, Inline, Select, Spinner, Stack, Surface, Text, Textarea } from "@studio-baeks/paper-ui";

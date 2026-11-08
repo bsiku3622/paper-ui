@@ -1,6 +1,3 @@
-// The detail of one course, under the board: what it is, what it needs and what builds on it. It shows the card the pointer
-// or the keyboard is on, or else the one held open.
-
 import { Grid, Stack, Surface, Text } from "@studio-baeks/paper-ui";
 
 import { TIER_LABEL, type Course } from "../../data/catalog";

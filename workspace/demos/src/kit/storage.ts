@@ -1,6 +1,3 @@
-// useStored — state that outlives a reload, for what a user makes in a demo (a note, a playlist, a setting).
-// Kept in localStorage under "paper-apps:<key>"; a private window without storage keeps it for the page only.
-
 import { useCallback, useEffect, useState } from "react";
 
 const PREFIX = "paper-apps:";
@@ -20,18 +17,15 @@ export const useStored = <T,>(key: string, initial: T | (() => T)) => {
     try {
       localStorage.setItem(PREFIX + key, JSON.stringify(value));
     } catch {
-      // No storage: the value lasts until the page reloads.
     }
   }, [key, value]);
   const reset = useCallback(() => setValue(typeof initial === "function" ? (initial as () => T)() : initial), [initial]);
   return [value, setValue, reset] as const;
 };
 
-// Forget everything one app stored, for its "처음 상태로" button.
 export const clearStored = (prefix: string) => {
   try {
     for (const key of Object.keys(localStorage)) if (key.startsWith(PREFIX + prefix)) localStorage.removeItem(key);
   } catch {
-    // No storage, nothing to clear.
   }
 };

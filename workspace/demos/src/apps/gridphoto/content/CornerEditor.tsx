@@ -1,7 +1,3 @@
-// The manual fallback: four handles on the photo, with a magnifier while one moves, because a finger hides exactly the spot
-// it is placing. Paper has no drag-to-position handle and no magnifier; the handles are buttons placed by percentage over the
-// kit's picture.
-
 import { useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent } from "react";
 
 import { Surface } from "@studio-baeks/paper-ui";
@@ -13,7 +9,6 @@ import { capped, cross as crossClass, editorFrame, handle, knob, knobBase, loupe
 import { Lines, SourcePhoto } from "./Photo";
 
 const NAMES = ["왼쪽 위", "오른쪽 위", "오른쪽 아래", "왼쪽 아래"];
-// The magnifier shows this share of the photo's width.
 const LOUPE_SHARE = 0.08;
 
 const Loupe = ({ photo, at, right }: { photo: Photo; at: Pt; right: boolean }) => {
@@ -61,7 +56,6 @@ export const CornerEditor = ({ photo, quad, cols, rows, onQuad }: { photo: Photo
     const box = frame.current?.getBoundingClientRect();
     if (!box) return;
     event.currentTarget.setPointerCapture(event.pointerId);
-    // Keep the offset from where the handle was grabbed, so it does not jump under the finger.
     grab.current = { dx: quad[index]!.x - (event.clientX - box.left) / box.width, dy: quad[index]!.y - (event.clientY - box.top) / box.height };
     setActive(index);
   };
@@ -89,7 +83,6 @@ export const CornerEditor = ({ photo, quad, cols, rows, onQuad }: { photo: Photo
       {quad.map((corner, index) => (
         <Handle key={index} at={corner} name={NAMES[index]!} active={active === index} onDown={down(index)} onMove={drag(index)} onUp={() => setActive(null)} onKey={key(index)} />
       ))}
-      {/* Stay out from under the finger: the magnifier takes the side away from the handle. */}
       {active !== null ? <Loupe photo={photo} at={quad[active]!} right={quad[active]!.x < 0.5} /> : null}
     </div>
   );

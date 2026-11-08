@@ -1,6 +1,3 @@
-// The top bar: the hub's clock on the left; on the right a search that opens the results page, the bell with the latest
-// activity, and the account menu.
-
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link as RouterLink, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
@@ -68,7 +65,6 @@ export const TopControls = () => {
   const query = typed ?? (onSearchPage ? params.get("q") ?? "" : "");
   const input = useRef<HTMLInputElement>(null);
 
-  // "/" jumps to the search from anywhere that is not already a text box.
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key !== "/" || event.metaKey || event.ctrlKey || event.altKey) return;
@@ -88,8 +84,6 @@ export const TopControls = () => {
     navigate(text ? `${BASE}/search?q=${encodeURIComponent(text)}` : `${BASE}/search`);
   };
 
-  // The kit's TopBar keeps its left cell even when it is empty, and on a phone that leaves a gap before the search; this row
-  // hides its left cell outright (a hidden Box takes no place) so the search starts at the page's edge.
   return (
     <Inline as="header" justify="between" align="center" gap="md" wrap>
       <Inline gap="sm" hideBelow="md">

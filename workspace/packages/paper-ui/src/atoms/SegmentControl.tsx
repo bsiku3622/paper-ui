@@ -1,17 +1,3 @@
-// SegmentControl — 여럿 중 하나를 한 줄 위에서 고른다. 기간 · 보기처럼 고른 즉시 화면이 바뀌는 자리에 쓴다.
-//   variant    track(기본)은 회색 홈 위로 흰 칸이 미끄러진다. outline 은 입력 틀과 같은 흰 틀을 나눔선으로 가르고, 고른 칸에
-//              control.chosen 면과 앞 체크를 둔다 — Field · Select 사이(Props 패널 같은 폼)에 놓일 때 같은 가족으로 읽힌다.
-//   size       컨트롤 사다리. 트랙이 그 높이이고, 칸은 트랙 안에 한 단계 들어가 앉는다(outline 은 틀 안을 그대로 채운다).
-//   fullWidth  주어진 폭을 칸이 같게 나눠 갖는다. 안 주면 글자가 폭을 정한다.
-//
-// 라디오 묶음이다. 방향키가 고르는 칸을 옮기고, Tab 정지는 하나다. SelectableGroup 이 상태와 aria 를 맡고, 이 Atom 은 트랙과
-// 그 위를 미끄러지는 칸만 더한다. 칸의 자리는 고른 항목을 재서 얻으니 글자 폭이 달라도 맞는다.
-//
-// 예) <SegmentControl aria-label="기간" defaultValue="7d">
-//       <SegmentControl.Item value="1d">1일</SegmentControl.Item>
-//       <SegmentControl.Item value="7d">7일</SegmentControl.Item>
-//     </SegmentControl>
-
 import { createContext, forwardRef, useContext, useRef, type HTMLAttributes, type ReactNode } from "react";
 
 import { joinClass } from "../internal/joinClass";
@@ -47,7 +33,6 @@ export type SegmentControlItemProps = Omit<HTMLAttributes<HTMLButtonElement>, "c
 };
 
 const SELECTED = stateSelector("selected");
-// The items draw what their group's variant asks of them: the outlined group's dividers, chosen face and check.
 const VariantContext = createContext<SegmentVariant>("track");
 
 const SegmentControlRoot = forwardRef<HTMLDivElement, SegmentControlProps>(function SegmentControl(

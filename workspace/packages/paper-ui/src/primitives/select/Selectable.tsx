@@ -10,8 +10,6 @@ export type SelectableState = { isSelected: boolean; isDisabled: boolean };
 export type SelectableOwnProps = Pick<SelectableOptions, "selected" | "defaultSelected" | "onSelectedChange" | "disabled" | "role" | "current"> & {
   children?: ReactNode | ((state: SelectableState) => ReactNode);
 };
-// A native button that toggles on click. `as` names another target, which targetProps makes a control, with a button's
-// keys, or hands the disabled to. `<Pressable as={Selectable}>` adds the press machinery.
 export type SelectableProps<As extends ElementType = "button"> = PolymorphicProps<SelectableOwnProps, As>;
 
 const SelectableImpl = forwardRef<HTMLElement, Omit<SelectableProps, "as" | "ref"> & { as?: ElementType }>(function Selectable({

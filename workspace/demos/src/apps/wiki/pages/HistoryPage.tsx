@@ -1,6 +1,3 @@
-// HistoryPage.tsx — every revision of an article, newest first. Pick two with the radio buttons to compare them; restore an old
-// one (which makes a new revision, the old ones stay).
-
 import { useMemo, useState } from "react";
 import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 

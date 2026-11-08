@@ -1,10 +1,3 @@
-// 시간표 비교 — pick students by name or ID and lay their weeks over one another. A period where nobody has a class is
-// green, one where everybody sits in the same subject is blue, one where everybody is busy with something different is
-// amber ("충돌": the group cannot meet then); the rest are plain and say who is busy. Pressing a period opens a small panel
-// with who is where.
-//
-// The chosen students live in the address (?ids=25-307,25-310), so the page can be shared and reloaded as it is.
-
 import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 
 import { Badge, Button, Field, Grid, IconButton, Inline, Pressable, Stack, Surface, Text } from "@studio-baeks/paper-ui";
@@ -19,7 +12,6 @@ import { CompareGrid, type Cell } from "./CompareGrid";
 import { shortName } from "./stats";
 import { classify, personOf, suggest, summarize, type Person } from "./weeks";
 
-// Who is where in one period, under the grid.
 const Detail = ({ people, day, period, onClose }: { people: readonly Person[]; day: Day; period: number; onClose: () => void }) => {
   const time = periodTime(period);
   const key = slotKey(day, period);
@@ -49,7 +41,6 @@ const Detail = ({ people, day, period, onClose }: { people: readonly Person[]; d
   );
 };
 
-// "WED-3" from the address → the period to open.
 const periodFrom = (value: string | undefined): { day: Day; period: number } | null => {
   const [day, period] = (value ?? "").split("-");
   const found = DAYS.find((item) => item === day);
@@ -57,7 +48,6 @@ const periodFrom = (value: string | undefined): { day: Day; period: number } | n
   return found && Number.isInteger(number) && periodTime(number) ? { day: found, period: number } : null;
 };
 
-// `seed` is what the address says to start with: ?who= is a name typed in the box, ?cell=WED-3 is a period already pressed.
 export const ComparePanel = ({ ids, onIds, seed }: { ids: string[]; onIds: (next: string[]) => void; seed?: { who?: string; cell?: string } }) => {
   const { data, me, friends, studentName } = useClasses();
   const toast = useToast();
@@ -82,7 +72,6 @@ export const ComparePanel = ({ ids, onIds, seed }: { ids: string[]; onIds: (next
   const open = found.list.length > 0;
   const current = Math.min(cursor, found.list.length - 1);
 
-  // Escape puts a pressed period away, as the original did.
   useEffect(() => {
     if (!active) return;
     const onKey = (event: KeyboardEvent) => {
@@ -106,8 +95,6 @@ export const ComparePanel = ({ ids, onIds, seed }: { ids: string[]; onIds: (next
     toast("비교하던 학생을 모두 뺐습니다", { action: { label: "되돌리기", onSelect: () => onIds(before) } });
   };
 
-  // Arrow keys move through the candidates, Enter takes the marked one, Escape closes the list. While a Korean syllable is
-  // still being composed the keys belong to the input method.
   const onKeyDown = (event: ReactKeyboardEvent<HTMLInputElement>) => {
     if (event.nativeEvent.isComposing) return;
     const count = found.list.length;

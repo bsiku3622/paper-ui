@@ -1,5 +1,3 @@
-// AddToPlaylistDialog — 곡을 어느 플레이리스트에 담을지 고르는 대화상자.
-
 import { Box, Button, Divider, Floating, IconButton, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";
 
 import { Glyph, useToast } from "../../../kit";

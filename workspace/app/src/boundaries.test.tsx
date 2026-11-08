@@ -13,8 +13,6 @@ import { Icon } from "@studio-baeks/paper-ui";
 import { GripIcon, InfoIcon, PlusIcon, SearchIcon } from "./compositions/icons";
 import { glyph } from "./playground/registry/demo";
 
-// What the app has promised about itself and no type can hold: read from the source of every app module.
-
 const SRC = fileURLToPath(new URL(".", import.meta.url));
 const sources = readdirSync(SRC, { recursive: true, encoding: "utf-8" })
   .filter((file) => /\.tsx?$/.test(file) && !/\.test\.tsx?$/.test(file))
@@ -26,7 +24,6 @@ const drawing = (node: ReactNode) => /<svg[^>]*>(.*)<\/svg>/.exec(renderToStatic
 
 describe("the app's drawings", () => {
   it("are drawn only in the files that declare why", () => {
-    // The set, the wordmark, the Playground's samples (their code panel shows the path) and the Shape specimens.
     const DRAWS = ["./compositions/icons.tsx", "./playground/foundations/ShapePage.tsx", "./playground/foundations/kit.tsx", "./playground/registry/demo.tsx", "./site/Logo.tsx"];
     const found = views.filter(([, text]) => /<(path|circle|rect|line|polygon|polyline|ellipse)\b/.test(text)).map(([file]) => file);
     expect(found.sort()).toEqual(DRAWS);

@@ -1,5 +1,3 @@
-// The lyrics pane's place: a column fixed to the right edge of the window, as wide as the column AppShell reserves for it.
-
 import { style } from "@vanilla-extract/css";
 
 import { tokens } from "@studio-baeks/paper-ui/tokens";

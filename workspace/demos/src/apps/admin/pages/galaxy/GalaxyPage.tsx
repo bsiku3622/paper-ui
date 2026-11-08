@@ -1,7 +1,3 @@
-// Galaxy S23+: a real hub only hands you over to the viewer, a separate app, and the menu and the card go there directly. A demo must not leave, so the entry is drawn — the spinner and the
-// words — and then, instead of leaving, the page shows what the viewer's side holds: the phone's latest shots, with the one
-// choice the hub owns, whether each is shown outside. ?entry keeps the entry on screen; ?viewer skips it.
-
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 

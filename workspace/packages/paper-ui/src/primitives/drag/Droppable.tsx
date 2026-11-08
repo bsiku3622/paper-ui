@@ -22,8 +22,6 @@ const DroppableImpl = forwardRef<HTMLElement, Omit<DroppableProps, "as" | "ref">
   const Tag = as ?? "div";
   const { type, href } = props as { type?: string; href?: string };
   const target = targetProps(Tag, { disabled, type, href, kind: "control" });
-  // A disabled one takes no drop and nothing else: its content stays live. The target says it is disabled the way
-  // targetProps tells it to; the aria-disabled in dropProps is for a hook's own element.
   delete target.onClickCapture;
   delete target.onAuxClickCapture;
   return <Tag {...mergeProps(target, props, { ...dropProps, "aria-disabled": target["aria-disabled"] })} ref={ref} className={joinClass(dropSurface, className)}>

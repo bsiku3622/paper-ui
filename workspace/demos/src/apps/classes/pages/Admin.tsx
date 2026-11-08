@@ -1,12 +1,3 @@
-// 관리 — the operator console: reviewing uploads, what Ask remembers, accounts and devices, the term data and its history,
-// make-up days, the course-change window, backups. One page of ten sections; the section is in the address
-// (?section=users), so a link opens it, and a few panels read more of the address (?dialog=create, ?filter=approved, ?tab=
-// teachers) to open on a state worth looking at.
-//
-// Everything on it is made up and kept in this browser. The accounts, devices, revisions, backups and remembered facts are
-// stored under "classes:admin:…"; the uploads and the course-change setting are the app's own shared state, so what is done
-// here shows on the Files page and in the sidebar.
-
 import type { ComponentType } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -72,7 +63,6 @@ const Console = () => {
         </StatRow>
       </Anchor>
 
-      {/* ten tabs do not fit a phone: the row scrolls, and a link into a later section brings its tab into view */}
       <ScrollTabs selected={current.id}>
         <Tabs
           label="관리 영역"

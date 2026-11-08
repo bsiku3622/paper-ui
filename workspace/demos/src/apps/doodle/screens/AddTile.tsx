@@ -1,7 +1,3 @@
-// The "+ 문서" tile at either end of the row of documents. A dashed face on the canvas (Paper's dashed is "add / drop") that
-// is a button by role: Paper's Button cannot be taller than 44, and this tile is a small portrait one, so it is the dashed
-// Paint on a Surface (for its corner), pressed by click or by Enter and Space.
-
 import { Paint, Stack, Surface, Text } from "@studio-baeks/paper-ui";
 
 import { Glyph } from "../../../kit";

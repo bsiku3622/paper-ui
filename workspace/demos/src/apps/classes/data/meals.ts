@@ -1,5 +1,3 @@
-// Cafeteria menus, made up from pools of dishes: the same date always has the same three meals.
-
 import { pick, random, shuffle } from "../../../kit";
 
 export type MealSlot = "breakfast" | "lunch" | "dinner";
@@ -28,7 +26,6 @@ export const mealFor = (key: string): Menu => {
   };
 };
 
-// The meal being served at a minute of the day (a meal is "now" a little before it starts and until it ends).
 export const slotAt = (minute: number): MealSlot | null => {
   if (minute < 8 * 60 + 30) return "breakfast";
   if (minute < 13 * 60 + 10) return "lunch";

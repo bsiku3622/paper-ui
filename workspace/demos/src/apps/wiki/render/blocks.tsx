@@ -1,6 +1,3 @@
-// blocks.tsx — the parts of an article, one Paper face each: a paragraph is Text, a list is Stacks of Texts, a table is rows of
-// Grids, an infobox is a Surface with a picture and rows. Nothing here has a stylesheet.
-
 import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -99,8 +96,6 @@ export const Figure = ({ block, ctx }: { block: Extract<Block, { t: "figure" }>;
 
 const ALIGN: Record<Align, "start" | "center" | "end"> = { start: "start", center: "center", end: "end" };
 
-// A table is a bordered face with one Grid per row. The columns share the width by how much their longest cell says, and a
-// wide table scrolls sideways on a phone instead of squeezing.
 export const TableView = ({ block, ctx }: { block: Extract<Block, { t: "table" }>; ctx: InlineCtx }) => {
   const width = block.align.length;
   const all = [...(block.head ? [block.head] : []), ...block.rows];
@@ -234,7 +229,6 @@ export const Toc = ({ entries }: { entries: readonly TocEntry[] }) => {
           </IconButton>
         </Inline>
         {open ? (
-          // A long list of headings runs down two columns instead of leaving a tall hole beside it.
           entries.length > 14 ? (
             <Grid as="ol" autoFlow="column" rows={Math.ceil(entries.length / 2)} columnGap="xl" rowGap="xs">
               {items}
@@ -256,7 +250,6 @@ export const HeadingRow = ({ block, open, onToggle, section, title, ctx }: {
   block: Extract<Block, { t: "h" }>;
   open: boolean;
   onToggle: () => void;
-  // Where “[편집]” leads; left out where a section cannot be edited (a preview, an old revision).
   section?: boolean;
   title: string;
   ctx: InlineCtx;

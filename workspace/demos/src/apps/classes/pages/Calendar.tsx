@@ -1,7 +1,3 @@
-// 학사일정 — the school's year and your own days on one calendar. A day shows the events that start on it (a long event
-// would fill a whole month); the day you pick opens on the right with everything that touches it. Your own events are
-// yours alone; a school event is added by a manager, or proposed by anyone and allowed or refused by a manager.
-
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -20,8 +16,6 @@ import { EventForm, type Draft, type Purpose } from "./calendar/EventForm";
 const MAX_CHIPS = 3;
 const minuteOf = (time: string) => Number(time.slice(0, 2)) * 60 + Number(time.slice(3, 5));
 
-// ── one day of the grid ──────────────────────────────────────────────────────
-
 const DayCell = ({ date, year, month, events, selected, today, week, onPick }: { date: Date; year: number; month: number; events: CalendarEvent[]; selected: boolean; today: boolean; week: number | null; onPick: () => void }) => {
   const key = toKey(date);
   const starting = events.filter((event) => event.start === key);
@@ -38,7 +32,6 @@ const DayCell = ({ date, year, month, events, selected, today, week, onPick }: {
           )}
           {week !== null && date.getDay() === 0 ? <Box as="span" hideBelow="md"><Text as="span" variant="label" strong={false} ink="tertiary" numeric>{week}주</Text></Box> : null}
         </Inline>
-        {/* a phone's cell is too narrow for titles: it shows one dot per event; from md up the titles are listed */}
         <BelowMd>
           <Inline as="span" gap="xs" wrap>
             {starting.slice(0, 6).map((event) => <Badge key={`${event.id}-${key}`} dot size="xs" variant="soft" accent={event.personal ? "info" : CATEGORY_ACCENT[event.category]} aria-label={event.personal ? "내 일정" : CATEGORY_LABEL[event.category]} />)}
@@ -58,8 +51,6 @@ const DayCell = ({ date, year, month, events, selected, today, week, onPick }: {
   );
 };
 
-// ── the page ─────────────────────────────────────────────────────────────────
-
 export const CalendarPage = () => {
   const { events, personal, setPersonal, shared, setShared, requests, setRequests, session, me, major, clock } = useClasses();
   const toast = useToast();
@@ -68,7 +59,6 @@ export const CalendarPage = () => {
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [selected, setSelected] = useState<string | null>(clock.key);
   const [onlyMine, setOnlyMine] = useState(false);
-  // ?form=personal|shared|request opens the form on arrival, to look at it
   const asked = useSearchParams()[0].get("form");
   const [form, setForm] = useState<Purpose | null>(asked === "personal" || asked === "shared" || asked === "request" ? asked : null);
   const isManager = hasRole(session.role, "manager");

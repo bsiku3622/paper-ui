@@ -1,69 +1,48 @@
-// 시험 — the school's exam timetables, and the part of them that is mine. A timetable lists every exam of the school with its
-// date, minutes and the rooms by section; "mine" are the exams of the subjects the account takes in that term, matched by name
-// (a special course's topic and the "(EC)" of an English class do not change the subject), with the room the section's rule
-// names. Where the rule cannot decide, the school's own words are kept rather than a guess.
-
 import { termData, TERMS, type Section, type SubjectData, type TermKey } from "../data/build";
 import { EXAM_PERIODS, type ExamPeriodRow, type ExamRow } from "../data/generated/exams";
 import { termIndex } from "./index";
 import { koreanName, sectionNumber, weekdayOf } from "./utils";
 
-// ── the timetables ───────────────────────────────────────────────────────────
-
 export const KIND_LABEL: Record<string, string> = { midterm: "중간고사", final: "기말고사" };
 
-// Earliest first; the page opens on the latest.
 export const PERIODS: readonly ExamPeriodRow[] = [...EXAM_PERIODS].sort((a, b) => a.start.localeCompare(b.start));
 
-// "2026-2-final" → the term 2026-2, if this app has it
 const termOf = (period: ExamPeriodRow) => {
   const match = /^(\d{4})-(\d)-/.exec(period.key);
   return match ? TERMS.find((term) => term.year === Number(match[1]) && term.semester === Number(match[2])) : undefined;
 };
 
-// The timetables of a term, earliest first (a term that has none says so).
 export const periodsOf = (term: TermKey): ExamPeriodRow[] =>
   PERIODS.filter((period) => {
     const owner = termOf(period);
     return owner !== undefined && owner.year === term.year && owner.semester === term.semester;
   });
 
-// ── dates ────────────────────────────────────────────────────────────────────
-
 const parts = (key: string) => key.split("-").map(Number) as [number, number, number];
 const dayNumber = (key: string) => {
   const [year, month, day] = parts(key);
   return Date.UTC(year, month - 1, day) / 86_400_000;
 };
-// the days from `from` to `to`; negative when `to` is earlier
 export const daysBetween = (from: string, to: string) => dayNumber(to) - dayNumber(from);
 export const monthDay = (key: string) => `${parts(key)[1]}월 ${parts(key)[2]}일`;
 export const dayLabel = (key: string) => `${monthDay(key)} (${weekdayOf(key)})`;
 export const rangeLabel = (period: ExamPeriodRow) => `${dayLabel(period.start)} – ${dayLabel(period.end)}`;
 
-// ── mine ─────────────────────────────────────────────────────────────────────
-
 type Rule = readonly [room: string, sections: readonly string[]];
 
 export type MyExam = {
   key: string;
-  // the subject as a student knows it: "미적분학2", and for a special course its topic apart
   subject: string;
   topic: string | null;
-  // the account takes the English class of it
   ec: boolean;
   date: string | null;
   start: number | null;
   end: number | null;
   section: string;
   teacher: string;
-  // the room the section's rule names, or null when the rule cannot say
   room: string | null;
-  // the school's rule, in its own words: "형3307(1반) 예6202(2,3반)"
   rules: string;
-  // more than one room is listed (so the rule text is worth showing beside a decided room)
   split: boolean;
-  // Several exams carry the subject's name (a special course with a topic each) and nothing says which is the account's.
   ambiguous: boolean;
   note: string | null;
 };
@@ -71,13 +50,10 @@ export type MyExam = {
 export type MyExams = {
   period: ExamPeriodRow;
   exams: MyExam[];
-  // the subjects of the term that have no exam in this timetable
   missing: string[];
-  // how many subjects the account takes in the term
   subjects: number;
 };
 
-// "융합특강(AI시대의인간기술)" and "융합특강" are the same subject; so are "미적분학2" and "미적분학2(EC)".
 const family = (name: string) => name.replace(/\([^()]*\)/g, "").replace(/\s+/g, "");
 
 const uniqueRules = (rules: readonly Rule[]): Rule[] => {
@@ -90,13 +66,11 @@ const uniqueRules = (rules: readonly Rule[]): Rule[] => {
   });
 };
 
-// 형3307(1반) 예6202(2,3반) — a room alone when the rule has no sections.
 export const ruleText = (rules: readonly Rule[]) =>
   uniqueRules(rules)
     .map(([room, sections]) => (sections.length > 0 ? `${room}(${sections.join(",")}반)` : room))
     .join(" ");
 
-// The room of a section: the only room when there is one for everybody, else the one rule that lists the section's number.
 export const roomFor = (rules: readonly Rule[], section: string): string | null => {
   const all = uniqueRules(rules);
   const first = all[0];
@@ -106,8 +80,6 @@ export const roomFor = (rules: readonly Rule[], section: string): string | null 
   return rooms.size === 1 ? [...rooms][0]! : null;
 };
 
-// Several exams carry one subject's name (Korean and foreign classes, an English one): the account's own is the one that is
-// not the foreign class, is the English one if it takes that, or names its section. What cannot be told apart is all kept.
 const choose = (candidates: readonly ExamRow[], subject: SubjectData, number: string): ExamRow[] => {
   let list = [...candidates];
   for (const keep of [(exam: ExamRow) => exam.ec === subject.isEc, (exam: ExamRow) => !/foreign/i.test(exam.english), (exam: ExamRow) => exam.rooms.some(([, sections]) => sections.includes(number))]) {
@@ -161,11 +133,8 @@ export const myExams = (period: ExamPeriodRow, stuId: string): MyExams => {
   return { period, exams, missing, subjects: taken.length };
 };
 
-// ── the week ─────────────────────────────────────────────────────────────────
-
 export type ExamDay = { date: string; exams: MyExam[] };
 
-// Every day from the first to the last of the period, a day without an exam too: the whole week is what is read.
 export const examDays = (period: ExamPeriodRow, exams: readonly MyExam[]): ExamDay[] => {
   const days: ExamDay[] = [];
   for (let stamp = Date.parse(`${period.start}T00:00:00Z`); stamp <= Date.parse(`${period.end}T00:00:00Z`); stamp += 86_400_000) {
@@ -175,7 +144,6 @@ export const examDays = (period: ExamPeriodRow, exams: readonly MyExam[]): ExamD
   return days;
 };
 
-// Exams of mine that overlap in time: both are kept and both are marked.
 export const examConflicts = (exams: readonly MyExam[]): Set<string> => {
   const keys = new Set<string>();
   exams.forEach((a, index) => {
@@ -190,15 +158,12 @@ export const examConflicts = (exams: readonly MyExam[]): Set<string> => {
   return keys;
 };
 
-// ── how far ──────────────────────────────────────────────────────────────────
-
 export type Countdown =
   | { kind: "ahead"; days: number; exam: MyExam }
   | { kind: "today"; exam: MyExam }
   | { kind: "over"; since: number }
   | { kind: "none" };
 
-// The next of my exams from `now` (a date key and a minute of the day): one still to come today counts as today.
 export const countdown = (exams: readonly MyExam[], now: { key: string; minute: number }): Countdown => {
   const dated = exams.filter((exam): exam is MyExam & { date: string } => exam.date !== null).sort((a, b) => a.date.localeCompare(b.date) || (a.start ?? 0) - (b.start ?? 0));
   const next = dated.find((exam) => exam.date > now.key || (exam.date === now.key && (exam.end ?? 0) > now.minute));

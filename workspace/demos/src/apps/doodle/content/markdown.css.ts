@@ -1,7 +1,3 @@
-// What Paper lacked: a way to set the elements of a rendered document (headings, lists, quotes, code, tables). How a Markdown
-// document reads on its paper, then — every size, weight and colour is a Paper role: the page is Paper's `body` on the `lead`
-// line (the prototype set 14px on a 1.8 line), its title is `display`, its headings `subheading`.
-
 import { globalStyle, style } from "@vanilla-extract/css";
 
 import { codeRule, emphasisRule, lineRule, tokens, typographyRule } from "@studio-baeks/paper-ui/tokens";
@@ -20,7 +16,6 @@ const inRoot = (selector: string) => `${root} ${selector}`;
 globalStyle(inRoot("h1"), { ...typographyRule("display"), ...emphasisRule("semibold"), margin: `0 0 ${gap.xl}` });
 globalStyle(inRoot("h2"), { ...typographyRule("subheading"), margin: `${gap["2xl"]} 0 ${gap.md}` });
 globalStyle(inRoot("h3, h4, h5, h6"), { ...typographyRule("body"), ...emphasisRule("semibold"), margin: `${gap.xl} 0 ${gap.sm}` });
-// A heading that opens a paper, or follows another heading, needs no space above it.
 globalStyle(inRoot("> :first-child"), { marginTop: 0 });
 
 globalStyle(inRoot("p"), { margin: `0 0 ${gap.lg}`, maxWidth: tokens.shape.measure.xs });

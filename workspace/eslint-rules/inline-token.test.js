@@ -56,7 +56,6 @@ test("[guardrails.inline-token.declared-runtime] a runtime value of the moment r
     ['import {measureSpace} from "../../internal/measure"; export const X = ({gap}) => <div style={{marginTop: measureSpace(gap)}} />;', "packages/paper-ui/src/primitives/float/Floating.tsx"],
     ['export const X = ({style}) => <div style={{...style}} />;', "packages/paper-ui/src/atoms/Field.tsx"],
   ]) assert.equal(await hasInline(code, path), false, `${path}: ${code}`);
-  // The same shapes are reported when the value comes from a tracked module.
   assert.equal(await hasInline('import {overlayStyle} from "../../internal/shape"; export const X = (p) => <div style={overlayStyle(p)} />;', "packages/paper-ui/src/primitives/float/Floating.tsx"), true);
 });
 
@@ -70,7 +69,6 @@ test("[guardrails.inline-token.no-token-style] any relative module is tracked: w
     ['import { pick } from "./other"; export const props = () => ({ style: { width: pick() } });', "packages/paper-ui/src/atoms/useProbe.ts"],
     ['import { pick } from "../compositions/other"; export const X = () => <div style={{ width: pick() }} />;', "app/src/pages/Probe.tsx"],
     ['import { DEMO_LAYOUT } from "./layout"; export const X = () => <div style={{ width: DEMO_LAYOUT.frame }} />;', "app/src/pages/demo/Probe.tsx"],
-    // A stylesheet in a directory of token values and maps is not a class list of its own.
     ['import { sheet } from "../styles/space.css"; export const X = () => <div style={{ gap: sheet.gap.md }} />;', "packages/paper-ui/src/atoms/Probe.tsx"],
     ['import { probe } from "../internal/measure.css"; export const X = () => <div style={{ gap: probe.md }} />;', "packages/paper-ui/src/atoms/Probe.tsx"],
   ]) assert.equal(await hasInline(code, path), true, `${path}: ${code}`);
@@ -80,7 +78,6 @@ test("[guardrails.inline-token.no-token-style] any relative module is tracked: w
     ['import { navHeight } from "../site/shell.css"; export const X = ({ value }) => <div style={{ [navHeight]: value }} />;', "app/src/pages/Probe.tsx"],
     ['import { useCarry } from "../../theme/source-carry"; export const X = ({ opener }) => <div style={useCarry(opener)} />;', "packages/paper-ui/src/primitives/a11y/Probe.tsx"],
     ['import { useAnchor } from "../../internal/aria/overlay"; export const X = (p) => <div style={useAnchor(p).style} />;', "packages/paper-ui/src/primitives/float/Probe.tsx"],
-    // A sibling that never reaches `style`, a type, and a package that is not the system.
     ['import { pick } from "./other"; export const X = ({ style }) => <div style={style} data-width={pick()} />;', "packages/paper-ui/src/atoms/Probe.tsx"],
     ['import type { Dim } from "./other"; export const X = (p: { width: Dim }) => <div style={{ width: p.width }} />;', "packages/paper-ui/src/atoms/Probe.tsx"],
     ['import { type Dim } from "./other"; export const X = (p: { width: Dim }) => <div style={{ width: p.width as Dim }} />;', "packages/paper-ui/src/atoms/Probe.tsx"],
@@ -195,11 +192,9 @@ test("[guardrails.inline-token.no-token-style] an app .tsx tracks what the packa
     'import {Swatch} from "./kit"; export const X = ({color}) => <Swatch color={color} />;',
     'export const X = ({color}) => <div style={{background: color}} />;',
   ]) assert.equal(await hasInline(code, app), false, code);
-  // The stylesheets, the tests and the e2e specs are not read.
   const token = 'import {tokens} from "@studio-baeks/paper-ui/tokens"; export const X = () => <div style={{color: tokens.color.ink.primary}} />;';
   assert.equal(await hasInline(token, "app/src/pages/probe.css.ts"), false);
   assert.equal(await hasInline(token, "app/src/pages/probe.test.tsx"), false);
-  // A plain .ts in the app is read like a .tsx.
   const plain = 'import {tokens} from "@studio-baeks/paper-ui/tokens"; export const props = { style: { color: tokens.color.ink.primary } };';
   assert.equal(await hasInline(plain, "app/src/pages/probe.ts"), true);
   assert.equal(await hasInline(plain, "app/src/pages/probe.test.ts"), false);

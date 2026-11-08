@@ -1,6 +1,3 @@
-// store.tsx — what a visitor changes: edits, threads and replies, stars, who is logged in. Everything is kept in localStorage
-// under “wiki:…”; the seeds in data/ never change, so “처음 상태로” is just clearing these keys.
-
 import { createContext, useCallback, useContext, useMemo, type ReactNode } from "react";
 
 import { useStored } from "../../../kit";
@@ -15,7 +12,6 @@ type Save = { title: string; text: string; summary: string; minor?: boolean; kin
 
 export type Wiki = {
   index: WikiIndex;
-  // The name edits and posts are made under: the logged-in name, or “손님”.
   user: string;
   loggedIn: boolean;
   login: (name: string) => void;
@@ -27,7 +23,6 @@ export type Wiki = {
   addThread: (input: { article: string; title: string; text: string }) => Thread;
   reply: (threadId: string, text: string) => void;
   setStatus: (threadId: string, status: Status) => void;
-  // What this browser keeps of the visitor's work, and a way to forget all of it.
   stored: { edits: number; threads: number; replies: number; stars: number };
   reset: () => void;
 };

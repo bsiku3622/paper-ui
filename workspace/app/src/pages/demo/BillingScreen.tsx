@@ -1,7 +1,3 @@
-// Cost and billing: what this month costs and where it comes from, the invoices behind it (one failed, and can be paid again), and
-// the plan and the cards that pay for it. The budget, the plan and the cards are the dashboard's own state, so the overview's meter
-// moves when the budget does.
-
 import { useState, type FormEvent } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
@@ -14,12 +10,9 @@ import {
   type Card, type Column,
 } from "./parts";
 
-// ─── Invoices ────────────────────────────────────────────────────────────────────────────────────────────────────────
-
 type InvoiceStatus = "결제 완료" | "결제 실패" | "집계 중";
 type Invoice = { id: string; at: number; amount: number; status: InvoiceStatus; method: string };
 
-// What a full month costs the company in all: the history is drawn around it.
 const FORECAST = monthlyOf(RESOURCES) + NETWORK_COST + planPrice("business");
 
 const monthKey = (at: number) => {
@@ -36,7 +29,6 @@ const makeInvoices = (): Invoice[] => {
   return [...closed, { id: `INV-${monthKey(Date.UTC(2026, 10, 1))}`, at: Date.UTC(2026, 10, 1), amount: Math.round(FORECAST * monthShare() * 1.1), status: "집계 중", method: "신용카드 •••• 4242" }];
 };
 
-// What an invoice is made of: the month's subtotal split the way the resources split the cost.
 const SHARES: readonly (readonly [string, number])[] = [
   ...KINDS.map((kind) => [kind, RESOURCES.filter((resource) => resource.kind === kind).reduce((sum, resource) => sum + resource.cost, 0)] as const),
   ["네트워크 전송", NETWORK_COST],
@@ -89,8 +81,6 @@ const InvoiceBody = ({ invoice, onPaid }: { invoice: Invoice; onPaid: (id: strin
     </Stack>
   );
 };
-
-// ─── Budget, plan and cards ──────────────────────────────────────────────────────────────────────────────────────────
 
 const BudgetForm = ({ onDone }: { onDone: () => void }) => {
   const { budget, setBudget, notify, record } = useStore();
@@ -157,7 +147,6 @@ const PlanForm = ({ onDone }: { onDone: () => void }) => {
   );
 };
 
-// The usual check that a card number was typed right, so a slip in one digit is caught before anything is sent.
 const luhn = (digits: string) => {
   let sum = 0;
   Array.from(digits).reverse().forEach((digit, index) => {
@@ -189,7 +178,6 @@ const CardForm = ({ onDone }: { onDone: () => void }) => {
     if (errors.holder || errors.number || errors.expires || busy) return;
     setBusy(true);
     await wait(900);
-    // Only the last four digits are kept; the rest of the number is gone with this form.
     const card: Card = { id: `card-${cards.length + 1}-${digits.slice(-4)}`, brand: "신용카드", last4: digits.slice(-4), holder: holder.trim().toUpperCase(), expires, primary: false };
     setCards([...cards, card]);
     record({ code: "billing.card", action: "결제 수단을 추가했습니다", target: `신용카드 •••• ${card.last4}` });
@@ -221,8 +209,6 @@ const CardForm = ({ onDone }: { onDone: () => void }) => {
   );
 };
 
-// ─── The page ────────────────────────────────────────────────────────────────────────────────────────────────────────
-
 type Category = { name: string; amount: number; change: number };
 type Share = { id: string; name: string; amount: number; count: number; top: string };
 
@@ -237,7 +223,6 @@ export const BillingScreen = () => {
   const [removing, setRemoving] = useState<Card | null>(null);
   const at = clock();
 
-  // Billing is about the whole workspace: the scope of the other pages does not cut it.
   const mine = resources;
   const forecast = monthlyOf(mine) + NETWORK_COST + planPrice(plan);
   const spent = forecast * monthShare(at);

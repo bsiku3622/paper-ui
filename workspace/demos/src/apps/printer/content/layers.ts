@@ -1,8 +1,3 @@
-// The G-code viewer has no G-code to read: the mock holds only each file's name and numbers. So the layer a file "has" is
-// drawn from them: a part whose footprint depends on the kind of object in the name (a wall hanger, a body, a collar, a
-// cube), cut at the height of the layer, with perimeters, infill lines clipped to the part and the travel between them. It
-// is a simplified path, not the file's own.
-
 import { random } from "../../../kit";
 
 type Point = readonly [number, number];
@@ -10,11 +5,9 @@ type Poly = readonly Point[];
 
 export type Part = {
   name: string;
-  // The outline at the first layer, and how much it narrows towards the top.
   outline: { kind: "rrect"; w: number; h: number; r: number } | { kind: "ellipse"; rx: number; ry: number };
   holes: readonly { x: number; y: number; r: number }[];
   taper: number;
-  // From this share of the height up the part is smaller: a step.
   step: { at: number; k: number } | null;
   centre: Point;
 };
@@ -34,7 +27,6 @@ export const partFor = (name: string): Part => {
   if (has("Benchy")) return { name, outline: { kind: "ellipse", rx: 30, ry: 11 }, holes: [], taper: 0.55, step: { at: 0.45, k: 0.8 }, centre: [115, 115] };
   if (has("벽 고리")) return { name, outline: { kind: "rrect", w: 110, h: 34, r: 8 }, holes: [{ x: -36, y: 0, r: 3.5 }, { x: 36, y: 0, r: 3.5 }], taper: 0.04, step: { at: 0.7, k: 0.92 }, centre: [115, 115] };
   if (has("받침")) return { name, outline: { kind: "rrect", w: 78, h: 58, r: 6 }, holes: [{ x: -12, y: 6, r: 14 }], taper: 0.12, step: { at: 0.6, k: 0.85 }, centre };
-  // A body: a plate with screw holes at the corners and a slot in the middle, narrowing a little towards the top.
   const w = 84 + Math.round(r() * 14);
   const h = 66 + Math.round(r() * 12);
   const inset = 8;
@@ -93,7 +85,6 @@ const holeAt = (part: Part, hole: Part["holes"][number], grow: number, steps: nu
 
 const path = (poly: Poly) => `M${poly.map(([x, y]) => `${x.toFixed(2)} ${(BED - y).toFixed(2)}`).join("L")}Z`;
 
-// Where the line through `origin` along `dir` crosses a polygon: the parameters, sorted.
 const crossings = (poly: Poly, origin: Point, dir: Point): number[] => {
   const out: number[] = [];
   for (let i = 0; i < poly.length; i++) {
@@ -139,7 +130,6 @@ export type Layer = {
   infill: string;
   solid: string;
   travel: string;
-  // mm of filament-bearing line, for the readout.
   length: number;
   layer: number;
   z: number;
@@ -194,7 +184,6 @@ export const buildLayer = (part: Part, layer: number, total: number, layerHeight
     }
     flip = !flip;
   }
-  // The nozzle goes from the outer wall to each hole's wall and to the first infill line.
   let at: Point | null = null;
   for (const loop of [...outerLoops, ...innerLoops.slice(0, 1)]) {
     const start = loop[0];

@@ -1,7 +1,3 @@
-// The document and everything that happens to it over time: pages being added and worked through one at a time, settings that
-// redraw a page for a moment, a search for printed lines, a PDF being made. Pages, their order and their settings are kept
-// with useStored; what is only going on right now (progress, a search, a save) is not.
-
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -13,7 +9,6 @@ import type { Doc, Fit, Page, Settings } from "../model/types";
 import { paths } from "../paths";
 
 const KEY = "gridphoto:document:v2";
-// A PDF this long does not fit in a phone's memory.
 const PDF_PAGES_LIMIT = 16;
 
 export type Saving = { kind: "pdf" | "image"; done: number; total: number };
@@ -25,11 +20,8 @@ type Api = {
   current: Page | null;
   ready: Page[];
   busy: boolean;
-  // 0 to 1 for each page being worked through.
   progress: Record<string, number>;
-  // A page is being drawn again after a setting changed.
   rendering: boolean;
-  // The page whose sheet is being searched for printed lines.
   searching: string | null;
   saving: Saving | null;
   problem: string | null;
@@ -75,7 +67,6 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
   const [problem, setProblem] = useState<string | null>(null);
   const timers = useRef<{ render?: number; export?: number }>({});
 
-  // A page caught halfway is simply looked at again next time.
   useEffect(() => {
     setDoc((now) => (now.pages.some((page) => page.status === "working") ? { ...now, pages: now.pages.map((page) => (page.status === "working" ? { ...page, status: "queued", stepIndex: 0 } : page)) } : now));
     setLoaded(true);
@@ -88,13 +79,11 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
   const waiting = pages.find((page) => page.status === "queued");
   const busy = pages.some((page) => page.status === "queued" || page.status === "working");
 
-  // One photo at a time, as the engine does it: each needs its full pixels while it is looked at.
   useEffect(() => {
     if (!loaded || working || !waiting) return;
     setDoc((now) => (now.pages.some((page) => page.status === "working") ? now : update(now, waiting.id, (page) => (page.status === "queued" ? { ...page, status: "working", stepIndex: 0 } : page))));
   }, [loaded, working, waiting, setDoc]);
 
-  // Walk the working page through its steps.
   const workingId = working?.id;
   const workingStep = working?.stepIndex;
   useEffect(() => {
@@ -124,7 +113,6 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
     };
   }, [loaded, workingId, workingStep, setDoc]);
 
-  // A page drawn again: it dims for a moment, as it does while the worker renders.
   const redraw = useCallback(() => {
     setRendering(true);
     window.clearTimeout(timers.current.render);
@@ -137,8 +125,6 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
     },
     [setDoc],
   );
-
-  // ── Adding ──
 
   const addItems = useCallback(
     (items: NewPhoto[]) => {
@@ -168,8 +154,6 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
     [addItems],
   );
 
-  // ── Settings ──
-
   const patchSettings = useCallback(
     (id: string, patch: Partial<Settings>) => {
       setDoc((now) => update(now, id, (page) => ({ ...page, settings: { ...page.settings, ...patch } })));
@@ -178,7 +162,6 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
     [redraw, setDoc],
   );
 
-  // Turning alignment on looks for printed lines first if this page has not been searched yet.
   const setAlign = useCallback(
     (id: string, value: boolean) => {
       const page = docRef.current.pages.find((item) => item.id === id);
@@ -203,13 +186,11 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
     (id: string, next: Fit) => {
       const page = docRef.current.pages.find((item) => item.id === id);
       if (!page) return;
-      // Someone who has just marked out a sheet wants it to look like a scan.
       const wasWholePhoto = page.fit?.origin === "none";
       const wanted = page.settings.align;
       const lines = printedOn(page);
       setDoc((now) => update(now, id, (item) => ({ ...item, fit: next, aligned: null, filled: 0, settings: { ...item.settings, align: false, filter: wasWholePhoto && next.kind === "sheet" ? "scan" : item.settings.filter } })));
       redraw();
-      // New corners are a new outline for the printed lines to land on.
       if (next.kind === "sheet" && lines) {
         window.setTimeout(() => {
           setDoc((now) => update(now, id, (item) => (item.fit === null || item.fit.origin !== "manual" || item.fit.quad !== next.quad ? item : { ...item, aligned: alignedFit(item, lines, next.quad), settings: { ...item.settings, align: wanted } })));
@@ -218,8 +199,6 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
     },
     [redraw, setDoc],
   );
-
-  // ── Order ──
 
   const movePage = useCallback(
     (id: string, offset: number) => {
@@ -273,7 +252,6 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
     navigate(paths.home);
   }, [navigate, setDoc]);
 
-  // The sample replaces what is open, so it can be taken back.
   const loadSample = useCallback(() => {
     const before = docRef.current;
     setProblem(null);
@@ -294,8 +272,6 @@ export const DocumentProvider = ({ children }: { children: ReactNode }) => {
 
   const setFormat = useCallback((format: Doc["format"]) => setDoc((now) => ({ ...now, format })), [setDoc]);
   const setShowGrid = useCallback((value: boolean) => setDoc((now) => ({ ...now, showGrid: value })), [setDoc]);
-
-  // ── Saving. Nothing is written anywhere: a save is a bar that fills, and a word at the end. ──
 
   const run = useCallback((kind: Saving["kind"], total: number, ms: number, finishWith: (done: boolean) => void, failAt?: number) => {
     const started = performance.now();

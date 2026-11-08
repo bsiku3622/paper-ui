@@ -2,14 +2,9 @@ import type { ComponentPropsWithRef, ComponentPropsWithoutRef, ElementType, Reac
 
 declare const polymorphic: unique symbol;
 
-// A primitive's props: its own, `as`, and the native props of the element `as` names, minus every name
-// the primitive's own props take. A native `align` or `width` never meets the primitive's own.
 export type PolymorphicProps<Own, As extends ElementType> = Own & { as?: As } &
   Omit<TargetProps<As>, keyof Own | "as"> & { ref?: TargetRef<As> };
 
-// A polymorphic primitive names its own props and its default tag in a phantom property. `as={Stack}` reads
-// them from there: a generic component's own signature only gives the open props of `ElementType`, which
-// would let a misspelt prop through.
 export type PolymorphicComponent<Own, Default extends ElementType> = {
   <As extends ElementType = Default>(props: PolymorphicProps<Own, As>): ReactElement;
   readonly [polymorphic]?: { own: Own; tag: Default };

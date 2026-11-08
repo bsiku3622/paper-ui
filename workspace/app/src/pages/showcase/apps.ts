@@ -1,6 +1,3 @@
-// The apps /demo shows. Arcfield is the site's own product demo (pages/demo, at /demo/arcfield); the other eight mirror the owner's
-// own apps with invented data and are a small app of their own (workspace/demos), served next to the site under /demos/.
-
 import type { Bilingual } from "../../site/locale";
 
 export const ARCFIELD = "/demo/arcfield";
@@ -23,5 +20,4 @@ export const SHOWCASE_APPS: readonly ShowcaseApp[] = [
 
 export const appOf = (id: string | null): ShowcaseApp => SHOWCASE_APPS.find((app) => app.id === id) ?? SHOWCASE_APPS[0]!;
 
-// The tab of the showcase that shows an app: the page with the app in its address, so the address can be shared.
 export const showcaseTo = (app: ShowcaseApp): string => (app.id === SHOWCASE_APPS[0]!.id ? "/demo" : `/demo?app=${app.id}`);

@@ -19,7 +19,6 @@ const ROLE_COLUMNS = [{ label: "Role", track: "minmax(0, 1fr)" }, { label: "Rule
 
 const n = (dp: number, unit = "dp") => `${dp} ${unit}`;
 
-// What each stroke is drawn as; the icon stroke is SVG units, not a line.
 const STROKE_NOTES: Record<keyof typeof SHAPE_SOURCE.stroke, Bilingual | undefined> = { border: undefined, emphasis: undefined, icon: { ko: "24 artboard의 SVG 단위", en: "SVG units of the 24 artboard" } };
 const STROKE_SPECIMEN: Record<keyof typeof SHAPE_SOURCE.stroke, React.ReactNode> = {
   border: <div className={s.strokeLine.border} />,
@@ -237,8 +236,6 @@ const RECIPES: { name: string; note: Bilingual; render: (size: ControlSize, t: T
   { name: "Spinner", note: { ko: "지름", en: "diameter" }, render: (size) => <Spinner size={size} />, caption: (size, t) => <>{t(W.diameter)} <C value={r.spinner.size[size]} /></> },
 ];
 
-// One size across what a control is made of, read at a glance. The height, the button's inset, the corner and the icon are Shape's
-// roles, the text is Typography's control preset, and the marks follow that text rather than the height.
 const SIZE_HEADS: Bilingual<readonly string[]> = {
   ko: ["높이", "버튼 좌우", "모서리", "글자", "아이콘", "체크 · 라디오"],
   en: ["Height", "Button sides", "Corner", "Text", "Icon", "Check · radio"],

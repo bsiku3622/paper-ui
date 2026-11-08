@@ -1,6 +1,3 @@
-// 프린터 콘솔: Mainsail's pages for a Klipper printer, drawn with Paper. The printer here is a mock that starts in the
-// middle of a print (at 95%) and keeps going; nothing reaches a real machine.
-
 import { Route, Routes } from "react-router-dom";
 
 import { Console } from "./pages/Console";

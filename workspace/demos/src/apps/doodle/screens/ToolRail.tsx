@@ -1,9 +1,3 @@
-// The tool rail on the canvas's left edge: select, hand, text, image, video, pen — and, below a rule, help.
-//
-// The corners are concentric. A control's corner is Paper's `radius.control.sm`; the rail is a Surface whose radius is the
-// control's plus the rail's padding (radius md = control sm + padding sm), so the gap between the chosen tool's face and the
-// rail's edge is the same all the way round. It floats over the canvas at Paper's floating depth.
-
 import { Divider, Floating, IconButton, Inline, SelectableGroup, Stack, Surface, Text } from "@studio-baeks/paper-ui";
 
 import { Glyph, type GlyphName } from "../../../kit";

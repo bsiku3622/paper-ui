@@ -1,10 +1,3 @@
-// The Overview's boards, one for every Atom that has a size. On the start, every value of the Atom's main axis down the side and
-// every size along the top; on the end, the controls that move the rest, the state it is drawn in first. A drawing is the Atom's
-// own Playground subject (registry/entries), so a board shows what the Atom's page shows and follows its props when they change.
-// A state a pointer or a key would hold is drawn by its preview (tokens/state.ts), and disabled by the prop; with every state laid
-// out, the sheet repeats once per state. Every drawing is live: the pointer and the keyboard reach it as on a screen, a mark turns
-// on and off, and each control is named by its place in the sheet.
-
 import { Fragment, cloneElement, useState, type ReactElement } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -20,7 +13,6 @@ import { entryBySlug, initialState, normalized, type Entry, type State } from ".
 import { flag, pick } from "./registry/schema";
 import * as b from "./boards.css";
 
-// The states a board can draw: at rest, the three a preview shows, and disabled, which is the prop.
 export type BoardState = "rest" | PreviewState | "disabled";
 export const STATE_LABELS: Record<BoardState, Bilingual> = {
   rest: { ko: "기본", en: "Rest" },
@@ -47,37 +39,25 @@ const BOARD_WORDS = {
   },
 } as const;
 
-// The period buttons of the segment drawing.
 const PERIODS: Bilingual<readonly [string, string, string]> = { ko: ["1일", "7일", "1달"], en: ["1 day", "7 days", "1 month"] };
 
 type Row = { key: string; label: string; isDefault?: boolean; state: State };
-// One drawing's props, the preview it is drawn in, and its name: the board, the row and the size.
 type Cell = { state: State; preview?: PreviewState; name: string; locale: SiteLocale };
 type BoardSpec = {
   slug: string;
-  // The axis down the side: one of the entry's selects or switches, or rows of its own when one row takes more than one prop.
   rows: string | readonly Row[];
-  // The states this Atom has, in the order of the docs' state table. A mark has no hover; a Badge and a Spinner have none.
   states: readonly BoardState[];
-  // The entry's controls the panel offers, by key.
   axes: readonly string[];
-  // What every drawing holds besides: a label left out, a shorter textarea.
   base?: State;
-  // A width for a drawing that fills what it is given.
   width?: string;
-  // The subject's root takes the cell's name as its own: an input with no words of its own to be named by.
   named?: true;
-  // A drawing of its own: a mark the pointer turns on and off, or an Atom whose state lives on one of its parts.
   draw?: (cell: Cell) => ReactElement;
-  // The drawing puts the preview on the part that holds the state, instead of the cell holding it for the whole drawing.
   previewsParts?: true;
-  // The sizes run down the side and the axis along the top: an Atom too wide for five of it side by side.
   sizesDown?: true;
 };
 
 const INTERACTIVE: readonly BoardState[] = ["rest", "hover", "active", "focus", "disabled"];
 const INPUT: readonly BoardState[] = ["rest", "hover", "focus", "disabled"];
-// A mark answers no hover: its label and its row do.
 const MARK: readonly BoardState[] = ["rest", "active", "focus", "disabled"];
 const MARK_ROWS = (indeterminate: boolean): readonly Row[] => [
   { key: "off", label: "off", state: { checked: false } },
@@ -85,7 +65,6 @@ const MARK_ROWS = (indeterminate: boolean): readonly Row[] => [
   ...(indeterminate ? [{ key: "indeterminate", label: "indeterminate", state: { checked: false, indeterminate: true } }] : []),
 ];
 
-// The page's subject holds a mark to its value; a drawing here starts from the row's value and then answers the pointer.
 const markProps = ({ state, name }: Cell) => ({
   defaultChecked: flag(state, "checked"),
   status: pick<ChoiceStatus>(state, "status"),
@@ -97,8 +76,6 @@ const drawCheckbox = (cell: Cell) => <Checkbox {...markProps(cell)} indeterminat
 const drawRadio = (cell: Cell) => <Radio {...markProps(cell)} />;
 const drawSwitch = (cell: Cell) => <Switch {...markProps(cell)} />;
 
-// A segment control's states live on its items: the pointer is over the item that is not chosen, and the keyboard is on the chosen
-// one. A preview of the whole control would light every item at once.
 const drawSegments = ({ state, preview, name, locale }: Cell) => {
   const [day, week, month] = inLocale(PERIODS, locale);
   const on = (item: "pointer" | "keyboard") => (preview === "hover" && item === "pointer") || (preview === "focus" && item === "keyboard") ? previewAttributes(preview) : {};
@@ -134,7 +111,6 @@ const rowsOf = (entry: Entry, board: BoardSpec): readonly Row[] =>
       })
     : board.rows;
 
-// The head of a size: its name, and the height it stands to.
 const SizeHead = ({ size, className }: { size: ControlSize; className: string }) => (
   <span className={className}>
     <Text variant="caption" family="mono" ink="secondary">{size}</Text>
@@ -142,7 +118,6 @@ const SizeHead = ({ size, className }: { size: ControlSize; className: string })
   </span>
 );
 
-// The head of a value of the axis: its name, and under it whether it is the default.
 const ValueHead = ({ row, className }: { row: Row; className: string }) => (
   <span className={className}>
     <Text variant="caption" family="mono" ink="secondary">{row.label}</Text>
@@ -172,7 +147,6 @@ const AtomBoard = ({ entry, board }: { entry: Entry; board: BoardSpec }) => {
     const name = `${entry.name} ${row.key} ${size}${all && group ? ` ${inLocale(STATE_LABELS[group], locale)}` : ""}`;
     const subject = board.draw ? board.draw({ state: held, preview, name, locale }) : entry.subject(held, harness, locale);
     const drawing = board.named ? cloneElement(subject as ReactElement<{ "aria-label"?: string }>, { "aria-label": name }) : subject;
-    // A pointer that presses is over what it presses, so a press is drawn with the hover under it.
     const previewed = preview === "active" ? previewAttributes("hover", "active") : preview ? previewAttributes(preview) : {};
     return (
       <div className={b.cell} data-cell={`${group ?? "rest"} ${row.key} ${size}`} {...(board.previewsParts ? {} : previewed)}>
@@ -197,8 +171,6 @@ const AtomBoard = ({ entry, board }: { entry: Entry; board: BoardSpec }) => {
           {(groups.length > 0 ? groups : [undefined]).map((group) => (
             <Fragment key={group ?? "rest"}>
               {all && group ? <Text className={b.groupHead} variant="label" ink="secondary">{inLocale(STATE_LABELS[group], locale)}</Text> : null}
-              {/* One order of children serves both ways round: the sizes' heads, then each value's head and its drawings. Sizes along
-                  the top fill it row by row; sizes down the side fill it column by column. */}
               <div className={joinClass(b.matrix, board.sizesDown ? b.sizesDown : b.sizesAcross)} data-board-sheet={group ?? "rest"}>
                 <span />
                 {CONTROL_SIZES.map((size) => <SizeHead key={size} size={size} className={board.sizesDown ? b.rowHead : b.columnHead} />)}
@@ -243,7 +215,6 @@ export const Boards = () => {
     {BOARDS.map((board) => {
       const entry = entryBySlug(board.slug);
       if (!entry) throw new Error(`The Overview has a board for ${board.slug}, which is not in the registry.`);
-      // A board starts again in the other language: the words its drawings hold come from the state it started with.
       return <AtomBoard key={`${board.slug}:${locale}`} entry={entry} board={board} />;
     })}
   </>

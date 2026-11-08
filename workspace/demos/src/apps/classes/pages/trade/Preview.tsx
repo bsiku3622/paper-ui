@@ -1,9 +1,3 @@
-// The timetable of the person being planned, in a week grid. With nothing chosen it is the timetable they have; with a
-// combination chosen (or the first one, while something is left to "자동") it is the timetable after it. A cell wears a
-// colour only when it means something: moved, coming in, in the way. Pointing at a subject in the lists lights its cells.
-//
-// The card is sticky: the lists beside it are long, and the grid they change stays in the window next to them.
-
 import { useMemo } from "react";
 
 import { Badge, Button, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";
@@ -32,7 +26,6 @@ export const PreviewCard = ({ model }: { model: TradeModel }) => {
     const subjects = here.map((section) => section.subject);
     const tone = subjects.some((subject) => planned.conflicting.has(subject)) ? "warning" : subjects.some((subject) => planned.moved.has(subject)) ? "info" : subjects.some((subject) => planned.entering.has(subject)) ? "success" : "plain";
     const lit = highlight !== null && subjects.includes(highlight);
-    // Two subjects in one hour are named one under the other; one subject has its section under its name.
     const [one, two] = subjects.map((subject) => koreanName(subject));
     return { text: one, sub: two ?? `${sectionNumber(first.section)}분반`, tone: lit ? "strong" : tone };
   };

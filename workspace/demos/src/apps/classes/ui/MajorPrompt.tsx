@@ -1,8 +1,3 @@
-// The question every student who has not answered is asked once: which 심화필수 전공 트랙? The answer is used by the
-// calendar ("내 학년·전공 것만") and by Ask. Nothing is chosen for you: the track the course history points to only wears a
-// "추천" mark. "아직 정하지 않았어요" is an answer too and is not asked again; "나중에" (the close button, the scrim and Esc
-// do the same) puts the question off for the day only. Open it by hand with ?prompt=major.
-
 import { useMemo, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 
@@ -23,11 +18,9 @@ export const MajorPrompt = () => {
   const [snoozed, setSnoozed] = useStored<string>("classes:major-snoozed", "");
   const [choice, setChoice] = useState<string | null>(null);
   const forced = params.get("prompt") === "major";
-  // the settings page has the same question in it, so the prompt does not sit on top of it
   const onSettings = useLocation().pathname.startsWith(path("/about"));
   const open = forced || (!major.answered && snoozed !== clock.key && !onSettings);
 
-  // The track most of this term's courses belong to, with the courses it came from.
   const suggestion = useMemo(() => {
     const entry = termIndex(data).students.get(me.stuId);
     const by = new Map<string, string[]>();

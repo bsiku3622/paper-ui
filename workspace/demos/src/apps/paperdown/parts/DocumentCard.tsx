@@ -1,6 +1,3 @@
-// A document of the account on the home: a small page with its title on it, the title and the day it was last changed under
-// it, and a button that takes it away.
-
 import { IconButton, Inline, Stack, Surface, Text } from "@studio-baeks/paper-ui";
 
 import { Glyph, SurfaceLink, formatDate, useFace } from "../../../kit";

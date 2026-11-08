@@ -1,9 +1,3 @@
-// Sidebar — an app's navigation: the first face of the window, a raised card, the page you are on in solid ink.
-// The app says only what is in it.
-//
-// An item with `to` is a route and is current when the location matches it (`end` for an exact match); an item with
-// `onSelect` is a button. `current` overrides both, for an app that keeps its own place.
-
 import type { ReactNode } from "react";
 import { Link as RouterLink, matchPath, useLocation } from "react-router-dom";
 
@@ -16,27 +10,22 @@ export type NavItem = {
   id: string;
   label: string;
   glyph?: GlyphName;
-  // Drawn in place of the glyph: a cover, an avatar, a colour dot.
   art?: ReactNode;
   to?: string;
   end?: boolean;
   onSelect?: () => void;
   count?: number | string;
-  // Anything else at the end of the row (a status dot, a Badge, a shortcut).
   badge?: ReactNode;
 };
 
 export type NavSection = { label?: string; action?: ReactNode; items: readonly NavItem[] };
 
 export type SidebarProps = {
-  // What the navigation is called, for assistive technology ("관리 메뉴").
   label: string;
   brand?: ReactNode;
-  // Under the brand: a workspace switcher, a search.
   top?: ReactNode;
   sections: readonly NavSection[];
   current?: string;
-  // At the bottom: items (설정, 도움말) and anything else (an account card, a storage meter).
   footerItems?: readonly NavItem[];
   footer?: ReactNode;
 };
@@ -110,7 +99,6 @@ export const Sidebar = ({ label, brand, top, sections, current, footerItems, foo
   return <Surface as="aside" elevation="sticky" height="viewport" overflowY="auto" hideBelow="md" top="lg" {...face} radius="lg" padding="md">{content}</Surface>;
 };
 
-// The app's name at the top of the sidebar, with a mark that leads home.
 export const SidebarBrand = ({ name, glyph = "sparkles", to, sub }: { name: string; glyph?: GlyphName; to: string; sub?: string }) => (
   <Inline gap="sm" align="center" paddingX="md" paddingY="xs">
     <IconButton as={RouterLink} to={to} size="xs" aria-label={`${name} 첫 화면`}><Glyph name={glyph} /></IconButton>
@@ -121,5 +109,4 @@ export const SidebarBrand = ({ name, glyph = "sparkles", to, sub }: { name: stri
   </Inline>
 );
 
-// A block at the foot of the sidebar: an account, a quota, what is playing. Inside the card it is a well.
 export const SidebarCard = ({ children }: { children: ReactNode }) => <Surface fill="sunken" radius="md" padding="md">{children}</Surface>;

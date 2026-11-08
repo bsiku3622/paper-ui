@@ -1,8 +1,3 @@
-// The roadmap: the one block that stays on top of 자몽 whichever department is open. It answers "can I graduate?" first — what is
-// still missing — then shows where each term stands (credits, courses, and an empty place to type a course into) and what the
-// requirements ask: credits by strand against REQUIREMENTS, and 시수, which only the person knows. Every number is what was
-// written on the cards. A department's track is not judged here: the rules differ too much for a sum to be trusted.
-
 import { useMemo, useState } from "react";
 
 import { Badge, Box, Button, Divider, Field, FormField, Grid, Inline, Stack, Text } from "@studio-baeks/paper-ui";
@@ -11,8 +6,6 @@ import { Glyph, Meter, Stat, StatRow } from "../../../../kit";
 import type { Course } from "../../data/catalog";
 import { displayName, HOUR_LABEL, HOUR_REQUIREMENTS, REGULAR_TERMS, searchCourses, slotLabel, TERM_CREDITS, type Hours, type TermKey, type TermSummary, type ZamongMap, type ZamongSummary } from "../../lib/curriculum";
 import { Card, Hint } from "../../ui/parts";
-
-// ── the conclusion ───────────────────────────────────────────────────────────
 
 const conclusion = (summary: ZamongSummary): { title: string; text: string } => {
   if (summary.recorded === 0) return { title: "아직 기록한 과목이 없습니다", text: "학과 판의 카드에서 학기를 고르면 들은 과목으로 잡히고, 졸업 요건이 이 자리에서 바로 계산됩니다." };
@@ -48,8 +41,6 @@ const Conclusion = ({ summary }: { summary: ZamongSummary }) => {
   );
 };
 
-// ── the terms ────────────────────────────────────────────────────────────────
-
 type TermActions = {
   placed: ZamongMap;
   onOpenTerm: (term: TermKey) => void;
@@ -63,7 +54,6 @@ const creditsLine = (term: TermSummary) => {
   return `${term.credits}학점${term.gpa !== null ? ` · 평점 ${term.gpa.toFixed(2)}` : ""}${range}`;
 };
 
-// A row of the term list: the term (it opens its panel), what it holds, and an empty place that takes a course by name.
 const TermLine = ({ term, now, divider, placed, onOpenTerm, onOpenCourse, onPlace }: TermActions & { term: TermSummary; now: boolean; divider: boolean }) => {
   const [query, setQuery] = useState("");
   const matches = useMemo(() => searchCourses(query), [query]);
@@ -137,7 +127,6 @@ const TermLine = ({ term, now, divider, placed, onOpenTerm, onOpenCourse, onPlac
   );
 };
 
-// The English classes, whichever term they were in — the EC requirement counts these.
 const EcLine = ({ summary, onOpenCourse }: { summary: ZamongSummary; onOpenCourse: (name: string) => void }) => (
   <Stack as="li" gap="md">
     <Divider />
@@ -157,7 +146,6 @@ const EcLine = ({ summary, onOpenCourse }: { summary: ZamongSummary; onOpenCours
 );
 
 const TermList = ({ summary, nowSlot, ...actions }: TermActions & { summary: ZamongSummary; nowSlot: TermKey | null }) => {
-  // The 7th and 8th places are for a leave of absence: they show only once they hold something.
   const terms = summary.terms.filter((term) => term.key === "S" || Number(term.key) <= REGULAR_TERMS || term.courses.length > 0);
   return (
     <Stack gap="md">
@@ -171,8 +159,6 @@ const TermList = ({ summary, nowSlot, ...actions }: TermActions & { summary: Zam
     </Stack>
   );
 };
-
-// ── the requirements ─────────────────────────────────────────────────────────
 
 const Requirements = ({ summary }: { summary: ZamongSummary }) => (
   <Stack gap="md">
@@ -215,12 +201,9 @@ const HoursBlock = ({ summary, hours, onHour }: { summary: ZamongSummary; hours:
   );
 };
 
-// ── the block ────────────────────────────────────────────────────────────────
-
 export type RoadmapProps = TermActions & {
   summary: ZamongSummary;
   hours: Hours;
-  // The semester the account is in now, if it is one of the places.
   nowSlot: TermKey | null;
   onHour: (key: keyof Hours, value: number) => void;
 };

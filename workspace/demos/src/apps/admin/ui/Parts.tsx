@@ -1,5 +1,3 @@
-// Small parts every service page draws the same way: a spinner, an error line, a note, a list of facts.
-
 import type { ReactNode } from "react";
 
 import { Grid, Inline, Spinner, Stack, Surface, Text } from "@studio-baeks/paper-ui";
@@ -13,7 +11,6 @@ export const Loading = ({ label }: { label: string }) => (
   </Grid>
 );
 
-// What went wrong and what to try, on a sunken well; `action` is the one button that tries again.
 export const Alert = ({ children, action }: { children: ReactNode; action?: ReactNode }) => (
   <Surface fill="sunken" radius="md" padding="md">
     <Inline justify="between" align="center" gap="md" wrap>
@@ -26,7 +23,6 @@ export const Alert = ({ children, action }: { children: ReactNode; action?: Reac
   </Surface>
 );
 
-// A line that says what just happened or what is going on.
 export const Note = ({ children, glyph = "info", live = true }: { children: ReactNode; glyph?: GlyphName; live?: boolean }) => (
   <Inline gap="sm" align="start">
     <Glyph name={glyph} ink="secondary" />
@@ -42,7 +38,6 @@ export const Mono = ({ children, ink, truncate }: { children: ReactNode; ink?: I
   <Text as="span" variant="caption" family="mono" ink={ink} truncate={truncate}>{children}</Text>
 );
 
-// Label and value pairs, the label small and quiet on the left. A value may be text or any part.
 export const Facts = ({ items }: { items: readonly { label: string; value: ReactNode }[] }) => (
   <Stack as="ul" gap="md">
     {items.map((item) => (

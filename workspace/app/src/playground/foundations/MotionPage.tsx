@@ -13,8 +13,6 @@ const role = tokens.motion.role;
 const easingName = (value: string) => Object.entries(EASING).find(([, curve]) => curve === value)?.[0] ?? value;
 const timing = (spec: { duration: string; easing: string }) => `${spec.duration} ${easingName(spec.easing)}`;
 
-// A surface entering or leaving through the presence recipe: data-presence picks the role. The exit specimen
-// starts open, so it plays its enter once on load; the enter specimen waits until it is opened.
 type Phase = "idle" | "entering" | "exiting";
 const Presence = ({ mode }: { mode: "enter" | "exit" }) => {
   const t = useT();
@@ -39,7 +37,6 @@ const Presence = ({ mode }: { mode: "enter" | "exit" }) => {
   );
 };
 
-// A Surface that swaps between the ambient theme and its inverse: the Switch inside changes in the same frame.
 const ThemeSwap = () => {
   const t = useT();
   const [inverse, setInverse] = useState(false);
@@ -56,7 +53,6 @@ const ThemeSwap = () => {
   );
 };
 
-// What first comes onto a screen: three tiles that come in a step apart, played again on each press.
 const REVEAL_TILES: Bilingual<readonly string[]> = { ko: ["제목", "본문", "카드"], en: ["Title", "Body", "Card"] };
 const RevealSpecimen = () => {
   const t = useT();
@@ -85,7 +81,6 @@ const SPECIMENS: Record<MotionRole, (t: ReturnType<typeof useT>) => ReactNode> =
   theme: () => <ThemeSwap />,
 };
 
-// The roles a component transitions with; reveal is the app's, for what first comes onto a screen.
 const COMPONENT_ROLES = MOTION_ROLES.filter((name) => name !== "reveal");
 const REVEAL_RESULT: Bilingual = {
   ko: `${timing(role.reveal)} · ${px(role.reveal.offset)} 아래에서 · 흐림 ${px(role.reveal.blur)}`,
@@ -93,7 +88,6 @@ const REVEAL_RESULT: Bilingual = {
 };
 const APP_SCREENS: Bilingual = { ko: "앱 화면", en: "App screens" };
 
-// The roles' presence recipe, as the two timings it joins.
 const PRESENCE_RESULT = `entering → enter ${timing(role.enter)} · exiting → exit ${timing(role.exit)}`;
 const PRESENCE_USERS = [...new Set([...MOTION_CONSUMERS.enter, ...MOTION_CONSUMERS.exit])].join(" · ");
 

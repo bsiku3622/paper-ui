@@ -1,7 +1,3 @@
-// The config files and their editor. A root (config, config_examples, logs) is a table of files like the G-code files', and a
-// file opens in an editor: a Paper Textarea in the mono face, saved with Cmd/Ctrl+S, with the Tab key and wrapping the user set
-// in the settings, and a warning before unsaved changes are lost. What is saved is kept in the browser (printer:config).
-
 import { useMemo, useRef, useState } from "react";
 
 import { Badge, Box, Button, Divider, Field, FormField, IconButton, Inline, Select, Stack, Switch, Text } from "@studio-baeks/paper-ui";
