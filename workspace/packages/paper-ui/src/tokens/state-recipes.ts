@@ -7,10 +7,10 @@
 import { COLOR, OPACITY_VALUES, STATUSES, SYSTEM_COLORS } from "./colors";
 import { itemProfile, outlinedControlProfile } from "./color-recipes";
 import { buildVarTree } from "./helpers";
-import { MOTION } from "./motion";
+import { MOTION } from "./motion-recipes";
 import { SHAPE } from "./shape";
 import { strokeRing } from "./shape-recipes";
-import { ENABLED_SELECTOR, SELECTED_SELECTOR, VALUE_ATTRIBUTE, stateSelector } from "./state";
+import { ENABLED_SELECTOR, SELECTED_SELECTOR, VALUE_ATTRIBUTE, previewSelector, stateSelector } from "./state";
 import { TYPOGRAPHY } from "./typography";
 
 // The tint a state lays over an element's own face. A registered property (styles/states.css.ts), so it
@@ -24,15 +24,16 @@ const FORCED = "(forced-colors: active)";
 const HOVER = "(hover: hover)";
 const withTint = (tint: string) => ({ vars: { [STATE_TINT_PROPERTY]: tint } });
 
-const focusVisible = `&${stateSelector("focusVisible")}`;
+// Each state also answers to its preview (tokens/state.ts), at the same weight.
+const focusVisible = `&:is(${stateSelector("focusVisible")}, ${previewSelector("focus")})`;
 const disabled = `&${stateSelector("disabled")}`;
 const selected = `&${SELECTED_SELECTOR}`;
 const dropTarget = `&${stateSelector("dropTarget")}`;
 // The press of a pointer and of the keyboard: :active is the pointer, data-active the press machinery.
-const pressing = `&:is(:active, ${stateSelector("active")})${ENABLED_SELECTOR}`;
+const pressing = `&:is(:active, ${stateSelector("active")}, ${previewSelector("active")})${ENABLED_SELECTOR}`;
 // Hover is the weakest state, so its selector adds no specificity and every other state outranks it.
-const hovering = `&:where(:hover${ENABLED_SELECTOR})`;
-const hovered = `&:hover${ENABLED_SELECTOR}`;
+const hovering = `&:where(:hover${ENABLED_SELECTOR}, ${previewSelector("hover")}${ENABLED_SELECTOR})`;
+const hovered = `&:is(:hover, ${previewSelector("hover")})${ENABLED_SELECTOR}`;
 const hoveredNeutral = `${hovered}:not([${VALUE_ATTRIBUTE.status}])`;
 
 // The keyboard focus ring: Shape owns its width and offset, Color its ink.

@@ -1,3 +1,4 @@
+import { CONTROL_LINE_PROPERTY } from "./shape-recipes";
 import { themeVariables } from "./variables";
 
 // Resolves a CSS length — var() references, calc(), min(), round(nearest, …), rem and px — to dp at the default
@@ -18,10 +19,11 @@ export const resolveDp = (expression: string, declarations: ReadonlyMap<string, 
   return Number(Function(`return ${js}`)());
 };
 
-// Every variable the stylesheet emits at the light mode: the sources, the invariants and the mode's own and ground roles.
+// Every variable the stylesheet emits at the light mode: the sources, the invariants and the mode's own and ground roles, and
+// the room a control keeps for its line as the stylesheet registers it: none, until a paint gives it one.
 export const emittedDeclarations = (): ReadonlyMap<string, string> => {
   const { source, invariant, modes } = themeVariables();
-  return new Map([...Object.entries(source), ...Object.entries(invariant), ...Object.entries(modes.light.own), ...Object.entries(modes.light.ground)]);
+  return new Map([...Object.entries(source), ...Object.entries(invariant), ...Object.entries(modes.light.own), ...Object.entries(modes.light.ground), [CONTROL_LINE_PROPERTY, "0px"]]);
 };
 
 // A role (the expression a token holds) in dp, resolved over what the stylesheet emits.

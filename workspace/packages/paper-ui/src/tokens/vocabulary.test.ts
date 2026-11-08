@@ -3,7 +3,7 @@ import { describe, expect, expectTypeOf, it } from "vitest";
 import { accentProfile } from "./color-recipes";
 import { COLOR_SELECTION, COLOR_VALUES, COLOR_VALUES_DARK, STATUS_PALETTE } from "./colors";
 import { LAYOUT_SOURCE } from "./layout";
-import { MOTION } from "./motion";
+import { MOTION } from "./motion-recipes";
 import * as publicEntry from "./public";
 import { SHAPE_SOURCE } from "./shape";
 import { STATE_ATTRIBUTE } from "./state";
@@ -16,9 +16,9 @@ const keysOf = (tree: object): string[] => Object.keys(tree);
 describe("vocabulary", () => {
   it("[foundations.vocabulary.one-pair-per-axis] exports every constant once and nothing else", () => {
     expect(constants.map(([name]) => name).sort()).toEqual([
-      "ACCENTS", "ACCENT_TONES", "ALIGNS", "BORDER_LEVELS", "BREAKPOINTS", "CHOICE_STATUSES", "COLOR_MODES", "CONTAINERS", "CONTROL_FONT_SIZES", "CONTROL_PRESETS", "CONTROL_SHAPES",
-      "CONTROL_SIZES", "DEPTHS", "DIMENSIONS", "DIVIDER_LEVELS", "ELEVATIONS", "EMPHASES", "FILLABLE_VARIANTS", "ICON_SIZES", "INKS", "INK_LEVELS", "INPUT_VARIANTS", "JUSTIFIES", "JUSTIFY_ITEMS", "LINK_UNDERLINES", "MEASURES", "MOTION_ROLES", "ORIENTATIONS",
-      "SELECTABLE_VARIANTS", "SPACES", "STATE_NAMES", "STATUSES", "SURFACE_FILLS", "SURFACE_RADII", "SURFACE_THEMES", "TEXT_FAMILIES", "TEXT_VARIANTS", "THEME_PREFERENCES", "VARIANTS",
+      "ACCENTS", "ACCENT_TONES", "ALIGNS", "BORDER_LEVELS", "BREAKPOINTS", "CHOICE_STATUSES", "COLOR_MODES", "CONTAINERS", "CONTROL_ANATOMIES", "CONTROL_FONT_SIZES", "CONTROL_PRESETS", "CONTROL_SHAPES",
+      "CONTROL_SIZES", "DEPTHS", "DIMENSIONS", "DIVIDER_LEVELS", "ELEVATIONS", "EMPHASES", "FILLABLE_VARIANTS", "ICON_SIZES", "INKS", "INK_LEVELS", "INPUT_VARIANTS", "JUSTIFIES", "JUSTIFY_ITEMS", "LINE_SIDES", "LINE_STYLES", "LINE_WEIGHTS", "LINK_UNDERLINES", "MEASURES", "MOTION_ROLES", "ORIENTATIONS",
+      "PREVIEW_STATES", "SEGMENT_VARIANTS", "SELECTABLE_VARIANTS", "SPACES", "STATE_NAMES", "STATUSES", "SURFACE_FILLS", "SURFACE_RADII", "SURFACE_THEMES", "TEXT_FAMILIES", "TEXT_VARIANTS", "THEME_PREFERENCES", "VARIANTS",
     ]);
   });
 
@@ -107,6 +107,9 @@ describe("vocabulary", () => {
   it("[foundations.vocabulary.one-pair-per-axis] derives the State axis from the tree that authors it", () => {
     expect(vocabulary.STATE_NAMES).toEqual(keysOf(STATE_ATTRIBUTE));
     expectTypeOf<vocabulary.StateName>().toEqualTypeOf<(typeof vocabulary.STATE_NAMES)[number]>();
+    // The states a gallery can show without a pointer or a keyboard: the three that have no attribute of their own to write.
+    expect([...vocabulary.PREVIEW_STATES]).toEqual(["hover", "active", "focus"]);
+    expectTypeOf<vocabulary.PreviewState>().toEqualTypeOf<(typeof vocabulary.PREVIEW_STATES)[number]>();
   });
 
   it("[foundations.vocabulary.one-pair-per-axis] types each constant and its type as one pair", () => {
@@ -130,7 +133,11 @@ describe("vocabulary", () => {
     expectTypeOf<vocabulary.TextVariant>().toEqualTypeOf<(typeof vocabulary.TEXT_VARIANTS)[number]>();
     expectTypeOf<vocabulary.TextFamily>().toEqualTypeOf<(typeof vocabulary.TEXT_FAMILIES)[number]>();
     expectTypeOf<vocabulary.ControlSize>().toEqualTypeOf<(typeof vocabulary.CONTROL_SIZES)[number]>();
+    expectTypeOf<vocabulary.ControlAnatomy>().toEqualTypeOf<(typeof vocabulary.CONTROL_ANATOMIES)[number]>();
     expectTypeOf<vocabulary.ControlFontSize>().toEqualTypeOf<(typeof vocabulary.CONTROL_FONT_SIZES)[number]>();
+    expectTypeOf<vocabulary.LineSide>().toEqualTypeOf<(typeof vocabulary.LINE_SIDES)[number]>();
+    expectTypeOf<vocabulary.LineStyle>().toEqualTypeOf<(typeof vocabulary.LINE_STYLES)[number]>();
+    expectTypeOf<vocabulary.LineWeight>().toEqualTypeOf<(typeof vocabulary.LINE_WEIGHTS)[number]>();
     expectTypeOf<vocabulary.ControlPreset>().toEqualTypeOf<(typeof vocabulary.CONTROL_PRESETS)[number]>();
     expectTypeOf<vocabulary.Emphasis>().toEqualTypeOf<(typeof vocabulary.EMPHASES)[number]>();
     expectTypeOf<vocabulary.LinkUnderline>().toEqualTypeOf<(typeof vocabulary.LINK_UNDERLINES)[number]>();
@@ -155,10 +162,10 @@ describe("vocabulary", () => {
     expectTypeOf<vocabulary.Accent>().toEqualTypeOf<"primary" | "info" | "success" | "warning" | "error">();
     expectTypeOf<vocabulary.SurfaceFill>().toEqualTypeOf<"canvas" | "raised" | "sunken">();
     expectTypeOf<vocabulary.Ink>().toEqualTypeOf<"primary" | "secondary" | "tertiary" | "info" | "success" | "warning" | "error" | "inherit">();
-    expectTypeOf<vocabulary.ControlSize>().toEqualTypeOf<"xs" | "sm" | "md" | "lg">();
+    expectTypeOf<vocabulary.ControlSize>().toEqualTypeOf<"xs" | "sm" | "md" | "lg" | "xl">();
     expectTypeOf<vocabulary.ControlFontSize>().toEqualTypeOf<"label" | "caption" | "body">();
     expectTypeOf<vocabulary.Emphasis>().toEqualTypeOf<"regular" | "medium" | "semibold" | "bold">();
-    expectTypeOf<vocabulary.TextVariant>().toEqualTypeOf<"hero" | "headline" | "display" | "title" | "heading" | "subheading" | "body" | "caption" | "label">();
+    expectTypeOf<vocabulary.TextVariant>().toEqualTypeOf<"hero" | "headline" | "display" | "title" | "heading" | "subheading" | "lead" | "body" | "caption" | "label">();
     expectTypeOf<vocabulary.Space>().toEqualTypeOf<"xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl">();
     expectTypeOf<vocabulary.DividerLevel>().toEqualTypeOf<"base" | "strong">();
     expectTypeOf<vocabulary.SurfaceRadius>().toEqualTypeOf<"sm" | "md" | "lg" | "full">();

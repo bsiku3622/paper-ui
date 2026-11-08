@@ -5,7 +5,7 @@
 // 만들어지니 조합이 빠질 수 없고, 어휘 밖의 이름은 타입에서 걸린다. 이 파일은 resolver 를
 // import 하지 않는다 — 지도가 아래, resolver 가 위다.
 
-import { tokens, ACCENTS, STATUSES, VARIANTS, ENABLED_SELECTOR, SELECTED_SELECTOR, STATE_TINT_PROPERTY, SYSTEM_COLORS, accentProfile, itemProfile, stateStyle, strokeRing, type Accent, type Ink, type Status, type Variant } from "../tokens";
+import { tokens, ACCENTS, STATUSES, VARIANTS, ENABLED_SELECTOR, SELECTED_SELECTOR, previewSelector, STATE_TINT_PROPERTY, SYSTEM_COLORS, accentProfile, itemProfile, lineFrame, stateStyle, strokeRing, type Accent, type Ink, type Status, type Variant } from "../tokens";
 import { layered } from "../tokens/layers.css";
 
 const utilities = layered("utilities");
@@ -17,6 +17,8 @@ const components = layered("components");
 // 페이지(canvas)가 이미 가장 깊은 단계라 sunken 이 같은 neutral.950 을 쓴다. canvas 위의 sunken 은 border 로 구분되고,
 // raised 위에서는 두 모드 모두 물러나 보인다.
 // 카드 테두리는 별도(Surface 의 border prop). hover 는 면이 아니라 앱의 interaction 이 맡는다.
+
+// 면은 자기 위에 놓일 컨트롤에게 아무것도 말하지 않는다. 입력 틀과 꺼진 표식은 어디에 놓이든 같은 흰 면에 그림자로 선다(11/6).
 
 export const fillClass = utilities.styleVariants(tokens.color.bg, (background) => ({ backgroundColor: background }));
 
@@ -46,7 +48,9 @@ export const hoverGate = components.style({});
 const FORCED = "(forced-colors: active)";
 const withTint = (tint: string) => ({ vars: { [STATE_TINT_PROPERTY]: tint } });
 const gated = `&.${hoverGate}`;
-const hovering = `&:where(.${hoverGate}:hover${ENABLED_SELECTOR})`;
+// The pointer over it, or its preview (tokens/state.ts).
+const pointedAt = `:is(:hover, ${previewSelector("hover")})`;
+const hovering = `&:where(.${hoverGate}${pointedAt}${ENABLED_SELECTOR})`;
 const selected = `&${SELECTED_SELECTOR}`;
 
 const accentClass = (accent: Accent, variant: Variant): string => {
@@ -58,16 +62,16 @@ const accentClass = (accent: Accent, variant: Variant): string => {
     ...(spec.face === "transparent" ? {} : { backgroundColor: spec.face }),
     color: spec.ink,
     borderColor: spec.border,
+    // 어느 variant 든 같은 틀을 갖는다. 선이 없는 variant 의 선은 투명이라, variant 가 바뀌어도 상자가 움직이지 않는다.
+    ...lineFrame({ style: spec.borderStyle }),
     // 선택된 면은 hover 로 경계가 올라오지 않고, 면 위에 tint 만 얹는다.
     selectors: {
       [gated]: stateStyle.tinted,
-      // 몸(Button · Badge)의 stylesheet 가 이 뒤에 실려 같은 특정도의 실선을 쓴다.
-      ...(spec.borderStyle === "dashed" ? { "&&": { borderStyle: spec.borderStyle } } : {}),
       ...(face ? { [selected]: { backgroundColor: face.face, color: face.ink, borderColor: face.border } } : {}),
     },
     "@media": {
       "(hover: hover)": {
-        selectors: { [hovering]: hover, ...(face ? { [`${selected}:where(.${hoverGate}:hover${ENABLED_SELECTOR})`]: withTint(itemProfile.hoverTint) } : {}) },
+        selectors: { [hovering]: hover, ...(face ? { [`${selected}:where(.${hoverGate}${pointedAt}${ENABLED_SELECTOR})`]: withTint(itemProfile.hoverTint) } : {}) },
       },
       [`(hover: hover) and ${FORCED}`]: { selectors: { [hovering]: { borderColor: SYSTEM_COLORS.highlight } } },
       // 선택된 면은 색만으로 알리지 않는다: 고대비에서는 Highlight 면, 더 높은 대비에서는 잉크 머리카락 선이 더해진다.

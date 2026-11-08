@@ -13,20 +13,20 @@ import * as vocabulary from "./vocabulary";
 
 // Composition functions: they take a name or a role and return a declaration, a class-free style fragment or a string.
 const FUNCTIONS = [
-  "elevationStack", "elevationCast", "elevationStyle", "accentProfile", "controlSizes", "strokeRing", "typographyRule", "monoRule", "codeRule", "presetRule", "emphasisRule",
-  "stateSelector", "stateAttributes", "transition", "isStylesheetLoaded", "unknownSourceVariables", "overridesRule",
+  "elevationStack", "elevationCast", "elevationStyle", "accentProfile", "controlSizes", "strokeRing", "nestedRadius", "markParts", "targetReach", "lineFrame", "lineRule", "insideLine", "typographyRule", "monoRule", "codeRule", "presetRule", "emphasisRule",
+  "stateSelector", "stateAttributes", "previewSelector", "previewAttributes", "transition", "isStylesheetLoaded", "unknownSourceVariables", "overridesRule",
 ];
 
 // Names the package spells: attributes, selectors, queries, the system colours a component may ask for.
 const NAMES = [
-  "THEME_ATTRIBUTE", "THEME_SWAP_ATTRIBUTE", "COLOR_MODE_QUERY", "SOURCE_VARIABLES", "STATE_ATTRIBUTE", "VALUE_ATTRIBUTE", "MARKER_ATTRIBUTE",
-  "SELECTED_SELECTOR", "ENABLED_SELECTOR", "STATE_TINT_PROPERTY", "SYSTEM_COLORS", "TEXT_INK", "CONTROL_ICON", "MOTION_CONSUMERS",
+  "THEME_ATTRIBUTE", "THEME_SWAP_ATTRIBUTE", "COLOR_MODE_QUERY", "SOURCE_VARIABLES", "STATE_ATTRIBUTE", "VALUE_ATTRIBUTE", "MARKER_ATTRIBUTE", "PREVIEW_ATTRIBUTE",
+  "SELECTED_SELECTOR", "ENABLED_SELECTOR", "STATE_TINT_PROPERTY", "CONTROL_LINE_PROPERTY", "VARIANT_LINE", "SYSTEM_COLORS", "TEXT_INK", "CONTROL_ICON", "CONTROL_ANATOMY_PRESET", "MOTION_CONSUMERS",
 ];
 
 // Composition: plain objects whose leaves refer to roles. A leaf is a variable reference, a formula or style
 // function over references, or a keyword (none, underline, a system colour) with no number in it.
 const COMPOSITION = [
-  "ELEVATION", "restingCast", "SHAPE_RECIPES", "markProfile", "markForcedProfile", "outlinedControlProfile", "itemProfile", "focusRing", "stateStyle", "linkStyle", "STATE_TINT",
+  "ELEVATION", "restingCast", "insetCast", "SHAPE_RECIPES", "CONTROL", "markProfile", "markForcedProfile", "outlinedControlProfile", "itemProfile", "focusRing", "stateStyle", "linkStyle", "STATE_TINT", "CONTROL_LINE", "CONTROL_LINE_ROOM", "controlLineWidth",
 ];
 
 // Value roles: the few places a number is the role itself, with the reason.
@@ -38,6 +38,7 @@ const VALUE_ROLES: Record<string, string> = {
   MOTION: "the motion roles themselves, read by styles/motion.css.ts",
   MOTION_LOOPS: "the loops' frames, time and curve, read by styles/motion.css.ts",
   MOTION_REDUCED: "the reduced-motion duration, read by styles/motion.css.ts",
+  REVEAL_AFTER: "the delays a reveal's siblings wait, whole steps of the duration scale, read by styles/motion.css.ts",
   ELEVATION_NEST_LIMIT: "a count derived from the elevation source",
 };
 
@@ -112,34 +113,54 @@ describe("the tokens barrel", () => {
   });
 });
 
-describe("the five systems stack in one direction", () => {
-  const SYSTEMS = [
-    { name: "Color", files: ["palette", "color-ladder", "color-modes", "colors", "color-recipes"] },
+describe("the Foundations have two orders", () => {
+  // The first order: five systems that hold a source and its roles. A file may read its own system and the names everyone shares.
+  const FIRST = [
+    { name: "Color", files: ["palette", "color-ladder", "colors", "color-recipes"] },
     { name: "Typography", files: ["typography", "typography-recipes"] },
     { name: "Shape", files: ["shape", "shape-recipes"] },
-    { name: "Layout", files: ["layout", "elevation-recipes"] },
+    { name: "Layout", files: ["layout"] },
     { name: "Motion", files: ["motion"] },
   ];
+  // The second order: what ties two systems or more together. It reads the first order.
+  const SECOND = ["line-recipes", "control-recipes", "elevation-recipes", "motion-recipes", "state", "state-recipes"];
+  // Names, not values: reading one ties nothing to anything.
+  const SHARED = ["helpers", "color-modes", "control-sizes"];
+  // The one length scale lives in Shape, and a gap picks from it as an inset does.
+  const FIRST_ORDER_EDGES: Record<string, string[]> = { layout: ["shape"] };
+  // A press sinks by the offset its motion role names.
+  const SECOND_ORDER_EDGES: Record<string, string[]> = { "state-recipes": ["state", "motion-recipes"] };
   const here = dirname(fileURLToPath(import.meta.url));
-  const importsOf = (file: string) => [...readFileSync(join(here, `${file}.ts`), "utf8").matchAll(/^(?:import|export)\s[^;'"]*?from\s*["']\.\/([^"']+)["']/gm)].map(([, from]) => from!);
-  const systemOf = (file: string) => SYSTEMS.findIndex(({ files }) => files.includes(file));
+  // What a file reads for its value. `import type` names a shape and ties no value to anything.
+  const importsOf = (file: string) => [...readFileSync(join(here, `${file}.ts`), "utf8").matchAll(/^(?:import|export)\s(?!type\s)[^;'"]*?from\s*["']\.\/([^"']+)["']/gm)].map(([, from]) => from!);
 
-  it("[foundations.systems.one-way] reads only the systems before it", () => {
-    const backward = SYSTEMS.flatMap(({ name, files }, position) => files.flatMap((file) =>
-      importsOf(file).filter((from) => from !== "helpers" && systemOf(from) > position).map((from) => `${name}: ${file} reads ${from}`),
+  it("[foundations.orders.first] a first-order system reads no other system, but for the one edge the table names", () => {
+    const crossing = FIRST.flatMap(({ files }) => files.flatMap((file) =>
+      importsOf(file).filter((from) => !SHARED.includes(from) && !files.includes(from) && !(FIRST_ORDER_EDGES[file] ?? []).includes(from)).map((from) => `${file} reads ${from}`),
     ));
-    expect(backward).toEqual([]);
+    expect(crossing).toEqual([]);
   });
 
-  it("[foundations.systems.sources] takes from the systems before it what its row names, and writes its source in the file its row names", () => {
-    expect(importsOf("shape")).toContain("typography");
-    expect(importsOf("layout")).toEqual(expect.arrayContaining(["shape", "colors"]));
-    expect(importsOf("motion")).toEqual(expect.arrayContaining(["shape", "layout"]));
+  it("[foundations.orders.second] a second-order file reads the first order and no other second-order file, but for the one edge the table names", () => {
+    const crossing = SECOND.flatMap((file) =>
+      importsOf(file).filter((from) => SECOND.includes(from) && !(SECOND_ORDER_EDGES[file] ?? []).includes(from)).map((from) => `${file} reads ${from}`),
+    );
+    expect(crossing).toEqual([]);
+    // And a first-order file reads no second-order one.
+    const upward = FIRST.flatMap(({ files }) => files.flatMap((file) => importsOf(file).filter((from) => SECOND.includes(from)).map((from) => `${file} reads ${from}`)));
+    expect(upward).toEqual([]);
+  });
+
+  it("[foundations.systems.sources] writes each system's source in the file its row names, and each tie between systems in its second-order file", () => {
     // A Typography role names its default ink, which Color defines.
     for (const [variant, ink] of Object.entries(barrel.TEXT_INK)) expect(barrel.INK_LEVELS, variant).toContain(ink);
     for (const [file, source] of [["palette", "OKLCH_PALETTE"], ["typography", "TYPOGRAPHY_SOURCE"], ["shape", "SHAPE_SOURCE"], ["layout", "LAYOUT_SOURCE"], ["motion", "DURATION"]] as const) {
       expect(readFileSync(join(here, `${file}.ts`), "utf8"), file).toContain(`export const ${source}`);
     }
+    expect(importsOf("line-recipes")).toEqual(expect.arrayContaining(["colors", "shape"]));
+    expect(importsOf("control-recipes")).toEqual(expect.arrayContaining(["shape", "typography"]));
+    expect(importsOf("elevation-recipes")).toEqual(expect.arrayContaining(["colors", "layout"]));
+    expect(importsOf("motion-recipes")).toEqual(expect.arrayContaining(["motion", "shape", "layout"]));
   });
 
   it("[foundations.systems.differences] differs from the others only where the table says", () => {

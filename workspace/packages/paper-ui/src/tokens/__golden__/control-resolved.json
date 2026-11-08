@@ -1,0 +1,43 @@
+{
+  "inset": {
+    "input": {
+      "xs": 8,
+      "sm": 10,
+      "md": 12,
+      "lg": 14,
+      "xl": 16
+    },
+    "button": {
+      "xs": 11,
+      "sm": 14,
+      "md": 17,
+      "lg": 20,
+      "xl": 23
+    }
+  },
+  "select": {
+    "paddingEnd": {
+      "xs": 32,
+      "sm": 34,
+      "md": 38,
+      "lg": 42,
+      "xl": 44
+    }
+  },
+  "area": {
+    "paddingBlock": {
+      "xs": 6,
+      "sm": 8,
+      "md": 10,
+      "lg": 12,
+      "xl": 14
+    }
+  },
+  "inputLine": {
+    "xs": 20,
+    "sm": 20,
+    "md": 20,
+    "lg": 20,
+    "xl": 20
+  }
+}

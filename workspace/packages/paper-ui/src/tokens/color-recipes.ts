@@ -26,6 +26,11 @@ export type FillableVariant = (typeof FILLABLE_VARIANTS)[number];
 export const INPUT_VARIANTS = ["hairline", "ghost"] as const satisfies readonly FillableVariant[];
 export type InputVariant = (typeof INPUT_VARIANTS)[number];
 
+// 세그먼트의 두 모습 — track 은 회색 홈 위로 흰 칸이 미끄러지고, outline 은 입력 틀과 같은 흰 틀을 나눔선으로 가르며 고른 칸에 면과
+// 체크를 둔다.
+export const SEGMENT_VARIANTS = ["track", "outline"] as const;
+export type SegmentVariant = (typeof SEGMENT_VARIANTS)[number];
+
 type VariantRecipe = {
   // 면: accent tone, 또는 없음. 없으면 fill 이 고르고, 안 주면 놓인 곳이 비친다.
   face: AccentTone | "none";
@@ -48,6 +53,9 @@ export const VARIANT_RECIPE = {
   ghost: { face: "none", ink: "ink", border: "none", hover: "tint", selected: "soft" },
   muted: { face: "none", ink: "subtle", border: "none", hover: "tint", selected: "soft" },
 } as const satisfies Record<Variant, VariantRecipe>;
+
+// The room a control of each variant keeps for its line: a variant that draws one keeps it.
+export const VARIANT_LINE = Object.fromEntries(VARIANTS.map((variant) => [variant, VARIANT_RECIPE[variant].border === "none" ? "none" : "line"])) as Record<Variant, "line" | "none">;
 
 // What an accent × variant control paints: a face, an ink and a border, how it answers a hover, and for the
 // selectable variants the face it wears when selected.
@@ -79,13 +87,14 @@ export const itemProfile = {
   selectedInk: COLOR.ink.primary,
 };
 
-// The marks of Checkbox, Radio and Switch. An off mark wears the line an input wears, on no face of its own; a Switch keeps
-// its track, because a knob has to stand on something. That line is under 3:1, so it is a documented exception, and
-// prefers-contrast: more lifts it with border.base. The checked face and the mark on it are the primary accent's solid and
-// wash. A checked Switch's ring is transparent: painted in the face's colour it would thicken the track's anti-aliased edge.
+// The marks of Checkbox, Radio and Switch. An off Checkbox or Radio is a white face in the one grey line, the same edge as an input
+// frame, so it shows on a white card as well as on the page. A Switch keeps its track, because a knob has to stand on something.
+// The line is under 3:1, so it is a documented exception, and prefers-contrast: more draws contrastRing, the strong grey. The
+// checked face and the mark on it are the primary accent's solid and wash. The checked ring is transparent and not absent: a
+// Switch's ring has something to fade to.
 export const markProfile = {
-  rest: { ring: COLOR.border.base, face: "transparent", knob: COLOR.bg.raised, track: COLOR.control.track },
-  checked: { face: COLOR.accent.primary.solid, ring: "transparent", mark: COLOR.accent.primary.wash, knob: COLOR.bg.raised },
+  rest: { ring: COLOR.border.base, contrastRing: COLOR.border.strong, knob: COLOR.control.knob, track: COLOR.control.track },
+  checked: { face: COLOR.accent.primary.solid, ring: "transparent", mark: COLOR.accent.primary.wash, knob: COLOR.accent.primary.wash },
   invalid: { ring: COLOR.accent.error.ink },
 };
 

@@ -40,7 +40,7 @@
     "hero": {
       "ink": "primary",
       "size": "clamp(2.75rem, 5.2vw, 4.75rem)",
-      "weight": "400",
+      "weight": "600",
       "leading": "1.12",
       "tracking": "-0.035em",
       "strong": "600"
@@ -48,7 +48,7 @@
     "headline": {
       "ink": "primary",
       "size": "3rem",
-      "weight": "400",
+      "weight": "600",
       "leading": "3.5rem",
       "tracking": "-0.035em",
       "strong": "600"
@@ -56,7 +56,7 @@
     "display": {
       "ink": "primary",
       "size": "2rem",
-      "weight": "400",
+      "weight": "600",
       "leading": "2.5rem",
       "tracking": "-0.03em",
       "strong": "600"
@@ -84,6 +84,14 @@
       "leading": "1.5rem",
       "tracking": "0",
       "strong": "600"
+    },
+    "lead": {
+      "ink": "primary",
+      "size": "1rem",
+      "weight": "400",
+      "leading": "1.5rem",
+      "tracking": "0",
+      "strong": "500"
     },
     "body": {
       "ink": "primary",
@@ -113,13 +121,13 @@
   "presets": {
     "button": {
       "xs": {
-        "size": "0.75rem",
+        "size": "0.8125rem",
         "weight": "500",
         "leading": "1rem",
         "tracking": "0"
       },
       "sm": {
-        "size": "0.8125rem",
+        "size": "0.875rem",
         "weight": "500",
         "leading": "1rem",
         "tracking": "0"
@@ -135,18 +143,24 @@
         "weight": "500",
         "leading": "1rem",
         "tracking": "0"
+      },
+      "xl": {
+        "size": "1rem",
+        "weight": "500",
+        "leading": "1rem",
+        "tracking": "0"
       }
     },
     "field": {
       "xs": {
-        "size": "0.75rem",
+        "size": "0.8125rem",
         "weight": "450",
         "leading": "1rem",
         "tracking": "0",
         "inputLeading": "1.25rem"
       },
       "sm": {
-        "size": "0.8125rem",
+        "size": "0.875rem",
         "weight": "450",
         "leading": "1rem",
         "tracking": "0",
@@ -160,7 +174,14 @@
         "inputLeading": "1.25rem"
       },
       "lg": {
-        "size": "0.875rem",
+        "size": "0.9375rem",
+        "weight": "450",
+        "leading": "1rem",
+        "tracking": "0",
+        "inputLeading": "1.25rem"
+      },
+      "xl": {
+        "size": "1rem",
         "weight": "450",
         "leading": "1rem",
         "tracking": "0",
@@ -169,13 +190,13 @@
     },
     "textarea": {
       "xs": {
-        "size": "0.75rem",
+        "size": "0.8125rem",
         "weight": "450",
         "leading": "1.25rem",
         "tracking": "0"
       },
       "sm": {
-        "size": "0.8125rem",
+        "size": "0.875rem",
         "weight": "450",
         "leading": "1.25rem",
         "tracking": "0"
@@ -187,7 +208,13 @@
         "tracking": "0"
       },
       "lg": {
-        "size": "0.875rem",
+        "size": "0.9375rem",
+        "weight": "450",
+        "leading": "1.25rem",
+        "tracking": "0"
+      },
+      "xl": {
+        "size": "1rem",
         "weight": "450",
         "leading": "1.25rem",
         "tracking": "0"

@@ -26,6 +26,7 @@
 //   자리에만 쓴다. 숫자를 무조건 등폭으로 두지 않는다 (표의 숫자 열은 sans + tabular-nums).
 
 import { buildVarTree, em, keys, lengths, mapValues, rem } from "./helpers";
+import type { ControlSize } from "./control-sizes";
 
 // ───── Typography Source — 원본 수치 ─────────────────────────────────────────
 //
@@ -52,7 +53,7 @@ export const TYPOGRAPHY_SOURCE = {
   // 고정 dp 사다리의 유일한 예외이며 hero 역할만 쓴다.
   fluid: { hero: { min: 44, vw: 5.2, max: 76, leading: 1.12 } },
   weight: {
-    regular: 400, // 큰 제목(hero · headline · display)과 본문 · caption
+    regular: 400, // 읽는 글 — lead · 본문 · caption
     normal: 450, // 입력값 — Field · Textarea
     medium: 500, // UI 컨트롤 — Button · Badge, 본문과 caption 의 강조
     semibold: 600, // 제목 · 라벨 · 소제목, 큰 제목의 강조
@@ -107,13 +108,6 @@ export const FONT_STYLESHEETS = {
   mono: "https://cdn.jsdelivr.net/gh/fonts-archive/D2Coding@5ac6fc6fada70f1d8a8561cec826722574c51a6e/D2Coding.css",
 } as const satisfies Record<TextFamily, string>;
 
-// ───── Control size — 컨트롤 크기 축 ───────────────────────────────────────
-//
-// Typography의 preset과 Shape의 geometry가 이 같은 축을 읽는다.
-
-export const CONTROL_SIZES = ["xs", "sm", "md", "lg"] as const;
-export type ControlSize = (typeof CONTROL_SIZES)[number];
-
 // ───── Role · Preset — Palette 값을 고르는 명세 ────────────────────────────
 
 type StyleKeys = {
@@ -124,19 +118,23 @@ type StyleKeys = {
 };
 
 // 역할은 자기 굵기와, 강조할 때의 굵기(strong)를 함께 정한다. Text 의 strong prop 은 굵기 이름을 고르지 않고 이 값을 켠다.
+// 제목은 hero 부터 subheading 까지 semibold 하나라 크기만 줄어든다 — 큰 제목이 regular 면 바로 아래 title(24 · 600)보다 얇아
+// 보여 위계가 뒤집혀 읽혔다(11/8).
 export const ROLE_SPEC = {
-  hero: { size: "hero", weight: "regular", strong: "semibold", leading: "hero", tracking: "tightest" },
-  headline: { size: "48", weight: "regular", strong: "semibold", leading: "56", tracking: "tightest" },
-  display: { size: "32", weight: "regular", strong: "semibold", leading: "40", tracking: "tighter" },
+  hero: { size: "hero", weight: "semibold", strong: "semibold", leading: "hero", tracking: "tightest" },
+  headline: { size: "48", weight: "semibold", strong: "semibold", leading: "56", tracking: "tightest" },
+  display: { size: "32", weight: "semibold", strong: "semibold", leading: "40", tracking: "tighter" },
   title: { size: "24", weight: "semibold", strong: "semibold", leading: "32", tracking: "tight" },
   heading: { size: "20", weight: "semibold", strong: "semibold", leading: "28", tracking: "normal" },
   subheading: { size: "16", weight: "semibold", strong: "semibold", leading: "24", tracking: "normal" },
+  // 일하는 화면이 아니라 읽는 글 — 페이지 첫머리의 설명, 문서의 본문. body 보다 한 단 크고 굵기는 같다.
+  lead: { size: "16", weight: "regular", strong: "medium", leading: "24", tracking: "normal" },
   body: { size: "14", weight: "regular", strong: "medium", leading: "20", tracking: "normal" },
   caption: { size: "13", weight: "regular", strong: "medium", leading: "16", tracking: "normal" },
   label: { size: "12", weight: "semibold", strong: "semibold", leading: "16", tracking: "wide" },
 } as const satisfies Record<string, StyleKeys & { strong: keyof typeof TYPOGRAPHY_SOURCE.weight }>;
 
-// hero·headline·display·title·heading·subheading은 제목 계층, body·caption·label은 사용 역할이다. 서체(mono)는
+// hero·headline·display·title·heading·subheading은 제목 계층, lead·body·caption·label은 사용 역할이다. 서체(mono)는
 // 위계가 아니라 family 축이라 여기 없다 — 어느 variant 에도 얹는다.
 export const TEXT_VARIANTS = keys(ROLE_SPEC);
 export type TextVariant = keyof typeof ROLE_SPEC;
@@ -154,30 +152,36 @@ export const LINK_UNDERLINES = ["always", "hover"] as const;
 export type LinkUnderline = (typeof LINK_UNDERLINES)[number];
 
 const BUTTON_CONTROL = {
-  xs: { size: "12", weight: "medium", leading: "16", tracking: "normal" },
-  sm: { size: "13", weight: "medium", leading: "16", tracking: "normal" },
+  xs: { size: "13", weight: "medium", leading: "16", tracking: "normal" },
+  sm: { size: "14", weight: "medium", leading: "16", tracking: "normal" },
   md: { size: "14", weight: "medium", leading: "16", tracking: "normal" },
   lg: { size: "15", weight: "medium", leading: "16", tracking: "normal" },
+  xl: { size: "16", weight: "medium", leading: "16", tracking: "normal" },
 } as const satisfies Record<ControlSize, StyleKeys>;
+// 같은 size 의 입력값은 버튼 글자와 크기가 같고 굵기만 다르다. 버튼 글자는 상자를 정하는 라벨이라 medium 이고, 입력값은 읽는 값이라
+// normal 이다.
 const FIELD_FONT = {
-  xs: { size: "12", weight: "normal", leading: "16", tracking: "normal" },
-  sm: { size: "13", weight: "normal", leading: "16", tracking: "normal" },
+  xs: { size: "13", weight: "normal", leading: "16", tracking: "normal" },
+  sm: { size: "14", weight: "normal", leading: "16", tracking: "normal" },
   md: { size: "14", weight: "normal", leading: "16", tracking: "normal" },
-  lg: { size: "14", weight: "normal", leading: "16", tracking: "normal" },
+  lg: { size: "15", weight: "normal", leading: "16", tracking: "normal" },
+  xl: { size: "16", weight: "normal", leading: "16", tracking: "normal" },
 } as const satisfies Record<ControlSize, StyleKeys>;
-// leading 16 은 글자 한 줄이고 Shape 의 안쪽 여백이 읽는 값이다. inputLeading 은 입력값이 앉는 줄상자 —
+// leading 16 은 글자 한 줄이고 2차 Control 의 안쪽 여백이 읽는 값이다. inputLeading 은 입력값이 앉는 줄상자 —
 // caret 과 한글 fallback glyph 가 눌리지 않을 만큼 높다.
 const FIELD_CONTROL = {
   xs: { ...FIELD_FONT.xs, inputLeading: "20" },
   sm: { ...FIELD_FONT.sm, inputLeading: "20" },
   md: { ...FIELD_FONT.md, inputLeading: "20" },
   lg: { ...FIELD_FONT.lg, inputLeading: "20" },
+  xl: { ...FIELD_FONT.xl, inputLeading: "20" },
 } as const satisfies Record<ControlSize, StyleKeys & { inputLeading: keyof typeof TYPOGRAPHY_SOURCE.leading }>;
 const TEXTAREA_CONTROL = {
   xs: { ...FIELD_FONT.xs, leading: "20" },
   sm: { ...FIELD_FONT.sm, leading: "20" },
   md: { ...FIELD_FONT.md, leading: "20" },
   lg: { ...FIELD_FONT.lg, leading: "20" },
+  xl: { ...FIELD_FONT.xl, leading: "20" },
 } as const satisfies Record<ControlSize, StyleKeys>;
 const BADGE_PRESET = { size: "12", weight: "medium", leading: "16", tracking: "normal" } as const satisfies StyleKeys;
 
@@ -225,6 +229,7 @@ export const TEXT_INK: Record<TextVariant, "primary" | "secondary"> = {
   title: "primary",
   heading: "primary",
   subheading: "primary",
+  lead: "primary",
   body: "primary",
   caption: "secondary",
   label: "secondary",

@@ -25,15 +25,19 @@ export const NEUTRAL_BASE_STEPS = ["0", "50", "100", "200", "300", "400", "500",
 export type NeutralBaseStep = (typeof NEUTRAL_BASE_STEPS)[number];
 
 // Neutral step numbers always run from light to dark: 0 is white and 950 is near-black.
-// Preserve the existing reviewed colors while expressing them with that shared direction.
+// The ramp is a zinc (2026-11-06, read from HeroUI v3's default theme): the ground is 0.9702 with no chroma, the grey face 0.94
+// and the line 0.91, and the middle steps, where the quiet inks are, carry zinc's chroma so they read crisp, not muddy. A grey
+// that is the same chroma all the way down (0.003 before) reads dull. 650 stays a step darker than HeroUI's muted ink, so a
+// placeholder still holds 4.5:1 on the sunken face, which HeroUI's does not.
 export const NEUTRAL_ANCHORS: Partial<Record<NeutralBaseStep, Oklch>> = {
-  "0": [1, 0.003, 286],
-  "100": [0.965, 0.003, 286],
-  "300": [0.88, 0.003, 286],
-  "500": [0.68, 0.003, 286],
-  "700": [0.48, 0.003, 286],
-  "900": [0.28, 0.003, 286],
-  "950": [0.18, 0.003, 286],
+  "0": [1, 0, 286],
+  "100": [0.9702, 0, 286],
+  "200": [0.91, 0.004, 286],
+  "300": [0.88, 0.004, 286],
+  "500": [0.66, 0.012, 286],
+  "700": [0.47, 0.012, 286],
+  "900": [0.28, 0.006, 286],
+  "950": [0.18, 0.005, 286],
 };
 
 export const ACCENT_PALETTES = ["blue", "green", "amber", "red"] as const;

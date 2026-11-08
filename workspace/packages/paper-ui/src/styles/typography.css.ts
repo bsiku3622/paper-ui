@@ -29,8 +29,8 @@ export const textNumericClass = style({ fontVariantNumeric: "tabular-nums" });
 
 // ───── 컨트롤 preset class ───────────────────────────────────────────────────
 //
-// tokens.typography.preset 과 같은 모양의 지도. 같은 선언은 class 하나를 나눠 쓴다 — sm 과 md 가 같은
-// Field 글자처럼. preset 이 늘면 이 타입이 여기서 빠진 자리를 걸러낸다.
+// tokens.typography.preset 과 같은 모양의 지도. 같은 선언은 class 하나를 나눠 쓴다 — xs Button 과 Badge 의
+// 글자처럼. preset 이 늘면 이 타입이 여기서 빠진 자리를 걸러낸다.
 type Mirror<T> = { [K in keyof T]: T[K] extends { size: string } ? string : Mirror<T[K]> };
 
 const shared = new Map<string, string>();

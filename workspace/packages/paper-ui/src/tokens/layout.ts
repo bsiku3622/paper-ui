@@ -9,13 +9,13 @@
 //   LAYOUT               public roles
 //
 // Distances select from the Shape space scale, so a gap and an inset of the same step are the
-// same length. A shadow is assembled where it is cast, from its geometry here and its shadow
-// colour from Color. An elevation is applied as one unit (tokens/elevation-recipes.ts), so it
-// has no public role of its own.
+// same length. That scale is the one thing Layout reads from another system. A shadow's geometry is
+// here and its colour in Color; the second-order Elevation (tokens/elevation-recipes.ts) puts them
+// together and applies them as one unit, so an elevation has no public role of its own.
 
 import { COLOR_MODES, type ColorMode } from "./color-modes";
-import { COLOR, type Depth } from "./colors";
-import { buildVarTree, keys, lengths, mediaEm, pathToVarRef, px } from "./helpers";
+import type { Depth } from "./colors";
+import { buildVarTree, keys, lengths, mediaEm, px } from "./helpers";
 import { SPACE } from "./shape";
 
 export const ELEVATIONS = ["lifted", "sticky", "overlay", "modal", "toast"] as const;
@@ -44,11 +44,14 @@ export const LAYOUT_SOURCE = {
     // nesting never reaches the next tier.
     nudge: 1,
   },
-  // Shadow geometry per mode. Dark surfaces need tighter, negatively spread layers.
+  // Shadow geometry per mode. What lies on the page casts straight down: resting, lifted and inset have no offset, so a face reads
+  // as paper lying flat under a light from above, with the same soft edge on every side, and a well inside a raised face as pressed
+  // in evenly. Only floating drops, because a layer above the page has to read as above it. Dark surfaces need tighter, negatively
+  // spread layers. inset is drawn inside the box (the inset keyword is the recipe's).
   shadow: {
-    light: { resting: [[0, 4, 16, 0]], lifted: [[0, 1, 3, 0]], floating: [[0, 8, 24, 0], [0, 2, 6, 0]] },
-    dark: { resting: [[0, 0, 0, 1]], lifted: [[0, 1, 2, 0]], floating: [[0, 8, 22, -5], [0, 3, 7, -2]] },
-  } satisfies Record<ColorMode, { resting: readonly [ShadowLayer]; lifted: readonly [ShadowLayer]; floating: readonly [ShadowLayer, ShadowLayer] }>,
+    light: { resting: [[0, 0, 2, 0]], lifted: [[0, 0, 2, 0]], floating: [[0, 8, 24, 0], [0, 2, 6, 0]], inset: [[0, 0, 2, 0]] },
+    dark: { resting: [[0, 0, 0, 1]], lifted: [[0, 0, 2, 0]], floating: [[0, 8, 22, -5], [0, 3, 7, -2]], inset: [[0, 0, 2, 0]] },
+  } satisfies Record<ColorMode, { resting: readonly [ShadowLayer]; lifted: readonly [ShadowLayer]; floating: readonly [ShadowLayer, ShadowLayer]; inset: readonly [ShadowLayer] }>,
 } as const;
 
 export const BREAKPOINTS = keys(LAYOUT_SOURCE.breakpoint);
@@ -89,16 +92,8 @@ const geometry = <const Layers extends readonly ShadowLayer[]>(layers: Layers) =
   Object.fromEntries(layers.map((layer, index) => [String(index), layer.map(px).join(" ")])) as Geometry<Layers>;
 
 export const LAYOUT_MODE_VALUES = Object.fromEntries(COLOR_MODES.map((mode) => [mode, {
-  shadow: { resting: geometry(LAYOUT_SOURCE.shadow[mode].resting), lifted: geometry(LAYOUT_SOURCE.shadow[mode].lifted), floating: geometry(LAYOUT_SOURCE.shadow[mode].floating) },
-}])) as Record<ColorMode, { shadow: { resting: Geometry<readonly [ShadowLayer]>; lifted: Geometry<readonly [ShadowLayer]>; floating: Geometry<readonly [ShadowLayer, ShadowLayer]> } }>;
-
-// A depth's shadow, assembled on the element that casts it: each layer's geometry beside the shadow
-// colour, both read where the element stands. No variable holds the result, so a scope that swaps the
-// mode swaps the shadow with it.
-export const castShadow = (depth: Depth): string =>
-  Object.keys(LAYOUT_MODE_VALUES.light.shadow[depth])
-    .map((layer) => `${pathToVarRef(["layout", "shadow", depth, layer])} ${COLOR.shadow[depth]}`)
-    .join(", ");
+  shadow: { resting: geometry(LAYOUT_SOURCE.shadow[mode].resting), lifted: geometry(LAYOUT_SOURCE.shadow[mode].lifted), floating: geometry(LAYOUT_SOURCE.shadow[mode].floating), inset: geometry(LAYOUT_SOURCE.shadow[mode].inset) },
+}])) as Record<ColorMode, { shadow: { resting: Geometry<readonly [ShadowLayer]>; lifted: Geometry<readonly [ShadowLayer]>; floating: Geometry<readonly [ShadowLayer, ShadowLayer]>; inset: Geometry<readonly [ShadowLayer]> } }>;
 
 const source = buildVarTree(LAYOUT_VALUES, ["layout"]);
 const { section } = LAYOUT_SOURCE;

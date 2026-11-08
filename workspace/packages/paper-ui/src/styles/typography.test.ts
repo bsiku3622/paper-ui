@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { CONTROL_FONT_SIZES, TEXT_VARIANTS, tokens } from "../tokens";
+import { CONTROL_FONT_SIZES, CONTROL_SIZES, TEXT_VARIANTS, presetRule, tokens } from "../tokens";
 import { controlFontSizeClass, presetClass, textMonoClass, textNumericClass, textRoleClass } from "./typography.css";
 
 const distinct = (classes: readonly string[]) => new Set(classes).size === classes.length && classes.every(Boolean);
@@ -24,13 +24,23 @@ describe("the typography class maps", () => {
     for (const [path, className] of leaves(presetClass)) expect(className, path).toBeTruthy();
   });
 
-  it("[foundations.typography.control-preset] share one class between presets that declare the same thing", () => {
-    expect(presetClass.field.md).toBe(presetClass.field.lg);
-    expect(presetClass.textarea.md).toBe(presetClass.textarea.lg);
+  it("[foundations.typography.control-preset] share one class exactly when two presets declare the same thing", () => {
+    const sized = (["button", "field", "textarea"] as const).flatMap((preset) => CONTROL_SIZES.map((size) => ({ name: `${preset}.${size}`, rule: presetRule(preset, size), className: presetClass[preset][size] })));
+    const all = [...sized, { name: "badge", rule: presetRule("badge"), className: presetClass.badge }];
+    let shared = 0;
+    for (const [i, a] of all.entries()) {
+      for (const b of all.slice(i + 1)) {
+        const same = JSON.stringify(a.rule) === JSON.stringify(b.rule);
+        if (same) shared += 1;
+        expect(a.className === b.className, `${a.name} · ${b.name}`).toBe(same);
+      }
+    }
+    // Some pair has to declare the same thing, or the sharing goes untested.
+    expect(shared).toBeGreaterThan(0);
   });
 
   it("[foundations.typography.control-preset] keep presets that differ apart", () => {
-    expect(presetClass.button.lg).not.toBe(presetClass.button.md);
+    expect(presetClass.button.xl).not.toBe(presetClass.button.md);
     expect(presetClass.field.md).not.toBe(presetClass.textarea.md);
     expect(presetClass.badge).not.toBe(presetClass.button.md);
   });

@@ -144,11 +144,11 @@ describe("item profile", () => {
 });
 
 describe("mark profile", () => {
-  it("[foundations.color.profile-shape] [foundations.color.profile-fields] rings a resting mark in the input's line on no face and fills a checked one with the primary solid", () => {
+  it("[foundations.color.profile-shape] [foundations.color.profile-fields] draws a resting mark in the one grey line, the strong one when more contrast is asked for, and fills a checked one with the primary solid", () => {
     const { color } = tokens;
     expect(markProfile).toEqual({
-      rest: { ring: color.border.base, face: "transparent", knob: color.bg.raised, track: color.control.track },
-      checked: { face: color.accent.primary.solid, ring: "transparent", mark: color.accent.primary.wash, knob: color.bg.raised },
+      rest: { ring: color.border.base, contrastRing: color.border.strong, knob: color.control.knob, track: color.control.track },
+      checked: { face: color.accent.primary.solid, ring: "transparent", mark: color.accent.primary.wash, knob: color.accent.primary.wash },
       invalid: { ring: color.accent.error.ink },
     });
   });
@@ -207,12 +207,14 @@ const excepted = (accent: (typeof ACCENTS)[number], mode: ColorMode) => {
 // The one pair measured just under 4.5:1 that the documentation names: the dark error muted text with the hover tint
 // over the raised surface. The tint is already the faintest step, and lifting the ink would change a Color role.
 const NEAR_MISS = "dark error muted on raised, hovered";
+// The other: the light success ghost with the hover tint over the sunken surface, the darkest face it can stand on.
+const SUNKEN_MISS = "light success ghost on sunken, hovered";
 
 const holds = (variant: Variant) => {
   for (const mode of COLOR_MODES) {
     for (const accent of ACCENTS) {
       if (variant === "solid" && excepted(accent, mode)) continue;
-      for (const { at, ratio } of readable(accent, variant, mode)) if (at !== NEAR_MISS) expect(ratio, at).toBeGreaterThanOrEqual(4.5);
+      for (const { at, ratio } of readable(accent, variant, mode)) if (at !== NEAR_MISS && at !== SUNKEN_MISS) expect(ratio, at).toBeGreaterThanOrEqual(4.5);
     }
   }
 };
@@ -240,7 +242,15 @@ describe("the variants read in both themes, at rest and hovered", () => {
     expect(COLOR_VALUES_BY_MODE.light.accent.warning.wash).toBe(COLOR_VALUES_BY_MODE.light.bg.raised);
     // Everything else, the dark warning solid included, reads.
     const below = COLOR_MODES.flatMap((mode) => ACCENTS.flatMap((accent) => VARIANTS.flatMap((variant) => readable(accent, variant, mode).filter(({ ratio }) => ratio < 4.5).map(({ at }) => at))));
-    expect(below).toEqual(["light warning solid on its face", "light warning solid on its face, hovered", NEAR_MISS]);
+    expect(below).toEqual([SUNKEN_MISS, "light warning solid on its face", "light warning solid on its face, hovered", NEAR_MISS]);
+  });
+
+  it("[foundations.color.light-success-ghost-hover] reads at 4.5:1 at rest and falls short only with the hover tint over the sunken surface", () => {
+    const sunken = readable("success", "ghost", "light").filter(({ at }) => at.includes("on sunken"));
+    expect(sunken.map(({ at }) => at)).toEqual(["light success ghost on sunken", SUNKEN_MISS]);
+    expect(sunken[0]!.ratio).toBeGreaterThanOrEqual(4.5);
+    expect(sunken[1]!.ratio).toBeLessThan(4.5);
+    expect(sunken[1]!.ratio).toBeGreaterThan(4.3);
   });
 
   it("[foundations.color.dark-error-muted-hover] reads at 4.5:1 at rest and falls only a hair short with the hover tint over the raised surface", () => {

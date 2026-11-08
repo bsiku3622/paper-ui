@@ -44,8 +44,8 @@ describe("the names a stylesheet can mean", () => {
   });
 
   it("[foundations.override.unknown-warning] picks out the names of Shape, Layout and Typography the stylesheet does not emit, once each and in order", () => {
-    expect(unknownSourceVariables(["--pui-typography-role-body-size", "--pui-shape-control-height-xl", "--pui-layout-gutter", "--pui-shape-control-height-xl", "--pui-color-nope", "--pui-state-tint", "--mine"])).toEqual([
-      "--pui-layout-gutter", "--pui-shape-control-height-xl", "--pui-typography-role-body-size",
+    expect(unknownSourceVariables(["--pui-typography-role-body-size", "--pui-shape-control-height-2xl", "--pui-layout-gutter", "--pui-shape-control-height-2xl", "--pui-color-nope", "--pui-state-tint", "--mine"])).toEqual([
+      "--pui-layout-gutter", "--pui-shape-control-height-2xl", "--pui-typography-role-body-size",
     ]);
   });
 });

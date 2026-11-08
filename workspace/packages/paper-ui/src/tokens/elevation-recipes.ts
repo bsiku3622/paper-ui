@@ -2,10 +2,20 @@
 // together. Layout owns the numbers and the shadow geometry, Color the shadow colour; nothing here is a
 // number, and every consumer (the `elevation` classes, Floating, the Switch thumb) spreads one of these.
 
-import { buildVarTree } from "./helpers";
-import { ELEVATIONS, LAYOUT_SOURCE, LAYOUT_VALUES, castShadow, type Elevation } from "./layout";
+import { COLOR, type Depth } from "./colors";
+import { buildVarTree, pathToVarRef } from "./helpers";
+import { ELEVATIONS, LAYOUT_MODE_VALUES, LAYOUT_SOURCE, LAYOUT_VALUES, type Elevation } from "./layout";
 
 const vars = buildVarTree(LAYOUT_VALUES, ["layout"]).elevation;
+
+// A depth's shadow, assembled on the element that casts it: each layer's geometry beside the shadow
+// colour, both read where the element stands. No variable holds the result, so a scope that swaps the
+// mode swaps the shadow with it.
+export const castShadow = (depth: Depth): string =>
+  Object.keys(LAYOUT_MODE_VALUES.light.shadow[depth])
+    .map((layer) => `${depth === "inset" ? "inset " : ""}${pathToVarRef(["layout", "shadow", depth, layer])} ${COLOR.shadow[depth]}`)
+    .join(", ");
+
 const perTier = <T>(read: (tier: Elevation) => T): Record<Elevation, T> =>
   Object.fromEntries(ELEVATIONS.map((tier) => [tier, read(tier)])) as Record<Elevation, T>;
 
@@ -31,6 +41,9 @@ export const elevationCast = (tier: Elevation) => ({ boxShadow: ELEVATION.shadow
 
 // The shadow of a face that stays where it is. It is no tier: it does not stack over anything, so it brings no position and no z.
 export const restingCast = { boxShadow: castShadow("resting") };
+
+// The shade a groove or a well sinks with: a track, and a field or a mark lying in a raised face. No tier either.
+export const insetCast = { boxShadow: castShadow("inset") };
 
 // The whole unit, for an element that is not already positioned.
 export const elevationStyle = (tier: Elevation) => ({

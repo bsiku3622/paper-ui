@@ -36,8 +36,9 @@ type OpenState = { isOpen: boolean; setOpen: (open: boolean) => void; open: () =
 // Where the panel stands against its anchor, as the style to put on it. Placement is logical: start and end are
 // turned into left and right by the direction the anchor reads, and the side React Aria settles on is turned back.
 // The panel's z belongs to its elevation, so the z that React Aria computes is dropped. Distances arrive as pixels,
-// measured by the caller from the role that names them.
-export function useAnchoredPosition({ anchor, overlay, open, placement, offsetPx, crossOffsetPx, flip, containerPaddingPx }: {
+// measured by the caller from the role that names them. A panel that fits its anchor is at least as wide as the anchor is
+// now, as far as the window's gutters allow: the width is read while the panel is open, and again whenever the anchor changes size.
+export function useAnchoredPosition({ anchor, overlay, open, placement, offsetPx, crossOffsetPx, flip, containerPaddingPx, fitAnchor = false }: {
   anchor: RefObject<Element | null>;
   overlay: RefObject<Element | null>;
   open: boolean;
@@ -46,11 +47,22 @@ export function useAnchoredPosition({ anchor, overlay, open, placement, offsetPx
   crossOffsetPx: number;
   flip: boolean;
   containerPaddingPx: number;
+  fitAnchor?: boolean;
 }): { style: CSSProperties; placement: PlacementSide | null } {
   const [direction, setDirection] = useState<Direction>("ltr");
   useIsomorphicLayoutEffect(() => {
     if (open && anchor.current) setDirection(directionOf(anchor.current));
   }, [open, anchor]);
+  const [anchorWidth, setAnchorWidth] = useState<number | null>(null);
+  useIsomorphicLayoutEffect(() => {
+    const element = anchor.current;
+    if (!open || !fitAnchor || !element) return;
+    const measure = () => setAnchorWidth(element.getBoundingClientRect().width);
+    measure();
+    const observer = typeof ResizeObserver === "undefined" ? undefined : new ResizeObserver(measure);
+    observer?.observe(element);
+    return () => observer?.disconnect();
+  }, [open, fitAnchor, anchor]);
   const { overlayProps, placement: resolved } = useOverlayPosition({
     targetRef: anchor,
     overlayRef: overlay,
@@ -63,6 +75,8 @@ export function useAnchoredPosition({ anchor, overlay, open, placement, offsetPx
   });
   const style: CSSProperties = { ...overlayProps.style };
   delete style.zIndex;
+  // Never wider than the window leaves between its gutters: a list under a control that spans the page stays on the page.
+  if (fitAnchor && anchorWidth !== null && typeof document !== "undefined") style.minWidth = Math.max(0, Math.min(anchorWidth, document.documentElement.clientWidth - containerPaddingPx - containerPaddingPx));
   return { style, placement: resolved && logical(resolved, direction) };
 }
 

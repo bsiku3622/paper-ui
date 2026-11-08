@@ -42,25 +42,32 @@ describe("the relations the design relies on", () => {
 
       expect(semantic.bg).toEqual({
         raised: palette.neutral[dark ? "925" : "0"],
-        canvas: palette.neutral[dark ? "950" : "50"],
-        sunken: palette.neutral[dark ? "950" : "100"],
+        canvas: palette.neutral[dark ? "950" : "100"],
+        sunken: palette.neutral[dark ? "950" : "150"],
       });
-      expect(semantic.control.track).toBe(palette.neutral[dark ? "800" : "200"]);
+      expect(semantic.control).toEqual({
+        track: palette.neutral[dark ? "875" : "150"],
+        knob: palette.neutral[dark ? "400" : "0"],
+        thumb: palette.neutral[dark ? "800" : "0"],
+        field: palette.neutral[dark ? "875" : "0"],
+        mark: palette.neutral[dark ? "875" : "0"],
+        chosen: palette.neutral[dark ? "800" : "150"],
+      });
       expect(semantic.border).toEqual({
         base: palette.neutral[dark ? "800" : "200"],
         strong: palette.neutral[dark ? "700" : "300"],
         hover: palette.neutral[dark ? "600" : "400"],
       });
       expect(semantic.ink).toEqual({
-        primary: palette.neutral[dark ? "100" : "900"],
+        primary: palette.neutral[dark ? "100" : "925"],
         secondary: palette.neutral[dark ? "400" : "700"],
-        tertiary: palette.neutral[dark ? "500" : "650"],
+        tertiary: palette.neutral["500"],
       });
       expect(semantic.accent.primary).toEqual({
         solid: palette.neutral[dark ? "50" : "950"],
         wash: palette.neutral[dark ? "950" : "0"],
-        ink: palette.neutral[dark ? "100" : "900"],
-        soft: palette.neutral[dark ? "875" : "200"],
+        ink: palette.neutral[dark ? "100" : "925"],
+        soft: palette.neutral[dark ? "875" : "150"],
         subtle: palette.neutral[dark ? "500" : "700"],
       });
     }
@@ -74,8 +81,7 @@ describe("the relations the design relies on", () => {
     expect(amber[paleHue!.to][2]).toBe(hue);
   });
 
-  it("[foundations.color.surface-ladder] folds sunken into canvas in the dark theme and turns the light canvas into the dark primary solid", () => {
-    expect(COLOR_VALUES_DARK.accent.primary.solid).toBe(COLOR_VALUES.bg.canvas);
+  it("[foundations.color.surface-ladder] folds sunken into canvas in the dark theme", () => {
     expect(COLOR_VALUES_DARK.bg.canvas).toBe(COLOR_VALUES_DARK.bg.sunken);
   });
 

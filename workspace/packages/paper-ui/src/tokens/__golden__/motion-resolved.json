@@ -5,14 +5,16 @@
     "fast": "100ms",
     "base": "130ms",
     "moderate": "200ms",
-    "slow": "300ms"
+    "slow": "300ms",
+    "scene": "700ms"
   },
   "easing": {
     "linear": "linear",
     "standard": "cubic-bezier(0.4, 0, 0.2, 1)",
     "decelerate": "cubic-bezier(0, 0, 0.2, 1)",
     "accelerate": "cubic-bezier(0.4, 0, 1, 1)",
-    "overshoot": "cubic-bezier(0.22, 1, 0.36, 1)"
+    "overshoot": "cubic-bezier(0.22, 1, 0.36, 1)",
+    "emphasized": "cubic-bezier(0.16, 1, 0.3, 1)"
   },
   "roles": {
     "press": {
@@ -37,6 +39,13 @@
     "exit": {
       "duration": "100ms",
       "easing": "cubic-bezier(0.4, 0, 1, 1)"
+    },
+    "reveal": {
+      "duration": "700ms",
+      "easing": "cubic-bezier(0.16, 1, 0.3, 1)",
+      "offset": "var(--pui-shape-space-lg)",
+      "blur": "var(--pui-shape-space-sm)",
+      "step": "100ms"
     },
     "theme": {
       "duration": "0ms",

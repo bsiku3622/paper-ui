@@ -5,15 +5,17 @@ import { describe, expect, it } from "vitest";
 
 import { STRUCTURAL, isStructural } from "../../../../eslint-rules/structural.js";
 import { emittedDeclarations, resolveDp } from "./resolve-dp";
-import { controlGeometry } from "../internal/shape";
-import { CONTROL_ICON, SOURCE_VARIABLES, strokeRing, tokens } from "./index";
+import { CONTROL } from "./control-recipes";
+import { CONTROL_SIZES, type ControlSize } from "./control-sizes";
+import { castShadow } from "./elevation-recipes";
+import { CONTROL_ICON, CONTROL_LINE_PROPERTY, SOURCE_VARIABLES, nestedRadius, strokeRing, tokens } from "./index";
 import { walkValues } from "./helpers";
 import { COLOR_MODES } from "./color-modes";
 import { DEPTHS } from "./colors";
-import { LAYOUT_MODE_VALUES, LAYOUT_SOURCE, castShadow } from "./layout";
-import { SHAPE_SOURCE, SHAPE_VALUES, SPACES } from "./shape";
-import { SHAPE_RECIPES, targetReach } from "./shape-recipes";
-import { CONTROL_SIZES, PRESET_SPEC, TYPOGRAPHY_SOURCE, type ControlSize } from "./typography";
+import { LAYOUT_MODE_VALUES, LAYOUT_SOURCE } from "./layout";
+import { ANATOMY, SHAPE_SOURCE, SHAPE_VALUES, SPACES } from "./shape";
+import { SHAPE_RECIPES, markParts, targetReach } from "./shape-recipes";
+import { PRESET_SPEC, TYPOGRAPHY_SOURCE } from "./typography";
 import { themeVariables } from "./variables";
 
 // Everything the stylesheet emits as a source variable: the same in every mode.
@@ -35,16 +37,15 @@ const expected = {
   height: (size: ControlSize) => source_.control.height[size],
   // A typed value gets the same room on every side of its glyph line.
   inputInset: (size: ControlSize) => (source_.control.height[size] - lineOf(PRESET_SPEC.field[size].leading)) / 2,
-  // A button's label defines its box, so its inset is the input inset widened by the ratio and snapped to a pixel.
-  buttonInset: (size: ControlSize) => Math.round(((source_.control.height[size] - lineOf(PRESET_SPEC.button[size].leading)) / 2) * source_.control.buttonInsetRatio),
+  // A button's label defines its box: its inset is set by hand for each size, and the role is that source.
+  buttonInset: (size: ControlSize) => source_.control.buttonInset[size],
   icon: (size: ControlSize) => source_.icon[CONTROL_ICON[size]],
   selection: (size: ControlSize) => source_.selection.size[size],
   thumb: (size: ControlSize) => expected.selection(size) - source_.stroke.emphasis,
   trackHeight: (size: ControlSize) => expected.selection(size) + source_.stroke.emphasis,
-  // One row of a textarea is a control tall: the padding is what the control height leaves around its line and border.
-  textareaPadding: (size: ControlSize) => (source_.control.height[size] - lineOf(PRESET_SPEC.textarea[size].leading)) / 2 - source_.stroke.border,
-  // The value stops a control gap before the trailing icon.
-  selectEnd: (size: ControlSize) => expected.inputInset(size) + expected.icon(size) + source_.space.sm,
+  // One row of a textarea is a control tall: the padding is what the control height leaves around its line, at rest with no room
+  // for a border. A frame that keeps room for one gives it up from here.
+  textareaPadding: (size: ControlSize) => (source_.control.height[size] - lineOf(PRESET_SPEC.textarea[size].leading)) / 2,
   // Half the shortfall of a mark under the minimum target, never positive.
   reach: (visual: number) => (Math.min(visual, source_.target.min) - source_.target.min) / 2,
 };
@@ -114,6 +115,11 @@ describe("Shape is source → role → recipe", () => {
     expect(bySize(tokens.shape.control.height)).toEqual(each(expected.height));
     expect(bySize(tokens.shape.control.inset.input)).toEqual(each(expected.inputInset));
     expect(bySize(tokens.shape.control.inset.button)).toEqual(each(expected.buttonInset));
+    // Set by hand, the button inset still has to sit wider than a typed value at every size, in whole pixels.
+    for (const size of CONTROL_SIZES) {
+      expect(expected.buttonInset(size), size).toBeGreaterThan(expected.inputInset(size));
+      expect(Number.isInteger(expected.buttonInset(size)), size).toBe(true);
+    }
     expect(dp(tokens.shape.control.gap)).toBe(source_.space.sm);
     // The input inset subtracts the field's glyph line, not the taller line box the value sits in.
     for (const size of CONTROL_SIZES) expect(lineOf(PRESET_SPEC.field[size].inputLeading)).toBeGreaterThan(lineOf(PRESET_SPEC.field[size].leading));
@@ -123,25 +129,24 @@ describe("Shape is source → role → recipe", () => {
     expect(bySize(tokens.shape.selection.size)).toEqual(each(expected.selection));
     expect(bySize(SHAPE_RECIPES.checkbox.mark)).toEqual(each((size) => expected.selection(size) / 2));
     expect(bySize(SHAPE_RECIPES.checkbox.short)).toEqual(each((size) => expected.selection(size) / 4));
-    expect(bySize(SHAPE_RECIPES.radio.dot)).toEqual(each((size) => expected.selection(size) / 2));
-    expect(bySize(SHAPE_RECIPES.switch.width)).toEqual(each((size) => expected.selection(size) * 2));
+    expect(bySize(SHAPE_RECIPES.radio.dot)).toEqual(each((size) => expected.selection(size) * SHAPE_SOURCE.anatomy.radio.dot));
+    expect(bySize(SHAPE_RECIPES.switch.width)).toEqual(each((size) => expected.trackHeight(size) * SHAPE_SOURCE.anatomy.switch.length));
     expect(bySize(SHAPE_RECIPES.switch.height)).toEqual(each(expected.trackHeight));
     expect(bySize(SHAPE_RECIPES.switch.thumb)).toEqual(each(expected.thumb));
-    expect(SHAPE_RECIPES.switch.travel).toBe(SHAPE_RECIPES.switch.thumb);
   });
 
-  it("[foundations.shape.recipe-geometry] makes one textarea row exactly one control tall", () => {
-    const padding = bySize(SHAPE_RECIPES.textarea.paddingBlock);
-    expect(padding).toEqual(each(expected.textareaPadding));
-    CONTROL_SIZES.forEach((size, i) => expect(lineOf(PRESET_SPEC.textarea[size].leading) + padding[i]! * 2 + SHAPE_SOURCE.stroke.border * 2).toBe(SHAPE_SOURCE.control.height[size]));
+  it("[foundations.shape.recipe-geometry] makes one textarea row exactly one control tall, whether its frame keeps room for a line or not", () => {
+    expect(bySize(CONTROL.area.paddingBlock)).toEqual(each(expected.textareaPadding));
+    for (const room of [0, SHAPE_SOURCE.stroke.border]) {
+      const at = new Map([...resolvable, [CONTROL_LINE_PROPERTY, `${room}px`]]);
+      const padding = CONTROL_SIZES.map((size) => resolveDp(CONTROL.area.paddingBlock[size]!, at));
+      expect(padding, `room ${room}`).toEqual(each((size) => expected.textareaPadding(size) - room));
+      CONTROL_SIZES.forEach((size, i) => expect(lineOf(PRESET_SPEC.textarea[size].leading) + padding[i]! * 2 + room * 2, `room ${room}`).toBe(SHAPE_SOURCE.control.height[size]));
+    }
   });
 
-  it("[foundations.shape.recipe-geometry] places the Select arrow as a trailing control icon", () => {
+  it("[foundations.shape.recipe-geometry] gives a control the icon its size names, and a Spinner the same ring", () => {
     expect(bySize(tokens.shape.control.icon)).toEqual(each(expected.icon));
-    expect("arrow" in SHAPE_RECIPES.select).toBe(false);
-    expect("minHeight" in SHAPE_RECIPES.textarea).toBe(false);
-    expect(SHAPE_RECIPES.select.arrowInset).toBe(tokens.shape.control.inset.input);
-    expect(bySize(SHAPE_RECIPES.select.paddingEnd)).toEqual(each(expected.selectEnd));
     expect(SHAPE_RECIPES.spinner.size).toBe(tokens.shape.control.icon);
   });
 
@@ -164,7 +169,7 @@ describe("Shape is source → role → recipe", () => {
     expect(tokens.shape.target.min).toBe("var(--pui-shape-target-min)");
     expect(bySize(SHAPE_RECIPES.target.selection)).toEqual(each((size) => expected.reach(expected.selection(size))));
     expect(bySize(SHAPE_RECIPES.target.switchBlock)).toEqual(each((size) => expected.reach(expected.trackHeight(size))));
-    expect(bySize(SHAPE_RECIPES.target.action)).toEqual(each((size) => expected.reach(expected.icon(size))));
+    expect(CONTROL_SIZES.map((size) => dp(targetReach(tokens.shape.control.icon[size])))).toEqual(each((size) => expected.reach(expected.icon(size))));
     // A mark that already is a minimum target, or larger, reaches nowhere.
     expect(dp(targetReach("30px"))).toBe(0);
     expect(dp(targetReach(tokens.shape.target.min))).toBe(0);
@@ -194,14 +199,14 @@ describe("what the Shape page says", () => {
     }
   });
 
-  it("[foundations.override.worked-example] says what one source override derives to: 40 tall, inset 12 and 17, while the marks keep their own ladder", () => {
-    const overridden = new Map([...resolvable, ["--pui-shape-control-height-md", "40px"]]);
+  it("[foundations.override.worked-example] says what one source override derives to: 36 tall and input inset 10, while the button inset (17) and the marks keep their own sources", () => {
+    const overridden = new Map([...resolvable, ["--pui-shape-control-height-md", "36px"]]);
     const at = (role: string) => resolveDp(role, overridden);
-    expect(at(tokens.shape.control.height.md)).toBe(40);
-    expect(at(tokens.shape.control.inset.input.md)).toBe(12);
+    expect(at(tokens.shape.control.height.md)).toBe(36);
+    expect(at(tokens.shape.control.inset.input.md)).toBe(10);
     expect(at(tokens.shape.control.inset.button.md)).toBe(17);
     expect(at(tokens.shape.selection.size.md)).toBe(SHAPE_SOURCE.selection.size.md);
-    expect(at(SHAPE_RECIPES.switch.width.md)).toBe(SHAPE_SOURCE.selection.size.md * 2);
+    expect(at(SHAPE_RECIPES.switch.width.md)).toBe((SHAPE_SOURCE.selection.size.md + SHAPE_SOURCE.stroke.emphasis) * SHAPE_SOURCE.anatomy.switch.length);
   });
 
   it("[foundations.shape.inset-scale] climbs the 4dp grid to xl and an 8dp flow past it", () => {
@@ -219,9 +224,9 @@ describe("what the Shape page says", () => {
   });
 
   it("[foundations.shape.target-table] draws the table of hit areas from the roles it names", () => {
-    expect(cells(docRow("`target.selection`").replace(/\| targetReach\([^|]*\) /, "")).slice(0, 4)).toEqual(bySize(SHAPE_RECIPES.target.selection));
-    expect(cells(docRow("`target.switchBlock`").replace(/\| targetReach\([^|]*\) /, "")).slice(0, 4)).toEqual(bySize(SHAPE_RECIPES.target.switchBlock));
-    expect(cells(docRow("`target.action`").replace(/\| targetReach\([^|]*\) /, "")).slice(0, 4)).toEqual(bySize(SHAPE_RECIPES.target.action));
+    expect(cells(docRow("`target.selection`").replace(/\| targetReach\([^|]*\) /, "")).slice(0, 5)).toEqual(bySize(SHAPE_RECIPES.target.selection));
+    expect(cells(docRow("`target.switchBlock`").replace(/\| targetReach\([^|]*\) /, "")).slice(0, 5)).toEqual(bySize(SHAPE_RECIPES.target.switchBlock));
+    expect(cells(docRow("`target.action`").replace(/\| targetReach\([^|]*\) /, "")).slice(0, 5)).toEqual(CONTROL_SIZES.map((size) => dp(targetReach(tokens.shape.control.icon[size]))));
   });
 
   it("[foundations.shape.radius-separate] keeps the surface family and the control corner apart, whatever their values", () => {
@@ -231,67 +236,79 @@ describe("what the Shape page says", () => {
   });
 });
 
-describe("controlGeometry is the one size entry of every sized Atom", () => {
-  type Rule = { [key: string]: unknown };
-  const rules = (entry: Record<ControlSize, Rule>, read: (rule: Rule) => unknown) => CONTROL_SIZES.map((size) => dp(read(entry[size]) as string));
-  const prop = (name: string) => (rule: Rule) => rule[name];
-  const nested = (selector: string, name: string) => (rule: Rule) => ((rule.selectors as Record<string, Rule>)[selector] as Rule)[name];
-
-  it("[foundations.shape.control-geometry] [foundations.shape.geometry-entry] names a rule for every control size in each entry", () => {
-    expect(Object.keys(controlGeometry)).toEqual([
-      "corner", "button", "iconButton", "field", "fieldInput", "select", "selectValue", "selectArrow", "textarea", "selection", "checkbox", "radio", "switch", "selectionReach", "switchReach", "fieldActionReach", "badge", "spinner", "spinnerInline",
-    ]);
-    for (const [name, entry] of Object.entries(controlGeometry)) {
-      if (name !== "spinnerInline") expect(Object.keys(entry), name).toEqual([...CONTROL_SIZES]);
+describe("a selection box derives its parts by one set of formulas", () => {
+  it("[foundations.shape.geometry-entry] reads the same over a size and over the variable an element holds", () => {
+    expect(markParts("BOX").half).toBe("calc(BOX / 2)");
+    expect(markParts("BOX").short).toBe("calc(calc(BOX / 2) / 2)");
+    expect(markParts("BOX").trackWidth).toBe(`calc(${markParts("BOX").trackHeight} * ${ANATOMY.switch.length})`);
+    expect(markParts("BOX").thumbWidth).toBe(markParts("BOX").thumb);
+    for (const size of CONTROL_SIZES) {
+      const parts = markParts(tokens.shape.selection.size[size]);
+      expect(SHAPE_RECIPES.checkbox.mark[size], size).toBe(parts.half);
+      expect(SHAPE_RECIPES.checkbox.short[size], size).toBe(parts.short);
+      expect(SHAPE_RECIPES.checkbox.dash.width[size], size).toBe(parts.half);
+      expect(SHAPE_RECIPES.radio.dot[size], size).toBe(parts.dot);
+      expect(SHAPE_RECIPES.switch.width[size], size).toBe(parts.trackWidth);
+      expect(SHAPE_RECIPES.switch.height[size], size).toBe(parts.trackHeight);
+      expect(SHAPE_RECIPES.switch.thumb[size], size).toBe(parts.thumb);
+      expect(SHAPE_RECIPES.target.selection[size], size).toBe(parts.reach);
+      expect(SHAPE_RECIPES.target.switchBlock[size], size).toBe(parts.trackReach);
     }
   });
 
-  it("[foundations.shape.control-geometry] sizes the icon button as a square a control tall, with no inset", () => {
-    expect(rules(controlGeometry.iconButton, prop("height"))).toEqual(each(expected.height));
-    expect(rules(controlGeometry.iconButton, prop("width"))).toEqual(each(expected.height));
-    for (const size of CONTROL_SIZES) expect(controlGeometry.iconButton[size].paddingInline, size).toBe(0);
-  });
-
-  it("[foundations.shape.recipe-geometry] sizes the selection box and the marks drawn inside it", () => {
+  it("[foundations.shape.recipe-geometry] sizes what is drawn inside the selection box", () => {
     const half = each((size) => expected.selection(size) / 2);
-    expect(rules(controlGeometry.selection, prop("width"))).toEqual(each(expected.selection));
-    expect(rules(controlGeometry.selection, prop("height"))).toEqual(each(expected.selection));
-    expect(rules(controlGeometry.checkbox, nested("&:checked::after", "width"))).toEqual(half);
-    expect(rules(controlGeometry.checkbox, nested("&:checked::after", "height"))).toEqual(each((size) => expected.selection(size) / 4));
-    expect(rules(controlGeometry.checkbox, nested("&:indeterminate::after", "width"))).toEqual(half);
-    expect(rules(controlGeometry.radio, nested("&:checked::after", "width"))).toEqual(half);
-    expect(rules(controlGeometry.radio, nested("&:checked::after", "height"))).toEqual(half);
+    expect(bySize(SHAPE_RECIPES.checkbox.mark)).toEqual(half);
+    expect(bySize(SHAPE_RECIPES.checkbox.short)).toEqual(each((size) => expected.selection(size) / 4));
+    expect(bySize(SHAPE_RECIPES.checkbox.dash.width)).toEqual(half);
+    expect(bySize(SHAPE_RECIPES.radio.dot)).toEqual(each((size) => expected.selection(size) * SHAPE_SOURCE.anatomy.radio.dot));
   });
 
-  it("[foundations.shape.recipe-geometry] sizes the switch track, its thumb at the rim, and the thumb's place once checked", () => {
-    expect(rules(controlGeometry.switch, prop("width"))).toEqual(each((size) => expected.selection(size) * 2));
-    expect(rules(controlGeometry.switch, prop("height"))).toEqual(each(expected.trackHeight));
-    expect(rules(controlGeometry.switch, nested("&::after", "width"))).toEqual(each(expected.thumb));
-    expect(rules(controlGeometry.switch, nested("&::after", "height"))).toEqual(each(expected.thumb));
-    expect(rules(controlGeometry.switch, nested("&::after", "insetInlineStart"))).toEqual(each(() => SHAPE_SOURCE.stroke.emphasis));
-    // Checked, the thumb sits a rim plus its own width from the start.
-    expect(rules(controlGeometry.switch, nested("&:checked::after", "insetInlineStart"))).toEqual(each((size) => SHAPE_SOURCE.stroke.emphasis + expected.thumb(size)));
+  it("[foundations.shape.recipe-geometry] sizes the switch track, its thumb at the rim, and how far the thumb travels", () => {
+    const rim = SHAPE_SOURCE.stroke.emphasis;
+    const width = (size: ControlSize) => expected.trackHeight(size) * SHAPE_SOURCE.anatomy.switch.length;
+    expect(bySize(SHAPE_RECIPES.switch.width)).toEqual(each(width));
+    expect(bySize(SHAPE_RECIPES.switch.height)).toEqual(each(expected.trackHeight));
+    // The thumb is round: as wide as it is tall, a rim inside the track on every side.
+    expect(bySize(SHAPE_RECIPES.switch.thumb)).toEqual(each(expected.thumb));
+    expect(bySize(SHAPE_RECIPES.switch.thumbWidth)).toEqual(each(expected.thumb));
+    expect(dp(SHAPE_RECIPES.switch.inset)).toBe(rim);
+    // Checked, the thumb sits at the far rim: the track less the thumb and a rim on each side.
+    expect(bySize(SHAPE_RECIPES.switch.travel)).toEqual(each((size) => width(size) - expected.thumb(size) - rim - rim));
   });
 
-  it("[foundations.shape.recipe-geometry] sizes the badge, the spinner and the select arrow", () => {
-    expect(rules(controlGeometry.badge, prop("height"))).toEqual(each((size) => SHAPE_SOURCE.anatomy.badge.height[size]));
-    expect(rules(controlGeometry.badge, prop("paddingInline"))).toEqual(each((size) => SHAPE_SOURCE.anatomy.badge.inset[size]));
-    expect(rules(controlGeometry.spinner, prop("width"))).toEqual(each(expected.icon));
-    expect(rules(controlGeometry.spinner, prop("height"))).toEqual(each(expected.icon));
-    expect(rules(controlGeometry.selectArrow, prop("insetInlineEnd"))).toEqual(each(expected.inputInset));
+  it("[foundations.shape.recipe-geometry] sizes the badge and the spinner", () => {
+    expect(bySize(SHAPE_RECIPES.badge.height)).toEqual(each((size) => SHAPE_SOURCE.anatomy.badge.height[size]));
+    expect(bySize(SHAPE_RECIPES.badge.inset)).toEqual(each((size) => SHAPE_SOURCE.anatomy.badge.inset[size]));
+    expect(bySize(SHAPE_RECIPES.spinner.size)).toEqual(each(expected.icon));
     // Inside a line of text the ring is as tall as the text.
-    const inline = controlGeometry.spinnerInline;
     expect(SHAPE_RECIPES.spinner.inline).toBe("var(--pui-shape-anatomy-inline-spinner)");
-    expect(inline).toEqual({ width: SHAPE_RECIPES.spinner.inline, height: SHAPE_RECIPES.spinner.inline });
     expect(resolvable.get("--pui-shape-anatomy-inline-spinner")).toBe("1em");
   });
+});
 
-  it("[foundations.shape.recipe-geometry] gives the controls that already had a ladder the values their roles derive", () => {
-    expect(rules(controlGeometry.button, prop("height"))).toEqual(each(expected.height));
-    expect(rules(controlGeometry.button, prop("paddingInline"))).toEqual(each(expected.buttonInset));
-    expect(rules(controlGeometry.field, prop("paddingInline"))).toEqual(each(expected.inputInset));
-    expect(rules(controlGeometry.selectValue, prop("paddingInlineEnd"))).toEqual(each(expected.selectEnd));
-    expect(rules(controlGeometry.textarea, prop("paddingBlock"))).toEqual(each(expected.textareaPadding));
+describe("CONTROL ties a size across Shape and Typography", () => {
+  it("[foundations.control.formulas] gives every size the insets and the textarea padding the sources work out to", () => {
+    expect(bySize(CONTROL.inset.input)).toEqual(each(expected.inputInset));
+    expect(bySize(CONTROL.inset.button)).toEqual(each(expected.buttonInset));
+    expect(bySize(CONTROL.area.paddingBlock)).toEqual(each(expected.textareaPadding));
+    expect(bySize(CONTROL.select.paddingEnd)).toEqual(each((size) => expected.inputInset(size) + expected.icon(size) + source_.space.sm));
+    expect(bySize(CONTROL.inputLine)).toEqual(each((size) => lineOf(PRESET_SPEC.field[size].inputLeading)));
+  });
+
+  it("[foundations.control.formulas] is what the public control insets point at", () => {
+    expect(tokens.shape.control.inset).toBe(CONTROL.inset);
+  });
+
+  it("[foundations.control.formulas] records the numbers in its golden file", async () => {
+    await expect(`${JSON.stringify(resolvedTree(CONTROL), null, 2)}\n`).toMatchFileSnapshot("./__golden__/control-resolved.json");
+  });
+});
+
+describe("nestedRadius keeps two curves parallel", () => {
+  it("[foundations.shape.nested-radius] is the outer corner less the distance, and never below a square corner", () => {
+    expect(dp(nestedRadius(tokens.shape.radius.surface.sm, tokens.shape.inset.sm).replace(/^max\(0px, (.*)\)$/, "$1"))).toBe(source_.radius.surface.sm - source_.space.sm);
+    expect(nestedRadius("A", "B")).toBe("max(0px, calc(A - B))");
   });
 });
 
@@ -319,12 +336,12 @@ describe("Layout shadow is geometry per mode, assembled where it is cast", () =>
     }
   });
 
-  it("[foundations.layout.shadow-geometry] has three depths, draws dark tighter than light layer by layer, and spreads dark's floating depth inward", () => {
-    expect([...DEPTHS].sort()).toEqual(["floating", "lifted", "resting"]);
+  it("[foundations.layout.shadow-geometry] has four depths, draws dark no wider than light layer by layer, and spreads dark's floating depth inward", () => {
+    expect([...DEPTHS].sort()).toEqual(["floating", "inset", "lifted", "resting"]);
     // How far a layer reaches past the box: its blur and its spread together.
     const reach = (layer: readonly number[]) => layer[2]! + layer[3]!;
     for (const depth of DEPTHS) {
-      LAYOUT_SOURCE.shadow.dark[depth].forEach((layer, index) => expect(reach(layer), `${depth} ${index}`).toBeLessThan(reach(LAYOUT_SOURCE.shadow.light[depth][index]!)));
+      LAYOUT_SOURCE.shadow.dark[depth].forEach((layer, index) => expect(reach(layer), `${depth} ${index}`).toBeLessThanOrEqual(reach(LAYOUT_SOURCE.shadow.light[depth][index]!)));
     }
     for (const layer of LAYOUT_SOURCE.shadow.dark.floating) expect(layer[3]).toBeLessThan(0);
   });
@@ -332,7 +349,7 @@ describe("Layout shadow is geometry per mode, assembled where it is cast", () =>
   it("[foundations.layout.emission] [foundations.layout.shadow-geometry] emits the geometry as ground variables of each mode and nothing else of Layout per mode", () => {
     for (const mode of COLOR_MODES) {
       const layoutNames = Object.keys(modes[mode].ground).filter((name) => name.startsWith("--pui-layout-"));
-      expect(layoutNames, mode).toEqual(["--pui-layout-shadow-resting-0", "--pui-layout-shadow-lifted-0", "--pui-layout-shadow-floating-0", "--pui-layout-shadow-floating-1"]);
+      expect(layoutNames, mode).toEqual(["--pui-layout-shadow-resting-0", "--pui-layout-shadow-lifted-0", "--pui-layout-shadow-floating-0", "--pui-layout-shadow-floating-1", "--pui-layout-shadow-inset-0"]);
       expect(Object.keys(modes[mode].own).some((name) => name.startsWith("--pui-layout-")), mode).toBe(false);
     }
   });

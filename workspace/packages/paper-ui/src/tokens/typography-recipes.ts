@@ -7,11 +7,11 @@ import {
   TYPOGRAPHY,
   TYPOGRAPHY_SOURCE,
   type ControlPreset,
-  type ControlSize,
   type Emphasis,
   type TextFamily,
   type TextVariant,
 } from "./typography";
+import type { ControlSize } from "./control-sizes";
 
 const { palette, role, preset } = TYPOGRAPHY;
 const { breaking } = TYPOGRAPHY_SOURCE;

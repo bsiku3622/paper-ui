@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import { COLOR_MODES } from "./color-modes";
 import { ELEVATION, ELEVATION_NEST_LIMIT, elevationCast, restingCast, elevationStack, elevationStyle, tokens } from "./index";
-import { BREAKPOINTS, ELEVATIONS, LAYOUT_MODE_VALUES, LAYOUT_SOURCE, castShadow } from "./layout";
+import { castShadow } from "./elevation-recipes";
+import { BREAKPOINTS, ELEVATIONS, LAYOUT_MODE_VALUES, LAYOUT_SOURCE } from "./layout";
 import { themeVariables } from "./variables";
 
 // The design values of Layout, written down. The tests below hold for any design; this file says which design this

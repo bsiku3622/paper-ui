@@ -8,18 +8,15 @@
 //
 // Roles never get variables of their own. An alias is the source variable itself and a formula
 // is evaluated on the element that uses it, so overriding one source variable in a subtree
-// re-derives every role built on it. Shape may read Typography (control text sets the insets);
-// Layout builds on the space scale here, and Shape never reads Layout.
+// re-derives every role built on it. Shape reads no other system: what a control's text does to its inset is the
+// second-order Control (control-recipes.ts). Layout builds on the space scale here, and Shape never reads Layout.
 
+import { controlSizes, type ControlSize } from "./control-sizes";
 import { buildVarTree, em, keys, lengths, px, rem } from "./helpers";
-import { CONTROL_SIZES, type ControlSize, type TextVariant, TYPOGRAPHY } from "./typography";
+import type { TextVariant } from "./typography";
 
 export const CONTROL_SHAPES = ["rounded", "pill"] as const;
 export type ControlShape = (typeof CONTROL_SHAPES)[number];
-
-// One typed size map; recipes choose a role instead of patching arbitrary CSS keys.
-export const controlSizes = <T>(recipe: (size: ControlSize) => T): Record<ControlSize, T> =>
-  Object.fromEntries(CONTROL_SIZES.map((size) => [size, recipe(size)])) as Record<ControlSize, T>;
 
 // Named element sizes (Box width·height) have their own five steps; the width map names them.
 const DIMENSION_WIDTH = { xs: 72, sm: 108, md: 160, lg: 240, xl: 360 } as const;
@@ -35,7 +32,7 @@ export const SHAPE_SOURCE = {
   // set them apart. text hugs a line of text. pill is the label's form and a Shape may pull it down; full is a circle's
   // geometry, and a Radio that read a lower value would stop being round.
   radius: {
-    control: { xs: 8, sm: 8, md: 12, lg: 12 } satisfies Record<ControlSize, number>,
+    control: { xs: 8, sm: 12, md: 12, lg: 12, xl: 12 } satisfies Record<ControlSize, number>,
     selection: 4,
     surface: { sm: 12, md: 16, lg: 20 },
     text: 4,
@@ -48,12 +45,15 @@ export const SHAPE_SOURCE = {
   // The smallest area a press may land on (WCAG 2.5.8). CSS px: a hit area does not follow the root font.
   target: { min: 24 },
   control: {
-    height: { xs: 28, sm: 32, md: 40, lg: 44 } satisfies Record<ControlSize, number>,
-    // A button's label defines its box, so it sits wider than a typed value.
-    buttonInsetRatio: 1.4,
+    height: { xs: 32, sm: 36, md: 40, lg: 44, xl: 48 } satisfies Record<ControlSize, number>,
+    // A button's label defines its box, so it sits wider than a typed value. Set by hand for each size: a ratio of the input
+    // inset could not move one size alone, and a value picked in a design file lands here as it is. It does not follow the
+    // height, so a change to the height ladder changes this one too.
+    buttonInset: { xs: 11, sm: 14, md: 17, lg: 20, xl: 23 } satisfies Record<ControlSize, number>,
   },
-  // A selection mark stands beside a line of text, so its size doesn't follow how much room a control takes.
-  selection: { size: { xs: 14, sm: 16, md: 18, lg: 20 } satisfies Record<ControlSize, number> },
+  // A selection mark stands beside a line of text, so its size doesn't follow how much room a control takes: sizes that hold the
+  // same text hold the same mark.
+  selection: { size: { xs: 16, sm: 18, md: 18, lg: 20, xl: 20 } satisfies Record<ControlSize, number> },
   // Icon artboards are named after the Text role they stand beside.
   icon: { label: 14, caption: 16, body: 18, subheading: 20 } satisfies Partial<Record<TextVariant, number>>,
   dimension: {
@@ -65,12 +65,18 @@ export const SHAPE_SOURCE = {
   // Component anatomy that no rule derives. Emitted, but reachable only through shape recipes.
   anatomy: {
     badge: {
-      height: { xs: 18, sm: 20, md: 22, lg: 24 } satisfies Record<ControlSize, number>,
-      inset: { xs: 4, sm: 6, md: 8, lg: 10 } satisfies Record<ControlSize, number>,
+      height: { xs: 20, sm: 22, md: 22, lg: 24, xl: 26 } satisfies Record<ControlSize, number>,
+      inset: { xs: 6, sm: 8, md: 8, lg: 10, xl: 12 } satisfies Record<ControlSize, number>,
     },
     // Turned onto its diagonal, the check keeps its visual mass low and left, so it shifts by these ratios of the
     // emphasis stroke (x to the right, y down).
     checkbox: { markShift: { x: 0.25, y: -0.5 } },
+    // A Radio's dot, as a share of its box: white on black reads larger than black on white, so it stays under half.
+    radio: { dot: 0.4 },
+    // A Switch's track, as long as this many of its heights: short and stout, so its round knob fills most of it.
+    switch: { length: 1.5 },
+    // How much of its turn a Spinner leaves empty before the tail starts (%).
+    spinner: { tail: 8 },
     // Marks sized against the text they sit in (em).
     inline: { dot: 0.5, spinner: 1 },
     // The highlighter's band: its height and where it sits in the line box (%), and how far past the glyphs it runs (em).
@@ -87,9 +93,9 @@ export const MEASURES = keys(SHAPE_SOURCE.measure);
 export type Measure = keyof typeof SHAPE_SOURCE.measure;
 export const ICON_SIZES = keys(SHAPE_SOURCE.icon);
 export type IconSize = keyof typeof SHAPE_SOURCE.icon;
-// Control icons follow the control height (28 and 32 → 16, 40 → 18, 44 → 20), not the text beside them:
-// control text is a preset (12 · 13 · 14 · 15) whose steps are not all Text roles.
-export const CONTROL_ICON = { xs: "caption", sm: "caption", md: "body", lg: "subheading" } as const satisfies Record<ControlSize, IconSize>;
+// Control icons follow the control height (32 and 36 → 16, 40 → 18, 44 and 48 → 20), not the text beside them:
+// control text is a preset (13 · 14 · 14 · 15 · 16) whose steps are not all Text roles.
+export const CONTROL_ICON = { xs: "caption", sm: "caption", md: "body", lg: "subheading", xl: "subheading" } as const satisfies Record<ControlSize, IconSize>;
 
 const s = SHAPE_SOURCE;
 
@@ -107,7 +113,7 @@ export const SHAPE_VALUES = {
   stroke: { border: px(s.stroke.border), emphasis: px(s.stroke.emphasis), icon: String(s.stroke.icon) },
   focus: lengths(s.focus, px),
   target: lengths(s.target, px),
-  control: { height: lengths(s.control.height), buttonInsetRatio: String(s.control.buttonInsetRatio) },
+  control: { height: lengths(s.control.height), buttonInset: lengths(s.control.buttonInset) },
   selection: { size: lengths(s.selection.size) },
   icon: lengths(s.icon),
   dimension: { width: lengths(s.dimension.width), height: lengths(s.dimension.height) },
@@ -115,6 +121,9 @@ export const SHAPE_VALUES = {
   anatomy: {
     badge: { height: lengths(s.anatomy.badge.height), inset: lengths(s.anatomy.badge.inset) },
     checkbox: { markShift: { x: String(s.anatomy.checkbox.markShift.x), y: String(s.anatomy.checkbox.markShift.y) } },
+    radio: { dot: String(s.anatomy.radio.dot) },
+    switch: { length: String(s.anatomy.switch.length) },
+    spinner: { tail: `${s.anatomy.spinner.tail}%` },
     inline: lengths(s.anatomy.inline, em),
     marker: { height: `${s.anatomy.marker.height}%`, position: `${s.anatomy.marker.position}%`, overrun: em(s.anatomy.marker.overrun) },
   },
@@ -127,13 +136,7 @@ const source = buildVarTree(SHAPE_VALUES, ["shape"]);
 export const SPACE = source.space;
 export const ANATOMY = source.anatomy;
 
-const height = source.control.height;
-
-// Measured from the glyph line: the same room above, below and beside the glyphs. The input's own line box
-// (inputLeading) is taller, for the caret, and the inset does not read it.
-const inputInset = controlSizes((size) => `calc((${height[size]} - ${TYPOGRAPHY.preset.field[size].leading}) / 2)`);
-const buttonInset = controlSizes((size) =>
-  `round(nearest, calc((${height[size]} - ${TYPOGRAPHY.preset.button[size].leading}) / 2 * ${source.control.buttonInsetRatio}), 1px)`);
+export const CONTROL_BUTTON_INSET = source.control.buttonInset;
 
 export const SHAPE = {
   inset: SPACE,
@@ -142,8 +145,7 @@ export const SHAPE = {
   focus: source.focus,
   target: source.target,
   control: {
-    height,
-    inset: { input: inputInset, button: buttonInset },
+    height: source.control.height,
     gap: SPACE.sm,
     icon: controlSizes((size) => source.icon[CONTROL_ICON[size]]),
   },

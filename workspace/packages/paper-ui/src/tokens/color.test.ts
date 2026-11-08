@@ -161,7 +161,11 @@ describe("color systems", () => {
   // One readability rule for both themes: small text on every surface, the accent inks on them, and the wash on the solid it sits on.
   const readability = (values: typeof COLOR_VALUES, mode: ColorMode) => {
     for (const [surfaceName, surface] of Object.entries(values.bg)) {
-      for (const [level, ink] of Object.entries(values.ink)) expect(contrast(ink, surface), `${mode} ink.${level} on ${surfaceName}`).toBeGreaterThanOrEqual(4.5);
+      for (const [level, ink] of Object.entries(values.ink)) {
+        // The light tertiary ink falls back on purpose, the one documented exception (QUIET_INK below).
+        if (mode === "light" && level === "tertiary") continue;
+        expect(contrast(ink, surface), `${mode} ink.${level} on ${surfaceName}`).toBeGreaterThanOrEqual(4.5);
+      }
       for (const [name, accent] of Object.entries(values.accent)) {
         expect(contrast(accent.ink, surface), `${mode} ${name}.ink on ${surfaceName}`).toBeGreaterThanOrEqual(4.5);
         expect(contrast(accent.subtle, surface), `${mode} ${name}.subtle on ${surfaceName}`).toBeGreaterThanOrEqual(4.5);
@@ -182,6 +186,18 @@ describe("color systems", () => {
     for (const mode of COLOR_MODES) readability(COLOR_VALUES_BY_MODE[mode], mode);
   });
 
+  // The light tertiary ink on each light surface, at the ratios docs/foundations/color.md gives.
+  const QUIET_INK = { raised: 3.1, canvas: 2.9, sunken: 2.6 } as const satisfies Record<(typeof SURFACE_FILLS)[number], number>;
+  it("[foundations.color.contrast-contract] lets the light tertiary ink alone fall under 4.5:1, at the ratios the page gives, and lifts it to 4.5:1 where more contrast is asked", () => {
+    for (const surface of SURFACE_FILLS) {
+      const ratio = contrast(COLOR_VALUES.ink.tertiary, COLOR_VALUES.bg[surface]);
+      expect(ratio, surface).toBeLessThan(4.5);
+      expect(ratio, surface).toBeCloseTo(QUIET_INK[surface], 1);
+      expect(contrast(COLOR_CONTRAST_MORE.light.ink.tertiary, COLOR_VALUES.bg[surface]), `${surface}, more contrast`).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(COLOR_VALUES_DARK.ink.tertiary, COLOR_VALUES_DARK.bg[surface]), `dark ${surface}`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
   it("[foundations.color.role-paths] gives light and dark the same tree of roles", () => {
     expect(pathsOf(COLOR_VALUES_DARK)).toEqual(pathsOf(COLOR_VALUES));
     expect(pathsOf(COLOR_SELECTION.dark)).toEqual(pathsOf(COLOR_SELECTION.light));
@@ -200,7 +216,7 @@ describe("color systems", () => {
   });
 
   it("[foundations.color.shadow-depths] names the shadow colours by depth", () => {
-    expect(DEPTHS).toEqual(["floating", "lifted", "resting"]);
+    expect(DEPTHS).toEqual(["floating", "lifted", "resting", "inset"]);
   });
 
   it("[foundations.color.link] gives links their own role, and keeps it readable everywhere", () => {
@@ -274,28 +290,27 @@ describe("non-text contrast", () => {
   });
 
   it("[foundations.color.non-text-exceptions] holds the off Switch's knob on its track to the ratios the page gives, and the on track that makes up for it to 3:1", () => {
-    expect(markProfile.rest.knob).toBe(COLOR.bg.raised);
+    expect(markProfile.rest.knob).toBe(COLOR.control.knob);
     expect(markProfile.rest.track).toBe(COLOR.control.track);
     const colorDoc = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "../../../../../docs/foundations/color.md"), "utf8");
     const [, light, dark] = /꺼진 Switch의 손잡이입니다[^\n]*?라이트 ([\d.]+):1, 다크 ([\d.]+):1/.exec(colorDoc)!;
-    const ratio = (mode: ColorMode) => contrast(COLOR_VALUES_BY_MODE[mode].bg.raised, COLOR_VALUES_BY_MODE[mode].control.track);
-    expect(ratio("light").toFixed(2)).toBe("1.26");
-    expect(ratio("dark").toFixed(2)).toBe("1.68");
+    const ratio = (mode: ColorMode) => contrast(COLOR_VALUES_BY_MODE[mode].control.knob, COLOR_VALUES_BY_MODE[mode].control.track);
+    expect(ratio("light").toFixed(2)).toBe("1.19");
+    expect(ratio("dark").toFixed(2)).toBe("6.48");
     expect(ratio("light").toFixed(2)).toBe(light);
     expect(ratio("dark").toFixed(2)).toBe(dark);
     for (const mode of COLOR_MODES) {
       const values = COLOR_VALUES_BY_MODE[mode];
-      expect(ratio(mode), `${mode}: the knob is below the contract, so the list is honest`).toBeLessThan(NON_TEXT);
       expect(contrast(values.accent.primary.solid, values.control.track), `${mode}: the on track against the off one`).toBeGreaterThanOrEqual(NON_TEXT);
     }
   });
 
-  it("[foundations.color.non-text-contrast] [foundations.color.contrast-contract] rings an off mark in the input's line, on no face, and leaves the contract to what is on and what is wrong", () => {
+  it("[foundations.color.non-text-contrast] [foundations.color.contrast-contract] draws an off mark in the one grey line, a stronger one when asked for more contrast, and leaves the contract to what is on and what is wrong", () => {
     expect(markProfile.rest.ring).toBe(COLOR.border.base);
-    expect(markProfile.rest.face).toBe("transparent");
+    expect(markProfile.rest.contrastRing).toBe(COLOR.border.strong);
     expect(markProfile.invalid.ring).toBe(COLOR.accent.error.ink);
     expect(markProfile.checked.face).toBe(COLOR.accent.primary.solid);
-    expect(markProfile.rest.knob).toBe(COLOR.bg.raised);
+    expect(markProfile.rest.knob).toBe(COLOR.control.knob);
   });
 });
 
@@ -322,7 +337,7 @@ describe("what the Color page says", () => {
     const groups = Object.fromEntries(Object.entries(COLOR_VALUES).map(([group, tree]) => [group, Object.keys(tree as object)]));
     expect(Object.keys(groups).sort()).toEqual(["accent", "bg", "border", "control", "ink", "interaction", "marker", "overlay", "shadow"]);
     expect(groups.bg).toEqual([...SURFACE_FILLS]);
-    expect(groups.control).toEqual(["track"]);
+    expect(groups.control).toEqual(["track", "knob", "thumb", "field", "mark", "chosen"]);
     expect(groups.ink).toEqual(["primary", "secondary", "tertiary"]);
     expect(groups.border).toEqual([...BORDER_LEVELS]);
     expect(groups.accent).toEqual([...ACCENTS]);
@@ -330,7 +345,7 @@ describe("what the Color page says", () => {
     expect(groups.interaction).toEqual(["bgHover", "selected", "active", "focus", "link"]);
     expect(Object.keys(COLOR_VALUES.interaction.bgHover)).toEqual(["onSurface", "onPrimarySolid", "onAccentSolid"]);
     expect(groups.overlay).toEqual(["scrim"]);
-    expect(groups.shadow).toEqual(["floating", "lifted", "resting"]);
+    expect(groups.shadow).toEqual(["floating", "lifted", "resting", "inset"]);
     expect(groups.marker).toEqual(["fill", "ink"]);
     expect(Object.keys(OPACITY_ROLES)).toEqual(["disabled", "subdued"]);
   });
@@ -369,7 +384,7 @@ describe("color modes", () => {
   it("[foundations.theme.scope-roles] [foundations.theme.ground-roles] keeps ground roles to the focus ring and the shadow colours, all of them in the Color tree", () => {
     for (const role of GROUND_ROLES) expect(valueAt(COLOR_VALUES, role), role.join(".")).toBeDefined();
     const ground = pathsOf(COLOR_VALUES).filter((path) => isGroundRole(path.split(".")));
-    expect(ground).toEqual(["interaction.focus", "shadow.floating", "shadow.lifted", "shadow.resting"]);
+    expect(ground).toEqual(["interaction.focus", "shadow.floating", "shadow.lifted", "shadow.resting", "shadow.inset"]);
     expect(isGroundRole(["ink", "primary"])).toBe(false);
     expect(isGroundRole(["interaction", "link"])).toBe(false);
   });
@@ -385,7 +400,10 @@ describe("surface ladder", () => {
         if (index > 0) expect(step, `${mode} ${SURFACE_ORDER[index]}`).toBeLessThanOrEqual(steps[index - 1]!);
       });
       for (const surface of SURFACE_FILLS) {
-        for (const level of Object.values(ink)) expect(contrast(level, bg[surface]), `${mode} ${surface}`).toBeGreaterThanOrEqual(4.5);
+        for (const [name, level] of Object.entries(ink)) {
+          if (mode === "light" && name === "tertiary") continue;
+          expect(contrast(level, bg[surface]), `${mode} ${surface}`).toBeGreaterThanOrEqual(4.5);
+        }
       }
     }
     const { bg } = COLOR_VALUES;

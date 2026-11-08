@@ -4,8 +4,7 @@
 //
 // 다른 축과 달리 CSS var 로 emit 하지 않는다. duration + easing 은 transition 문자열로,
 // 변위는 keyframe 안에서 한꺼번에 조립되므로 빌드 타임에 값으로 읽는 게 맞다. 시간과 곡선은
-// 이 파일의 값이고, 변위(offset)는 길이라서 Shape·Layout 역할의 var 참조를 가리킨다 —
-// Motion 은 마지막 층이고 자기 길이를 갖지 않는다.
+// 이 파일의 값이고, 변위(offset)는 길이라서 Motion 이 갖지 않는다 — motion-recipes.ts 가 역할에 더한다.
 //
 // paper-ui 는 조용한 밀도의 시스템 — 모션도 짧고 차분하다(100~200ms). 튀는 전이는
 // 없다. hover 는 거의 즉각, 상태 전이는 base, 떠오르는 overlay 만 살짝 길게.
@@ -14,8 +13,6 @@
 // transition(role, …속성) 으로 조립하거나, 조립된 class(styles/motion.css.ts) 를 쓴다.
 
 import { keys } from "./helpers";
-import { LAYOUT } from "./layout";
-import { SHAPE } from "./shape";
 
 // ───── duration — 전이 시간 ─────────────────────────────────────────────────
 
@@ -26,6 +23,7 @@ export const DURATION = {
   base: "130ms", // 상태 전이 (background · color · border) ◀ 기본
   moderate: "200ms", // overlay 등장
   slow: "300ms",
+  scene: "700ms", // 화면에 처음 들어오는 덩어리(reveal) — 컴포넌트의 전이가 아니라 장면의 시간
 } as const;
 
 // ───── easing — 가속 곡선 ───────────────────────────────────────────────────
@@ -36,6 +34,7 @@ export const EASING = {
   decelerate: "cubic-bezier(0, 0, 0.2, 1)", // 등장 (끝에서 부드럽게 멈춤)
   accelerate: "cubic-bezier(0.4, 0, 1, 1)", // 퇴장
   overshoot: "cubic-bezier(0.22, 1, 0.36, 1)", // 떠오르는 overlay (이름과 달리 목표를 지나치지 않는다 — 빠르게 떠서 부드럽게 멈춘다)
+  emphasized: "cubic-bezier(0.16, 1, 0.3, 1)", // 화면에 들어오는 덩어리 — 처음에 거의 다 오고 남은 길을 길게 내려앉는다
 } as const;
 
 // ───── loop — 반복 (spinner 등, 전이와 별도 축) ─────────────────────────────
@@ -56,37 +55,44 @@ export const LOOP_REDUCED = { spin: "pulse", pulse: "pulse" } as const satisfies
 
 // ───── role — 의미별 모션 묶음 ──────────────────────────────────────────────
 //
-// 컴포넌트는 "무슨 상황의 모션인지"(role)만 고른다. press · enter 는 변위(offset)도 갖고,
-// 그 길이는 Shape·Layout 의 역할을 가리킨다. enter 는 scale 도 갖는다.
+// 컴포넌트는 "무슨 상황의 모션인지"(role)만 고른다. press · enter 의 변위(offset)는 motion-recipes.ts 가 더한다.
+// enter 는 scale 도 갖는다.
 
 export type MotionRoleSpec = {
   duration: string;
   easing: string;
   offset?: string;
   scale?: string;
+  // reveal 만: 흐림에서 또렷해지는 길이와, 함께 들어오는 형제 사이의 걸음.
+  blur?: string;
+  step?: string;
 };
 
 // 포커스 링은 즉시 나타난다 — 포커스에는 모션이 없다.
-export const MOTION = {
-  press: { duration: DURATION.fast, easing: EASING.standard, offset: SHAPE.stroke.border },
+export const MOTION_TIMING = {
+  press: { duration: DURATION.fast, easing: EASING.standard },
   hover: { duration: DURATION.fast, easing: EASING.standard },
   state: { duration: DURATION.base, easing: EASING.standard },
-  enter: { duration: DURATION.moderate, easing: EASING.overshoot, offset: LAYOUT.gap.xs, scale: "0.99" },
+  enter: { duration: DURATION.moderate, easing: EASING.overshoot, scale: "0.99" },
   exit: { duration: DURATION.fast, easing: EASING.accelerate },
+  // 화면에 처음 들어오는 덩어리 — 제목 · 섹션 · 카드. 컴포넌트의 전이보다 길게, 빠르게 떠서 길게 내려앉는다.
+  reveal: { duration: DURATION.scene, easing: EASING.emphasized },
   // 테마 전환 — 모드가 바뀌는 프레임에 모든 전이를 즉시 끝낸다 (theme/engine.ts 의 holdTransitions).
   theme: { duration: DURATION.instant, easing: EASING.linear },
 } as const satisfies Record<string, MotionRoleSpec>;
 
-export const MOTION_ROLES = keys(MOTION);
+export const MOTION_ROLES = keys(MOTION_TIMING);
 export type MotionRole = (typeof MOTION_ROLES)[number];
 
 // 역할을 쓰는 곳. 문서와 Playground 가 이 목록을 읽는다.
 export const MOTION_CONSUMERS = {
   press: ["Button", "IconButton"],
   hover: ["Button", "IconButton", "Field", "Select", "Textarea", "Surface"],
-  state: ["Button", "IconButton", "Field", "Select", "Textarea", "Checkbox", "Radio", "Switch"],
+  state: ["Button", "IconButton", "Field", "Select", "Textarea", "Checkbox", "Radio", "Switch", "SegmentControl"],
   enter: ["Floating"],
   exit: ["Floating"],
+  // 패키지의 컴포넌트는 등장하지 않는다 — 앱의 화면이 reveal class 로 고른다.
+  reveal: [],
   theme: ["PaperProvider", "Surface"],
 } as const satisfies Record<MotionRole, readonly string[]>;
 
@@ -103,4 +109,4 @@ export const MOTION_REDUCED = { duration: DURATION.reduced } as const;
 // transition 문자열 조립 헬퍼 — `prop {duration} {easing}` 조각을 잇는다.
 //   transition("state", "background", "color") → "background 130ms …, color 130ms …"
 export const transition = (role: MotionRole, ...properties: string[]): string =>
-  properties.map((property) => `${property} ${MOTION[role].duration} ${MOTION[role].easing}`).join(", ");
+  properties.map((property) => `${property} ${MOTION_TIMING[role].duration} ${MOTION_TIMING[role].easing}`).join(", ");

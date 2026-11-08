@@ -28,6 +28,9 @@ export { LiveRegion, announce, clearAnnouncements, type LiveRegionProps, type Li
 export { Surface, surfaceClass, type SurfaceProps } from "./primitives/paint/Surface";
 export { Paint, paintClass, type PaintProps } from "./primitives/paint/Paint";
 
+// Control — the size of a box control: height, inset, corner, text and icon together.
+export { Control, controlClass, type ControlProps } from "./primitives/control/Control";
+
 // Press — semantics, cursor, disabled look. No colour.
 export { Pressable, type PressableProps, type PressableState } from "./primitives/press/Pressable";
 export { usePressable, type PressableResult } from "./primitives/press/usePressable";
@@ -83,11 +86,14 @@ export { Textarea, type TextareaProps } from "./atoms/Textarea";
 export { Switch, type SwitchProps } from "./atoms/Switch";
 export { Radio, type RadioProps } from "./atoms/Radio";
 export { Spinner, type SpinnerProps } from "./atoms/Spinner";
+export { SegmentControl, type SegmentControlProps, type SegmentControlItemProps } from "./atoms/SegmentControl";
+export { Slider, type SliderProps } from "./atoms/Slider";
 
 // Class maps — class names for what a stylesheet cannot reach. elevation is one class per tier: position, z and shadow together.
-// presence is the enter and exit of a surface or a scrim, keyed on data-presence; loop is a repeating animation (spin, pulse).
+// presence is the enter and exit of a surface or a scrim, keyed on data-presence; loop is a repeating animation (spin, pulse);
+// reveal brings what first comes onto a screen in, on mount or as it scrolls into view, and revealAfter staggers its siblings.
 export { elevation } from "./styles/elevation.css";
-export { presence, loop } from "./styles/motion.css";
+export { presence, loop, reveal, revealAfter } from "./styles/motion.css";
 
 // Theme — the Provider and the hooks; the boot script is the entry "theme-boot"
 export { PaperProvider, type PaperProviderProps } from "./theme/PaperProvider";

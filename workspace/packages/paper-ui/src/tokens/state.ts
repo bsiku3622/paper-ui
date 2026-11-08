@@ -3,7 +3,7 @@
 // the names a component writes and the names a rule reads cannot drift apart. Nothing here imports.
 
 // A state is boolean: present while it holds. `active` is the transient press (hover is CSS and has no
-// attribute); `pressed` means aria-pressed only and has no name here.
+// attribute, only a preview below); `pressed` means aria-pressed only and has no name here.
 export const STATE_ATTRIBUTE = {
   active: "data-active",
   focused: "data-focused",
@@ -22,6 +22,19 @@ export type StateName = keyof typeof STATE_ATTRIBUTE;
 
 export const stateSelector = (name: StateName): string => `[${STATE_ATTRIBUTE[name]}]`;
 
+// A state shown without the pointer or the keyboard that would hold it: an element with [data-pui-preview~="hover"], or under one, is
+// drawn as if hovered, under "active" as if pressed, under "focus" as if the keyboard had come to it. It is for a gallery of states
+// (the Playground Overview) and never for a working screen: no component writes it, and real hover stays CSS.
+export const PREVIEW_ATTRIBUTE = "data-pui-preview";
+export const PREVIEW_STATES = ["hover", "active", "focus"] as const;
+export type PreviewState = (typeof PREVIEW_STATES)[number];
+// The element that carries a preview or stands under one. It stands inside :is() or :where() beside the real state and weighs one
+// attribute, as that state does, so the order of states holds under a preview too.
+export const previewSelector = (state: PreviewState): string => `:is([${PREVIEW_ATTRIBUTE}~="${state}"], [${PREVIEW_ATTRIBUTE}~="${state}"] *)`;
+// The attribute a gallery cell carries to show its contents in the states it names.
+export const previewAttributes = (...states: readonly PreviewState[]): Record<typeof PREVIEW_ATTRIBUTE, string | undefined> => ({
+  [PREVIEW_ATTRIBUTE]: states.length > 0 ? states.join(" ") : undefined,
+});
 // A selected item: the attribute a Selectable writes, or the current item of a navigation.
 export const SELECTED_SELECTOR = `:is([${STATE_ATTRIBUTE.selected}], [aria-current]:not([aria-current=false]))`;
 // A target that can take input: hover and press colour bind to it, so a blocked target never reacts.

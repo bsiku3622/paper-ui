@@ -63,8 +63,8 @@ export const ACCENT_TONE_STEPS = {
 export const PRIMARY_TONE_STEPS = {
   solid: ["950", "50"],
   wash: ["0", "950"],
-  ink: ["900", "100"],
-  soft: ["200", "875"],
+  ink: ["925", "100"],
+  soft: ["150", "875"],
   subtle: ["700", "500"],
 } as const satisfies Record<AccentTone, readonly [light: PaletteStep, dark: PaletteStep]>;
 
@@ -106,15 +106,30 @@ const selection = (mode: ColorMode) => {
     // shares neutral.950. A sunken surface on canvas is told apart by its border; on raised it
     // recedes in both modes.
     bg: {
-      canvas: pick("neutral.50", "neutral.950"),
+      canvas: pick("neutral.100", "neutral.950"),
       raised: pick("neutral.0", "neutral.925"),
-      sunken: pick("neutral.100", "neutral.950"),
+      sunken: pick("neutral.150", "neutral.950"),
     },
-    control: { track: pick("neutral.200", "neutral.800") },
+    // What a control stands on and what stands on it. track is the groove of a Switch, a SegmentControl and a Slider. knob is a
+    // Switch's thumb at rest, thumb a segment's. field is the face of an input frame that chose none and mark the face of an off
+    // mark: white wherever they stand, with a shadow for an edge. Dark has no white to rise with, so these climb the ramp instead,
+    // a step above a card's face so a frame inside one still shows.
+    control: {
+      track: pick("neutral.150", "neutral.875"),
+      knob: pick("neutral.0", "neutral.400"),
+      thumb: pick("neutral.0", "neutral.800"),
+      field: pick("neutral.0", "neutral.875"),
+      mark: pick("neutral.0", "neutral.875"),
+      // The chosen face in an outlined group of segments. In light it is the track's grey on a white frame; in dark the frame is
+      // already that grey, so it takes the thumb's step above it.
+      chosen: pick("neutral.150", "neutral.800"),
+    },
     ink: {
-      primary: pick("neutral.900", "neutral.100"),
+      primary: pick("neutral.925", "neutral.100"),
       secondary: pick("neutral.700", "neutral.400"),
-      tertiary: pick("neutral.650", "neutral.500"),
+      // The quiet ink: words the screen still works without — a placeholder, an empty choice, a group's name, a caption's aside.
+      // In light it stays under 4.5:1 on purpose, the documented exception; prefers-contrast: more lifts it to 4.5:1.
+      tertiary: pick("neutral.500", "neutral.500"),
     },
     border: {
       base: pick("neutral.200", "neutral.800"),
@@ -148,6 +163,8 @@ const selection = (mode: ColorMode) => {
       // Dark has no darker place for a shadow to fall, so there the resting depth is a one-pixel line. White at a low alpha
       // reads about as strong as a border on either dark face.
       resting: pick("alpha10.neutral.950", "alpha15.neutral.0"),
+      // What a groove or a well sinks with: a shade along its top edge, inside its own box.
+      inset: pick("alpha10.neutral.950", "alpha45.neutral.950"),
     },
     // The highlighter. The pigment is as bright as paper, so the ink on it stays dark in both modes.
     marker: {
@@ -179,7 +196,7 @@ export type BorderLevel = keyof typeof COLOR_VALUES.border;
 export const DIVIDER_LEVELS = ["base", "strong"] as const satisfies readonly BorderLevel[];
 export type DividerLevel = (typeof DIVIDER_LEVELS)[number];
 // How deep a shadow reads: resting is a face that stays in place and keeps its edge with a shadow, lifted is a small rise
-// off the page, floating is a layer above it.
+// off the page, floating is a layer above it, and inset is the one that goes the other way: a groove or a well sunk into its face.
 export const DEPTHS = keys(COLOR_VALUES.shadow);
 export type Depth = keyof typeof COLOR_VALUES.shadow;
 

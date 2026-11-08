@@ -12,9 +12,10 @@
     "radius": {
       "control": {
         "xs": 8,
-        "sm": 8,
+        "sm": 12,
         "md": 12,
-        "lg": 12
+        "lg": 12,
+        "xl": 12
       },
       "selection": 4,
       "surface": {
@@ -40,23 +41,26 @@
     },
     "control": {
       "height": {
-        "xs": 28,
-        "sm": 32,
+        "xs": 32,
+        "sm": 36,
         "md": 40,
-        "lg": 44
+        "lg": 44,
+        "xl": 48
       },
       "inset": {
         "input": {
-          "xs": 6,
-          "sm": 8,
+          "xs": 8,
+          "sm": 10,
           "md": 12,
-          "lg": 14
+          "lg": 14,
+          "xl": 16
         },
         "button": {
-          "xs": 8,
-          "sm": 11,
+          "xs": 11,
+          "sm": 14,
           "md": 17,
-          "lg": 20
+          "lg": 20,
+          "xl": 23
         }
       },
       "gap": 8,
@@ -64,15 +68,17 @@
         "xs": 16,
         "sm": 16,
         "md": 18,
-        "lg": 20
+        "lg": 20,
+        "xl": 20
       }
     },
     "selection": {
       "size": {
-        "xs": 14,
-        "sm": 16,
+        "xs": 16,
+        "sm": 18,
         "md": 18,
-        "lg": 20
+        "lg": 20,
+        "xl": 20
       }
     },
     "icon": {
@@ -110,16 +116,18 @@
   "recipes": {
     "badge": {
       "height": {
-        "xs": 18,
-        "sm": 20,
+        "xs": 20,
+        "sm": 22,
         "md": 22,
-        "lg": 24
+        "lg": 24,
+        "xl": 26
       },
       "inset": {
-        "xs": 4,
-        "sm": 6,
+        "xs": 6,
+        "sm": 8,
         "md": 8,
-        "lg": 10
+        "lg": 10,
+        "xl": 12
       },
       "gap": 4,
       "dot": "0.5em"
@@ -127,25 +135,28 @@
     "checkbox": {
       "radius": 4,
       "mark": {
-        "xs": 7,
-        "sm": 8,
+        "xs": 8,
+        "sm": 9,
         "md": 9,
-        "lg": 10
+        "lg": 10,
+        "xl": 10
       },
       "short": {
-        "xs": 3.5,
-        "sm": 4,
+        "xs": 4,
+        "sm": 4.5,
         "md": 4.5,
-        "lg": 5
+        "lg": 5,
+        "xl": 5
       },
       "stroke": 2,
       "markTransform": "rotate(-45deg) translate(calc(var(--pui-shape-stroke-emphasis) * var(--pui-shape-anatomy-checkbox-mark-shift-x)), calc(var(--pui-shape-stroke-emphasis) * var(--pui-shape-anatomy-checkbox-mark-shift-y)))",
       "dash": {
         "width": {
-          "xs": 7,
-          "sm": 8,
+          "xs": 8,
+          "sm": 9,
           "md": 9,
-          "lg": 10
+          "lg": 10,
+          "xl": 10
         },
         "height": 2,
         "radius": 999
@@ -153,60 +164,63 @@
     },
     "radio": {
       "dot": {
-        "xs": 7,
-        "sm": 8,
-        "md": 9,
-        "lg": 10
+        "xs": 6.4,
+        "sm": 7.2,
+        "md": 7.2,
+        "lg": 8,
+        "xl": 8
       }
     },
     "switch": {
       "width": {
-        "xs": 28,
-        "sm": 32,
-        "md": 36,
-        "lg": 40
+        "xs": 27,
+        "sm": 30,
+        "md": 30,
+        "lg": 33,
+        "xl": 33
       },
       "height": {
-        "xs": 16,
-        "sm": 18,
+        "xs": 18,
+        "sm": 20,
         "md": 20,
-        "lg": 22
+        "lg": 22,
+        "xl": 22
       },
       "thumb": {
-        "xs": 12,
-        "sm": 14,
+        "xs": 14,
+        "sm": 16,
         "md": 16,
-        "lg": 18
+        "lg": 18,
+        "xl": 18
+      },
+      "thumbWidth": {
+        "xs": 14,
+        "sm": 16,
+        "md": 16,
+        "lg": 18,
+        "xl": 18
       },
       "inset": 2,
       "travel": {
-        "xs": 12,
-        "sm": 14,
-        "md": 16,
-        "lg": 18
+        "xs": 9,
+        "sm": 10,
+        "md": 10,
+        "lg": 11,
+        "xl": 11
       }
     },
-    "select": {
-      "arrowInset": {
-        "xs": 6,
-        "sm": 8,
-        "md": 12,
-        "lg": 14
+    "segment": {
+      "inset": 4
+    },
+    "slider": {
+      "thumb": {
+        "xs": 18,
+        "sm": 20,
+        "md": 20,
+        "lg": 22,
+        "xl": 22
       },
-      "paddingEnd": {
-        "xs": 30,
-        "sm": 32,
-        "md": 38,
-        "lg": 42
-      }
-    },
-    "textarea": {
-      "paddingBlock": {
-        "xs": 3,
-        "sm": 5,
-        "md": 9,
-        "lg": 11
-      }
+      "rim": 2
     },
     "marker": {
       "height": "84%",
@@ -218,29 +232,27 @@
         "xs": 16,
         "sm": 16,
         "md": 18,
-        "lg": 20
+        "lg": 20,
+        "xl": 20
       },
       "inline": "1em",
-      "stroke": 2
+      "stroke": 2,
+      "tail": "8%"
     },
     "target": {
       "selection": {
-        "xs": -5,
-        "sm": -4,
-        "md": -3,
-        "lg": -2
-      },
-      "switchBlock": {
         "xs": -4,
         "sm": -3,
-        "md": -2,
-        "lg": -1
-      },
-      "action": {
-        "xs": -4,
-        "sm": -4,
         "md": -3,
-        "lg": -2
+        "lg": -2,
+        "xl": -2
+      },
+      "switchBlock": {
+        "xs": -3,
+        "sm": -2,
+        "md": -2,
+        "lg": -1,
+        "xl": -1
       }
     }
   }

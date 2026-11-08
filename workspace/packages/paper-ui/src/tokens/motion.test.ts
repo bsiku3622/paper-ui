@@ -10,7 +10,6 @@ import {
   EASING,
   LOOP,
   LOOP_FRAMES,
-  MOTION,
   MOTION_CONSUMERS,
   MOTION_LOOPS,
   MOTION_REDUCED,
@@ -18,6 +17,7 @@ import {
   transition,
   type MotionRole,
 } from "./motion";
+import { MOTION, REVEAL_AFTER } from "./motion-recipes";
 import * as rootEntry from "../index";
 import * as publicEntry from "./public";
 
@@ -38,16 +38,19 @@ describe("the golden Motion file", () => {
 });
 
 describe("Motion roles", () => {
-  it("[foundations.motion.roles] [foundations.motion.no-focus-role] names press, hover, state, enter, exit and theme, in that order, and no focus", () => {
-    expect([...MOTION_ROLES]).toEqual(["press", "hover", "state", "enter", "exit", "theme"]);
+  it("[foundations.motion.roles] [foundations.motion.no-focus-role] names press, hover, state, enter, exit, reveal and theme, in that order, and no focus", () => {
+    expect([...MOTION_ROLES]).toEqual(["press", "hover", "state", "enter", "exit", "reveal", "theme"]);
     expect(Object.keys(MOTION)).toEqual([...MOTION_ROLES]);
     expect(Object.keys(MOTION)).not.toContain("focus");
-    expectTypeOf<MotionRole>().toEqualTypeOf<"press" | "hover" | "state" | "enter" | "exit" | "theme">();
+    expectTypeOf<MotionRole>().toEqualTypeOf<"press" | "hover" | "state" | "enter" | "exit" | "reveal" | "theme">();
   });
 
-  it("[foundations.motion.roles] gives every role at least one consumer, and a consumer only to a role", () => {
+  it("[foundations.motion.roles] [foundations.motion.consumers] gives every role a consumer in the package but reveal, which the app's screens take through the reveal class", () => {
     expect(Object.keys(MOTION_CONSUMERS)).toEqual([...MOTION_ROLES]);
-    for (const role of MOTION_ROLES) expect(MOTION_CONSUMERS[role].length, role).toBeGreaterThan(0);
+    for (const role of MOTION_ROLES) {
+      if (role === "reveal") expect(MOTION_CONSUMERS[role], role).toEqual([]);
+      else expect(MOTION_CONSUMERS[role].length, role).toBeGreaterThan(0);
+    }
   });
 
   it("[foundations.motion.roles] names consumers that exist: an Atom, a Primitive or the Provider", () => {
@@ -65,8 +68,11 @@ describe("Motion roles", () => {
     expect(MOTION.press.offset).toBe(tokens.shape.stroke.border);
     expect(MOTION.enter.offset).toBe(tokens.layout.gap.xs);
     expect(Number(MOTION.enter.scale)).toBeLessThan(1);
+    // A reveal rises a reading step and comes into focus from a smaller one: both are lengths, so both are Layout's.
+    expect(MOTION.reveal.offset).toBe(tokens.layout.gap.lg);
+    expect(MOTION.reveal.blur).toBe(tokens.layout.gap.sm);
     const withOffset = MOTION_ROLES.filter((role) => "offset" in MOTION[role]);
-    expect(withOffset).toEqual(["press", "enter"]);
+    expect(withOffset).toEqual(["press", "enter", "reveal"]);
     for (const role of withOffset) expect((MOTION[role] as { offset: string }).offset, role).toMatch(/^var\(--pui-/);
   });
 
@@ -74,6 +80,13 @@ describe("Motion roles", () => {
     for (const role of MOTION_ROLES) {
       expect(Object.values(DURATION), `${role} duration`).toContain(MOTION[role].duration);
       expect(Object.values(EASING), `${role} easing`).toContain(MOTION[role].easing);
+    }
+    // A reveal's siblings follow a step of the duration scale apart, and a stagger is that step taken a whole number of times.
+    expect(Object.values(DURATION), "reveal step").toContain(MOTION.reveal.step);
+    expect(Object.keys(REVEAL_AFTER)).toEqual(["0", "1", "2", "3", "4", "5", "6", "7"]);
+    for (const [beats, delay] of Object.entries(REVEAL_AFTER)) {
+      const expected = Number(beats) === 0 ? DURATION.instant : Number(beats) === 1 ? MOTION.reveal.step : `calc(${MOTION.reveal.step} * ${beats})`;
+      expect(delay, `${beats} beats`).toBe(expected);
     }
     for (const [name, loop] of Object.entries(MOTION_LOOPS)) expect(Object.values(EASING), `${name} curve`).toContain(loop.easing);
   });
@@ -102,10 +115,12 @@ describe("Motion roles", () => {
 });
 
 describe("The easings", () => {
-  it("[foundations.motion.easing-settles] keeps overshoot's y values at 1 or below, so the curve never passes its target", () => {
-    const [, y1, , y2] = /^cubic-bezier\((.+)\)$/.exec(EASING.overshoot)![1]!.split(",").map(Number);
-    expect(y1).toBeLessThanOrEqual(1);
-    expect(y2).toBeLessThanOrEqual(1);
+  it("[foundations.motion.easing-settles] keeps overshoot's and emphasized's y values at 1 or below, so neither curve passes its target", () => {
+    for (const curve of [EASING.overshoot, EASING.emphasized]) {
+      const [, y1, , y2] = /^cubic-bezier\((.+)\)$/.exec(curve)![1]!.split(",").map(Number);
+      expect(y1, curve).toBeLessThanOrEqual(1);
+      expect(y2, curve).toBeLessThanOrEqual(1);
+    }
   });
 });
 
@@ -148,12 +163,29 @@ describe("The class maps", () => {
   it("[foundations.motion.class-maps-in-root] come from the component entry, not from /tokens", () => {
     const root = rootEntry as Record<string, unknown>;
     const tokensEntry = publicEntry as Record<string, unknown>;
-    for (const name of ["presence", "loop"]) {
+    for (const name of ["presence", "loop", "reveal", "revealAfter"]) {
       expect(typeof root[name], `${name} in '.'`).toBe("object");
       expect(tokensEntry[name], `${name} not in /tokens`).toBeUndefined();
     }
     expect(Object.keys(root.presence as object)).toEqual(["surface", "scrim"]);
     expect(Object.keys(root.loop as object)).toEqual(Object.keys(LOOP));
+    expect(Object.keys(root.reveal as object)).toEqual(["load", "scroll"]);
+    expect(Object.keys(root.revealAfter as object)).toEqual(Object.keys(REVEAL_AFTER));
+  });
+});
+
+describe("The reveal", () => {
+  it("[foundations.motion.reveal] plays only where motion is not turned down, and runs its scroll form on a view timeline where there is one", () => {
+    const code = readFileSync(join(SRC, "styles", "motion.css.ts"), "utf8");
+    expect(code).toContain('const NO_PREFERENCE = "(prefers-reduced-motion: no-preference)"');
+    expect(code).toContain('const VIEW_TIMELINE = "(animation-timeline: view())"');
+    const block = /export const reveal = utilities\.styleVariants\(\{[\s\S]*?\n\}\);/.exec(code)![0];
+    // Both forms sit inside the no-preference query, so reduced motion never sees them; the scroll form also waits for view timelines.
+    expect(block.match(/\[NO_PREFERENCE\]/g)).toHaveLength(2);
+    expect(block).toContain("[VIEW_TIMELINE]");
+    expect(block).toContain('animationTimeline: "view()"');
+    // Longhands only: a shorthand would reset the delay revealAfter gives.
+    expect(block).not.toMatch(/\banimation:/);
   });
 });
 

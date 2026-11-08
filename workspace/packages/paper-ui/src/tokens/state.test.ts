@@ -11,7 +11,8 @@ import { strokeRing } from "./shape-recipes";
 import { STATE_TINT, STATE_TINT_PROPERTY, focusRing, linkStyle, stateStyle } from "./state-recipes";
 import { TYPOGRAPHY } from "./typography";
 import {
-  ENABLED_SELECTOR, MARKER_ATTRIBUTE, SELECTED_SELECTOR, STATE_ATTRIBUTE, STATE_NAMES, VALUE_ATTRIBUTE, stateAttributes, stateSelector,
+  ENABLED_SELECTOR, MARKER_ATTRIBUTE, PREVIEW_ATTRIBUTE, PREVIEW_STATES, SELECTED_SELECTOR, STATE_ATTRIBUTE, STATE_NAMES, VALUE_ATTRIBUTE, previewAttributes,
+  previewSelector, stateAttributes, stateSelector,
   type StateName,
 } from "./state";
 
@@ -44,6 +45,20 @@ describe("state vocabulary", () => {
     expect(stateAttributes({})).toEqual({});
     const attributes = stateAttributes({ selected: true });
     expectTypeOf(attributes).toEqualTypeOf<{ "data-selected"?: "true" }>();
+  });
+
+  it("[atoms.states.preview] names a preview for the three states that have no attribute to write, and writes the cell's attribute", () => {
+    expect(PREVIEW_ATTRIBUTE).toBe("data-pui-preview");
+    expect(Object.values(STATE_ATTRIBUTE)).not.toContain(PREVIEW_ATTRIBUTE);
+    expect(previewAttributes("hover")).toEqual({ "data-pui-preview": "hover" });
+    expect(previewAttributes("active", "focus")).toEqual({ "data-pui-preview": "active focus" });
+    // No state, no attribute: a cell at rest carries nothing.
+    expect(previewAttributes()).toEqual({ "data-pui-preview": undefined });
+  });
+
+  it("[atoms.states.preview] selects the element that carries a preview and the elements under it, by one attribute's weight", () => {
+    expect(previewSelector("hover")).toBe(':is([data-pui-preview~="hover"], [data-pui-preview~="hover"] *)');
+    for (const state of PREVIEW_STATES) expect(previewSelector(state)).toBe(`:is([data-pui-preview~="${state}"], [data-pui-preview~="${state}"] *)`);
   });
 
   it("[atoms.states.value-attributes] spells the selected and enabled selectors from the state attributes", () => {
@@ -101,6 +116,10 @@ describe("state recipes", () => {
   const at = (fragment: unknown, ...path: string[]): Fragment => path.reduce((node, key) => (node as Fragment)[key], fragment) as Fragment;
   const { color, shape, motion } = tokens;
   const ENABLED = ENABLED_SELECTOR;
+  // The preview of each state, spelled out here so the attribute it reads is pinned (tokens/state.ts).
+  const previewOf = (state: string) => `:is([data-pui-preview~="${state}"], [data-pui-preview~="${state}"] *)`;
+  const PREVIEW = { hover: previewOf("hover"), active: previewOf("active"), focus: previewOf("focus") } as const;
+  const HOVERED = `&:is(:hover, ${PREVIEW.hover})${ENABLED}`;
   const forced = (fragment: unknown) => (fragment as Fragment)["@media"] as Fragment;
 
   // Every value under a key, anywhere below a fragment.
@@ -120,8 +139,10 @@ describe("state recipes", () => {
   it("[foundations.state.recipes] [foundations.state.fragments] lets the ring owner draw the ring on the keyboard state, with the native outline off", () => {
     const { focusVisible } = stateStyle;
     expect(focusVisible.outline).toBe("none");
-    expect(at(focusVisible, "selectors")["&[data-focus-visible]"]).toEqual(focusRing);
-    expect(at(forced(focusVisible), "(forced-colors: active)", "selectors")["&[data-focus-visible]"]).toEqual({ outlineColor: SYSTEM_COLORS.highlight });
+    const ring = `&:is([data-focus-visible], ${PREVIEW.focus})`;
+    expect(Object.keys(at(focusVisible, "selectors"))).toEqual([ring]);
+    expect(at(focusVisible, "selectors")[ring]).toEqual(focusRing);
+    expect(at(forced(focusVisible), "(forced-colors: active)", "selectors")[ring]).toEqual({ outlineColor: SYSTEM_COLORS.highlight });
   });
 
   it("[foundations.state.recipes] [foundations.state.fragments] fades a disabled target by the opacity role and gives it the not-allowed cursor", () => {
@@ -131,21 +152,22 @@ describe("state recipes", () => {
   });
 
   it("[foundations.state.recipes] [foundations.state.fragments] presses one stroke down under the pointer or data-active, while the target is enabled", () => {
-    expect(at(stateStyle.press, "selectors")[`&:is(:active, [data-active])${ENABLED}`]).toEqual({ transform: `translateY(${motion.role.press.offset})` });
+    expect(at(stateStyle.press, "selectors")[`&:is(:active, [data-active], ${PREVIEW.active})${ENABLED}`]).toEqual({ transform: `translateY(${motion.role.press.offset})` });
   });
 
   it("[foundations.state.recipes] [atoms.states.priority] [foundations.state.fragments] tints a neutral item: pressed over selected over hover, and a disabled item answers to neither the pointer nor the press", () => {
     const { item } = stateStyle;
     const selectors = at(item, "selectors");
     const selected = `&${SELECTED_SELECTOR}`;
-    const pressing = `&:is(:active, [data-active])${ENABLED}`;
+    const pressing = `&:is(:active, [data-active], ${PREVIEW.active})${ENABLED}`;
     expect(Object.keys(selectors)).toEqual([selected, pressing]);
     expect(at(selectors, selected)).toEqual({ vars: { [STATE_TINT_PROPERTY]: itemProfile.selectedTint }, color: itemProfile.selectedInk });
     expect(at(selectors, pressing)).toEqual({ vars: { [STATE_TINT_PROPERTY]: itemProfile.activeTint }, color: itemProfile.selectedInk });
     // Hover adds no specificity, so the two above outrank it; it is also the only one that waits for a pointer that can hover.
     const hover = at(item, "@media", "(hover: hover)", "selectors");
-    expect(Object.keys(hover)).toEqual([`&:where(:hover${ENABLED})`]);
-    expect(hover[`&:where(:hover${ENABLED})`]).toEqual({ vars: { [STATE_TINT_PROPERTY]: itemProfile.hoverTint } });
+    const hovering = `&:where(:hover${ENABLED}, ${PREVIEW.hover}${ENABLED})`;
+    expect(Object.keys(hover)).toEqual([hovering]);
+    expect(hover[hovering]).toEqual({ vars: { [STATE_TINT_PROPERTY]: itemProfile.hoverTint } });
     expect(item.backgroundImage).toBe(stateStyle.tinted.backgroundImage);
   });
 
@@ -155,7 +177,7 @@ describe("state recipes", () => {
     expect(at(item, "@media", "(forced-colors: active)", "selectors")[selected]).toEqual({
       forcedColorAdjust: "none", backgroundColor: SYSTEM_COLORS.highlight, backgroundImage: "none", color: SYSTEM_COLORS.highlightText,
     });
-    expect(at(item, "@media", "(hover: hover) and (forced-colors: active)", "selectors")[`&:hover${ENABLED}`]).toEqual({ borderColor: SYSTEM_COLORS.highlight });
+    expect(at(item, "@media", "(hover: hover) and (forced-colors: active)", "selectors")[HOVERED]).toEqual({ borderColor: SYSTEM_COLORS.highlight });
     expect(at(item, "@media", "(prefers-contrast: more)", "selectors")[selected]).toEqual({ boxShadow: strokeRing(color.ink.primary) });
   });
 
@@ -163,10 +185,10 @@ describe("state recipes", () => {
     const { field } = stateStyle;
     expect(Object.keys(at(field, "selectors"))).toEqual(STATUSES.map((status) => `&[data-status="${status}"]`));
     for (const status of STATUSES) expect(at(field, "selectors")[`&[data-status="${status}"]`]).toEqual({ borderColor: outlinedControlProfile.status[status] });
-    expect(at(field, "@media", "(hover: hover)", "selectors")[`&:hover${ENABLED}:not([data-status])`]).toEqual({ borderColor: outlinedControlProfile.hoverBorder });
+    expect(at(field, "@media", "(hover: hover)", "selectors")[`${HOVERED}:not([data-status])`]).toEqual({ borderColor: outlinedControlProfile.hoverBorder });
     // A forced palette reverts the rule above, so the Highlight rule has to match its specificity too.
     const forcedHover = at(field, "@media", "(hover: hover) and (forced-colors: active)", "selectors");
-    for (const selector of [`&:hover${ENABLED}`, `&:hover${ENABLED}:not([data-status])`]) expect(forcedHover[selector]).toEqual({ borderColor: SYSTEM_COLORS.highlight });
+    for (const selector of [HOVERED, `${HOVERED}:not([data-status])`]) expect(forcedHover[selector]).toEqual({ borderColor: SYSTEM_COLORS.highlight });
   });
 
   it("[foundations.state.recipes] [foundations.state.fragments] turns the border of a drop target to where the input is going", () => {
@@ -177,7 +199,7 @@ describe("state recipes", () => {
   it("[foundations.state.recipes] [foundations.state.fragments] underlines only under a pointer that can hover, while the target is enabled", () => {
     const { hoverUnderline } = stateStyle;
     expect(hoverUnderline.textDecorationLine).toBe("none");
-    expect(at(hoverUnderline, "@media", "(hover: hover)", "selectors")[`&:hover${ENABLED}`]).toEqual({ textDecorationLine: "underline" });
+    expect(at(hoverUnderline, "@media", "(hover: hover)", "selectors")[HOVERED]).toEqual({ textDecorationLine: "underline" });
   });
 
   it("[foundations.state.recipes] asks the system colours alone for anything it paints under forced colours", () => {

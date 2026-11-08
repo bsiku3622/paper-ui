@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import { walkValues, pathToCssVar, rem } from "./helpers";
 import { tokens } from "./index";
-import { CODE_SPEC, CONTROL_PRESETS, CONTROL_SIZES, FONT_STYLESHEETS, PRESET_SPEC, ROLE_SPEC, TEXT_INK, TEXT_VARIANTS, TYPOGRAPHY, TYPOGRAPHY_SOURCE, TYPOGRAPHY_VALUES } from "./typography";
+import { CONTROL_SIZES } from "./control-sizes";
+import { CODE_SPEC, CONTROL_PRESETS, FONT_STYLESHEETS, PRESET_SPEC, ROLE_SPEC, TEXT_INK, TEXT_VARIANTS, TYPOGRAPHY, TYPOGRAPHY_SOURCE, TYPOGRAPHY_VALUES } from "./typography";
 import { PRESET_SINGLE_LINE, codeRule, emphasisRule, monoRule, presetRule, typographyRule } from "./typography-recipes";
 
 const emitted = new Map<string, string>();
@@ -234,6 +235,14 @@ describe("monoRule and codeRule", () => {
 });
 
 describe("presetRule", () => {
+  it("[foundations.typography.control-preset] sets the same letters for a Button and an input of the same size, and only the weight apart", () => {
+    for (const size of CONTROL_SIZES) {
+      expect(PRESET_SPEC.field[size].size, size).toBe(PRESET_SPEC.button[size].size);
+      expect(PRESET_SPEC.textarea[size].size, size).toBe(PRESET_SPEC.button[size].size);
+      expect(PRESET_SPEC.field[size].weight, size).not.toBe(PRESET_SPEC.button[size].weight);
+    }
+  });
+
   it("[foundations.typography.control-preset] gives a Button one weight at every size", () => {
     for (const size of CONTROL_SIZES) expect(presetRule("button", size).fontWeight, size).toBe(TYPOGRAPHY.palette.weight.medium);
   });

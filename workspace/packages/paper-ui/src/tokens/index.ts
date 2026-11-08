@@ -11,9 +11,10 @@
 
 import { buildVarTree, pathToCssVar } from "./helpers";
 import { COLOR, OPACITY_VALUES } from "./colors";
+import { CONTROL } from "./control-recipes";
 import { SHAPE } from "./shape";
 import { TYPOGRAPHY } from "./typography";
-import { MOTION } from "./motion";
+import { MOTION } from "./motion-recipes";
 import { LAYOUT } from "./layout";
 
 export const tokens = {
@@ -22,9 +23,10 @@ export const tokens = {
   // Typography 는 역할과 preset 만 노출한다 — Palette 는 토큰 층 안에 둔다 (typography.ts · inspect/typography.ts).
   typography: { role: TYPOGRAPHY.role, preset: TYPOGRAPHY.preset },
   // Shape은 요소 하나의 형태, Layout은 요소 사이의 관계. 둘 다 역할만 노출한다 (shape.ts · layout.ts).
-  shape: SHAPE,
+  // 컨트롤 여백은 Typography 를 읽어 2차 Control 에서 오지만, 찾는 자리는 다른 컨트롤 역할과 같다.
+  shape: { ...SHAPE, control: { height: SHAPE.control.height, inset: CONTROL.inset, gap: SHAPE.control.gap, icon: SHAPE.control.icon } },
   layout: LAYOUT,
-  // motion 은 var 로 굽지 않는다 — 역할이 시간과 곡선을 값으로 들고 변위만 Shape·Layout var 를 가리킨다 (motion.ts 참고).
+  // motion 은 var 로 굽지 않는다 — 역할이 시간과 곡선을 값으로 들고 변위만 Shape·Layout var 를 가리킨다 (motion-recipes.ts 참고).
   motion: { role: MOTION },
 } as const;
 
@@ -40,24 +42,30 @@ export { overridesRule, unknownSourceVariables } from "./overrides";
 export type { ThemeOverrides } from "./overrides";
 
 export { ELEVATION_NEST_LIMIT } from "./layout";
-export { ELEVATION, elevationStack, elevationCast, elevationStyle, restingCast } from "./elevation-recipes";
+export { ELEVATION, elevationStack, elevationCast, elevationStyle, insetCast, restingCast } from "./elevation-recipes";
 
 export { SYSTEM_COLORS } from "./colors";
-export { accentProfile, itemProfile, markProfile, markForcedProfile, outlinedControlProfile } from "./color-recipes";
+export { accentProfile, itemProfile, markProfile, markForcedProfile, outlinedControlProfile, VARIANT_LINE } from "./color-recipes";
 export type { AccentProfile } from "./color-recipes";
 
-export { CONTROL_ICON, controlSizes } from "./shape";
-export { SHAPE_RECIPES, strokeRing } from "./shape-recipes";
+export { CONTROL_ICON } from "./shape";
+export { controlSizes } from "./control-sizes";
+export { SHAPE_RECIPES, CONTROL_LINE, CONTROL_LINE_PROPERTY, CONTROL_LINE_ROOM, insideLine, markParts, nestedRadius, strokeRing, targetReach } from "./shape-recipes";
+
+export { CONTROL, CONTROL_ANATOMY_PRESET } from "./control-recipes";
+export { lineFrame, lineRule, controlLineWidth } from "./line-recipes";
+export type { LineOptions } from "./line-recipes";
 
 export { TEXT_INK } from "./typography";
 export { typographyRule, monoRule, codeRule, presetRule, emphasisRule } from "./typography-recipes";
 export type { CodeKind } from "./typography-recipes";
 
-export { STATE_ATTRIBUTE, VALUE_ATTRIBUTE, MARKER_ATTRIBUTE, SELECTED_SELECTOR, ENABLED_SELECTOR, stateSelector, stateAttributes } from "./state";
+export { STATE_ATTRIBUTE, VALUE_ATTRIBUTE, MARKER_ATTRIBUTE, SELECTED_SELECTOR, ENABLED_SELECTOR, PREVIEW_ATTRIBUTE, stateSelector, stateAttributes, previewSelector, previewAttributes, type PreviewState } from "./state";
 export type { StateAttributes } from "./state";
 export { focusRing, stateStyle, linkStyle, STATE_TINT, STATE_TINT_PROPERTY } from "./state-recipes";
 
-export { MOTION, MOTION_CONSUMERS, MOTION_LOOPS, MOTION_REDUCED, transition } from "./motion";
+export { MOTION_CONSUMERS, MOTION_LOOPS, MOTION_REDUCED, transition } from "./motion";
+export { MOTION, REVEAL_AFTER } from "./motion-recipes";
 
 // styles.css 가 깔렸는가 — Shape 원본 변수는 테마와 무관하게 :root 에 늘 굽힌다(tokens/variables.css.ts).
 export const isStylesheetLoaded = (root: Element): boolean =>

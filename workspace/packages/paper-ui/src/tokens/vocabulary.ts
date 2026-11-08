@@ -8,11 +8,20 @@ export type { Status, ChoiceStatus, Accent, AccentTone, SurfaceFill, InkLevel, I
 export { COLOR_MODES, THEME_PREFERENCES, SURFACE_THEMES } from "./color-modes";
 export type { ColorMode, ThemePreference, SurfaceTheme } from "./color-modes";
 
-export { VARIANTS, SELECTABLE_VARIANTS, FILLABLE_VARIANTS, INPUT_VARIANTS } from "./color-recipes";
-export type { Variant, SelectableVariant, FillableVariant, InputVariant } from "./color-recipes";
+export { VARIANTS, SELECTABLE_VARIANTS, FILLABLE_VARIANTS, INPUT_VARIANTS, SEGMENT_VARIANTS } from "./color-recipes";
+export type { Variant, SelectableVariant, FillableVariant, InputVariant, SegmentVariant } from "./color-recipes";
 
-export { TEXT_VARIANTS, TEXT_FAMILIES, CONTROL_SIZES, CONTROL_FONT_SIZES, CONTROL_PRESETS, EMPHASES, LINK_UNDERLINES } from "./typography";
-export type { TextVariant, TextFamily, ControlSize, ControlFontSize, ControlPreset, Emphasis, LinkUnderline } from "./typography";
+export { TEXT_VARIANTS, TEXT_FAMILIES, CONTROL_FONT_SIZES, CONTROL_PRESETS, EMPHASES, LINK_UNDERLINES } from "./typography";
+export type { TextVariant, TextFamily, ControlFontSize, ControlPreset, Emphasis, LinkUnderline } from "./typography";
+
+export { CONTROL_SIZES } from "./control-sizes";
+export type { ControlSize } from "./control-sizes";
+
+export { CONTROL_ANATOMIES } from "./control-recipes";
+export type { ControlAnatomy } from "./control-recipes";
+
+export { LINE_SIDES, LINE_STYLES, LINE_WEIGHTS } from "./line-recipes";
+export type { LineSide, LineStyle, LineWeight } from "./line-recipes";
 
 export { SPACES, DIMENSIONS, MEASURES, ICON_SIZES, CONTROL_SHAPES, SURFACE_RADII } from "./shape";
 export type { Space, Dimension, Measure, IconSize, ControlShape, SurfaceRadius } from "./shape";
@@ -23,5 +32,5 @@ export type { Elevation, Breakpoint, Container, Align, Justify, JustifyItem, Ori
 export { MOTION_ROLES } from "./motion";
 export type { MotionRole } from "./motion";
 
-export { STATE_NAMES } from "./state";
-export type { StateName } from "./state";
+export { PREVIEW_STATES, STATE_NAMES } from "./state";
+export type { PreviewState, StateName } from "./state";
