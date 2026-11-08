@@ -8,6 +8,8 @@ This is how to attach Paper UI to a React app. One package and one line of style
 pnpm add @studio-baeks/paper-ui
 ```
 
+An app that used a `file:` path or a vendored copy before installs the package by name once (`npm install "@studio-baeks/paper-ui@^0.1.0"`): changing the range in package.json alone leaves the lockfile on the old `file:` source.
+
 Paper UI takes React 18.2 or later, or React 19, as a peer dependency (`^18.2.0 || ^19.0.0`). The package is ESM-only, so it does not support `require`. An app loads it with `import`, and CommonJS code loads it only with a dynamic `import()`. The TypeScript types are bundled into one declaration file per entry, and TypeScript finds that file when `moduleResolution` is one of `bundler`, `node16` or `nodenext`.
 
 The package splits its entries by use. A name comes from one entry only, so you never have to choose the same name from two paths.

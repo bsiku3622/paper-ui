@@ -8,6 +8,8 @@ paper-ui를 React 앱에 붙이는 방법입니다. 패키지 하나와 스타�
 pnpm add @studio-baeks/paper-ui
 ```
 
+예전에 `file:` 경로나 vendor 사본으로 쓰던 앱은 처음 한 번 패키지 이름을 적어 설치합니다(`npm install "@studio-baeks/paper-ui@^0.1.0"`). package.json의 범위만 바꾸면 lockfile이 예전 `file:` 출처를 그대로 기억합니다.
+
 [contract:install.package.peers]: #
 paper-ui는 React 18.2 이상 또는 React 19를 peer dependency로 받습니다(`^18.2.0 || ^19.0.0`). 패키지는 ESM 전용이라 `require`를 지원하지 않습니다. 앱은 `import`로 불러오고, CommonJS 코드는 동적 `import()`로만 불러옵니다. TypeScript 타입은 entry마다 선언 파일 하나로 묶여 있고, `moduleResolution`이 `bundler` · `node16` · `nodenext` 중 하나이면 그 파일을 찾습니다.
 
