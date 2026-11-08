@@ -4,7 +4,7 @@ Primitive는 Foundations의 값을 화면 구조로 옮기는 첫 컴포넌트�
 
 ## 1차와 2차
 
-Primitive는 두 차수로 나뉩니다. **1차**는 바탕입니다 — Box · Text · Icon · A11y로, 서로 기대지 않습니다. **2차**는 Box에 능력 하나를 더한 것입니다 — 색(Paint), 누르기(Press), 선택(Select), 떠 있는 층(Float), 끌기(Drag), 그룹 탐색(Focus), 입력 연결(Field), 배치(Layout) 가운데 하나씩만 맡습니다. Atom은 이 둘을 hook과 class 함수로 묶습니다. 2차끼리는 서로 기대지 않고(예외는 아래 둘뿐입니다), 묶는 일은 Atom이 합니다. 누르기는 부품이 안에 두지 않습니다 — 부품(Selectable · SelectableGroup.Item · Floating.Trigger · Floating.Close · RovingFocus.Item)은 `onClick`을 받는 native button이고, 누르기 장치가 필요하면 `<Pressable as={부품}>`으로 올립니다.
+Primitive는 두 차수로 나뉩니다. **1차**는 바탕입니다 — Box · Text · Icon · A11y로, 서로 기대지 않습니다. **2차**는 Box에 능력 하나를 더한 것입니다 — 색(Paint), 크기(Control), 누르기(Press), 선택(Select), 떠 있는 층(Float), 끌기(Drag), 그룹 탐색(Focus), 입력 연결(Field), 배치(Layout) 가운데 하나씩만 맡습니다. Atom은 이 둘을 hook과 class 함수로 묶습니다. 2차끼리는 서로 기대지 않고(예외는 아래 둘뿐입니다), 묶는 일은 Atom이 합니다. 누르기는 부품이 안에 두지 않습니다 — 부품(Selectable · SelectableGroup.Item · Floating.Trigger · Floating.Close · RovingFocus.Item)은 `onClick`을 받는 native button이고, 누르기 장치가 필요하면 `<Pressable as={부품}>`으로 올립니다.
 
 [contract:primitives.orders.first]: #
 1차 파일은 2차 폴더를 import하지 않습니다.
@@ -29,7 +29,8 @@ Atom과 호출자 말고는 아무도 Press에 닿지 않습니다. 부품에 pr
 | Element | 1차 | Box | — | [Element](element.md) |
 | Content | 1차 | Text · Icon | — | [Content](content.md) |
 | A11y | 1차 | FocusScope · VisuallyHidden · Portal · LiveRegion | useFocusRing · useFocusWithin (함수 announce · clearAnnouncements) | [A11y](a11y.md) |
-| Paint | 2차 | Surface · Paint | — (class 함수 surfaceClass · paintClass, class 지도 elevation) | [Paint](paint.md) |
+| Paint | 2차 | Surface · Paint | — (class 함수 surfaceClass · paintClass, class 지도 elevation · reveal · revealAfter) | [Paint](paint.md) |
+| Control | 2차 | Control | — (class 함수 controlClass) | [Control](control.md) |
 | Press | 2차 | Pressable | usePressable | [Press](press.md) |
 | Select | 2차 | Selectable · SelectableGroup | useSelectable · useSelectableGroup | [Select](select.md) |
 | Float | 2차 | Floating | useFloating · useFloatingContext | [Float](float.md) |
@@ -39,13 +40,13 @@ Atom과 호출자 말고는 아무도 Press에 닿지 않습니다. 부품에 pr
 | Layout | 2차 | Stack · Inline · Grid | — | [Layout](layout.md) |
 | 합성 도구 (분류 밖) | — | — | mergeProps · mergeRefs · composeEventHandlers | [합성 도구](#합성-도구) |
 
-`Draggable.Handle`은 Draggable의 anatomy라 따로 세지 않고, 합성 도구와 `announce` · `clearAnnouncements`는 컴포넌트가 아니라서 위 열한 분류 밖에 따로 둡니다. 합계 20개입니다.
+`Draggable.Handle`은 Draggable의 anatomy라 따로 세지 않고, 합성 도구와 `announce` · `clearAnnouncements`는 컴포넌트가 아니라서 위 열두 분류 밖에 따로 둡니다. 합계 21개입니다.
 <!-- /generated:inventory.primitives -->
 
 ## 공통 계약
 
 [contract:primitives.polymorphic.default-tags]: #
-`as`로 렌더 대상을 고르는 것은 <!-- generated:polymorphic --><!-- 이 블록은 생성됩니다 — pnpm docs:sync -->Box · Surface · Paint · Stack · Inline · Grid · Text · VisuallyHidden · Pressable · Selectable · SelectableGroup · SelectableGroup.Item · Floating.Trigger · Floating.Content · Floating.Close · Draggable · Draggable.Handle · Droppable · RovingFocus · RovingFocus.Item · Button · IconButton · Link입니다. native props와 ref는 같은 요소로 전달합니다.<!-- /generated:polymorphic --> Pressable의 `as`에는 부품도 올 수 있습니다(`<Pressable as={Selectable}>`). 부품(Pressable · Selectable · SelectableGroup.Item · Floating.Trigger · Floating.Close · RovingFocus.Item · Draggable · Draggable.Handle · Droppable)과 VisuallyHidden도 `as`를 받고, 기본 태그는 Pressable · Selectable · Floating.Trigger · Floating.Close · Draggable.Handle · RovingFocus.Item이 button, Draggable과 Droppable이 div, VisuallyHidden이 span입니다. Icon도 SVG ref와 native SVG props를 전달합니다. 어느 것도 중첩 wrapper를 더하지 않습니다. 부품의 `as`는 모두 같은 규칙으로 `disabled`를 대상에 옮깁니다(`internal/render-target.ts`의 `targetProps`가 유일한 투영입니다).
+`as`로 렌더 대상을 고르는 것은 <!-- generated:polymorphic --><!-- 이 블록은 생성됩니다 — pnpm docs:sync -->Box · Surface · Paint · Control · Stack · Inline · Grid · Text · VisuallyHidden · Pressable · Selectable · SelectableGroup · SelectableGroup.Item · Floating.Trigger · Floating.Content · Floating.Close · Draggable · Draggable.Handle · Droppable · RovingFocus · RovingFocus.Item · Button · IconButton · Link입니다. native props와 ref는 같은 요소로 전달합니다.<!-- /generated:polymorphic --> Pressable의 `as`에는 부품도 올 수 있습니다(`<Pressable as={Selectable}>`). 부품(Pressable · Selectable · SelectableGroup.Item · Floating.Trigger · Floating.Close · RovingFocus.Item · Draggable · Draggable.Handle · Droppable)과 VisuallyHidden도 `as`를 받고, 기본 태그는 Pressable · Selectable · Floating.Trigger · Floating.Close · Draggable.Handle · RovingFocus.Item이 button, Draggable과 Droppable이 div, VisuallyHidden이 span입니다. Icon도 SVG ref와 native SVG props를 전달합니다. 어느 것도 중첩 wrapper를 더하지 않습니다. 부품의 `as`는 모두 같은 규칙으로 `disabled`를 대상에 옮깁니다(`internal/render-target.ts`의 `targetProps`가 유일한 투영입니다).
 
 [contract:primitives.target.projection]: #
 대상은 두 종류입니다. **control**은 입력을 받는 대상(Pressable · Selectable · Floating.Trigger · Floating.Close · Draggable · Draggable.Handle · Droppable · RovingFocus.Item)이고, **region**은 자리만 차지하는 대상(VisuallyHidden)입니다. 비활성은 모든 경우 `data-disabled`를 달아 같은 selector로 스타일되고, 나머지는 대상이 무엇이냐에 따라 갈립니다.

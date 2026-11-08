@@ -23,6 +23,9 @@ Atom이 hover·focus·active·selected·disabled·invalid에 어떻게 반응하
 [contract:atoms.states.value-attributes]: #
 값을 가진 속성은 `data-status`(error 같은 틀의 상태 단어), `data-presence`(`entering` · `exiting`), `data-presentation`, `data-placement`, `data-part`, `data-orientation`이고, 코드가 DOM을 걷기 위한 표지는 `data-roving-item`과 `data-drag-ignore`입니다. hover는 CSS이고 속성이 없습니다 — `@media (hover: hover)` 안에서, 막히지 않은 대상에만 걸립니다.
 
+[contract:atoms.states.preview]: #
+상태 미리보기는 포인터나 키보드 없이 상태 하나를 그리는 길입니다. `data-pui-preview`를 단 요소와 그 아래 요소는 값이 `hover`면 가리킨 모습으로, `active`면 누르는 모습으로, `focus`면 키보드가 닿은 모습(링)으로 그려집니다. 셋은 진짜 상태와 한 selector 안에 서서 무게가 같으므로 순서도 그대로입니다 — 미리보기 hover는 selected와 눌림에 지고, 막힌 대상에는 뜨지 않으며, `@media (hover: hover)` 밖에서는 그려지지 않습니다. 상태 갤러리(Playground Overview)만 쓰는 장치라 어느 컴포넌트도 이 속성을 달지 않고, 칸은 `previewAttributes("hover")`로 답니다. 비활성 · 선택 · 오류는 미리보기가 없습니다 — prop으로 줍니다.
+
 ## 우선순위
 
 한 면 안에서 상태는 다음 순서로 읽습니다.
@@ -53,9 +56,9 @@ Atom이 hover·focus·active·selected·disabled·invalid에 어떻게 반응하
 |---|---|---|---|---|
 | `Button` 같은 눌리는 shared accent 컴포넌트 | `accent × variant` | variant profile의 tint 또는 경계 | keyboard ring | `hoverable`일 때만 적용(Button은 주고 Badge는 주지 않음) |
 | primary `solid` | `accent.primary.solid` | `interaction.bgHover.onPrimarySolid` tint | keyboard ring | 검정 면은 더 어두워질 수 없어 한 단계 밝힘 |
-| neutral `Field`·`Select`·`Textarea` | `border.base` | `border.hover` | keyboard ring | 배경은 바꾸지 않음 |
-| pointer-focused neutral Form | `border.base` | `border.hover` | ring 없음 | 클릭한 입력은 경계를 바꾸지 않음 |
-| 비활성 `Field`·`Select`·`Textarea` | `border.base`, `opacity.disabled` | 없음 | 해당 없음 | `not-allowed` 커서. Field의 보기 버튼도 그려진 채 반응하지 않음 |
+| neutral `Field`·`Select`·`Textarea` | `border.base` 선, `control.field` 흰 면 | `border.base`에서 `border.hover`로. `variant="ghost"`면 없음 | keyboard ring | 배경은 바꾸지 않음 |
+| pointer-focused neutral Form | 쉬는 모습 그대로 | 쉬는 모습 그대로 | ring 없음 | 클릭한 입력은 경계를 바꾸지 않음 |
+| 비활성 `Field`·`Select`·`Textarea` | 쉬는 모습에 `opacity.disabled` | 없음 | 해당 없음 | `not-allowed` 커서. Field의 보기 버튼도 그려진 채 반응하지 않음 |
 | semantic Form (`info`·`success`·`warning`·`error`) | 해당 accent `ink` 경계 | 같은 경계 유지 | keyboard ring | 상태색 경계로 의미를 계속 표시 |
 | 선택 가능한 행·항목 | base 면 | `interaction.bgHover.onSurface` tint | keyboard ring 또는 selected state | selected 면이 hover보다 우선 |
 | Link | `interaction.link` 잉크, 밑줄(`underline="always"` 기본) | 밑줄 없이 시작한 Link(`underline="hover"`)만 가리킬 때 밑줄 | keyboard ring | 면을 만들지 않음 |
@@ -85,7 +88,10 @@ Button · IconButton은 눌리는 동안 한 단계(`motion.press`의 변위, 1p
 비활성(disabled)이거나 로딩 중인 Button은 모두 `data-disabled`를 달고 흐려지며(`opacity.disabled`) `not-allowed` 커서를 보이고, hover tint를 받지 않습니다. 링크 모양의 Button도 같습니다. 그 모습은 비활성 recipe(`stateStyle.disabled`) 하나가 입히고, `<a>`가 된 Button은 `aria-disabled`와 클릭 차단으로 이동하지 않습니다. 로딩의 접근성은 하나로 정합니다 — 혼자 서는 Spinner는 라벨이 있는 progressbar이고, 컨트롤 안의 Spinner는 장식이며 컨트롤이 `aria-busy`를 답니다.
 
 [contract:atoms.mark.ring]: #
-꺼진 Checkbox · Radio는 입력칸과 같은 `border.base` 테로 서고 자기 면이 없으며, 포인터가 올라가도 테는 그대로입니다. 켜지거나 부분 선택이면 primary solid 면과 테, 오류면 꺼진 표식의 테만 error 잉크입니다. 꺼진 Switch는 `control.track` 트랙을 같은 선의 1px 안쪽 테(`strokeRing`)가 두르고, 이 테는 박스 안에 그려져 크기를 늘리지 않습니다. 켜진 Switch는 primary solid 트랙에 `bg.raised` 손잡이가 앉고, 테는 투명해져 트랙의 가장자리에 아무것도 덧칠하지 않으면서 전이는 이어집니다.
+꺼진 Checkbox · Radio는 `control.mark` 흰 면에 `border.base` 선 한 줄로 섭니다. 어디에 놓이든 같고([입력 틀의 면](README.md)), 포인터가 올라가도 그대로입니다. 켜지거나 부분 선택이면 primary solid 면, 오류면 꺼진 표식에만 error 잉크 테가 생깁니다. 꺼진 Switch는 `control.track` 트랙에 `control.knob` 손잡이가 앉습니다. 켜진 Switch는 primary solid 트랙에 `accent.primary.wash` 손잡이가 앉고, 테는 투명해 트랙의 가장자리에 아무것도 덧칠하지 않으면서 전이는 이어집니다. `prefers-contrast: more`에서는 꺼진 표식의 선과 꺼진 트랙의 테가 `border.strong`으로 짙어집니다.
+
+[contract:atoms.mark.press]: #
+Checkbox · Radio · Switch는 포인터로 누르는 동안(`:active`) 표식 바깥에 눌림 고리가 섭니다. 고리는 `interaction.active` 색이고, 폭은 포커스 링의 폭에 offset을 더한 4px라 키보드 링이 차지할 자리를 빈틈없이 채웁니다. 그래서 쉬는 모습 · 누르는 중 · 선택됨 셋이 서로 다르게 읽히고, 고리는 놓으면 사라집니다. 키보드 링이 보이는 동안에는 링이 이기고 고리는 서지 않으며, 비활성 표식에는 생기지 않습니다. 강제 색상 모드에서는 고리가 Highlight입니다.
 
 [contract:atoms.mark.disabled]: #
 비활성 Checkbox · Radio · Switch는 켜져 있든 아니든 `data-disabled`를 달고 `opacity.disabled`로 흐려지며 `not-allowed` 커서를 보입니다. 그 모습은 비활성 recipe(`stateStyle.disabled`) 하나가 입히고, 표식 stylesheet에는 opacity 숫자가 없습니다. 비활성이 아닌 표식은 불투명하고 포인터 커서입니다.
@@ -100,18 +106,20 @@ Button · IconButton은 눌리는 동안 한 단계(`motion.press`의 변위, 1p
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Button | 자신(자신의 곡률) | variant profile의 tint, hairline · dashed는 `border.hover` | 1px 변위 | `selected`(hairline · ghost · muted) · `aria-current` → soft 면 | `opacity.disabled` · `not-allowed`. 링크형은 `aria-disabled` · Tab 제외, 로딩은 포커스 유지 | — | hover는 Highlight 경계, selected는 Highlight 면, 비활성은 GrayText, 링은 Highlight | 높이 30 이상 |
 | IconButton | Button과 같음 | Button과 같음 | Button과 같음 | Button과 같음 | Button과 같음 | — | Button과 같음 | 정사각형, 한 변이 컨트롤 높이 |
-| Field | 틀(wrapper) | status가 없을 때만 `border.hover` | — | — | 틀이 `opacity.disabled` · `not-allowed`, 보기 버튼은 그려진 채 반응 없음 | `status` · `aria-invalid` → 상태 잉크 경계 | 경계 CanvasText, hover는 Highlight | 지우기 · 보기 버튼 24px |
+| Field | 틀(wrapper) | `variant="hairline"`에 status가 없을 때만 `border.hover` | — | — | 틀이 `opacity.disabled` · `not-allowed`, 보기 버튼은 그려진 채 반응 없음 | `status` · `aria-invalid` → 상태 잉크 경계 | 경계 CanvasText, hover는 Highlight | 지우기 · 보기 버튼 24px |
 | Textarea | 자신 | Field와 같음 | — | — | Field와 같음 | Field와 같음 | Field와 같음 | 컨트롤 전체 |
-| Select | 틀(wrapper) | Field와 같음 | — | — | Field와 같음 | Field와 같음(`status` 있음) | Field와 같음 | 컨트롤 전체 |
-| Checkbox | 자신(상자 곡률) | 없음 — 라벨과 행이 맡음 | — | checked · indeterminate → primary solid 면 | `opacity.disabled` · `not-allowed` | `status="error"`(`ChoiceStatus`) → 꺼진 상자의 테가 error 잉크 | Canvas 면 · ButtonText 테, 켜지면 Highlight 면 · HighlightText 표식, 비활성은 GrayText | 24px hit area |
-| Switch | 자신(트랙) | 없음 | — | checked → primary solid 트랙 | Checkbox와 같음 | `status="error"` → 꺼진 트랙의 안쪽 테가 error 잉크 | ButtonFace 트랙 · ButtonText 테 · 손잡이, 켜지면 Highlight 트랙 · HighlightText 손잡이 | 트랙 위아래로 24px hit area |
-| Radio | 자신(원) | 없음 | — | checked → primary solid 테와 점 | Checkbox와 같음 | Checkbox와 같음 | Canvas 면 · ButtonText 테, 켜지면 Highlight 테와 점 | 24px hit area |
+| Select | 틀(wrapper) | Field와 같음. 목록에서는 포인터나 키보드가 가리키는 항목이 hover tint | — | 목록의 고른 항목은 앞의 체크(면은 그대로) | Field와 같음. 고를 수 없는 항목은 `opacity.disabled` | Field와 같음(`status` 있음) | Field와 같음. 가리키는 항목은 Highlight | 컨트롤 전체 |
+| Checkbox | 자신(상자 곡률) | 없음 — 라벨과 행이 맡음 | 바깥 4px `interaction.active` 눌림 고리 | checked · indeterminate → primary solid 면 | `opacity.disabled` · `not-allowed` | `status="error"`(`ChoiceStatus`) → 꺼진 상자에 error 잉크 테 | Canvas 면 · ButtonText 테, 켜지면 Highlight 면 · HighlightText 표식, 비활성은 GrayText | 24px hit area |
+| Switch | 자신(트랙) | 없음 | Checkbox와 같음 | checked → primary solid 트랙 | Checkbox와 같음 | `status="error"` → 꺼진 트랙에 error 잉크 안쪽 테 | ButtonFace 트랙 · ButtonText 테 · 손잡이, 켜지면 Highlight 트랙 · HighlightText 손잡이 | 트랙 위아래로 24px hit area |
+| Radio | 자신(원) | 없음 | Checkbox와 같음 | checked → primary solid 면과 wash 점 | Checkbox와 같음 | Checkbox와 같음 | Canvas 면 · ButtonText 테, 켜지면 Highlight 면과 HighlightText 점 | 24px hit area |
 | Label | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 글자는 OS가 정함 | 해당 없음 |
 | Badge | 포커스 없음 | 없음 — `hoverable`을 주지 않아 hover 색이 없음 | 없음 | 없음 | 해당 없음 | 해당 없음 | 테두리로 남음, 점은 CanvasText | 해당 없음 |
 | Spinner | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 링 GrayText, 호 CanvasText | 해당 없음 |
 | Divider | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | border라 CanvasText로 남음 | 해당 없음 |
 | Link | 자신(`radius.text`) | `underline="hover"`면 밑줄이 뜸 | — | — | 링크에는 disabled가 없음 | — | LinkText | inline 예외 |
 | Marker | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | 해당 없음 | OS의 Mark · MarkText | 해당 없음 |
+| SegmentControl | 칸(Item) | track은 고르지 않은 칸의 글자가 `ink.primary`로, outline은 고르지 않은 칸에 hover tint | — | track은 고른 칸 위로 `control.thumb` 칸이 미끄러짐, outline은 고른 칸에 `control.chosen` 면과 앞 체크 | `opacity.disabled` · `not-allowed` | — | ButtonFace 트랙(outline은 틀) · ButtonText 테, 고른 칸은 Highlight 면 · HighlightText 글자 | 칸 전체 |
+| Slider | 자신 | 없음 | — | — | `opacity.disabled` · `not-allowed` | `status="error"` → 막대에 error 잉크 안쪽 테 | ButtonFace 막대 · Highlight 채움 · ButtonText 손잡이 테 | 막대 위아래로 24px |
 
 ## Focus와 transition
 
@@ -127,7 +135,7 @@ Button · IconButton · Link는 키보드 포커스를 `useFocusRing`(Pressable 
 OS가 색을 정하는 모드(`forced-colors: active`)에서는 대부분의 요소를 OS에 맡깁니다. 상태가 배경에만 기대는 자리 — 선택 표식, Spinner, selected 면, Badge의 점 — 만 `forced-color-adjust: none`으로 빼고 시스템 색(`SYSTEM_COLORS`)으로 직접 그립니다. hover는 Highlight 경계, 비활성은 GrayText, 포커스 링은 Highlight이고, Divider는 border라 그대로 남습니다([Color](../foundations/color.md#forced-colors)). 오류는 이 모드에서 색을 고르지 못하므로 `aria-invalid`와 오류 문구가 알립니다.
 
 [contract:atoms.mark.forced-colors]: #
-forced colors에서 꺼진 Switch는 ButtonFace 트랙을 ButtonText 테와 손잡이가 두르고 켜진 Switch는 Highlight 트랙과 HighlightText 손잡이이며, Checkbox는 Canvas 면과 ButtonText 테에서 켜지거나 부분 선택이면 Highlight 면과 HighlightText 체크 · 대시, Radio는 켜지면 Highlight 테와 점입니다. 비활성 표식은 켜져 있든 아니든 GrayText이고, Spinner의 호와 링은 서로 다른 색(CanvasText · GrayText)이며 Divider는 1px 실선으로 남습니다.
+forced colors에서 꺼진 Switch는 ButtonFace 트랙을 ButtonText 테와 손잡이가 두르고 켜진 Switch는 Highlight 트랙과 HighlightText 손잡이이며, Checkbox는 Canvas 면과 ButtonText 테에서 켜지거나 부분 선택이면 Highlight 면과 HighlightText 체크 · 대시, Radio는 켜지면 Highlight 면과 HighlightText 점입니다. 비활성 표식은 켜져 있든 아니든 GrayText이고, Spinner의 호는 CanvasText이며 Divider는 1px 실선으로 남습니다.
 
 [contract:atoms.button.forced-colors]: #
 forced colors에서 선택된 Button은 Highlight 면과 HighlightText 글자, hover한 Button은 Highlight 경계, 비활성 Button은 GrayText 글자이고 키보드 링은 Highlight입니다.
@@ -180,4 +188,5 @@ forced colors에서 Badge는 면이 사라져도 1px 실선 테두리로 남습�
 | forced colors | `tests/atoms/forced-colors.spec.ts`의 `atoms.mark.forced-colors` · `atoms.button.forced-colors` · `atoms.field.forced-colors` · `atoms.label.forced-colors` · `atoms.link.forced-colors` · `atoms.badge.forced-colors` |
 | target | `atoms.mark.target`(표식), `foundations.shape.target-reach`(Field 액션), `foundations.shape.control-geometry`(Button 높이와 정사각 IconButton) |
 | 대비 | `tokens/color.test.ts`의 `foundations.color.non-text-contrast`, `prefers-contrast: more`는 `atoms.mark.contrast-more` |
+| 상태 미리보기 | `tokens/state.test.ts`와 `tests/atoms/states.spec.ts`의 `atoms.states.preview` — 미리보기가 진짜 hover · 눌림 · 키보드 포커스와 같은 모습을 그리는지 |
 | 상태 철자 | `styles/states.test.ts`의 `foundations.state.source-scan` — `:hover` · `:active` · `:focus-visible`은 상태 recipe와 paint 층에만, 상태 속성은 `tokens/state.ts`에만 있음 |

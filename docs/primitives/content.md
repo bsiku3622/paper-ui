@@ -55,7 +55,7 @@ Content Primitive는 화면에 읽히는 것 — 글자와 아이콘 — 을 그
 아이콘 세트는 시스템이 소유하지 않습니다. 24 단위 viewBox의 path를 앱이 children으로 넣고(Lucide 등), 크기와 선 굵기는 Paper UI가 정합니다. 크기 이름은 Text 역할 이름의 부분집합이고 타입으로 묶여 있습니다(`IconSize`는 `TextVariant`의 일부). `label` 글자 옆이면 `size="label"`(14), 본문 옆이면 `body`(18). 선 굵기는 Shape의 `stroke.icon`(1.75)입니다.
 
 [contract:primitives.icon.size-precedence]: #
-`size`를 주지 않으면 컨트롤 안에서는 그 컨트롤의 `control.icon`(Shape)을, 그 밖에서는 body를 씁니다. 컨트롤이 정한 크기는 맥락으로 건네져 안쪽 Icon이 받고, 명시한 `size`가 언제나 맥락을 이깁니다.
+`size`를 주지 않으면 컨트롤 안에서는 그 컨트롤의 `control.icon`(Shape)을, 그 밖에서는 body를 씁니다. 컨트롤이 정한 크기는 CSS 변수로 내려와 안쪽 Icon이 읽고, 명시한 `size`가 언제나 그것을 이깁니다.
 
 [contract:primitives.icon.ink]: #
 `ink`를 주지 않으면 부모의 글자색(currentColor)을 따릅니다.

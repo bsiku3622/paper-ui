@@ -1,6 +1,6 @@
 # Color
 
-Color는 면·잉크·경계·의미색·상태 tint를 정하는 시스템입니다. 베이스는 흰색과 검정 둘뿐이고, 색(blue·green·amber·red)은 상태·포커스·링크처럼 의미가 있는 자리에만 작게 얹습니다. 다섯 시스템 중 가장 앞에 있어 다른 시스템을 참조하지 않습니다.
+Color는 면·잉크·경계·의미색·상태 tint를 정하는 시스템입니다. 베이스는 흰색과 검정 둘뿐이고, 색(blue·green·amber·red)은 상태·포커스·링크처럼 의미가 있는 자리에만 작게 얹습니다. [1차 시스템](README.md#1차와-2차)이라 다른 시스템을 읽지 않습니다.
 
 색은 한 방향으로만 흐릅니다.
 
@@ -62,11 +62,16 @@ Palette Token은 내부 이름입니다. 컴포넌트와 앱은 import하지 않
 <!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 | 역할 | Light | Dark |
 | --- | --- | --- |
-| `bg.canvas` | neutral.50 | neutral.950 |
+| `bg.canvas` | neutral.100 | neutral.950 |
 | `bg.raised` | neutral.0 | neutral.925 |
-| `bg.sunken` | neutral.100 | neutral.950 |
-| `control.track` | neutral.200 | neutral.800 |
-| `ink.primary` · `secondary` · `tertiary` | neutral.900 · 700 · 650 | neutral.100 · 400 · 500 |
+| `bg.sunken` | neutral.150 | neutral.950 |
+| `control.track` | neutral.150 | neutral.875 |
+| `control.knob` | neutral.0 | neutral.400 |
+| `control.thumb` | neutral.0 | neutral.800 |
+| `control.field` | neutral.0 | neutral.875 |
+| `control.mark` | neutral.0 | neutral.875 |
+| `control.chosen` | neutral.150 | neutral.800 |
+| `ink.primary` · `secondary` · `tertiary` | neutral.925 · 700 · 500 | neutral.100 · 400 · 500 |
 | `border.base` · `strong` · `hover` | neutral.200 · 300 · 400 | neutral.800 · 700 · 600 |
 | `interaction.bgHover.onSurface` | alpha05.neutral.950 | alpha05.neutral.0 |
 | `interaction.bgHover.onPrimarySolid` | alpha10.neutral.0 | alpha10.neutral.950 |
@@ -76,6 +81,7 @@ Palette Token은 내부 이름입니다. 컴포넌트와 앱은 import하지 않
 | `interaction.link` | blue.700 | blue.300 |
 | `overlay.scrim` | alpha30.neutral.950 | alpha60.neutral.950 |
 | `shadow.floating` · `lifted` · `resting` | alpha10.neutral.950 · alpha10.neutral.950 · alpha10.neutral.950 | alpha60.neutral.950 · alpha45.neutral.950 · alpha15.neutral.0 |
+| `shadow.inset` | alpha10.neutral.950 | alpha45.neutral.950 |
 | `marker.fill` | marker | marker |
 | `marker.ink` | neutral.950 | neutral.950 |
 <!-- /generated:color-roles -->
@@ -84,7 +90,7 @@ Palette Token은 내부 이름입니다. 컴포넌트와 앱은 import하지 않
 면은 앞에서 뒤로 `raised` > `canvas` > `sunken` 순서로 물러납니다. 라이트는 세 단계가 모두 다르고, 다크는 두 단계입니다 — 페이지(`canvas`)가 이미 가장 깊은 단계라 `sunken`이 같은 neutral.950을 씁니다. 그래서 다크에서 canvas 위의 sunken 면은 면 색이 아니라 경계로 구분하고, raised 위에서는 두 모드 모두 물러나 보입니다. 이 순서는 `SURFACE_ORDER`에 선언되어 있고, 두 모드에서 명도가 앞에서 뒤로 줄어드는지와 모든 잉크가 모든 면 위에서 4.5:1 이상인지를 단위 테스트가 지킵니다.
 
 [contract:foundations.color.control-track]: #
-`control.track`은 Switch 트랙과 진행 막대의 홈처럼 컨트롤 안에 박힌 면입니다. `bg` 밖에 따로 둔 이유는 컨트롤의 세부가 일반 페이지 면으로 번지지 않게 하기 위해서입니다. 포커스 링의 색은 `interaction.focus`가 갖고, 두께와 offset은 [Shape](shape.md)이, 그림자의 기하는 [Layout](layout.md)의 elevation이 갖습니다.
+`control.track`은 Switch · SegmentControl · Slider의 트랙과 진행 막대의 홈처럼 컨트롤 안에 박힌 면입니다. 그 위에 서는 것이 `control.knob`(꺼진 Switch의 손잡이)와 `control.thumb`(SegmentControl의 칸)입니다. 선 두른 SegmentControl은 트랙 없이 입력 틀의 면 위에 서고, 고른 칸은 `control.chosen` 면입니다 — 라이트는 트랙의 회색, 다크는 틀이 이미 그 회색이라 한 단계 위입니다. `control.field`는 면을 고르지 않은 입력 틀의 면, `control.mark`는 꺼진 표식의 면이고, 둘 다 어디에 놓이든 흰 면에 회색 선 한 줄로 섭니다. 다크에서는 흰 면에 해당하는 `bg.raised`가 카드 면과 같아서 한 단계 밝은 neutral.875에 섭니다. `bg` 밖에 따로 둔 이유는 컨트롤의 세부가 일반 페이지 면으로 번지지 않게 하기 위해서입니다. 포커스 링의 색은 `interaction.focus`가 갖고, 두께와 offset은 [Shape](shape.md)이, 그림자의 기하는 [Layout](layout.md)의 elevation이 갖습니다.
 
 [contract:foundations.color.shadow-depths]: #
 [contract:foundations.color.marker]: #
@@ -132,13 +138,13 @@ Palette Token은 내부 이름입니다. 컴포넌트와 앱은 import하지 않
 ## 대비 계약
 
 [contract:foundations.color.contrast-contract]: #
-글자는 4.5:1입니다. 컨트롤과 그 상태를 알리는 표식은 3:1입니다 — 스위치의 켜진 트랙, 체크 면과 그 위의 표식, 포커스 링, 오류 경계. 꺼진 선택 표식은 입력칸과 같은 선(`border.base`)을 두르고 자기 면이 없습니다. 입력칸은 연한데 표식만 진하면 한 화면에서 어긋나기 때문입니다. Switch만 손잡이가 앉을 `control.track` 트랙을 남깁니다. 켜진 Switch는 primary solid 트랙과 `bg.raised` 손잡이이고, 켜짐은 면(최소 15:1)이 알립니다.
+글자는 4.5:1입니다. 라이트의 `ink.tertiary`만 예외입니다 — 읽지 않고 지나가도 화면을 쓰는 데 지장이 없는 글자(placeholder, 비어 있는 Select, 목록의 그룹 이름, 캡션의 덧붙임)라 일부러 물러나 있고, 흰 면 3.1:1 · canvas 2.9:1 · sunken 2.6:1입니다. `prefers-contrast: more`에서는 neutral.700으로 올라가 모든 면에서 4.5:1을 넘고, 다크의 `ink.tertiary`는 늘 4.5:1 이상입니다. 그래서 그 글자가 없으면 무엇을 해야 할지 모르게 되는 자리에는 tertiary를 쓰지 않습니다. 컨트롤과 그 상태를 알리는 표식은 3:1입니다 — 스위치의 켜진 트랙, 체크 면과 그 위의 표식, 포커스 링, 오류 경계. 꺼진 선택 표식은 입력칸처럼 흰 면에 회색 선 한 줄(`border.base`)로 섭니다. 입력칸은 연한데 표식만 진하면 한 화면에서 어긋나기 때문입니다. Switch는 손잡이가 앉을 `control.track` 트랙이 면입니다. 켜진 Switch는 primary solid 트랙과 `accent.primary.wash` 손잡이이고, 켜짐은 면(최소 15:1)이 알립니다.
 
 [contract:foundations.color.non-text-contrast]: #
-단위 테스트(`tokens/color.test.ts`)가 두 테마의 모든 면(raised · canvas · sunken) 위에서 표식의 켜진 면(`accent.primary.solid`), 포커스 링, 오류 테(`accent.error.ink`)가 3:1 이상임을, 꺼진 트랙이 켜진 트랙과 3:1 이상 갈리고 켜진 트랙 위의 손잡이(`bg.raised`)와 체크(`accent.primary.wash`)가 3:1 이상임을 지킵니다. 다크 `accent.ink`는 모든 다크 면 위에서 4.5:1 이상으로 라이트와 같고, hover · selected · active의 tint를 면에 깐 자리 위의 `ink.primary`도 4.5:1 이상입니다.
+단위 테스트(`tokens/color.test.ts`)가 두 테마의 모든 면(raised · canvas · sunken) 위에서 표식의 켜진 면(`accent.primary.solid`), 포커스 링, 오류 테(`accent.error.ink`)가 3:1 이상임을, 꺼진 트랙이 켜진 트랙과 3:1 이상 갈리고 켜진 트랙 위의 손잡이와 체크(모두 `accent.primary.wash`)가 3:1 이상임을 지킵니다. 다크 `accent.ink`는 모든 다크 면 위에서 4.5:1 이상으로 라이트와 같고, hover · selected · active의 tint를 면에 깐 자리 위의 `ink.primary`도 4.5:1 이상입니다.
 
 [contract:foundations.color.non-text-exceptions]: #
-명시된 예외는 셋입니다. 첫째는 입력과 꺼진 선택 표식의 경계(`border.base`)입니다. 회색 선은 한 벌이라는 결정에 따라 컨트롤 전용 경계색을 두지 않으므로, 라벨 · placeholder · hover 경계 · 포커스 링이 입력의 존재를 보완하고 `prefers-contrast: more`에서 3:1로 오릅니다. 꺼진 표식은 옆의 라벨과 포커스 링이 보완합니다. 둘째는 옅게 깔린 selected 면(accent `soft`, `interaction.selected`)입니다. `aria-pressed` · `aria-current`와 `ink.primary`가 선택을 보완하고 `prefers-contrast: more`에서 `ink.primary` 안쪽 테를 얻습니다. selected · active 면 위의 글자는 `ink.primary`만 씁니다. 셋째는 꺼진 Switch의 손잡이입니다. `control.track` 위의 `bg.raised` 손잡이는 라이트 1.26:1, 다크 1.68:1입니다. 켜진 트랙이 꺼진 트랙과 3:1 이상 갈리므로, 켜짐과 꺼짐은 트랙이 말하고 손잡이의 자리가 보탭니다. 단위 테스트는 세 예외가 실제로 3:1 아래임을 확인해 목록이 거짓이 되지 않게 합니다.
+명시된 예외는 셋입니다. 첫째는 입력과 꺼진 선택 표식의 경계입니다. 둘 다 `border.base` 선 한 줄로 서서 3:1에 못 미칩니다. 라벨 · placeholder · 포커스 링이 입력의 존재를 보완하고, `prefers-contrast: more`에서는 그 선이 짙어지며 꺼진 표식은 `border.strong` 선으로 바뀝니다. 꺼진 표식은 옆의 라벨과 포커스 링이 보완합니다. 둘째는 옅게 깔린 selected 면(accent `soft`, `interaction.selected`, 선 두른 SegmentControl의 `control.chosen`)입니다. `aria-pressed` · `aria-current` · `aria-checked`와 `ink.primary`가 선택을 보완하고(고른 칸은 앞의 체크도 보탭니다) `prefers-contrast: more`에서 `ink.primary` 안쪽 테를 얻습니다. selected · active 면 위의 글자는 `ink.primary`만 씁니다. 셋째는 꺼진 Switch의 손잡이입니다. `control.track` 위의 `control.knob` 손잡이는 라이트 1.19:1, 다크 6.48:1이고 라이트에는 그림자가 더해집니다. 켜진 트랙이 꺼진 트랙과 3:1 이상 갈리므로, 켜짐과 꺼짐은 트랙이 말하고 손잡이의 자리가 보탭니다. 단위 테스트는 앞의 두 예외가 실제로 3:1 아래임을 확인해 목록이 거짓이 되지 않게 합니다.
 
 ## Forced colors
 
@@ -158,8 +164,8 @@ Windows 고대비처럼 OS가 색을 정하는 모드(`forced-colors: active`)�
 | --- | --- | --- | --- |
 | `solid` | 채운 면, 상태 점 | 600 (primary 950) | 600 (primary 50) |
 | `wash` | solid 위 글자 | 50 (primary 0) | 50 (primary 950) |
-| `ink` | soft·hairline·ghost 위 글자와 의미색 글자 (링크는 `interaction.link`) | 650 (primary 900) | 300 (primary 100) |
-| `soft` | soft variant의 옅은 면 | 100 (primary 200) | 925 (primary 875) |
+| `ink` | soft·hairline·ghost 위 글자와 의미색 글자 (링크는 `interaction.link`) | 650 (primary 925) | 300 (primary 100) |
+| `soft` | soft variant의 옅은 면 | 100 (primary 150) | 925 (primary 875) |
 | `subtle` | muted variant의 글자 | 700 (primary 700) | 400 (primary 500) |
 <!-- /generated:color-tones -->
 
@@ -171,6 +177,9 @@ light `warning`은 의도된 예외입니다. `STATUS_EXCEPTIONS.warning`이 lig
 
 [contract:foundations.color.dark-error-muted-hover]: #
 또 하나는 쉬는 모습이 아니라 hover입니다. 다크 `error`의 `muted` 글자(`subtle`)는 모든 지면 위에서 4.5:1 이상이지만, `raised` 위에 `bgHover.onSurface` tint가 얹히면 4.5:1에 0.02쯤 못 미칩니다. tint는 이미 가장 옅은 alpha 단계라 더 줄일 수 없고, 글자를 밝히면 Color 역할이 바뀝니다. 이 예외를 받아들일지 다크 `error.subtle`을 밝힐지는 아직 정하지 않았고, 그 결정을 기다리는 동안 기록으로 남깁니다. 단위 테스트가 이 한 자리를 이름으로 지목하고, 더 나빠지거나 다른 조합으로 번지면 실패합니다. 나머지 조합은 쉬는 모습과 hover 모두 4.5:1을 지킵니다.
+
+[contract:foundations.color.light-success-ghost-hover]: #
+라이트 `success`의 `ghost` 글자(`ink`)는 쉴 때 모든 지면 위에서 4.5:1 이상이지만, 가장 진한 지면인 `sunken` 위에 `bgHover.onSurface` tint가 얹히면 4.40:1입니다. `sunken`이 neutral.150으로 내려오면서 생긴 자리입니다. 단위 테스트가 이 한 자리도 이름으로 지목합니다.
 
 [contract:foundations.color.status-dots]: #
 상태 점은 두 가지입니다. 독립 상태 점은 accent `solid`를, 글자 옆에 붙는 점은 그 글자의 잉크를 씁니다.
@@ -194,7 +203,7 @@ Atom은 색을 직접 고르지 않고 `accent`와 `variant` 두 축을 말합�
 | `muted` | `fill` | `subtle` | `bgHover.onSurface` tint | 그 accent의 `soft` 면, 글자는 `ink` |
 
 [contract:foundations.color.variant-fill]: #
-`solid`와 `soft`만 면을 스스로 칠합니다. 나머지 넷(`FILLABLE_VARIANTS`)은 선과 글자만 정하고, 면은 `fill`이 Surface와 같은 사다리(raised · canvas · sunken)에서 고르며, 안 주면 놓인 곳이 비칩니다. 입력의 틀은 `hairline`과 `ghost`(`INPUT_VARIANTS`)만 받고, 글자를 넣는 칸이라 `fill` 기본값이 raised입니다.
+`solid`와 `soft`만 면을 스스로 칠합니다. 나머지 넷(`FILLABLE_VARIANTS`)은 선과 글자만 정하고, 면은 `fill`이 Surface와 같은 사다리(raised · canvas · sunken)에서 고르며, 안 주면 놓인 곳이 비칩니다. 입력의 틀은 `hairline`과 `ghost`(`INPUT_VARIANTS`)만 받고, 기본은 `hairline`입니다. `fill`을 주지 않으면 `control.field` 흰 면입니다([Atoms](../atoms/README.md)).
 
 선택된 상태를 soft 면으로 알릴 수 있는 variant는 `SELECTABLE_VARIANTS`(`hairline` · `ghost` · `muted`)입니다. 면이 없거나 옅어서 선택된 모습이 따로 필요한 variant들이고, `solid`와 `soft`는 이미 면이 있어, `dashed`는 넣을 자리를 말하는 표시라 selected가 없습니다. 선택은 `data-selected`나 `aria-current`가 알리고 `Paint`의 `selected`가 `data-selected`를 답니다. 선택된 면 위의 hover는 경계를 올리지 않고 tint만 얹습니다. tint는 면(`backgroundColor`)을 바꾸지 않고 면 위에 깔린 한 겹 `--pui-state-tint`를 옮기는 것이라, 전이가 면 위에서 합성됩니다([상태와 피드백](../atoms/states.md#tint와-색-profile)).
 

@@ -1,31 +1,65 @@
 # Overview
 
-Foundations는 화면에 쓰이는 모든 값을 정하는 다섯 시스템입니다. 색·글자·형태·배치·시간이 각자 하나의 시스템을 이루고, Primitive와 Atom은 이 값을 고르기만 합니다. 컴포넌트 안에 숫자나 색을 직접 쓰는 일은 없습니다.
+Foundations는 화면에 쓰이는 모든 값을 정합니다. 색·글자·형태·배치·시간이 각자 하나의 시스템을 이루고, 둘 이상에 걸친 것은 그 위의 조합이 맡습니다. Primitive와 Atom은 이 값을 고르기만 합니다. 컴포넌트 안에 숫자나 색을 직접 쓰는 일은 없습니다.
 
-## 다섯 시스템은 쌓인다
+## 1차와 2차
 
-[contract:foundations.systems.one-way]: #
-다섯 시스템은 정해진 순서로 쌓이고, 각 시스템은 자기보다 앞에 있는 시스템만 참조합니다.
+Foundation은 Primitive처럼 두 차수로 나뉩니다. **1차**는 다섯 시스템이고, 각자 원본과 자기 역할만 갖습니다. **2차**는 둘 이상의 시스템을 묶는 자리입니다. 선 하나는 Shape의 두께와 Color의 색이 있어야 그려지고, 컨트롤 크기는 Shape의 높이와 Typography의 글자 줄이 있어야 정해지므로 어느 한 시스템에 속하지 않습니다.
 
 ```text
-Color → Typography → Shape → Layout → Motion → Primitives → Atoms
+1차          Color · Typography · Shape · Layout · Motion
+              ↓
+2차          Line · Control · Elevation · Motion 변위 · State
+              ↓
+Primitives → Atoms
 ```
+
+[contract:foundations.orders.first]: #
+1차 시스템은 다른 시스템의 값을 읽지 않습니다. 예외는 하나입니다. 길이 scale이 Shape에 있고 Layout의 간격이 같은 scale에서 고르므로 Layout은 Shape을 읽습니다. 모드 이름(`color-modes`)과 컨트롤 크기 이름(`control-sizes`)은 값이 아니라 이름이라 어느 시스템이든 읽고, 타입만 가져오는 import는 값을 묶지 않으므로 세지 않습니다.
+
+[contract:foundations.orders.second]: #
+2차 파일은 1차를 읽고 서로 기대지 않으며, 1차는 2차를 읽지 않습니다. 예외는 하나입니다. 눌림이 내려앉는 거리는 Motion 역할이 말하므로 State가 Motion 변위를 읽습니다.
 
 [contract:foundations.systems.sources]: #
 
-| 시스템 | 정하는 것 | 앞 시스템에서 가져오는 것 | 원본 |
-|---|---|---|---|
-| [Color](color.md) | 면·잉크·경계·의미색·상태 tint | — | `tokens/palette.ts` |
-| [Typography](typography.md) | 서체·크기·굵기·행간·자간, 글자 역할 | 역할별 기본 잉크(Color) | `tokens/typography.ts` |
-| [Shape](shape.md) | 요소 하나의 곡률·선·포커스 링·크기·안쪽 여백 | 컨트롤 글자 줄(Typography) | `tokens/shape.ts` |
-| [Layout](layout.md) | 형제 간격·페이지 틀·breakpoint·elevation(position · z · 그림자) | 길이 scale(Shape), 그림자 색(Color) | `tokens/layout.ts` |
-| [Motion](motion.md) | 전이 시간·곡선·상황별 움직임 | 위 네 시스템이 바뀌는 방식 | `tokens/motion.ts` |
+| 1차 시스템 | 정하는 것 | 원본 |
+|---|---|---|
+| [Color](color.md) | 면·잉크·경계·의미색·상태 tint | `tokens/palette.ts` |
+| [Typography](typography.md) | 서체·크기·굵기·행간·자간, 글자 역할 | `tokens/typography.ts` |
+| [Shape](shape.md) | 요소 하나의 곡률·선·포커스 링·크기·안쪽 여백 | `tokens/shape.ts` |
+| [Layout](layout.md) | 형제 간격·페이지 틀·breakpoint·쌓임 순서·그림자 모양 | `tokens/layout.ts` |
+| [Motion](motion.md) | 전이 시간·곡선·상황별 움직임 | `tokens/motion.ts` |
 
 Shape와 Layout의 경계는 하나의 질문으로 가립니다. **빈 캔버스에 그 요소 하나만 놓아도 남는가.** 버튼의 곡률·높이·안쪽 여백은 버튼 하나만 있어도 보이므로 Shape이고, 형제 사이 간격이나 쌓임 순서는 두 번째 요소나 화면이 있어야 생기므로 Layout입니다.
 
+| 2차 | 묶는 것 | 파일 |
+|---|---|---|
+| [Line](#line) | Color 경계 + Shape 두께 + 실선 · 점선 | `tokens/line-recipes.ts` |
+| [Control](#control) | Shape 컨트롤 + Typography 글자 줄 | `tokens/control-recipes.ts` |
+| Elevation | Layout 층과 그림자 모양 + Color 그림자 색 | `tokens/elevation-recipes.ts` |
+| Motion 변위 | Motion 시간 + Shape · Layout의 길이 | `tokens/motion-recipes.ts` |
+| State | Color 상태 + Motion + Shape, 포커스 링 | `tokens/state-recipes.ts` |
+
+### Line
+
+[contract:foundations.line.assembly]: #
+선 하나는 여기서 조립합니다. `lineFrame`이 두께와 모양을, `lineRule`이 색까지 더한 완성형을 돌려줍니다. `side`(top · bottom · start · end, 없으면 둘레 전체)와 `style`(solid · dashed), `weight`(border · emphasis), `level`(base · strong · hover)을 고르고, 논리 속성이라 RTL에서 저절로 뒤집힙니다. 색은 늘리지 않습니다. 지면의 선은 `border.base` 하나이고 level은 Color에 이미 있는 이름입니다.
+
+```ts
+import { style } from "@vanilla-extract/css";
+import { lineRule } from "@studio-baeks/paper-ui/tokens";
+
+export const topbar = style({ ...lineRule({ side: "bottom" }) });
+```
+
+### Control
+
+[contract:foundations.control.formulas]: #
+크기 하나가 Shape와 Typography에 걸쳐 무엇을 뜻하는지 여기서 정합니다. 안쪽 여백은 컨트롤 높이에서 글자 줄을 뺀 식이고, Textarea의 위아래 여백과 Select의 값이 멈추는 자리도 같습니다. 숫자는 각 시스템의 원본에 있고 여기에는 식만 있습니다. 풀린 값은 `tokens/__golden__/control-resolved.json`이 지키고, 찾는 경로는 다른 컨트롤 역할과 같은 `tokens.shape.control.inset`입니다. 이 값을 쓰는 Primitive는 [Control](../primitives/control.md)입니다.
+
 ## 원본 → 역할 → 조합
 
-다섯 시스템은 같은 세 단계로 짜여 있고, 다른 점은 아래 표에 있습니다. 숫자와 색은 원본에 한 번만 적고, 컴포넌트와 앱은 역할을 고르며, 역할을 묶어 컴포넌트 하나가 쓰는 완성형을 만듭니다.
+1차 시스템은 같은 세 단계로 짜여 있고, 다른 점은 아래 표에 있습니다. 숫자와 색은 원본에 한 번만 적고, 컴포넌트와 앱은 역할을 고르며, 역할을 묶어 컴포넌트 하나가 쓰는 완성형을 만듭니다.
 
 | 시스템 | 원본 | 역할 | 조합 |
 |---|---|---|---|
@@ -56,7 +90,9 @@ dp·em·색    CSS 값       var() 참조                  숫자 없는 완성�
 | Typography | `tokens/typography.ts` · `tokens/typography-recipes.ts` · `styles/typography.css.ts` |
 | Shape | `tokens/shape.ts` · `tokens/shape-recipes.ts` |
 | Layout | `tokens/layout.ts` · `tokens/elevation-recipes.ts` · `styles/elevation.css.ts` |
-| Motion | `tokens/motion.ts` · `styles/motion.css.ts` |
+| Motion | `tokens/motion.ts` · `tokens/motion-recipes.ts` · `styles/motion.css.ts` |
+| Line | `tokens/line-recipes.ts` |
+| Control | `tokens/control-sizes.ts` · `tokens/control-recipes.ts` · `primitives/control/Control.css.ts` |
 | State recipes | `tokens/state.ts` · `tokens/state-recipes.ts` · `styles/states.css.ts` |
 
 [contract:foundations.systems.differences]: #
@@ -225,6 +261,7 @@ export const panel = style([elevation.overlay, {
 [contract:guardrails.source-numbers.structural-only]: #
 [contract:guardrails.source-numbers.media-keys]: #
 [contract:guardrails.source-numbers.depth-owners]: #
+[contract:guardrails.source-numbers.line-owners]: #
 [contract:guardrails.source-numbers.app-roles]: #
 [contract:guardrails.layered-styles.package-css-layered]: #
 [contract:guardrails.internal-class.no-class-names]: #
@@ -239,7 +276,7 @@ export const panel = style([elevation.overlay, {
 1. **raw 색값 금지** (`paper/raw-color`). 색 원본은 `tokens/palette.ts`의 OKLCH 좌표뿐이고 HEX는 `tokens/color-ladder.ts`가 생성합니다. 어떤 파일도 색 리터럴을 손으로 쓰지 않습니다 — HEX, `oklch()` 같은 색 함수, 색을 받는 자리의 이름 있는 색과 CSS 시스템 색 키워드가 모두 막힙니다. 색을 받는 자리는 색을 받는 속성(축약 속성과 같은 파일에서 읽히는 계산된 키 포함), `vars`의 변수, 이름을 읽을 수 없는 계산된 키, DOM style 쓰기입니다. 값은 한 파일 안에서 따라갑니다 — 이름 · 표 · 함수와, 매개변수에 건네는 것(호출 인자 · JSX prop · `.map` · `.forEach` · `styleVariants`의 항목)까지 읽고, 스타일 호출 안에서 읽을 수 없는 함수에 넘긴 글자도 읽습니다. 시스템 색은 `SYSTEM_COLORS`를 거칩니다. 패키지에서 `tokens.color`를 읽는 곳은 paint 층(`primitives/paint/`)과 `styles/`의 class 지도, Icon의 잉크뿐입니다(`manifest.js`의 `COLOR_OWNERS`; `primitives/orders.test.ts`와 `atoms/color-ownership.test.ts`가 backstop).
 2. **원본 격리** (`paper/source-isolation`). 원본 값을 읽는 곳은 토큰 층(`tokens/`)뿐입니다. 패키지의 나머지는 tokens 배럴(`tokens/index.ts`)로만 들어가고(바인딩 없는 `variables.css` import와 이름만 담은 `layers.css`는 예외, `tokens/inspect`는 import하지 않음), 앱과 fixture는 패키지 소스를 import하지 않고 exports로만 씁니다(`vite.config`가 읽는 boot 스크립트 하나가 manifest의 `TOOLING`입니다). Foundations inspector는 자기 시스템 하나를 `@paper-ui/inspect/<시스템>`으로 읽어 글자나 kit의 표시 부품(`Swatch` · `Meter` …)으로만 보여 주고, 그 값은 `style` · `className` · 패키지 컴포넌트의 prop에 닿지 않습니다. `--pui-` 변수는 토큰 층 밖에서 문자열로 쓰지 않습니다 — `tokens`로 읽고 `sourceVars()`로 덮어씁니다. 테스트는 검증 코드라 받지 않습니다. 같은 묶음이 React Aria 경계도 지킵니다(`no-restricted-imports`, 패턴은 manifest의 `ARIA_BOUNDARY`): `@react-aria/*` · `@react-stately/*` · `@react-types/*`는 `packages/paper-ui/src/internal/aria` 밖에서 import하지 않고(`@react-stately`는 쓰지도 않습니다), 어댑터가 Paper의 이름과 타입으로 옮깁니다. 번들한 d.ts에 그 경로가 남으면 `build-types.mjs`가 빌드를 실패시킵니다.
 3. **inline style로 토큰 주입 금지** (`paper/inline-token`). 토큰은 `.css.ts` className으로만 적용합니다. 패키지와 앱의 `.ts` · `.tsx`에서 패키지 자신(`@studio-baeks/paper-ui*`)이나 상대 모듈에서 온 값이 `style` 또는 DOM style 쓰기(`el.style.width =` · `setProperty` · `Object.assign(el.style, …)` · `setAttribute("style", …)`)에 닿으면(변수 · 함수 호출 · hook · 구조 분해, 매개변수에 건네는 호출 인자 · JSX prop · `.map` · `.forEach`의 항목을 거쳐도, 던지는 오류는 따라가지 않고) 막습니다. 따라가는 범위는 한 파일입니다 — 파일 밖의 호출자, 객체의 메서드, `.call` · `.apply` · `.bind`, 다른 함수에 넘긴 콜백은 읽지 않습니다. 상대 모듈이 무엇을 돌려주는지는 읽지 않으므로 토큰을 담았다고 봅니다. `.css` 모듈만 자기 class와 변수의 이름을 내보내므로 따라가지 않습니다(`tokens` · `styles` · `internal` 안의 것은 따라갑니다). 실행 중에 정해지는 값만 예외이고 목록은 이것이 전부입니다: Draggable 이동 좌표, Grid track, Floating rank 변수, Floating 앵커 위치, Floating 원본 변수 운반, 호출자가 넘긴 style. 예외 모듈(`internal/aria` · `internal/measure` · `theme/source-carry` · `primitives/drag/useDraggable` · `primitives/float/nestElevation`)은 manifest의 `RUNTIME_STYLE`에 이유와 함께 선언합니다.
-4. **숫자는 원본에만** (`paper/source-numbers`). 스타일 자리(`.css.ts`의 vanilla-extract 호출 인자, `.ts` · `.tsx`의 `style`과 DOM style 쓰기)의 숫자 · 단위 · easing은 구조 값(0 · 100% · 50% · 1fr · 45° 배수 · calc의 `/ 2` · `* -1`, 정본은 `eslint-rules/structural.js`)이 아니면 원본의 값입니다. 범주가 없는 속성과 `vars`의 변수 값도 똑같이 읽습니다. 값은 한 파일 안에서 따라갑니다 — 이름 · 표 · 함수와, 매개변수에 건네는 것(호출 인자 · JSX prop · `.map` · `.forEach` · `styleVariants`의 항목 · 기본값)까지 읽고, 스타일 자리에서 읽을 수 없는 함수에 넘긴 숫자도 읽으며, import한 스타일 API는 원래 이름(`style as s`)으로 봅니다. 다른 모듈에서 import한 값, 객체의 메서드, `.call` · `.apply` · `.bind`, 다른 함수에 넘긴 콜백은 읽지 않습니다. 패키지에서는 스타일 속성을 키로 가진 객체 리터럴이 어느 `.ts` · `.tsx`에 있든 스타일 자리입니다 — 그 조각이 import로 stylesheet에 펼쳐질 수 있기 때문입니다. 패키지는 토큰 층 밖에서 간격 · 형태 · 깊이 · 글자 · 투명도 · 시간 · 치수 모두를 역할로 고르고, 앱은 콘텐츠 치수(폭 · 높이 · 그리드 트랙과 그 위치)만 직접 씁니다. 앱의 변수 값은 같은 파일의 규칙이 그 변수를 치수로 읽을 때만 치수입니다. 미디어 · container 쿼리의 길이는 `tokens.layout.breakpoint`나 `APP_DIMENSION_MODULES`의 import로만 적고, 읽을 수 없는 쿼리는 막습니다. 깊이(`zIndex` · `boxShadow` · `filter`)는 Surface와 Floating의 stylesheet(manifest의 `ELEVATION_OWNERS`)나 elevation 조각의 spread, 안쪽 선은 `strokeRing()`에서만 나옵니다. 앱은 Typography Palette를 읽지 않습니다 — 공개 트리에 없고, 그것을 보여 주는 Typography inspector는 `@paper-ui/inspect/typography`로 읽습니다. 한 화면의 치수 모듈(`pages/demo/layout.ts`)은 `APP_DIMENSION_MODULES`에 선언합니다.
+4. **숫자는 원본에만** (`paper/source-numbers`). 스타일 자리(`.css.ts`의 vanilla-extract 호출 인자, `.ts` · `.tsx`의 `style`과 DOM style 쓰기)의 숫자 · 단위 · easing은 구조 값(0 · 100% · 50% · 1fr · 45° 배수 · calc의 `/ 2` · `* -1`, 정본은 `eslint-rules/structural.js`)이 아니면 원본의 값입니다. 범주가 없는 속성과 `vars`의 변수 값도 똑같이 읽습니다. 값은 한 파일 안에서 따라갑니다 — 이름 · 표 · 함수와, 매개변수에 건네는 것(호출 인자 · JSX prop · `.map` · `.forEach` · `styleVariants`의 항목 · 기본값)까지 읽고, 스타일 자리에서 읽을 수 없는 함수에 넘긴 숫자도 읽으며, import한 스타일 API는 원래 이름(`style as s`)으로 봅니다. 다른 모듈에서 import한 값, 객체의 메서드, `.call` · `.apply` · `.bind`, 다른 함수에 넘긴 콜백은 읽지 않습니다. 패키지에서는 스타일 속성을 키로 가진 객체 리터럴이 어느 `.ts` · `.tsx`에 있든 스타일 자리입니다 — 그 조각이 import로 stylesheet에 펼쳐질 수 있기 때문입니다. 패키지는 토큰 층 밖에서 간격 · 형태 · 깊이 · 글자 · 투명도 · 시간 · 치수 모두를 역할로 고르고, 앱은 콘텐츠 치수(폭 · 높이 · 그리드 트랙과 그 위치)만 직접 씁니다. 앱의 변수 값은 같은 파일의 규칙이 그 변수를 치수로 읽을 때만 치수입니다. 미디어 · container 쿼리의 길이는 `tokens.layout.breakpoint`나 `APP_DIMENSION_MODULES`의 import로만 적고, 읽을 수 없는 쿼리는 막습니다. 깊이(`zIndex` · `boxShadow` · `filter`)는 Surface와 Floating의 stylesheet, 그리고 등장의 흐림을 쓰는 Motion의 stylesheet(manifest의 `ELEVATION_OWNERS`)나 elevation 조각의 spread, 안쪽 선은 `strokeRing()`에서만 나옵니다. border의 두께와 모양은 `lineRule` · `lineFrame`의 spread에서만 나옵니다(manifest의 `LINE_OWNERS`). 앱은 Typography Palette를 읽지 않습니다 — 공개 트리에 없고, 그것을 보여 주는 Typography inspector는 `@paper-ui/inspect/typography`로 읽습니다. 한 화면의 치수 모듈(`pages/demo/layout.ts`)은 `APP_DIMENSION_MODULES`에 선언합니다.
 5. **패키지 CSS는 레이어 안에** (`paper/layered-styles`). 패키지 `.css.ts`는 vanilla-extract의 규칙 API(`style` · `styleVariants` · `globalStyle` · `globalLayer` …)를 직접 import하지 않고 `tokens/layers.css.ts`의 `layered(name)`으로 규칙을 만듭니다. 그래서 모든 규칙이 cascade layer `pui` 안에 들고, 레이어 밖의 앱 CSS가 로드 순서와 무관하게 이깁니다. 레이어를 정의하는 `layers.css.ts`만 예외이고, `keyframes` · `createVar` · `fallbackVar` · `createGlobalVar`는 그대로 씁니다.
 6. **내부 class 이름 문자열 금지** (`paper/internal-class`). 패키지(`packages/paper-ui/src`) · 앱(`app/src`) · fixture(`fixtures/`) · 테스트(`tests/`)는 `pui-` 뒤에 글자가 오는 문자열(템플릿, `pui-`로 끝나는 왼쪽 글자의 `+`, 정규식 포함)을 쓰지 않습니다. 공유 축의 class는 resolver가 `styles/`의 typed map(`fillClass` · `inkClass` · `accentVariantClass` · `spaceClass`)을 인덱싱해 고르고 이름은 빌드가 짓습니다. 변수 `--pui-*`와 속성 `data-pui-*`는 이 규칙을 통과합니다(변수 문자열은 원본 격리가 막습니다). 패키지 안에서만 그 이름이 class가 아닐 수 있고 놓인 자리가 그것을 말합니다 — 요소의 id(`id` · `htmlFor` · `…Id` 바인딩), 저장 키(`…KEY` · `…Key` 바인딩과 storage 호출의 첫 인자), 테스트의 부정 단언(`.not`). `.pui-` selector와 class 자리가 읽는 바인딩은 그래도 class입니다.
 7. **손으로 지은 전역 class 금지** (`paper/global-class`). 앱 `.css.ts`의 `globalStyle` selector는 scoped class에서 시작합니다. 요소 · `:root` selector는 `site/shell.css.ts`(manifest의 `GLOBAL_SELECTOR_FILES`)뿐이고, 전역 keyframes와 전역 변수 이름은 짓지 않습니다.

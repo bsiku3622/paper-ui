@@ -30,10 +30,10 @@ Root의 open/defaultOpen/onOpenChange는 controlled·uncontrolled 상태를 선�
 Content의 children은 노드이거나 `FloatingContentState`를 받는 함수입니다 — `{ isOpen, presentation, placement, elevation }`이고, `presentation`은 `popover` 또는 `modal`, `placement`는 panel이 앵커의 어느 쪽에 자리 잡았는지(`top` · `bottom` · `start` · `end`, 앵커 요소의 방향을 따라 오른쪽에서 왼쪽으로 쓰는 페이지에서는 거울상이며 modal에는 없어 undefined), `elevation`은 `{ tier, rank }`입니다. 열고 닫는 동작은 스냅샷이 아니라 `useFloatingContext()`로 합니다. Content는 FormField의 context를 끊어, field에서 연 패널 안의 입력은 그 field와 관계가 없습니다([Field](field.md)).
 
 [contract:primitives.floating.presentation]: #
-Content는 `presentation`으로 두 가지 중 하나로 섭니다. `popover`(기본)는 앵커 곁에, `modal`은 scrim 위 가운데에 섭니다. Root가 아니라 Content가 고르므로 열린 상태와 서는 방식은 따로입니다. popover는 `anchorRef`로 앵커를 고르고, 주지 않으면 Floating.Trigger가 앵커입니다. 둘 다 없으면 개발 오류(`[paper-ui] Floating.Content (popover) needs Floating.Trigger or anchorRef.`)를 한 번 내고 아무것도 그리지 않습니다. Trigger는 Content 앞에 두는 것이 자연스럽지만 뒤에 있어도 Content가 한 번 더 자리를 잡습니다. modal에는 앵커가 없고 `aria-modal`, scrim, 배경 inert, 스크롤 잠금이 붙습니다. Content는 `data-presentation`을, popover는 자리 잡은 쪽을 `data-placement`로 답니다. 두 모양의 prop은 타입이 가릅니다 — `anchorRef` · `placement` · `offset` · `crossOffset` · `flip`은 popover(`FloatingPopoverProps`)에만, `underlayClassName`은 modal(`FloatingModalProps`)에만 있습니다.
+Content는 `presentation`으로 두 가지 중 하나로 섭니다. `popover`(기본)는 앵커 곁에, `modal`은 scrim 위 가운데에 섭니다. Root가 아니라 Content가 고르므로 열린 상태와 서는 방식은 따로입니다. popover는 `anchorRef`로 앵커를 고르고, 주지 않으면 Floating.Trigger가 앵커입니다. 둘 다 없으면 개발 오류(`[paper-ui] Floating.Content (popover) needs Floating.Trigger or anchorRef.`)를 한 번 내고 아무것도 그리지 않습니다. Trigger는 Content 앞에 두는 것이 자연스럽지만 뒤에 있어도 Content가 한 번 더 자리를 잡습니다. modal에는 앵커가 없고 `aria-modal`, scrim, 배경 inert, 스크롤 잠금이 붙습니다. Content는 `data-presentation`을, popover는 자리 잡은 쪽을 `data-placement`로 답니다. 두 모양의 prop은 타입이 가릅니다 — `anchorRef` · `placement` · `offset` · `crossOffset` · `flip` · `fitAnchor`는 popover(`FloatingPopoverProps`)에만, `underlayClassName`은 modal(`FloatingModalProps`)에만 있습니다.
 
 [contract:primitives.floating.role]: #
-Content role은 dialog / alertdialog이며 기본값은 dialog입니다. aria-label 또는 aria-labelledby로 이름을 제공해주세요. Modal에만 aria-modal=true가 붙습니다. Menu·Tooltip 등의 의미론은 이 API에 임의로 부여하지 않습니다.
+Content role은 dialog / alertdialog / listbox이며 기본값은 dialog입니다. aria-label 또는 aria-labelledby로 이름을 제공해주세요. Modal에만 aria-modal=true가 붙습니다. listbox는 다른 컨트롤이 열고 가리키는 목록(Select의 목록)입니다 — 포커스를 가져가지도 되돌려 주지도 않아 그 컨트롤에 머물고(`autoFocus` · `restoreFocus`의 기본이 false), 그 컨트롤은 `useFloatingContentId()`로 panel의 id를 읽어 `aria-controls`로 가리킵니다. Menu·Tooltip 등의 의미론은 이 API에 임의로 부여하지 않습니다.
 
 [contract:primitives.floating.content-options]: #
 
@@ -44,12 +44,13 @@ Content role은 dialog / alertdialog이며 기본값은 dialog입니다. aria-la
 | dismissable | true | 바깥 pointer 조작으로 닫기 |
 | keyboardDismissDisabled | false | true이면 Escape 닫기 해제. Escape는 포커스가 panel 안에 있을 때만 듣습니다 |
 | closeOnBlur | false | focus 이탈 시 닫기 요청 |
-| autoFocus / restoreFocus | true / true | 진입 / 해제 후 복원 |
+| autoFocus / restoreFocus | true / true, listbox는 false / false | 진입 / 해제 후 복원 |
 | initialFocusRef | 없음 | 내부의 명시적 focus 대상 |
 | anchorRef | Trigger | popover가 곁에 설 요소. 바깥 조작이 이 요소에서 일어나도 닫지 않습니다 |
 | placement | bottom start | 방향·정렬(`Placement`, 논리 방향이라 오른쪽에서 왼쪽으로 쓰는 페이지에서는 거울상) |
 | offset / crossOffset | sm / none | 앵커와 panel 사이의 간격. gap 단계 이름(`xs`~`3xl`)이나 `none` |
 | flip | true | 공간이 부족하면 방향 전환 |
+| fitAnchor | false | true면 panel이 앵커보다 좁지 않습니다. 다만 창의 양쪽 `layout.gutter` 사이보다 넓어지지는 않습니다. 열려 있는 동안 앵커의 폭을 재고, 앵커가 크기를 바꾸면 다시 잽니다 |
 | portalContainer | document.body | Portal을 붙일 Element |
 | closeOnInteractOutside | 없음 | 바깥 조작 필터 |
 | underlayClassName | 없음 | Modal scrim class |

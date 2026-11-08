@@ -18,8 +18,8 @@ Surface는 Box가 놓인 종이입니다. 어떤 면 위에 있는지(fill), 경
 
 | prop | 값 | 출처 |
 | --- | --- | --- |
-| `fill` | canvas · raised · sunken (`SURFACE_FILLS`) | Color `bg.*` — 다크에서 sunken = canvas라, canvas 위에서는 border와 함께 |
-| `border` | boolean | Color `border.base`, Shape `stroke.border` |
+| `fill` | canvas · raised · sunken (`SURFACE_FILLS`) | Color `bg.*` — 다크에서 sunken = canvas라, canvas 위에서는 border와 함께. 면을 고르지 않은 안쪽 입력과 표식의 기본도 정함([Atoms](../atoms/README.md)) |
+| `border` | boolean · top · bottom · start · end (`LINE_SIDES`) | Color `border.base`, Shape `stroke.border` |
 | `radius` | sm · md · lg · full (`SURFACE_RADII`) | Shape `radius.surface.*` · `radius.full` |
 | `shadow` | boolean | Layout resting 깊이 — 제자리 그림자. `fill`이 있을 때만 받고, 그림자를 가진 tier에서는 그 그림자가 이김. sticky는 그림자가 없어 그대로 받음 |
 | `elevation` | lifted · sticky · overlay · modal · toast (`ELEVATIONS`) | Layout `elevation` class — position과 z와 그림자를 함께 |
@@ -27,6 +27,9 @@ Surface는 Box가 놓인 종이입니다. 어떤 면 위에 있는지(fill), 경
 | `theme` | light · dark · inverse (`SURFACE_THEMES`) | Color 모드 — 이 면과 안쪽만 그 모드. `inverse`는 주변 모드의 반대 |
 | `hoverable` | boolean | Color `interaction` — 면이 항목이 되어 hover · 눌림 · 선택이 중립 tint로 드러남 |
 | `selected` | boolean | `data-selected`만 답니다 — 색은 그 속성을 읽는 CSS가 입힘 |
+
+[contract:primitives.surface.border-side]: #
+`border`를 켜면 둘레 전체에, 면 이름을 주면 그 면에만 선을 긋습니다. 탑바의 아래 선이나 사이드바의 옆 선이 그 자리입니다. 색은 어느 쪽이든 `border.base`입니다.
 
 [contract:primitives.surface.classes]: #
 Surface의 `fill` · `border` · `radius` · `elevation`은 각자 지도 하나의 class가 되고, 주지 않은 축에는 class가 붙지 않습니다. `surfaceClass`는 같은 class를 theme만 빼고 돌려줍니다. `as`로 Stack · Inline · Grid 같은 primitive를 고르면 그 요소 하나가 면이 되어, `<Surface as={Stack} gap="md" fill="raised">`도 DOM 요소는 하나이고 Stack의 class와 prop이 그대로 남습니다. Box · Stack · Inline · Grid에 면 prop을 주면 타입이 막습니다.
@@ -60,6 +63,9 @@ Paint는 accent(의미)와 variant(시각 무게)를 고르면 그 조합의 색
 
 [contract:primitives.paint.fill]: #
 `solid`와 `soft`는 자기 면을 칠하고 `fill`을 받지 않습니다. 나머지 넷은 선과 글자만 정하고, 면은 `fill`이 Surface와 같은 class로 고르며, 안 주면 놓인 곳이 비칩니다.
+
+[contract:primitives.paint.frame]: #
+accent를 입은 상자는 variant와 상관없이 같은 틀을 갖습니다. 선이 없는 variant의 선은 투명이라, variant가 바뀌어도 상자가 움직이지 않습니다. 틀은 [Line](../foundations/README.md#line)에서 옵니다.
 
 [contract:primitives.paint.shadow]: #
 `shadow`는 Surface와 같은 제자리 그림자이고 면이 있을 때만 받습니다. `solid`와 `soft`는 언제나, 나머지 넷은 `fill`이 있을 때만 받고, 그 밖의 조합은 타입이 막으며 그려지지도 않습니다. 선은 그림자와 상관없이 variant가 정합니다. 선 대신 그림자로 세우려면 `ghost`에 `fill`과 `shadow`를 줍니다.

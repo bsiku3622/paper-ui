@@ -1,6 +1,6 @@
 # Typography
 
-Typography는 서체·크기·굵기·행간·자간을 정하는 시스템입니다. 컴포넌트는 크기를 숫자로 고르지 않고 **역할**로 고릅니다 — 페이지 제목인지, 본문인지, 짧은 이름인지. Color 다음 층이라, 역할마다 기본 잉크를 Color에서 가져옵니다.
+Typography는 서체·크기·굵기·행간·자간을 정하는 시스템입니다. 컴포넌트는 크기를 숫자로 고르지 않고 **역할**로 고릅니다 — 페이지 제목인지, 본문인지, 짧은 이름인지. 역할마다 기본 잉크의 이름을 갖고, 그 이름이 가리키는 색은 Color가 정합니다.
 
 [contract:foundations.typography.palette-only]: #
 Typography도 세 단계입니다. 원본 수치인 **Typography Palette**, 그것을 조합한 **글자 역할**, 반복되는 컨트롤 글자를 묶은 **Control preset**입니다. 역할과 preset은 Palette의 변수를 조합할 뿐, 숫자를 새로 쓰지 않습니다. 공개 토큰 경로는 역할의 `tokens.typography.role`과 preset의 `tokens.typography.preset`입니다. Palette는 공개 트리에 없고 CSS 변수(`--pui-typography-palette-*`)로만 구워지며, 패키지 안쪽은 `tokens/typography.ts`에서, Playground의 Typography inspector는 `@paper-ui/inspect/typography`로 읽습니다. 이 값들을 화면에 적용하는 선언은 한 곳, `tokens/typography-recipes.ts`가 만듭니다([역할을 적용하는 단위](#역할을-적용하는-단위)).
@@ -53,18 +53,19 @@ mono는 위계가 아니라 **family 축**입니다. `<Text family="mono">`로 �
 <!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 | 역할 | 크기 / 행간 | 굵기 | 강조 | 자간 | 기본 잉크 | 기본 태그 | 쓰는 곳 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `hero` | 44–76 유동 / 1.12 | 400 | 600 | tightest | primary | h1 | 랜딩 헤드라인 |
-| `headline` | 48 / 56 | 400 | 600 | tightest | primary | h1 | 앱 화면의 큰 제목 |
-| `display` | 32 / 40 | 400 | 600 | tighter | primary | h1 | 큰 제목 |
+| `hero` | 44–76 유동 / 1.12 | 600 | 600 | tightest | primary | h1 | 랜딩 헤드라인 |
+| `headline` | 48 / 56 | 600 | 600 | tightest | primary | h1 | 앱 화면의 큰 제목 |
+| `display` | 32 / 40 | 600 | 600 | tighter | primary | h1 | 큰 제목 |
 | `title` | 24 / 32 | 600 | 600 | tight | primary | h1 | 페이지 제목 |
 | `heading` | 20 / 28 | 600 | 600 | normal | primary | h2 | 섹션 제목 |
 | `subheading` | 16 / 24 | 600 | 600 | normal | primary | h3 | 작은 제목 |
+| `lead` | 16 / 24 | 400 | 500 | normal | primary | p | 페이지 첫머리의 설명·문서 본문 |
 | `body` | 14 / 20 | 400 | 500 | normal | primary | p | 본문 (기본값) |
 | `caption` | 13 / 16 | 400 | 500 | normal | secondary | p | 보조 정보·메타 |
 | `label` | 12 / 16 | 600 | 600 | wide | secondary | span | 필드 라벨·표 머리·짧은 이름 |
 <!-- /generated:typography-roles -->
 
-본문은 14px입니다. 복잡한 웹앱의 표준 밀도라 16px 본문 variant는 두지 않습니다. 제목은 크기로 위계를 만들고, `label`은 대문자나 mono가 아닌 sentence case semibold입니다. `hero`는 크기가 뷰포트를 따라 자라는 유일한 역할입니다([Palette](#typography-palette--원본)). `headline`은 같은 결의 고정 단계로, 랜딩이 아니라 앱 화면의 큰 제목에 씁니다.
+본문은 14px입니다. 복잡한 웹앱의 표준 밀도이기 때문입니다. 16px로 읽는 글은 `lead` 하나이고, 페이지 첫머리의 설명과 문서 본문처럼 일하는 화면이 아니라 읽는 글에 씁니다. 제목은 `hero`부터 `subheading`까지 굵기 600 하나에 크기로만 위계를 만듭니다 — 큰 제목이 400이면 바로 아래 `title`(24 · 600)보다 얇아 보여 위계가 뒤집혀 읽힙니다. `label`은 대문자나 mono가 아닌 sentence case semibold입니다. `hero`는 크기가 뷰포트를 따라 자라는 유일한 역할입니다([Palette](#typography-palette--원본)). `headline`은 같은 결의 고정 단계로, 랜딩이 아니라 앱 화면의 큰 제목에 씁니다.
 
 `variant`와 태그는 따로 정합니다. `title`이 어떤 페이지에서는 `h1`, 대화상자 안에서는 `h2`가 될 수 있습니다. 잉크는 `ink`로 한 번 덮어쓸 수 있고, 색면 위에서는 `ink="inherit"`로 면의 글자색을 그대로 받습니다.
 
@@ -121,17 +122,17 @@ body 요소는 body 역할 전체를 받습니다. 크기와 행간뿐 아니라
 ## Control preset
 
 [contract:foundations.typography.control-preset]: #
-조작 문구는 읽기 위계가 아니라 **컨트롤 크기**를 따릅니다. 같은 size의 Button·Field·Select가 같은 줄에 서면 글자 높이도 맞아야 하기 때문입니다. preset은 완성 class 하나로 제공되고, package의 Atom이 안에서 그 class를 고릅니다. 컨트롤을 직접 그리는 stylesheet는 `/tokens`의 `presetRule(preset, size, weight)`로 같은 선언을 가져옵니다.
+조작 문구는 읽기 위계가 아니라 **컨트롤 크기**를 따릅니다. 같은 size의 Button·Field·Select가 같은 줄에 서면 글자 높이도 맞아야 하기 때문입니다. 그래서 같은 size의 버튼 글자와 입력값은 크기와 줄이 같고 굵기만 다릅니다. 버튼 글자는 상자를 정하는 라벨이라 medium이고, 입력값은 읽는 값이라 normal입니다. preset은 완성 class 하나로 제공되고, package의 Atom이 안에서 그 class를 고릅니다. 컨트롤을 직접 그리는 stylesheet는 `/tokens`의 `presetRule(preset, size, weight)`로 같은 선언을 가져옵니다.
 
 [contract:foundations.typography.preset-table]: #
 
 <!-- generated:typography-presets -->
 <!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
-| preset | xs | sm | md | lg | 쓰는 Atom |
-| --- | --- | --- | --- | --- | --- |
-| `button` | 12 / 16 · 500 | 13 / 16 · 500 | 14 / 16 · 500 | 15 / 16 · 500 | Button · IconButton |
-| `field` | 12 / 16 · 450 · 입력 줄상자 20 | 13 / 16 · 450 · 입력 줄상자 20 | 14 / 16 · 450 · 입력 줄상자 20 | 14 / 16 · 450 · 입력 줄상자 20 | Field · Select |
-| `textarea` | 12 / 20 · 450 | 13 / 20 · 450 | 14 / 20 · 450 | 14 / 20 · 450 | Textarea |
+| preset | xs | sm | md | lg | xl | 쓰는 Atom |
+| --- | --- | --- | --- | --- | --- | --- |
+| `button` | 13 / 16 · 500 | 14 / 16 · 500 | 14 / 16 · 500 | 15 / 16 · 500 | 16 / 16 · 500 | Button · IconButton |
+| `field` | 13 / 16 · 450 · 입력 줄상자 20 | 14 / 16 · 450 · 입력 줄상자 20 | 14 / 16 · 450 · 입력 줄상자 20 | 15 / 16 · 450 · 입력 줄상자 20 | 16 / 16 · 450 · 입력 줄상자 20 | Field · Select |
+| `textarea` | 13 / 20 · 450 | 14 / 20 · 450 | 14 / 20 · 450 | 15 / 20 · 450 | 16 / 20 · 450 | Textarea |
 | `badge` | 12 / 16 · 500 (크기 무관) |  |  | Badge |
 <!-- /generated:typography-presets -->
 
