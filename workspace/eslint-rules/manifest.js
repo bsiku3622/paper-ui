@@ -36,6 +36,9 @@ export const INSPECT_CONSUMERS = [
   { pattern: /^app\/src\/playground\/foundations\/([a-z]+)-roles\.ts$/, system: (match) => match[1] },
   // The docs generators (S29) read sources the same way.
   { pattern: /^app\/src\/docs\/generated\/([a-z]+)\.ts$/, system: (match) => match[1] },
+  // The studio (/demo) edits the system's own values, so it has to know them: where each source sits in the tree an override is
+  // written in, and the palette steps the colour picker offers. One data module per system, no JSX (pages/studio/<system>-source.ts).
+  { pattern: /^app\/src\/pages\/studio\/([a-z]+)-source\.ts$/, system: (match) => match[1] },
 ];
 
 // ── Tests ────────────────────────────────────────────────────────────────────
@@ -61,7 +64,10 @@ export const ARIA_BOUNDARY = {
 
 // zIndex and a depth shadow are written in these two files, or spread from elevationStack / elevationCast /
 // elevationStyle. Nothing else states depth.
-export const ELEVATION_OWNERS = [`${SRC}/primitives/paint/Surface.css.ts`, `${SRC}/primitives/float/Floating.css.ts`];
+// Motion's stylesheet blurs what a reveal brings in, out of focus to in: the one filter that is not a surface's depth.
+export const ELEVATION_OWNERS = [`${SRC}/primitives/paint/Surface.css.ts`, `${SRC}/primitives/float/Floating.css.ts`, `${SRC}/styles/motion.css.ts`];
+// The one file that writes a border's width and style, and the mark that draws its glyph with a border rather than a line.
+export const LINE_OWNERS = [`${SRC}/tokens/line-recipes.ts`, `${SRC}/atoms/Checkbox.css.ts`];
 // The one other boxShadow a file may state: the inset stroke ring, by the function that draws it.
 export const STROKE_OWNER = { file: `${SRC}/tokens/shape-recipes.ts`, name: "strokeRing" };
 
@@ -118,7 +124,7 @@ export const RULES = [
   {
     id: "source-numbers",
     eslint: ["paper/source-numbers"],
-    ko: { title: "숫자는 원본에만", summary: "스타일 자리(`.css.ts`의 vanilla-extract 호출 인자, `.ts` · `.tsx`의 `style`과 DOM style 쓰기)의 숫자 · 단위 · easing은 구조 값(0 · 100% · 50% · 1fr · 45° 배수 · calc의 `/ 2` · `* -1`, 정본은 `eslint-rules/structural.js`)이 아니면 원본의 값입니다. 범주가 없는 속성과 `vars`의 변수 값도 똑같이 읽습니다. 값은 한 파일 안에서 따라갑니다 — 이름 · 표 · 함수와, 매개변수에 건네는 것(호출 인자 · JSX prop · `.map` · `.forEach` · `styleVariants`의 항목 · 기본값)까지 읽고, 스타일 자리에서 읽을 수 없는 함수에 넘긴 숫자도 읽으며, import한 스타일 API는 원래 이름(`style as s`)으로 봅니다. 다른 모듈에서 import한 값, 객체의 메서드, `.call` · `.apply` · `.bind`, 다른 함수에 넘긴 콜백은 읽지 않습니다. 패키지에서는 스타일 속성을 키로 가진 객체 리터럴이 어느 `.ts` · `.tsx`에 있든 스타일 자리입니다 — 그 조각이 import로 stylesheet에 펼쳐질 수 있기 때문입니다. 패키지는 토큰 층 밖에서 간격 · 형태 · 깊이 · 글자 · 투명도 · 시간 · 치수 모두를 역할로 고르고, 앱은 콘텐츠 치수(폭 · 높이 · 그리드 트랙과 그 위치)만 직접 씁니다. 앱의 변수 값은 같은 파일의 규칙이 그 변수를 치수로 읽을 때만 치수입니다. 미디어 · container 쿼리의 길이는 `tokens.layout.breakpoint`나 `APP_DIMENSION_MODULES`의 import로만 적고, 읽을 수 없는 쿼리는 막습니다. 깊이(`zIndex` · `boxShadow` · `filter`)는 Surface와 Floating의 stylesheet(manifest의 `ELEVATION_OWNERS`)나 elevation 조각의 spread, 안쪽 선은 `strokeRing()`에서만 나옵니다. 앱은 Typography Palette를 읽지 않습니다 — 공개 트리에 없고, 그것을 보여 주는 Typography inspector는 `@paper-ui/inspect/typography`로 읽습니다. 한 화면의 치수 모듈(`pages/demo/layout.ts`)은 `APP_DIMENSION_MODULES`에 선언합니다." },
+    ko: { title: "숫자는 원본에만", summary: "스타일 자리(`.css.ts`의 vanilla-extract 호출 인자, `.ts` · `.tsx`의 `style`과 DOM style 쓰기)의 숫자 · 단위 · easing은 구조 값(0 · 100% · 50% · 1fr · 45° 배수 · calc의 `/ 2` · `* -1`, 정본은 `eslint-rules/structural.js`)이 아니면 원본의 값입니다. 범주가 없는 속성과 `vars`의 변수 값도 똑같이 읽습니다. 값은 한 파일 안에서 따라갑니다 — 이름 · 표 · 함수와, 매개변수에 건네는 것(호출 인자 · JSX prop · `.map` · `.forEach` · `styleVariants`의 항목 · 기본값)까지 읽고, 스타일 자리에서 읽을 수 없는 함수에 넘긴 숫자도 읽으며, import한 스타일 API는 원래 이름(`style as s`)으로 봅니다. 다른 모듈에서 import한 값, 객체의 메서드, `.call` · `.apply` · `.bind`, 다른 함수에 넘긴 콜백은 읽지 않습니다. 패키지에서는 스타일 속성을 키로 가진 객체 리터럴이 어느 `.ts` · `.tsx`에 있든 스타일 자리입니다 — 그 조각이 import로 stylesheet에 펼쳐질 수 있기 때문입니다. 패키지는 토큰 층 밖에서 간격 · 형태 · 깊이 · 글자 · 투명도 · 시간 · 치수 모두를 역할로 고르고, 앱은 콘텐츠 치수(폭 · 높이 · 그리드 트랙과 그 위치)만 직접 씁니다. 앱의 변수 값은 같은 파일의 규칙이 그 변수를 치수로 읽을 때만 치수입니다. 미디어 · container 쿼리의 길이는 `tokens.layout.breakpoint`나 `APP_DIMENSION_MODULES`의 import로만 적고, 읽을 수 없는 쿼리는 막습니다. 깊이(`zIndex` · `boxShadow` · `filter`)는 Surface와 Floating의 stylesheet, 그리고 등장의 흐림을 쓰는 Motion의 stylesheet(manifest의 `ELEVATION_OWNERS`)나 elevation 조각의 spread, 안쪽 선은 `strokeRing()`에서만 나옵니다. border의 두께와 모양은 `lineRule` · `lineFrame`의 spread에서만 나옵니다(manifest의 `LINE_OWNERS`). 앱은 Typography Palette를 읽지 않습니다 — 공개 트리에 없고, 그것을 보여 주는 Typography inspector는 `@paper-ui/inspect/typography`로 읽습니다. 한 화면의 치수 모듈(`pages/demo/layout.ts`)은 `APP_DIMENSION_MODULES`에 선언합니다." },
     en: { title: "Numbers only in sources", summary: "no number outside the token sources" },
   },
   {

@@ -15,7 +15,7 @@
 // file hands it (a call's argument, a JSX prop, the entries of a `.map` or a `styleVariants`, its default). A value
 // from another module is not read: an imported const, or a number handed to an imported helper outside a style position.
 
-import { APP_DIMENSION_MODULES, ELEVATION_OWNERS, PACKAGE_NAME, STROKE_OWNER, TOKEN_LAYER, isInside, resolveRelative, workspacePath } from "./manifest.js";
+import { APP_DIMENSION_MODULES, ELEVATION_OWNERS, LINE_OWNERS, PACKAGE_NAME, STROKE_OWNER, TOKEN_LAYER, isInside, resolveRelative, workspacePath } from "./manifest.js";
 import { categoryOf, isKeyframeSelector, isStructural, isStyleProperty, isUnit } from "./structural.js";
 
 export const STYLE_CALLS = new Set(["style", "styleVariants", "globalStyle", "keyframes", "globalKeyframes", "createTheme", "createGlobalTheme", "recipe", "fallbackVar"]);
@@ -40,6 +40,8 @@ const LENGTH = /(?<![\w.#$-])[+-]?(?:\d+\.?\d*|\.\d+)(?:px|r?em|r?ex|r?ch|r?lh|c
 const NUMBER = /(?<![\w.#$-])([+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?)(%|[a-zA-Z]+)?/g;
 // What a depth property may say without a source: no depth at all.
 const NO_DEPTH = /^(?:none|auto|0|inherit|initial|unset|revert)$/i;
+// A border's shorthand, width or style, on any side. Its colour and its radius are not the line's shape.
+const LINE_PROPERTY = /^border(?:Top|Right|Bottom|Left|Block|Inline|BlockStart|BlockEnd|InlineStart|InlineEnd)?(?:Width|Style)?$/;
 const EASING = /\b(?:ease(?:-in)?(?:-out)?|linear|step-start|step-end)\b|\b(?:cubic-bezier|steps|linear)\(/;
 
 // The text a number is read from: a variable's name, a quoted string and a url() are not values.
@@ -303,6 +305,7 @@ export const sourceNumbersRule = {
       number: "스타일 자리의 숫자 `{{text}}`는 원본의 값이 아니면 역할에서 고릅니다. 구조 값(0 · 100% · 1fr · 45° 배수 …)만 직접 씁니다.",
       easing: "easing `{{text}}`는 Motion 원본의 값입니다. `transition()`으로 역할을 고르세요.",
       depth: "깊이(zIndex · boxShadow · filter)는 elevation의 소유 파일이나 strokeRing()에서만 나옵니다. `elevationStyle()` 같은 조각을 펼치세요.",
+      line: "선의 두께와 모양은 손으로 쓰지 않습니다. `lineRule()`이나 `lineFrame()`을 펼치세요. 지울 때만 0이나 none을 씁니다.",
       query: "미디어 쿼리에 길이 `{{text}}`를 쓰지 않습니다. `tokens.layout.breakpoint`를 넣으세요.",
       queryUnread: "미디어 쿼리 `{{text}}`를 읽을 수 없습니다. 같은 파일에서 `tokens.layout.breakpoint`로 적으세요.",
       keyframe: "keyframes 선택자는 0% · 50% · 100%(from · to)입니다. `{{text}}`는 원본의 recipe에서 만듭니다.",
@@ -316,6 +319,7 @@ export const sourceNumbersRule = {
     const source = context.sourceCode;
     const isStylesheet = file.endsWith(".css.ts");
     const ownsDepth = ELEVATION_OWNERS.includes(file);
+    const ownsLine = LINE_OWNERS.includes(file);
     const reported = new WeakSet();
     const visitors = {};
 
@@ -521,6 +525,8 @@ export const sourceNumbersRule = {
       if (scope === "app" && name === undefined && readAsDimension(entry.key)) return;
       const own = name ?? CUSTOM_PROPERTY;
       if (categoryOf(own) === "depth" && !ownsDepth && !stateless(entry.value, new Set())) return report(entry.value, "depth");
+      // Outside a stylesheet `{ border }` hands a prop along, as surfaceClass does; it says nothing of how a line is drawn.
+      if (LINE_PROPERTY.test(own) && !ownsLine && !(entry.shorthand && !isStylesheet) && !stateless(entry.value, new Set())) return report(entry.value, "line");
       scan(entry.value, own, seen);
     };
 

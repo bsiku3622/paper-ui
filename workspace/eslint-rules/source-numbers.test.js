@@ -451,6 +451,19 @@ test("[guardrails.source-numbers.media-keys] a query key is followed through tab
   assert.equal(await flagged(local, "app/src/pages/demo.css.ts"), true);
 });
 
+test("[guardrails.source-numbers.line-owners] a border's width and style come from the line recipe, and only taking one away is written by hand", async () => {
+  for (const rule of ["{ borderWidth: tokens.shape.stroke.border }", "{ borderBottom: `${tokens.shape.stroke.border} solid ${tokens.color.border.base}` }", "{ borderStyle: 'solid' }", "{ borderInlineStartWidth: tokens.shape.stroke.emphasis }"]) {
+    assert.equal(await flagged(css(rule), PACKAGE_CSS), true, `package ${rule}`);
+    assert.equal(await flagged(css(rule), APP_CSS), true, `app ${rule}`);
+  }
+  for (const rule of ["{ border: 'none' }", "{ borderBottom: 0 }", "{ borderWidth: 0, borderStyle: 'none' }", "{ borderColor: tokens.color.border.base }", "{ borderRadius: tokens.shape.radius.text }", "{ ...lineFrame() }", "{ ...lineRule({ side: 'top' }) }"]) {
+    assert.equal(await flagged(css(rule), PACKAGE_CSS), false, rule);
+  }
+  for (const owner of ["packages/paper-ui/src/atoms/Checkbox.css.ts"]) {
+    assert.equal(await flagged(css("{ borderWidth: tokens.shape.stroke.emphasis, borderStyle: 'solid' }"), owner), false, owner);
+  }
+});
+
 test("[guardrails.source-numbers.depth-owners] depth is stated by the elevation owners and drawn as strokeRing()", async () => {
   for (const rule of ["{ zIndex: 5 }", "{ zIndex: 'var(--x)' }", "{ boxShadow: '0 0 0 1px var(--x)' }", "{ boxShadow: shadows.low }", "{ filter: 'blur(4px)' }", "{ boxShadow: tokens.layout.shadow }", "{ boxShadow: ring(tokens.color.ink.primary) }"]) {
     assert.equal(await flagged(css(rule), PACKAGE_CSS), true, `package ${rule}`);
