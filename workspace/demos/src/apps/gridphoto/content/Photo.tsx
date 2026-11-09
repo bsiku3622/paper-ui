@@ -6,7 +6,8 @@ import { tokens } from "@studio-baeks/paper-ui/tokens";
 import { Art } from "../../../kit";
 import { homography, inDrawing, matrix3d, quadIsValid } from "../model/geometry";
 import type { Filter, Photo, Quad, Win } from "../model/types";
-import { capped as cappedClass, dim as dimClass, flat, frame, grey, lift, lines, lineWeight, stale as staleClass, view } from "./content.css";
+import { capped as cappedClass, dim as dimClass, flat, frame, lines, lineWeight, stale as staleClass, view } from "./content.css";
+import { photoFilter } from "./filters.css";
 
 const drawing = (photo: Photo) => <Art seed={photo.seed} kind={photo.art} grid={photo.grid} ratio="1 / 1" radius="none" />;
 
@@ -62,9 +63,7 @@ export const FlatPage = ({ photo, quad, aspect, rotation, filter, stale, large, 
 
   return (
     <div ref={frameRef} {...frameProps(aspect, stale, large)} role={label ? "img" : undefined} aria-label={label}>
-      {transform ? <div className={flat} style={{ width: side, transform }}>{drawing(photo)}</div> : null}
-      {filter !== "original" ? <div className={lift} aria-hidden="true" /> : null}
-      {filter === "bw" ? <div className={grey} aria-hidden="true" /> : null}
+      {transform ? <div className={`${flat} ${photoFilter[filter]}`} style={{ width: side, transform }}>{drawing(photo)}</div> : null}
       {children}
     </div>
   );

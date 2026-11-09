@@ -3,7 +3,40 @@ import { globalStyle, style } from "@vanilla-extract/css";
 import { codeRule, emphasisRule, lineRule, tokens } from "@studio-baeks/paper-ui/tokens";
 
 import "./fonts.css";
-import { BLOCK, BLOCK_CODE_PADDING, BOX, CELL_PADDING, CODE_PADDING, GAP, HEADING, MATH, QUOTE_PADDING, UNDERLINE_OFFSET } from "./rhythm";
+
+const BLOCK = "1em";
+const GAP = {
+  block: BLOCK,
+  tight: "0.25em",
+  item: "0.3em",
+  heading: "0.7em",
+  headingSmall: "0.65em",
+  indent: "1.6em",
+  rule: "1.6em",
+  figure: "0.5em",
+  table: "1.2em",
+  math: "0.6em",
+} as const;
+
+const HEADING = {
+  h1: { size: "2.25em", leading: 1.4, tracking: "-0.04em", after: "1em" },
+  h2: { size: "1.5em", leading: 1.5, tracking: "-0.025em", after: "0.7em" },
+  h3: { size: "1.2em", leading: 1.5, tracking: "normal", after: "0.65em" },
+} as const;
+
+const UNDERLINE_OFFSET = "3px";
+
+const QUOTE_PADDING = "0.15em 0 0.15em 1.2em";
+const CODE_PADDING = "0.15em 0.35em";
+const BLOCK_CODE_PADDING = "1em";
+const CELL_PADDING = "0.5em 0.7em";
+const MATH = { block: "1.1em", inline: "1.05em" } as const;
+
+const BOX = {
+  size: "1em",
+  top: "0.33em",
+  tick: { left: "0.34em", top: "0.43em", width: "0.3em", height: "0.55em" },
+} as const;
 
 export const lane = style({ width: "100%", minWidth: 0 });
 export const stage = style({ margin: "0 auto", width: "calc((var(--pd-width) + 2px) * var(--pd-zoom))" });

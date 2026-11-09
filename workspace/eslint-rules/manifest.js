@@ -51,6 +51,13 @@ export const RUNTIME_STYLE = {
 
 export const APP_DIMENSION_MODULES = [];
 
+// An app's own drawing: numbers that are the shape of an illustration or of a page it typesets, not a role it could pick.
+export const APP_DRAWING_MODULES = {
+  "demos/src/apps/paperdown/content/paper.css.ts": "the typeset page's own scale in em, which follows the page's font size and zoom",
+  "demos/src/apps/gridphoto/content/filters.css.ts": "the scan and black-and-white looks are filters on the photo, not depth",
+  "demos/src/apps/doodle/content/brand.css.ts": "the logo mark's hand-drawn lean",
+};
+
 export const TOOLING = [
   { file: "app/vite/theme-boot.ts", imports: `${SRC}/theme/boot.ts`, reason: "vite.config.ts is loaded before Vite resolves anything, so the boot plugin imports the boot script by relative path." },
 ];

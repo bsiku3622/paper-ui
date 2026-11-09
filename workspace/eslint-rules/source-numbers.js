@@ -1,4 +1,4 @@
-import { APP_DIMENSION_MODULES, ELEVATION_OWNERS, LINE_OWNERS, PACKAGE_NAME, STROKE_OWNER, TOKEN_LAYER, isInside, resolveRelative, workspacePath } from "./manifest.js";
+import { APP_DIMENSION_MODULES, APP_DRAWING_MODULES, ELEVATION_OWNERS, LINE_OWNERS, PACKAGE_NAME, STROKE_OWNER, TOKEN_LAYER, isInside, resolveRelative, workspacePath } from "./manifest.js";
 import { categoryOf, isKeyframeSelector, isStructural, isStyleProperty, isUnit } from "./structural.js";
 
 export const STYLE_CALLS = new Set(["style", "styleVariants", "globalStyle", "keyframes", "globalKeyframes", "createTheme", "createGlobalTheme", "recipe", "fallbackVar"]);
@@ -265,7 +265,7 @@ export const sourceNumbersRule = {
   create(context) {
     const scope = context.options[0]?.scope ?? "package";
     const file = workspacePath(context.filename);
-    if (scope === "app" && APP_DIMENSION_MODULES.includes(file)) return {};
+    if (scope === "app" && (APP_DIMENSION_MODULES.includes(file) || Object.hasOwn(APP_DRAWING_MODULES, file))) return {};
     const source = context.sourceCode;
     const isStylesheet = file.endsWith(".css.ts");
     const ownsDepth = ELEVATION_OWNERS.includes(file);

@@ -5,6 +5,7 @@ import { test } from "node:test";
 
 import {
   APP_DIMENSION_MODULES,
+  APP_DRAWING_MODULES,
   ELEVATION_OWNERS,
   GLOBAL_SELECTOR_FILES,
   INSPECT_ALIAS,
@@ -35,6 +36,10 @@ test("[guardrails.manifest.declared-boundaries] every path the manifest declares
   assert.equal(exists(TOKEN_LAYER), true);
   for (const system of INSPECT_SYSTEMS) assert.equal(exists(`${INSPECT_DIR}/${system}.ts`), true, system);
   assert.match(read(STROKE_OWNER.file), new RegExp(`export const ${STROKE_OWNER.name}\\b`));
+  for (const [module, reason] of Object.entries(APP_DRAWING_MODULES)) {
+    assert.ok(exists(module), module);
+    assert.ok(reason.length > 0, module);
+  }
   for (const [module, reason] of Object.entries(RUNTIME_STYLE)) {
     assert.equal(exists(`${TOKEN_LAYER.replace(/\/tokens$/, "")}/${module.replace(/\/\*\*$/, "")}`) || exists(`${TOKEN_LAYER.replace(/\/tokens$/, "")}/${module.replace(/\/\*\*$/, "")}.ts`), true, module);
     assert.ok(reason.length > 0, module);

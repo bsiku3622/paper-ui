@@ -38,10 +38,6 @@ export const dim = style({ opacity: tokens.color.opacity.disabled });
 
 export const flat = style({ position: "absolute", left: 0, top: 0, transformOrigin: "0 0" });
 
-const blend = { position: "absolute", inset: 0, pointerEvents: "none" } as const;
-export const lift = style({ ...blend, mixBlendMode: "soft-light", backgroundColor: tokens.color.accent.warning.wash, opacity: tokens.color.opacity.disabled });
-export const grey = style({ ...blend, mixBlendMode: "saturation", backgroundColor: tokens.color.marker.ink });
-
 export const lines = style({ position: "absolute", inset: 0, width: "100%", height: "100%", overflow: "visible", pointerEvents: "none" });
 export const lineWeight = styleVariants({
   normal: { strokeWidth: tokens.shape.stroke.border },
