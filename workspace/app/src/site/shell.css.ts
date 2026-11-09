@@ -83,7 +83,6 @@ export const sidebarFrame = style([
   {
     display: "grid",
     gridTemplateColumns: `${tokens.shape.dimension.width.lg} auto minmax(0, 1fr)`,
-    columnGap: tokens.layout.gap.xl,
     isolation: "isolate",
     "@media": { [narrow]: { gridTemplateColumns: "minmax(0, 1fr)", columnGap: 0, paddingInline: 0 } },
   },
@@ -100,6 +99,7 @@ export const sidebar = style({
   overflowY: "auto",
   marginInlineStart: `calc((${rowInset} + ${tokens.shape.inset.xs}) * -1)`,
   paddingInline: tokens.shape.inset.xs,
+  paddingInlineEnd: tokens.shape.inset.md,
   paddingBlockStart: tokens.shape.inset.xl,
   paddingBlockEnd: tokens.shape.inset.xl,
   "@media": {
@@ -109,6 +109,7 @@ export const sidebar = style({
 
 export const content = style({
   minWidth: 0,
+  paddingInlineStart: tokens.layout.gap["2xl"],
   paddingBlockStart: tokens.shape.inset["2xl"],
   paddingBlockEnd: tokens.shape.inset["3xl"],
   "@media": { [narrow]: { paddingInline: tokens.layout.gutter, paddingBlockStart: tokens.shape.inset.xl } },
