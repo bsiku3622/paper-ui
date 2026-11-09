@@ -26,3 +26,7 @@ workspace/app/.doc-snippets/
 
 # local work log — stays on the machine, never in the repo
 /logs.md
+
+# notes for coding agents, kept on this machine
+/AGENTS.md
+/CLAUDE.md

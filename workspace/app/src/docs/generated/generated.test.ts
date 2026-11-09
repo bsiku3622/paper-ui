@@ -4,7 +4,7 @@
 // sources. UPDATE_DOCS=1 (pnpm docs:sync) rewrites a stale block instead of failing on it. A block that names no
 // file, or whose marker is missing from a file, fails here too.
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -14,6 +14,10 @@ import { REPO } from "./paths";
 
 const UPDATE = process.env.UPDATE_DOCS === "1";
 
+// Kept on the owner's machine and out of the repository, so a checkout without it skips its blocks.
+const LOCAL_ONLY = new Set(["AGENTS.md"]);
+const present = (file: string) => !LOCAL_ONLY.has(file) || existsSync(join(REPO, file));
+
 describe("generated docs", () => {
   it("names every block once, and every block names at least one file", () => {
     const ids = GENERATED_BLOCKS.map((block) => block.id);
@@ -22,7 +26,7 @@ describe("generated docs", () => {
   });
 
   it("never lets a marker start a line that goes on with text", () => {
-    const files = [...new Set(GENERATED_BLOCKS.flatMap((block) => block.files))];
+    const files = [...new Set(GENERATED_BLOCKS.flatMap((block) => block.files))].filter(present);
     const hits = files.flatMap((file) =>
       readFileSync(join(REPO, file), "utf-8").split("\n").flatMap((line, index) => (/^ {0,3}<!--/.test(line) && line.replace(/<!--.*?-->/g, "").trim() !== "" ? [`${file}:${index + 1}`] : [])),
     );
@@ -31,7 +35,7 @@ describe("generated docs", () => {
 
   for (const block of GENERATED_BLOCKS) {
     for (const file of block.files) {
-      it(`[${block.id}] ${file} holds the block as the sources state it`, () => {
+      it.skipIf(!present(file))(`[${block.id}] ${file} holds the block as the sources state it`, () => {
         const path = join(REPO, file);
         const text = readFileSync(path, "utf-8");
         const expected = block.render();
