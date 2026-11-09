@@ -13,9 +13,9 @@ A date is a `"YYYY-MM-DD"` string. `value` is controlled and `defaultValue` unco
 
 Days outside `min` and `max` (the same strings) and days that `isDateUnavailable(date)` calls unavailable are drawn disabled and cannot be pressed. The previous and next buttons are disabled too on the side of a month that `min` or `max` shuts. The disabled look is the same disabled state as the other controls.
 
-With both `min` and `max`, the open days between them get a soft face so the window of choosable dates shows at a glance. Today takes the soft face with strong text inside it; the chosen day stays solid and a blocked day stays faceless and disabled. With only one end there is no face, since every day past it would be painted.
+With both `min` and `max`, one soft band runs from `min` to `max` so the window of choosable dates shows at a glance. The days touch side by side, so the band never breaks; it starts rounded at `min`, ends rounded at `max`, and is cut straight at the ends of a week row. The day buttons stand on it as they are: today keeps its ring, the chosen day stays solid, and a blocked day shows disabled on the band. With only one end there is no band, since every day past it would be painted.
 
-`marked` is a list of date strings, and a small dot sits under the number of each. The dot takes the paint of the Badge `dot` and follows the text colour, so it reads on the chosen day too. A dot only tells the eye (`aria-hidden`), so a screen that has to read out what it means writes it as text beside the day.
+`marked` is a list of date strings, and a 4px dot sits under the number of each, near the bottom of the cell. The dot takes the paint of the Badge `dot` and follows the text colour, so it reads on the chosen day too. A dot only tells the eye (`aria-hidden`), so a screen that has to read out what it means writes it as text beside the day.
 
 ## Keyboard and locale
 

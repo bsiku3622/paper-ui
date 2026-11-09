@@ -282,5 +282,9 @@ export const sliderOriginPaint = style({
   },
 });
 
+export const calendarRangePaint = style({
+  backgroundColor: tokens.color.accent.primary.soft,
+  "@media": { [FORCED]: { forcedColorAdjust: "none", backgroundColor: SYSTEM_COLORS.canvas } },
+});
 export const datePickerEmptyPaint = style({ color: tokens.color.ink.tertiary });
 export const datePickerIconPaint = style({ color: tokens.color.ink.secondary });

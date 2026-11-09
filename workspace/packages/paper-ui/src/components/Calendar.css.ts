@@ -1,4 +1,5 @@
-import { SHAPE_RECIPES, STATE_TINT_PROPERTY, stateStyle, tokens, transition } from "../tokens";
+import { controlVars } from "../primitives/control/Control.css";
+import { STATE_TINT_PROPERTY, stateStyle, tokens, transition } from "../tokens";
 import { layered } from "../tokens/layers.css";
 
 const { style } = layered("components");
@@ -24,13 +25,21 @@ export const calendarTitle = style({
 
 export const calendarGrid = style({
   borderCollapse: "separate",
-  borderSpacing: tokens.shape.inset.xs,
-  margin: `calc(${tokens.shape.inset.xs} * -1)`,
+  borderSpacing: `0 ${tokens.shape.inset.xs}`,
+  marginBlock: `calc(${tokens.shape.inset.xs} * -1)`,
 });
 
 export const calendarWeekday = style({ padding: 0, textAlign: "center" });
 
-export const calendarCell = style({ padding: 0, textAlign: "center" });
+export const calendarCell = style({ position: "relative", padding: 0, textAlign: "center" });
+
+export const calendarRange = style({
+  position: "absolute",
+  inset: 0,
+  pointerEvents: "none",
+});
+export const calendarRangeStart = style({ borderStartStartRadius: controlVars.corner, borderEndStartRadius: controlVars.corner });
+export const calendarRangeEnd = style({ borderStartEndRadius: controlVars.corner, borderEndEndRadius: controlVars.corner });
 
 export const calendarDay = style([stateStyle.focusVisible, stateStyle.disabled, {
   position: "relative",
@@ -41,11 +50,11 @@ export const calendarDay = style([stateStyle.focusVisible, stateStyle.disabled, 
 
 export const calendarMark = style({
   position: "absolute",
-  insetBlockEnd: tokens.shape.inset.xs,
+  insetBlockEnd: tokens.shape.stroke.emphasis,
   insetInline: 0,
   marginInline: "auto",
-  width: SHAPE_RECIPES.badge.dot,
-  height: SHAPE_RECIPES.badge.dot,
+  width: tokens.shape.inset.xs,
+  height: tokens.shape.inset.xs,
   borderRadius: tokens.shape.radius.full,
   pointerEvents: "none",
 });

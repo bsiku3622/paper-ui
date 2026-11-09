@@ -8,11 +8,11 @@ import { useLocale } from "../internal/locale";
 import { useFocusRing } from "../primitives/a11y/focus";
 import { mergeProps } from "../primitives/composition";
 import { controlClass, type ControlForm } from "../primitives/control/Control";
-import { controlLineRoom } from "../primitives/control/Control.css";
+import { controlLineRoom, controlShape, controlSize } from "../primitives/control/Control.css";
 import { useControlShape } from "../primitives/control/shape";
 import { Icon } from "../primitives/Icon";
 import { paintClass } from "../primitives/paint/Paint";
-import { dotPaint } from "../primitives/paint/recipes.css";
+import { calendarRangePaint, dotPaint } from "../primitives/paint/recipes.css";
 import { Text } from "../primitives/Text";
 import { VALUE_ATTRIBUTE, VARIANT_LINE, stateAttributes, type ControlShape, type ControlSize } from "../tokens";
 import * as styles from "./Calendar.css";
@@ -32,15 +32,17 @@ export type CalendarProps = Omit<HTMLAttributes<HTMLDivElement>, "className" | "
   "data-testid"?: string;
 };
 
-type CellProps = { calendar: AriaCalendar; iso: string; marked: boolean; inRange: boolean; size: ControlSize; shape: ControlShape };
+type RangeEdge = { inside: boolean; start: boolean; end: boolean };
+type CellProps = { calendar: AriaCalendar; iso: string; marked: boolean; range: RangeEdge; size: ControlSize; shape: ControlShape };
 
-function CalendarCell({ calendar, iso, marked, inRange, size, shape }: CellProps) {
+function CalendarCell({ calendar, iso, marked, range, size, shape }: CellProps) {
   const ref = useRef<HTMLDivElement>(null);
   const cell = useAriaCalendarCell(calendar, iso, ref);
   const { focusProps, isFocusVisible } = useFocusRing();
-  const variant = cell.isSelected ? "solid" : inRange && !cell.isDisabled ? "soft" : cell.isToday ? "hairline" : "ghost";
+  const variant = cell.isSelected ? "solid" : cell.isToday ? "hairline" : "ghost";
   return (
-    <td {...cell.cellProps} className={styles.calendarCell}>
+    <td {...cell.cellProps} className={joinClass(styles.calendarCell, range.inside && controlSize[size], range.inside && shape !== "rounded" && controlShape[shape])}>
+      {range.inside ? <span aria-hidden {...{ [VALUE_ATTRIBUTE.part]: "range" }} className={joinClass(styles.calendarRange, range.start && styles.calendarRangeStart, range.end && styles.calendarRangeEnd, calendarRangePaint)} /> : null}
       <div
         {...mergeProps(cell.buttonProps, focusProps)}
         ref={ref}
@@ -71,7 +73,7 @@ function CalendarBody({ forwardedRef, value, defaultValue, onValueChange, min, m
   const locale = useLocale();
   const calendar = useAriaCalendar({ value, defaultValue, onValueChange, min, max, isDateUnavailable, disabled, autoFocus: focusOnMount, locale, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledby });
   const dotted = new Set(marked);
-  const within = (iso: string) => Boolean(min && max && iso >= min && iso <= max);
+  const rangeOf = (iso: string): RangeEdge => ({ inside: Boolean(min && max && iso >= min && iso <= max), start: iso === min, end: iso === max });
   return (
     <div
       {...mergeProps(rest, calendar.rootProps)}
@@ -115,7 +117,7 @@ function CalendarBody({ forwardedRef, value, defaultValue, onValueChange, min, m
             <tr key={row}>
               {week.map((iso, column) => (iso === null
                 ? <td key={column} role="gridcell" aria-disabled="true" className={styles.calendarCell} />
-                : <CalendarCell key={iso} calendar={calendar} iso={iso} marked={dotted.has(iso)} inRange={within(iso)} size={size} shape={shape} />))}
+                : <CalendarCell key={iso} calendar={calendar} iso={iso} marked={dotted.has(iso)} range={rangeOf(iso)} size={size} shape={shape} />))}
             </tr>
           ))}
         </tbody>
