@@ -1,19 +1,19 @@
 # Calendar · DatePicker
 
-Calendar is the Component that chooses one date on a month grid, and DatePicker is the Component whose button, in the shape of an input frame, opens a Calendar as a popup. The scope is one date: a field to type a date in, a range, a time and several months at once are not in this version. Keyboard movement, focus and calendar arithmetic are left to the React Aria calendar ([the React Aria boundary](../primitives/a11y.md)), and Paper does all the drawing.
+Calendar is the Component that chooses one date on a month grid, and DatePicker is the Component whose button, in the shape of an input frame, opens a Calendar as a popup. The same pair exists for a period: RangeCalendar and DateRangePicker ([Range](#range)). A field to type a date in, a time and several months at once are not in this version. Keyboard movement, focus and calendar arithmetic are left to the React Aria calendar ([the React Aria boundary](../primitives/a11y.md)), and Paper does all the drawing.
 
 | Component | Main props | Default | Responsibility |
 | --- | --- | --- | --- |
 | Calendar | value · defaultValue · onValueChange · min · max · isDateUnavailable · marked · size · shape · disabled · focusOnMount | size xs / shape rounded, no value | The month grid, paging, choosing a day, the keyboard. It puts on no face |
 | DatePicker | the value props of Calendar · placeholder · name · form · status · size · fontSize · shape · variant · fill · shadow · disabled · required | size md / shape rounded / hairline, empty | The button, the popup, focus back on close, the form value |
+| RangeCalendar | as Calendar, but the value is `{ start, end }` | size xs / shape rounded, no value | Two presses for start and end, one joined band, the preview. It puts on no face |
+| DateRangePicker | the value props of RangeCalendar · placeholder · startName · endName · form · the axes of DatePicker · required | as DatePicker | The button, the popup, closing and focus back at the end, two form values |
 
 ## Value
 
 A date is a `"YYYY-MM-DD"` string. `value` is controlled and `defaultValue` uncontrolled (`null` is an empty value), and choosing a day calls `onValueChange(value)` with a string of the same form. A string that cannot be read is read as no value. The chosen day takes a primary solid face, today takes one hairline and bold text with no face, and every other day is a faceless ghost. Cells outside the shown month stay empty. The month shown first is the value's, or today's when there is none.
 
-Days outside `min` and `max` (the same strings) and days that `isDateUnavailable(date)` calls unavailable are drawn disabled and cannot be pressed. The previous and next buttons are disabled too on the side of a month that `min` or `max` shuts. The disabled look is the same disabled state as the other controls.
-
-With both `min` and `max`, one soft band runs from `min` to `max` so the window of choosable dates shows at a glance. The days touch side by side, so the band never breaks; it starts rounded at `min`, ends rounded at `max`, and is cut straight at the ends of a week row. The day buttons stand on it as they are: today keeps its ring, the chosen day stays solid, and a blocked day shows disabled on the band. With only one end there is no band, since every day past it would be painted.
+Days outside `min` and `max` (the same strings) and days that `isDateUnavailable(date)` calls unavailable are drawn disabled and cannot be pressed. The previous and next buttons are disabled too on the side of a month that `min` or `max` shuts. The disabled look is the same disabled state as the other controls. `min` and `max` are only limits, so nothing between them is painted.
 
 `marked` is a list of date strings, and a 4px dot sits under the number of each, near the bottom of the cell. The dot takes the paint of the Badge `dot` and follows the text colour, so it reads on the chosen day too. A dot only tells the eye (`aria-hidden`), so a screen that has to read out what it means writes it as text beside the day.
 
@@ -43,6 +43,32 @@ With `name`, a hidden input sends the ISO value with the form (`form` can attach
   name="due"
   min="2026-11-01"
   marked={["2026-11-12"]}
+  onValueChange={save}
+/>
+```
+
+## Range
+
+RangeCalendar chooses a period on the same grid as Calendar. The value is `{ start, end }` (both `"YYYY-MM-DD"`) and `null` is an empty value, with `value`, `defaultValue` and `onValueChange` as in Calendar. The first press is the start and the second the end: a second press that is earlier swaps the two days, and the same day twice is a one-day period. `onValueChange` is called once, when the end is set, and not while only the start is. With `value` the app holds the value.
+
+One soft band runs from the start to the end, both included. The cells touch side by side so the band never breaks, and it is cut straight at the ends of a week row. The start and end days are solid, with rounded outer corners and square inner corners that join the band; a one-day period is rounded all round. When today is not an end day its ring stays on the band, and the dot of `marked` sits in the same place on it.
+
+While the end is still to come, the band is drawn from the start day to the day the pointer or focus is on, and runs backwards if that day is earlier. Setting the start by keyboard moves the focus a day ahead so the band shows at once; choose the end with the arrow keys and Enter. The preview is not a value, so it does not call `onValueChange`.
+
+Days outside `min` and `max` and days that `isDateUnavailable` calls unavailable are disabled as in Calendar and cannot be pressed as a start or an end. A period with a blocked day in between cannot be chosen. `size`, `shape`, `disabled`, `marked`, ref and `className` mean what they do in Calendar. With `focusOnMount` the focus goes to the start day of the value, or today.
+
+The button of DateRangePicker writes the period on one line in the locale's medium date range (`formatRange` of `Intl.DateTimeFormat`, such as `Nov 5 – 12, 2026` or `2026. 11. 5. ~ 2026. 12. 12.`) in the same input frame as DatePicker, and one date for a one-day period. With no value it is the `placeholder`. `aria-haspopup="dialog"`, `aria-expanded` and `aria-controls` are as in DatePicker, and when it opens the focus goes to the start day of the RangeCalendar.
+
+The popup is the same Floating popover as DatePicker's. It stays open for the first press, and when the second sets the end the value is set, `onValueChange` is called, the popup closes and the focus returns to the button. Escape and a press outside close it without changing the value. `min`, `max`, `isDateUnavailable` and `marked` go to the RangeCalendar, and with `value` the app holds the value.
+
+With `startName` and `endName`, two hidden inputs send the ISO dates with the form (`form` can attach them to another form), and a value that is missing is an empty string. A required empty DateRangePicker is a missing value to the form check and the focus a browser points at goes to the button. When the form resets it returns to `defaultValue`, and with `disabled` it does not open and sends no value. Inside a [FormField](../primitives/field.md) it takes `id`, `disabled`, `required`, `aria-invalid` and `aria-describedby` as DatePicker does. `status`, `size`, `fontSize`, `shape`, `variant`, `fill` and `shadow` are the axes of DatePicker and mean the same; `ref` goes to the button, and `className`, `style` and `data-testid` to the input frame.
+
+```tsx
+<DateRangePicker
+  aria-label="Stay"
+  startName="from"
+  endName="to"
+  defaultValue={{ start: "2026-11-05", end: "2026-11-12" }}
   onValueChange={save}
 />
 ```

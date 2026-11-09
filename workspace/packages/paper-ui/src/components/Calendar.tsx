@@ -1,7 +1,7 @@
-import { forwardRef, useRef, type ForwardedRef, type HTMLAttributes } from "react";
+import { forwardRef, useRef, type ForwardedRef, type HTMLAttributes, type Ref } from "react";
 
 import { IconButton } from "../atoms/IconButton";
-import { useAriaCalendar, useAriaCalendarCell, type AriaCalendar } from "../internal/aria/calendar";
+import { useAriaCalendar, useAriaCalendarCell, type AriaCalendar, type DateRange } from "../internal/aria/calendar";
 import { LocaleHost } from "../internal/aria/i18n";
 import { joinClass } from "../internal/joinClass";
 import { useLocale } from "../internal/locale";
@@ -33,25 +33,33 @@ export type CalendarProps = Omit<HTMLAttributes<HTMLDivElement>, "className" | "
 };
 
 type RangeEdge = { inside: boolean; start: boolean; end: boolean };
-type CellProps = { calendar: AriaCalendar; iso: string; marked: boolean; range: RangeEdge; size: ControlSize; shape: ControlShape };
+
+const edgesOf = (range: DateRange | null, iso: string): RangeEdge | null =>
+  range === null ? null : { inside: iso >= range.start && iso <= range.end, start: iso === range.start, end: iso === range.end };
+type CellProps = { calendar: AriaCalendar; iso: string; marked: boolean; range: RangeEdge | null; size: ControlSize; shape: ControlShape };
 
 function CalendarCell({ calendar, iso, marked, range, size, shape }: CellProps) {
   const ref = useRef<HTMLDivElement>(null);
   const cell = useAriaCalendarCell(calendar, iso, ref);
   const { focusProps, isFocusVisible } = useFocusRing();
-  const variant = cell.isSelected ? "solid" : cell.isToday ? "hairline" : "ghost";
+  const endpoint = range !== null && (range.start || range.end);
+  const chosen = range === null ? cell.isSelected : endpoint;
+  const variant = chosen ? "solid" : cell.isToday ? "hairline" : "ghost";
+  const inside = range?.inside === true;
+  const joined = range !== null && endpoint && !(range.start && range.end);
   return (
-    <td {...cell.cellProps} className={joinClass(styles.calendarCell, range.inside && controlSize[size], range.inside && shape !== "rounded" && controlShape[shape])}>
-      {range.inside ? <span aria-hidden {...{ [VALUE_ATTRIBUTE.part]: "range" }} className={joinClass(styles.calendarRange, range.start && styles.calendarRangeStart, range.end && styles.calendarRangeEnd, calendarRangePaint)} /> : null}
+    <td {...cell.cellProps} className={joinClass(styles.calendarCell, inside && controlSize[size], inside && shape !== "rounded" && controlShape[shape])}>
+      {range !== null && inside ? <span aria-hidden {...{ [VALUE_ATTRIBUTE.part]: "range" }} className={joinClass(styles.calendarRange, range.start && styles.calendarRangeStart, range.end && styles.calendarRangeEnd, calendarRangePaint)} /> : null}
       <div
         {...mergeProps(cell.buttonProps, focusProps)}
         ref={ref}
         {...stateAttributes({ active: cell.isPressed, disabled: cell.isDisabled, focusVisible: isFocusVisible })}
         className={joinClass(
-          controlClass({ size, anatomy: "icon", shape, strong: cell.isToday || cell.isSelected }),
+          controlClass({ size, anatomy: "icon", shape, strong: cell.isToday || chosen }),
           paintClass({ accent: "primary", variant, hoverable: true }),
           controlLineRoom[VARIANT_LINE[variant]],
           styles.calendarDay,
+          joined && (range.start ? styles.calendarDayStart : styles.calendarDayEnd),
         )}
       >
         {cell.label}
@@ -67,13 +75,19 @@ const Chevron = ({ direction }: { direction: "previous" | "next" }) => (
   </Icon>
 );
 
-type BodyProps = Omit<CalendarProps, "shape"> & { shape: ControlShape; forwardedRef: ForwardedRef<HTMLDivElement> };
+export type CalendarViewProps = {
+  calendar: AriaCalendar;
+  marked?: readonly string[];
+  size: ControlSize;
+  shape: ControlShape;
+  disabled?: boolean;
+  className?: string;
+  forwardedRef: Ref<HTMLDivElement>;
+  rest: HTMLAttributes<HTMLDivElement>;
+};
 
-function CalendarBody({ forwardedRef, value, defaultValue, onValueChange, min, max, isDateUnavailable, marked, size = "xs", shape, disabled, focusOnMount, className, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledby, ...rest }: BodyProps) {
-  const locale = useLocale();
-  const calendar = useAriaCalendar({ value, defaultValue, onValueChange, min, max, isDateUnavailable, disabled, autoFocus: focusOnMount, locale, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledby });
+export function CalendarView({ calendar, marked, size, shape, disabled, className, forwardedRef, rest }: CalendarViewProps) {
   const dotted = new Set(marked);
-  const rangeOf = (iso: string): RangeEdge => ({ inside: Boolean(min && max && iso >= min && iso <= max), start: iso === min, end: iso === max });
   return (
     <div
       {...mergeProps(rest, calendar.rootProps)}
@@ -117,13 +131,21 @@ function CalendarBody({ forwardedRef, value, defaultValue, onValueChange, min, m
             <tr key={row}>
               {week.map((iso, column) => (iso === null
                 ? <td key={column} role="gridcell" aria-disabled="true" className={styles.calendarCell} />
-                : <CalendarCell key={iso} calendar={calendar} iso={iso} marked={dotted.has(iso)} range={rangeOf(iso)} size={size} shape={shape} />))}
+                : <CalendarCell key={iso} calendar={calendar} iso={iso} marked={dotted.has(iso)} range={edgesOf(calendar.range, iso)} size={size} shape={shape} />))}
             </tr>
           ))}
         </tbody>
       </table>
     </div>
   );
+}
+
+type BodyProps = Omit<CalendarProps, "shape"> & { shape: ControlShape; forwardedRef: ForwardedRef<HTMLDivElement> };
+
+function CalendarBody({ forwardedRef, value, defaultValue, onValueChange, min, max, isDateUnavailable, marked, size = "xs", shape, disabled, focusOnMount, className, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledby, ...rest }: BodyProps) {
+  const locale = useLocale();
+  const calendar = useAriaCalendar({ value, defaultValue, onValueChange, min, max, isDateUnavailable, disabled, autoFocus: focusOnMount, locale, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledby });
+  return <CalendarView calendar={calendar} marked={marked} size={size} shape={shape} disabled={disabled} className={className} forwardedRef={forwardedRef} rest={rest} />;
 }
 
 export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(function Calendar({ shape, ...props }, ref) {

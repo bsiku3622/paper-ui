@@ -1,6 +1,6 @@
-import { useCalendar, useCalendarCell, useCalendarGrid } from "@react-aria/calendar";
+import { useCalendar, useCalendarCell, useCalendarGrid, useRangeCalendar } from "@react-aria/calendar";
 import { GregorianCalendar, createCalendar, getLocalTimeZone, parseDate, toCalendar, isSameMonth, today, type CalendarDate } from "@internationalized/date";
-import { useCalendarState, type CalendarState } from "@react-stately/calendar";
+import { useCalendarState, useRangeCalendarState, type CalendarState, type RangeCalendarState } from "@react-stately/calendar";
 import { useMemo, type HTMLAttributes, type RefObject } from "react";
 
 export type CalendarOptions = {
@@ -15,6 +15,14 @@ export type CalendarOptions = {
   locale: string;
   "aria-label"?: string;
   "aria-labelledby"?: string;
+};
+
+export type DateRange = { start: string; end: string };
+
+export type RangeCalendarOptions = Omit<CalendarOptions, "value" | "defaultValue" | "onValueChange"> & {
+  value?: DateRange | null;
+  defaultValue?: DateRange | null;
+  onValueChange?: (value: DateRange | null) => void;
 };
 
 export type CalendarPage = {
@@ -33,7 +41,8 @@ export type AriaCalendar = {
   next: CalendarPage;
   weekdays: string[];
   weeks: (string | null)[][];
-  state: CalendarState;
+  range: DateRange | null;
+  state: CalendarState | RangeCalendarState;
 };
 
 const gregorian = new GregorianCalendar();
@@ -64,12 +73,42 @@ export function useAriaCalendar({ value, defaultValue, onValueChange, min, max, 
     autoFocus,
   });
   const { calendarProps, prevButtonProps, nextButtonProps, title } = useCalendar({ ...labels, isDisabled: disabled }, state);
+  return useAssembled(state, calendarProps, prevButtonProps, nextButtonProps, title, null);
+}
+
+const parseRange = (range: DateRange | null | undefined) => {
+  const start = parse(range?.start);
+  const end = parse(range?.end);
+  return start && end ? { start, end } : null;
+};
+
+export function useAriaRangeCalendar({ value, defaultValue, onValueChange, min, max, isDateUnavailable, disabled, autoFocus, locale, ...labels }: RangeCalendarOptions, ref: RefObject<HTMLElement | null>): AriaCalendar {
+  const state = useRangeCalendarState({
+    locale,
+    createCalendar,
+    ...(value === undefined ? {} : { value: parseRange(value) }),
+    ...(defaultValue === undefined ? {} : { defaultValue: parseRange(defaultValue) }),
+    onChange: (next) => onValueChange?.(next ? { start: toIso(next.start as CalendarDate), end: toIso(next.end as CalendarDate) } : null),
+    minValue: parse(min),
+    maxValue: parse(max),
+    isDateUnavailable: isDateUnavailable ? (date) => isDateUnavailable(toIso(date as CalendarDate)) : undefined,
+    isDisabled: disabled,
+    autoFocus,
+  });
+  const { calendarProps, prevButtonProps, nextButtonProps, title } = useRangeCalendar({ ...labels, isDisabled: disabled }, state, ref);
+  const shown = state.highlightedRange;
+  return useAssembled(state, calendarProps, prevButtonProps, nextButtonProps, title, shown ? { start: toIso(shown.start as CalendarDate), end: toIso(shown.end as CalendarDate) } : null);
+}
+
+type ButtonProps = ReturnType<typeof useCalendar>["prevButtonProps"];
+
+function useAssembled(state: CalendarState | RangeCalendarState, calendarProps: object, prevButtonProps: ButtonProps, nextButtonProps: ButtonProps, title: string, range: DateRange | null): AriaCalendar {
   const { gridProps, headerProps, weekDays, weeksInMonth } = useCalendarGrid({ weekdayStyle: "short" }, state);
   const month = state.visibleRange.start;
   const weeks = Array.from({ length: weeksInMonth }, (_, index) =>
     state.getDatesInWeek(index).map((date) => (date && isSameMonth(date, month) ? toIso(date as CalendarDate) : null)),
   );
-  const page = (props: typeof prevButtonProps): CalendarPage => ({
+  const page = (props: ButtonProps): CalendarPage => ({
     label: props["aria-label"] ?? "",
     disabled: props.isDisabled === true,
     go: () => props.onPress?.({} as never),
@@ -84,6 +123,7 @@ export function useAriaCalendar({ value, defaultValue, onValueChange, min, max, 
     next: page(nextButtonProps),
     weekdays: weekDays,
     weeks,
+    range,
     state,
   };
 }

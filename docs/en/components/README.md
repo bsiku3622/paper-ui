@@ -1,12 +1,14 @@
 # Overview
 
-A Component is a finished part that ties Atoms and Primitives together to do one job. Where an Atom is a control with one role, a Component only means something as a set: a sidebar whose items, groups and drawer move under one contract, or a date choice whose grid and popup move together. Components make no new colour, line or size; they use the Foundations roles and the Atoms' axes, and borrow colour only from the recipes in `primitives/paint/`. The package exposes 3 today.
+A Component is a finished part that ties Atoms and Primitives together to do one job. Where an Atom is a control with one role, a Component only means something as a set: a sidebar whose items, groups and drawer move under one contract, or a date choice whose grid and popup move together. Components make no new colour, line or size; they use the Foundations roles and the Atoms' axes, and borrow colour only from the recipes in `primitives/paint/`. The package exposes 5 today.
 
 | Component | What it does | Docs |
 | --- | --- | --- |
 | Sidebar | Navigation that is a rail on wide screens and a drawer on narrow ones | [below](#sidebar) |
 | Calendar | Chooses one date on a month grid | [Calendar · DatePicker](date-picker.md) |
 | DatePicker | A button in the shape of an input frame opens a Calendar in a popup | [Calendar · DatePicker](date-picker.md) |
+| RangeCalendar | Chooses a period (start and end) on a month grid | [Calendar · DatePicker](date-picker.md#range) |
+| DateRangePicker | A button in the shape of an input frame that opens a RangeCalendar as a popup | [Calendar · DatePicker](date-picker.md#range) |
 
 ## Sidebar
 

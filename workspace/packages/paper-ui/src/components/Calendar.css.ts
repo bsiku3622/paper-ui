@@ -41,6 +41,9 @@ export const calendarRange = style({
 export const calendarRangeStart = style({ borderStartStartRadius: controlVars.corner, borderEndStartRadius: controlVars.corner });
 export const calendarRangeEnd = style({ borderStartEndRadius: controlVars.corner, borderEndEndRadius: controlVars.corner });
 
+export const calendarDayStart = style({ borderStartEndRadius: 0, borderEndEndRadius: 0 });
+export const calendarDayEnd = style({ borderStartStartRadius: 0, borderEndStartRadius: 0 });
+
 export const calendarDay = style([stateStyle.focusVisible, stateStyle.disabled, {
   position: "relative",
   cursor: "pointer",

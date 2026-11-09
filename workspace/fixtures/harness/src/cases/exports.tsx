@@ -1,5 +1,5 @@
 import {
-  Badge, Box, Button, Calendar, Checkbox, Control, DatePicker, Divider, Draggable, Droppable, Field, Floating, FocusScope, FormField, Grid, Icon, IconButton, INVENTORY, PRIMITIVE_GROUPS, PRIMITIVE_ORDERS, Inline, Label, Link, Marker, LiveRegion, Paint, PaperProvider, Portal, Pressable,
+  Badge, Box, Button, Calendar, DateRangePicker, RangeCalendar, Checkbox, Control, DatePicker, Divider, Draggable, Droppable, Field, Floating, FocusScope, FormField, Grid, Icon, IconButton, INVENTORY, PRIMITIVE_GROUPS, PRIMITIVE_ORDERS, Inline, Label, Link, Marker, LiveRegion, Paint, PaperProvider, Portal, Pressable,
   Radio, RovingFocus, SegmentControl, Sidebar, Select, Selectable, SelectableGroup, Slider, Spinner, Stack, Surface, Switch, Text, Textarea, VisuallyHidden,
   announce, clearAnnouncements, composeEventHandlers, controlClass, elevation, loop, mergeProps, mergeRefs, paintClass, presence, reveal, revealAfter, surfaceClass,
   useDraggable, useDroppable, useFloating, useFloatingContext, useFocusRing, useFocusWithin, useFormField, useFormFieldControl, usePressable, useResolvedTheme, useRovingFocusItem, useSelectable, useSelectableGroup, useTheme,
@@ -70,6 +70,8 @@ const COMPONENTS: Record<ComponentName, ReactNode> = {
   Slider: <Slider aria-label="Slider" />,
   Calendar: <Calendar aria-label="Calendar" defaultValue="2026-11-20" />,
   DatePicker: <DatePicker aria-label="DatePicker" defaultValue="2026-11-20" />,
+  RangeCalendar: <RangeCalendar aria-label="RangeCalendar" defaultValue={{ start: "2026-11-05", end: "2026-11-12" }} />,
+  DateRangePicker: <DateRangePicker aria-label="DateRangePicker" defaultValue={{ start: "2026-11-05", end: "2026-11-12" }} />,
   Sidebar: <Sidebar label="Sidebar" collapseBelow="never"><Sidebar.Item as="button">Item</Sidebar.Item></Sidebar>,
   Divider: <Divider />,
   Link: <Link href="#link">Link</Link>,

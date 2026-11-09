@@ -70,19 +70,11 @@ describe("Calendar", () => {
     expect(onValueChange).toHaveBeenCalledWith("2026-11-25");
   });
 
-  it("[components.calendar.range] lays one soft band from min to max, rounded only at its two ends, and none with only one end", () => {
-    const band = (name: RegExp) => day(name).closest("td")!.querySelector("[data-part=range]");
-    const { unmount } = render(<Calendar aria-label="Date" defaultValue="2026-11-20" min="2026-11-08" max="2026-11-26" isDateUnavailable={(date) => date === "2026-11-18"} />);
-    for (const name of [/November 8, 2026/, /November 9, 2026/, /November 18, 2026/, /November 20, 2026/, /November 26, 2026/]) expect(band(name), String(name)).not.toBeNull();
-    for (const name of [/November 7, 2026/, /November 27, 2026/]) expect(band(name), String(name)).toBeNull();
-    const [start, middle, end] = [band(/November 8, 2026/)!, band(/November 15, 2026/)!, band(/November 26, 2026/)!];
-    expect(start.className).not.toBe(middle.className);
-    expect(end.className).not.toBe(middle.className);
-    expect(start.className).not.toBe(end.className);
-    expect(day(/November 20, 2026/).className).not.toBe(day(/November 19, 2026/).className);
-    unmount();
-    render(<Calendar aria-label="Date" defaultValue="2026-11-20" min="2026-11-08" />);
-    expect(band(/November 12, 2026/)).toBeNull();
+  it("[components.calendar.limits] paints no band between min and max, only the disabled days outside", () => {
+    const { container } = render(<Calendar aria-label="Date" defaultValue="2026-11-20" min="2026-11-08" max="2026-11-26" />);
+    expect(container.querySelector("[data-part=range]")).toBeNull();
+    expect(day(/November 7, 2026/).hasAttribute("data-disabled")).toBe(true);
+    expect(day(/November 12, 2026/).hasAttribute("data-disabled")).toBe(false);
   });
 
   it("[components.calendar.limits] stops paging at the month min and max close", () => {
