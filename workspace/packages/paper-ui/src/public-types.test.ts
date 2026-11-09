@@ -174,7 +174,7 @@ describe("the React Aria boundary", () => {
 
   it("[primitives.aria.boundary] keeps the adapters in one folder, one file per concern", () => {
     const adapters = readdirSync(join(src, "internal", "aria")).sort();
-    expect(adapters).toEqual(["dnd.ts", "focus.tsx", "i18n.tsx", "live.ts", "move.ts", "overlay.ts", "portal.tsx", "press.ts", "visually-hidden.ts"]);
+    expect(adapters).toEqual(["calendar.ts", "dnd.ts", "focus.tsx", "i18n.tsx", "live.ts", "move.ts", "overlay.ts", "portal.tsx", "press.ts", "visually-hidden.ts"]);
     const importing = adapters.filter((file) => ARIA.test(readFileSync(join(src, "internal", "aria", file), "utf8")));
     expect(importing).toEqual(adapters);
   });

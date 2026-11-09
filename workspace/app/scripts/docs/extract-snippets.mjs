@@ -15,6 +15,7 @@ const { INVENTORY } = await import(`data:text/javascript,${encodeURIComponent(in
 const rootNames = [
   ...Object.values(INVENTORY.primitives).flatMap((group) => [...group.components, ...group.hooks, ...(group.functions ?? [])]),
   ...INVENTORY.atoms,
+  ...INVENTORY.components,
   ...Object.values(INVENTORY.utilities).flat(),
   ...INVENTORY.classes,
   "INVENTORY",

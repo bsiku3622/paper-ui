@@ -1,13 +1,15 @@
 {
-  "version": "0.1.3",
+  "version": "0.1.4",
   "entries": {
     ".": {
       "values": [
         "Badge",
         "Box",
         "Button",
+        "Calendar",
         "Checkbox",
         "Control",
+        "DatePicker",
         "Divider",
         "Draggable",
         "Droppable",
@@ -80,8 +82,10 @@
         "BoxProps",
         "BoxWidth",
         "ButtonProps",
+        "CalendarProps",
         "CheckboxProps",
         "ControlProps",
+        "DatePickerProps",
         "DirectoryDropItem",
         "DividerProps",
         "DragItem",

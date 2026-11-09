@@ -3,6 +3,13 @@
 Every published version has a `## <version>` heading below, newest first. The recorded API surface (`api/surface.json`)
 moves only with a version that has one: `pnpm api:update` refuses otherwise.
 
+## 0.1.4
+
+- A new layer, Components, for finished parts built from Atoms and Primitives. It starts with `Calendar` and `DatePicker`, which choose one date. A date is an ISO string (`"YYYY-MM-DD"`): `value`, `defaultValue` and `onValueChange` take and give it, `min`, `max`, `isDateUnavailable` close days and `marked` puts a dot under days.
+- `Calendar` is a month grid with muted previous and next buttons, day cells on the control ladder (`size`, `xs` by default) and `shape` from the app's control shape. The chosen day is a solid face, today a hairline, and cells outside the month stay empty. Keys, focus and the locale's week start and names come from the React Aria calendar.
+- `DatePicker` is an input-frame button (the axes of `Field` and `Select`) that shows the date in the locale's medium format and opens a `Calendar` in a popover. Choosing a day closes it and returns focus. `name` sends the ISO value with a form, and it works inside `FormField`. There is no typing of dates and no range yet.
+- New dependencies: `@react-aria/calendar`, `@react-stately/calendar` and `@internationalized/date`.
+
 ## 0.1.3
 
 - `SegmentControl` takes `variant="underline"`: no surface, one `border.base` line under the group and an `ink.primary` bar that slides under the chosen choice, so hover only changes the text colour. For a row of tabs that changes the list below it.

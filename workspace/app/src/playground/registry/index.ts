@@ -6,7 +6,7 @@ const FILES = import.meta.glob<{ default: Spec }>("./entries/*.tsx", { eager: tr
 export type Entry = Spec & {
   slug: string;
   group: string;
-  part: "primitives" | "atoms";
+  part: "primitives" | "atoms" | "components";
 };
 
 const fileOf = (slug: string): Spec | undefined => FILES[`./entries/${slug}.tsx`]?.default;
@@ -16,7 +16,7 @@ export const REGISTRY: readonly Entry[] = PLAYGROUND_NAV.filter((group) => group
     section.items.map((item): Entry => {
       const spec = fileOf(item.slug);
       if (!spec) throw new Error(`The registry has no entry for ${item.name}; add playground/registry/entries/${item.slug}.tsx.`);
-      return { ...spec, slug: item.slug, group: section.label || "Atoms", part: group.id as Entry["part"] };
+      return { ...spec, slug: item.slug, group: section.label || group.label, part: group.id as Entry["part"] };
     }),
   ),
 );

@@ -61,6 +61,9 @@ export { Spinner, type SpinnerProps } from "./atoms/Spinner";
 export { SegmentControl, type SegmentControlProps, type SegmentControlItemProps } from "./atoms/SegmentControl";
 export { Slider, type SliderProps } from "./atoms/Slider";
 
+export { Calendar, type CalendarProps } from "./components/Calendar";
+export { DatePicker, type DatePickerProps } from "./components/DatePicker";
+
 export { elevation } from "./styles/elevation.css";
 export { presence, loop, reveal, revealAfter } from "./styles/motion.css";
 

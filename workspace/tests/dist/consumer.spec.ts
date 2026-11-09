@@ -48,6 +48,7 @@ test("[install.layers.app-css-wins] consumer CSS linked before the package still
 const ROOT_EXPORTS = [
   ...Object.values(INVENTORY.primitives).flatMap((group) => [...group.components, ...group.hooks, ...("functions" in group ? group.functions : [])]),
   ...INVENTORY.atoms,
+  ...INVENTORY.components,
   ...Object.values(INVENTORY.utilities).flat(),
   ...INVENTORY.classes,
   "INVENTORY",

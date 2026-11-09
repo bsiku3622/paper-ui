@@ -35,6 +35,7 @@ const agentsRows = (): string[][] => {
     ...second.map((group) => row(group, "2차")),
     ["Provider", String(INVENTORY.utilities.Theme.length), `${list(INVENTORY.utilities.Theme)} — 테마 엔진의 entry이고 문서당 저장소 하나에 붙습니다. \`locale\` · \`messages\`로 언어도 정합니다. 첫 화면 전에 모드를 정하는 \`themeBootScript\`는 \`/theme-boot\`에서 나갑니다`],
     ["Atoms", String(INVENTORY.atoms.length), list(INVENTORY.atoms)],
+    ["Components", String(INVENTORY.components.length), list(INVENTORY.components)],
   ];
 };
 
@@ -90,6 +91,7 @@ export const INVENTORY_BLOCKS: GeneratedBlock[] = [
         ...PRIMITIVE_ORDERS.first.map((group, index) => [index === 0 ? "Primitives, first order" : "", `${group} ${components(group as PrimitiveGroup).length}`, list(components(group as PrimitiveGroup))]),
         ...second.map((group, index) => [index === 0 ? "Primitives, second order" : "", `${group} ${components(group as PrimitiveGroup).length}`, list(components(group as PrimitiveGroup))]),
         ["Atoms", String(INVENTORY.atoms.length), list(INVENTORY.atoms)],
+        ["Components", String(INVENTORY.components.length), list(INVENTORY.components)],
       ]),
   },
   {
@@ -100,6 +102,7 @@ export const INVENTORY_BLOCKS: GeneratedBlock[] = [
         ["Primitives, first order", `${list(PRIMITIVE_ORDERS.first.flatMap((group) => components(group as PrimitiveGroup)))} (and ${list(functionsOf("A11y"))})`],
         ["Primitives, second order", list(second.flatMap((group) => components(group as PrimitiveGroup)))],
         ["Atoms", list(INVENTORY.atoms)],
+        ["Components", list(INVENTORY.components)],
         ["`/tokens`", "`tokens`, and the vocabulary: one constant and one type for each axis (`ACCENTS` · `Accent`, `VARIANTS` · `Variant`, `SPACES` · `Space` …)"],
       ]),
   },

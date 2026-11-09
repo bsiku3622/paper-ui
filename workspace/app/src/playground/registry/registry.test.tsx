@@ -50,7 +50,7 @@ describe("the references under an Atom", () => {
 
   it("[app.playground.reference] crosses and moves only the selects and switches of its own entry, two different ones in a crossing", () => {
     for (const entry of REGISTRY.filter((candidate) => candidate.sheet)) {
-      expect(entry.part, entry.name).toBe("atoms");
+      expect(entry.part, entry.name).not.toBe("primitives");
       for (const key of axesOf(entry)) expect(entry.controls.find((control) => control.key === key)?.kind, `${entry.name}.${key}`).toMatch(/^(enum|bool)$/);
       if (entry.sheet?.matrix) expect(entry.sheet.matrix.rows, entry.name).not.toBe(entry.sheet.matrix.columns);
     }
@@ -93,7 +93,7 @@ describe("REGISTRY", () => {
     const sections = PLAYGROUND_NAV.filter((group) => group.id !== "foundations").flatMap((group) => group.sections.map((section) => ({ group, section })));
     for (const entry of REGISTRY) {
       const home = sections.find(({ section }) => section.items.some((item) => item.slug === entry.slug))!;
-      expect(entry.group, entry.name).toBe(home.section.label || "Atoms");
+      expect(entry.group, entry.name).toBe(home.section.label || home.group.label);
       expect(entry.part, entry.name).toBe(home.group.id);
     }
   });

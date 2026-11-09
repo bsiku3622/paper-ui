@@ -8,7 +8,7 @@ import { INVENTORY, PRIMITIVE_GROUPS, PRIMITIVE_ORDERS } from "./inventory";
 
 const exported = pkg as unknown as Record<string, unknown>;
 const primitives = Object.values(INVENTORY.primitives);
-const components: readonly string[] = [...primitives.flatMap((group) => group.components), ...INVENTORY.atoms];
+const components: readonly string[] = [...primitives.flatMap((group) => group.components), ...INVENTORY.atoms, ...INVENTORY.components];
 const functions: readonly string[] = [
   ...primitives.flatMap((group) => [...group.hooks, ...("functions" in group ? group.functions : [])]),
   ...Object.values(INVENTORY.utilities).flat(),

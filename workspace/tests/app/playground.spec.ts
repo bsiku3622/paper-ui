@@ -18,6 +18,7 @@ const EXPECTED = [
   "Composition",
   "Theme",
   ...INVENTORY.atoms,
+  ...INVENTORY.components,
 ];
 
 const sidebar = (page: Page) => page.getByRole("navigation", { name: "플레이그라운드" });
@@ -32,7 +33,7 @@ test("the sidebar lists the Playground in the inventory's order, with Utilities 
   const nav = sidebar(page);
   await expect(nav.getByRole("link")).toHaveText(["Overview", ...EXPECTED]);
   const text = (await nav.innerText()).split("\n");
-  expect(text.filter((line) => !["Overview", ...EXPECTED].includes(line) && line !== "").sort()).toEqual(["Atoms", "Foundations", "Primitives", "Utilities"]);
+  expect(text.filter((line) => !["Overview", ...EXPECTED].includes(line) && line !== "").sort()).toEqual(["Atoms", "Components", "Foundations", "Primitives", "Utilities"]);
   const row = async (name: string) => (await nav.getByRole("link", { name, exact: true }).boundingBox())!;
   const [liveRegion, surface, paint] = [await row("LiveRegion"), await row("Surface"), await row("Paint")];
   expect(surface.y - (liveRegion.y + liveRegion.height)).toBeGreaterThan(paint.y - (surface.y + surface.height));

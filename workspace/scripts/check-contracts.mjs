@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
-export const AREAS = ["foundations", "primitives", "atoms", "install", "guardrails", "app"];
+export const AREAS = ["foundations", "primitives", "atoms", "components", "install", "guardrails", "app"];
 
 const ID = new RegExp(`^(?:${AREAS.join("|")})\\.[a-z0-9]+(?:-[a-z0-9]+)*\\.[a-z0-9]+(?:-[a-z0-9]+)*$`);
 const MARKER = /^\[contract:([^\]]*)\]: #$/;
