@@ -1,6 +1,6 @@
 import {
-  Badge, Box, Button, Checkbox, Control, Divider, Draggable, Droppable, Field, Floating, FocusScope, FormField, Grid, Icon, IconButton, INVENTORY, PRIMITIVE_GROUPS, PRIMITIVE_ORDERS, Inline, Label, Link, Marker, LiveRegion, Paint, PaperProvider, Portal, Pressable,
-  Radio, RovingFocus, SegmentControl, Select, Selectable, SelectableGroup, Slider, Spinner, Stack, Surface, Switch, Text, Textarea, VisuallyHidden,
+  Badge, Box, Button, Calendar, Checkbox, Control, DatePicker, Divider, Draggable, Droppable, Field, Floating, FocusScope, FormField, Grid, Icon, IconButton, INVENTORY, PRIMITIVE_GROUPS, PRIMITIVE_ORDERS, Inline, Label, Link, Marker, LiveRegion, Paint, PaperProvider, Portal, Pressable,
+  Radio, RovingFocus, SegmentControl, Sidebar, Select, Selectable, SelectableGroup, Slider, Spinner, Stack, Surface, Switch, Text, Textarea, VisuallyHidden,
   announce, clearAnnouncements, composeEventHandlers, controlClass, elevation, loop, mergeProps, mergeRefs, paintClass, presence, reveal, revealAfter, surfaceClass,
   useDraggable, useDroppable, useFloating, useFloatingContext, useFocusRing, useFocusWithin, useFormField, useFormFieldControl, usePressable, useResolvedTheme, useRovingFocusItem, useSelectable, useSelectableGroup, useTheme,
 } from "@studio-baeks/paper-ui";
@@ -10,7 +10,7 @@ import { useEffect, useRef, type ReactNode } from "react";
 import { SELECT_OPTIONS } from "./options.js";
 
 type Primitive = (typeof INVENTORY.primitives)[keyof typeof INVENTORY.primitives];
-type ComponentName = Primitive["components"][number] | (typeof INVENTORY.atoms)[number];
+type ComponentName = Primitive["components"][number] | (typeof INVENTORY.atoms)[number] | (typeof INVENTORY.components)[number];
 type HookName = Primitive["hooks"][number];
 
 const BOX_ICON = <path d="M4 4h16v16H4z" />;
@@ -68,6 +68,9 @@ const COMPONENTS: Record<ComponentName, ReactNode> = {
   Spinner: <Spinner />,
   SegmentControl: <SegmentControl aria-label="SegmentControl" defaultValue="a"><SegmentControl.Item value="a">A</SegmentControl.Item></SegmentControl>,
   Slider: <Slider aria-label="Slider" />,
+  Calendar: <Calendar aria-label="Calendar" defaultValue="2026-11-20" />,
+  DatePicker: <DatePicker aria-label="DatePicker" defaultValue="2026-11-20" />,
+  Sidebar: <Sidebar label="Sidebar" collapseBelow="never"><Sidebar.Item as="button">Item</Sidebar.Item></Sidebar>,
   Divider: <Divider />,
   Link: <Link href="#link">Link</Link>,
   Marker: <Marker>Marker</Marker>,

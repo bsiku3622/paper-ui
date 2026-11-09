@@ -1,6 +1,12 @@
 # Overview
 
-Component는 Atom을 조합해 만든, 앱 화면의 한 덩어리입니다. Atom이 한 가지 역할의 컨트롤이라면 Component는 여럿이 함께 서야 뜻이 있는 것 — 내비게이션 사이드바처럼 항목, 묶음, 구분선, 서랍이 한 계약으로 움직이는 부품입니다. Primitive와 Atom 위에 서고, 색은 `primitives/paint/`의 recipe에서만 빌립니다. 패키지는 지금 1개를 공개합니다.
+Component는 Atom과 Primitive를 엮어 한 가지 일을 끝내는 완성 부품입니다. Atom이 한 가지 역할의 컨트롤이라면 Component는 여럿이 함께 서야 뜻이 있는 것입니다. 항목 · 묶음 · 서랍이 한 계약으로 움직이는 사이드바, 격자와 팝업이 함께 움직이는 날짜 선택이 그렇습니다. 색 · 선 · 크기는 새로 만들지 않고 Foundations의 역할과 Atom의 축을 그대로 쓰며, 색은 `primitives/paint/`의 recipe에서만 빌립니다. 패키지는 지금 3개를 공개합니다.
+
+| Component | 하는 일 | 문서 |
+| --- | --- | --- |
+| Sidebar | 넓은 화면에서는 레일, 좁은 화면에서는 서랍이 되는 내비게이션 | [아래](#sidebar) |
+| Calendar | 한 달 격자에서 날짜 하나를 고름 | [Calendar · DatePicker](date-picker.md) |
+| DatePicker | 입력 틀 모습의 단추가 Calendar를 팝업으로 엶 | [Calendar · DatePicker](date-picker.md) |
 
 ## Sidebar
 

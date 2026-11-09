@@ -50,7 +50,7 @@ describe("the references under an Atom", () => {
 
   it("[app.playground.reference] crosses and moves only the selects and switches of its own entry, two different ones in a crossing", () => {
     for (const entry of REGISTRY.filter((candidate) => candidate.sheet)) {
-      expect(entry.part, entry.name).toBe("atoms");
+      expect(entry.part, entry.name).not.toBe("primitives");
       for (const key of axesOf(entry)) expect(entry.controls.find((control) => control.key === key)?.kind, `${entry.name}.${key}`).toMatch(/^(enum|bool)$/);
       if (entry.sheet?.matrix) expect(entry.sheet.matrix.rows, entry.name).not.toBe(entry.sheet.matrix.columns);
     }

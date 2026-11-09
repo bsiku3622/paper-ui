@@ -22,7 +22,7 @@ export const INVENTORY = {
     Layout: { components: ["Stack", "Inline", "Grid"], hooks: [] },
   },
   atoms: ["Button", "IconButton", "Field", "Textarea", "Select", "Checkbox", "Switch", "Radio", "Label", "Badge", "Spinner", "Divider", "Link", "Marker", "SegmentControl", "Slider"],
-  components: ["Sidebar"],
+  components: ["Sidebar", "Calendar", "DatePicker"],
   anatomy: { Select: ["Option", "Group"], SegmentControl: ["Item"], Sidebar: ["Item", "Group", "Divider", "Footer"] },
   utilities: {
     Composition: ["mergeProps", "mergeRefs", "composeEventHandlers"],

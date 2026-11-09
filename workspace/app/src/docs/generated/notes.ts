@@ -45,10 +45,10 @@ export const PRESET_USES: Record<PresetName, string> = {
 
 export const DIR_NOTES: Record<string, string> = {
   "packages/paper-ui/src/atoms": "Atom 14개 — 한 가지 역할의 컨트롤, 모두 Primitive 위에 섭니다",
-  "packages/paper-ui/src/components": "Component 1개 — Atom을 조합한 화면 부품(Sidebar), 색은 primitives/paint/recipes.css.ts에서 빌립니다",
+  "packages/paper-ui/src/components": "Component 3개 — Atom과 Primitive를 엮어 한 가지 일을 끝내는 완성 부품(Sidebar · Calendar · DatePicker), 색은 primitives/paint/recipes.css.ts에서 빌립니다",
   "packages/paper-ui/src/atoms/recipes": "Atom이 함께 쓰는 형태와 상태 조각(input-frame · mark) — 색은 없고, 색은 primitives/paint/recipes.css.ts에서 옵니다",
   "packages/paper-ui/src/internal": "패키지 안쪽 도구 — 밖으로 나가지 않습니다",
-  "packages/paper-ui/src/internal/aria": "React Aria 어댑터 — `@react-aria/*`를 import하는 유일한 자리",
+  "packages/paper-ui/src/internal/aria": "React Aria 어댑터 — `@react-aria/*`(와 Calendar의 `@react-stately/*`)를 import하는 유일한 자리",
   "packages/paper-ui/src/primitives": "두 차수 — 1차 바탕(Box · Text · Icon · polymorphic · composition)과 2차 Box + 능력 하나",
   "packages/paper-ui/src/primitives/a11y": "1차 A11y — FocusScope · VisuallyHidden · Portal · LiveRegion",
   "packages/paper-ui/src/primitives/drag": "2차 Drag — Draggable · Droppable",

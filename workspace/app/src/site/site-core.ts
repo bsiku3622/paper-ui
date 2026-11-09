@@ -14,7 +14,7 @@ export const DOC_GROUPS: readonly DocGroup[] = [
   { id: "foundations", label: "Foundations", ko: "Foundations", docs: ["README", ...FOUNDATIONS.map(({ id }) => id)] },
   { id: "primitives", label: "Primitives", ko: "Primitives", docs: ["README", "element", "content", "a11y", "paint", "control", "press", "select", "float", "drag", "focus", "field", "layout"] },
   { id: "atoms", label: "Atoms", ko: "Atoms", docs: ["README", "states"] },
-  { id: "components", label: "Components", ko: "Components", docs: ["README"] },
+  { id: "components", label: "Components", ko: "Components", docs: ["README", "date-picker"] },
 ];
 
 export type DocEntry = { slug: string; group: string; title: string; file: string; titleEn?: string };

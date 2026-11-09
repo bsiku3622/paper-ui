@@ -27,7 +27,7 @@ describe("PLAYGROUND_NAV", () => {
     expect(unique(items.map((item) => item.name))).toEqual([]);
   });
 
-  it("lists the Foundations pages, then the primitive categories and Utilities, then the Atoms of the inventory in order", () => {
+  it("lists the Foundations pages, then the primitive categories and Utilities, then the Atoms and the Components of the inventory in order", () => {
     const [foundations, primitives, atoms, components] = PLAYGROUND_NAV;
     expect(foundations?.sections.flatMap((section) => section.items.map((item) => item.slug))).toEqual(FOUNDATIONS.map(({ id }) => `foundations/${id}`));
     expect(primitives?.sections.map((section) => section.label)).toEqual([...PRIMITIVE_GROUPS, "Utilities"]);

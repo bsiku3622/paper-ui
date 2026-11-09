@@ -281,3 +281,6 @@ export const sliderOriginPaint = style({
     },
   },
 });
+
+export const datePickerEmptyPaint = style({ color: tokens.color.ink.tertiary });
+export const datePickerIconPaint = style({ color: tokens.color.ink.secondary });

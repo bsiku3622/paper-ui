@@ -84,6 +84,8 @@
     "prepublishOnly": "pnpm -w run verify && PAPER_API_RECORD=1 vitest --run src/api.test.ts"
   },
   "dependencies": {
+    "@internationalized/date": "^3.12.4",
+    "@react-aria/calendar": "^3.10.1",
     "@react-aria/dnd": "^3.12.1",
     "@react-aria/focus": "^3.22.1",
     "@react-aria/i18n": "^3.13.1",
@@ -91,7 +93,8 @@
     "@react-aria/live-announcer": "^3.5.1",
     "@react-aria/overlays": "^3.32.1",
     "@react-aria/utils": "^3.34.1",
-    "@react-aria/visually-hidden": "^3.9.1"
+    "@react-aria/visually-hidden": "^3.9.1",
+    "@react-stately/calendar": "^3.10.1"
   },
   "peerDependencies": {
     "react": "^18.2.0 || ^19.0.0",
