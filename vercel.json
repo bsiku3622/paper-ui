@@ -1,8 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "installCommand": "cd workspace && corepack enable && pnpm install --frozen-lockfile",
-  "buildCommand": "cd workspace && pnpm build",
+  "installCommand": "npm install -g pnpm@11.0.9 && export PATH=\"$(npm prefix -g)/bin:$PATH\" && cd workspace && pnpm install --frozen-lockfile",
+  "buildCommand": "export PATH=\"$(npm prefix -g)/bin:$PATH\" && cd workspace && pnpm build",
   "outputDirectory": "workspace/app/dist",
   "rewrites": [
     { "source": "/demos/(.*)", "destination": "/demos/index.html" },
