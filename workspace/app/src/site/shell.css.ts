@@ -81,6 +81,7 @@ export const skipLink = style({
 export const sidebarFrame = style([
   frame,
   {
+    paddingInlineStart: tokens.layout.gap.md,
     display: "grid",
     gridTemplateColumns: `${tokens.shape.dimension.width.lg} minmax(0, 1fr)`,
     isolation: "isolate",

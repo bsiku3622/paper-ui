@@ -2,6 +2,7 @@ import { act, cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { controlSize } from "../primitives/control/Control.css";
 import { paintClass } from "../primitives/paint/Paint";
 import { Sidebar } from "./Sidebar";
 import { sidebarScrim } from "./Sidebar.css";
@@ -70,9 +71,13 @@ describe("Sidebar", () => {
     expect(screen.queryByRole("group")).toBeNull();
   });
 
-  it("[components.sidebar.fold] makes the title of a collapsible group a button that folds its items out of the tree and the tab order", () => {
+  it("[components.sidebar.fold] keeps the title as plain text and folds the items with an icon button named by the title", () => {
     render(<Sidebar label="Main"><Sidebar.Group collapsible title="프린터"><Sidebar.Item as="a" href="/">대시보드</Sidebar.Item></Sidebar.Group></Sidebar>);
     const button = screen.getByRole("button", { name: "프린터" });
+    const title = screen.getByText("프린터");
+    expect(button.contains(title)).toBe(false);
+    expect(button.getAttribute("aria-labelledby")).toBe(title.id);
+    expect(button.querySelector("svg")).not.toBeNull();
     expect(button.getAttribute("aria-expanded")).toBe("true");
     const list = document.getElementById(button.getAttribute("aria-controls")!)!;
     expect(list.contains(screen.getByRole("link", { name: "대시보드" }))).toBe(true);
@@ -83,6 +88,18 @@ describe("Sidebar", () => {
     expect(screen.queryByRole("link", { name: "대시보드" })).toBeNull();
     fireEvent.click(button);
     expect(screen.getByRole("link", { name: "대시보드" })).toBeTruthy();
+  });
+
+  it("[components.sidebar.current] sizes every item with size, sm by default, and sets only the current one strong", () => {
+    render(<Sidebar label="Main"><Sidebar.Item current>하나</Sidebar.Item><Sidebar.Item>둘</Sidebar.Item></Sidebar>);
+    const [first, second] = screen.getAllByRole("button");
+    expect(second!.classList.contains(controlSize.sm)).toBe(true);
+    expect(classesOf(first!)).not.toEqual(classesOf(second!));
+    cleanup();
+    render(<Sidebar label="Main" size="lg"><Sidebar.Item>하나</Sidebar.Item></Sidebar>);
+    const large = screen.getByRole("button");
+    expect(large.classList.contains(controlSize.lg)).toBe(true);
+    expect(large.classList.contains(controlSize.sm)).toBe(false);
   });
 
   it("[components.sidebar.fold] takes open as a controlled value and defaultOpen=false as a folded start", () => {

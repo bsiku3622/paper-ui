@@ -297,3 +297,31 @@ test("at 1440 the sidebars are open rails with no menu button, and the header st
     await expect(nav(page)).toHaveCSS("overflow-y", "auto");
   }
 });
+
+test("at 1440 a sidebar row is sm tall on an sm + xs pitch, starts 24 from the viewport edge, and a group folds from its icon button", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const row = roleDp(tokens.shape.control.height.sm);
+  const pitch = row + roleDp(tokens.layout.gap.xs);
+  for (const [route, nav] of [["/docs/foundations/color", docsNav], ["/playground/button", playgroundNav]] as const) {
+    await page.goto(route);
+    await settled(page);
+    const links = nav(page).getByRole("link");
+    const first = (await links.nth(0).boundingBox())!;
+    const tops = await links.evaluateAll((anchors) => anchors.map((anchor) => anchor.getBoundingClientRect().top));
+    expect(first.height, `${route}: row`).toBe(row);
+    expect(Math.min(...tops.slice(1).map((top, at) => top - tops[at]!)), `${route}: pitch`).toBe(pitch);
+    expect(first.x, `${route}: edge to item`).toBe(roleDp(tokens.layout.gap.md) + roleDp(tokens.layout.gap.sm));
+    const fold = nav(page).locator("button[aria-expanded]").first();
+    await expect(fold, route).toHaveAccessibleName(/\S/);
+    const head = (await fold.boundingBox())!;
+    expect(head.height, `${route}: fold button`).toBe(roleDp(tokens.shape.control.height.xs));
+    const group = nav(page).getByRole("group", { name: (await fold.evaluate((element) => document.getElementById(element.getAttribute("aria-labelledby")!)!.textContent))! });
+    const open = await group.getByRole("link").count();
+    expect(open, route).toBeGreaterThan(0);
+    await fold.click();
+    await expect(fold).toHaveAttribute("aria-expanded", "false");
+    await expect(group.getByRole("link")).toHaveCount(0);
+    await fold.click();
+    await expect(group.getByRole("link")).toHaveCount(open);
+  }
+});

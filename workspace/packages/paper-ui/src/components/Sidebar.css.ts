@@ -25,7 +25,7 @@ export const sidebarRail = style({
   display: "flex",
   flexDirection: "column",
   gap: tokens.layout.gap.xs,
-  padding: tokens.layout.gap.md,
+  padding: tokens.layout.gap.sm,
   overflowY: "auto",
   ...lineRule({ side: "end" }),
 });
@@ -74,12 +74,12 @@ export const sidebarGroup = style({
   gap: tokens.layout.gap.xs,
   selectors: { "& + &": { marginBlockStart: tokens.layout.gap.sm }, "&[hidden]": { display: "none" } },
 });
-export const sidebarGroupTitle = style({ paddingBlock: tokens.layout.gap.xs, paddingInline: controlVars.buttonInset });
+export const sidebarGroupTitle = style({ boxSizing: "border-box", minInlineSize: 0, minBlockSize: tokens.shape.control.height.xs, alignContent: "center", paddingInline: controlVars.buttonInset });
 
 export const sidebarDivider = style({ marginBlock: tokens.layout.gap.sm });
 export const sidebarFooter = style({ marginBlockStart: "auto", display: "flex", flexDirection: "column", gap: tokens.layout.gap.xs, selectors: { "&[hidden]": { display: "none" } } });
 
-export const sidebarGroupToggle = style({ textAlign: "start" });
+export const sidebarGroupHead = style({ display: "flex", alignItems: "center", justifyContent: "space-between", gap: tokens.layout.gap.xs });
 export const sidebarGroupChevron = style({
   flexShrink: 0,
   transition: transition("state", "transform"),

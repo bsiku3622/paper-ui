@@ -4,7 +4,7 @@ import { Badge, IconButton, Sidebar, Stack, Text, type SidebarFooterProps, type 
 
 import { glyph } from "../demo";
 import { named } from "../jsx";
-import { boolControl, defineSpec, enumControl, flag, local, pick } from "../schema";
+import { boolControl, defineSpec, enumControl, flag, local, pick, vocab } from "../schema";
 import { pick as inLocale, useSiteLocale } from "../../../site/locale";
 import { sidebarBar, sidebarFit, sidebarMenu, sidebarPage, sidebarShell } from "./examples.css";
 
@@ -18,12 +18,13 @@ export default defineSpec({
   blurb: { ko: "내비게이션 사이드바입니다. breakpoint 위에서는 화면 가장자리에 붙어 따라오는 레일이고, 그 아래에서는 스크림과 함께 미끄러져 나오는 서랍이 됩니다. 서랍은 닫혀 있으면 inert이고, 열리면 포커스를 가두며 Escape와 항목을 누르는 것으로 닫히고 페이지 스크롤을 잠급니다. 메뉴 버튼은 앱의 것이라 aria-expanded와 aria-controls로 직접 잇습니다. offset은 위의 바 높이이고, 레일의 sticky 위치와 서랍의 위쪽과 스크림의 안쪽 가장자리가 모두 이 한 값을 읽습니다.", en: "The navigation sidebar. Above its breakpoint it is a rail that sticks beside the page; below it, a drawer slides in over a scrim. A closed drawer is inert; an open one contains focus, closes on Escape and when an item is pressed, and locks the page scroll. The menu button is the app's own, joined by aria-expanded and aria-controls. offset is the height of the bar above, and the rail's sticky position, the drawer's top and the scrim's edge all read that one value." },
   controls: [
     enumControl<SidebarProps, "collapseBelow">("collapseBelow", local<SidebarProps, "collapseBelow">()(["never", "always", "xl", "lg", "md", "sm"], "Sidebar's own union: a breakpoint from the Layout scale, never for a rail at every width, or always for a drawer at every width")),
+    enumControl<SidebarProps, "size">("size", vocab("CONTROL_SIZES")),
     boolControl<SidebarProps, "offset">("offset", true, { example: { ko: "상단 바 높이", en: "height of the bar" }, type: "string" }),
     boolControl<SidebarItemProps, "current">("current", true, { target: "Sidebar.Item" }),
     boolControl<SidebarGroupProps, "collapsible">("collapsible", false, { target: "Sidebar.Group" }),
     boolControl<SidebarFooterProps, "hidden">("hidden", false, { target: "Sidebar.Footer" }),
   ],
-  defaults: { collapseBelow: "md" },
+  defaults: { collapseBelow: "md", size: "sm" },
   useHarness: () => {
     const [open, setOpen] = useState(false);
     return { open, setOpen };
@@ -35,6 +36,7 @@ export default defineSpec({
         id="sidebar-preview"
         label={w.label}
         collapseBelow={pick<NonNullable<SidebarProps["collapseBelow"]>>(state, "collapseBelow")}
+        size={pick<NonNullable<SidebarProps["size"]>>(state, "size")}
         offset={flag(state, "offset") ? "3.5rem" : undefined}
         open={open}
         onOpenChange={named("setOpen", setOpen)}

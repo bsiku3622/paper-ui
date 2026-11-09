@@ -44,10 +44,10 @@ export function Shell({ upload }: { upload: () => void }) {
 뿌리는 `label`로 이름을 받는 `<nav>`이고 ref를 그대로 전달합니다. 제목을 준 `Sidebar.Group`은 `role="group"`이며 그 제목이 이름이 됩니다. 제목이 없는 Group은 항목을 쌓는 래퍼일 뿐이라 role이 없습니다.
 
 [contract:components.sidebar.fold]: #
-`Sidebar.Group`에 `collapsible`을 주면 제목이 접는 버튼이 됩니다. 제목이 꼭 있어야 하고, 없으면 개발 중에 오류를 냅니다. 버튼은 `aria-expanded`와 `aria-controls`로 항목 목록에 이어지고, 끝의 화살표가 접히면 돌아갑니다(줄어든 모션에서도 돌아갑니다). 접힌 목록은 `hidden`이라 항목이 탭 순서와 접근성 트리에서 빠집니다. `open` · `defaultOpen`(기본 열림) · `onOpenChange`로 제어와 비제어 모두 쓸 수 있습니다. `collapsible`이 아닌 Group은 그대로 제목만 있는 `role="group"`입니다.
+`Sidebar.Group`에 `collapsible`을 주면 제목은 그대로 글자로 남고, 제목 줄 끝에 작은 ghost 아이콘 버튼(xs)이 붙어 접습니다. 제목이 꼭 있어야 하고, 없으면 개발 중에 오류를 냅니다. 버튼은 제목이 이름(`aria-labelledby`)이 되고, `aria-expanded`와 `aria-controls`로 항목 목록에 이어지며, 안의 화살표는 열리면 아래를, 접히면 끝 쪽(RTL에서는 반대)을 가리킵니다(줄어든 모션에서도 돌아갑니다). 제목 줄 높이는 이 버튼의 높이이고 제목 글자는 항목 글자와 같은 선에서 시작합니다. 접힌 목록은 `hidden`이라 항목이 탭 순서와 접근성 트리에서 빠집니다. `open` · `defaultOpen`(기본 열림) · `onOpenChange`로 제어와 비제어 모두 쓸 수 있습니다. `collapsible`이 아닌 Group은 그대로 제목만 있는 `role="group"`입니다.
 
 [contract:components.sidebar.current]: #
-`Sidebar.Item`은 Button 위에 서므로 `as`로 라우터 Link, `a`, `button`을 받습니다. `current`이면 `aria-current="page"`를 달고 variant가 `muted`, 글자가 `strong`이 되며, 아니면 `ghost`입니다. `icon`은 앞에, `badge`는 줄의 끝에 앉습니다. `accent` · `variant` · `shape`(기본 rounded)는 덮어쓸 수 있습니다.
+`Sidebar.Item`은 Button 위에 서므로 `as`로 라우터 Link, `a`, `button`을 받습니다. `current`이면 `aria-current="page"`를 달고 variant가 `muted`, 글자가 `strong`이 되며, 아니면 `ghost`에 보통 굵기입니다. 크기는 Sidebar의 `size`(기본 `sm`, 36)를 따릅니다. `icon`은 앞에, `badge`는 줄의 끝에 앉습니다. `accent` · `variant` · `shape`(기본 rounded)는 덮어쓸 수 있습니다.
 
 [contract:components.sidebar.rail]: #
 breakpoint 이상에서는 레일입니다. `offset` 아래에 sticky로 붙고, 높이는 뷰포트에서 `offset`을 뺀 만큼이며, 넘치면 안에서 스크롤합니다. 레일의 끝 쪽 가장자리에 `border.base` 선 하나가 걸리고 스크롤바는 그 선 안쪽에 앉습니다. 폭은 `width`(Dimension, 기본 `lg`)입니다.
@@ -68,5 +68,6 @@ breakpoint 아래에서는 서랍입니다. `collapseBelow="always"`면 폭과 �
 | `collapseBelow` | `sm` · `md` · `lg` · `xl` · `never` · `always` | `md` |
 | `offset` | 위 바의 높이(CSS 길이) | 없음(0) |
 | `width` | Dimension | `lg` |
-| `Sidebar.Group` `collapsible` | 제목이 접는 버튼이 됨. `title` 필수 | 아님 |
+| `size` | 모든 `Sidebar.Item`의 컨트롤 크기. 레일 안쪽 여백은 `sm` | `sm` |
+| `Sidebar.Group` `collapsible` | 제목 줄 끝에 접는 아이콘 버튼이 붙음. `title` 필수 | 아님 |
 | `Sidebar.Group` `open` · `defaultOpen` · `onOpenChange` | `collapsible`일 때 접힘 상태. 제어와 비제어 모두 | 열림 |

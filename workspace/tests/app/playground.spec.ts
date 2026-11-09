@@ -48,7 +48,7 @@ test("a page far down the list opens with its row in view, and a row is a small 
   await expect(row).toHaveAttribute("aria-current", "page");
   await expect(row).toBeInViewport();
   const { height } = (await row.boundingBox())!;
-  expect(height).toBe(roleDp(tokens.shape.control.height.md));
+  expect(height).toBe(roleDp(tokens.shape.control.height.sm));
 });
 
 test("a component page titles its sections with headings, like the Overview and the Foundations pages", async ({ page }) => {
