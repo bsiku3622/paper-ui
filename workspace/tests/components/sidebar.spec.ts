@@ -25,13 +25,6 @@ test.describe("a wide screen", () => {
     expect(read.color).toBe(await page.evaluate((hex) => { const probe = document.createElement("i"); probe.style.color = hex; document.body.append(probe); const resolved = getComputedStyle(probe).color; probe.remove(); return resolved; }, COLOR_VALUES_BY_MODE.light.border.base));
   });
 
-  test("[components.sidebar.touch] keeps the md control height and the body icon with a mouse", async ({ page }) => {
-    await openHarness(page, "sidebar");
-    const item = page.getByTestId("sidebar-first");
-    expect((await item.boundingBox())!.height).toBe(40);
-    expect(await item.evaluate((element) => getComputedStyle(element.querySelector("svg")!).width)).toBe("18px");
-  });
-
   test("[components.sidebar.rail] keeps the footer at the bottom of the rail", async ({ page }) => {
     await openHarness(page, "sidebar");
     const nav = (await page.getByTestId("sidebar").boundingBox())!;
@@ -87,18 +80,5 @@ test.describe("a narrow screen", () => {
     expect(await nav.evaluate((element) => element.contains(document.activeElement))).toBe(true);
     await page.keyboard.press("Escape");
     await expect(menu).toBeFocused();
-  });
-});
-
-test.describe("a phone", () => {
-  test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
-
-  test("[components.sidebar.touch] stands its items at the lg control height with the icon a step up and the text unchanged", async ({ page }) => {
-    await openHarness(page, "sidebar");
-    await page.getByTestId("sidebar-menu").click();
-    const item = page.getByTestId("sidebar-first");
-    await expect.poll(async () => (await item.boundingBox())?.height).toBe(44);
-    expect(await item.evaluate((element) => getComputedStyle(element.querySelector("svg")!).width)).toBe("20px");
-    expect(await item.evaluate((element) => getComputedStyle(element.querySelector("span")!).fontSize)).toBe("14px");
   });
 });

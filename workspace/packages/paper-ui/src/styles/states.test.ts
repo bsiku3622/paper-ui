@@ -59,8 +59,8 @@ describe("the package source", () => {
     expect(offenders).toEqual([]);
   });
 
-  it("[foundations.shape.no-coarse-growth] grows no hit area under a coarse pointer: no stylesheet of the package asks about one, but a Component that stacks its own rows", () => {
-    const asking = stylesheets(src).filter((file) => /pointer:\s*coarse/.test(read(file)) && !relative(src, file).startsWith("components/"));
+  it("[foundations.shape.no-coarse-growth] grows no hit area under a coarse pointer: no stylesheet of the package asks about one", () => {
+    const asking = stylesheets(src).filter((file) => /pointer:\s*coarse/.test(read(file)));
     expect(asking.length, asking.join(", ")).toBe(0);
   });
 

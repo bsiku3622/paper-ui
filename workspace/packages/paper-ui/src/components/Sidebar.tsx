@@ -16,7 +16,7 @@ import type { PolymorphicProps } from "../primitives/polymorphic";
 import { usePressable } from "../primitives/press/usePressable";
 import { Text } from "../primitives/Text";
 import { tokens, type Accent, type Breakpoint, type Dimension, type Variant } from "../tokens";
-import { sidebarBadge, sidebarDensity, sidebarDivider, sidebarDrawer, sidebarClosed, sidebarFooter, sidebarGroup, sidebarGroupTitle, sidebarItem, sidebarOffsetProperty, sidebarRail, sidebarScrim, sidebarWidth } from "./Sidebar.css";
+import { sidebarBadge, sidebarDivider, sidebarDrawer, sidebarClosed, sidebarFooter, sidebarGroup, sidebarGroupTitle, sidebarItem, sidebarOffsetProperty, sidebarRail, sidebarScrim, sidebarWidth } from "./Sidebar.css";
 
 export type SidebarProps = Omit<HTMLAttributes<HTMLElement>, "className" | "children" | "aria-label"> & {
   label: string;
@@ -144,7 +144,7 @@ const SidebarItemImpl = forwardRef<HTMLElement, Omit<SidebarItemProps, "as" | "r
       gap="sm"
       variant={variant ?? (current ? "muted" : "ghost")}
       aria-current={current ? "page" : undefined}
-      className={joinClass(sidebarDensity, sidebarItem, className)}
+      className={joinClass(sidebarItem, className)}
       onClick={(event: MouseEvent<HTMLElement>) => { (onClick as ((event: MouseEvent<HTMLElement>) => void) | undefined)?.(event); dismiss(); }}
       {...rest}
     >
@@ -163,7 +163,7 @@ const SidebarGroup = forwardRef<HTMLDivElement, SidebarGroupProps>(function Side
   const titleId = useId();
   return (
     <div ref={ref} role={title == null ? undefined : "group"} aria-labelledby={title == null ? undefined : titleId} className={joinClass(sidebarGroup, className)} {...rest}>
-      {title == null ? null : <Text id={titleId} as="span" variant="label" ink="tertiary" className={joinClass(controlSize.md, sidebarDensity, sidebarGroupTitle)}>{title}</Text>}
+      {title == null ? null : <Text id={titleId} as="span" variant="label" ink="tertiary" className={joinClass(controlSize.md, sidebarGroupTitle)}>{title}</Text>}
       {children}
     </div>
   );

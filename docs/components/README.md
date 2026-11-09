@@ -58,9 +58,6 @@ breakpoint 아래에서는 서랍입니다. `collapseBelow="always"`면 폭과 �
 [contract:components.sidebar.offset]: #
 `offset`은 위에 놓인 바의 높이(CSS 길이)이고 비우면 0입니다. 값은 CSS 변수 하나로 쓰이고, 레일의 sticky 위치와 서랍의 위쪽과 스크림의 안쪽 가장자리가 모두 이 한 변수를 읽어서 서로 어긋날 수 없습니다.
 
-[contract:components.sidebar.touch]: #
-터치 화면(폰은 세워도 눕혀도)에서는 항목이 lg 컨트롤 높이(44px)에 서고 아이콘이 한 단계 커집니다. 글자 크기는 그대로입니다. JavaScript로 prop을 바꾸지 않고 CSS 미디어 쿼리 하나가 컨트롤 크기 변수를 바꾸므로 첫 화면부터 맞습니다. 조건은 Layout의 breakpoint `sm` 아래 또는 `sm` 높이 아래의 coarse pointer입니다.
-
 | prop | 값 | 기본값 |
 | --- | --- | --- |
 | `label` | 필수. `<nav>`의 이름 | — |

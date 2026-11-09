@@ -1,6 +1,6 @@
 import { createVar, fallbackVar, type StyleRule } from "@vanilla-extract/css";
 
-import { controlSizeVars, controlVars } from "../primitives/control/Control.css";
+import { controlVars } from "../primitives/control/Control.css";
 import { sidebarFace } from "../primitives/paint/recipes.css";
 import { BREAKPOINTS, elevationStack, lineRule, tokens, transition, type Breakpoint } from "../tokens";
 import { layered } from "../tokens/layers.css";
@@ -8,7 +8,6 @@ import { layered } from "../tokens/layers.css";
 const { style, styleVariants } = layered("components");
 
 const below = (breakpoint: Breakpoint) => `not all and (min-width: ${tokens.layout.breakpoint[breakpoint]})`;
-const touch = `(pointer: coarse) and (max-width: ${tokens.layout.breakpoint.sm}), (pointer: coarse) and (max-height: ${tokens.layout.breakpoint.sm})`;
 
 const offsetVar = createVar();
 const towardStart = createVar();
@@ -65,9 +64,6 @@ export const sidebarScrim = style({
   ...elevationStack("overlay"),
 });
 
-export const sidebarDensity = style({
-  "@media": { [touch]: { selectors: { "&&": { vars: controlSizeVars.lg } } } },
-});
 
 export const sidebarItem = style({ textAlign: "start" });
 export const sidebarBadge = style({ display: "inline-flex", flexShrink: 0, marginInlineStart: "auto" });

@@ -52,8 +52,6 @@ The drawer calls `onOpenChange(false)` on Escape, on a press of the scrim and on
 
 `offset` is the height of the bar above it (a CSS length) and is 0 when omitted. It is written as one CSS variable, and the rail's sticky position, the drawer's top and the scrim's edge all read that one variable, so they cannot disagree.
 
-On a touch screen (a phone, upright or on its side) items stand at the lg control height (44px) and the icon is one step larger. Text size stays. No prop is changed from JavaScript: one CSS media query changes the control size variables, so it is right from the first paint. The condition is a coarse pointer under the Layout `sm` breakpoint in width, or under `sm` in height.
-
 | prop | values | default |
 | --- | --- | --- |
 | `label` | required. The name of the `<nav>` | — |

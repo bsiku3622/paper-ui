@@ -170,7 +170,7 @@ inset은 컨트롤의 바깥 가장자리에서 잽니다. 디자인 파일이 �
 hit area를 갖는 Atom은 Checkbox · Radio · Switch와 Field의 지우기와 보기 버튼입니다. 보이지 않는 `::before`가 표식 밖으로 넓어지고 색을 칠하지 않습니다. Field의 버튼 안 아이콘은 `control.icon` 그대로 그려지고 `::before`가 `target.action`만큼 사방으로 넓어져 24px 정사각이 됩니다. 나란한 두 버튼은 `control.gap` 8을 사이에 두므로 서로의 hit area를 침범하지 않습니다. Checkbox · Radio는 `target.selection`만큼 사방으로, Switch는 `target.switchBlock`만큼 트랙 위아래로 넓어지고 가로는 트랙 폭이 이미 24px 이상이라 그대로입니다. `::before`는 padding box에서 놓이므로, 선 자리를 둔 상자(오류 · 더 높은 대비 · 강제 색상)에서는 그 한 줄만큼 더 멀리서 시작하고, 선 자리가 없는 쉬는 표식에서는 상자 가장자리에서 시작합니다.
 
 [contract:foundations.shape.no-coarse-growth]: #
-coarse pointer에서 더 키우지 않습니다 — 촘촘한 목록에서 hit area가 겹치면 탭이 엉뚱한 곳으로 가기 때문이고, 행 단위 hit area는 앱이 정합니다. 예외는 Component가 행을 스스로 쌓아 서로 겹치지 않게 하는 경우뿐이고, 지금은 [Sidebar](../components/README.md#sidebar)의 항목이 터치 화면에서 lg 높이를 받습니다.
+coarse pointer에서 더 키우지 않습니다 — 촘촘한 목록에서 hit area가 겹치면 탭이 엉뚱한 곳으로 가기 때문이고, 행 단위 hit area는 앱이 정합니다.
 
 ## Recipe — 컴포넌트 anatomy
 
