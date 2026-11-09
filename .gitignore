@@ -30,3 +30,4 @@ workspace/app/.doc-snippets/
 # notes for coding agents, kept on this machine
 /AGENTS.md
 /CLAUDE.md
+.vercel
