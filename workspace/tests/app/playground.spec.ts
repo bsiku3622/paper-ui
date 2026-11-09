@@ -3,7 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { INVENTORY, PRIMITIVE_GROUPS } from "../../packages/paper-ui/src/inventory";
 import { FOUNDATIONS } from "../../app/src/site/site-core";
 import { COLOR_VALUES_BY_MODE } from "../../packages/paper-ui/src/tokens/colors";
-import { ACCENTS, ALIGNS, CONTROL_SIZES, LINE_SIDES, SURFACE_RADII, SURFACE_THEMES, ICON_SIZES, JUSTIFIES, JUSTIFY_ITEMS, SPACES, VARIANTS } from "../../packages/paper-ui/src/tokens/vocabulary";
+import { ACCENTS, ALIGNS, CONTROL_SHAPES, CONTROL_SIZES, LINE_SIDES, SURFACE_RADII, SURFACE_THEMES, ICON_SIZES, JUSTIFIES, JUSTIFY_ITEMS, SPACES, VARIANTS } from "../../packages/paper-ui/src/tokens/vocabulary";
 import { tokens } from "../../packages/paper-ui/src/tokens";
 import { pageErrors } from "../support/console";
 import { roleDp } from "../support/geometry";
@@ -90,7 +90,7 @@ test("the selects offer every value of their axis, among them the ones the hand 
 
 test("the knobs that props already had now have controls", async ({ page }) => {
   await openPlayground(page, "icon-button", "IconButton");
-  await expect(segment(page, "shape")).toBeVisible();
+  expect(await optionsOf(control(page, "shape"))).toEqual([...CONTROL_SHAPES]);
   await openPlayground(page, "spinner", "Spinner");
   await expect(page.getByRole("textbox", { name: "label", exact: true })).toBeVisible();
   await openPlayground(page, "button", "Button");

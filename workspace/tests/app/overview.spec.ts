@@ -119,7 +119,7 @@ test("[app.playground.overview-boards] moves every cell with the props on its pa
   await open(page);
   await chooseOption(board(page, "Button").getByRole("combobox", { name: "accent" }), "error");
   for (const size of CONTROL_SIZES) await expectStyle(cell(page, "Button", `rest solid ${size}`).getByRole("button"), profile("error", "solid"));
-  await board(page, "Button").getByRole("radiogroup", { name: "shape" }).getByRole("radio", { name: "rounded" }).click();
+  await chooseOption(board(page, "Button").getByRole("combobox", { name: "shape" }), "rounded");
   await expectStyle(cell(page, "Button", "rest solid md").getByRole("button"), { borderTopLeftRadius: tokens.shape.radius.control.md });
   await chooseOption(board(page, "Field").getByRole("combobox", { name: "status" }), "error");
   await expectStyle(cell(page, "Field", "rest hairline md").locator("input").locator("xpath=.."), { borderTopColor: tokens.color.accent.error.ink });
