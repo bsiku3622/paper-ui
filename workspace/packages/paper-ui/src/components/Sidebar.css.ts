@@ -1,8 +1,8 @@
-import { createVar, fallbackVar } from "@vanilla-extract/css";
+import { createVar, fallbackVar, type StyleRule } from "@vanilla-extract/css";
 
 import { controlSizeVars, controlVars } from "../primitives/control/Control.css";
 import { sidebarFace } from "../primitives/paint/recipes.css";
-import { elevationStack, lineRule, tokens, transition, type Breakpoint } from "../tokens";
+import { BREAKPOINTS, elevationStack, lineRule, tokens, transition, type Breakpoint } from "../tokens";
 import { layered } from "../tokens/layers.css";
 
 const { style, styleVariants } = layered("components");
@@ -11,10 +11,13 @@ const below = (breakpoint: Breakpoint) => `not all and (min-width: ${tokens.layo
 const touch = `(pointer: coarse) and (max-width: ${tokens.layout.breakpoint.sm}), (pointer: coarse) and (max-height: ${tokens.layout.breakpoint.sm})`;
 
 const offsetVar = createVar();
+const towardStart = createVar();
 export const sidebarOffsetProperty = offsetVar.slice("var(".length, -")".length);
 const offset = fallbackVar(offsetVar, "0px");
 
 export const sidebarRail = style({
+  vars: { [towardStart]: "translateX(calc(100% * -1))" },
+  selectors: { "&:dir(rtl)": { vars: { [towardStart]: "translateX(100%)" } } },
   position: "sticky",
   insetBlockStart: offset,
   alignSelf: "start",
@@ -30,32 +33,31 @@ export const sidebarRail = style({
 
 export const sidebarWidth = styleVariants(tokens.shape.dimension.width, (inlineSize) => ({ inlineSize }));
 
-export const sidebarDrawer = styleVariants(tokens.layout.breakpoint, (_, breakpoint) => ({
-  "@media": {
-    [below(breakpoint)]: {
-      position: "fixed",
-      insetBlockStart: offset,
-      insetBlockEnd: 0,
-      insetInlineStart: 0,
-      blockSize: "auto",
-      // With `start`, Chrome shrinks a fixed box to its content.
-      alignSelf: "normal",
-      paddingBlockEnd: `max(${tokens.layout.gap.md}, env(safe-area-inset-bottom))`,
-      backgroundColor: sidebarFace,
-      ...elevationStack("modal"),
-      transition: transition("state", "transform"),
-    },
-  },
-}));
+const drawerRules = {
+  position: "fixed",
+  insetBlockStart: offset,
+  insetBlockEnd: 0,
+  insetInlineStart: 0,
+  blockSize: "auto",
+  // With `start`, Chrome shrinks a fixed box to its content.
+  alignSelf: "normal",
+  paddingBlockEnd: `max(${tokens.layout.gap.md}, env(safe-area-inset-bottom))`,
+  backgroundColor: sidebarFace,
+  ...elevationStack("modal"),
+  transition: transition("state", "transform"),
+} as const;
 
-export const sidebarClosed = styleVariants(tokens.layout.breakpoint, (_, breakpoint) => ({
-  "@media": {
-    [below(breakpoint)]: {
-      transform: "translateX(calc(100% * -1))",
-      selectors: { "&:dir(rtl)": { transform: "translateX(100%)" } },
-    },
-  },
-}));
+const closedRules = { transform: towardStart } as const;
+
+export const sidebarDrawer = styleVariants({
+  ...(Object.fromEntries(BREAKPOINTS.map((breakpoint) => [breakpoint, { "@media": { [below(breakpoint)]: drawerRules } }])) as Record<Breakpoint, StyleRule>),
+  always: drawerRules,
+});
+
+export const sidebarClosed = styleVariants({
+  ...(Object.fromEntries(BREAKPOINTS.map((breakpoint) => [breakpoint, { "@media": { [below(breakpoint)]: closedRules } }])) as Record<Breakpoint, StyleRule>),
+  always: closedRules,
+});
 
 export const sidebarScrim = style({
   position: "fixed",

@@ -23,7 +23,7 @@ export type SidebarProps = Omit<HTMLAttributes<HTMLElement>, "className" | "chil
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
-  collapseBelow?: Breakpoint | "never";
+  collapseBelow?: Breakpoint | "never" | "always";
   offset?: string;
   width?: Dimension;
   children?: ReactNode;
@@ -83,7 +83,8 @@ const SidebarRoot = forwardRef<HTMLElement, SidebarProps>(function Sidebar(
   forwardedRef,
 ) {
   const [isOpen, setOpen] = useControllableState<boolean>({ value: open, defaultValue: defaultOpen, onChange: onOpenChange });
-  const drawer = useMediaQuery(collapseBelow === "never" ? null : `not all and (min-width: ${tokens.layout.breakpoint[collapseBelow]})`);
+  const below = useMediaQuery(collapseBelow === "never" || collapseBelow === "always" ? null : `not all and (min-width: ${tokens.layout.breakpoint[collapseBelow]})`);
+  const drawer = collapseBelow === "always" || below;
   const active = drawer && isOpen;
   const nav = useRef<HTMLElement>(null);
   const ref = useMergedRef(forwardedRef, nav);

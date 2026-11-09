@@ -48,7 +48,7 @@ export function Shell({ upload }: { upload: () => void }) {
 breakpoint 이상에서는 레일입니다. `offset` 아래에 sticky로 붙고, 높이는 뷰포트에서 `offset`을 뺀 만큼이며, 넘치면 안에서 스크롤합니다. 레일의 끝 쪽 가장자리에 `border.base` 선 하나가 걸리고 스크롤바는 그 선 안쪽에 앉습니다. 폭은 `width`(Dimension, 기본 `lg`)입니다.
 
 [contract:components.sidebar.drawer]: #
-breakpoint 아래에서는 서랍입니다. 같은 폭으로 화면 시작 쪽에 fixed로 서고(RTL에서는 거울처럼 반대편), 닫혀 있으면 화면 밖에 있으면서 `inert`라 포커스도 읽기 도구도 닿지 않습니다. 열리면 제자리로 들어오고 포커스를 서랍 안에 가두며, 닫으면 포커스를 서랍을 연 요소로 돌려줍니다. 열려 있는 동안 페이지 스크롤은 잠기고, 아래 여백은 기기의 safe area를 지킵니다. 움직임은 Motion의 `state` 역할이라 줄인 모션에서도 이동은 남습니다.
+breakpoint 아래에서는 서랍입니다. `collapseBelow="always"`면 폭과 상관없이 늘 서랍이라, 메뉴 버튼으로만 여는 앱이나 틀 안의 미리보기에 씁니다. 같은 폭으로 화면 시작 쪽에 fixed로 서고(RTL에서는 거울처럼 반대편), 닫혀 있으면 화면 밖에 있으면서 `inert`라 포커스도 읽기 도구도 닿지 않습니다. 열리면 제자리로 들어오고 포커스를 서랍 안에 가두며, 닫으면 포커스를 서랍을 연 요소로 돌려줍니다. 열려 있는 동안 페이지 스크롤은 잠기고, 아래 여백은 기기의 safe area를 지킵니다. 움직임은 Motion의 `state` 역할이라 줄인 모션에서도 이동은 남습니다.
 
 [contract:components.sidebar.dismiss]: #
 서랍은 Escape, 스크림 누르기, `Sidebar.Item` 누르기 어느 것으로든 `onOpenChange(false)`를 부릅니다. 항목을 누르면 닫히므로 경로가 바뀔 때 따로 닫을 필요가 없습니다. 레일일 때는 항목을 눌러도 아무것도 부르지 않습니다. 열기 버튼은 앱의 것입니다 — `aria-expanded`와 `aria-controls`를 직접 이어 주고, Sidebar는 `id`를 받습니다.
@@ -63,6 +63,6 @@ breakpoint 아래에서는 서랍입니다. 같은 폭으로 화면 시작 쪽�
 | --- | --- | --- |
 | `label` | 필수. `<nav>`의 이름 | — |
 | `open` · `defaultOpen` · `onOpenChange` | 서랍의 열림. 제어와 비제어 모두 | 닫힘 |
-| `collapseBelow` | `sm` · `md` · `lg` · `xl` · `never` | `md` |
+| `collapseBelow` | `sm` · `md` · `lg` · `xl` · `never` · `always` | `md` |
 | `offset` | 위 바의 높이(CSS 길이) | 없음(0) |
 | `width` | Dimension | `lg` |

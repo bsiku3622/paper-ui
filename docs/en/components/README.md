@@ -44,7 +44,7 @@ The root is a `<nav>` named by `label`, and it forwards its ref. A `Sidebar.Grou
 
 At or above the breakpoint it is a rail. It sticks below `offset`, its height is the viewport minus `offset`, and it scrolls inside when it overflows. One `border.base` line hangs on its end edge, with the scrollbar inside it. Its width is `width` (a Dimension, `lg` by default).
 
-Below the breakpoint it is a drawer. At the same width it stands fixed at the start side (mirrored in RTL). Closed, it is off screen and `inert`, so neither focus nor assistive technology reaches it. Open, it slides into place and contains focus; closing returns focus to whatever opened it. Page scroll is locked while it is open, and the space at the bottom keeps the device's safe area. Its motion is the Motion `state` role, so the movement remains under reduced motion.
+Below the breakpoint it is a drawer. With `collapseBelow="always"` it is a drawer at every width, for an app that only ever opens it from a menu button or for a framed preview. At the same width it stands fixed at the start side (mirrored in RTL). Closed, it is off screen and `inert`, so neither focus nor assistive technology reaches it. Open, it slides into place and contains focus; closing returns focus to whatever opened it. Page scroll is locked while it is open, and the space at the bottom keeps the device's safe area. Its motion is the Motion `state` role, so the movement remains under reduced motion.
 
 The drawer calls `onOpenChange(false)` on Escape, on a press of the scrim and on a press of a `Sidebar.Item`. Pressing an item closes it, so there is no need to close it separately when the route changes. As a rail, pressing an item calls nothing. The button that opens it belongs to the app: join `aria-expanded` and `aria-controls` yourself; Sidebar accepts an `id`.
 
@@ -56,6 +56,6 @@ On a touch screen (a phone, upright or on its side) items stand at the lg contro
 | --- | --- | --- |
 | `label` | required. The name of the `<nav>` | — |
 | `open` · `defaultOpen` · `onOpenChange` | the drawer's open state, controlled or not | closed |
-| `collapseBelow` | `sm` · `md` · `lg` · `xl` · `never` | `md` |
+| `collapseBelow` | `sm` · `md` · `lg` · `xl` · `never` · `always` | `md` |
 | `offset` | height of the bar above (a CSS length) | none (0) |
 | `width` | Dimension | `lg` |

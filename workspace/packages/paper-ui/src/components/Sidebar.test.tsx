@@ -141,6 +141,14 @@ describe("Sidebar", () => {
     expect(classesOf(document.querySelector("nav")!).length).toBeGreaterThan(0);
   });
 
+  it("[components.sidebar.drawer] is a drawer at every width with collapseBelow always, whatever the media say", () => {
+    drawer = false;
+    const { rerender } = render(<Sidebar label="Main" collapseBelow="always"><Sidebar.Item>하나</Sidebar.Item></Sidebar>);
+    expect(document.querySelector("nav")!.hasAttribute("inert")).toBe(true);
+    rerender(<Sidebar label="Main" collapseBelow="always" open><Sidebar.Item>하나</Sidebar.Item></Sidebar>);
+    expect(document.querySelector("nav")!.hasAttribute("inert")).toBe(false);
+  });
+
   it("[components.sidebar.offset] writes the bar height once, on the nav and the scrim", () => {
     drawer = true;
     render(<Sidebar label="Main" defaultOpen offset="3.5rem"><Sidebar.Item>하나</Sidebar.Item></Sidebar>);
