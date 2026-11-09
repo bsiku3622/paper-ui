@@ -209,6 +209,14 @@ export const segmentPaint = {
     borderColor: tokens.color.border.base,
     "@media": { [FORCED]: { forcedColorAdjust: "none", backgroundColor: SYSTEM_COLORS.buttonFace, borderColor: SYSTEM_COLORS.buttonText } },
   }),
+  underline: style({
+    borderColor: tokens.color.border.base,
+    "@media": { [FORCED]: { forcedColorAdjust: "none", borderColor: SYSTEM_COLORS.buttonText } },
+  }),
+  underlineThumb: style({
+    backgroundColor: tokens.color.ink.primary,
+    "@media": { [FORCED]: { forcedColorAdjust: "none", backgroundColor: SYSTEM_COLORS.highlight } },
+  }),
   outlineItem: style({
     color: tokens.color.ink.secondary,
     borderColor: tokens.color.border.base,

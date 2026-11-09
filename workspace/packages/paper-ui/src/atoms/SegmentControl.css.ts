@@ -51,6 +51,14 @@ export const segmentOutlineItem = style({
     [`${segmentOutline} &:last-of-type`]: { borderStartEndRadius: endCorner, borderEndEndRadius: endCorner },
   },
 });
+export const segmentUnderline = style({ ...lineFrame({ side: "bottom" }), padding: 0, borderRadius: 0, overflow: "visible" });
+export const segmentUnderlineThumb = style({
+  top: "auto",
+  bottom: `calc(${tokens.shape.stroke.border} * -1)`,
+  height: tokens.shape.stroke.emphasis,
+  borderRadius: 0,
+  boxShadow: "none",
+});
 export const segmentCheck = style({ display: "none", flexShrink: 0 });
 globalStyle(`${segmentOutlineItem}${SELECTED} > ${segmentCheck}`, { display: "block" });
 globalStyle(`${segmentOutlineItem}${SELECTED} > svg:not(${segmentCheck})`, { display: "none" });

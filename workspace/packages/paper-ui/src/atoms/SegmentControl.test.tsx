@@ -1,7 +1,9 @@
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { segmentPaint } from "../primitives/paint/recipes.css";
 import { SegmentControl } from "./SegmentControl";
+import { segmentUnderlineThumb } from "./SegmentControl.css";
 
 afterEach(cleanup);
 
@@ -65,6 +67,18 @@ describe("SegmentControl", () => {
     const root = screen.getByRole("radiogroup", { name: "기간" });
     expect(root.querySelectorAll(":scope > span[aria-hidden]").length).toBe(1);
     expect(root.querySelectorAll("svg").length).toBe(0);
+  });
+
+  it("[atoms.segment.underline] keeps the sliding part as a bar under the chosen choice, with no check and no chip face", () => {
+    render(<SegmentControl aria-label="기간" variant="underline" defaultValue="w">{items}</SegmentControl>);
+    const root = screen.getByRole("radiogroup", { name: "기간" });
+    const bars = root.querySelectorAll(":scope > span[aria-hidden]");
+    expect(bars.length).toBe(1);
+    expect(bars[0]!.classList.contains(segmentUnderlineThumb)).toBe(true);
+    expect(bars[0]!.classList.contains(segmentPaint.thumb)).toBe(false);
+    expect(root.classList.contains(segmentPaint.track)).toBe(false);
+    expect(root.querySelectorAll("svg").length).toBe(0);
+    expect(screen.getByRole("radio", { name: "7일" }).getAttribute("aria-checked")).toBe("true");
   });
 
   it("[atoms.segment.radiogroup] disables every item when the group is disabled", () => {

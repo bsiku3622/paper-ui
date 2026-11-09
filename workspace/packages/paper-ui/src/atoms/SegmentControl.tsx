@@ -12,7 +12,7 @@ import { trackInset } from "../primitives/paint/Surface.css";
 import { Pressable } from "../primitives/press/Pressable";
 import { SelectableGroup } from "../primitives/select/SelectableGroup";
 import { stateAttributes, stateSelector, type SegmentVariant } from "../tokens";
-import { segmentCheck, segmentFull, segmentItem, segmentOutline, segmentOutlineItem, segmentRoot, segmentSettled, segmentThumb } from "./SegmentControl.css";
+import { segmentCheck, segmentFull, segmentItem, segmentOutline, segmentOutlineItem, segmentRoot, segmentSettled, segmentThumb, segmentUnderline, segmentUnderlineThumb } from "./SegmentControl.css";
 
 export type SegmentControlProps = Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "defaultValue" | "onChange" | "dir"> & Pick<ControlForm, "size" | "shape"> & {
   dir?: "ltr" | "rtl";
@@ -48,6 +48,7 @@ const SegmentControlRoot = forwardRef<HTMLDivElement, SegmentControlProps>(funct
   // The chip is placed again when the variant changes too: back on the track it mounts anew and has no place until it is measured.
   const settled = useSlidingThumb(root, thumb, SELECTED, `${variant}:${String(selected)}`);
   const outlined = variant === "outline";
+  const underlined = variant === "underline";
   return (
     <SelectableGroup
       ref={setRef}
@@ -58,11 +59,11 @@ const SegmentControlRoot = forwardRef<HTMLDivElement, SegmentControlProps>(funct
       onSelectedValuesChange={([next]: string[]) => { if (next !== undefined) setSelected(next); }}
       currentValue={selected ?? undefined}
       onCurrentValueChange={setSelected}
-      className={joinClass(controlClass({ size, anatomy: "segment", shape }), outlined ? joinClass(segmentPaint.outline, segmentOutline) : joinClass(trackInset, segmentPaint.track), segmentRoot, fullWidth && segmentFull, settled && segmentSettled, className)}
+      className={joinClass(controlClass({ size, anatomy: "segment", shape }), outlined ? joinClass(segmentPaint.outline, segmentOutline) : underlined ? joinClass(segmentPaint.underline, segmentUnderline) : joinClass(trackInset, segmentPaint.track), segmentRoot, fullWidth && segmentFull, settled && segmentSettled, className)}
       {...stateAttributes({ disabled })}
       {...rest}
     >
-      {outlined ? null : <span ref={thumb} aria-hidden className={joinClass(segmentThumb, segmentPaint.thumb)} />}
+      {outlined ? null : <span ref={thumb} aria-hidden className={joinClass(segmentThumb, underlined ? joinClass(segmentUnderlineThumb, segmentPaint.underlineThumb) : segmentPaint.thumb)} />}
       <VariantContext.Provider value={variant}>{children}</VariantContext.Provider>
     </SelectableGroup>
   );

@@ -3,6 +3,10 @@
 Every published version has a `## <version>` heading below, newest first. The recorded API surface (`api/surface.json`)
 moves only with a version that has one: `pnpm api:update` refuses otherwise.
 
+## 0.1.3
+
+- `SegmentControl` takes `variant="underline"`: no surface, one `border.base` line under the group and an `ink.primary` bar that slides under the chosen choice, so hover only changes the text colour. For a row of tabs that changes the list below it.
+
 ## 0.1.2
 
 - Controls take four corners: `shape` is `sharp`, `small`, `rounded` or `pill`. `small` reads a new source, `radius.small` (4 at xs, 6 from sm up), and `sharp` has none. The corners inside a control follow it: SegmentControl's segments, Select's list and options, and Field's clear and reveal buttons.

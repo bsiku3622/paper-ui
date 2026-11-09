@@ -19,7 +19,7 @@ export type FillableVariant = (typeof FILLABLE_VARIANTS)[number];
 export const INPUT_VARIANTS = ["hairline", "ghost"] as const satisfies readonly FillableVariant[];
 export type InputVariant = (typeof INPUT_VARIANTS)[number];
 
-export const SEGMENT_VARIANTS = ["track", "outline"] as const;
+export const SEGMENT_VARIANTS = ["track", "outline", "underline"] as const;
 export type SegmentVariant = (typeof SEGMENT_VARIANTS)[number];
 
 type VariantRecipe = {

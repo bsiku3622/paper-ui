@@ -235,9 +235,9 @@ test("[atoms.segment.radiogroup] keeps its chip over the chosen item when its va
   const preview = page.getByRole("radiogroup", { name: "기간", exact: true });
   const chip = preview.locator(":scope > span[aria-hidden=true]");
   const chosen = preview.getByRole("radio", { name: "7일", exact: true });
-  await item(page, "variant", "outline").click();
+  await chooseOption(control(page, "variant"), "outline");
   await expect(chip).toHaveCount(0);
-  await item(page, "variant", "track").click();
+  await chooseOption(control(page, "variant"), "track");
   await expect(chip).toHaveCount(1);
   await expect(async () => {
     const [a, b] = [await chip.boundingBox(), await chosen.boundingBox()];

@@ -1,3 +1,5 @@
+import { useLayoutEffect, useRef, useState } from "react";
+
 import { Field, Inline, SegmentControl, Select, Stack, Switch, Text } from "@studio-baeks/paper-ui";
 
 import { useSiteLocale } from "../site/locale";
@@ -8,7 +10,14 @@ import { labelOf } from "./registry/schema";
 const OMITTED = "__pui_default__";
 
 export const ControlRow = ({ control, value, defaults, onChange }: { control: Control; value: string | boolean | undefined; defaults: Readonly<Record<string, unknown>>; onChange: (v: string | boolean | undefined) => void }) => {
+  const segment = useRef<HTMLDivElement>(null);
+  const [spills, setSpills] = useState(false);
   const { locale } = useSiteLocale();
+  // An outline segment never shrinks below its words, so a set wider than the column becomes a Select.
+  useLayoutEffect(() => {
+    const root = segment.current;
+    if (root && root.scrollWidth > root.clientWidth) setSpills(true);
+  }, [control, locale]);
   const label = labelOf(control, locale);
   if (control.kind === "bool") {
     return (
@@ -19,11 +28,12 @@ export const ControlRow = ({ control, value, defaults, onChange }: { control: Co
     );
   }
   const resting = control.kind === "enum" ? String(defaults[control.prop] ?? control.rootDefault ?? control.omitted ?? "") : "";
-  if (control.kind === "enum" && control.options.length <= 3 && (control.required || control.options.includes(resting))) {
+  if (!spills && control.kind === "enum" && control.options.length <= 3 && (control.required || control.options.includes(resting))) {
     return (
       <Stack gap="xs">
         <Text variant="label">{label}</Text>
         <SegmentControl
+          ref={segment}
           aria-label={label}
           variant="outline"
           shape="rounded"

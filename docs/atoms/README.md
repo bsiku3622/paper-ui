@@ -14,7 +14,7 @@ Atom은 같은 축 몇 개로 말합니다. 축의 값은 모두 Foundations에�
 | `accent` | primary · info · success · warning · error | Color accent |
 | `variant` | solid · soft · hairline · dashed · ghost · muted | Color [accent × variant](../foundations/color.md#accent--variant) |
 | `variant` (입력) | hairline · ghost, 기본 hairline. Field · Textarea · Select가 같은 축을 씀 | ghost는 선 없음, hairline은 Color `border.base` 경계. 상태의 선은 ghost에서도 남음 |
-| `variant` (고르는 줄) | track · outline, 기본 track. SegmentControl만 받음 | track은 Color `control.track` 홈 위의 `control.thumb` 칸, outline은 입력 틀과 같은 `control.field` 면 · `border.base` 선에 고른 칸의 `control.chosen` 면 |
+| `variant` (고르는 줄) | track · outline · underline, 기본 track. SegmentControl만 받음 | track은 Color `control.track` 홈 위의 `control.thumb` 칸, outline은 입력 틀과 같은 `control.field` 면 · `border.base` 선에 고른 칸의 `control.chosen` 면, underline은 면 없이 `border.base` 선 위의 `ink.primary` 막대 |
 | `status` (입력) | info · success · warning · error, 생략하면 중립. Field · Textarea · Select가 같은 축을 씀 | Color accent `ink` 경계 |
 | `status` (선택 표식) | error만(`ChoiceStatus`), 생략하면 중립. Checkbox · Radio · Switch · Slider가 같은 축을 씀 | Color accent `error.ink` 테 |
 | `fill` | raised · canvas · sunken. Button · IconButton · Badge는 hairline · dashed · ghost · muted에서만 받고 안 주면 투명, Field · Textarea · Select는 안 주면 `control.field` 흰 면 | Color [Surface](../foundations/color.md) 면 — 다크에서 sunken은 canvas와 같은 단계 |
@@ -48,7 +48,7 @@ Atom은 같은 축 몇 개로 말합니다. 축의 값은 모두 Foundations에�
 | Divider | orientation=horizontal/vertical · level=base/strong · ref · native hr props | horizontal / base. `Box as="hr"` + aria-orientation. 선은 border로 긋고 level은 선의 색(`border.base` · `border.strong`), 두께는 border stroke |
 | Link | as · underline(always · hover) · native anchor props | a, `interaction.link` 잉크, 늘 밑줄(`always`), 단독 링크는 hover 때만(`hover`). 라우터의 Link는 `as`로 받음 |
 | Marker | native 속성 · ref | mark. 칠은 `marker.fill`, 글자는 `marker.ink`이고 글자의 크기와 굵기는 둘러싼 글자를 따름 |
-| SegmentControl | value · defaultValue · onValueChange · variant · size · shape · fullWidth · disabled · native div props, SegmentControl.Item은 value · disabled | track / md / pill. `role=radiogroup`이고 높이는 컨트롤 높이. track은 칸이 트랙 안쪽으로 inset xs에 앉고, outline은 칸이 틀 안을 채우며 칸 사이에 같은 선을 그음. 고르지 않은 칸의 글자는 읽어야 할 선택지라 `ink.secondary`, 고른 칸은 `ink.primary`. 글자가 폭을 정하고, fullWidth면 칸이 폭을 같게 나눔 |
+| SegmentControl | value · defaultValue · onValueChange · variant · size · shape · fullWidth · disabled · native div props, SegmentControl.Item은 value · disabled | track / md / pill. `role=radiogroup`이고 높이는 컨트롤 높이. track은 칸이 트랙 안쪽으로 inset xs에 앉고, outline은 칸이 틀 안을 채우며 칸 사이에 같은 선을 그음. underline은 면 없이 묶음 아래 선 위로 고른 칸의 막대가 미끄러짐. 고르지 않은 칸의 글자는 읽어야 할 선택지라 `ink.secondary`, 고른 칸은 `ink.primary`. 글자가 폭을 정하고, fullWidth면 칸이 폭을 같게 나눔 |
 | Slider | status · size · value · defaultValue · min · max · origin · native input props | md, 0 ~ 100. input type=range. 막대는 Switch 트랙과 같은 높이, 손잡이는 지름이 막대 높이인 원(흰 면에 emphasis 테). 끌기와 키보드는 native |
 
 [contract:atoms.select.anatomy]: #
@@ -205,6 +205,9 @@ SegmentControl은 `role=radiogroup`이고 SegmentControl.Item은 `role=radio`입
 
 [contract:atoms.segment.outline]: #
 `variant="outline"`인 SegmentControl은 Field · Select의 틀과 같은 모습으로 섭니다 — `control.field` 흰 면에 `border.base` 선 한 줄, 같은 size Field와 같은 높이와 곡률입니다. 미끄러지는 칸은 없고, 둘째 칸부터 시작 쪽에 같은 선을 그어 칸을 나눕니다. 고른 칸은 틀의 선 안쪽을 `control.chosen` 면으로 채우고 글자 앞에 체크를 둡니다. 체크는 `aria-hidden`이라 칸의 이름은 글자 그대로입니다. 칸이 자기 아이콘을 가져오면 고른 동안에는 그 자리를 체크에 내줍니다. 폼 곁(Props 패널처럼 Select · Field와 한 줄에 놓이는 자리)에 씁니다. 기본은 `track`이고, `shape` 기본값(pill)은 variant와 따로 갑니다.
+
+[contract:atoms.segment.underline]: #
+`variant="underline"`인 SegmentControl은 탭처럼 섭니다. 면이 없고 묶음 아래에 `border.base` 선 한 줄을 그으며, 고른 칸 아래에서 `ink.primary` 막대(`stroke.emphasis`)가 그 선을 덮고 미끄러집니다. 칸에도 면이 없어서 hover는 글자색만 `ink.primary`로 올리고, 고르지 않은 칸은 `ink.secondary`입니다. 체크는 없고 모서리(`shape`)는 그려지지 않습니다. 아래 목록이나 내용을 바꾸는 자리, 곧 페이지 위에 홀로 놓인 줄에 씁니다.
 
 [contract:atoms.slider.native]: #
 Slider는 native `input type=range`입니다. 끌기 · 방향키 · 폼 제출은 브라우저가 맡고, `min` · `max` · `step`은 native 뜻 그대로입니다. FormField의 관계와 오류는 다른 입력과 같은 규칙으로 받습니다.
