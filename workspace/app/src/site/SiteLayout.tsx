@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { Outlet, ScrollRestoration } from "react-router-dom";
 
-import { Box, Link, Text, VisuallyHidden, surfaceClass } from "@studio-baeks/paper-ui";
+import { Box, Divider, Link, Text, VisuallyHidden, surfaceClass } from "@studio-baeks/paper-ui";
 
 import { DocsNav } from "../docs/DocsNav";
 import { joinClass } from "../joinClass";
@@ -45,6 +45,7 @@ export const SiteLayout = () => {
           {sidebar ? (
             <div className={s.sidebarFrame}>
               {sidebar === "docs" ? <DocsNav /> : <PlaygroundNav />}
+              <Divider orientation="vertical" className={s.sidebarRule} />
               <main id="main" tabIndex={-1} className={s.content}>{page}</main>
             </div>
           ) : (

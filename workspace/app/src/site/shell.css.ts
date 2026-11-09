@@ -82,12 +82,14 @@ export const sidebarFrame = style([
   frame,
   {
     display: "grid",
-    gridTemplateColumns: `${tokens.shape.dimension.width.lg} minmax(0, 1fr)`,
-    columnGap: tokens.layout.gap["2xl"],
+    gridTemplateColumns: `${tokens.shape.dimension.width.lg} auto minmax(0, 1fr)`,
+    columnGap: tokens.layout.gap.xl,
     isolation: "isolate",
     "@media": { [narrow]: { gridTemplateColumns: "minmax(0, 1fr)", columnGap: 0, paddingInline: 0 } },
   },
 ]);
+
+export const sidebarRule = style({ "@media": { [narrow]: { display: "none" } } });
 
 const rowInset = tokens.shape.control.inset.button.sm;
 
