@@ -298,7 +298,7 @@ test("at 1440 the sidebars are open rails with no menu button, and the header st
   }
 });
 
-test("at 1440 a sidebar row is sm tall on an sm + xs pitch, starts 24 from the viewport edge, and a group folds from its icon button", async ({ page }) => {
+test("at 1440 a sidebar row is sm tall on an sm + xs pitch, starts md + sm from the viewport edge, and a group folds from its icon button", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   const row = roleDp(tokens.shape.control.height.sm);
   const pitch = row + roleDp(tokens.layout.gap.xs);
@@ -324,4 +324,21 @@ test("at 1440 a sidebar row is sm tall on an sm + xs pitch, starts 24 from the v
     await fold.click();
     await expect(group.getByRole("link")).toHaveCount(open);
   }
+});
+
+test("the group that holds the current page folds and stays folded until a page in it opens again", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/docs/foundations/color");
+  await settled(page);
+  const fold = docsNav(page).getByRole("button", { name: "Foundations" });
+  const current = docsNav(page).locator('[aria-current="page"]');
+  await fold.click();
+  await expect(fold).toHaveAttribute("aria-expanded", "false");
+  await docsNav(page).getByRole("link", { name: "Element" }).click();
+  await expect(current).toHaveText("Element");
+  await expect(fold).toHaveAttribute("aria-expanded", "false");
+  await page.goBack();
+  await expect(current).toHaveText("Color");
+  await expect(fold).toHaveAttribute("aria-expanded", "true");
+  await expect(current).toBeVisible();
 });

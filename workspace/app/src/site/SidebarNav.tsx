@@ -42,15 +42,17 @@ const writeFolded = (list: string, folded: string[]) => {
 
 const useFolded = (list: string, groups: SidebarGroup[], current: string) => {
   const [folded, setFolded] = useState<string[]>(() => readFolded(list));
-  const opening = groups.find((group) => group.label && folded.includes(group.label) && holds(group, current))?.label;
+  const owner = groups.find((group) => group.label && holds(group, current))?.label;
+  // Reopen on navigation only; reading `folded` here would reopen the group the moment it is folded.
   useEffect(() => {
-    if (!opening) return;
+    if (!owner) return;
     setFolded((names) => {
-      const next = names.filter((name) => name !== opening);
+      if (!names.includes(owner)) return names;
+      const next = names.filter((name) => name !== owner);
       writeFolded(list, next);
       return next;
     });
-  }, [list, opening]);
+  }, [list, owner, current]);
   const toggle = useCallback((name: string) => setFolded((names) => {
     const next = names.includes(name) ? names.filter((item) => item !== name) : [...names, name];
     writeFolded(list, next);
