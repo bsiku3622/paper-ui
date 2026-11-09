@@ -123,7 +123,7 @@ const DetailView = ({ entry }: { entry: Entry }) => {
 
   return (
     <Stack gap="xl">
-      <PageHeader group={entry.part === "atoms" ? "Atoms" : `Primitives / ${entry.group}`} name={entry.name} description={inLocale(entry.blurb, locale)} />
+      <PageHeader group={entry.part === "primitives" ? `Primitives / ${entry.group}` : entry.group} name={entry.name} description={inLocale(entry.blurb, locale)} />
 
       <div className={s.detailBody}>
         <Stack gap="xl" className={s.previewColumn}>
@@ -170,7 +170,7 @@ const DetailView = ({ entry }: { entry: Entry }) => {
               <CodeBlock code={code} onChange={editCode} error={codeError} />
             </Stack>
           </Stack>
-          {entry.part === "atoms" ? (
+          {entry.part !== "primitives" ? (
             <>
               <PropsTable entry={entry} />
               <VariantSheet entry={entry} harness={harness} ground={previewBackground} />

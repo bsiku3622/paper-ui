@@ -1,5 +1,5 @@
 {
-  "version": "0.1.3",
+  "version": "0.1.4",
   "entries": {
     ".": {
       "values": [
@@ -36,6 +36,7 @@
         "Select",
         "Selectable",
         "SelectableGroup",
+        "Sidebar",
         "Slider",
         "Spinner",
         "Stack",
@@ -172,6 +173,11 @@
         "SelectableProps",
         "SelectableResult",
         "SelectableState",
+        "SidebarDividerProps",
+        "SidebarFooterProps",
+        "SidebarGroupProps",
+        "SidebarItemProps",
+        "SidebarProps",
         "SliderProps",
         "SpinnerProps",
         "StackProps",

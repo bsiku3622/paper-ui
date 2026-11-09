@@ -12,6 +12,9 @@ const FORCED = "(forced-colors: active)";
 
 export const scrimPaint = style({ background: tokens.color.overlay.scrim });
 
+export const sidebarFace = createVar();
+export const sidebarPaint = style({ vars: { [sidebarFace]: tokens.color.bg.canvas } });
+
 export const fieldPaint = style([stateStyle.field, { color: outlinedControlProfile.ink, borderColor: outlinedControlProfile.border, vars: CONTROL_LINE_ROOM.line }]);
 
 // The hover border's selector is long, so the rule that holds against it needs one as long.

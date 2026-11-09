@@ -80,7 +80,7 @@ describe("the references under an Atom", () => {
 describe("REGISTRY", () => {
   const items = PLAYGROUND_NAV.filter((group) => group.id !== "foundations").flatMap((group) => group.sections.flatMap((section) => section.items));
 
-  it("is the site map's Primitives, Utilities and Atoms one for one, in order", () => {
+  it("is the site map's Primitives, Utilities, Atoms and Components one for one, in order", () => {
     expect(REGISTRY.map((entry) => entry.name)).toEqual(items.map((item) => item.name));
     expect(REGISTRY.map((entry) => entry.slug)).toEqual(items.map((item) => slugOf(item.name)));
   });
@@ -93,7 +93,7 @@ describe("REGISTRY", () => {
     const sections = PLAYGROUND_NAV.filter((group) => group.id !== "foundations").flatMap((group) => group.sections.map((section) => ({ group, section })));
     for (const entry of REGISTRY) {
       const home = sections.find(({ section }) => section.items.some((item) => item.slug === entry.slug))!;
-      expect(entry.group, entry.name).toBe(home.section.label || "Atoms");
+      expect(entry.group, entry.name).toBe(home.section.label || home.group.label);
       expect(entry.part, entry.name).toBe(home.group.id);
     }
   });

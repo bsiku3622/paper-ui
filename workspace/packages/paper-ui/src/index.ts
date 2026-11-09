@@ -61,6 +61,8 @@ export { Spinner, type SpinnerProps } from "./atoms/Spinner";
 export { SegmentControl, type SegmentControlProps, type SegmentControlItemProps } from "./atoms/SegmentControl";
 export { Slider, type SliderProps } from "./atoms/Slider";
 
+export { Sidebar, type SidebarProps, type SidebarItemProps, type SidebarGroupProps, type SidebarDividerProps, type SidebarFooterProps } from "./components/Sidebar";
+
 export { elevation } from "./styles/elevation.css";
 export { presence, loop, reveal, revealAfter } from "./styles/motion.css";
 

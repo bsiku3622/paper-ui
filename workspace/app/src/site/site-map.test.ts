@@ -18,8 +18,8 @@ describe("slugOf", () => {
 describe("PLAYGROUND_NAV", () => {
   const items = PLAYGROUND_NAV.flatMap((group) => group.sections.flatMap((section) => section.items));
 
-  it("runs Foundations, Primitives, Atoms", () => {
-    expect(PLAYGROUND_NAV.map((group) => group.label)).toEqual(["Foundations", "Primitives", "Atoms"]);
+  it("runs Foundations, Primitives, Atoms, Components", () => {
+    expect(PLAYGROUND_NAV.map((group) => group.label)).toEqual(["Foundations", "Primitives", "Atoms", "Components"]);
   });
 
   it("maps every item to one slug", () => {
@@ -28,13 +28,14 @@ describe("PLAYGROUND_NAV", () => {
   });
 
   it("lists the Foundations pages, then the primitive categories and Utilities, then the Atoms of the inventory in order", () => {
-    const [foundations, primitives, atoms] = PLAYGROUND_NAV;
+    const [foundations, primitives, atoms, components] = PLAYGROUND_NAV;
     expect(foundations?.sections.flatMap((section) => section.items.map((item) => item.slug))).toEqual(FOUNDATIONS.map(({ id }) => `foundations/${id}`));
     expect(primitives?.sections.map((section) => section.label)).toEqual([...PRIMITIVE_GROUPS, "Utilities"]);
     for (const group of PRIMITIVE_GROUPS) {
       expect(primitives?.sections.find((section) => section.label === group)?.items.map((item) => item.name)).toEqual([...INVENTORY.primitives[group].components]);
     }
     expect(atoms?.sections.flatMap((section) => section.items.map((item) => item.name))).toEqual([...INVENTORY.atoms]);
+    expect(components?.sections.flatMap((section) => section.items.map((item) => item.name))).toEqual([...INVENTORY.components]);
   });
 
   it("puts every primitive group under the order that lists it, the first order before the second, and Utilities under none", () => {

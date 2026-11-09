@@ -45,6 +45,7 @@ export const PRESET_USES: Record<PresetName, string> = {
 
 export const DIR_NOTES: Record<string, string> = {
   "packages/paper-ui/src/atoms": "Atom 14개 — 한 가지 역할의 컨트롤, 모두 Primitive 위에 섭니다",
+  "packages/paper-ui/src/components": "Component 1개 — Atom을 조합한 화면 부품(Sidebar), 색은 primitives/paint/recipes.css.ts에서 빌립니다",
   "packages/paper-ui/src/atoms/recipes": "Atom이 함께 쓰는 형태와 상태 조각(input-frame · mark) — 색은 없고, 색은 primitives/paint/recipes.css.ts에서 옵니다",
   "packages/paper-ui/src/internal": "패키지 안쪽 도구 — 밖으로 나가지 않습니다",
   "packages/paper-ui/src/internal/aria": "React Aria 어댑터 — `@react-aria/*`를 import하는 유일한 자리",
@@ -108,6 +109,7 @@ export const FILE_NOTES: Record<string, string> = {
   "packages/paper-ui/src/internal/refs.ts": "`mergeRefs` · `useMergedRef`",
   "packages/paper-ui/src/internal/measure.ts": "`measureSpace` · `useMeasuredSpace` — gap 단계를 쓰이는 자리의 픽셀로 잽니다",
   "packages/paper-ui/src/internal/useControllableState.ts": "제어 · 비제어 상태를 한 hook으로",
+  "packages/paper-ui/src/internal/useMediaQuery.ts": "`matchMedia` 한 질의를 읽는 hook — 서버와 첫 화면은 false",
   "packages/paper-ui/src/internal/errors.ts": "`paperError`",
   "packages/paper-ui/src/internal/render-target.ts": "`as`와 disabled의 유일한 투영 `targetProps`",
   "packages/paper-ui/src/internal/locale.ts": "locale과 messages를 읽는 context",

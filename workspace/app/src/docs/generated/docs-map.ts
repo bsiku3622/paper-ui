@@ -35,9 +35,9 @@ const primitiveDocs = (): string => {
 };
 
 const playground = () => {
-  const [foundations, primitives, atoms] = PLAYGROUND_NAV;
+  const [foundations, primitives, atoms, components] = PLAYGROUND_NAV;
   const href = (slug: string | undefined) => `/playground/${slug}`;
-  return `[Overview](/playground) · [Foundations](${href(foundations!.sections[0]!.items[0]!.slug)}) · [Primitives](${href(primitives!.sections[0]!.items[0]!.slug)}) · [Atoms](${href(atoms!.sections[0]!.items[0]!.slug)})`;
+  return `[Overview](/playground) · [Foundations](${href(foundations!.sections[0]!.items[0]!.slug)}) · [Primitives](${href(primitives!.sections[0]!.items[0]!.slug)}) · [Atoms](${href(atoms!.sections[0]!.items[0]!.slug)}) · [Components](${href(components!.sections[0]!.items[0]!.slug)})`;
 };
 
 export const DOCS_MAP_BLOCK: GeneratedBlock = {

@@ -1,4 +1,4 @@
-import { useModalOverlay, useOverlay, useOverlayPosition, type AriaOverlayProps } from "@react-aria/overlays";
+import { useModalOverlay, useOverlay, useOverlayPosition, usePreventScroll, type AriaOverlayProps } from "@react-aria/overlays";
 import { useEnterAnimation, useExitAnimation } from "@react-aria/utils";
 import { useEffect, useLayoutEffect, useState, type CSSProperties, type HTMLAttributes, type RefObject } from "react";
 
@@ -108,4 +108,8 @@ export function useAriaEnter(ref: RefObject<HTMLElement | null>, ready: boolean)
 
 export function useAriaExit(ref: RefObject<HTMLElement | null>, open: boolean): boolean {
   return useExitAnimation(ref, open);
+}
+
+export function usePageScrollLock(locked: boolean): void {
+  usePreventScroll({ isDisabled: !locked });
 }

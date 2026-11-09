@@ -1,0 +1,104 @@
+import { expect, test } from "@playwright/test";
+
+import { COLOR_VALUES_BY_MODE } from "../../packages/paper-ui/src/tokens/colors";
+import { openHarness } from "../support/harness";
+
+const BAR = 56;
+
+test.describe("a wide screen", () => {
+  test.use({ viewport: { width: 1440, height: 900 } });
+
+  test("[components.sidebar.rail] sticks below the bar with the rest of the height, one line on its end edge and the scrollbar inside it", async ({ page }) => {
+    await openHarness(page, "sidebar");
+    const nav = page.getByTestId("sidebar");
+    const before = (await nav.boundingBox())!;
+    expect(before.y).toBe(BAR);
+    expect(before.width).toBe(240);
+    expect(before.height).toBe(900 - BAR);
+    await page.evaluate(() => window.scrollTo(0, 400));
+    await expect.poll(async () => (await nav.boundingBox())!.y).toBe(BAR);
+    const read = await nav.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return { position: style.position, edge: style.borderInlineEndWidth, color: style.borderInlineEndColor, start: style.borderInlineStartWidth, overflow: style.overflowY, inert: element.hasAttribute("inert") };
+    });
+    expect(read).toMatchObject({ position: "sticky", edge: "1px", start: "0px", overflow: "auto", inert: false });
+    expect(read.color).toBe(await page.evaluate((hex) => { const probe = document.createElement("i"); probe.style.color = hex; document.body.append(probe); const resolved = getComputedStyle(probe).color; probe.remove(); return resolved; }, COLOR_VALUES_BY_MODE.light.border.base));
+  });
+
+  test("[components.sidebar.touch] keeps the md control height and the body icon with a mouse", async ({ page }) => {
+    await openHarness(page, "sidebar");
+    const item = page.getByTestId("sidebar-first");
+    expect((await item.boundingBox())!.height).toBe(40);
+    expect(await item.evaluate((element) => getComputedStyle(element.querySelector("svg")!).width)).toBe("18px");
+  });
+
+  test("[components.sidebar.rail] keeps the footer at the bottom of the rail", async ({ page }) => {
+    await openHarness(page, "sidebar");
+    const nav = (await page.getByTestId("sidebar").boundingBox())!;
+    const last = (await page.getByTestId("sidebar-last").boundingBox())!;
+    expect(nav.y + nav.height - (last.y + last.height)).toBeLessThan(24);
+    await expect(page.getByTestId("sidebar-menu")).toHaveAttribute("aria-expanded", "false");
+  });
+});
+
+test.describe("a narrow screen", () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test("[components.sidebar.drawer] waits off screen and inert, then stands in place under the bar with the scrim around it", async ({ page }) => {
+    await openHarness(page, "sidebar");
+    const nav = page.getByTestId("sidebar");
+    const closed = (await nav.boundingBox())!;
+    expect(closed.x + closed.width).toBeLessThanOrEqual(0);
+    await expect(nav).toHaveAttribute("inert", "");
+
+    await page.getByTestId("sidebar-menu").click();
+    await expect(nav).not.toHaveAttribute("inert", "");
+    await expect.poll(async () => (await nav.boundingBox())!.x).toBe(0);
+    const open = (await nav.boundingBox())!;
+    expect(open.y).toBe(BAR);
+    expect(open.height).toBe(844 - BAR);
+    expect(open.width).toBe(240);
+    expect(await nav.evaluate((element) => getComputedStyle(element).position)).toBe("fixed");
+
+    const scrim = await page.evaluate(() => {
+      const element = document.elementFromPoint(380, 400)!;
+      const style = getComputedStyle(element);
+      return { tag: element.tagName, top: element.getBoundingClientRect().top, background: style.backgroundColor, position: style.position };
+    });
+    expect(scrim).toMatchObject({ tag: "DIV", top: BAR, position: "fixed" });
+    expect(scrim.background).not.toBe("rgba(0, 0, 0, 0)");
+    expect(await page.evaluate(() => getComputedStyle(document.documentElement).overflow)).toBe("hidden");
+  });
+
+  test("[components.sidebar.dismiss] closes on the scrim, on Escape and on an item, and gives focus back to the menu button", async ({ page }) => {
+    await openHarness(page, "sidebar");
+    const nav = page.getByTestId("sidebar");
+    const menu = page.getByTestId("sidebar-menu");
+    for (const close of [() => page.mouse.click(380, 400), () => page.keyboard.press("Escape"), () => page.getByTestId("sidebar-first").click()]) {
+      await menu.click();
+      await expect(nav).not.toHaveAttribute("inert", "");
+      await close();
+      await expect(nav).toHaveAttribute("inert", "");
+      await expect(menu).toHaveAttribute("aria-expanded", "false");
+    }
+    await menu.focus();
+    await page.keyboard.press("Enter");
+    await expect(nav).not.toHaveAttribute("inert", "");
+    expect(await nav.evaluate((element) => element.contains(document.activeElement))).toBe(true);
+    await page.keyboard.press("Escape");
+    await expect(menu).toBeFocused();
+  });
+});
+
+test.describe("a phone", () => {
+  test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+
+  test("[components.sidebar.touch] stands its items at the lg control height with the icon a step up and the text unchanged", async ({ page }) => {
+    await openHarness(page, "sidebar");
+    await page.getByTestId("sidebar-menu").click();
+    const item = page.getByTestId("sidebar-first");
+    await expect.poll(async () => (await item.boundingBox())?.height).toBe(44);
+    expect(await item.evaluate((element) => getComputedStyle(element.querySelector("svg")!).width)).toBe("20px");
+    expect(await item.evaluate((element) => getComputedStyle(element.querySelector("span")!).fontSize)).toBe("14px");
+  });
+});

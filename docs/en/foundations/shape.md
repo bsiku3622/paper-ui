@@ -129,7 +129,7 @@ The minimum size you can press is `target.min`, 24px (CSS px). For a mark whose 
 
 The Atoms with a hit area are Checkbox · Radio · Switch and the clear and show buttons of Field. An invisible `::before` extends beyond the mark and paints no color. The icon inside a Field's button is drawn at `control.icon` as it is, and `::before` widens on all sides by `target.action` to make a 24px square. Two buttons side by side have `control.gap` 8 between them, so they do not intrude on each other's hit area. Checkbox · Radio widen on all sides by `target.selection`, and Switch widens above and below the track by `target.switchBlock`, with the horizontal unchanged since the track width is already 24px or more. `::before` is placed from the padding box, so on a box that has room for a line (error · higher contrast · forced colors) it starts that one line farther out, and on a resting mark with no line room it starts at the edge of the box.
 
-We do not grow targets further on a coarse pointer — in a dense list, overlapping hit areas send a tap to the wrong place, and hit areas per row are decided by the app.
+We do not grow targets further on a coarse pointer — in a dense list, overlapping hit areas send a tap to the wrong place, and hit areas per row are decided by the app. The one exception is a Component that stacks its own rows so they cannot overlap: the items of the [Sidebar](../components/README.md#sidebar) take the lg height on a touch screen.
 
 ## Recipe — component anatomy
 

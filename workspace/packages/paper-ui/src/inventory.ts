@@ -22,7 +22,8 @@ export const INVENTORY = {
     Layout: { components: ["Stack", "Inline", "Grid"], hooks: [] },
   },
   atoms: ["Button", "IconButton", "Field", "Textarea", "Select", "Checkbox", "Switch", "Radio", "Label", "Badge", "Spinner", "Divider", "Link", "Marker", "SegmentControl", "Slider"],
-  anatomy: { Select: ["Option", "Group"], SegmentControl: ["Item"] },
+  components: ["Sidebar"],
+  anatomy: { Select: ["Option", "Group"], SegmentControl: ["Item"], Sidebar: ["Item", "Group", "Divider", "Footer"] },
   utilities: {
     Composition: ["mergeProps", "mergeRefs", "composeEventHandlers"],
     Theme: ["PaperProvider", "useTheme", "useResolvedTheme"],
@@ -43,6 +44,6 @@ export const INVENTORY = {
   polymorphic: [
     "Box", "Surface", "Paint", "Control", "Stack", "Inline", "Grid", "Text", "VisuallyHidden",
     "Pressable", "Selectable", "SelectableGroup", "SelectableGroup.Item", "Floating.Trigger", "Floating.Content", "Floating.Close", "Draggable", "Draggable.Handle", "Droppable", "RovingFocus", "RovingFocus.Item",
-    "Button", "IconButton", "Link",
+    "Button", "IconButton", "Link", "Sidebar.Item",
   ],
 } as const;

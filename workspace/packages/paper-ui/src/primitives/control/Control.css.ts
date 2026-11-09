@@ -14,24 +14,26 @@ const areaBlock = createVar();
 const badgeHeight = createVar();
 const badgeInset = createVar();
 
-export const controlVars = { inputInset: createVar(), inputLine: createVar(), valueEnd: createVar(), mark: createVar(), corner };
+export const controlVars = { inputInset: createVar(), inputLine: createVar(), valueEnd: createVar(), mark: createVar(), corner, buttonInset };
 
-export const controlSize = styleVariants(Object.fromEntries(CONTROL_SIZES.map((size) => [size, {
-  vars: {
-    [height]: tokens.shape.control.height[size],
-    [corner]: tokens.shape.radius.control[size],
-    [smallCorner]: tokens.shape.radius.small[size],
-    [buttonInset]: CONTROL.inset.button[size],
-    [areaBlock]: CONTROL.area.paddingBlock[size],
-    [controlVars.inputInset]: CONTROL.inset.input[size],
-    [controlVars.inputLine]: CONTROL.inputLine[size],
-    [controlVars.valueEnd]: CONTROL.select.paddingEnd[size],
-    [controlVars.mark]: tokens.shape.selection.size[size],
-    [badgeHeight]: SHAPE_RECIPES.badge.height[size],
-    [badgeInset]: SHAPE_RECIPES.badge.inset[size],
-    [iconSizeVar]: tokens.shape.control.icon[size],
-  },
-}])) as Record<ControlSize, { vars: Record<string, string> }>);
+const sizeVars = (size: ControlSize): Record<string, string> => ({
+  [height]: tokens.shape.control.height[size],
+  [corner]: tokens.shape.radius.control[size],
+  [smallCorner]: tokens.shape.radius.small[size],
+  [buttonInset]: CONTROL.inset.button[size],
+  [areaBlock]: CONTROL.area.paddingBlock[size],
+  [controlVars.inputInset]: CONTROL.inset.input[size],
+  [controlVars.inputLine]: CONTROL.inputLine[size],
+  [controlVars.valueEnd]: CONTROL.select.paddingEnd[size],
+  [controlVars.mark]: tokens.shape.selection.size[size],
+  [badgeHeight]: SHAPE_RECIPES.badge.height[size],
+  [badgeInset]: SHAPE_RECIPES.badge.inset[size],
+  [iconSizeVar]: tokens.shape.control.icon[size],
+});
+
+export const controlSizeVars = Object.fromEntries(CONTROL_SIZES.map((size) => [size, sizeVars(size)])) as Record<ControlSize, Record<string, string>>;
+
+export const controlSize = styleVariants(Object.fromEntries(CONTROL_SIZES.map((size) => [size, { vars: controlSizeVars[size] }])) as Record<ControlSize, { vars: Record<string, string> }>);
 
 export const controlIconSize = styleVariants(Object.fromEntries(ICON_SIZES.map((size) => [size, {
   vars: { [iconSizeVar]: tokens.shape.icon.size[size] },

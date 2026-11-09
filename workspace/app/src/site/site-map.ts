@@ -15,7 +15,7 @@ export const slugOf = (name: string): string => name.replace(/([a-z0-9])([A-Z])/
 
 export type PlaygroundItem = { name: string; slug: string };
 export type PlaygroundSection = { label: string; items: PlaygroundItem[]; order?: PrimitiveOrder };
-export type PlaygroundGroup = { id: "foundations" | "primitives" | "atoms"; label: string; sections: PlaygroundSection[] };
+export type PlaygroundGroup = { id: "foundations" | "primitives" | "atoms" | "components"; label: string; sections: PlaygroundSection[] };
 
 const items = (names: readonly string[]): PlaygroundItem[] => names.map((name) => ({ name, slug: slugOf(name) }));
 
@@ -36,4 +36,5 @@ export const PLAYGROUND_NAV: readonly PlaygroundGroup[] = [
     ],
   },
   { id: "atoms", label: "Atoms", sections: [{ label: "", items: items(INVENTORY.atoms) }] },
+  { id: "components", label: "Components", sections: [{ label: "", items: items(INVENTORY.components) }] },
 ];

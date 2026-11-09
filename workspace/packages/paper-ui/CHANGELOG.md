@@ -3,6 +3,11 @@
 Every published version has a `## <version>` heading below, newest first. The recorded API surface (`api/surface.json`)
 moves only with a version that has one: `pnpm api:update` refuses otherwise.
 
+## 0.1.4
+
+- A new layer, Components, after Atoms: the pieces that only mean something as a set of Atoms. `INVENTORY.components` lists `Sidebar`.
+- `Sidebar`, with `Sidebar.Item`, `Sidebar.Group`, `Sidebar.Divider` and `Sidebar.Footer`: a `<nav>` that is a sticky rail at or above `collapseBelow` and a drawer below it. The drawer is `inert` while closed; open, it contains focus, closes on Escape, on its scrim and on a pressed item, returns focus to what opened it and locks the page scroll. `offset` is the height of the bar above, read by the rail, the drawer and the scrim as one variable. On a touch screen its items stand at the `lg` control height with the icon a step up.
+
 ## 0.1.3
 
 - `SegmentControl` takes `variant="underline"`: no surface, one `border.base` line under the group and an `ink.primary` bar that slides under the chosen choice, so hover only changes the text colour. For a row of tabs that changes the list below it.

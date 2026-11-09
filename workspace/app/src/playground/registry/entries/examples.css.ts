@@ -15,3 +15,7 @@ globalStyle(`${roving}[data-orientation="vertical"]`, { flexDirection: "column",
 export const portalNote = style({ position: "fixed", insetInlineEnd: tokens.layout.gap.lg, insetBlockEnd: tokens.layout.gap.lg });
 export const narrow = style({ width: "12rem" });
 export const wide = style({ width: "18rem" });
+export const sidebarShell = style({ display: "grid", gridTemplateColumns: "auto minmax(0, 1fr)", gridTemplateRows: "3.5rem minmax(0, 1fr)", width: "100%", minWidth: 320, height: "22rem", overflow: "hidden", contain: "layout", ...lineRule(), borderRadius: tokens.shape.radius.surface.md, background: tokens.color.bg.canvas });
+export const sidebarBar = style({ gridColumn: "1 / -1", display: "flex", alignItems: "center", gap: tokens.layout.gap.sm, paddingInline: tokens.layout.gap.md, ...lineRule({ side: "bottom" }) });
+export const sidebarFit = style({ maxBlockSize: "100%" });
+export const sidebarPage = style({ padding: tokens.layout.gap.lg, overflow: "auto" });
