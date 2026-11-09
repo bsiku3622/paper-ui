@@ -16,13 +16,13 @@ const WORDS = {
   en: { home: "Paper UI home", nav: "Main menu" },
 } as const;
 
-export const SiteHeader = () => {
+export const SiteHeader = ({ ruled = false }: { ruled?: boolean }) => {
   const { pathname } = useLocation();
   const { locale } = useSiteLocale();
   const words = WORDS[locale];
   const active = SITE_NAV.find((entry) => isActive(pathname, entry.to))?.to;
   return (
-    <Surface as="header" fill="canvas" elevation="sticky" top="none" className={s.header}>
+    <Surface as="header" fill="canvas" border={ruled ? "bottom" : undefined} elevation="sticky" top="none" className={s.header}>
       <Box className={s.headerInner}>
         <Inline gap="md" className={s.brand}>
           <Link as={RouterLink} to="/" underline="hover" className={s.navLink.plain} aria-label={words.home}>
