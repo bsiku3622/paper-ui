@@ -49,7 +49,7 @@ Atom은 같은 축 몇 개로 말합니다. 축의 값은 모두 Foundations에�
 | Link | as · underline(always · hover) · native anchor props | a, `interaction.link` 잉크, 늘 밑줄(`always`), 단독 링크는 hover 때만(`hover`). 라우터의 Link는 `as`로 받음 |
 | Marker | native 속성 · ref | mark. 칠은 `marker.fill`, 글자는 `marker.ink`이고 글자의 크기와 굵기는 둘러싼 글자를 따름 |
 | SegmentControl | value · defaultValue · onValueChange · variant · size · shape · fullWidth · disabled · native div props, SegmentControl.Item은 value · disabled | track / md / pill. `role=radiogroup`이고 높이는 컨트롤 높이. track은 칸이 트랙 안쪽으로 inset xs에 앉고, outline은 칸이 틀 안을 채우며 칸 사이에 같은 선을 그음. 고르지 않은 칸의 글자는 읽어야 할 선택지라 `ink.secondary`, 고른 칸은 `ink.primary`. 글자가 폭을 정하고, fullWidth면 칸이 폭을 같게 나눔 |
-| Slider | status · size · value · defaultValue · min · max · native input props | md, 0 ~ 100. input type=range. 막대는 Switch 트랙과 같은 높이, 손잡이는 지름이 막대 높이인 원(흰 면에 emphasis 테). 끌기와 키보드는 native |
+| Slider | status · size · value · defaultValue · min · max · origin · native input props | md, 0 ~ 100. input type=range. 막대는 Switch 트랙과 같은 높이, 손잡이는 지름이 막대 높이인 원(흰 면에 emphasis 테). 끌기와 키보드는 native |
 
 [contract:atoms.select.anatomy]: #
 Select.Option과 Select.Group은 Select의 anatomy라 따로 세지 않습니다. 이 둘은 `Select.Option` · `Select.Group` 하나의 경로로만 쓰고, 따로 export하지 않습니다. SegmentControl.Item도 같습니다. 각 Atom의 치수가 어디서 나오는지는 [Shape](../foundations/shape.md#recipe--컴포넌트-anatomy)의 recipe 표에 있습니다.
@@ -211,6 +211,9 @@ Slider는 native `input type=range`입니다. 끌기 · 방향키 · 폼 제출�
 
 [contract:atoms.slider.fill]: #
 채워진 부분은 값이 선 자리까지입니다. 값이 없으면 native range와 같은 가운데에서 시작하고, 범위를 벗어난 값은 막대 안에 머뭅니다.
+
+[contract:atoms.slider.origin]: #
+`origin`을 주면 채움이 그 값의 자리에서 손잡이까지 이어지고, 손잡이가 어느 쪽에 있든 그 사이만 칠합니다. -100 ~ 100처럼 0이 "바꾸지 않음"인 값은 `origin={0}`으로 가운데에서 채웁니다. 주지 않으면 채움은 `min`에서 시작합니다.
 
 [contract:atoms.checkbox.indeterminate]: #
 Checkbox의 `indeterminate`는 속성이 아니라 DOM 프로퍼티라 layout effect가 input에 직접 세웁니다. 넘어온 ref는 그대로 두므로 값이 바뀌어도 callback ref는 다시 불리지 않습니다.

@@ -41,7 +41,7 @@ Atoms speak with the same few axes. Every value of an axis comes from Foundation
 | Link | as · underline (always · hover) · native anchor props | a, `interaction.link` ink, always underlined (`always`); a standalone link only on hover (`hover`). A router's Link is received through `as` |
 | Marker | native attributes · ref | mark. The fill is `marker.fill` and the text is `marker.ink`, and the size and weight of the text follow the surrounding text |
 | SegmentControl | value · defaultValue · onValueChange · variant · size · shape · fullWidth · disabled · native div props; SegmentControl.Item takes value · disabled | track / md / pill. `role=radiogroup` and the height is the control height. In track, segments sit inside the track at inset xs; in outline, segments fill the frame and draw the same line between segments. The text of an unchosen segment is `ink.secondary` because it is a choice to be read, and the chosen segment is `ink.primary`. The text decides the width, and with fullWidth the segments share the width equally |
-| Slider | status · size · value · defaultValue · min · max · native input props | md, 0 to 100. input type=range. The bar has the same height as the Switch track, and the knob is a circle whose diameter is the bar height (a white surface with an emphasis rim). Dragging and keyboard are native |
+| Slider | status · size · value · defaultValue · min · max · origin · native input props | md, 0 to 100. input type=range. The bar has the same height as the Switch track, and the knob is a circle whose diameter is the bar height (a white surface with an emphasis rim). Dragging and keyboard are native |
 
 Select.Option and Select.Group are the anatomy of Select, so they are not counted separately. They are used only through the single path `Select.Option` · `Select.Group` and are not exported separately. SegmentControl.Item is the same. Where each Atom's dimensions come from is in the recipe table of [Shape](../foundations/shape.md#recipe--component-anatomy).
 
@@ -160,6 +160,8 @@ A SegmentControl with `variant="outline"` stands in the same look as the frame o
 Slider is a native `input type=range`. Dragging, arrow keys and form submission are handled by the browser, and `min` · `max` · `step` have their native meaning. It receives FormField's relations and errors by the same rules as other inputs.
 
 The filled part extends to where the value stands. With no value it starts from the center, like a native range, and a value out of range stays inside the bar.
+
+With `origin`, the fill runs from that value's place to the thumb and paints only what lies between, on whichever side the thumb stands. A value whose 0 means "unchanged", such as -100 to 100, fills from the middle with `origin={0}`. Without it the fill starts at `min`.
 
 Checkbox's `indeterminate` is a DOM property, not an attribute, so a layout effect sets it on the input directly. The ref passed in is left as it is, so the callback ref is not called again when the value changes.
 

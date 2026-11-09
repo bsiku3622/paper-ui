@@ -3,6 +3,10 @@
 Every published version has a `## <version>` heading below, newest first. The recorded API surface (`api/surface.json`)
 moves only with a version that has one: `pnpm api:update` refuses otherwise.
 
+## 0.1.1
+
+- `Slider` takes `origin`: the fill runs from that value to the thumb, so a range whose 0 means "unchanged" (-100 to 100) fills from the middle.
+
 ## 0.1.0
 
 First release. Nothing before it was published: the earlier commits on `origin/main` that also carried the version `0.1.0` were never released, and their token paths and variables promise nothing. The bump gate measures from this release.

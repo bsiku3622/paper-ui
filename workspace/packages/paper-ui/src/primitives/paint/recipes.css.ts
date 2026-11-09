@@ -225,9 +225,10 @@ export const segmentPaint = {
   }),
 };
 
-export const sliderVars = { share: createVar(), thumb: createVar() };
+export const sliderVars = { share: createVar(), thumb: createVar(), origin: createVar() };
 // createVar returns the var() reference, and the inline style that sets it is keyed by the property inside it.
 export const sliderShareProperty = sliderVars.share.slice("var(".length, -")".length);
+export const sliderOriginProperty = sliderVars.origin.slice("var(".length, -")".length);
 const sliderEnd = `calc(${sliderVars.thumb} / 2 + (100% - ${sliderVars.thumb}) * ${sliderVars.share})`;
 const sliderFill = (fill: string, track: string, side: string) => `linear-gradient(to ${side}, ${fill} ${sliderEnd}, ${track} ${sliderEnd})`;
 const sliderThumbPaint = { backgroundColor: tokens.color.accent.primary.wash, borderColor: tokens.color.accent.primary.solid };
@@ -249,6 +250,23 @@ export const sliderPaint = style({
         "&::-webkit-slider-thumb": sliderForcedThumb,
         "&::-moz-range-thumb": sliderForcedThumb,
       },
+    },
+  },
+});
+
+// With an origin the fill spans from the origin to the thumb, on whichever side the thumb stands.
+const sliderAt = (share: string) => `calc(${sliderVars.thumb} / 2 + (100% - ${sliderVars.thumb}) * ${share})`;
+const sliderFrom = sliderAt(`min(${sliderVars.share}, ${sliderVars.origin})`);
+const sliderTo = sliderAt(`max(${sliderVars.share}, ${sliderVars.origin})`);
+const sliderSpan = (fill: string, track: string, side: string) =>
+  `linear-gradient(to ${side}, ${track} ${sliderFrom}, ${fill} ${sliderFrom}, ${fill} ${sliderTo}, ${track} ${sliderTo})`;
+export const sliderOriginPaint = style({
+  backgroundImage: sliderSpan(tokens.color.accent.primary.solid, tokens.color.control.track, "right"),
+  selectors: { "&:dir(rtl)": { backgroundImage: sliderSpan(tokens.color.accent.primary.solid, tokens.color.control.track, "left") } },
+  "@media": {
+    [FORCED]: {
+      backgroundImage: sliderSpan(SYSTEM_COLORS.highlight, SYSTEM_COLORS.buttonFace, "right"),
+      selectors: { "&:dir(rtl)": { backgroundImage: sliderSpan(SYSTEM_COLORS.highlight, SYSTEM_COLORS.buttonFace, "left") } },
     },
   },
 });

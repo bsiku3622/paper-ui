@@ -1,7 +1,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { sliderShareProperty } from "../primitives/paint/recipes.css";
+import { sliderOriginPaint, sliderOriginProperty, sliderShareProperty } from "../primitives/paint/recipes.css";
 import { FormField } from "../primitives/field/FormField";
 import { Slider } from "./Slider";
 
@@ -10,6 +10,17 @@ afterEach(cleanup);
 const share = (input: HTMLElement) => input.style.getPropertyValue(sliderShareProperty);
 
 describe("Slider", () => {
+  it("[atoms.slider.origin] with an origin the fill spans from the origin's place to the value, and without one it starts at min", () => {
+    const { rerender } = render(<Slider aria-label="밝기" min={-100} max={100} value={-40} origin={0} onChange={() => {}} />);
+    const input = screen.getByRole("slider");
+    expect(input.style.getPropertyValue(sliderOriginProperty)).toBe("0.5");
+    expect(share(input)).toBe("0.3");
+    expect(input.className.split(" ")).toContain(sliderOriginPaint);
+    rerender(<Slider aria-label="밝기" min={-100} max={100} value={-40} onChange={() => {}} />);
+    expect(input.style.getPropertyValue(sliderOriginProperty)).toBe("");
+    expect(input.className.split(" ")).not.toContain(sliderOriginPaint);
+  });
+
   it("[atoms.slider.native] is the native range: the role, the bounds and the value are the browser's", () => {
     render(<Slider aria-label="예산" min={0} max={200} step={10} defaultValue={50} />);
     const input = screen.getByRole("slider", { name: "예산" }) as HTMLInputElement;
