@@ -2,7 +2,7 @@ import { DOCS } from "virtual:paper-docs";
 
 import { useSiteLocale, type SiteLocale } from "../site/locale";
 import { DOC_GROUPS } from "../site/site-map";
-import { SidebarNav, type SidebarGroup } from "../site/SidebarNav";
+import { SidebarNav, type SidebarState, type SidebarGroup } from "../site/SidebarNav";
 import { docPath } from "./links";
 
 const groupsIn = (locale: SiteLocale): SidebarGroup[] =>
@@ -14,7 +14,7 @@ const groupsIn = (locale: SiteLocale): SidebarGroup[] =>
 const GROUPS: Record<SiteLocale, SidebarGroup[]> = { ko: groupsIn("ko"), en: groupsIn("en") };
 const LABEL = { ko: "문서 목차", en: "Contents" } as const;
 
-export const DocsNav = () => {
+export const DocsNav = ({ open, onOpenChange }: SidebarState) => {
   const { locale } = useSiteLocale();
-  return <SidebarNav label={LABEL[locale]} groups={GROUPS[locale]} />;
+  return <SidebarNav label={LABEL[locale]} groups={GROUPS[locale]} open={open} onOpenChange={onOpenChange} />;
 };

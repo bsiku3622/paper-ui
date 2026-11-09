@@ -1,22 +1,24 @@
 import { Link as RouterLink, useLocation } from "react-router-dom";
 
-import { Box, Inline, Link, Surface, Text } from "@studio-baeks/paper-ui";
+import { Box, IconButton, Inline, Link, Surface, Text } from "@studio-baeks/paper-ui";
 
+import { MenuIcon } from "../compositions/icons";
 import { LocaleToggle } from "../compositions/LocaleToggle";
 import { ThemeToggle } from "../compositions/ThemeToggle";
 import { useSiteLocale } from "./locale";
 import { Logo } from "./Logo";
+import { SIDEBAR_ID } from "./SidebarNav";
 import { SITE_NAV } from "./site-map";
 import * as s from "./shell.css";
 
 const isActive = (pathname: string, to: string) => (to === "/" ? pathname === "/" : pathname.startsWith(to));
 
 const WORDS = {
-  ko: { home: "Paper UI 홈", nav: "주요 메뉴" },
-  en: { home: "Paper UI home", nav: "Main menu" },
+  ko: { home: "Paper UI 홈", nav: "주요 메뉴", open: "목차 열기", close: "목차 닫기" },
+  en: { home: "Paper UI home", nav: "Main menu", open: "Open contents", close: "Close contents" },
 } as const;
 
-export const SiteHeader = ({ ruled = false }: { ruled?: boolean }) => {
+export const SiteHeader = ({ ruled = false, menu }: { ruled?: boolean; menu?: { open: boolean; onToggle: () => void } }) => {
   const { pathname } = useLocation();
   const { locale } = useSiteLocale();
   const words = WORDS[locale];
@@ -25,6 +27,9 @@ export const SiteHeader = ({ ruled = false }: { ruled?: boolean }) => {
     <Surface as="header" fill="canvas" border={ruled ? "bottom" : undefined} elevation="sticky" top="none" className={s.header}>
       <Box className={s.headerInner}>
         <Inline gap="md" className={s.brand}>
+          {menu ? (
+            <IconButton variant="ghost" shape="rounded" className={s.menuButton} aria-label={menu.open ? words.close : words.open} aria-expanded={menu.open} aria-controls={SIDEBAR_ID} onClick={menu.onToggle}><MenuIcon /></IconButton>
+          ) : null}
           <Link as={RouterLink} to="/" underline="hover" className={s.navLink.plain} aria-label={words.home}>
             <Logo height={24} />
           </Link>

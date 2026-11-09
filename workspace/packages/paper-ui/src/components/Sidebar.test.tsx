@@ -70,6 +70,36 @@ describe("Sidebar", () => {
     expect(screen.queryByRole("group")).toBeNull();
   });
 
+  it("[components.sidebar.fold] makes the title of a collapsible group a button that folds its items out of the tree and the tab order", () => {
+    render(<Sidebar label="Main"><Sidebar.Group collapsible title="프린터"><Sidebar.Item as="a" href="/">대시보드</Sidebar.Item></Sidebar.Group></Sidebar>);
+    const button = screen.getByRole("button", { name: "프린터" });
+    expect(button.getAttribute("aria-expanded")).toBe("true");
+    const list = document.getElementById(button.getAttribute("aria-controls")!)!;
+    expect(list.contains(screen.getByRole("link", { name: "대시보드" }))).toBe(true);
+    expect(screen.getByRole("group", { name: "프린터" })).toBeTruthy();
+    fireEvent.click(button);
+    expect(button.getAttribute("aria-expanded")).toBe("false");
+    expect(list.hasAttribute("hidden")).toBe(true);
+    expect(screen.queryByRole("link", { name: "대시보드" })).toBeNull();
+    fireEvent.click(button);
+    expect(screen.getByRole("link", { name: "대시보드" })).toBeTruthy();
+  });
+
+  it("[components.sidebar.fold] takes open as a controlled value and defaultOpen=false as a folded start", () => {
+    const onOpenChange = vi.fn();
+    const { rerender } = render(<Sidebar label="Main"><Sidebar.Group collapsible title="프린터" open={false} onOpenChange={onOpenChange}><Sidebar.Item>하나</Sidebar.Item></Sidebar.Group></Sidebar>);
+    const button = screen.getByRole("button", { name: "프린터" });
+    fireEvent.click(button);
+    expect(onOpenChange).toHaveBeenLastCalledWith(true);
+    expect(button.getAttribute("aria-expanded")).toBe("false");
+    rerender(<Sidebar label="Main"><Sidebar.Group collapsible title="프린터" open onOpenChange={onOpenChange}><Sidebar.Item>하나</Sidebar.Item></Sidebar.Group></Sidebar>);
+    expect(button.getAttribute("aria-expanded")).toBe("true");
+    cleanup();
+    render(<Sidebar label="Main"><Sidebar.Group collapsible title="프린터" defaultOpen={false}><Sidebar.Item>하나</Sidebar.Item></Sidebar.Group></Sidebar>);
+    expect(screen.getByRole("button", { name: "프린터" }).getAttribute("aria-expanded")).toBe("false");
+    expect(screen.queryByRole("button", { name: "하나" })).toBeNull();
+  });
+
   it("[components.sidebar.rail] stays reachable and takes no part in the open state while the page is wide", () => {
     render(<Shell />);
     const nav = screen.getByRole("navigation", { name: "Main" });

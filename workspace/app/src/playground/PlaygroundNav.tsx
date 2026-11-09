@@ -1,6 +1,6 @@
 import { PLAYGROUND_NAV, type PlaygroundGroup, type PlaygroundSection } from "../site/site-map";
 import { useWords } from "../site/locale";
-import { SidebarNav, type SidebarBlock, type SidebarGroup } from "../site/SidebarNav";
+import { SidebarNav, type SidebarState, type SidebarBlock, type SidebarGroup } from "../site/SidebarNav";
 
 const linksOf = (section: PlaygroundSection) => section.items.map(({ name, slug }) => ({ label: name, to: `/playground/${slug}` }));
 
@@ -22,4 +22,4 @@ const GROUPS: SidebarGroup[] = [
 
 const NAV_LABEL = { ko: "플레이그라운드 목차", en: "Playground contents" };
 
-export const PlaygroundNav = () => <SidebarNav label={useWords(NAV_LABEL)} groups={GROUPS} />;
+export const PlaygroundNav = ({ open, onOpenChange }: SidebarState) => <SidebarNav label={useWords(NAV_LABEL)} groups={GROUPS} open={open} onOpenChange={onOpenChange} />;

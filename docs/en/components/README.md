@@ -42,6 +42,8 @@ export function Shell({ upload }: { upload: () => void }) {
 
 The root is a `<nav>` named by `label`, and it forwards its ref. A `Sidebar.Group` with a title is a `role="group"` named by that title; without a title it is only a wrapper that stacks its items and has no role.
 
+A `Sidebar.Group` with `collapsible` makes its title a button that folds it. The title is required, and its absence is an error in development. The button is joined to the item list by `aria-expanded` and `aria-controls`, and the arrow at its end turns when the group folds (it turns under reduced motion too). A folded list is `hidden`, so its items leave the tab order and the accessibility tree. `open`, `defaultOpen` (open by default) and `onOpenChange` work controlled or uncontrolled. A Group without `collapsible` stays a titled `role="group"`.
+
 `Sidebar.Item` stands on Button, so `as` takes a router Link, `a` or `button`. When `current` it carries `aria-current="page"`, the `muted` variant and strong text; otherwise it is `ghost`. `icon` goes first and `badge` at the end of the line. `accent`, `variant` and `shape` (rounded by default) can be overridden.
 
 At or above the breakpoint it is a rail. It sticks below `offset`, its height is the viewport minus `offset`, and it scrolls inside when it overflows. One `border.base` line hangs on its end edge, with the scrollbar inside it. Its width is `width` (a Dimension, `lg` by default).
@@ -59,3 +61,5 @@ The drawer calls `onOpenChange(false)` on Escape, on a press of the scrim and on
 | `collapseBelow` | `sm` · `md` · `lg` · `xl` · `never` · `always` | `md` |
 | `offset` | height of the bar above (a CSS length) | none (0) |
 | `width` | Dimension | `lg` |
+| `Sidebar.Group` `collapsible` | The title becomes a fold button. `title` required | no |
+| `Sidebar.Group` `open` · `defaultOpen` · `onOpenChange` | The fold state when `collapsible`. Controlled or uncontrolled | open |

@@ -1,11 +1,12 @@
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 
-import { Button, Stack, Surface, Text } from "@studio-baeks/paper-ui";
+import { Sidebar } from "@studio-baeks/paper-ui";
 
-import { ChevronDownIcon, ChevronRightIcon } from "../compositions/icons";
 import * as s from "./shell.css";
-import { useMediaQuery } from "./useMediaQuery";
+
+export const SIDEBAR_ID = "site-sidebar";
+export type SidebarState = { open: boolean; onOpenChange: (open: boolean) => void };
 
 export type SidebarLink = { label: string; to: string };
 export type SidebarBlock = { heading?: string; links: SidebarLink[] };
@@ -14,37 +15,14 @@ export type SidebarGroup = { label?: string; blocks: SidebarBlock[] };
 const here = (pathname: string) => (pathname.length > 1 ? pathname.replace(/\/$/, "") : pathname);
 
 const Block = ({ block, current }: { block: SidebarBlock; current: string }) => (
-  <Stack gap="xs">
-    {block.heading ? <Text as="span" variant="caption" ink="tertiary" className={s.navHeading}>{block.heading}</Text> : null}
+  <Sidebar.Group title={block.heading}>
     {block.links.map(({ label, to }) => (
-      <Button key={to} as={RouterLink} to={to} size="sm" fontSize="body" fullWidth justify="start" strong={to === current} variant="ghost" aria-current={to === current ? "page" : undefined}>
-        {label}
-      </Button>
+      <Sidebar.Item key={to} as={RouterLink} to={to} current={to === current}>{label}</Sidebar.Item>
     ))}
-  </Stack>
+  </Sidebar.Group>
 );
 
 const holds = (group: SidebarGroup, current: string) => group.blocks.some((block) => block.links.some((link) => link.to === current));
-
-const Group = ({ group, current, folded, onFold }: { group: SidebarGroup; current: string; folded: boolean; onFold: () => void }) => {
-  const body = useId();
-  return (
-    <Stack gap="sm">
-      {group.label ? (
-        <Button size="sm" variant="ghost" fullWidth justify="between" aria-expanded={!folded} aria-controls={body} onClick={onFold}>
-          <Text as="span" variant="subheading" ink="inherit">{group.label}</Text>
-          <ChevronDownIcon className={s.groupChevron} />
-        </Button>
-      ) : null}
-      {/* A plain element: a Stack's display would win over the hidden attribute. */}
-      <div id={body} hidden={folded}>
-        <Stack gap="md">
-          {group.blocks.map((block, index) => <Block key={block.heading ?? index} block={block} current={current} />)}
-        </Stack>
-      </div>
-    </Stack>
-  );
-};
 
 const FOLDED_KEY = "paper-site:sidebar-folded";
 const readFolded = (list: string): string[] => {
@@ -81,37 +59,30 @@ const useFolded = (list: string, groups: SidebarGroup[], current: string) => {
   return [folded, toggle] as const;
 };
 
-export const SidebarNav = ({ label, groups }: { label: string; groups: SidebarGroup[] }) => {
+export const SidebarNav = ({ label, groups, open, onOpenChange }: { label: string; groups: SidebarGroup[]; open: boolean; onOpenChange: (open: boolean) => void }) => {
   const current = here(useLocation().pathname);
-  const wide = !useMediaQuery(s.narrow);
   const [folded, toggle] = useFolded(label, groups, current);
-  const [openAt, setOpenAt] = useState<string>();
-  const open = wide || openAt === current;
-  const page = groups.flatMap((group) => group.blocks.flatMap((block) => block.links)).find((link) => link.to === current);
   const nav = useRef<HTMLElement>(null);
   useEffect(() => {
     const list = nav.current;
     const item = list?.querySelector('[aria-current="page"]');
-    if (!wide || !list || !item) return;
+    if (!list || !item) return;
     const frame = list.getBoundingClientRect();
     const { top, bottom } = item.getBoundingClientRect();
     if (top < frame.top || bottom > frame.bottom) list.scrollTop += top - frame.top - frame.height / 2;
-  }, [current, wide]);
+  }, [current, open]);
 
   return (
-    <Surface as="nav" ref={nav} elevation="sticky" aria-label={label} className={s.sidebar}>
-      <details open={open} onToggle={(event) => { if (!wide) setOpenAt(event.currentTarget.open ? current : undefined); }}>
-        <Surface as="summary" border radius="sm" hoverable className={s.summary}>
-          <Text variant="label" as="span">{label}</Text>
-          {page ? <Text variant="caption" as="span" ink="secondary" className={s.summaryCurrent}>{page.label}</Text> : null}
-          <ChevronRightIcon className={s.chevron} />
-        </Surface>
-        <Stack gap="xl" className={s.disclosureBody}>
-          {groups.map((group, index) => (
-            <Group key={group.label ?? index} group={group} current={current} folded={Boolean(group.label && folded.includes(group.label))} onFold={() => { if (group.label) toggle(group.label); }} />
-          ))}
-        </Stack>
-      </details>
-    </Surface>
+    <Sidebar ref={nav} id={SIDEBAR_ID} label={label} offset={s.navHeight} collapseBelow="md" open={open} onOpenChange={onOpenChange}>
+      {groups.map((group, index) => {
+        const blocks = group.blocks.map((block, at) => <Block key={block.heading ?? at} block={block} current={current} />);
+        const name = group.label;
+        return name ? (
+          <Sidebar.Group key={name} collapsible title={name} open={!folded.includes(name)} onOpenChange={() => toggle(name)}>{blocks}</Sidebar.Group>
+        ) : (
+          <Sidebar.Group key={index}>{blocks}</Sidebar.Group>
+        );
+      })}
+    </Sidebar>
   );
 };

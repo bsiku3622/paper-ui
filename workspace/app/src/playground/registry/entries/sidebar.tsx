@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Badge, IconButton, Sidebar, Stack, Text, type SidebarFooterProps, type SidebarItemProps, type SidebarProps } from "@studio-baeks/paper-ui";
+import { Badge, IconButton, Sidebar, Stack, Text, type SidebarFooterProps, type SidebarGroupProps, type SidebarItemProps, type SidebarProps } from "@studio-baeks/paper-ui";
 
 import { glyph } from "../demo";
 import { named } from "../jsx";
@@ -20,6 +20,7 @@ export default defineSpec({
     enumControl<SidebarProps, "collapseBelow">("collapseBelow", local<SidebarProps, "collapseBelow">()(["never", "always", "xl", "lg", "md", "sm"], "Sidebar's own union: a breakpoint from the Layout scale, never for a rail at every width, or always for a drawer at every width")),
     boolControl<SidebarProps, "offset">("offset", true, { example: { ko: "상단 바 높이", en: "height of the bar" }, type: "string" }),
     boolControl<SidebarItemProps, "current">("current", true, { target: "Sidebar.Item" }),
+    boolControl<SidebarGroupProps, "collapsible">("collapsible", false, { target: "Sidebar.Group" }),
     boolControl<SidebarFooterProps, "hidden">("hidden", false, { target: "Sidebar.Footer" }),
   ],
   defaults: { collapseBelow: "md" },
@@ -39,7 +40,7 @@ export default defineSpec({
         onOpenChange={named("setOpen", setOpen)}
         className={sidebarFit}
       >
-        <Sidebar.Group title={w.printer}>
+        <Sidebar.Group title={w.printer} {...(flag(state, "collapsible") ? { collapsible: true as const } : {})}>
           <Sidebar.Item icon={glyph.home} current={flag(state, "current")}>{w.dashboard}</Sidebar.Item>
           <Sidebar.Item icon={glyph.file} badge={<Badge size="xs">3</Badge>}>{w.files}</Sidebar.Item>
           <Sidebar.Item icon={glyph.clock}>{w.history}</Sidebar.Item>

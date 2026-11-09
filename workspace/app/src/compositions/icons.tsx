@@ -12,6 +12,7 @@ const glyph = (name: string, paths: ReactNode) => {
 
 export const SearchIcon = glyph("Search", <><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></>);
 export const PlusIcon = glyph("Plus", <path d="M12 5v14M5 12h14" />);
+export const MenuIcon = glyph("Menu", <path d="M4 7h16M4 12h16M4 17h16" />);
 export const ChevronRightIcon = glyph("ChevronRight", <path d="m9 18 6-6-6-6" />);
 export const ArrowRightIcon = glyph("ArrowRight", <><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></>);
 export const ArrowLeftIcon = glyph("ArrowLeft", <><path d="M19 12H5" /><path d="m11 6-6 6 6 6" /></>);

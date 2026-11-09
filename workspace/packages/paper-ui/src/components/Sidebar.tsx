@@ -1,6 +1,7 @@
 import { createContext, forwardRef, useCallback, useContext, useEffect, useId, useLayoutEffect, useMemo, useRef, type ElementType, type HTMLAttributes, type MouseEvent, type ReactElement, type ReactNode } from "react";
 
 import { Divider } from "../atoms/Divider";
+import { paperError } from "../internal/errors";
 import { Button } from "../atoms/Button";
 import { useScopeFocus } from "../internal/aria/focus";
 import { usePageScrollLock } from "../internal/aria/overlay";
@@ -14,9 +15,10 @@ import { controlSize } from "../primitives/control/Control.css";
 import { scrimPaint, sidebarPaint } from "../primitives/paint/recipes.css";
 import type { PolymorphicProps } from "../primitives/polymorphic";
 import { usePressable } from "../primitives/press/usePressable";
+import { Icon } from "../primitives/Icon";
 import { Text } from "../primitives/Text";
 import { tokens, type Accent, type Breakpoint, type Dimension, type Variant } from "../tokens";
-import { sidebarBadge, sidebarDivider, sidebarDrawer, sidebarClosed, sidebarFooter, sidebarGroup, sidebarGroupTitle, sidebarItem, sidebarOffsetProperty, sidebarRail, sidebarScrim, sidebarWidth } from "./Sidebar.css";
+import { sidebarBadge, sidebarDivider, sidebarDrawer, sidebarClosed, sidebarFooter, sidebarGroup, sidebarGroupChevron, sidebarGroupToggle, sidebarGroupTitle, sidebarItem, sidebarOffsetProperty, sidebarRail, sidebarScrim, sidebarWidth } from "./Sidebar.css";
 
 export type SidebarProps = Omit<HTMLAttributes<HTMLElement>, "className" | "children" | "aria-label"> & {
   label: string;
@@ -43,11 +45,14 @@ type SidebarItemOwn = Pick<ControlForm, "shape"> & {
 
 export type SidebarItemProps<As extends ElementType = "button"> = PolymorphicProps<SidebarItemOwn, As>;
 
-export type SidebarGroupProps = Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "title"> & {
-  title?: ReactNode;
+type SidebarGroupBase = Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "title"> & {
   children?: ReactNode;
   className?: string;
 };
+
+export type SidebarGroupProps =
+  | (SidebarGroupBase & { title?: ReactNode; collapsible?: false; open?: never; defaultOpen?: never; onOpenChange?: never })
+  | (SidebarGroupBase & { title: ReactNode; collapsible: true; open?: boolean; defaultOpen?: boolean; onOpenChange?: (open: boolean) => void });
 
 export type SidebarDividerProps = Omit<HTMLAttributes<HTMLHRElement>, "className" | "children"> & { className?: string };
 
@@ -159,12 +164,29 @@ const SidebarItem = SidebarItemImpl as unknown as {
   <As extends ElementType = "button">(props: SidebarItemProps<As>): ReactElement;
 };
 
-const SidebarGroup = forwardRef<HTMLDivElement, SidebarGroupProps>(function SidebarGroup({ title, children, className, ...rest }, ref) {
+const SidebarGroup = forwardRef<HTMLDivElement, SidebarGroupProps>(function SidebarGroup(props, ref) {
+  const { title, collapsible = false, open, defaultOpen = true, onOpenChange, children, className, ...rest } = props;
   const titleId = useId();
+  const listId = useId();
+  const [expanded, setExpanded] = useControllableState<boolean>({ value: open, defaultValue: defaultOpen, onChange: onOpenChange });
+  if (collapsible && title == null && process.env.NODE_ENV !== "production") {
+    console.error(paperError("A collapsible Sidebar.Group needs a title: the title is the button that folds it.").message);
+  }
+  if (!collapsible || title == null) {
+    return (
+      <div ref={ref} role={title == null ? undefined : "group"} aria-labelledby={title == null ? undefined : titleId} className={joinClass(sidebarGroup, className)} {...rest}>
+        {title == null ? null : <Text id={titleId} as="span" variant="label" ink="tertiary" className={joinClass(controlSize.md, sidebarGroupTitle)}>{title}</Text>}
+        {children}
+      </div>
+    );
+  }
   return (
-    <div ref={ref} role={title == null ? undefined : "group"} aria-labelledby={title == null ? undefined : titleId} className={joinClass(sidebarGroup, className)} {...rest}>
-      {title == null ? null : <Text id={titleId} as="span" variant="label" ink="tertiary" className={joinClass(controlSize.md, sidebarGroupTitle)}>{title}</Text>}
-      {children}
+    <div ref={ref} role="group" aria-labelledby={titleId} className={joinClass(sidebarGroup, className)} {...rest}>
+      <Button size="md" shape="rounded" variant="ghost" fullWidth justify="between" className={sidebarGroupToggle} aria-expanded={expanded} aria-controls={listId} onClick={() => setExpanded(!expanded)}>
+        <Text id={titleId} as="span" variant="label" ink="tertiary" truncate>{title}</Text>
+        <Icon className={sidebarGroupChevron}><path d="m6 9 6 6 6-6" /></Icon>
+      </Button>
+      <div id={listId} hidden={!expanded} className={sidebarGroup}>{children}</div>
     </div>
   );
 });

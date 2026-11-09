@@ -1,7 +1,7 @@
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { Outlet, ScrollRestoration } from "react-router-dom";
 
-import { Box, Divider, Link, Text, VisuallyHidden, surfaceClass } from "@studio-baeks/paper-ui";
+import { Box, Link, Text, VisuallyHidden, surfaceClass } from "@studio-baeks/paper-ui";
 
 import { DocsNav } from "../docs/DocsNav";
 import { joinClass } from "../joinClass";
@@ -30,6 +30,9 @@ export const SiteLayout = () => {
   const { title, chrome, sidebar, frame } = useSiteHandle();
   useDocumentTitle(title);
 
+  const [menuOpen, setMenuOpen] = useState(false);
+  const state = { open: menuOpen, onOpenChange: setMenuOpen };
+
   const page = (
     <Suspense fallback={<PageLoading />}>
       <Outlet />
@@ -41,11 +44,10 @@ export const SiteLayout = () => {
       <SkipLink />
       {chrome === "none" ? page : (
         <div className={joinClass(s.frameScope, sidebar && s.wideFrame)}>
-          <SiteHeader ruled={Boolean(sidebar)} />
+          <SiteHeader ruled={Boolean(sidebar)} menu={sidebar ? { open: menuOpen, onToggle: () => setMenuOpen(!menuOpen) } : undefined} />
           {sidebar ? (
             <div className={s.sidebarFrame}>
-              {sidebar === "docs" ? <DocsNav /> : <PlaygroundNav />}
-              <Divider orientation="vertical" className={s.sidebarRule} />
+              {sidebar === "docs" ? <DocsNav {...state} /> : <PlaygroundNav {...state} />}
               <main id="main" tabIndex={-1} className={s.content}>{page}</main>
             </div>
           ) : (

@@ -242,7 +242,7 @@ test("the theme toggle has a name for the theme it goes to, and flips the docume
   await expect(page.locator("html")).toHaveAttribute("data-pui-theme", "light");
 });
 
-test("at 390 the header is static and the sidebars are closed disclosures above the content that open on a click and close on a link", async ({ page }) => {
+test("at 390 the header is static and the sidebars are closed drawers that a menu button in the header opens, and that close on a link", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/docs/foundations/color");
   await settled(page);
@@ -252,15 +252,19 @@ test("at 390 the header is static and the sidebars are closed disclosures above 
     await page.goto(route);
     await settled(page);
     const list = nav(page);
-    const summary = list.locator("summary");
-    await expect(summary).toBeVisible();
-    await expect(list.getByRole("link", { name: link, exact: true })).toBeHidden();
-    expect((await list.boundingBox())!.y + (await list.boundingBox())!.height).toBeLessThanOrEqual((await main(page).boundingBox())!.y + 1);
-    await summary.click();
-    await expect(list.getByRole("link", { name: link, exact: true })).toBeVisible();
+    const menu = page.getByRole("button", { name: "목차 열기" });
+    await expect(menu).toBeVisible();
+    await expect(menu).toHaveAttribute("aria-expanded", "false");
+    await expect(menu).toHaveAttribute("aria-controls", (await list.getAttribute("id"))!);
+    await expect(list).toHaveAttribute("inert", "");
+    await expect(list.getByRole("link", { name: link, exact: true })).not.toBeInViewport();
+    await menu.click();
+    await expect(page.getByRole("button", { name: "목차 닫기" })).toHaveAttribute("aria-expanded", "true");
+    await expect(list.getByRole("link", { name: link, exact: true })).toBeInViewport();
     await list.getByRole("link", { name: link, exact: true }).click();
-    await expect(list.getByRole("link", { name: link, exact: true })).toBeHidden();
-    await expect(summary).toContainText(link);
+    await expect(list).toHaveAttribute("inert", "");
+    await expect(list.getByRole("link", { name: link, exact: true })).not.toBeInViewport();
+    await expect(menu).toHaveAttribute("aria-expanded", "false");
   }
 });
 
@@ -281,12 +285,12 @@ test("in a short window a sidebar scrolls inside itself and stays under the head
   }
 });
 
-test("at 1440 the sidebars are open lists with no summary, and the header stays at the top", async ({ page }) => {
+test("at 1440 the sidebars are open rails with no menu button, and the header stays at the top", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 700 });
   for (const [route, nav] of [["/docs", docsNav], ["/playground", playgroundNav]] as const) {
     await page.goto(route);
     await settled(page);
-    await expect(nav(page).locator("summary")).toBeHidden();
+    await expect(page.getByRole("button", { name: "목차 열기" })).toBeHidden();
     await expect(nav(page).getByRole("link").first()).toBeVisible();
     await expect(header(page)).toHaveCSS("position", "sticky");
     await expect(nav(page)).toHaveCSS("position", "sticky");

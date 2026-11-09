@@ -1,6 +1,6 @@
 import { createVar, globalStyle, style, styleVariants } from "@vanilla-extract/css";
 
-import { emphasisRule, tokens, transition } from "@studio-baeks/paper-ui/tokens";
+import { emphasisRule, tokens } from "@studio-baeks/paper-ui/tokens";
 
 export const narrow = `screen and (max-width: ${tokens.layout.breakpoint.md})`;
 
@@ -82,30 +82,13 @@ export const sidebarFrame = style([
   frame,
   {
     display: "grid",
-    gridTemplateColumns: `${tokens.shape.dimension.width.lg} auto minmax(0, 1fr)`,
+    gridTemplateColumns: `${tokens.shape.dimension.width.lg} minmax(0, 1fr)`,
     isolation: "isolate",
     "@media": { [narrow]: { gridTemplateColumns: "minmax(0, 1fr)", columnGap: 0, paddingInline: 0 } },
   },
 ]);
 
-export const sidebarRule = style({ "@media": { [narrow]: { display: "none" } } });
-
-const rowInset = tokens.shape.control.inset.button.sm;
-
-export const sidebar = style({
-  top: navHeight,
-  alignSelf: "start",
-  maxHeight: `calc(${tokens.layout.viewport} - ${navHeight})`,
-  overflowY: "auto",
-  marginInlineStart: `calc((${rowInset} + ${tokens.shape.inset.xs}) * -1)`,
-  paddingInline: tokens.shape.inset.xs,
-  paddingInlineEnd: tokens.shape.inset.md,
-  paddingBlockStart: tokens.shape.inset.xl,
-  paddingBlockEnd: tokens.shape.inset.xl,
-  "@media": {
-    [narrow]: { position: "static", maxHeight: "none", overflowY: "visible", marginInlineStart: 0, paddingInline: tokens.layout.gutter, paddingBlock: 0 },
-  },
-});
+export const menuButton = style({ display: "none", "@media": { [narrow]: { display: "inline-flex" } } });
 
 export const content = style({
   minWidth: 0,
@@ -115,32 +98,3 @@ export const content = style({
   "@media": { [narrow]: { paddingInline: tokens.layout.gutter, paddingBlockStart: tokens.shape.inset.xl } },
 });
 
-export const navHeading = style({ paddingInline: rowInset });
-
-export const groupChevron = style({
-  transition: transition("state", "transform"),
-  selectors: { '[aria-expanded="false"] > &': { transform: "rotate(-90deg)" } },
-});
-
-export const summary = style({
-  display: "none",
-  listStyle: "none",
-  selectors: { "&::-webkit-details-marker": { display: "none" } },
-  "@media": {
-    [narrow]: {
-      display: "flex",
-      alignItems: "center",
-      gap: tokens.layout.gap.sm,
-      minHeight: tokens.shape.control.height.md,
-      paddingInline: tokens.shape.inset.md,
-      cursor: "pointer",
-    },
-  },
-});
-export const summaryCurrent = style({ flex: 1, minWidth: 0 });
-export const chevron = style({
-  selectors: { "details[open] > summary &": { transform: "rotate(90deg)" } },
-});
-export const disclosureBody = style({
-  "@media": { [narrow]: { paddingBlockStart: tokens.layout.gap.lg } },
-});

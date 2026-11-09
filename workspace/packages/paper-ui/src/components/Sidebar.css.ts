@@ -72,9 +72,16 @@ export const sidebarGroup = style({
   display: "flex",
   flexDirection: "column",
   gap: tokens.layout.gap.xs,
-  selectors: { "& + &": { marginBlockStart: tokens.layout.gap.sm } },
+  selectors: { "& + &": { marginBlockStart: tokens.layout.gap.sm }, "&[hidden]": { display: "none" } },
 });
 export const sidebarGroupTitle = style({ paddingBlock: tokens.layout.gap.xs, paddingInline: controlVars.buttonInset });
 
 export const sidebarDivider = style({ marginBlock: tokens.layout.gap.sm });
 export const sidebarFooter = style({ marginBlockStart: "auto", display: "flex", flexDirection: "column", gap: tokens.layout.gap.xs, selectors: { "&[hidden]": { display: "none" } } });
+
+export const sidebarGroupToggle = style({ textAlign: "start" });
+export const sidebarGroupChevron = style({
+  flexShrink: 0,
+  transition: transition("state", "transform"),
+  selectors: { '[aria-expanded="false"] &': { transform: "rotate(-90deg)" }, '[aria-expanded="false"]:dir(rtl) &': { transform: "rotate(90deg)" } },
+});
