@@ -2,9 +2,9 @@ import { render, screen } from "@testing-library/react";
 import { createRef } from "react";
 import { describe, expect, it } from "vitest";
 
-import { CONTROL_ANATOMIES, CONTROL_SIZES } from "../tokens";
+import { CONTROL_ANATOMIES, CONTROL_SHAPES, CONTROL_SIZES } from "../tokens";
 import { Control, controlClass } from "./control/Control";
-import { controlAlign, controlAnatomy, controlGap, controlIconSize, controlJustify, controlPill, controlSize } from "./control/Control.css";
+import { controlAlign, controlAnatomy, controlGap, controlIconSize, controlJustify, controlShape, controlSize } from "./control/Control.css";
 
 describe("Control", () => {
   const classes = (value: string) => value.split(" ");
@@ -12,7 +12,7 @@ describe("Control", () => {
   it("[primitives.control.class] stands at md as a label by default", () => {
     const list = classes(controlClass());
     for (const name of [controlSize.md, controlAnatomy.label]) expect(list).toContain(name);
-    expect(list).not.toContain(controlPill);
+    for (const name of Object.values(controlShape)) expect(list).not.toContain(name);
   });
 
   it("[primitives.control.class] takes one class for a size and one for an anatomy, whichever the pair", () => {
@@ -27,11 +27,18 @@ describe("Control", () => {
 
   it("[primitives.control.class] swaps the corner for a pill, and adds what it is told", () => {
     const list = classes(controlClass({ shape: "pill", gap: "lg", align: "end", justify: "start", iconSize: "label" }));
-    expect(list).toContain(controlPill);
+    expect(list).toContain(controlShape.pill);
     expect(list).toContain(controlGap.lg);
     expect(list).toContain(controlAlign.end);
     expect(list).toContain(controlJustify.start);
     expect(list).toContain(controlIconSize.label);
+  });
+
+  it("[foundations.shape.control-shapes] gives sharp, small and pill a class of their own and rounded none, since rounded is the corner every size sets", () => {
+    for (const shape of CONTROL_SHAPES) {
+      const list = classes(controlClass({ shape }));
+      for (const [name, value] of Object.entries(controlShape)) expect(list.includes(value), `${shape} → ${name}`).toBe(name === shape);
+    }
   });
 
   it("[primitives.control.class] picks a text preset only for an anatomy that holds text", () => {

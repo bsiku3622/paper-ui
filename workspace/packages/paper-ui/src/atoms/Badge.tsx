@@ -3,6 +3,7 @@ import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 import { joinClass } from "../internal/joinClass";
 import { controlClass, type ControlForm } from "../primitives/control/Control";
 import { controlLineRoom } from "../primitives/control/Control.css";
+import { useControlShape } from "../primitives/control/shape";
 import { Paint, type PaintFace } from "../primitives/paint/Paint";
 import { dotPaint } from "../primitives/paint/recipes.css";
 import { VARIANT_LINE, type Accent } from "../tokens";
@@ -16,9 +17,10 @@ export type BadgeProps = Omit<HTMLAttributes<HTMLSpanElement>, "className"> & Pa
 };
 
 export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
-  { accent = "primary", variant = "soft", fill, shadow, size, fontSize, shape = "pill", gap, align, justify, dot, children, className, ...rest },
+  { accent = "primary", variant = "soft", fill, shadow, size, fontSize, shape: givenShape, gap, align, justify, dot, children, className, ...rest },
   ref,
 ) {
+  const shape = useControlShape(givenShape, "pill");
   return (
     <Paint
       as="span"

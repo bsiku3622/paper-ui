@@ -21,6 +21,7 @@ paper-ui의 테마는 두 가지를 구분합니다. **선택**은 사용자가 
 |---|---|---|
 | `defaultTheme` | `system` | 사용자가 고르기 전의 선택. 저장된 값이 있으면 그 값이 이깁니다 |
 | `storageKey` | `pui-theme` | 선택을 담는 localStorage 키. `null`이면 저장하지 않습니다 |
+| `controlShape` | 없음 | 앱 전체 컨트롤의 기본 모서리. sharp · small · rounded · pill이고, 컨트롤에 준 `shape`가 이깁니다([Shape](../foundations/shape.md#radius)) |
 
 [contract:foundations.theme.storage]: #
 선택은 `setTheme`가 부를 때만 `storageKey`로 localStorage에 쓰입니다. `storageKey`가 `null`이면 저장소를 읽지도 쓰지도 않고, 선택은 그 페이지에만 남습니다. 저장소가 막혀 있어도(사생활 보호 모드 등) 오류 없이 같은 방식으로 동작합니다.

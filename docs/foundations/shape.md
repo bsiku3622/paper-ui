@@ -70,19 +70,30 @@ Box의 `padding` · `paddingX` · `paddingY`가 이 단계를 받습니다. 앱 
 <!-- 이 블록은 생성됩니다 — pnpm docs:sync -->
 | 역할 | 값 | 쓰는 곳 |
 | --- | --- | --- |
-| `radius.control.xs / sm / md / lg / xl` | 8 / 12 / 12 / 12 / 12 | Button · IconButton · Field · Select · Textarea, `shape="rounded"`인 Badge |
+| `radius.control.xs / sm / md / lg / xl` | 8 / 12 / 12 / 12 / 12 | `shape="rounded"` — Field · Select · Textarea의 기본 |
+| `radius.small.xs / sm / md / lg / xl` | 4 / 6 / 6 / 6 / 6 | `shape="small"` |
 | `radius.selection` | 4 | Checkbox |
 | `radius.surface.sm / md / lg` | 12 / 16 / 20 | Surface의 `radius` prop |
 | `radius.text` | 4 | 글자 줄 곁에 서는 것 — Link의 링 |
-| `radius.pill` | 999px | 알약 — Badge의 기본, `shape="pill"` |
+| `radius.pill` | 999px | 알약, `shape="pill"` — Button · IconButton · Badge · SegmentControl의 기본 |
 | `radius.full` | 999px | 원(Radio · Switch · Spinner), Surface의 `radius="full"` |
 <!-- /generated:shape-radius -->
 
 [contract:foundations.shape.corner-by-size]: #
-Button · IconButton · Field · Select · Textarea와 `shape="rounded"`인 Badge는 자기 크기의 `radius.control`을 읽습니다. 원본이 크기마다 따로 있어서 `PaperProvider`와 `sourceVars`로 크기별로 덮어쓸 수 있습니다.
+`shape="rounded"`인 컨트롤은 자기 크기의 `radius.control`을 읽습니다. Field · Select · Textarea는 기본이 rounded이고, Button · IconButton · Badge는 `shape="rounded"`를 받을 때 그렇습니다. 원본이 크기마다 따로 있어서 `PaperProvider`와 `sourceVars`로 크기별로 덮어쓸 수 있습니다.
+
+[contract:foundations.shape.control-shapes]: #
+컨트롤의 모서리(`shape`)는 네 단계입니다. `sharp`는 모서리가 없고, `small`은 자기 크기의 `radius.small`을, `rounded`는 `radius.control`을, `pill`은 `radius.pill`을 읽습니다. 안쪽의 모서리도 같은 단계를 따릅니다. SegmentControl의 칸은 `nestedRadius`로, Select 목록의 항목은 같은 곡률로, 목록은 항목 곡률에 안쪽 여백(`inset.xs`, 곡률보다 크지 않게)을 더해서, Field의 지우기 · 보기 버튼은 `radius.control.xs`를 넘지 않게 고릅니다. 그래서 `sharp` 안에서는 모두 각집니다. pill Select의 목록은 알약이 아니라 rounded로 열립니다.
+
+[contract:foundations.shape.app-shape]: #
+앱 전체의 단계는 `PaperProvider`의 `controlShape`가 정합니다. 컨트롤에 준 `shape`가 먼저이고, 없으면 가장 가까운 Provider의 `controlShape`, 그것도 없으면 부품의 기본입니다. Button · IconButton · Badge · SegmentControl의 기본은 pill, Field · Select · Textarea · Control의 기본은 rounded입니다. 여러 줄 상자에 알약은 맞지 않아서 Textarea는 `pill`을 받으면 rounded로 섭니다.
+
+```tsx
+<PaperProvider controlShape="small">…</PaperProvider>
+```
 
 [contract:foundations.shape.pill-not-circle]: #
-`radius.pill`은 알약의 모양이고 `radius.full`은 원의 기하입니다. `radius.pill`을 낮추면 Badge와 `shape="pill"`만 따라오고, Radio · Switch · Spinner는 원으로 남습니다.
+`radius.pill`은 알약의 모양이고 `radius.full`은 원의 기하입니다. `radius.pill`을 낮추면 pill인 컨트롤(Button · IconButton · Badge · SegmentControl의 기본)만 따라오고, Radio · Switch · Spinner는 원으로 남습니다.
 
 [contract:foundations.shape.pill-inset]: #
 `shape="pill"`인 Field와 Select는 값을 버튼 inset(`control.inset.button`)에 둡니다. 알약의 둥근 끝이 값 곁의 자리를 먹으므로, pill Button이 라벨 둘레에 두는 넓은 자리를 입력 틀도 똑같이 둡니다. Select의 화살표도 그 inset에 서고, 값은 화살표 앞 `control.gap`에서 멈춥니다. rounded 틀은 입력 inset(`control.inset.input`) 그대로입니다.
@@ -99,7 +110,7 @@ Surface의 `radius="sm"`은 surface 쪽을 고릅니다. `radius.control.sm`과 
 선과 포커스 링은 root 글자 크기를 따라 커지지 않도록 CSS px로 둡니다. `stroke.border` 1px은 테두리와 Divider, `stroke.emphasis` 2px은 체크 표시·Spinner 링·스위치 손잡이 둘레·Slider 손잡이의 테, `stroke.icon` 1.75는 24 artboard 위 SVG 선입니다. 포커스 링은 `focus.width` 2px · `focus.offset` 2px이고, 패키지의 모든 포커스 링은 한 스타일(`focusRing`)을 공유합니다. 링의 두께와 offset은 Shape, 색은 Color(`interaction.focus`)가 소유합니다. 안쪽에 그리는 1px 선은 `strokeRing(color)`가 `inset 0 0 0 stroke.border`로 한 곳에서 만들어, 요소의 크기를 바꾸지 않고 상자 안쪽에 선을 긋습니다.
 
 [contract:foundations.shape.focus-ring]: #
-링은 요소 자신의 곡률을 따릅니다. 전역 baseline(`:where(:focus-visible)`)은 링만 그리고 요소의 모양을 바꾸지 않으므로, 자기 곡률이 없는 요소(제목, 사이드바 링크)의 키보드 링은 각지게 그려집니다. 곡률은 링을 그리는 요소가 정합니다 — Button · Field · Select · Textarea는 자기 크기의 `radius.control`을, Link는 `radius.text`를 가집니다. Field와 Select는 wrapper가 링을 그리는 틀이라 그 곡률을, Textarea는 자기 곡률을 따르고, 안쪽 native control은 곡률도 outline도 갖지 않습니다.
+링은 요소 자신의 곡률을 따릅니다. 전역 baseline(`:where(:focus-visible)`)은 링만 그리고 요소의 모양을 바꾸지 않으므로, 자기 곡률이 없는 요소(제목, 사이드바 링크)의 키보드 링은 각지게 그려집니다. 곡률은 링을 그리는 요소가 정합니다 — Button · Field · Select · Textarea는 자기 `shape`의 곡률을, Link는 `radius.text`를 가집니다. Field와 Select는 wrapper가 링을 그리는 틀이라 그 곡률을, Textarea는 자기 곡률을 따르고, 안쪽 native control은 곡률도 outline도 갖지 않습니다.
 
 ## Control
 

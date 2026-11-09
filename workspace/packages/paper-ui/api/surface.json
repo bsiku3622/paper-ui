@@ -1,5 +1,5 @@
 {
-  "version": "0.1.1",
+  "version": "0.1.2",
   "entries": {
     ".": {
       "values": [
@@ -454,6 +454,11 @@
         "shape.radius.full",
         "shape.radius.pill",
         "shape.radius.selection",
+        "shape.radius.small.lg",
+        "shape.radius.small.md",
+        "shape.radius.small.sm",
+        "shape.radius.small.xl",
+        "shape.radius.small.xs",
         "shape.radius.surface.lg",
         "shape.radius.surface.md",
         "shape.radius.surface.sm",
@@ -675,6 +680,11 @@
           "--pui-shape-radius-full",
           "--pui-shape-radius-pill",
           "--pui-shape-radius-selection",
+          "--pui-shape-radius-small-lg",
+          "--pui-shape-radius-small-md",
+          "--pui-shape-radius-small-sm",
+          "--pui-shape-radius-small-xl",
+          "--pui-shape-radius-small-xs",
           "--pui-shape-radius-surface-lg",
           "--pui-shape-radius-surface-md",
           "--pui-shape-radius-surface-sm",

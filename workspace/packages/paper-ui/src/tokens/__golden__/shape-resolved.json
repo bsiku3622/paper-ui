@@ -17,6 +17,13 @@
         "lg": 12,
         "xl": 12
       },
+      "small": {
+        "xs": 4,
+        "sm": 6,
+        "md": 6,
+        "lg": 6,
+        "xl": 6
+      },
       "selection": 4,
       "surface": {
         "sm": 12,

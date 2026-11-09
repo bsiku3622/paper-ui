@@ -12,6 +12,7 @@ import { announce } from "../primitives/a11y/LiveRegion";
 import { useSelectable } from "../primitives/select/useSelectable";
 import { controlClass, type ControlForm } from "../primitives/control/Control";
 import { controlLineRoom } from "../primitives/control/Control.css";
+import { useControlShape } from "../primitives/control/shape";
 import { paintClass } from "../primitives/paint/Paint";
 import { VARIANT_LINE, type Accent, type ControlAnatomy, type SurfaceFill, type Variant } from "../tokens";
 import { buttonAnchored, buttonBadge, buttonFull, buttonRoot } from "./Button.css";
@@ -41,12 +42,13 @@ const holdsSelection = (as: ElementType | undefined) => as === Selectable || as 
 
 export const ButtonBase = forwardRef<HTMLElement, ButtonBaseProps>(function ButtonBase(
   {
-    anatomy, as, accent = "primary", variant = "solid", fill, shadow, size, fontSize, strong, gap, align, justify, shape = "pill", loading, loadingLabel, fullWidth,
+    anatomy, as, accent = "primary", variant = "solid", fill, shadow, size, fontSize, strong, gap, align, justify, shape: givenShape, loading, loadingLabel, fullWidth,
     selected, disabled = false, iconSize, badge, children, className, ...rest
   },
   forwardedRef,
 ) {
   const messages = useMessages();
+  const shape = useControlShape(givenShape, "pill");
   const element = useRef<HTMLElement>(null);
   const ref = useMergedRef(forwardedRef, element);
   const { selectProps } = useSelectable({ selected, disabled, role: rest.role });

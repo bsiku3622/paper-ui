@@ -5,6 +5,7 @@ import { useSlidingThumb } from "../internal/measure";
 import { useMergedRef } from "../internal/refs";
 import { useControllableState } from "../internal/useControllableState";
 import { controlClass, type ControlForm } from "../primitives/control/Control";
+import { useControlShape } from "../primitives/control/shape";
 import { Icon } from "../primitives/Icon";
 import { segmentPaint } from "../primitives/paint/recipes.css";
 import { trackInset } from "../primitives/paint/Surface.css";
@@ -36,10 +37,11 @@ const SELECTED = stateSelector("selected");
 const VariantContext = createContext<SegmentVariant>("track");
 
 const SegmentControlRoot = forwardRef<HTMLDivElement, SegmentControlProps>(function SegmentControl(
-  { value, defaultValue, onValueChange, variant = "track", size, shape = "pill", fullWidth, disabled = false, children, className, ...rest },
+  { value, defaultValue, onValueChange, variant = "track", size, shape: givenShape, fullWidth, disabled = false, children, className, ...rest },
   ref,
 ) {
   const [selected, setSelected] = useControllableState<string | null>({ value, defaultValue: defaultValue ?? null, onChange: (next) => { if (next !== null) onValueChange?.(next); } });
+  const shape = useControlShape(givenShape, "pill");
   const root = useRef<HTMLDivElement>(null);
   const setRef = useMergedRef(ref, root);
   const thumb = useRef<HTMLSpanElement>(null);

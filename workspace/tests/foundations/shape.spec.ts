@@ -401,6 +401,50 @@ test("[foundations.shape.pill-inset] a pill Field or Select holds its value, its
   expect((await metrics(page, "[data-testid=field-md]")).padding).toBe(roleDp(control.inset.input.md));
 });
 
+const openShapes = async (page: Page) => {
+  await openHarness(page, "shapes");
+  await expect(page.getByLabel("select-small-md", { exact: true })).toBeVisible();
+};
+
+const inShapes = (page: Page, selector: string) => measure(page.locator("#shapes-fixture").locator(selector));
+
+test("[foundations.shape.control-shapes] sharp has no corner and small reads radius.small of its own size, and the corners inside a control follow it", async ({ page }) => {
+  await openShapes(page);
+  const { radius, inset } = tokens.shape;
+  for (const size of CONTROL_SIZES) {
+    const corner = { sharp: 0, small: roleDp(radius.small[size]) };
+    for (const shape of ["sharp", "small"] as const) {
+      for (const id of ["button", "icon", "field", "select", "badge", "segment"]) {
+        expect((await inShapes(page, `[data-testid=${id}-${shape}-${size}]`)).radius, `${id} ${shape} ${size}`).toBe(corner[shape]);
+      }
+      expect((await inShapes(page, `textarea[aria-label=textarea-${shape}-${size}]`)).radius, `textarea ${shape} ${size}`).toBe(corner[shape]);
+      const clear = page.locator(`#shapes-fixture [data-testid=field-${shape}-${size}]`).getByRole("button");
+      expect((await measure(clear)).radius, `clear ${shape} ${size}`).toBe(Math.min(corner[shape], roleDp(radius.control.xs)));
+      const chosen = page.locator(`#shapes-fixture [data-testid=segment-${shape}-${size}]`).getByRole("radio", { checked: true });
+      expect((await measure(chosen)).radius, `segment ${shape} ${size}`).toBe(Math.max(0, corner[shape] - roleDp(SHAPE_RECIPES.segment.inset)));
+    }
+  }
+  for (const shape of ["sharp", "small"] as const) {
+    const corner = shape === "sharp" ? 0 : roleDp(radius.small.md);
+    await page.getByLabel(`select-${shape}-md`, { exact: true }).click();
+    const list = page.getByRole("listbox");
+    await expect(list).toBeVisible();
+    expect((await measure(list)).radius, `list ${shape}`).toBe(corner + Math.min(corner, roleDp(inset.xs)));
+    expect((await measure(list.getByRole("option").first())).radius, `option ${shape}`).toBe(corner);
+    await page.keyboard.press("Escape");
+    await expect(list).toBeHidden();
+  }
+});
+
+test("[foundations.shape.app-shape] PaperProvider's controlShape shapes the controls under it, a control's own shape wins, and a Textarea stands rounded under pill", async ({ page }) => {
+  await openShapes(page);
+  const { radius } = tokens.shape;
+  for (const id of ["app-button", "app-field"]) expect((await inShapes(page, `[data-testid=${id}]`)).radius, id).toBe(roleDp(radius.small.md));
+  expect((await inShapes(page, "textarea[aria-label=app-textarea]")).radius).toBe(roleDp(radius.small.md));
+  expect((await inShapes(page, "[data-testid=app-button-pill]")).radius).toBe(roleDp(radius.pill));
+  expect((await inShapes(page, "textarea[aria-label=app-pill-textarea]")).radius).toBe(roleDp(radius.control.md));
+});
+
 test("[foundations.shape.switch-thumb] a Switch's thumb sits the rim from its end when unchecked and the rim from the other end when checked, and the ends swap right to left", async ({ page }) => {
   await openHarness(page, "marks");
   const edges = (id: string) => thumbEdges(page.getByTestId(id));

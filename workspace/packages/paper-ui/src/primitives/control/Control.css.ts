@@ -1,13 +1,14 @@
 import { createGlobalVar, createVar } from "@vanilla-extract/css";
 
-import { CONTROL, CONTROL_LINE_PROPERTY, CONTROL_LINE_ROOM, CONTROL_SIZES, ICON_SIZES, SHAPE_RECIPES, controlLineWidth, insideLine, markParts, tokens, type Align, type ControlAnatomy, type ControlSize, type IconSize, type Justify } from "../../tokens";
+import { CONTROL, CONTROL_LINE_PROPERTY, CONTROL_LINE_ROOM, CONTROL_SIZES, ICON_SIZES, SHAPE_RECIPES, controlLineWidth, insideLine, markParts, tokens, type Align, type ControlAnatomy, type ControlShape, type ControlSize, type IconSize, type Justify } from "../../tokens";
 import { layered } from "../../tokens/layers.css";
 import { iconSizeVar } from "../Icon.css";
 
-const { style, styleVariants } = layered("components");
+const { styleVariants } = layered("components");
 
 const height = createVar();
 const corner = createVar();
+const smallCorner = createVar();
 const buttonInset = createVar();
 const areaBlock = createVar();
 const badgeHeight = createVar();
@@ -19,6 +20,7 @@ export const controlSize = styleVariants(Object.fromEntries(CONTROL_SIZES.map((s
   vars: {
     [height]: tokens.shape.control.height[size],
     [corner]: tokens.shape.radius.control[size],
+    [smallCorner]: tokens.shape.radius.small[size],
     [buttonInset]: CONTROL.inset.button[size],
     [areaBlock]: CONTROL.area.paddingBlock[size],
     [controlVars.inputInset]: CONTROL.inset.input[size],
@@ -66,14 +68,18 @@ export const controlLineRoom = styleVariants({
   none: { vars: CONTROL_LINE_ROOM.none, selectors: { "&&": controlLineWidth }, "@media": { "(forced-colors: active)": { vars: CONTROL_LINE_ROOM.line } } },
 });
 
-export const controlPill = style({
-  vars: {
-    [corner]: tokens.shape.radius.pill,
-    [controlVars.inputInset]: buttonInset,
-    [controlVars.valueEnd]: `calc(${buttonInset} + ${iconSizeVar} + ${tokens.shape.control.gap})`,
+export const controlShape = styleVariants({
+  sharp: { vars: { [corner]: "0px" } },
+  small: { vars: { [corner]: smallCorner } },
+  pill: {
+    vars: {
+      [corner]: tokens.shape.radius.pill,
+      [controlVars.inputInset]: buttonInset,
+      [controlVars.valueEnd]: `calc(${buttonInset} + ${iconSizeVar} + ${tokens.shape.control.gap})`,
+    },
+    borderRadius: tokens.shape.radius.pill,
   },
-  borderRadius: tokens.shape.radius.pill,
-});
+} satisfies Record<Exclude<ControlShape, "rounded">, object>);
 
 export const controlGap = styleVariants(tokens.layout.gap, (gap) => ({ gap }));
 const ALIGN_ITEMS = { start: "flex-start", center: "center", end: "flex-end", stretch: "stretch", baseline: "baseline" } as const satisfies Record<Align, string>;

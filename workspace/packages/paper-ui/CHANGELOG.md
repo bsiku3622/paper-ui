@@ -3,6 +3,11 @@
 Every published version has a `## <version>` heading below, newest first. The recorded API surface (`api/surface.json`)
 moves only with a version that has one: `pnpm api:update` refuses otherwise.
 
+## 0.1.2
+
+- Controls take four corners: `shape` is `sharp`, `small`, `rounded` or `pill`. `small` reads a new source, `radius.small` (4 at xs, 6 from sm up), and `sharp` has none. The corners inside a control follow it: SegmentControl's segments, Select's list and options, and Field's clear and reveal buttons.
+- `PaperProvider` takes `controlShape`, the shape of every control under it that is not given one. `Textarea` takes `shape` too, without `pill`, and stands rounded under an app that asks for pill.
+
 ## 0.1.1
 
 - `Slider` takes `origin`: the fill runs from that value to the thumb, so a range whose 0 means "unchanged" (-100 to 100) fills from the middle.

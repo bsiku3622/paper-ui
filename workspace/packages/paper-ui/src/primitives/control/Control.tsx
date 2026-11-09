@@ -5,7 +5,8 @@ import { resolveControlFontSize, resolveControlStrong, resolvePreset } from "../
 import { CONTROL_ANATOMY_PRESET, type Align, type ControlAnatomy, type ControlFontSize, type ControlShape, type ControlSize, type IconSize, type Justify, type Space } from "../../tokens";
 import { Box, type BoxOwnProps } from "../Box";
 import type { PolymorphicComponent, PolymorphicProps } from "../polymorphic";
-import { controlAlign, controlAnatomy, controlGap, controlIconSize, controlJustify, controlPill, controlSize } from "./Control.css";
+import { controlAlign, controlAnatomy, controlGap, controlIconSize, controlJustify, controlShape, controlSize } from "./Control.css";
+import { useControlShape } from "./shape";
 
 export type ControlForm = {
   size?: ControlSize;
@@ -27,7 +28,7 @@ export const controlClass = ({ size = "md", anatomy = "label", shape, fontSize, 
   return joinClass(
     controlSize[size],
     controlAnatomy[anatomy],
-    shape === "pill" && controlPill,
+    shape !== undefined && shape !== "rounded" && controlShape[shape],
     preset === "badge" ? resolvePreset(preset) : preset && resolvePreset(preset, size),
     resolveControlFontSize(fontSize),
     resolveControlStrong(strong),
@@ -51,7 +52,8 @@ const ControlImpl = forwardRef<HTMLElement, Omit<ControlProps, "as" | "ref"> & {
   className,
   ...rest
 }, ref) {
-  return <Box ref={ref} className={joinClass(controlClass({ size, anatomy, shape, fontSize, strong, gap, align, justify, iconSize }), className)} {...rest} />;
+  const resolved = useControlShape(shape, "rounded");
+  return <Box ref={ref} className={joinClass(controlClass({ size, anatomy, shape: resolved, fontSize, strong, gap, align, justify, iconSize }), className)} {...rest} />;
 });
 
 export const Control = ControlImpl as PolymorphicComponent<ControlOwnProps, "div">;

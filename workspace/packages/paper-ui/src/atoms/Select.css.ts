@@ -73,7 +73,7 @@ export const selectListbox = style({
   display: "flex",
   flexDirection: "column",
   padding: tokens.shape.inset.xs,
-  borderRadius: `calc(${controlVars.corner} + ${tokens.shape.inset.xs})`,
+  borderRadius: `calc(${controlVars.corner} + min(${controlVars.corner}, ${tokens.shape.inset.xs}))`,
   outline: "none",
 });
 

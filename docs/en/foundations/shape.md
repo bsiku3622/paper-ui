@@ -57,16 +57,25 @@ The corners of a control follow its size, because the same curve reads as much r
 
 | Role | Value | Used for |
 | --- | --- | --- |
-| `radius.control.xs / sm / md / lg / xl` | 8 / 12 / 12 / 12 / 12 | Button · IconButton · Field · Select · Textarea, Badge with `shape="rounded"` |
+| `radius.control.xs / sm / md / lg / xl` | 8 / 12 / 12 / 12 / 12 | `shape="rounded"` — the default of Field · Select · Textarea |
+| `radius.small.xs / sm / md / lg / xl` | 4 / 6 / 6 / 6 / 6 | `shape="small"` |
 | `radius.selection` | 4 | Checkbox |
 | `radius.surface.sm / md / lg` | 12 / 16 / 20 | The `radius` prop of Surface |
 | `radius.text` | 4 | Things that stand beside a text line — the Link's ring |
-| `radius.pill` | 999px | Pill — the default of Badge, `shape="pill"` |
+| `radius.pill` | 999px | Pill, `shape="pill"` — the default of Button · IconButton · Badge · SegmentControl |
 | `radius.full` | 999px | Circle (Radio · Switch · Spinner), `radius="full"` of Surface |
 
-Button · IconButton · Field · Select · Textarea and a Badge with `shape="rounded"` read the `radius.control` of their own size. The source exists per size, so it can be overridden per size with `PaperProvider` and `sourceVars`.
+A control with `shape="rounded"` reads the `radius.control` of its own size. Field · Select · Textarea are rounded by default, and Button · IconButton · Badge are when given `shape="rounded"`. The source exists per size, so it can be overridden per size with `PaperProvider` and `sourceVars`.
 
-`radius.pill` is the shape of a pill and `radius.full` is the geometry of a circle. If you lower `radius.pill`, only Badge and `shape="pill"` follow, and Radio · Switch · Spinner stay circles.
+The corner of a control (`shape`) has four steps. `sharp` has no corner, `small` reads the `radius.small` of its own size, `rounded` reads `radius.control`, and `pill` reads `radius.pill`. The corners inside follow the same step: SegmentControl's segments by `nestedRadius`, the options of Select's list by the same radius, the list by the option radius plus its inner room (`inset.xs`, no more than the radius), and Field's clear and reveal buttons by no more than `radius.control.xs`. So inside `sharp` they are all square. The list of a pill Select opens rounded, not as a pill.
+
+The step for the whole app is set by `controlShape` on `PaperProvider`. The `shape` given to a control comes first, then the `controlShape` of the nearest Provider, then the part's own default: pill for Button · IconButton · Badge · SegmentControl, rounded for Field · Select · Textarea · Control. A pill does not fit a box of several lines, so a Textarea asked for `pill` stands rounded.
+
+```tsx
+<PaperProvider controlShape="small">…</PaperProvider>
+```
+
+`radius.pill` is the shape of a pill and `radius.full` is the geometry of a circle. If you lower `radius.pill`, only the pill controls (the default of Button · IconButton · Badge · SegmentControl) follow, and Radio · Switch · Spinner stay circles.
 
 A Field and Select with `shape="pill"` place their value at the button inset (`control.inset.button`). The rounded ends of a pill take up room beside the value, so the input frame leaves the same wide room that a pill Button leaves around its label. The Select's arrow also stands on that inset, and the value stops before the arrow by `control.gap`. A rounded frame uses the input inset (`control.inset.input`) as it is.
 
@@ -78,7 +87,7 @@ The corner of something placed inside a rounded box at a constant distance is ch
 
 Strokes and focus rings are kept as CSS px so that they do not grow with the root font size. `stroke.border` 1px is for borders and Divider, `stroke.emphasis` 2px is for the check mark, the Spinner ring, the outline around a Switch knob and the outline of a Slider thumb, and `stroke.icon` 1.75 is an SVG line on a 24 artboard. The focus ring is `focus.width` 2px · `focus.offset` 2px, and every focus ring in the package shares one style (`focusRing`). The ring's thickness and offset are owned by Shape, and its color by Color (`interaction.focus`). The 1px line drawn inside is made in one place by `strokeRing(color)` as `inset 0 0 0 stroke.border`, which draws a line inside the box without changing the element's size.
 
-The ring follows the element's own radius. The global baseline (`:where(:focus-visible)`) draws only the ring and does not change the shape of the element, so the keyboard ring of an element with no radius of its own (a heading, a sidebar link) is drawn square. The radius is decided by the element that draws the ring — Button · Field · Select · Textarea have the `radius.control` of their own size, and Link has `radius.text`. A Field and Select are frames whose wrapper draws the ring, so they use the wrapper's radius, a Textarea follows its own radius, and the native control inside has neither a radius nor an outline.
+The ring follows the element's own radius. The global baseline (`:where(:focus-visible)`) draws only the ring and does not change the shape of the element, so the keyboard ring of an element with no radius of its own (a heading, a sidebar link) is drawn square. The radius is decided by the element that draws the ring — Button · Field · Select · Textarea have the radius of their own `shape`, and Link has `radius.text`. A Field and Select are frames whose wrapper draws the ring, so they use the wrapper's radius, a Textarea follows its own radius, and the native control inside has neither a radius nor an outline.
 
 ## Control
 

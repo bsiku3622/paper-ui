@@ -27,7 +27,8 @@ import { useMergedRef } from "../internal/refs";
 import { bareButton } from "../primitives/bare-button.css";
 import { composeEventHandlers } from "../primitives/composition";
 import { controlClass, type ControlForm } from "../primitives/control/Control";
-import { controlSize } from "../primitives/control/Control.css";
+import { controlShape, controlSize } from "../primitives/control/Control.css";
+import { useControlShape } from "../primitives/control/shape";
 import { Floating, useFloatingContentId } from "../primitives/float/Floating";
 import { Icon } from "../primitives/Icon";
 import { selectArrowPaint, selectCheckPaint, selectEmptyPaint, selectOptionPaint } from "../primitives/paint/recipes.css";
@@ -93,6 +94,8 @@ type SelectBodyProps = SelectProps & { isOpen: boolean; setOpen: (open: boolean)
 
 function SelectBody({ isOpen, setOpen, forwardedRef, children, status, size = "md", fill, variant, shadow, fontSize, shape, className, style, "data-testid": testid, ...rest }: SelectBodyProps) {
   const { inputProps, frameProps, isDisabled } = useInputControl(rest, { status });
+  const frameShape = useControlShape(shape, "rounded");
+  const listShape = frameShape === "pill" ? "rounded" : frameShape;
   const { name, form, value, defaultValue, onChange, onInput, onInvalid, autoComplete, required, ...buttonProps } = inputProps;
   const triggerProps = buttonProps as ButtonHTMLAttributes<HTMLButtonElement>;
 
@@ -275,7 +278,7 @@ function SelectBody({ isOpen, setOpen, forwardedRef, children, status, size = "m
     return () => cancelAnimationFrame(frame);
   }, [isOpen, active, listboxId, baseId]);
 
-  const optionRow = controlClass({ size, anatomy: "input", fontSize });
+  const optionRow = controlClass({ size, anatomy: "input", fontSize, shape: listShape });
   const renderOption = (item: SelectItem) => {
     const isChosen = item.index === chosen;
     return (
@@ -300,7 +303,7 @@ function SelectBody({ isOpen, setOpen, forwardedRef, children, status, size = "m
         ref={frameRef}
         style={style}
         data-testid={testid}
-        className={joinClass(inputFrameClass({ size, anatomy: "frame", shape, fontSize, fill, variant, shadow }), selectEmptyPaint, styles.selectWrap, className)}
+        className={joinClass(inputFrameClass({ size, anatomy: "frame", shape: frameShape, fontSize, fill, variant, shadow }), selectEmptyPaint, styles.selectWrap, className)}
         {...frameProps}
       >
         <button
@@ -354,7 +357,7 @@ function SelectBody({ isOpen, setOpen, forwardedRef, children, status, size = "m
         offset="xs"
         aria-labelledby={triggerProps["aria-labelledby"]}
         aria-label={triggerProps["aria-labelledby"] ? undefined : listLabel}
-        className={joinClass(surfaceClass({ fill: "raised" }), controlSize[size], styles.selectListbox)}
+        className={joinClass(surfaceClass({ fill: "raised" }), controlSize[size], listShape !== "rounded" && controlShape[listShape], styles.selectListbox)}
         onMouseDown={onListMouseDown}
         onClick={onListClick}
         onPointerMove={onListPointerMove}

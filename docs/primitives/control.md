@@ -30,7 +30,7 @@ Atom이 컨트롤 크기에 닿는 길은 class 함수 `controlClass({ size, ana
 | `segment` | 컨트롤 높이의 트랙입니다. 안쪽으로 `inset.xs` 들어간 칸의 줄이 폭을 정합니다 | SegmentControl |
 | `slider` | 폭을 다 채우는 막대입니다. 높이는 Switch 트랙과 같습니다 | Slider |
 
-`shape="pill"`은 모서리를 알약으로 바꿉니다. 글자 preset은 anatomy가 고릅니다. `label` · `icon` · `segment`는 button, `input`과 `frame`은 field, `area`는 textarea, `badge`는 badge이고, `mark` · `track` · `spinner` · `slider`는 글자가 없습니다. 모서리도 anatomy를 따릅니다. 상자는 크기에 맞는 컨트롤 곡선이고, `mark` · `track` · `spinner`의 모서리는 각 Atom이 정합니다.
+`shape`는 모서리를 네 단계(sharp · small · rounded · pill)에서 고르고, 안 주면 `PaperProvider`의 `controlShape`를, 그것도 없으면 rounded를 씁니다. 글자 preset은 anatomy가 고릅니다. `label` · `icon` · `segment`는 button, `input`과 `frame`은 field, `area`는 textarea, `badge`는 badge이고, `mark` · `track` · `spinner` · `slider`는 글자가 없습니다. 모서리도 anatomy를 따릅니다. 상자는 크기에 맞는 컨트롤 곡선이고, `mark` · `track` · `spinner`의 모서리는 각 Atom이 정합니다.
 
 ## 내용 배치
 

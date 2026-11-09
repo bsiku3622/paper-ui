@@ -16,6 +16,7 @@ The canonical source of the mode is one attribute, `<html data-pui-theme>`. The 
 |---|---|---|
 | `defaultTheme` | `system` | The choice before the user picks one. If there is a stored value, that value wins |
 | `storageKey` | `pui-theme` | The localStorage key that holds the choice. If `null`, nothing is stored |
+| `controlShape` | none | The default corner of every control in the app: sharp · small · rounded · pill. The `shape` given to a control wins ([Shape](../foundations/shape.md#radius)) |
 
 The choice is written to localStorage under `storageKey` only when `setTheme` is called. If `storageKey` is `null`, the storage is neither read nor written, and the choice stays only on that page. Even when storage is blocked (private mode and the like), it works the same way without errors.
 

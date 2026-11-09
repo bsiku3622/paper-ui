@@ -14,6 +14,7 @@ import { Icon } from "../primitives/Icon";
 import { Pressable } from "../primitives/press/Pressable";
 import { Selectable } from "../primitives/select/Selectable";
 import type { ControlForm } from "../primitives/control/Control";
+import { useControlShape } from "../primitives/control/shape";
 import { fieldActionPaint, fieldAdornmentPaint, fieldPlaceholderPaint } from "../primitives/paint/recipes.css";
 import { textNumericClass } from "../styles/typography.css";
 import { inputFrameClass, useInputControl, type InputFrameProps } from "./input-control";
@@ -84,6 +85,7 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
   ref,
 ) {
   const messages = useMessages();
+  const frameShape = useControlShape(shape, "rounded");
   const { inputProps, frameProps, isDisabled } = useInputControl(rest, { status, textInput: true });
   const input = useRef<HTMLInputElement>(null);
   const setRef = useMergedRef(ref, input);
@@ -119,7 +121,7 @@ export const Field = forwardRef<HTMLInputElement, FieldProps>(function Field(
     // 진짜 컨트롤은 input 이라 role·키보드를 붙이는 게 오히려 틀리다.
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions -- 여백 클릭만 안쪽 input 으로 넘긴다
     <span
-      className={joinClass(inputFrameClass({ size, anatomy: "input", shape, fontSize, gap, fill, variant, shadow }), fieldWrap, numeric && textNumericClass, className)}
+      className={joinClass(inputFrameClass({ size, anatomy: "input", shape: frameShape, fontSize, gap, fill, variant, shadow }), fieldWrap, numeric && textNumericClass, className)}
       style={style}
       data-testid={testid}
       {...frameProps}

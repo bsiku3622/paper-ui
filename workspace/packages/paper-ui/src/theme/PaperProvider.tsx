@@ -4,7 +4,8 @@ import { LocaleHost } from "../internal/aria/i18n";
 import { localeDirection } from "../internal/direction";
 import { LocaleContext, normalizeLocale, resolveLocale, useDocumentLanguage, type LocaleValue } from "../internal/locale";
 import type { PaperMessages } from "../internal/messages";
-import { isStylesheetLoaded, overridesRule, type ColorMode, type ThemeOverrides, type ThemePreference } from "../tokens";
+import { ControlShapeContext } from "../primitives/control/shape";
+import { isStylesheetLoaded, overridesRule, type ColorMode, type ControlShape, type ThemeOverrides, type ThemePreference } from "../tokens";
 import { ThemeControlContext, type ThemeControl } from "./context";
 import { THEME_STORAGE_KEY } from "./engine";
 import { warnUnknownSourceVariables } from "./source-check";
@@ -20,6 +21,7 @@ export type PaperProviderProps = ThemeOverrides & {
   storageKey?: string | null;
   locale?: string;
   messages?: Partial<PaperMessages>;
+  controlShape?: ControlShape;
   children?: ReactNode;
 };
 
@@ -42,7 +44,7 @@ const useOverridesRule = (rule: string) => {
   }, [rule]);
 };
 
-export const PaperProvider = ({ defaultTheme = "system", storageKey = THEME_STORAGE_KEY, locale, messages, children, ...overrides }: PaperProviderProps) => {
+export const PaperProvider = ({ defaultTheme = "system", storageKey = THEME_STORAGE_KEY, locale, messages, controlShape, children, ...overrides }: PaperProviderProps) => {
   const store = getThemeStore();
   store.configure({ storageKey, defaultTheme });
 
@@ -68,6 +70,7 @@ export const PaperProvider = ({ defaultTheme = "system", storageKey = THEME_STOR
   const control = useMemo<ThemeControl>(() => ({ theme, resolved, setTheme: store.setPreference }), [theme, resolved, store]);
 
   const outer = useContext(LocaleContext);
+  const outerShape = useContext(ControlShapeContext);
   const language = useDocumentLanguage();
   const given = locale ?? outer?.locale;
   const words = useMemo(() => (outer?.messages && messages ? { ...outer.messages, ...messages } : messages ?? outer?.messages), [outer?.messages, messages]);
@@ -91,7 +94,9 @@ export const PaperProvider = ({ defaultTheme = "system", storageKey = THEME_STOR
   return (
     <ThemeControlContext.Provider value={control}>
       <LocaleContext.Provider value={value}>
-        <LocaleHost locale={resolveLocale(given, language)}>{children}</LocaleHost>
+        <ControlShapeContext.Provider value={controlShape ?? outerShape}>
+          <LocaleHost locale={resolveLocale(given, language)}>{children}</LocaleHost>
+        </ControlShapeContext.Provider>
       </LocaleContext.Provider>
     </ThemeControlContext.Provider>
   );

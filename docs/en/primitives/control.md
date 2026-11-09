@@ -26,7 +26,7 @@ Size only decides values, and shape only reads those values. So fixing one size 
 | `segment` | A track of the control height. The row of cells inset by `inset.xs` decides the width | SegmentControl |
 | `slider` | A bar that fills the whole width. Its height is the same as the Switch track | Slider |
 
-`shape="pill"` turns the corners into a pill. The text preset is chosen by the anatomy: `label` · `icon` · `segment` use button, `input` and `frame` use field, `area` uses textarea, `badge` uses badge, and `mark` · `track` · `spinner` · `slider` have no text. Corners follow the anatomy too. A box has the control curve that fits its size, and the corners of `mark` · `track` · `spinner` are decided by each Atom.
+`shape` picks the corner from four steps (sharp · small · rounded · pill); without it, Control takes the `controlShape` of `PaperProvider`, and rounded without that. The text preset is chosen by the anatomy: `label` · `icon` · `segment` use button, `input` and `frame` use field, `area` uses textarea, `badge` uses badge, and `mark` · `track` · `spinner` · `slider` have no text. Corners follow the anatomy too. A box has the control curve that fits its size, and the corners of `mark` · `track` · `spinner` are decided by each Atom.
 
 ## Content arrangement
 

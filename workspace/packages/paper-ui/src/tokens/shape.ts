@@ -2,7 +2,7 @@ import { controlSizes, type ControlSize } from "./control-sizes";
 import { buildVarTree, em, keys, lengths, px, rem } from "./helpers";
 import type { TextVariant } from "./typography";
 
-export const CONTROL_SHAPES = ["rounded", "pill"] as const;
+export const CONTROL_SHAPES = ["sharp", "small", "rounded", "pill"] as const;
 export type ControlShape = (typeof CONTROL_SHAPES)[number];
 
 const DIMENSION_WIDTH = { xs: 72, sm: 108, md: 160, lg: 240, xl: 360 } as const;
@@ -13,6 +13,7 @@ export const SHAPE_SOURCE = {
   space: { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, "2xl": 32, "3xl": 48 },
   radius: {
     control: { xs: 8, sm: 12, md: 12, lg: 12, xl: 12 } satisfies Record<ControlSize, number>,
+    small: { xs: 4, sm: 6, md: 6, lg: 6, xl: 6 } satisfies Record<ControlSize, number>,
     selection: 4,
     surface: { sm: 12, md: 16, lg: 20 },
     text: 4,
@@ -64,6 +65,7 @@ export const SHAPE_VALUES = {
   space: lengths(s.space),
   radius: {
     control: lengths(s.radius.control),
+    small: lengths(s.radius.small),
     selection: rem(s.radius.selection),
     surface: lengths(s.radius.surface),
     text: rem(s.radius.text),

@@ -19,7 +19,7 @@ Atom은 같은 축 몇 개로 말합니다. 축의 값은 모두 Foundations에�
 | `status` (선택 표식) | error만(`ChoiceStatus`), 생략하면 중립. Checkbox · Radio · Switch · Slider가 같은 축을 씀 | Color accent `error.ink` 테 |
 | `fill` | raised · canvas · sunken. Button · IconButton · Badge는 hairline · dashed · ghost · muted에서만 받고 안 주면 투명, Field · Textarea · Select는 안 주면 `control.field` 흰 면 | Color [Surface](../foundations/color.md) 면 — 다크에서 sunken은 canvas와 같은 단계 |
 | `shadow` | boolean. 면이 있을 때만 받음. Field · Textarea · Select는 생략하면 그림자가 없고 `true`면 제자리 그림자를 얹음 | Layout [resting 깊이](../foundations/layout.md#elevation--위치와-쌓임과-그림자는-한-단위다) |
-| `shape` | rounded · pill. 누르는 것(Button · IconButton)과 고르는 줄(SegmentControl), Badge는 기본 pill이고, 값을 받는 틀(Field · Select)은 기본 rounded. pill 틀은 값과 화살표를 Button과 같은 넓은 inset에 둠 | Shape `radius.control` · `radius.pill`, [pill inset](../foundations/shape.md#radius) |
+| `shape` | sharp · small · rounded · pill. 누르는 것(Button · IconButton)과 고르는 줄(SegmentControl), Badge는 기본 pill이고, 값을 받는 틀(Field · Select · Textarea)은 기본 rounded. 앱 전체의 기본은 `PaperProvider`의 `controlShape`. pill 틀은 값과 화살표를 Button과 같은 넓은 inset에 두고, Textarea에는 pill이 없음 | Shape `radius.small` · `radius.control` · `radius.pill`, [네 단계와 pill inset](../foundations/shape.md#radius) |
 | `fontSize` | `label` · `caption` · `body` (`CONTROL_FONT_SIZES`) | Typography — 글자 크기만 바꾸는 탈출구. 컨트롤 상자가 담을 수 있는 역할만 받음 |
 
 [contract:atoms.field.neutral-status]: #
@@ -34,10 +34,10 @@ Atom은 같은 축 몇 개로 말합니다. 축의 값은 모두 Foundations에�
 
 | Atom | 고유 축 | 기본값·동작 |
 | --- | --- | --- |
-| Button | as · accent · variant · fill · shadow · size · fontSize · strong · shape · selected · loading · loadingLabel · fullWidth · gap · align · justify · badge | button / primary / solid / md / rounded, type=button. 글자는 variant와 무관하게 `button` preset. selected는 hairline · ghost · muted에서 aria-pressed와 선택된 면. loading은 spinner·aria-busy, 포커스는 유지하고 누름과 제출만 막음 |
+| Button | as · accent · variant · fill · shadow · size · fontSize · strong · shape · selected · loading · loadingLabel · fullWidth · gap · align · justify · badge | button / primary / solid / md / pill, type=button. 글자는 variant와 무관하게 `button` preset. selected는 hairline · ghost · muted에서 aria-pressed와 선택된 면. loading은 spinner·aria-busy, 포커스는 유지하고 누름과 제출만 막음 |
 | IconButton | as · accent · variant · fill · shadow · size · shape · disabled · iconSize · badge · 필수 aria-label · 단일 children | 정사각형, 높이가 변. 안의 Icon은 iconSize를 주지 않으면 컨트롤 높이를 따름. loading · fullWidth · fontSize는 없음 |
 | Field | status · size · variant · fill · shadow · fontSize · shape · numeric · textAlign · gap · leading / trailing · clearable · clearLabel · showPasswordToggle · showPasswordLabel · onClear | 중립 / md / hairline / 흰 면(`control.field`) / rounded, type=text. wrapper가 면·높이·상태·포커스를 소유. 지우기와 보기 버튼의 이름은 locale 문구이고 label prop으로 바꿈. 브라우저의 search 취소 ×와 Edge 비밀번호 보기 장치는 Field가 소유해 숨기고, number 증감·date 선택 장치는 브라우저에 남음 |
-| Textarea | status · size · variant · fill · shadow · fontSize · rows · native textarea props | 중립 / md / hairline / 흰 면(`control.field`), 기본 4줄. rows가 높이를 정하고(최소 높이 없음) 한 줄 = 같은 size Field, 세로 resize. pill 없음 |
+| Textarea | status · size · variant · fill · shadow · fontSize · shape · rows · native textarea props | 중립 / md / hairline / 흰 면(`control.field`), 기본 4줄. rows가 높이를 정하고(최소 높이 없음) 한 줄 = 같은 size Field, 세로 resize. pill 없음 |
 | Select | status · size · variant · fill · shadow · fontSize · shape · children · native select props | 중립 / md / hairline / 흰 면(`control.field`) / rounded. 버튼(combobox)이 값을 보이고 Paper가 그린 목록(listbox)이 열림. Option·Group, multiple 없음. 폼과 ref는 보이지 않는 native select. 화살표는 trailing Icon. className · style · data-testid는 wrapper |
 | Checkbox | status · size · indeterminate · native input props | md. 상자는 `selection.size`, 체크는 그 절반. 꺼진 면은 `control.mark` 흰 면에 `border.base` 선이고 `status="error"`면 error 잉크 테. 켜지면 primary solid 면. 누르는 동안 바깥에 눌림 고리. 24px hit area |
 | Switch | status · size · native input props | md. input type=checkbox + role=switch. 트랙 폭 = 높이의 1.5배(`anatomy.switch.length`). 꺼진 트랙은 `control.track` 면이고 선이 없음. 손잡이는 사방 테만큼 안쪽에 앉는 원이고, `inset-inline-start`로 움직여 RTL에서 저절로 뒤집힘. 누르는 동안 바깥에 눌림 고리 |
