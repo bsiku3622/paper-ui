@@ -75,7 +75,7 @@ pnpm api:update   # rewrites api/surface.json after an intended change to an exp
 ```
 
 `pnpm build` puts the site and the demo apps into one static folder, `workspace/app/dist`, with the demos under `demos/`
-and the rewrites a static host needs in `vercel.json`.
+and the repository's `vercel.json` builds it on Vercel with the rewrites a static host needs.
 
 `pnpm test:e2e` starts its own two servers: the app on port 41731 and the test harness
 (`workspace/fixtures/harness`) on 41732. Both run with `--strictPort` and are never reused,
