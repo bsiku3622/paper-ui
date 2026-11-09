@@ -32,13 +32,13 @@ export type CalendarProps = Omit<HTMLAttributes<HTMLDivElement>, "className" | "
   "data-testid"?: string;
 };
 
-type CellProps = { calendar: AriaCalendar; iso: string; marked: boolean; size: ControlSize; shape: ControlShape };
+type CellProps = { calendar: AriaCalendar; iso: string; marked: boolean; inRange: boolean; size: ControlSize; shape: ControlShape };
 
-function CalendarCell({ calendar, iso, marked, size, shape }: CellProps) {
+function CalendarCell({ calendar, iso, marked, inRange, size, shape }: CellProps) {
   const ref = useRef<HTMLDivElement>(null);
   const cell = useAriaCalendarCell(calendar, iso, ref);
   const { focusProps, isFocusVisible } = useFocusRing();
-  const variant = cell.isSelected ? "solid" : cell.isToday ? "hairline" : "ghost";
+  const variant = cell.isSelected ? "solid" : inRange && !cell.isDisabled ? "soft" : cell.isToday ? "hairline" : "ghost";
   return (
     <td {...cell.cellProps} className={styles.calendarCell}>
       <div
@@ -71,6 +71,7 @@ function CalendarBody({ forwardedRef, value, defaultValue, onValueChange, min, m
   const locale = useLocale();
   const calendar = useAriaCalendar({ value, defaultValue, onValueChange, min, max, isDateUnavailable, disabled, autoFocus: focusOnMount, locale, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledby });
   const dotted = new Set(marked);
+  const within = (iso: string) => Boolean(min && max && iso >= min && iso <= max);
   return (
     <div
       {...mergeProps(rest, calendar.rootProps)}
@@ -114,7 +115,7 @@ function CalendarBody({ forwardedRef, value, defaultValue, onValueChange, min, m
             <tr key={row}>
               {week.map((iso, column) => (iso === null
                 ? <td key={column} role="gridcell" aria-disabled="true" className={styles.calendarCell} />
-                : <CalendarCell key={iso} calendar={calendar} iso={iso} marked={dotted.has(iso)} size={size} shape={shape} />))}
+                : <CalendarCell key={iso} calendar={calendar} iso={iso} marked={dotted.has(iso)} inRange={within(iso)} size={size} shape={shape} />))}
             </tr>
           ))}
         </tbody>

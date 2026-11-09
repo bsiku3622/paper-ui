@@ -3,6 +3,7 @@ import { act, cleanup, fireEvent, render, screen, within } from "@testing-librar
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { controlSize } from "../primitives/control/Control.css";
+import { paintClass } from "../primitives/paint/Paint";
 import { dotPaint } from "../primitives/paint/recipes.css";
 import { Calendar } from "./Calendar";
 
@@ -68,6 +69,16 @@ describe("Calendar", () => {
     expect(day(/November 10, 2026/).getAttribute("aria-disabled")).toBeNull();
     fireEvent.click(day(/November 25, 2026/));
     expect(onValueChange).toHaveBeenCalledWith("2026-11-25");
+  });
+
+  it("[components.calendar.range] lays a soft face under every open day between min and max, today included, and none with only one end", () => {
+    const soft = paintClass({ accent: "primary", variant: "soft", hoverable: true });
+    const { unmount } = render(<Calendar aria-label="Date" defaultValue="2026-11-20" min="2026-11-08" max="2026-11-26" isDateUnavailable={(date) => date === "2026-11-18"} />);
+    for (const name of [/November 8, 2026/, /November 9, 2026/, /November 26, 2026/]) expect(day(name).className, String(name)).toContain(soft);
+    for (const name of [/November 7, 2026/, /November 27, 2026/, /November 18, 2026/, /November 20, 2026/]) expect(day(name).className, String(name)).not.toContain(soft);
+    unmount();
+    render(<Calendar aria-label="Date" defaultValue="2026-11-20" min="2026-11-08" />);
+    expect(day(/November 12, 2026/).className).not.toContain(soft);
   });
 
   it("[components.calendar.limits] stops paging at the month min and max close", () => {

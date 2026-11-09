@@ -15,6 +15,9 @@ Calendar는 한 달 격자에서 날짜 하나를 고르는 Component이고, Dat
 [contract:components.calendar.limits]: #
 `min` · `max`(같은 문자열)를 벗어난 날과 `isDateUnavailable(date)`가 참이라고 하는 날은 비활성 상태로 그려지고 눌리지 않습니다. 이전 · 다음 단추도 `min` · `max`로 가로막힌 달 쪽에서는 비활성이 됩니다. 비활성 모습은 다른 컨트롤과 같은 disabled 상태입니다.
 
+[contract:components.calendar.range]: #
+`min`과 `max`가 둘 다 있으면 그 사이의 고를 수 있는 날에 soft 면을 깔아, 열린 날짜 창이 한눈에 보이게 합니다. 오늘도 그 안에서는 soft 면에 굵은 글자로 서고, 고른 날은 solid, 고를 수 없게 막은 날은 면 없이 비활성입니다. 한쪽 끝만 있으면 면을 깔지 않습니다. 그 너머의 날이 모두 칠해지기 때문입니다.
+
 [contract:components.calendar.marked]: #
 `marked`는 날짜 문자열의 목록이고, 그 날의 숫자 아래에 작은 점이 붙습니다. 점은 Badge의 `dot`과 같은 칠을 쓰고 글자색을 따라가므로 고른 날 위에서도 읽힙니다. 점은 눈으로만 알리는 장식(`aria-hidden`)이라, 점이 뜻하는 바를 읽어 줘야 하는 화면은 날 옆에 글로 적습니다.
 
