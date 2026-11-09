@@ -41,7 +41,7 @@ export const SiteLayout = () => {
       <SkipLink />
       {chrome === "none" ? page : (
         <div className={joinClass(s.frameScope, sidebar && s.wideFrame)}>
-          <SiteHeader />
+          <SiteHeader ruled={Boolean(sidebar)} />
           {sidebar ? (
             <div className={s.sidebarFrame}>
               {sidebar === "docs" ? <DocsNav /> : <PlaygroundNav />}
