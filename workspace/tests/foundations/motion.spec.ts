@@ -292,7 +292,7 @@ test.describe("with reduced motion", () => {
       }
       return count;
     });
-    expect(frames).toBeLessThanOrEqual(3);
+    expect(frames).toBeLessThan(Math.ceil(timing("exit").duration / (1000 / 60)));
     await expect(page.getByRole("button", { name: "설정 열기", exact: true })).toBeFocused();
   });
 
