@@ -374,6 +374,24 @@ test("[primitives.floating.geometry] a popover keeps the sm gap from its trigger
   expect(await gapOf(trigger, panel)).toBeCloseTo(0, 1);
 });
 
+test("[primitives.floating.geometry] a popover opened while its trigger is still held down keeps the sm gap once the trigger is back up", async ({ page }) => {
+  await page.goto("/playground/floating");
+  const trigger = page.getByRole("button", { name: "설정 열기", exact: true });
+  const panel = page.getByRole("dialog", { name: "설정", exact: true });
+  const rest = (await trigger.boundingBox())!;
+  await page.mouse.move(rest.x + rest.width / 2, rest.y + rest.height / 2);
+  await page.mouse.down();
+  await expect.poll(async () => (await trigger.boundingBox())!.y).toBeGreaterThan(rest.y);
+  await trigger.evaluate((element) => (element as HTMLElement).click());
+  await expect(panel).toBeVisible();
+  await page.mouse.move(rest.x + rest.width / 2, rest.y - rest.height);
+  await page.mouse.up();
+  await expect.poll(async () => (await trigger.boundingBox())!.y).toBe(rest.y);
+  await expect(panel).toHaveAttribute("data-placement", "bottom");
+  await expect(panel).not.toHaveAttribute("data-presence", /.*/);
+  await expect.poll(async () => (await panel.boundingBox())!.y - (rest.y + rest.height)).toBeCloseTo(SHAPE_SOURCE.space.sm, 1);
+});
+
 for (const [dir, side] of [["ltr", "left"], ["rtl", "right"]] as const) {
   test(`[primitives.floating.content-state] [primitives.floating.content-options] a panel placed at the start stands on the ${side} of its anchor under ${dir}, and says start`, async ({ page }) => {
     await openHarness(page, "elevation", { placed: dir });

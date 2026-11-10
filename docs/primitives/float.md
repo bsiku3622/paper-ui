@@ -56,7 +56,7 @@ Content role은 dialog / alertdialog / listbox이며 기본값은 dialog입니�
 | underlayClassName | 없음 | Modal scrim class |
 
 [contract:primitives.floating.geometry]: #
-`offset`과 `crossOffset`은 숫자가 아니라 [gap 단계](../foundations/layout.md#원본--역할) 이름이고, 숫자 픽셀을 받는 React Aria에는 Floating이 그 단계를 panel이 서 있는 자리에서 재어 넘깁니다(`internal/measure`). 그래서 하위 트리가 간격 scale을 덮어도, root 글자 크기가 달라져도 간격이 따라가고, 창 크기가 바뀌면 다시 잽니다. panel이 뷰포트 가장자리에 닿을 때 남기는 여백은 `layout.gutter`(16)입니다.
+`offset`과 `crossOffset`은 숫자가 아니라 [gap 단계](../foundations/layout.md#원본--역할) 이름이고, 숫자 픽셀을 받는 React Aria에는 Floating이 그 단계를 panel이 서 있는 자리에서 재어 넘깁니다(`internal/measure`). 그래서 하위 트리가 간격 scale을 덮어도, root 글자 크기가 달라져도 간격이 따라가고, 창 크기가 바뀌면 다시 잽니다. 눌린 트리거는 한 걸음 내려앉아 있다가 돌아오므로, 그 사이에 열린 panel은 트리거가 제자리로 돌아온 뒤 자리를 다시 잡습니다. panel이 뷰포트 가장자리에 닿을 때 남기는 여백은 `layout.gutter`(16)입니다.
 
 [contract:primitives.floating.initial-focus]: #
 [contract:primitives.floating.portal-container]: #

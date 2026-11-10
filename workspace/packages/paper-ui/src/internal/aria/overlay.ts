@@ -57,7 +57,7 @@ export function useAnchoredPosition({ anchor, overlay, open, placement, offsetPx
     observer?.observe(element);
     return () => observer?.disconnect();
   }, [open, fitAnchor, anchor]);
-  const { overlayProps, placement: resolved } = useOverlayPosition({
+  const { overlayProps, placement: resolved, updatePosition } = useOverlayPosition({
     targetRef: anchor,
     overlayRef: overlay,
     isOpen: open,
@@ -67,6 +67,16 @@ export function useAnchoredPosition({ anchor, overlay, open, placement, offsetPx
     containerPadding: containerPaddingPx,
     shouldFlip: flip,
   });
+  // A trigger that opens the panel is measured while it still sinks under the press, so the panel is placed again once it is back.
+  useEffect(() => {
+    const element = anchor.current;
+    if (!open || !element) return;
+    const settle = (event: Event) => {
+      if (event.target === element && (event as TransitionEvent).propertyName === "transform") updatePosition();
+    };
+    element.addEventListener("transitionend", settle);
+    return () => element.removeEventListener("transitionend", settle);
+  }, [open, anchor, updatePosition]);
   const style: CSSProperties = { ...overlayProps.style };
   delete style.zIndex;
   if (fitAnchor && anchorWidth !== null && typeof document !== "undefined") style.minWidth = Math.max(0, Math.min(anchorWidth, document.documentElement.clientWidth - containerPaddingPx - containerPaddingPx));
