@@ -11,6 +11,7 @@ const below = (breakpoint: Breakpoint) => `not all and (min-width: ${tokens.layo
 
 const offsetVar = createVar();
 const towardStart = createVar();
+const railWidth = createVar();
 export const sidebarOffsetProperty = offsetVar.slice("var(".length, -")".length);
 const offset = fallbackVar(offsetVar, "0px");
 
@@ -30,13 +31,14 @@ export const sidebarRail = style({
   ...lineRule({ side: "end" }),
 });
 
-export const sidebarWidth = styleVariants(tokens.shape.dimension.width, (inlineSize) => ({ inlineSize }));
+export const sidebarWidth = styleVariants(tokens.shape.dimension.width, (width) => ({ vars: { [railWidth]: width }, inlineSize: railWidth }));
 
 const drawerRules = {
   position: "fixed",
   insetBlockStart: offset,
   insetBlockEnd: 0,
   insetInlineStart: 0,
+  inlineSize: `max(${railWidth}, min(calc(100% - ${tokens.layout.gap["3xl"]}), ${tokens.shape.dimension.width.xl}))`,
   blockSize: "auto",
   // With `start`, Chrome shrinks a fixed box to its content.
   alignSelf: "normal",

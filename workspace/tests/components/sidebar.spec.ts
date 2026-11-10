@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 import { COLOR_VALUES_BY_MODE } from "../../packages/paper-ui/src/tokens/colors";
+import { SHAPE_SOURCE } from "../../packages/paper-ui/src/tokens/shape";
 import { openHarness } from "../support/harness";
 
 const BAR = 56;
@@ -34,6 +35,18 @@ test.describe("a wide screen", () => {
   });
 });
 
+test.describe("a screen just below md", () => {
+  test.use({ viewport: { width: 600, height: 900 } });
+
+  test("[components.sidebar.drawer] grows the drawer to the xl width and no further, leaving the rest to the scrim", async ({ page }) => {
+    await openHarness(page, "sidebar");
+    const nav = page.getByTestId("sidebar");
+    await page.getByTestId("sidebar-menu").click();
+    await expect.poll(async () => (await nav.boundingBox())!.x).toBe(0);
+    expect((await nav.boundingBox())!.width).toBe(SHAPE_SOURCE.dimension.width.xl);
+  });
+});
+
 test.describe("a narrow screen", () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
@@ -50,7 +63,7 @@ test.describe("a narrow screen", () => {
     const open = (await nav.boundingBox())!;
     expect(open.y).toBe(BAR);
     expect(open.height).toBe(844 - BAR);
-    expect(open.width).toBe(240);
+    expect(open.width).toBe(390 - SHAPE_SOURCE.space["3xl"]);
     expect(await nav.evaluate((element) => getComputedStyle(element).position)).toBe("fixed");
 
     const scrim = await page.evaluate(() => {
