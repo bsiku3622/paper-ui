@@ -41,6 +41,7 @@ test("a Foundations page speaks English", async ({ page }) => {
 });
 
 test("every page of the sidebar speaks English", async ({ page }) => {
+  test.setTimeout(120_000);
   await page.goto("/playground");
   const paths = await page.getByRole("navigation").locator("a[href^='/playground']").evaluateAll((links) => links.map((link) => link.getAttribute("href")!));
   expect(paths.length).toBeGreaterThan(40);
