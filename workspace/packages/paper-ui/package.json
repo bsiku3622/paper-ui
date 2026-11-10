@@ -1,6 +1,6 @@
 {
   "name": "@studio-baeks/paper-ui",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "type": "module",
   "description": "A design system for complex web apps. White and black carry the structure; colour appears only where it means something.",
   "license": "MIT",

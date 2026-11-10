@@ -3,6 +3,11 @@
 Every published version has a `## <version>` heading below, newest first. The recorded API surface (`api/surface.json`)
 moves only with a version that has one: `pnpm api:update` refuses otherwise.
 
+## 0.1.5
+
+- A popover opened from a trigger that is still pressed keeps its gap: a pressed Button sinks one step, and the panel used to be placed against the sunk trigger, one pixel lower than its `offset` once the trigger came back up. The panel is now placed again when the trigger's press transition ends.
+- The `Sidebar` drawer is wider on phones: it stays at least the rail's `width`, and grows to `dimension.width.xl` (360) while leaving `layout.gap.3xl` (48) of scrim at the end of the screen. The rail is unchanged.
+
 ## 0.1.4
 
 - A new layer, Components, after Atoms: finished parts built from Atoms and Primitives. `INVENTORY.components` lists `Sidebar`, `Calendar`, `DatePicker`, `RangeCalendar` and `DateRangePicker`.
