@@ -14,6 +14,7 @@ moves only with a version that has one: `pnpm api:update` refuses otherwise.
 - `RangeCalendar` chooses a period on the `Calendar` grid. The value is `{ start, end }` (ISO strings, exported as `DateRangeValue`); the first press is the start and the second the end, and `onValueChange` is called once, when the end is set. One soft band runs from the start to the end, the two end days are solid with their inner corners square, and while the end is pending the band previews up to the day the pointer or focus is on. `min` and `max` stay limits only.
 - `DateRangePicker` is the `DatePicker` button for a period: the locale's medium date range on one line, `startName` and `endName` hidden inputs, and a popup that closes, and returns focus, when the end is chosen.
 - New dependencies: `@react-aria/calendar`, `@react-stately/calendar` and `@internationalized/date`.
+- Dark lines are quieter: `border.base`, `strong` and `hover` move one step toward the surfaces (neutral.875, 800 and 700), and the resting edge of a first surface is a 1px line of 10% white instead of 15%. A dark input or mark now reads as its face, since its line is the same grey; the hover line still appears. Light is unchanged.
 
 ## 0.1.3
 

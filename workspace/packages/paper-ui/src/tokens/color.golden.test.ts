@@ -49,9 +49,9 @@ describe("the relations the design relies on", () => {
         chosen: palette.neutral[dark ? "800" : "150"],
       });
       expect(semantic.border).toEqual({
-        base: palette.neutral[dark ? "800" : "200"],
-        strong: palette.neutral[dark ? "700" : "300"],
-        hover: palette.neutral[dark ? "600" : "400"],
+        base: palette.neutral[dark ? "875" : "200"],
+        strong: palette.neutral[dark ? "800" : "300"],
+        hover: palette.neutral[dark ? "700" : "400"],
       });
       expect(semantic.ink).toEqual({
         primary: palette.neutral[dark ? "100" : "925"],

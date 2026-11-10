@@ -104,9 +104,9 @@ const selection = (mode: ColorMode) => {
       tertiary: pick("neutral.500", "neutral.500"),
     },
     border: {
-      base: pick("neutral.200", "neutral.800"),
-      strong: pick("neutral.300", "neutral.700"),
-      hover: pick("neutral.400", "neutral.600"),
+      base: pick("neutral.200", "neutral.875"),
+      strong: pick("neutral.300", "neutral.800"),
+      hover: pick("neutral.400", "neutral.700"),
     },
     accent: {
       primary: primarySelection(mode),
@@ -132,7 +132,7 @@ const selection = (mode: ColorMode) => {
     shadow: {
       floating: pick("alpha10.neutral.950", "alpha60.neutral.950"),
       lifted: pick("alpha10.neutral.950", "alpha45.neutral.950"),
-      resting: pick("alpha10.neutral.950", "alpha15.neutral.0"),
+      resting: pick("alpha10.neutral.950", "alpha10.neutral.0"),
       inset: pick("alpha10.neutral.950", "alpha45.neutral.950"),
     },
     marker: {

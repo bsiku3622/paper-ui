@@ -72,7 +72,7 @@ tier 사이는 10씩 띄우고 같은 tier 안의 한 걸음(nudge)은 1이라, 
 Surface는 `elevation` prop으로 tier를 고릅니다. position, z, 그림자가 함께 붙습니다. Surface가 아닌 요소는 같은 class를 직접 받습니다.
 
 [contract:foundations.layout.resting-shadow]: #
-resting과 inset은 tier가 아닙니다. 제자리에 있는 면이 선 대신 가장자리를 세우는 그림자이고(라이트는 lifted와 같은 기하입니다), `shadow` prop(Surface · Paint와 그 위의 Atom)으로 받으며 position도 z도 붙이지 않아 아무것도 덮지 않습니다. 면이 있는 요소만 받고, Surface에 `elevation`이 함께 있으면 tier의 그림자가 이깁니다. 다크 바탕은 이미 거의 검정이라 그림자가 떨어질 자리가 없어서, 다크의 resting은 흰색 15%의 1px 선입니다. 크기는 변하지 않습니다.
+resting과 inset은 tier가 아닙니다. 제자리에 있는 면이 선 대신 가장자리를 세우는 그림자이고(라이트는 lifted와 같은 기하입니다), `shadow` prop(Surface · Paint와 그 위의 Atom)으로 받으며 position도 z도 붙이지 않아 아무것도 덮지 않습니다. 면이 있는 요소만 받고, Surface에 `elevation`이 함께 있으면 tier의 그림자가 이깁니다. 다크 바탕은 이미 거의 검정이라 그림자가 떨어질 자리가 없어서, 다크의 resting은 흰색 10%의 1px 선입니다. 크기는 변하지 않습니다.
 
 ```tsx
 <Surface fill="raised" border radius="md" padding="md" elevation="overlay">…</Surface>

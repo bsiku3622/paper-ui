@@ -59,7 +59,7 @@ The steps each role picks are as follows.
 | `control.mark` | neutral.0 | neutral.875 |
 | `control.chosen` | neutral.150 | neutral.800 |
 | `ink.primary` · `secondary` · `tertiary` | neutral.925 · 700 · 500 | neutral.100 · 400 · 500 |
-| `border.base` · `strong` · `hover` | neutral.200 · 300 · 400 | neutral.800 · 700 · 600 |
+| `border.base` · `strong` · `hover` | neutral.200 · 300 · 400 | neutral.875 · 800 · 700 |
 | `interaction.bgHover.onSurface` | alpha05.neutral.950 | alpha05.neutral.0 |
 | `interaction.bgHover.onPrimarySolid` | alpha10.neutral.0 | alpha10.neutral.950 |
 | `interaction.bgHover.onAccentSolid` | alpha15.neutral.950 | alpha15.neutral.950 |
@@ -67,7 +67,7 @@ The steps each role picks are as follows.
 | `interaction.focus` | blue.600 | blue.400 |
 | `interaction.link` | blue.700 | blue.300 |
 | `overlay.scrim` | alpha30.neutral.950 | alpha60.neutral.950 |
-| `shadow.floating` · `lifted` · `resting` | alpha10.neutral.950 · alpha10.neutral.950 · alpha10.neutral.950 | alpha60.neutral.950 · alpha45.neutral.950 · alpha15.neutral.0 |
+| `shadow.floating` · `lifted` · `resting` | alpha10.neutral.950 · alpha10.neutral.950 · alpha10.neutral.950 | alpha60.neutral.950 · alpha45.neutral.950 · alpha10.neutral.0 |
 | `shadow.inset` | alpha10.neutral.950 | alpha45.neutral.950 |
 | `marker.fill` | marker | marker |
 | `marker.ink` | neutral.950 | neutral.950 |

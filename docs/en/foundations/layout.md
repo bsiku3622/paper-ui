@@ -52,7 +52,7 @@ There are four shadow depths: resting · lifted · floating · inset. The shadow
 
 Surface chooses a tier with the `elevation` prop. Position, z and shadow are attached together. An element that is not a Surface receives the same class directly.
 
-resting and inset are not tiers. They are the shadows with which a surface in place raises its edge instead of a line (in light, the same geometry as lifted), received through the `shadow` prop (Surface · Paint and the Atoms on top of them), and they attach neither position nor z, so they cover nothing. Only elements that have a surface receive them, and if a Surface also has `elevation`, the tier's shadow wins. A dark background is already nearly black, so there is no place for a shadow to fall; dark's resting is therefore a 1px line of 15% white. The size does not change.
+resting and inset are not tiers. They are the shadows with which a surface in place raises its edge instead of a line (in light, the same geometry as lifted), received through the `shadow` prop (Surface · Paint and the Atoms on top of them), and they attach neither position nor z, so they cover nothing. Only elements that have a surface receive them, and if a Surface also has `elevation`, the tier's shadow wins. A dark background is already nearly black, so there is no place for a shadow to fall; dark's resting is therefore a 1px line of 10% white. The size does not change.
 
 ```tsx
 <Surface fill="raised" border radius="md" padding="md" elevation="overlay">…</Surface>
